@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestApp", "TestApp\TestApp.vcproj", "{11752BD2-704D-44D8-A88D-AAD097000897}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PerformanceTest", "PerformanceTest\PerformanceTest.vcproj", "{9B728C43-2636-4655-8B45-6FB214171815}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{11752BD2-704D-44D8-A88D-AAD097000897}.Debug|Win32.ActiveCfg = Debug|Win32
+		{11752BD2-704D-44D8-A88D-AAD097000897}.Debug|Win32.Build.0 = Debug|Win32
+		{11752BD2-704D-44D8-A88D-AAD097000897}.Release|Win32.ActiveCfg = Release|Win32
+		{11752BD2-704D-44D8-A88D-AAD097000897}.Release|Win32.Build.0 = Release|Win32
+		{9B728C43-2636-4655-8B45-6FB214171815}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9B728C43-2636-4655-8B45-6FB214171815}.Debug|Win32.Build.0 = Debug|Win32
+		{9B728C43-2636-4655-8B45-6FB214171815}.Release|Win32.ActiveCfg = Release|Win32
+		{9B728C43-2636-4655-8B45-6FB214171815}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
