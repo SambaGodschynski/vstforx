@@ -1,0 +1,839 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1052.3622"
+   height="744.09448"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="scanDialog.svg"
+   inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\dlgScan_frame.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient3770">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop3772" />
+      <stop
+         style="stop-color:#000000;stop-opacity:0;"
+         offset="1"
+         id="stop3774" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5121">
+      <stop
+         style="stop-color:#5ca7d3;stop-opacity:1;"
+         offset="0"
+         id="stop5123" />
+      <stop
+         style="stop-color:#367ea9;stop-opacity:0.08176101;"
+         offset="1"
+         id="stop5125" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5099">
+      <stop
+         style="stop-color:#6f3737;stop-opacity:1;"
+         offset="0"
+         id="stop5101" />
+      <stop
+         id="stop5111"
+         offset="0.54867256"
+         style="stop-color:#ff9494;stop-opacity:1;" />
+      <stop
+         style="stop-color:#c41212;stop-opacity:1;"
+         offset="1"
+         id="stop5103" />
+    </linearGradient>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+    <inkscape:perspective
+       id="perspective3822"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3617"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5099"
+       id="radialGradient5115"
+       cx="143.625"
+       cy="65.719482"
+       fx="143.625"
+       fy="65.719482"
+       r="7.625"
+       gradientTransform="matrix(1,0,0,0.96721311,16.651651,44.926184)"
+       gradientUnits="userSpaceOnUse" />
+    <inkscape:perspective
+       id="perspective5145"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5169"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5207"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5359"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5359-2"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5508"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5542"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5099-4"
+       id="radialGradient5115-2"
+       cx="143.625"
+       cy="65.719482"
+       fx="143.625"
+       fy="65.719482"
+       r="7.625"
+       gradientTransform="matrix(1,0,0,0.96721311,16.651651,44.926184)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       id="linearGradient5099-4">
+      <stop
+         style="stop-color:#323232;stop-opacity:1;"
+         offset="0"
+         id="stop5101-5" />
+      <stop
+         id="stop5111-2"
+         offset="0.048"
+         style="stop-color:#dcdcdc;stop-opacity:1;" />
+      <stop
+         style="stop-color:#f7f7f7;stop-opacity:1;"
+         offset="1"
+         id="stop5103-9" />
+    </linearGradient>
+    <radialGradient
+       r="7.625"
+       fy="65.719482"
+       fx="143.625"
+       cy="65.719482"
+       cx="143.625"
+       gradientTransform="matrix(1,0,0,0.96721311,-68.12499,42.154739)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient5554"
+       xlink:href="#linearGradient5099-4"
+       inkscape:collect="always" />
+    <inkscape:perspective
+       id="perspective5542-8"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5099-9"
+       id="radialGradient5115-6"
+       cx="143.625"
+       cy="65.719482"
+       fx="143.625"
+       fy="65.719482"
+       r="7.625"
+       gradientTransform="matrix(1,0,0,0.96721311,16.651651,44.926184)"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       id="linearGradient5099-9">
+      <stop
+         style="stop-color:#eaeaea;stop-opacity:1;"
+         offset="0"
+         id="stop5101-8" />
+      <stop
+         id="stop5111-6"
+         offset="0.54867256"
+         style="stop-color:#553d3d;stop-opacity:1;" />
+      <stop
+         style="stop-color:#332727;stop-opacity:1;"
+         offset="1"
+         id="stop5103-6" />
+    </linearGradient>
+    <radialGradient
+       r="7.625"
+       fy="65.719482"
+       fx="143.625"
+       cy="65.719482"
+       cx="143.625"
+       gradientTransform="matrix(1,0,0,0.96721311,-68.12499,56.902758)"
+       gradientUnits="userSpaceOnUse"
+       id="radialGradient5554-2"
+       xlink:href="#linearGradient5099-9"
+       inkscape:collect="always" />
+    <inkscape:perspective
+       id="perspective5628"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5658"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5707"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5760"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5782"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5833"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5861"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5883"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5930"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5957"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5979"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective6039"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective6064"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective6099"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective6191"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <linearGradient
+       gradientTransform="translate(-833.91399,-11.941505)"
+       inkscape:collect="always"
+       xlink:href="#linearGradient5121-5"
+       id="linearGradient5532-5"
+       x1="143.75296"
+       y1="107.10078"
+       x2="780.07507"
+       y2="107.10078"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       id="linearGradient5121-5">
+      <stop
+         style="stop-color:#5ca7d3;stop-opacity:1;"
+         offset="0"
+         id="stop5123-2" />
+      <stop
+         style="stop-color:#367ea9;stop-opacity:0.08176101;"
+         offset="1"
+         id="stop5125-1" />
+    </linearGradient>
+    <inkscape:perspective
+       id="perspective6239"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective6265"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective6287"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <filter
+       id="filter3795"
+       inkscape:label="Fuzzy Glow"
+       inkscape:menu="Shadows and Glows"
+       inkscape:menu-tooltip="Overlays a semi-transparent shifted copy to a blurred one"
+       color-interpolation-filters="sRGB">
+      <feOffset
+         id="feOffset3797"
+         dx="4"
+         dy="4"
+         result="result11"
+         in="SourceGraphic" />
+      <feGaussianBlur
+         id="feGaussianBlur3799"
+         stdDeviation="4"
+         result="result8" />
+      <feComposite
+         in2="result8"
+         id="feComposite3801"
+         result="result9"
+         in="SourceGraphic"
+         operator="in" />
+      <feBlend
+         in2="result8"
+         id="feBlend3803"
+         in="result9"
+         mode="darken" />
+    </filter>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5099-4"
+       id="linearGradient3732"
+       x1="461.914"
+       y1="93.828331"
+       x2="461.914"
+       y2="474.24365"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.9994398,0,0,1.5321606,0.25876294,-50.152771)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3770"
+       id="linearGradient3776"
+       x1="173.29828"
+       y1="107.99529"
+       x2="323.12836"
+       y2="107.99529"
+       gradientUnits="userSpaceOnUse" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="282.66943"
+     inkscape:cy="379.33662"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1680"
+     inkscape:window-height="1003"
+     inkscape:window-x="-4"
+     inkscape:window-y="-4"
+     inkscape:window-maximized="1"
+     inkscape:snap-bbox="true" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="Ebene#1"
+     style="display:inline">
+    <rect
+       style="fill:url(#linearGradient3732);fill-opacity:1;fill-rule:nonzero;stroke:#696262;stroke-width:1.85618699000000010;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect5497"
+       width="635.46808"
+       height="580.55914"
+       x="144.17995"
+       y="94.756424"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\dlgScan_frame.png" />
+  </g>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-308.2677)"
+     style="display:inline">
+    <rect
+       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:6.64609289000000030;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect5133"
+       width="583.37714"
+       height="462.37708"
+       x="166.31145"
+       y="462.17361"
+       rx="4.9230137"
+       ry="8.7654428"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\dlgScan_frame.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Ebene"
+     style="display:inline">
+    <text
+       xml:space="preserve"
+       style="font-size:13px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial Black;-inkscape-font-specification:Arial Black"
+       x="173.24115"
+       y="112.64812"
+       id="text5117"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\dlgScan_frame.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan5119"
+         x="173.24115"
+         y="112.64812"
+         style="font-family:Arial;-inkscape-font-specification:Arial;fill-opacity:1;fill:#000000">VSTForx Scan Directories</tspan></text>
+    <rect
+       style="fill:url(#radialGradient5554);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect3631-9"
+       width="14.25"
+       height="13.75"
+       x="68.375"
+       y="98.844482"
+       rx="1"
+       ry="1"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\exit_button.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Arial Black;-inkscape-font-specification:Arial Black"
+       x="70.473038"
+       y="109.78072"
+       id="text5129-8"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\exit_button.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan5131-3"
+         x="70.473038"
+         y="109.78072"
+         style="font-size:16px">x</tspan></text>
+    <rect
+       style="fill:url(#radialGradient5554-2);fill-opacity:1.0;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect3631-3"
+       width="14.25"
+       height="13.75"
+       x="68.375"
+       y="113.59248"
+       rx="1"
+       ry="1"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\exit_button.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;fill:#a5a2a2;fill-opacity:1;stroke:none;display:inline;font-family:Arial Black;-inkscape-font-specification:Arial Black"
+       x="70.935066"
+       y="125.19348"
+       id="text5129-82"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\exit_button.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan5131-6"
+         x="70.935066"
+         y="125.19348"
+         style="font-size:16px;fill:#a5a2a2;fill-opacity:1">x</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Arial Black;-inkscape-font-specification:Arial Black;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none"
+       x="811.42059"
+       y="225.02644"
+       id="text5347-2"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_add.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan5349-7"
+         x="811.42059"
+         y="225.02644"
+         style="font-size:12px;font-family:Arial Black;-inkscape-font-specification:Arial Black;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none">+ <tspan
+   style="fill:#ff0000;fill-opacity:1;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none"
+   id="tspan5430-5">add</tspan> Directory</tspan></text>
+    <rect
+       style="fill:#a5a2a2;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect5648"
+       width="100.16761"
+       height="16.912235"
+       x="812.05847"
+       y="213.16174"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_add.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Arial Black;-inkscape-font-specification:Arial Black;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none"
+       x="811.42059"
+       y="241.98444"
+       id="text5347-2-7"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_add.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan5349-7-8"
+         x="811.42059"
+         y="241.98444"
+         style="font-size:12px;font-family:Arial Black;-inkscape-font-specification:Arial Black;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none">+ add <tspan
+   style="fill:#ff0000;fill-opacity:1;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none"
+   id="tspan5697">Directory</tspan></tspan></text>
+    <rect
+       style="fill:#a5a2a2;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect5648-7"
+       width="100.16761"
+       height="16.912235"
+       x="812.05847"
+       y="230.12247"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_add.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Arial Black;-inkscape-font-specification:Arial Black"
+       x="811.50488"
+       y="273.37671"
+       id="text5347-7-8"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_change.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan5349-1-0"
+         x="811.50488"
+         y="273.37671"
+         style="font-size:12px;font-family:Arial Black;-inkscape-font-specification:Arial Black">+ <tspan
+   style="font-family:Arial Black;-inkscape-font-specification:Arial Black"
+   id="tspan5426-2"><tspan
+   style="fill:#ff0000;fill-opacity:1"
+   id="tspan5444-0">change</tspan> Directory</tspan></tspan></text>
+    <rect
+       style="fill:#a5a2a2;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect5648-7-9"
+       width="124.02542"
+       height="16.901014"
+       x="812.0625"
+       y="261.39398"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_change.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Arial Black;-inkscape-font-specification:Arial Black"
+       x="811.49762"
+       y="290.28073"
+       id="text5347-7-8-2"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_change.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan5349-1-0-8"
+         x="811.49762"
+         y="290.28073"
+         style="font-size:12px;font-family:Arial Black;-inkscape-font-specification:Arial Black">+ change <tspan
+   style="fill:#ff0000;fill-opacity:1"
+   id="tspan5822">Directory</tspan></tspan></text>
+    <rect
+       style="fill:#a5a2a2;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect5648-7-9-5"
+       width="124.02542"
+       height="16.901014"
+       x="812.0625"
+       y="278.298"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_change.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:8px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Arial Black;-inkscape-font-specification:Arial Black;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none"
+       x="811.28772"
+       y="319.15033"
+       id="text5347-0-5"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_remove.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan5349-4-2"
+         x="811.28772"
+         y="319.15033"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;font-family:Arial Black;-inkscape-font-specification:Arial Black Heavy;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none">+ <tspan
+   style="fill:#ff0000;fill-opacity:1;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none"
+   id="tspan5454-7">remove</tspan> Directory</tspan></text>
+    <rect
+       style="fill:#a5a2a2;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect5648-7-9-5-6"
+       width="124.9971"
+       height="16.900696"
+       x="811.68762"
+       y="306.96066"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_remove.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:8px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Arial Black;-inkscape-font-specification:Arial Black;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none"
+       x="811.2959"
+       y="336.05258"
+       id="text5347-0-5-7"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_remove.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan5349-4-2-8"
+         x="811.2959"
+         y="336.05258"
+         style="font-size:12px;font-style:normal;font-variant:normal;font-weight:900;font-stretch:normal;font-family:Arial Black;-inkscape-font-specification:Arial Black Heavy;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none">+ remove <tspan
+   style="fill:#ff0000;fill-opacity:1;stroke-width:0.1;stroke-miterlimit:4;stroke-dasharray:none"
+   id="tspan5920">Directory</tspan></tspan></text>
+    <rect
+       style="fill:#a5a2a2;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect5648-7-9-5-6-8"
+       width="124.9971"
+       height="16.900696"
+       x="811.68762"
+       y="323.86285"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_remove.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Arial Black;-inkscape-font-specification:Arial Black"
+       x="-520.90332"
+       y="483.00458"
+       id="text5418-1"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_ok.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan5420-6"
+         x="-520.90332"
+         y="483.00458">+ Ok</tspan></text>
+    <rect
+       style="fill:#a5a2a2;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect5648-7-9-5-6-8-0"
+       width="106.22178"
+       height="31.233435"
+       x="-524.93738"
+       y="454.79022"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_ok.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-weight:normal;fill:#ff0000;fill-opacity:1;stroke:none;display:inline;font-family:Arial Black;-inkscape-font-specification:Arial Black"
+       x="-520.91022"
+       y="514.23566"
+       id="text5418-1-9"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_ok.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan5420-6-5"
+         x="-520.91022"
+         y="514.23566">+ Ok</tspan></text>
+    <rect
+       style="fill:#a5a2a2;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect5648-7-9-5-6-8-0-8"
+       width="106.22178"
+       height="31.233435"
+       x="-524.93738"
+       y="486.0213"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_ok.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Arial Black;-inkscape-font-specification:Arial Black"
+       x="-382.23367"
+       y="486.97046"
+       id="text5422-9"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_cancel.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan5424-0"
+         x="-382.23367"
+         y="486.97046">+ Cancel</tspan></text>
+    <rect
+       style="fill:#a5a2a2;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect5648-7-9-5-6-8-0-0"
+       width="172.92854"
+       height="31.205919"
+       x="-381.93622"
+       y="459.24152"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_cancel.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-weight:normal;fill:#ff0000;fill-opacity:1;stroke:none;display:inline;font-family:Arial Black;-inkscape-font-specification:Arial Black"
+       x="-382.23367"
+       y="518.23431"
+       id="text5422-9-0"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_cancel.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan5424-0-7"
+         x="-382.23367"
+         y="518.23431">+ Cancel</tspan></text>
+    <rect
+       style="fill:#a5a2a2;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect5648-7-9-5-6-8-0-0-2"
+       width="172.92854"
+       height="31.205919"
+       x="-381.93622"
+       y="490.50537"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\btn_cancel.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect6229-9"
+       width="16.5"
+       height="15.5"
+       x="-103"
+       y="438.09448"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\chkbx_fastscan.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect6229-9-8"
+       width="16.5"
+       height="15.5"
+       x="-103"
+       y="455.59369"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\chkbx_fastscan.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <text
+       xml:space="preserve"
+       style="font-size:18px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial Black;-inkscape-font-specification:Arial Black"
+       x="-100.875"
+       y="467.96948"
+       id="text6301"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\dlg\chkbx_fastscan.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan6303"
+         x="-100.875"
+         y="467.96948">x</tspan></text>
+  </g>
+</svg>
