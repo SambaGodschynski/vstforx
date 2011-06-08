@@ -2,6 +2,14 @@
 		            VSTForx Version History
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
+0.4.300
+-------
+
+bugfixes:
+    > 0000084: [General] Can't scan plugins. Scanning stopped before finished.
+    > 0000088: [General] VSTForx sometime crashes when loading another vstforx instance
+    > 0000090: [Signal process] IK Amplitube2 crashes when receiving midi data
+
 
 0.4.275
 -------
