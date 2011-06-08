@@ -1,0 +1,504 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Quelldateien">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Headerdateien">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Ressourcendateien">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="EXT">
+      <UniqueIdentifier>{9860b934-a343-41e4-8d4c-904e79f85c03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EXT\Core">
+      <UniqueIdentifier>{2f663510-1990-4b10-8117-55a46d77e987}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EXT\Core\gui">
+      <UniqueIdentifier>{62e35d6f-433d-4bf3-a8cb-e0c5fd51c035}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EXT\Core\gui\ctrl">
+      <UniqueIdentifier>{d6285767-b714-49f6-a455-cd9c4ca52ce9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EXT\Core\OS_Spec">
+      <UniqueIdentifier>{cac3bf6a-b906-4d8e-8bec-9d919772692f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EXT\Core\OS_Spec\com">
+      <UniqueIdentifier>{224c3796-5e59-406b-b529-675ab6644757}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EXT\Core\OS_Spec\gui">
+      <UniqueIdentifier>{bf8fa6de-4999-456a-a19a-f174fcf9821c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EXT\Core\OS_Spec\processing">
+      <UniqueIdentifier>{989a6a95-afe2-43a6-adb3-94d731ea6102}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EXT\Core\processing">
+      <UniqueIdentifier>{b2617fa4-f4b2-4340-b76c-ac85342bab3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EXT\Core\processing\parameter">
+      <UniqueIdentifier>{fd2aa47b-571e-4bf2-9474-03f14f3d20e3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EXT\Core\processing\plugNodes">
+      <UniqueIdentifier>{d2cbf17b-1373-4cdd-b764-cea643792ced}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EXT\Core\com">
+      <UniqueIdentifier>{0bf62612-2cb9-469a-b9d6-859ec948d564}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EXT\VstGui">
+      <UniqueIdentifier>{47daea92-cd54-4236-b95d-a141ca7358fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EXT\VstGui\Zlib">
+      <UniqueIdentifier>{bf46696f-6f6d-434f-80bf-e604b4c4cb87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EXT\VstGui\png">
+      <UniqueIdentifier>{a453bee4-8310-4856-ac88-ea3c6224e3db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EXT\VstSDK">
+      <UniqueIdentifier>{33ccb6d7-3db1-4928-bc47-afda885f8dc0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="PPiVst.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\CircuidView.cpp">
+      <Filter>EXT\Core\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\CMenu.cpp">
+      <Filter>EXT\Core\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\ConcreteGObjects.cpp">
+      <Filter>EXT\Core\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\GObjectSerrializationsFunc.cpp">
+      <Filter>EXT\Core\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\ModalView.cpp">
+      <Filter>EXT\Core\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\MouseAction.cpp">
+      <Filter>EXT\Core\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\PpiEditor.cpp">
+      <Filter>EXT\Core\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\PpiGui.cpp">
+      <Filter>EXT\Core\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\Resources.cpp">
+      <Filter>EXT\Core\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\SetupDialog.cpp">
+      <Filter>EXT\Core\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\VstPlugView.cpp">
+      <Filter>EXT\Core\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\CircuidControl.cpp">
+      <Filter>EXT\Core\gui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\GObjectController.cpp">
+      <Filter>EXT\Core\gui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\MainCtrl.cpp">
+      <Filter>EXT\Core\gui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\ViewCommand.cpp">
+      <Filter>EXT\Core\gui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\gui\ViewEvents.cpp">
+      <Filter>EXT\Core\gui\ctrl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\OS_Specific\windows\com\win_one4All.cpp">
+      <Filter>EXT\Core\OS_Spec\com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\OS_Specific\windows\gui\win_Window.cpp">
+      <Filter>EXT\Core\OS_Spec\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\OS_Specific\windows\processing\OS_VSTPlugNode2x.cpp">
+      <Filter>EXT\Core\OS_Spec\processing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\processing\ConcreteProcessAdapter.cpp">
+      <Filter>EXT\Core\processing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\processing\PlugNode.cpp">
+      <Filter>EXT\Core\processing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\processing\processing.cpp">
+      <Filter>EXT\Core\processing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\processing\parameter\ConnectionOperators.cpp">
+      <Filter>EXT\Core\processing\parameter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\processing\parameter\parameter.cpp">
+      <Filter>EXT\Core\processing\parameter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\processing\plugNodes\NullAEffect.cpp">
+      <Filter>EXT\Core\processing\plugNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\processing\plugNodes\VSTPlugNode2x.cpp">
+      <Filter>EXT\Core\processing\plugNodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\com\Command.cpp">
+      <Filter>EXT\Core\com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\com\dspTools.cpp">
+      <Filter>EXT\Core\com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\com\Events.cpp">
+      <Filter>EXT\Core\com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\com\Frame.cpp">
+      <Filter>EXT\Core\com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\com\Log.cpp">
+      <Filter>EXT\Core\com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\com\MyString.cpp">
+      <Filter>EXT\Core\com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\com\one4All.cpp">
+      <Filter>EXT\Core\com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\com\PluginCollection.cpp">
+      <Filter>EXT\Core\com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\com\PPIError.cpp">
+      <Filter>EXT\Core\com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\com\Settings.cpp">
+      <Filter>EXT\Core\com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\com\SystemCommand.cpp">
+      <Filter>EXT\Core\com</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vstsdk2.4\vstgui.sf\vstgui\aeffguieditor.cpp">
+      <Filter>EXT\VstGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vstsdk2.4\vstgui.sf\vstgui\cfileselector.cpp">
+      <Filter>EXT\VstGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vstsdk2.4\vstgui.sf\vstgui\cscrollview.cpp">
+      <Filter>EXT\VstGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vstsdk2.4\vstgui.sf\vstgui\ctabview.cpp">
+      <Filter>EXT\VstGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vstsdk2.4\vstgui.sf\vstgui\vstcontrols.cpp">
+      <Filter>EXT\VstGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vstsdk2.4\vstgui.sf\vstgui\vstgui.cpp">
+      <Filter>EXT\VstGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\zlib\adler32.c">
+      <Filter>EXT\VstGui\Zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\zlib\compress.c">
+      <Filter>EXT\VstGui\Zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\zlib\crc32.c">
+      <Filter>EXT\VstGui\Zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\zlib\deflate.c">
+      <Filter>EXT\VstGui\Zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\zlib\gzio.c">
+      <Filter>EXT\VstGui\Zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\zlib\infback.c">
+      <Filter>EXT\VstGui\Zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\zlib\inffast.c">
+      <Filter>EXT\VstGui\Zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\zlib\inflate.c">
+      <Filter>EXT\VstGui\Zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\zlib\inftrees.c">
+      <Filter>EXT\VstGui\Zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\zlib\minigzip.c">
+      <Filter>EXT\VstGui\Zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\zlib\trees.c">
+      <Filter>EXT\VstGui\Zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\zlib\uncompr.c">
+      <Filter>EXT\VstGui\Zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\zlib\zutil.c">
+      <Filter>EXT\VstGui\Zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\lpng1239\png.c">
+      <Filter>EXT\VstGui\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\lpng1239\pngerror.c">
+      <Filter>EXT\VstGui\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\lpng1239\pnggccrd.c">
+      <Filter>EXT\VstGui\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\lpng1239\pngget.c">
+      <Filter>EXT\VstGui\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\lpng1239\pngmem.c">
+      <Filter>EXT\VstGui\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\lpng1239\pngpread.c">
+      <Filter>EXT\VstGui\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\lpng1239\pngread.c">
+      <Filter>EXT\VstGui\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\lpng1239\pngrio.c">
+      <Filter>EXT\VstGui\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\lpng1239\pngrtran.c">
+      <Filter>EXT\VstGui\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\lpng1239\pngrutil.c">
+      <Filter>EXT\VstGui\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\lpng1239\pngset.c">
+      <Filter>EXT\VstGui\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\lpng1239\pngtrans.c">
+      <Filter>EXT\VstGui\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\lpng1239\pngvcrd.c">
+      <Filter>EXT\VstGui\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\lpng1239\pngwio.c">
+      <Filter>EXT\VstGui\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\lpng1239\pngwrite.c">
+      <Filter>EXT\VstGui\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\lpng1239\pngwtran.c">
+      <Filter>EXT\VstGui\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\lpng1239\pngwutil.c">
+      <Filter>EXT\VstGui\png</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x\audioeffect.cpp">
+      <Filter>EXT\VstSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x\audioeffectx.cpp">
+      <Filter>EXT\VstSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x\vstplugmain.cpp">
+      <Filter>EXT\VstSDK</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PPiVst.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gui\ModalView.h">
+      <Filter>EXT\Core\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gui\Resources.h">
+      <Filter>EXT\Core\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\OS_Specific\MessageBoxDef.h">
+      <Filter>EXT\Core\OS_Spec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\OS_Specific\OS_com.h">
+      <Filter>EXT\Core\OS_Spec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\OS_Specific\OS_gui.h">
+      <Filter>EXT\Core\OS_Spec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\OS_Specific\os_processing.h">
+      <Filter>EXT\Core\OS_Spec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\OS_Specific\OS_Specific.h">
+      <Filter>EXT\Core\OS_Spec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\OS_Specific\WindowDef.h">
+      <Filter>EXT\Core\OS_Spec</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\OS_Specific\windows\processing\OS_VSTPlugNode2x.h">
+      <Filter>EXT\Core\OS_Spec\processing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\processing\IHostInfo.h">
+      <Filter>EXT\Core\processing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\processing\plugNodes\NullAEffect.h">
+      <Filter>EXT\Core\processing\plugNodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\com\RegisterBoostTypes.h">
+      <Filter>EXT\Core\com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\com\SystemCommand.h">
+      <Filter>EXT\Core\com</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gui\CircuidView.h">
+      <Filter>EXT\Core\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gui\CMenu.h">
+      <Filter>EXT\Core\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gui\ConcreteGObjects.h">
+      <Filter>EXT\Core\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gui\MouseAction.h">
+      <Filter>EXT\Core\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gui\PpiEditor.h">
+      <Filter>EXT\Core\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gui\PpiGui.h">
+      <Filter>EXT\Core\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gui\ViewEvents.h">
+      <Filter>EXT\Core\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gui\VstPlugView.h">
+      <Filter>EXT\Core\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gui\CircuidControl.h">
+      <Filter>EXT\Core\gui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gui\GObjectController.h">
+      <Filter>EXT\Core\gui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gui\MainCtrl.h">
+      <Filter>EXT\Core\gui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gui\ViewCommand.h">
+      <Filter>EXT\Core\gui\ctrl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\gui\SetupDialog.h">
+      <Filter>EXT\Core\gui\ctrl</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Graphics\Nodes\adsr_trigger.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\dlg\btn_add.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\dlg\btn_cancel.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\dlg\btn_change.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\ToolBox\btn_connect\btn_connect.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\ToolBox\btn_move\btn_move.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\dlg\btn_ok.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\dlg\btn_remove.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\ToolBox\btn_use\btn_use.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\Nodes\channel_split.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\dlg\chkbx_fastscan.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\dlg\dlg_frame.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\dlg\dlgScan_frame.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\Ebutton\eButton.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\dlg\exit_button.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="icon1.ico">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\Nodes\InputNode.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\Nodes\InputNode_small.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\MenuRocker\menurocker.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\Nodes\oSwitch.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\Nodes\OutputNode.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\Nodes\OutputNode_small.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\Nodes\OutputNode_small_glow.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\regler01\passive_regler01.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\Nodes\peak_tracker.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="POINTER.cur">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\regler01\regler01.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\resizeHandler.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\resizeHandlerHeight.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\resizeHandlerWidth.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\dlg\rocker_sm_larg.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\dlg\scan_now.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\ToolBox\settings\settings.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\Nodes\step_adapter.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\ToolBox\toolbx_bk.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\Nodes\volume_node.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\Graphics\Nodes\vstPlugNode.png">
+      <Filter>Ressourcendateien</Filter>
+    </None>
+    <None Include="..\..\toDo.txt" />
+    <None Include="..\Debug\vstforx.log" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="testplug02.rc">
+      <Filter>Ressourcendateien</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,122 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+/*
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Deutsch (Deutschland) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DEU)
+#ifdef _WIN32
+LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+*/
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON1               ICON                    "icon1.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_CONTEXT_CURSOR      CURSOR                  "POINTER.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// PNG
+//
+
+IDB_PNG1                PNG                     "..\\..\\Graphics\\Nodes\\vstPlugNode.png"
+IDB_PNG2                PNG                     "..\\..\\Graphics\\Nodes\\adsr_trigger.png"
+IDB_PNG3                PNG                     "..\\..\\Graphics\\Nodes\\channel_split.png"
+IDB_PNG4                PNG                     "..\\..\\Graphics\\Nodes\\InputNode.png"
+IDB_PNG5                PNG                     "..\\..\\Graphics\\Nodes\\InputNode_small.png"
+IDB_PNG6                PNG                     "..\\..\\Graphics\\Nodes\\OutputNode.png"
+IDB_PNG7                PNG                     "..\\..\\Graphics\\Nodes\\OutputNode_small.png"
+IDB_PNG8                PNG                     "..\\..\\Graphics\\Nodes\\peak_tracker.png"
+IDB_PNG9                PNG                     "..\\..\\Graphics\\Nodes\\step_adapter.png"
+IDB_PNG10               PNG                     "..\\..\\Graphics\\Nodes\\volume_node.png"
+IDB_PNG11               PNG                     "..\\..\\Graphics\\Ebutton\\eButton.png"
+IDB_PNG12               PNG                     "..\\..\\Graphics\\regler01\\passive_regler01.png"
+IDB_PNG13               PNG                     "..\\..\\Graphics\\regler01\\regler01.png"
+IDB_PNG14               PNG                     "..\\..\\Graphics\\MenuRocker\\menurocker.png"
+IDB_PNG15               PNG                     "..\\..\\Graphics\\ToolBox\\btn_connect\\btn_connect.png"
+IDB_PNG16               PNG                     "..\\..\\Graphics\\ToolBox\\btn_move\\btn_move.png"
+IDB_PNG17               PNG                     "..\\..\\Graphics\\ToolBox\\btn_use\\btn_use.png"
+IDB_PNG18               PNG                     "..\\..\\Graphics\\ToolBox\\toolbx_bk.png"
+IDB_PNG19               PNG                     "..\\..\\Graphics\\Nodes\\oSwitch.png"
+IDB_PNG20               PNG                     "..\\..\\Graphics\\Nodes\\OutputNode_small_glow.png"
+IDB_PNG21               PNG                     "..\\..\\Graphics\\ToolBox\\settings\\settings.png"
+IDB_PNG22               PNG                     "..\\..\\Graphics\\dlg\\exit_button.png"
+IDB_PNG23               PNG                     "..\\..\\Graphics\\dlg\\dlg_frame.png"
+IDB_PNG24               PNG                     "..\\..\\Graphics\\dlg\\btn_remove.png"
+IDB_PNG25               PNG                     "..\\..\\Graphics\\dlg\\btn_add.png"
+IDB_PNG26               PNG                     "..\\..\\Graphics\\dlg\\btn_cancel.png"
+IDB_PNG27               PNG                     "..\\..\\Graphics\\dlg\\btn_change.png"
+IDB_PNG28               PNG                     "..\\..\\Graphics\\dlg\\btn_ok.png"
+IDB_PNG29               PNG                     "..\\..\\Graphics\\dlg\\chkbx_fastscan.png"
+IDB_PNG30               PNG                     "..\\..\\Graphics\\dlg\\dlgScan_frame.png"
+IDB_PNG31               PNG                     "..\\..\\Graphics\\dlg\\rocker_sm_larg.png"
+IDB_PNG32               PNG                     "..\\..\\Graphics\\resizeHandlerWidth.png"
+IDB_PNG33               PNG                     "..\\..\\Graphics\\resizeHandlerHeight.png"
+IDB_PNG34               PNG                     "..\\..\\Graphics\\dlg\\scan_now.png"
+IDB_PNG35               PNG                     "..\\..\\Graphics\\Nodes\\midiReceiver.png"
+IDB_PNG36               PNG                     "..\\..\\Graphics\\bk.png"
+//#endif    // Deutsch (Deutschland) resources
+/////////////////////////////////////////////////////////////////////////////
+
+/*
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
+*/

@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="iRelease|Win32">
+      <Configuration>iRelease</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B54D99D6-511D-46F5-93CE-39105094B8C8}</ProjectGuid>
+    <RootNamespace>VSTForx</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='iRelease|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='iRelease|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='iRelease|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='iRelease|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='iRelease|Win32'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='iRelease|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='iRelease|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='iRelease|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\..\boost_1_42_0;$(ProjectDir)..\..\src;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x;$(ProjectDir)..\..\..\..\vstsdk2.4\vstgui.sf\vstgui;$(ProjectDir)..\..\..\..\vstsdk2.4\;$(ProjectDir)..\..\..\..\zlib;$(ProjectDir)..\..\..\..\lpng1239</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;VSTFORX_EXPORTS;USE_LIBPNG;BOOST_FILESYSTEM_VERSION=2;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level2</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)$(ProjectName)_d.dll</OutputFile>
+      <AdditionalLibraryDirectories>C:\Eigene Dateien\Eigene Progs\boost_1_42_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>vstplug.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\..\boost_1_42_0;$(ProjectDir)..\..\src;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x;$(ProjectDir)..\..\..\..\vstsdk2.4\vstgui.sf\vstgui;$(ProjectDir)..\..\..\..\vstsdk2.4\;$(ProjectDir)..\..\..\..\zlib;$(ProjectDir)..\..\..\..\lpng1239</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;VSTFORX_EXPORTS;USE_LIBPNG;BOOST_FILESYSTEM_VERSION 2;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level2</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Eigene Dateien\Eigene Progs\boost_1_42_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>vstplug.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='iRelease|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\..\boost_1_42_0;$(ProjectDir)..\..\src;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x;$(ProjectDir)..\..\..\..\vstsdk2.4\vstgui.sf\vstgui;$(ProjectDir)..\..\..\..\vstsdk2.4\;$(ProjectDir)..\..\..\..\zlib;$(ProjectDir)..\..\..\..\lpng1239</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;VSTFORX_EXPORTS;USE_LIBPNG;FORX_IS_SYNTH;BOOST_FILESYSTEM_VERSION 2;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level2</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>gdiplus.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)i$(ProjectName).dll</OutputFile>
+      <AdditionalLibraryDirectories>C:\Eigene Dateien\Eigene Progs\boost_1_42_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>vstplug.def</ModuleDefinitionFile>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="PPiVst.cpp" />
+    <ClCompile Include="..\..\src\gui\CircuidView.cpp" />
+    <ClCompile Include="..\..\src\gui\CMenu.cpp" />
+    <ClCompile Include="..\..\src\gui\ConcreteGObjects.cpp" />
+    <ClCompile Include="..\..\src\gui\GObjectSerrializationsFunc.cpp" />
+    <ClCompile Include="..\..\src\gui\ModalView.cpp" />
+    <ClCompile Include="..\..\src\gui\MouseAction.cpp" />
+    <ClCompile Include="..\..\src\gui\PpiEditor.cpp" />
+    <ClCompile Include="..\..\src\gui\PpiGui.cpp" />
+    <ClCompile Include="..\..\src\gui\Resources.cpp" />
+    <ClCompile Include="..\..\src\gui\SetupDialog.cpp" />
+    <ClCompile Include="..\..\src\gui\VstPlugView.cpp" />
+    <ClCompile Include="..\..\src\gui\CircuidControl.cpp" />
+    <ClCompile Include="..\..\src\gui\GObjectController.cpp" />
+    <ClCompile Include="..\..\src\gui\MainCtrl.cpp" />
+    <ClCompile Include="..\..\src\gui\ViewCommand.cpp" />
+    <ClCompile Include="..\..\src\gui\ViewEvents.cpp" />
+    <ClCompile Include="..\..\src\OS_Specific\windows\com\win_one4All.cpp" />
+    <ClCompile Include="..\..\src\OS_Specific\windows\gui\win_Window.cpp" />
+    <ClCompile Include="..\..\src\OS_Specific\windows\processing\OS_VSTPlugNode2x.cpp" />
+    <ClCompile Include="..\..\src\processing\ConcreteProcessAdapter.cpp" />
+    <ClCompile Include="..\..\src\processing\PlugNode.cpp" />
+    <ClCompile Include="..\..\src\processing\processing.cpp" />
+    <ClCompile Include="..\..\src\processing\parameter\ConnectionOperators.cpp" />
+    <ClCompile Include="..\..\src\processing\parameter\parameter.cpp" />
+    <ClCompile Include="..\..\src\processing\plugNodes\NullAEffect.cpp" />
+    <ClCompile Include="..\..\src\processing\plugNodes\VSTPlugNode2x.cpp" />
+    <ClCompile Include="..\..\src\com\Command.cpp" />
+    <ClCompile Include="..\..\src\com\dspTools.cpp" />
+    <ClCompile Include="..\..\src\com\Events.cpp" />
+    <ClCompile Include="..\..\src\com\Frame.cpp" />
+    <ClCompile Include="..\..\src\com\Log.cpp" />
+    <ClCompile Include="..\..\src\com\MyString.cpp" />
+    <ClCompile Include="..\..\src\com\one4All.cpp" />
+    <ClCompile Include="..\..\src\com\PluginCollection.cpp" />
+    <ClCompile Include="..\..\src\com\PPIError.cpp" />
+    <ClCompile Include="..\..\src\com\Settings.cpp" />
+    <ClCompile Include="..\..\src\com\SystemCommand.cpp" />
+    <ClCompile Include="..\..\..\..\vstsdk2.4\vstgui.sf\vstgui\aeffguieditor.cpp" />
+    <ClCompile Include="..\..\..\..\vstsdk2.4\vstgui.sf\vstgui\cfileselector.cpp" />
+    <ClCompile Include="..\..\..\..\vstsdk2.4\vstgui.sf\vstgui\cscrollview.cpp" />
+    <ClCompile Include="..\..\..\..\vstsdk2.4\vstgui.sf\vstgui\ctabview.cpp" />
+    <ClCompile Include="..\..\..\..\vstsdk2.4\vstgui.sf\vstgui\vstcontrols.cpp" />
+    <ClCompile Include="..\..\..\..\vstsdk2.4\vstgui.sf\vstgui\vstgui.cpp" />
+    <ClCompile Include="..\..\..\..\zlib\adler32.c" />
+    <ClCompile Include="..\..\..\..\zlib\compress.c" />
+    <ClCompile Include="..\..\..\..\zlib\crc32.c" />
+    <ClCompile Include="..\..\..\..\zlib\deflate.c" />
+    <ClCompile Include="..\..\..\..\zlib\gzio.c" />
+    <ClCompile Include="..\..\..\..\zlib\infback.c" />
+    <ClCompile Include="..\..\..\..\zlib\inffast.c" />
+    <ClCompile Include="..\..\..\..\zlib\inflate.c" />
+    <ClCompile Include="..\..\..\..\zlib\inftrees.c" />
+    <ClCompile Include="..\..\..\..\zlib\minigzip.c" />
+    <ClCompile Include="..\..\..\..\zlib\trees.c" />
+    <ClCompile Include="..\..\..\..\zlib\uncompr.c" />
+    <ClCompile Include="..\..\..\..\zlib\zutil.c" />
+    <ClCompile Include="..\..\..\..\lpng1239\png.c" />
+    <ClCompile Include="..\..\..\..\lpng1239\pngerror.c" />
+    <ClCompile Include="..\..\..\..\lpng1239\pnggccrd.c" />
+    <ClCompile Include="..\..\..\..\lpng1239\pngget.c" />
+    <ClCompile Include="..\..\..\..\lpng1239\pngmem.c" />
+    <ClCompile Include="..\..\..\..\lpng1239\pngpread.c" />
+    <ClCompile Include="..\..\..\..\lpng1239\pngread.c" />
+    <ClCompile Include="..\..\..\..\lpng1239\pngrio.c" />
+    <ClCompile Include="..\..\..\..\lpng1239\pngrtran.c" />
+    <ClCompile Include="..\..\..\..\lpng1239\pngrutil.c" />
+    <ClCompile Include="..\..\..\..\lpng1239\pngset.c" />
+    <ClCompile Include="..\..\..\..\lpng1239\pngtrans.c" />
+    <ClCompile Include="..\..\..\..\lpng1239\pngvcrd.c" />
+    <ClCompile Include="..\..\..\..\lpng1239\pngwio.c" />
+    <ClCompile Include="..\..\..\..\lpng1239\pngwrite.c" />
+    <ClCompile Include="..\..\..\..\lpng1239\pngwtran.c" />
+    <ClCompile Include="..\..\..\..\lpng1239\pngwutil.c" />
+    <ClCompile Include="..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x\audioeffect.cpp" />
+    <ClCompile Include="..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x\audioeffectx.cpp" />
+    <ClCompile Include="..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x\vstplugmain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\gui\CircuidControl.h" />
+    <ClInclude Include="..\..\src\gui\CircuidView.h" />
+    <ClInclude Include="..\..\src\gui\CMenu.h" />
+    <ClInclude Include="..\..\src\gui\ConcreteGObjects.h" />
+    <ClInclude Include="..\..\src\gui\GObjectController.h" />
+    <ClInclude Include="..\..\src\gui\MainCtrl.h" />
+    <ClInclude Include="..\..\src\gui\MouseAction.h" />
+    <ClInclude Include="..\..\src\gui\PpiEditor.h" />
+    <ClInclude Include="..\..\src\gui\PpiGui.h" />
+    <ClInclude Include="..\..\src\gui\ViewCommand.h" />
+    <ClInclude Include="..\..\src\gui\ViewEvents.h" />
+    <ClInclude Include="..\..\src\gui\VstPlugView.h" />
+    <ClInclude Include="PPiVst.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="..\..\src\gui\ModalView.h" />
+    <ClInclude Include="..\..\src\gui\Resources.h" />
+    <ClInclude Include="..\..\src\gui\SetupDialog.h" />
+    <ClInclude Include="..\..\src\OS_Specific\MessageBoxDef.h" />
+    <ClInclude Include="..\..\src\OS_Specific\OS_com.h" />
+    <ClInclude Include="..\..\src\OS_Specific\OS_gui.h" />
+    <ClInclude Include="..\..\src\OS_Specific\os_processing.h" />
+    <ClInclude Include="..\..\src\OS_Specific\OS_Specific.h" />
+    <ClInclude Include="..\..\src\OS_Specific\WindowDef.h" />
+    <ClInclude Include="..\..\src\OS_Specific\windows\processing\OS_VSTPlugNode2x.h" />
+    <ClInclude Include="..\..\src\processing\IHostInfo.h" />
+    <ClInclude Include="..\..\src\processing\plugNodes\NullAEffect.h" />
+    <ClInclude Include="..\..\src\com\RegisterBoostTypes.h" />
+    <ClInclude Include="..\..\src\com\SystemCommand.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\Graphics\Nodes\adsr_trigger.png" />
+    <None Include="..\..\Graphics\dlg\btn_add.png" />
+    <None Include="..\..\Graphics\dlg\btn_cancel.png" />
+    <None Include="..\..\Graphics\dlg\btn_change.png" />
+    <None Include="..\..\Graphics\ToolBox\btn_connect\btn_connect.png" />
+    <None Include="..\..\Graphics\ToolBox\btn_move\btn_move.png" />
+    <None Include="..\..\Graphics\dlg\btn_ok.png" />
+    <None Include="..\..\Graphics\dlg\btn_remove.png" />
+    <None Include="..\..\Graphics\ToolBox\btn_use\btn_use.png" />
+    <None Include="..\..\Graphics\Nodes\channel_split.png" />
+    <None Include="..\..\Graphics\dlg\chkbx_fastscan.png" />
+    <None Include="..\..\Graphics\dlg\dlg_frame.png" />
+    <None Include="..\..\Graphics\dlg\dlgScan_frame.png" />
+    <None Include="..\..\Graphics\Ebutton\eButton.png" />
+    <None Include="..\..\Graphics\dlg\exit_button.png" />
+    <None Include="icon1.ico" />
+    <None Include="..\..\Graphics\Nodes\InputNode.png" />
+    <None Include="..\..\Graphics\Nodes\InputNode_small.png" />
+    <None Include="..\..\Graphics\MenuRocker\menurocker.png" />
+    <None Include="..\..\Graphics\Nodes\oSwitch.png" />
+    <None Include="..\..\Graphics\Nodes\OutputNode.png" />
+    <None Include="..\..\Graphics\Nodes\OutputNode_small.png" />
+    <None Include="..\..\Graphics\Nodes\OutputNode_small_glow.png" />
+    <None Include="..\..\Graphics\regler01\passive_regler01.png" />
+    <None Include="..\..\Graphics\Nodes\peak_tracker.png" />
+    <None Include="POINTER.cur" />
+    <None Include="..\..\Graphics\regler01\regler01.png" />
+    <None Include="..\..\Graphics\resizeHandler.png" />
+    <None Include="..\..\Graphics\resizeHandlerHeight.png" />
+    <None Include="..\..\Graphics\resizeHandlerWidth.png" />
+    <None Include="..\..\Graphics\dlg\rocker_sm_larg.png" />
+    <None Include="..\..\Graphics\dlg\scan_now.png" />
+    <None Include="..\..\Graphics\ToolBox\settings\settings.png" />
+    <None Include="..\..\Graphics\Nodes\step_adapter.png" />
+    <None Include="..\..\Graphics\ToolBox\toolbx_bk.png" />
+    <None Include="..\..\Graphics\Nodes\volume_node.png" />
+    <None Include="..\..\Graphics\Nodes\vstPlugNode.png" />
+    <None Include="..\..\toDo.txt" />
+    <None Include="..\Debug\vstforx.log" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="testplug02.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
