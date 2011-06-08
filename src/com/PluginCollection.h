@@ -37,6 +37,13 @@ struct OnFileLoaded : public Event {
 		info(info), filename(filename) {}
 };
 //============================================================================================================
+// Event: OnScanInterrupted
+//============================================================================================================
+struct ScanInterrupted : public Event {
+	string cause;
+	ScanInterrupted ( const string &cause ) : cause(cause) {}
+};
+//============================================================================================================
 // Event: CleaningUpDataBase
 //============================================================================================================
 struct CleaningUpDataBase : public Event {};
@@ -99,7 +106,8 @@ class PluginCollection :
 	public EventSender<OnLoadFile>, 
 	public EventSender<OnFileLoaded>,
 	public EventSender<CleaningUpDataBase>, 
-	public EventSender<ScanFinished> 
+	public EventSender<ScanFinished>,
+	public EventSender<ScanInterrupted>
 {
 friend class ScanVisitor;
 public:
@@ -148,6 +156,8 @@ private:
 	bool searchPlugin ( processing::PluginInfo &pI ); 
 	//--------------------------------------------------------------------------------------------------------
 	Folder getFolder ( FolderID id ) const;
+	//--------------------------------------------------------------------------------------------------------
+	bool abortScan;
 public:
 	//--------------------------------------------------------------------------------------------------------
 	Folder getFolder ( const Path &loc ) const;
@@ -218,7 +228,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	processing::PluginInfo restorePluginInfo ( processing::IHostInfo *hostInfo, processing::PluginInfo &pI );
 	//--------------------------------------------------------------------------------------------------------
-	void stopScanning() { } // TODO:!
+	void stopScanning() { abortScan = true; } 
 	//--------------------------------------------------------------------------------------------------------
 	bool isScanning();
 	//--------------------------------------------------------------------------------------------------------

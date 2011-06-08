@@ -24,7 +24,7 @@ public:
 	typedef std::pair< AudioMasterCallback, AudioEffectX* > HostCallBackOnInit; 
 private:
 	//--------------------------------------------------------------------------------------------------------
-	com::Mutex onInitLock;
+	static com::Mutex onInitLock;
 	//--------------------------------------------------------------------------------------------------------
 	// DLL Handler
 	Module module;

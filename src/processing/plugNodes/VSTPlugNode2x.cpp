@@ -27,7 +27,8 @@ VSTPlugNode::VSTPlugNode( IHostInfo *hostInfo, const string &filename ) :
 OS_VSTPlugNode2x ( filename ), // initalisiert aEff
 PlugNode ( hostInfo, filename, 0,  0 ),  // ProcessAdapter
 onPlugChangeParameterIndex (0),
-param(NULL)
+param(NULL),
+canReceiveVstEvents(false)
 { 
 	loadModule( HostCallBackOnInit (          // erzeugt Mutex lock bis fertig geladen
 		hostInfo->getAudioMasterCallback(), 
@@ -54,7 +55,8 @@ MyString VSTPlugNode::extractNameFromFilename( const string &fileName ){
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugNode::processMidiEvents( VstEvents * events ) {
-	aEff->dispatcher ( aEff, effProcessEvents, 0, NULL, (void*)events, NULL );
+	if ( canHandleMidiEvent() )
+		aEff->dispatcher ( aEff, effProcessEvents, 0, NULL, (void*)events, NULL );
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugNode::initPlug( VSTPlugNode &plug ) {
@@ -78,6 +80,12 @@ void VSTPlugNode::initPlug( VSTPlugNode &plug ) {
 	if ( plug.aEff == &nullAEff ) {
 		plug.setPlugName( "could not load " + plug.getLocation() );
 	}
+	
+	// can receive vst events?
+	char can[] = "receiveVstMidiEvent";
+	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
+	int ret = plug.aEff->dispatcher ( plug.aEff, effCanDo, 0, 0, &can[0], 0.0 );
+	plug.canReceiveVstEvents = ret == 1;
 	
 	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	// reihenfolge wichtig! ( ueber debugger ermittelt )
@@ -326,7 +334,7 @@ void VSTPlugNode::load(com::iArchive &ar, const unsigned int version) {
 
 	// load Plugin
 	OS_VSTPlugNode2x::setModuleLocation ( getLocation() );
-	loadModule( HostCallBackOnInit (          // indirect lock with mutex 
+	loadModule( HostCallBackOnInit (
 		hostInfo->getAudioMasterCallback(), 
 		hostInfo->getAudioEffectX() ) 
 	);
@@ -370,9 +378,16 @@ VstIntPtr VSTPlugNode::_hostCallback ( AEffect* effect,
 {
 	
  	if ( callBkOnInit.first && callBkOnInit.second ) { 
-		return callBkOnInit.first( 
-			callBkOnInit.second->getAeffect(), 
-			opcode, index, value, ptr, opt );
+		// Set callBkOnInit to zero before call.
+		// Because when VSTForx is loaded in VSTForx then this
+		// call occurs a stack overflow. 
+		// ( it calls callBkOnInit[static] again and again because it is not zero )
+		// see bug: 0000088
+		HostCallBackOnInit tmp = callBkOnInit;
+		callBkOnInit = HostCallBackOnInit( NULL, NULL );
+		int ret = tmp.first( tmp.second->getAeffect(), opcode, index, value, ptr, opt );
+		callBkOnInit = tmp;
+		return ret;
 	}
 	
 	RelatedPlugNode::iterator it = relatedPlugNode.find ( effect );

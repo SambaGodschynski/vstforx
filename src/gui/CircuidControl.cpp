@@ -156,7 +156,7 @@ inline void CircuidControl::createDynMenuPlugTree ( menu::MenuEntryList &mE, con
 	typedef PluginCollection::PluginInfoList PluginInfoList;
 	// get folders plugs
 	PluginInfoList pluginInfoList;
-	pluginCollection->getPlugInfoList ( folder, pluginInfoList, SETTINGS->isFastScan() );
+	pluginCollection->getPlugInfoList ( folder, pluginInfoList, /*SETTINGS->isFastScan()*/true );
 	// get folders subfolder
 	PluginCollection::Folders folders; 
 	pluginCollection->getSubFolders( GET_FOLDER_ID(folder), folders );

@@ -315,7 +315,7 @@ ScanningDialog::~ScanningDialog() {
 // Klasse SetupCtrl:
 //============================================================================================================
 SetupCtrl::SetupCtrl ( CFrame *frame ) : 
-	scanStart ( tNone )
+	scanStart ( tNone ), scanLock(false)
 {
 	dlgSetup = new SetupDialog ( frame );
 	dlgScanning = new ScanningDialog ( frame );
@@ -358,6 +358,8 @@ void SetupCtrl::setupOk( long tag ) {
 }
 //------------------------------------------------------------------------------------------------------------
 void SetupCtrl::scan() {
+	if (scanLock) return;
+	scanLock = true;
 	PluginCollection::Ptr pC = PluginCollection::getPluginCollection();
 	if ( pC->isAllScanned() && scanStart != tScanNow || /*TODO: extra behandl.:*/ pC->isScanning() ) {
 		eventHandler ( dlgScanning, OnClose() );
@@ -381,6 +383,7 @@ void SetupCtrl::eventHandler(void *src, const com::ScanFinished &ev) {
 	pC->EventSender<OnLoadFile>::removeEventListener ( dlgScanning ); // wichtig!
 	pC->EventSender<OnFileLoaded>::removeEventListener ( dlgScanning );
 	pC->EventSender<ScanFinished>::removeEventListener ( this );
+	pC->EventSender<CleaningUpDataBase>::removeEventListener ( this );
 	ListBox &lB = dlgScanning->getListBox();
 	// suma sumarum
 	lB.addString("=========================================================");
@@ -408,6 +411,7 @@ SetupCtrl::~SetupCtrl() {
 	pC->EventSender<OnLoadFile>::removeEventListener ( dlgScanning ); // wichtig!
 	pC->EventSender<OnFileLoaded>::removeEventListener ( dlgScanning );
 	pC->EventSender<ScanFinished>::removeEventListener ( this );
+	pC->EventSender<CleaningUpDataBase>::removeEventListener ( this );
 	
 	if ( pC->isScanning() ) {
 		pC->stopScanning();
@@ -425,12 +429,12 @@ SetupCtrl::~SetupCtrl() {
 }
 //------------------------------------------------------------------------------------------------------------
 void SetupCtrl::scanningOk() {
+	dlgScanning->getListBox().clear();
+	scanLock = false;
 	if ( scanStart == tScanNow ) {
-		dlgScanning->getListBox().clear();
 		modView->removeWindowView ( dlgScanning );
 		return;
 	}
-	dlgScanning->getListBox().clear();
 	eventHandler ( dlgScanning, OnClose() );
 }
 } // ppiGui

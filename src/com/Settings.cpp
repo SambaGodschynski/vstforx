@@ -181,7 +181,7 @@ string Settings::versionToString( const unsigned int version ) {
 	ss.str("");
 	ss.clear();
 	ss.fill (' ');
-	ss<<tmp[0]<<tmp[1]<<"."<<tmp[2]<<tmp[3]<<"."<<tmp[4]<<tmp[5]<<tmp[6]<<"b";
+	ss<<tmp[0]<<tmp[1]<<"."<<tmp[2]<<tmp[3]<<"."<<tmp[4]<<tmp[5]<<tmp[6];
 	return ss.str();
 }
 

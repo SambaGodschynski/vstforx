@@ -82,13 +82,16 @@ namespace processing {
 //------------------------------------------------------------------------------------------------------------
 OS_VSTPlugNode2x::HostCallBackOnInit OS_VSTPlugNode2x::callBkOnInit = HostCallBackOnInit( NULL, NULL);
 //------------------------------------------------------------------------------------------------------------
+com::Mutex OS_VSTPlugNode2x::onInitLock;
+//------------------------------------------------------------------------------------------------------------
 bool OS_VSTPlugNode2x::loadModule( const HostCallBackOnInit &_callBkOnInit ) {
 	if ( moduleLocation.length() == 0 ) return false;
-	onInitLock.lock();
-	OS_VSTPlugNode2x::callBkOnInit = _callBkOnInit;
-	::loadModule ( moduleLocation.c_str(), &module, &aEff );
-	OS_VSTPlugNode2x::callBkOnInit = HostCallBackOnInit( NULL, NULL);
-	onInitLock.unlock();
+	{ // lock scope
+		TRY_TO_LOCK_TIMED (onInitLock)
+		OS_VSTPlugNode2x::callBkOnInit = _callBkOnInit;
+		::loadModule ( moduleLocation.c_str(), &module, &aEff );
+		OS_VSTPlugNode2x::callBkOnInit = HostCallBackOnInit(NULL, NULL);
+	}
 	if ( aEff ) return true;
 	aEff = &nullAEff;
 	::unloadModule ( module );

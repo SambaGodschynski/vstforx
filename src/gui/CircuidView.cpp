@@ -113,7 +113,7 @@ inline void fillBackground ( CDrawContext *cC,
 	CCoord ox = offset.x % 15; // 15 == gridsize
 	CCoord oy = offset.y % 15;
 	
-	for ( int y=oy; y<=size.height(); y+=bmp->getHeight() ) {
+	for ( int y=oy; y<=size.height() + 15; y+=bmp->getHeight() ) {
 		for ( int x=ox; x<=size.width(); x+=bmp->getWidth() ) {
 			VSTGUI::CRect rect( x, y, x + bmp->getWidth(), y + bmp->getHeight() ); 
 			bmp->draw( cC, rect );

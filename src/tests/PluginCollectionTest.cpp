@@ -8,6 +8,7 @@
 #include <boost/assign/list_of.hpp>
 #include <map>
 #include <boost/timer.hpp>
+#include "com/PluginCollectionSQL.h"
 
 #if WIN32
 #define VSTPLUG_EXT ".dll"
@@ -350,19 +351,47 @@ void PluginCollectionTest::testFolderIntegrity2(){
 	settings->clearVSTFolders();
 	com::Path pathA =  boost::filesystem::complete("testVstFolder");
 	com::Path pathB =  pathA.string() + "/NeuFolder";
+	create_directory(pathB);
 	string filename1  = string("mda Delay")  + VSTPLUG_EXT;
 	string filename2  = string("mda Detune") + VSTPLUG_EXT;
 	string filename3  = string("mda Dither") + VSTPLUG_EXT;
 	settings->addVSTFolder( pathA.string() );
-	////>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>create new folder
-	create_directory(pathB);
+	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	// bug 07-15-2011 :
+	// rootfolder not visible: 
+	// - scan empty folder
+	// - scan filled folder
+	// => folder invisible
+	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan empty folder
+	using namespace sambag::cpsqlite;
+	using namespace com::sqlcommands;
+	pC->update( graph.get() );
+	DataBase::Results res;
+	DataBase::Executer::Ptr exec = pC->getDataBase()->getExecuter();
+	std::string qGetNeuFolder = "SELECT * FROM folders WHERE name='NeuFolder';";
+	exec->execute( qGetNeuFolder, res );
+	try {
+		CPPUNIT_ASSERT ( !res.empty() );
+		CPPUNIT_ASSERT_EQUAL ( string("0"), res[0]->get(TblFolder::visible()) );
+	} catch (...) {
+		remove_all ( pathB );
+		throw;
+	}
+	////>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>fill new folder
 	copy_file ( pathA.string() + "/A/" + filename1,
 			    pathB.string() + "/" + filename1 );
 	copy_file ( pathA.string() + "/A/" + filename2,
 			    pathB.string() + "/" + filename2 );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan
 	pC->update( graph.get() );
+	// get NeuFolder from DB 
+	res.clear();
+	exec->execute( qGetNeuFolder, res );
 	try {
+		// NeuFolder has to be visible
+		CPPUNIT_ASSERT ( !res.empty() );
+		CPPUNIT_ASSERT_EQUAL ( string("1"), res[0]->get(TblFolder::visible()) );
+
 		CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 3, pC->getNumSucceed() );
 		CPPUNIT_ASSERT_EQUAL ( (size_t)2, pC->getNumFailed() );
 		CPPUNIT_ASSERT_EQUAL ( (size_t)0, pC->getNumNotChecked() );

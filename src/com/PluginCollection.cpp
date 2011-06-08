@@ -107,7 +107,7 @@ namespace {
 boost::weak_ptr<PluginCollection> highlander; // es darf nur einen geben
 }
 //------------------------------------------------------------------------------------------------------------
-PluginCollection::PluginCollection() : settings( SETTINGS ), tmpHostInfo(NULL) {
+PluginCollection::PluginCollection() : settings( SETTINGS ), tmpHostInfo(NULL), abortScan(false) {
 	using namespace sambag::cpsqlite;
 	try {
 		database = DataBase::getDataBase ( settings->getPlugCollectionDumpFilename() );
@@ -167,13 +167,14 @@ void PluginCollection::scanDirectories ( const Settings::PathnameSet &pathSet ) 
 	// scan complete now clean up db
 	EventSender<CleaningUpDataBase>::notifyEventListeners ( this, CleaningUpDataBase() );
 
-	removeUnusedPlugins( vis.getScannedFiles() );   // 1.
-	removeUnusedFolders( vis.getScannedFolders() ); // 2.
+	removeUnusedPlugins( vis.getScannedFiles() );   // 1. removes intersection
+	removeUnusedFolders( vis.getScannedFolders() ); // 2. removes intersection
 }
 //------------------------------------------------------------------------------------------------------------
 void PluginCollection::scanDirectory ( const ScanVisitor::Path &path, ScanVisitor &vis ) {
 	vis.setStartFolder ( path );
-	sambag::com::dirWalker( path, vis );
+	abortScan = false;
+	sambag::com::dirWalker( path, vis, &abortScan );
 }
 //------------------------------------------------------------------------------------------------------------
 void PluginCollection::update(  processing::IHostInfo *hostInfo ) {
@@ -188,10 +189,26 @@ void PluginCollection::update(  processing::IHostInfo *hostInfo ) {
 	//!!
 	tmpHostInfo = hostInfo;
 	//!!
-	
-	if ( pathSet.empty() ) {
-		removeUnusedFolders( ScanVisitor::PathList() );
-	} else scanDirectories( pathSet );
+	// scan setted directories
+	try {
+		if ( pathSet.empty() ) {
+			removeUnusedFolders( ScanVisitor::PathList() );
+		} else scanDirectories( pathSet );
+	} catch ( const sambag::cpsqlite::DataBaseException &ex ) {
+		// send interrupt
+		EventSender<ScanInterrupted>::notifyEventListeners (
+			this,
+			ScanInterrupted("Database Exception")
+		);
+		return;
+	} catch ( ... ) {
+		// send interrupt
+		EventSender<ScanInterrupted>::notifyEventListeners (
+			this,
+			ScanInterrupted("Unkown Exception")
+		);
+		return;
+	}
 
 
 	//!!
@@ -287,29 +304,37 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, processing::
 {
 	using namespace processing;
 	if (!hostinfo) throw com::ppiError::NullPointer("null pointer",__FILE__,__LINE__);
+	// is fastscan?
 	if ( settings->isFastScan() ) {
 		out_info.access = PluginInfo::NOT_CHECKED;
 		out_info.name = Path( out_info.location ).filename();
+		// set not the timestamp! because if rescan without the fast option we want to peek in plug
+		// out_info.timestamp = last_write_time(out_info.location);
 		return;
 	}
 	TOLOG ("peek " + out_info.location );
 	appendLog ( out_info.location );		   // eintrag ins scan log	
 	PlugNode::Ptr n = PluginFactory::createPlugNode ( hostinfo, out_info.location );
-	if ( !n ) {
-		appendLog ( "?" + out_info.location ); // TODO: noch noch notwendig? 
+	if ( !n ) { // loading failed
+		appendLog ( "?" + out_info.location );
 		                                   // nochmal ins log damit nach einem evntl. absturz
 										   // im scan diese datei nicht nochmal versucht wird zu laden. 
 		out_info.access = PluginInfo::FAILED;
+		// set timestamp
+		out_info.timestamp = last_write_time(out_info.location);
 		return;
 	}
 	if ( ! n->isAccessable() ) {
 		out_info.access = PluginInfo::FAILED;
+		// set timestamp
+		out_info.timestamp = last_write_time(out_info.location);
 		return;
 	}
 	// fill out
-
 	out_info = n->getPluginInfo();
 	out_info.access = PluginInfo::SUCCEED;
+	// set timestamp
+	out_info.timestamp = last_write_time(out_info.location);
 	return;
 }
 //------------------------------------------------------------------------------------------------------------
@@ -393,6 +418,8 @@ void PluginCollection::checkDataBaseIntegrity() {
 void PluginCollection::removeUnusedFolders( const ScanVisitor::PathList &scannedFolders ) {	
 	using namespace sambag::cpsqlite;
 	using namespace sqlcommands;
+
+	// remove unused folders
 	ParameterList pL;
 	std::string q = TblFolder::removeUnusedFolders( scannedFolders, pL );
 	DataBase::Executer::Ptr exec = database->getExecuter();
@@ -400,7 +427,13 @@ void PluginCollection::removeUnusedFolders( const ScanVisitor::PathList &scanned
 		exec->execute( q, pL ); 
 	)
 	
-	// TODO: 
+
+	// reset folder visibility
+	DB_QUERY(
+		exec->execute( TblFolder::resetFolderVisibility() ); 
+	)
+
+	// hide folders without related content
 	// while ( s = hole ordner ohne inhalt ):
 	//     for x in s:
 	//         delete x

@@ -19,7 +19,6 @@ editorPosY ( processing::parameter::Parameter::create() ),
 editorOpen ( processing::parameter::Parameter::create() )
 {
 	setLocation ( location );
-	pluginInfo.timestamp = last_write_time(location);
 
 	// init editorPos parameters
 	editorPosX->setName("editor_X");

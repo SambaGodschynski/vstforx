@@ -156,6 +156,10 @@ struct TblFolder {
 		return ss.str();
 	}
 	//--------------------------------------------------------------------------------------------------------
+	static string resetFolderVisibility() {
+		return "UPDATE folders SET visible=1;";
+	}
+	//--------------------------------------------------------------------------------------------------------
 	static string setFolderVisible ( const Int &folderID, bool visible ) {
 		stringstream ss;
 		ss<<"UPDATE folders SET visible = "<< (visible ? "1":"0") <<" WHERE id = "<<folderID<<";";
