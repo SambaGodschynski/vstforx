@@ -358,11 +358,12 @@ void SetupCtrl::setupOk( long tag ) {
 }
 //------------------------------------------------------------------------------------------------------------
 void SetupCtrl::scan() {
-	if (scanLock) return;
+	if (scanLock) return; // avoid double execution ( happens e.g when doubleclicked on fastscan )
 	scanLock = true;
 	PluginCollection::Ptr pC = PluginCollection::getPluginCollection();
-	if ( pC->isAllScanned() && scanStart != tScanNow || /*TODO: extra behandl.:*/ pC->isScanning() ) {
+	if ( pC->isAllScanned() && scanStart != tScanNow ) {
 		eventHandler ( dlgScanning, OnClose() );
+		scanLock = false;
 		return;
 	}
 	PpiEditor *ed = static_cast<PpiEditor*>( dlgScanning->getFrame()->getEditor() );
