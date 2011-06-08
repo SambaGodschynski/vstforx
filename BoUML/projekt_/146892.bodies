@@ -1,0 +1,13 @@
+class MenuEntryContainer
+!!!162892.cpp!!!	addMenuEntry(in me : MenuEntryPtr) : void
+
+	cMenuEntries.push_back (me);
+!!!163020.cpp!!!	removeMenuEntry(in me : MenuEntryPtr) : void
+
+	MenuEntryList::iterator it = cMenuEntries.begin();
+	while ( it!=cMenuEntries.end() ){
+		if ( *it == me ){
+			it = cMenuEntries.erase (it);
+		}
+		++it;
+	}

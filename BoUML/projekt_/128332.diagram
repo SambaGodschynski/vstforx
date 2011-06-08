@@ -1,0 +1,198 @@
+format 75
+
+classinstance 128076 class_ref 170444 // CFrame
+  name ""   xyz 361 9 2000 life_line_z 2000
+classinstance 128204 class_ref 141132 // CMenu
+  name ""   xyz 547 10 2000 life_line_z 2000
+classinstance 128332 class_ref 143820 // CMenuEntry
+  name ""   xyz 776 15 2000 life_line_z 2000
+classinstance 130380 class_ref 128332 // Command
+  name ""   xyz 964 13 2000 life_line_z 2000
+classinstance 131276 class_ref 157772 // PpiEditor
+  name ""   xyz 174 8 2000 life_line_z 2000
+classinstance 131660 class_ref 170572 // Host
+  name ""   xyz 3 4 2000 life_line_z 2000
+durationcanvas 128460 classinstance_ref 128076 // :CFrame
+  xyzwh 381 59 2010 11 42
+end
+durationcanvas 128588 classinstance_ref 128204 // :CMenu
+  xyzwh 566 60 2010 11 25
+end
+durationcanvas 128844 classinstance_ref 128332 // :CMenuEntry
+  xyzwh 807 71 2010 11 79
+  overlappingdurationcanvas 129100
+    xyzwh 813 87 2020 11 25
+  end
+  overlappingdurationcanvas 129356
+    xyzwh 813 115 2020 11 29
+  end
+end
+durationcanvas 129868 classinstance_ref 128204 // :CMenu
+  xyzwh 566 133 2010 11 202
+  overlappingdurationcanvas 130764
+    xyzwh 572 235 2020 11 35
+  end
+  overlappingdurationcanvas 131020
+    xyzwh 572 299 2020 11 30
+  end
+end
+durationcanvas 130124 classinstance_ref 128332 // :CMenuEntry
+  xyzwh 807 173 2010 11 39
+end
+durationcanvas 130508 classinstance_ref 130380 // :Command
+  xyzwh 989 253 2010 11 31
+end
+durationcanvas 131404 classinstance_ref 131276 // :PpiEditor
+  xyzwh 196 259 2010 11 27
+end
+durationcanvas 131788 classinstance_ref 131660 // :Host
+  xyzwh 35 378 2010 11 59
+end
+durationcanvas 131916 classinstance_ref 131276 // :PpiEditor
+  xyzwh 196 423 2010 11 175
+  overlappingdurationcanvas 132172
+    xyzwh 202 555 2020 11 36
+  end
+end
+durationcanvas 132428 classinstance_ref 128204 // :CMenu
+  xyzwh 566 428 2010 11 59
+end
+durationcanvas 132684 classinstance_ref 128204 // :CMenu
+  xyzwh 566 512 2010 11 332
+  overlappingdurationcanvas 133196
+    xyzwh 572 536 2020 11 25
+  end
+  overlappingdurationcanvas 133452
+    xyzwh 572 599 2020 11 26
+  end
+end
+durationcanvas 133964 classinstance_ref 131660 // :Host
+  xyzwh 35 590 2010 11 131
+  overlappingdurationcanvas 134220
+    xyzwh 41 620 2020 11 77
+  end
+end
+durationcanvas 134476 classinstance_ref 128076 // :CFrame
+  xyzwh 381 701 2010 11 35
+end
+durationcanvas 134988 classinstance_ref 128076 // :CFrame
+  xyzwh 381 786 2010 11 25
+end
+msg 128716 asynchronous
+  from durationcanvas_ref 128460
+  to durationcanvas_ref 128588
+  yz 62 2015 msg operation_ref 159692 // "mouse(inout cc : CDrawContext, inout p : CPoint, in btn : long = -1) : void"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 491 48
+msg 128972 synchronous
+  from durationcanvas_ref 128588
+  to durationcanvas_ref 128844
+  yz 71 2015 msg operation_ref 160844 // "mouse(inout cc : CDrawContext, inout p : CPoint, in btn : long = -1) : void"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 694 57
+reflexivemsg 129228 synchronous
+  to durationcanvas_ref 129100
+  yz 87 2025 explicitmsg "hitTest()"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 846 73
+reflexivemsg 129484 synchronous
+  to durationcanvas_ref 129356
+  yz 115 2025 explicitmsg "notifyEventListeners()"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 858 103
+msg 129996 synchronous
+  from durationcanvas_ref 129356
+  to durationcanvas_ref 129868
+  yz 133 2030 msg operation_ref 159820 // "eventHandler(inout src : void, in ev : OnMouseClick) : void"
+  stereotype "<<OnClick>>" xyz 687 147 3000
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 681 119
+msg 130252 synchronous
+  from durationcanvas_ref 129868
+  to durationcanvas_ref 130124
+  yz 201 3005 msg operation_ref 160716 // "getAction() : Command::Ptr"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 687 187
+msg 130636 synchronous
+  from durationcanvas_ref 129868
+  to durationcanvas_ref 130508
+  yz 273 3010 msg operation_ref 128588 // "execute() : void"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 700 259
+reflexivemsg 130892 synchronous
+  to durationcanvas_ref 130764
+  yz 235 2025 msg operation_ref 158028 // "hide() : void"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 605 220
+reflexivemsg 131148 synchronous
+  to durationcanvas_ref 131020
+  yz 299 3015 explicitmsg "notifyEventListeners()"
+  stereotype "<<OnClick>>" xyz 637 300 3000
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 610 284
+msg 131532 synchronous
+  from durationcanvas_ref 130764
+  to durationcanvas_ref 131404
+  yz 259 3015 explicitmsg "addCommand()"
+  stereotype "<<RemoveMenu>>" xyz 347 267 3000
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 354 244
+msg 132044 asynchronous
+  from durationcanvas_ref 131788
+  to durationcanvas_ref 131916
+  yz 423 2015 msg operation_ref 195148 // "idle() : void"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 79 409
+reflexivemsg 132300 synchronous
+  to durationcanvas_ref 132172
+  yz 555 2025 explicitmsg "executeCommands()"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 303 539
+msg 132556 synchronous
+  from durationcanvas_ref 131916
+  to durationcanvas_ref 132428
+  yz 429 2015 msg operation_ref 159308 // "onIdle() : void"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 532 415
+msg 132812 synchronous
+  from durationcanvas_ref 132172
+  to durationcanvas_ref 132684
+  yz 579 2030 msg operation_ref 156748 // "_hide() : void"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 474 565
+reflexivemsg 133324 synchronous
+  to durationcanvas_ref 133196
+  yz 536 2025 explicitmsg "...()"
+  stereotype "<<removeEventListeners>>" xyz 609 550 3000
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 607 520
+reflexivemsg 133580 synchronous
+  to durationcanvas_ref 133452
+  yz 599 2025 msg operation_ref 158796 // "clearEntries() : void"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 604 585
+msg 134092 synchronous
+  from durationcanvas_ref 132684
+  to durationcanvas_ref 133964
+  yz 665 2015 explicitmsg "removeIdleListener()"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 256 649
+reflexivemsg 134348 synchronous
+  to durationcanvas_ref 134220
+  yz 620 2025 explicitmsg "...()"
+  stereotype "<<IdleListenerListChanged>>" xyz 59 634 3000
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 76 618
+msg 134604 synchronous
+  from durationcanvas_ref 132684
+  to durationcanvas_ref 134476
+  yz 703 2020 explicitmsg "setFocusView (this)"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 430 689
+msg 135116 synchronous
+  from durationcanvas_ref 132684
+  to durationcanvas_ref 134988
+  yz 786 2015 explicitmsg "removeView()"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 444 772
+end

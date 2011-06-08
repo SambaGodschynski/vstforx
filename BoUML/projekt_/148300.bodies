@@ -1,0 +1,13 @@
+class GInputNode
+!!!167116.cpp!!!	GInputNode(inout parent : CircuidView, in skinResID : long)
+
+	skin = new CBitmap (skinResID);
+	bBox = CRect ( 0,0, skin->getWidth(), skin->getHeight() );
+	focus = CPoint ( skin->getWidth()>>1, skin->getHeight()>>1 );
+	radius = skin->getWidth()>>1;
+	name = "Input_Node";
+	//ConnectionNode verschieben
+	focus = CPoint (bBox.width()>>1, bBox.height()>>1);
+!!!167372.cpp!!!	~GInputNode()
+
+	delete skin;

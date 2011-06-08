@@ -1,0 +1,16 @@
+class CmdCreateFreeGKnob
+!!!209484.cpp!!!	_execute() : void
+
+	Graph *graph = getRelatedGraph ( cView );
+	CPoint point;
+	cView->getMouseLocation (point);
+	Parameter *p = graph->createParameter();
+	p->setName ( "free knob " + MyString( graph->getNumCreatedParameter() ) );
+	GKnob *knob = new GStdKnob ( cView );
+	knob->_isFree = true;
+	ctrl->registerObject ( knob, p );
+	knob->moveTo ( point );
+	knob->setHeader ( p->getName() );
+	knob->setDisplay( p->getDisplay() );
+	cView->addGObject ( knob );
+	cView->setDirty(knob);

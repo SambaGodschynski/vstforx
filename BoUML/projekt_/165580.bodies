@@ -1,0 +1,119 @@
+class StepAdapter
+!!!222156.cpp!!!	load(inout ar : iArchive, in version : uint) : void
+
+	ar >> boost::serialization::base_object< ProcessAdapter > ( *this );
+	ar >> parameterMap;
+	ar >> type;
+	ar >> fadeDuration;
+	ar >> steps;
+	ar >> fixTimeValue;
+	ar >> sync;
+	ar >> cStep;
+	// Adapter Nodes:
+	for ( int i=0; i<MAX_STEPS; ++i ) {
+		ar >> nNode[i];
+	}
+	Parameter::ParameterListenerFunction f = boost::bind( 
+			&StepAdapter::typeChanged, this, _1, _2 
+	);
+	type->addValueChangedListenerF ( f );
+	f = boost::bind( &StepAdapter::fadeDurationChanged, this, _1, _2 );
+	fadeDuration->addValueChangedListenerF ( f );
+!!!222412.cpp!!!	init() : void
+
+	VstTimeInfo *inf = graph->getVstTimeInfo(0);
+	// Type Parameter:
+	type->setName ("Step Type");
+	type->setDisplay("fix");
+	parameterMap.push_back (type);
+	Parameter::ParameterListenerFunction f = boost::bind( 
+			&StepAdapter::typeChanged, this, _1, _2 
+	);
+	type->addValueChangedListenerF (f);
+	// Kreuzblend Parameter:
+	fadeDuration->setName ("Crossfade duration");
+	fadeDuration->setLabel("s");
+	f = boost::bind( &StepAdapter::fadeDurationChanged, this, _1, _2 );
+	fadeDuration->addValueChangedListenerF (f);
+	fadeDuration->setMin (0.001f);
+	fadeDuration->setValue (512.0f/inf->sampleRate);
+	parameterMap.push_back (fadeDuration);
+	// Adapter Nodes:
+	for ( int i=0; i<MAX_STEPS; ++i ) {
+		nNode[i] = createAdapterNode("StepNode["+MyString(i+1)+"]");
+		if ( i<steps ) parameterMap.push_back (&cStep->getParameter(i));
+	}
+!!!222540.cpp!!!	reset() : void
+
+	cStep->reset();
+	// ermittle anzahl der samples bis zu naechsten 1/4 note
+	VstTimeInfo *inf = graph->getVstTimeInfo( kVstPpqPosValid || kVstTempoValid );
+	double m = inf->ppqPos -  ((int)inf->ppqPos) ; //ziffern hintern komma.
+	if ( m == 0.0 ) return;
+	if ( m < 0.5 ) { // dauer verkuerzen
+		double rest = m / 4.0; // 1.0 == in ppqPos 1/4
+		cStep->setOffset ( -note2Sample ( rest, inf->tempo, inf->sampleRate ) );
+	} else { //dauer verlaengern 
+		double rest = (1.0 - m) / 4.0; 
+		cStep->setOffset ( note2Sample ( rest, inf->tempo, inf->sampleRate ) );
+	}
+!!!222668.cpp!!!	typeChanged(inout src : void, in v : float) : void
+
+	Parameter *pP = (Parameter*) src;
+	int n = mapInteger ( v, 2);
+	switch (n){
+		case 0 : 
+			pP->setDisplay ("fix");
+			cStep->setValueTranslator ( &fixTimeValue );
+			break;
+		case 1:
+			pP->setDisplay ("sync");
+			cStep->setValueTranslator ( sync );
+			break;
+	}
+	cStep->resetLabel();
+!!!222796.cpp!!!	fadeDurationChanged(inout src : void, in v : float) : void
+
+	Parameter *pP = (Parameter*) src;
+	VstTimeInfo *inf = graph->getVstTimeInfo(0);
+	cStep->setCrossFadeDuration ( v * inf->sampleRate );
+	
+!!!222924.cpp!!!	processAdapter(inout frC : FrameContainer) : void
+
+	VstTimeInfo *inf = graph->getVstTimeInfo(0);
+	ClockEdge::EdgeValue t = transport.in ( isFlag(inf->flags,kVstTransportPlaying) );
+	if (t == ClockEdge::HIGH ){ // Transport: play flanke
+		reset();
+	}
+	Frame iFrame = *frC.top(); // InputFrame
+	Frame *outpMatrix[MAX_STEPS];  
+	for ( int i=0; i<steps; ++i ) { // bilde InputFrames auf Matrix ab.
+		if ( !nNode[i]->isActive() ) {
+			outpMatrix[i] = NULL;
+			continue;
+		}
+		outpMatrix[i] = frC.top();
+		frC.pop();
+	}
+	// berechne OutputFrames
+	cStep->processFrames( &iFrame, outpMatrix );
+	for ( int i=0; i<steps; ++i ) nNode[i]->pushFrame ( outpMatrix[i] ); // knoten Frame zuweisen
+!!!223052.cpp!!!	StepAdapter(inout graph : Graph, in initSteps : int = 2)
+
+	cStep = new Step<MAX_STEPS> ( &fixTimeValue );
+	sync = new SyncTranslator ( graph );
+	init();
+	cStep->setNumSteps (initSteps);
+!!!223180.cpp!!!	~StepAdapter()
+
+	delete cStep;
+	delete sync;
+	delete type;
+	delete fadeDuration;
+!!!223564.cpp!!!	addStepNode() : ProcessAdapterNode
+
+	if (steps>=MAX_STEPS) return NULL;
+	cStep->setNumSteps (++steps);
+	cStep->reset();
+	parameterMap.push_back (&cStep->getParameter(steps-1));
+	return nNode[steps-1];

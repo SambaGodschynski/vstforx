@@ -1,0 +1,5 @@
+class GStdKnob
+!!!176588.cpp!!!	GStdKnob(inout view : CircuidView)
+
+	setRadius(12);
+	cView->setListener ( this );

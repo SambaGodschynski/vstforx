@@ -1,0 +1,192 @@
+class PluginCollection
+!!!144204.cpp!!!	insertPlug(in _path : Path, in proxy : VSTPlugProxy) : void
+
+	if ( proxy.access ) info.numAccessablePlugs++;
+	else info.numInaccessablePlugs++;
+	plugTree.insert (PathTree::value_type(_path, proxy) );
+!!!144332.cpp!!!	__addFile__(in filename : Filename) : void
+
+	using namespace processing;
+	// 1. test ist plugfilename?
+	if ( !isPlugFilename ( filename ) ) return;
+	// 2. update OnLoad listeners:
+	EventSender<OnLoadFile>::notifyEventListeners ( this, OnLoadFile ( filename.string() ) );
+	// 3. datei schon vorhanden ?
+	VSTPlugProxy tmp = getPlugProxyByFilename ( oldPlugTree, filename );
+	if ( !tmp.isEmpty() ) { // ja, schon vorhanden!
+		if ( !tmp.hasChanged ( last_write_time (filename) ) ) { // hatt sich nicht veraendert
+			insertPlug ( filename.parent_path(), tmp );
+			return;
+		}
+	}
+	// 4. test ist file als vst-plugin ladbar
+	VstInt32 uid;
+	VSTPlugProxy proxy;
+	proxy.filename  = filename.filename();
+	proxy.directory = filename.parent_path().string();
+	proxy.timestamp = last_write_time ( filename );
+	appendLog ( filename.string() );
+	if ( contains<Filenames, Filename> ( blackList, filename ) ) {
+		proxy.access = false;
+		insertPlug ( filename.parent_path(), proxy );
+		return;
+	}
+	try {
+		VSTPlugNode::peekVstPlugFile( filename.string(), proxy );
+	} catch ( ... ) {
+		appendLog ( "?" + filename.string() ); // nochmal ins log damit bei einem spaeteren evntl. absturz
+		                                       // im init diese datei nicht nochmal versucht wird zu laden. 
+		insertPlug ( filename.parent_path(), proxy ); // insert : access = false
+		return;
+	} 
+	proxy.access = true;
+	insertPlug ( filename.parent_path(), proxy );
+!!!144588.cpp!!!	create() : PluginCollection
+
+	string &filename = SETTINGS->plugCollectionDumpFile;
+	if ( !exists ( Filename (filename) ) ) return new PluginCollection();
+	PluginCollection *neu;
+	ifstream f;
+	try {
+		f.open ( filename.c_str(), ios::binary );
+		boost::archive::binary_iarchive ar (f);
+		ar>>neu;
+	} catch (...) {
+		 return new PluginCollection();
+	}
+ 
+	return neu;
+!!!144716.cpp!!!	getPlugProxyByFilename(in tree : PluginCollection::PathTree, in filename : Filename) : VSTPlugProxy
+
+	VSTPlugProxy tmp;
+	tmp.directory = filename.parent_path().string();
+	tmp.filename  = filename.filename();
+	PathTree::right_map::const_iterator it = tree.right.find ( tmp );
+	if ( it==tree.right.end() ) return VSTPlugProxy();
+	return (*it).first;	
+!!!144844.cpp!!!	appendLog(in log_msg : string) : void
+
+	ofstream f;
+	try {
+		f.open ( Settings::PLUG_LOAD_LOGFILE.c_str(), ios::app );
+		f<<log_msg<<endl;
+	}
+	catch ( ... ) {
+		f.close();
+		return;
+	}
+	f.close();
+!!!144972.cpp!!!	analyzeLog() : string
+
+	ifstream f;
+	string str;
+	try {
+		f.open ( Settings::PLUG_LOAD_LOGFILE.c_str() );
+		while ( !f.eof() ) {
+			MyString l;
+			getline(f, l);
+			if ( l.trim().length() > 0 ) str = l;
+			else continue;
+			// file to skip schon vorhanden ( 2 nicht funz. plugs )
+			if ( l.at(0) == '?' ) blackList.push_back ( Filename ( l.substr ( 1 ) ) );
+		}
+	}
+	catch ( ... ) {
+		f.close();
+	}
+	f.close();
+	return str;
+!!!145228.cpp!!!	toString() : string
+
+	if ( plugTree.empty() ) return "";
+	std::stringstream ss;
+	PathTree::iterator it = plugTree.begin();
+	for ( ; it!=plugTree.end(); ++it ) {
+		const string &loc = (*it).left.string();
+		ss<<(*it).right.toString();
+	}
+	return ss.str();
+!!!145356.cpp!!!	update() : void
+
+	TOLOG ( "update plugin collection." );
+	// Logfile Fehlerbehandlung
+	if ( exists( Filename(Settings::PLUG_LOAD_LOGFILE) ) ) { // ja: 
+		Filename f = Filename ( analyzeLog () );
+		if (exists (f)) {
+			MessageBoxReturn ret = 
+				com::MessageBox ( "Attention!", "The last attempt to load the file " + f.string() + 
+								  " failed!\n Do you want to skip this file?", com::MSG_QUESTION );
+			if ( ret == com::MSG_RET_YES ) {
+				appendLog ( "?" + f.string() ); 
+				blackList.push_back ( f );
+			}
+		}
+	} // Logfile Fehlerbehandlung
+	appendLog ( "plugin init log:" );
+	// hole plugin verzeichnisse aus settings
+	Settings::PathnameList const &l = settings->getPluginDirectoryList();
+	Settings::PathnameList::const_iterator it = l.begin() ;
+	for ( ; it!=l.end(); ++it ) { 
+		plugDirectories.push_back ( *it );
+	};
+	oldPlugTree = plugTree;
+	plugTree = PathTree();
+	// binde iterdir callback methode:
+	FileFoundFuncPtr f = boost::bind( &PluginCollection::__addFile__, this, _1 );
+	//duchsuche verzeichnisse :
+	PathList::iterator dirIt = plugDirectories.begin();
+	for ( ; dirIt != plugDirectories.end(); ++dirIt ) iterDir ( *dirIt, f, iteredDirectories );
+	oldPlugTree = PathTree(); // alte eintraege loeschen
+	try {
+		std::remove ( Settings::PLUG_LOAD_LOGFILE.c_str() ); // log wieder loeschen
+	} catch (...) {
+		return;
+	}
+
+	saveDump ( this );
+
+!!!145484.cpp!!!	getPlugProxyByFilename(in filename : Filename) : VSTPlugProxy
+
+	return getPlugProxyByFilename ( plugTree, filename );
+!!!145868.cpp!!!	saveDump(inout collection : PluginCollection) : void
+
+	string &filename = SETTINGS->plugCollectionDumpFile;
+	ofstream f;
+	try {
+		f.open( filename.c_str(), ios::trunc | ios::binary );
+		boost::archive::binary_oarchive ar (f);
+		ar<<collection;
+	} catch (...) {
+		throw ppiError::FileIOException ("could not save dump file: " + filename, __FILE__, __LINE__ );
+		f.close();
+	}
+    f.close();
+!!!145996.cpp!!!	getPluginCollection(inout listener : EventListener<OnLoadFile> = NULL) : PluginCollection::Ptr
+
+	static int c = 0;
+	if (!highlander) {
+		highlander = Ptr ( create() );
+		if (listener) highlander->EventSender<OnLoadFile>::addEventListener ( listener );
+		if ( c++ == 0 ) highlander->update();
+	}
+	return highlander;
+!!!146124.cpp!!!	~PluginCollection()
+
+	TOLOG ("closing plugin collection");
+!!!146380.cpp!!!	getSubDirectories(in dir : Path, inout ret : PathList) : void
+
+	PathList::iterator it = iteredDirectories.begin();
+	for ( ; it!=iteredDirectories.end(); ++it ) {
+		if ( isSubDirectory ( dir, *it ) ) ret.push_back(*it);
+	}
+!!!146508.cpp!!!	getProxyList(in key : Path, inout l : PluginCollection::VSTPluginProxyList, in accessableOnly : bool = false) : void
+
+	pair < PathTree::left_map::const_iterator, PathTree::left_map::const_iterator > ret =
+		plugTree.left.equal_range ( key );
+	PathTree::left_map::const_iterator it = ret.first;
+	for ( ; it != ret.second; ++it ) {
+		if ( accessableOnly ) {
+			if ( !(*it).second.access ) continue;
+		}
+		l.push_back ( (*it).second );
+	}

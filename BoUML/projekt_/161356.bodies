@@ -1,0 +1,12 @@
+class CmdCreateStepNode
+!!!208716.cpp!!!	_execute() : void
+
+	create<GStepNode, StepAdapter, 2>();
+	cView->addGObject ( newGPr );
+	list<GConnection*> l;
+	newGPr->addIONodesOnView( ins, outs, l );
+	// connections registr.
+	for ( list<GConnection*>::iterator it = l.begin(); it!=l.end(); ++it ) {
+		ctrl->registerObject ( *it );
+	}
+	cView->CView::setDirty();

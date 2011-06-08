@@ -1,0 +1,4 @@
+class Command
+!!!128460.cpp!!!	createReverseCommand() : Command::Ptr
+
+	return Command::Ptr( new CmdNull() ); 

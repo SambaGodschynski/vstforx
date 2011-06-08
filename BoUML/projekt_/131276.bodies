@@ -1,0 +1,44 @@
+class Parameter
+!!!243148.cpp!!!	_removeConnection(inout dst : Parameter) : void
+
+		ParameterConnection::iterator it = connections.find ( dst );
+		if ( it == connections.end() ) return;
+		//parameter processoren entfernen.
+		(*it).second.clear();
+		connections.erase ( it );
+!!!243276.cpp!!!	updateConnections() : void
+
+	boost::lock_guard<boost::mutex> lock(mutex);
+	updateLock = true; // sperrt setValue() aufrufe.
+	ParameterConnection::iterator it = connections.begin();
+	while ( it!=connections.end() ){
+		Parameter *p = (*it).first;
+		ConnectionOperator::SPtrContainer &liPP = (*it).second;
+		VstNumber tmp = value;
+		ConnectionOperator::SPtrContainer::iterator it2 = liPP.begin();
+		while ( it2!=liPP.end() ){ // zu p gehoerige ProcessParameter Objekte
+			tmp = (*it2).get()->operate ( tmp );
+			++it2;
+		}
+		*p = tmp;
+		++it;
+	}
+	updateLock = false; // schaltet setValue() wieder frei
+!!!243532.cpp!!!	Parameter(in index : int = 0)
+
+	nr = instances++;
+	Parameter::index = index;
+	setName ("Parameter:" + MyString(nr) );
+	setValue (0.0);
+!!!243660.cpp!!!	~Parameter()
+
+	instances--;
+	// kollegen bescheid sagen dass ich n schwan mach.
+	ParameterConnection::iterator it = connections.begin();
+	for ( ;it!=connections.end(); ++it ) {
+		(*it).first->_removeConnection (this);
+	}
+!!!246476.cpp!!!	removeBiConnection(inout dst : Parameter) : void
+
+	_removeConnection ( dst );
+	dst->_removeConnection ( this );

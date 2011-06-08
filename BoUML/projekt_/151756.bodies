@@ -1,0 +1,30 @@
+class PlaceGObject
+!!!177996.cpp!!!	PlaceGObject(inout parent : CircuidView, inout content : GObject)
+
+	gObj = content;
+	bBox = gObj->getSize();
+	focus = gObj->getPos();
+	// MouseMotionListener registrieren
+	MainCtrl * mV = (MainCtrl*) parent->getFrame();
+	mV->addMouseMotionListener ( this );
+!!!178252.cpp!!!	~PlaceGObject()
+
+	// MouseMotionListener austragen
+	MainCtrl * mV = (MainCtrl*) parentView->getFrame();
+	mV->removeMouseMotionListener ( this );
+	if (gObj) delete gObj;
+!!!178380.cpp!!!	onMouse(inout cc : CDrawContext, inout p : CPoint, in btn : long) : void
+
+	parentView->addGObject ( gObj );
+	gObj = NULL;
+	MainCtrl * mV = (MainCtrl*) parentView->getFrame();
+	mV->removeMouseMotionListener ( this );
+	parentView->removeGObject ( this );
+	delete this;
+!!!178508.cpp!!!	render(inout cc : CDrawContext) : void
+
+	gObj->render ( cc );
+!!!178636.cpp!!!	mouseMoveEventHandler(inout cc : CDrawContext, inout p : CPoint) : void
+
+	moveTo (p);
+	setObjectDirty();

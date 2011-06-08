@@ -1,0 +1,82 @@
+class CircuidView
+!!!153676.cpp!!!	_clearx() : void
+
+	boost::lock_guard<boost::mutex> lock(updateLock);
+	GObjectStageBuffer::iterator it = gObjectBuffer.begin();
+	while ( it != gObjectBuffer.end() ){
+		delete (*it).second;
+		GObjectStageBuffer::iterator del = it++;
+		gObjectBuffer.erase (del);
+	}
+!!!153804.cpp!!!	CircuidView(in size : CRect)
+
+	offset (0,0);
+	TOLOG ( com::MyString("+CircuidView.") );
+!!!153932.cpp!!!	~CircuidView()
+
+	_clearx();
+	TOLOG ( com::MyString ("-CircuidView.") );
+!!!154188.cpp!!!	addGObject(inout gObj : GObject, in stage : int = DEFAULT) : void
+
+	boost::lock_guard<boost::mutex> lock(updateLock);
+	gObj->EventSender<OnMouseClick>::addEventListener ( this );
+	gObjectBuffer.insert( pair <U, V> (stage, gObj) );
+	gObj->setZPos ( stage );
+!!!154316.cpp!!!	removeGObject(inout gObj : GObject) : void
+
+	gObj->EventSender<OnMouseClick>::removeEventListener ( this );
+	gObj->EventSender<OnRemove>::notifyEventListeners ( this, OnRemove ( gObj ) );
+	GObjectStageBuffer::iterator it = gObjectBuffer.begin();
+	boost::lock_guard<boost::mutex> lock(updateLock);
+	while ( it!=gObjectBuffer.end() ) {
+		GObjectStageBuffer::iterator del = it++;
+		if ( (*del).second == gObj ) gObjectBuffer.erase( del );
+	}
+!!!154444.cpp!!!	getGObjectAtStage(inout p : CPoint, in stage : int) : GObject
+
+	if ( gObjectBuffer.empty() ) return NULL;
+	pair< GObjectStageBuffer::iterator, GObjectStageBuffer::iterator > ret;
+	ret = gObjectBuffer.equal_range ( stage );
+	GObjectStageBuffer::iterator it = ret.first;
+	for ( ; it!=ret.second; ++it ){
+		if ( (*it).second->hitTest(p) ){
+			if ( (*it).second->isVisible() ) return (*it).second;
+		}
+	}
+	return NULL;
+!!!154572.cpp!!!	getGObjectsAtStage(inout l : list<V>, in stage : int) : void
+
+	pair < GObjectStageBuffer::iterator, GObjectStageBuffer::iterator > ret;
+	ret = gObjectBuffer.equal_range ( stage );
+	GObjectStageBuffer::iterator it = ret.first;
+	for ( ; it!=ret.second; ++it ) l.push_back ( it->second );
+!!!154700.cpp!!!	getGObjectAt(inout p : CPoint, in start : int, in end : int) : GObject
+
+	if ( gObjectBuffer.empty() ) return NULL;
+	if ( start <= end ){
+		for ( int i = start; i<=end; ++i ){
+			GObject *obj = getGObjectAtStage ( p, i );
+			if ( obj ) return obj;
+		}
+	} else {
+		for ( int i=start; i>=end; --i ){
+			GObject *obj = getGObjectAtStage ( p, i );
+			if ( obj ) return obj;
+		}
+	}
+	return NULL;
+!!!155340.cpp!!!	offsetView(inout point : CPoint) : void
+
+	GObjectStageBuffer::iterator it = gObjectBuffer.begin();
+	while ( it != gObjectBuffer.end() ){
+		(*it).second->offset ( point.x, point.y );
+		++it;
+	}
+	offset.offset ( point.x, point.y );
+	CView::setDirty();
+!!!155596.cpp!!!	setDirty(inout gObj : GObject) : void
+
+	CView::setDirty();
+!!!155980.cpp!!!	eventHandler(inout src : void, in ev : OnMouseClick) : void
+
+	EventSender<OnMouseClick>::notifyEventListeners ( this, OnMouseClick ( ev.src, ev.cD, ev.p, ev.btn ) );

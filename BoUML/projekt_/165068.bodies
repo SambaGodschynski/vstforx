@@ -1,0 +1,61 @@
+class Step
+!!!218060.cpp!!!	load(inout ar : iArchive, in version : uint) : void
+
+	Parameter::ParameterListenerFunction f = boost::bind( 
+			&Step::durationParameterChanged, this, _1, _2 
+		);
+	for (int i=0; i<MAX_STEPS; ++i) {
+		ar >> nFactor[i];
+		ar >> nDuration[i]; 
+		nDuration[i]->addValueChangedListenerF ( f );
+	}
+	ar >> currTranslator;
+	ar >> steps;
+	ar >> currStep;
+	ar >> duration;
+!!!218316.cpp!!!	durationParameterChanged(inout src : void, in v : float) : void
+
+	Parameter *p = (Parameter*) src;
+	p->setDisplay ( currTranslator->translateAsString(v) );
+!!!218444.cpp!!!	setDuration() : void
+
+	duration = currTranslator->translate ( *nDuration[getCurrentStep()] );
+!!!218700.cpp!!!	resetLabel() : void
+
+	for (int i=0; i<MAX_STEPS; ++i) {
+		Parameter &p = getParameter(i);
+		p.setValue(p.getValue());
+	}
+!!!218956.cpp!!!	processFrames(inout iFrame : Frame, inout fr : Frame) : void
+
+	VstNumber *l = iFrame->data[0];
+	VstNumber *r = iFrame->data[1];
+	for ( int i=0; i<iFrame->frameSize; ++i ){
+		if (--duration<=0) {
+			nextStep();
+			setDuration();
+		}
+		for ( int j=0; j<steps; j++ ){
+			if (!fr[j]) continue; // !!Wichtig
+			fr[j]->data[0][i] = *l * nFactor[j];
+			fr[j]->data[1][i] = *r * nFactor[j];
+		}
+		++l; ++r;
+	}
+!!!219340.cpp!!!	Step(inout tr : ValueTranslator)
+ 
+	Parameter::ParameterListenerFunction f = boost::bind( 
+			&Step::durationParameterChanged, this, _1, _2 
+		);
+	for (int i=0; i<MAX_STEPS; ++i) {
+		nFactor[i]=0.0f;
+		nDuration[i] = new Parameter (); 
+		Parameter &p = getParameter(i);
+		p.setName ( "Step " + MyString(i+1) + " duration." );
+		p.addValueChangedListenerF (f);
+		p.setValue(0.15f);
+	}
+	setDuration();
+!!!220364.cpp!!!	~Step()
+
+	for (int i=0; i<MAX_STEPS; ++i) delete nDuration[i];

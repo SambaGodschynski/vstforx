@@ -1,0 +1,25 @@
+class GIOConnectionController
+!!!187724.cpp!!!	registerObject(inout gObj : GObject, inout pObj : PObject) : void
+
+	GConnection *gc = (GConnection*) gObj;
+	GObject *a = gc->getObjectA();
+	GObject *b = gc->getObjectB();
+!!!187852.cpp!!!	unregisterObject(inout gObj : GObject, inout pObj : PObject) : void
+
+	GConnectionIO *gc = (GConnectionIO*) gObj;
+	// Ordne Oberklassen Unterklassen zu. 
+	GInputNode *input = NULL; GOutputNode *output = NULL; 
+	relate< GInputNode, GOutputNode, GObject > ( &input, &output, gc->getObjectA(), gc->getObjectB() );
+	if ( !input || !output ) return;
+	ProcessorNode *prIn  = frntCtrl.getViewRelations().get<ProcessorNode> ( input  );
+	ProcessorNode *prOut = frntCtrl.getViewRelations().get<ProcessorNode> ( output );
+	if ( !prIn || !prOut ) return;
+	// graph command uebergeben
+	Graph *g = getRelatedGraph ( gc->getParentView() );
+	g->addCommand ( Command::Ptr ( new GCmdRemoveProcessorNodeConnection ( g, prIn, prOut ) ) );
+!!!187980.cpp!!!	getMenuEntryList(inout obj : GObject, inout mL : MenuEntryList) : void
+
+	if ( !dynamic_cast<GConnectionIO*>(obj) ) return;
+	ADD_MENU_TITLE ( mL, "input/output connection : " );
+	ADD_MENU_LABEL ( mL, "remove connection", 
+		new CmdRemoveGObject ( obj->getParentView(), (GConnectionIO*)obj ) );

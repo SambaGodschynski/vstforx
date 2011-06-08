@@ -1,0 +1,57 @@
+format 75
+
+classinstance 128076 class_ref 170444 // CFrame
+  name ""   xyz 361 9 2000 life_line_z 2000
+classinstance 128204 class_ref 141132 // CMenu
+  name "rootMenu"   xyz 502 7 2000 life_line_z 2000
+classinstance 128332 class_ref 143820 // CMenuEntry
+  name ""   xyz 976 8 2000 life_line_z 2000
+classinstance 130380 class_ref 128332 // Command
+  name ""   xyz 1077 11 2000 life_line_z 2000
+classinstance 131276 class_ref 157772 // PpiEditor
+  name ""   xyz 157 4 2000 life_line_z 2000
+classinstance 131660 class_ref 170572 // Host
+  name ""   xyz 3 4 2000 life_line_z 2000
+classinstance 135372 class_ref 141132 // CMenu
+  name "subMenu"   xyz 773 9 2000 life_line_z 2000
+classinstance 136524 class_ref 140364 // CircuidControl
+  name ""   xyz 252 4 2000 life_line_z 2000
+durationcanvas 131788 classinstance_ref 131660 // :Host
+  xyzwh 35 58 2010 11 59
+end
+durationcanvas 131916 classinstance_ref 131276 // :PpiEditor
+  xyzwh 179 67 2010 11 94
+end
+durationcanvas 132428 classinstance_ref 128204 // rootMenu:CMenu
+  xyzwh 543 70 2010 11 140
+  overlappingdurationcanvas 135500
+    xyzwh 549 91 2020 11 93
+    overlappingdurationcanvas 136012
+      xyzwh 555 141 2030 11 36
+    end
+  end
+end
+msg 132044 asynchronous
+  from durationcanvas_ref 131788
+  to durationcanvas_ref 131916
+  yz 88 2015 msg operation_ref 195148 // "idle() : void"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 79 74
+msg 132556 asynchronous
+  from durationcanvas_ref 131916
+  to durationcanvas_ref 132428
+  yz 74 2015 msg operation_ref 159308 // "onIdle() : void"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 515 60
+reflexivemsg 135628 synchronous
+  to durationcanvas_ref 135500
+  yz 91 2025 explicitmsg "...()"
+  stereotype "<<OnEnter>>" xyz 563 104 3000
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 561 77
+reflexivemsg 136140 synchronous
+  to durationcanvas_ref 136012
+  yz 141 2035 explicitmsg "notifyEventListeners()"
+  show_full_operations_definition default drawing_language default show_context_mode default
+  label_xy 570 152
+end

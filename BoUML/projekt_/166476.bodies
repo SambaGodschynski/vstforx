@@ -1,0 +1,4 @@
+class GCmdConnectProcessorNodes
+!!!226124.cpp!!!	_execute() : void
+
+	graph->connectNodes( output, input );

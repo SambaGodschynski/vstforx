@@ -1,0 +1,6 @@
+class VolumeAdapter
+!!!216780.cpp!!!	processAdapter(inout frC : FrameContainer) : void
+ 
+	Frame *frame = frC.top(); frC.pop();
+	*frame*= *volume;
+	vNode->pushFrame(frame);

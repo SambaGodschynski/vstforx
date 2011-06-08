@@ -1,0 +1,26 @@
+class MAConnect
+!!!193228.cpp!!!	MAConnect(inout view : CircuidView)
+
+	MAConnect::view = view;
+	line = new GLine ( view );
+	line->setVisible (false);
+	line->setWidth ( 2 );
+	view->addGObject ( line, 3 );
+!!!193356.cpp!!!	onMouse(in ev : OnMouseDrag) : void
+
+	if ( ev.btn != kLButton ) return;
+	if ( ev.state == OnMouseDrag::DRAG_START ){
+		line->lineTo ( ev.src->getPos(), ev.p );
+		line->setVisible();
+	}
+	if ( ev.state == OnMouseDrag::DRAG ){
+		CPoint s = ev.src->getPos();
+		line->lineTo ( s, ev.p );
+		line->setObjectDirty();
+	}
+	if ( ev.state == OnMouseDrag::DRAG_STOP ){
+		line->setVisible ( false );
+		line->setObjectDirty();
+		GObject *dst = view->getGObjectAt( ev.p, CircuidView::DEFAULT );
+		if ( ev.src != dst && dst ) ev.src->connect ( dst );
+	}

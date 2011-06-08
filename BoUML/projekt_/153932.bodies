@@ -1,0 +1,71 @@
+class GKnobController
+!!!184908.cpp!!!	knobValueChanged(inout src : void, in value : float) : void
+
+	GKnob *knob = (GKnob*)src;
+	Parameter *p = frntCtrl.getViewRelations().get<Parameter> ( knob );
+	*p = value;
+!!!185036.cpp!!!	parameterValueChanged(inout src : void, in value : float) : void
+
+	Parameter *p = (Parameter*)src;
+	list<GKnob*> l;
+	frntCtrl.getGObjectList<GKnob> ( p, l );
+	list<GKnob*>::iterator it = l.begin();
+	for ( ; it!=l.end(); ++it ) {
+		GKnob *knob = *it;
+		knob->setValue ( value );
+		knob->setDisplay ( p->getDisplay() + p->getLabel() );
+		knob->setObjectDirty();
+	}
+!!!185164.cpp!!!	registerObject(inout vObj : GObject, inout mObj : PObject) : void
+ 
+	GKnob *knob = dynamic_cast <GKnob*> (vObj);
+	Parameter *p = dynamic_cast <Parameter*> (mObj);
+	// Knob Listener
+	Parameter::ParameterListenerFunction kf=boost::bind(&GKnobController::knobValueChanged,this,_1,_2);
+	knob->addValueChangedListenerF (kf);
+	// Parameter Listener
+	Parameter::ParameterListenerFunction pf=boost::bind(&GKnobController::parameterValueChanged,this,_1,_2);
+	p->addValueChangedListenerF (pf);
+	// OnConnect Event
+	knob->EventSender<OnConnect>::addEventListener ( this );
+	// OnDestroy Event
+	knob->EventSender< OnDestroy<GObject> >::addEventListener ( this );
+
+	knob->setValue ( *p );
+!!!185292.cpp!!!	unregisterObject(inout gObj : GObject, inout pObj : PObject) : void
+
+	GKnob *knob = (GKnob*) gObj;
+	Parameter *p = (Parameter*) pObj;
+	if ( frntCtrl.getModelRelation().count (p) == 1 ) { // war das der letzte knob mit diesem parameter
+		// value changed listener entfernen
+		Parameter::ParameterListenerFunction pf=boost::bind(&GKnobController::parameterValueChanged,this,_1,_2);
+		p->removeValueChangedListenerF (pf);
+	}
+	// onDestroy listener entfernen
+	knob->EventSender< OnDestroy<GObject> >::removeEventListener (this);
+	if ( knob->isFree() ) { // falls free knob: parameter entfernen
+		Graph *g = getRelatedGraph( gObj->getParentView() );
+		g->remove ( p );
+		delete p;
+	}
+!!!185420.cpp!!!	getMenuEntryList(inout obj : GObject, inout mL : MenuEntryList) : void
+
+	GKnob *knob = (GKnob*) obj;
+	if ( isPassiveKnob( knob ) ) return;
+	ADD_MENU_TITLE ( mL, "knob: " + knob->getHeader() );
+	ADD_MENU_LABEL ( mL, "remove knob", new CmdRemoveGObject ( obj->getParentView(), knob ) );
+!!!185548.cpp!!!	eventHandler(inout src : void, in ev : OnDestroy<GObject>) : void
+
+	GKnob *knob = (GKnob*)ev.src;
+	// entferne Parameter Listener Funktion
+	Parameter::ParameterListenerFunction pf=boost::bind(&GKnobController::parameterValueChanged,this,_1,_2);
+	Parameter *p = frntCtrl.getViewRelations().get<Parameter> ( knob );
+	if (!p) return;
+	p->removeValueChangedListenerF (pf);
+	
+!!!185676.cpp!!!	eventHandler(inout src : void, in ev : OnConnect) : void
+
+	GKnob *dst = dynamic_cast<GKnob*> ( ev.dst );
+	if ( !dst ) return;
+	CmdConnectGKnob connectGKnob( dst->getParentView(), (GKnob*)ev.src, dst, &frntCtrl );
+	connectGKnob.execute();

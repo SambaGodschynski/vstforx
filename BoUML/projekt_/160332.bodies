@@ -1,0 +1,17 @@
+class CmdConnectGKnob
+!!!206796.cpp!!!	_execute() : void
+
+	// Modell
+	Parameter *pA = ctrl->getViewRelations().get<Parameter> ( src );
+	Parameter *pB = ctrl->getViewRelations().get<Parameter> ( dst );
+	if ( !pA->addBiConnection ( pB ) ) return;
+	pB->setValue ( *pA );
+	// View
+	gc = new GConnectionPaPa ( cView, src, dst );
+	ctrl->registerObject ( gc );
+	cView->addGObject ( gc, CircuidView::CONNECTIONS );
+	cView->CView::setDirty();
+!!!206924.cpp!!!	createReverseCommand() : Command::Ptr
+
+	if (!gc) throw ppiError::NullPointer ("NullPointer", __FILE__, __LINE__ );
+	return Command::Ptr ( new CmdRemoveGObject ( cView, gc ) );

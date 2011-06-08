@@ -1,0 +1,4 @@
+class CmdChangeParameter
+!!!210764.cpp!!!	_execute() : void
+
+	parameter->setValue ( value );

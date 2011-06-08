@@ -1,0 +1,4801 @@
+format 75
+"com" // src::com
+  revision 1
+  modified_by 76 "Samba"
+  // class settings
+  //class diagram settings
+  draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+  //use case diagram settings
+  package_name_in_tab default show_context default auto_label_position default draw_all_relations default class_drawing_mode default shadow default show_stereotype_properties default
+  //sequence diagram settings
+  show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default show_class_context_mode default show_msg_context_mode default
+  //collaboration diagram settings
+  show_full_operations_definition default show_hierarchical_rank default write_horizontally default drawing_language default package_name_in_tab default show_context default show_msg_context default draw_all_relations default shadow default show_stereotype_properties default
+  //object diagram settings
+   write_horizontally default package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default show_stereotype_properties default
+  //component diagram settings
+  package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default
+  draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+  //deployment diagram settings
+  package_name_in_tab default show_context default write_horizontally default auto_label_position default draw_all_relations default shadow default
+  draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+  //state diagram settings
+  package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  //activity diagram settings
+  package_name_in_tab default show_context default show_opaque_action_definition default auto_label_position default write_flow_label_horizontally default draw_all_relations default shadow default
+  show_infonote default drawing_language default show_stereotype_properties default
+  
+  cpp_h_dir "c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/com/"
+  cpp_src_dir "c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/com/"
+  cpp_namespace "com"
+  classview 128076 "com"
+    //class diagram settings
+    draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+    //collaboration diagram settings
+    show_full_operations_definition default show_hierarchical_rank default write_horizontally default drawing_language default package_name_in_tab default show_context default show_msg_context default draw_all_relations default shadow default show_stereotype_properties default
+    //object diagram settings
+     write_horizontally default package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default show_stereotype_properties default
+    //sequence diagram settings
+    show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default show_class_context_mode default show_msg_context_mode default
+    //state diagram settings
+    package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+    show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+    //class settings
+    //activity diagram settings
+    package_name_in_tab default show_context default show_opaque_action_definition default auto_label_position default write_flow_label_horizontally default draw_all_relations default shadow default
+    show_infonote default drawing_language default show_stereotype_properties default
+    class 128076 "AbstractAction"
+      visibility package stereotype "struct"
+      cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Klasse AbstractAction:
+  Behaelter fuer Command, und bezeichner::MyString.
+============================================================================================================"
+      operation 129100 "AbstractAction"
+	cpp_inline public explicit_return_type ""
+	nparams 2
+	  param in name "name" type class_ref 128972 // MyString
+	  param in name "cmd" type class_ref 128460 // Ptr
+	cpp_decl "    ${comment}${inline}${name}${(}const ${t0} & ${p0}${v0}, ${t1} ${p1}${v1}${)}${volatile}${throw} : name(name), cmd(cmd) {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      classrelation 128716 // cmd (<directional composition>)
+	relation 128716 *-->
+	  a role_name "cmd" public
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 128716 // cmd (<directional composition>)
+	  b parent class_ref 128460 // Ptr
+      end
+
+      classrelation 128844 // name (<directional composition>)
+	relation 128844 *-->
+	  a role_name "name" public
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 128844 // name (<directional composition>)
+	  b parent class_ref 128972 // MyString
+      end
+
+      operation 129228 "operator =="
+	const cpp_inline public explicit_return_type "bool"
+	nparams 1
+	  param in name "b" type class_ref 128076 // AbstractAction
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { return cmd==b.cmd && name==b.name; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 128204 "AbstractActionContainer"
+      visibility package stereotype "typedef" base_type class_ref 128076 // AbstractAction
+      cpp_decl "${comment}typedef vector<${type}> ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================"
+      classrelation 128076 // <dependency>
+	relation 128076 -_->
+	  a default
+	    cpp default "#include in source"
+	    classrelation_ref 128076 // <dependency>
+	  b parent class_ref 128076 // AbstractAction
+      end
+    end
+
+    class 128332 "Command"
+      abstract visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "namespace com
+============================================================================================================
+	Klasse Command:
+  Schnitstelle im sinne des Command Pattern.
+============================================================================================================"
+      operation 128076 "_execute"
+	abstract cpp_virtual private explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      class 128460 "Ptr"
+	visibility package stereotype "typedef" base_type class_ref 128332 // Command
+	cpp_decl "${comment}typedef boost::shared_ptr<${type}> ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	classrelation 128204 // <dependency>
+	  relation 128204 -_->
+	    a default
+	      cpp default "#include in source"
+	      classrelation_ref 128204 // <dependency>
+	    b parent class_ref 128332 // Command
+	end
+      end
+
+      class 128588 "Container"
+	visibility package stereotype "typedef" base_type class_ref 128460 // Ptr
+	cpp_decl "${comment}typedef list<${type}> ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	classrelation 128332 // <dependency>
+	  relation 128332 -_->
+	    a default
+	      cpp default "#include in source"
+	      classrelation_ref 128332 // <dependency>
+	    b parent class_ref 128460 // Ptr
+	end
+      end
+
+      operation 128204 "Command"
+	cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 128332 "~Command"
+	cpp_virtual cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 128460 "createReverseCommand"
+	preserve_cpp_body_indent cpp_virtual public return_type class_ref 128460 // Ptr
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//============================================================================================================
+//	Klasse Command:
+//  Schnitstelle im sinne des Command Pattern.
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 128588 "execute"
+	cpp_inline public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} {
+		_execute();
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 128716 "CmdNull"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Klasse CmdNull:
+  Tut Null.
+============================================================================================================"
+      classrelation 128460 // <generalisation>
+	relation 128460 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 128460 // <generalisation>
+	  b parent class_ref 128332 // Command
+      end
+
+      operation 128716 "_execute"
+	cpp_virtual cpp_inline private explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 128844 "CreateCommand"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Klasse CreateCommand:
+  Oberklasse fuer alle Commands die ein Objekt erzeugen
+============================================================================================================"
+      classrelation 128588 // <generalisation>
+	relation 128588 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 128588 // <generalisation>
+	  b parent class_ref 128332 // Command
+      end
+
+      attribute 128076 "createdPtr"
+	protected explicit_type "void"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} * ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 128844 "CreateCommand"
+	cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw} : createdPtr(NULL) {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 128972 "create"
+	stereotype "template"
+	class_operation cpp_inline public explicit_return_type "T"
+	nparams 1
+	  param inout name "cmd" type class_ref 128844 // CreateCommand
+	cpp_decl "    ${comment}template<typename T>
+  ${friend}${static}${inline}${virtual}${type} * ${name}${(}${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		cmd.execute();
+		return (T*) cmd.createdPtr;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 128972 "MyString"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+ class MyString
+ Erweitert die Klasse string um ein paar Features:
+    - Initalisierung mit Numerischen typen int, float , ...
+    - Implementierung von ValueChangedListener.
+	  - Verknuepfung von MyStings ueber ValueChangedListener : andert sich a aendert sich b. 
+============================================================================================================
+------------------------------------------------------------------------------------------------------------"
+      classrelation 131404 // <generalisation>
+	relation 131404 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 131404 // <generalisation>
+	  b parent class_ref 133836 // typedef1
+      end
+
+      extra_member 128588 "friend"
+	
+	cpp "
+friend class boost::serialization::access;" ""
+	java ""
+	php ""
+	python ""
+	idl ""
+      end
+
+      operation 140876 "load"
+	stereotype "template"
+	cpp_inline private explicit_return_type "void"
+	nparams 2
+	  param inout name "ar" explicit_type "Archive"
+	  param in name "version" explicit_type "uint"
+	cpp_decl "    ${comment}template<typename Archive>
+  ${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}, const ${t1} ${p1}${v1}${)}${const}${volatile}${throw}${abstract} {
+		string str;
+		ar >> str;
+		*this = str; 
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 141004 "MyString"
+	cpp_inline public explicit_return_type ""
+	nparams 1
+	  param in name "str" explicit_type "string"
+	    defaultvalue "string() "
+	cpp_decl "    ${comment}${inline}${name}${(}const ${t0} & ${p0}${v0}${)}${volatile}${throw} : string (str){};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 141132 "MyString"
+	cpp_inline public explicit_return_type ""
+	nparams 1
+	  param in name "s" explicit_type "char"
+	cpp_decl "    ${comment}${inline}${name}${(}const ${t0} * ${p0}${v0}${)}${volatile}${throw} : string ( s ){};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 141260 "trim"
+	preserve_cpp_body_indent const public return_type class_ref 128972 // MyString
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//============================================================================================================
+// class MyString
+// Erweitert die Klasse string um ein paar Features:
+//    - Initalisierung mit Numerischen typen int, float , ...
+//    - Implementierung von ValueChangedListener.
+//	  - Verknuepfung von MyStings ueber ValueChangedListener : andert sich a aendert sich b. 
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 141388 "~MyString"
+	cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 141516 "operator ="
+	cpp_inline public return_type class_ref 128972 // MyString
+	nparams 1
+	  param in name "str" type class_ref 128972 // MyString
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} & ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		string::operator = (str);
+		return *this;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 141644 "MyString"
+	cpp_inline public explicit_return_type ""
+	nparams 1
+	  param in name "integer" explicit_type "int"
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} ${p0}${v0}${)}${volatile}${throw} {
+		std::ostringstream os;
+		os<<integer;
+		*this = string (os.str());
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 141772 "MyString"
+	cpp_inline public explicit_return_type ""
+	nparams 1
+	  param in name "integer" explicit_type "uint"
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} ${p0}${v0}${)}${volatile}${throw} {
+		std::ostringstream os;
+		os<<integer;
+		*this = string (os.str());
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 141900 "MyString"
+	cpp_inline public explicit_return_type ""
+	nparams 1
+	  param in name "integer" explicit_type "ulong"
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} ${p0}${v0}${)}${volatile}${throw} {
+		std::ostringstream os;
+		os<<integer;
+		*this = string (os.str());
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 142028 "MyString"
+	cpp_inline public explicit_return_type ""
+	nparams 1
+	  param in name "flt" explicit_type "float"
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} ${p0}${v0}${)}${volatile}${throw} {
+		std::ostringstream os;
+		os.precision (3);
+		os<< std::fixed << flt;
+		*this = string ( os.str() );
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 142156 "MyString"
+	cpp_inline public explicit_return_type ""
+	nparams 1
+	  param in name "dbl" explicit_type "double"
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} ${p0}${v0}${)}${volatile}${throw} {
+		std::ostringstream os;
+		os.precision (3);
+		os<< std::fixed << dbl;
+		*this = string (os.str());
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 142284 "copyToC_Str"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param inout name "data" explicit_type "char"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		memcpy ( data, c_str(), size() );
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------
+ Kopiert MyString nach bereits allozoiertem c_str ptr."
+      end
+
+      operation 142412 "hash"
+	const cpp_inline public explicit_return_type "long"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} {
+		long h = 0;
+		for ( size_t i = 0; i < length(); i++) h = 31*h + at(i);
+		return h;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------
+ liefert Hashwert fuer String"
+      end
+    end
+
+    class 129100 "ActionContainer"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Schittstelle HasAbstractActions:
+============================================================================================================"
+      classrelation 128972 // aC (<directional composition>)
+	relation 128972 *-->
+	  a role_name "aC" private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 128972 // aC (<directional composition>)
+	  b parent class_ref 128204 // AbstractActionContainer
+      end
+
+      operation 129356 "addAbstractAction"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "aA" type class_ref 128076 // AbstractAction
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { aC.push_back (aA); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 129484 "getAbstractAction"
+	const cpp_inline public return_type class_ref 128076 // AbstractAction
+	nparams 1
+	  param in name "index" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}const ${type} & ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { return aC.at(index); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 129612 "getNumAbstractActions"
+	const cpp_inline public explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return aC.size(); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 129228 "CommandExecuter"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Klasse CommandExecuter:
+============================================================================================================"
+      classrelation 129100 // commands (<directional composition>)
+	relation 129100 *-->
+	  a role_name "commands" private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 129100 // commands (<directional composition>)
+	  b parent class_ref 128588 // Container
+      end
+
+      operation 129740 "addCommand"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "cmd" type class_ref 128460 // Ptr
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { commands.push_back ( cmd ); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 129868 "executeCommands"
+	cpp_inline public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { 
+		Command::Container::iterator it = commands.begin();
+		while ( it!=commands.end() ) {
+			(*it)->execute();
+			it = commands.erase ( it );
+		}
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 129484 "SimpleFadeValue"
+      visibility package 
+      nformals 2
+      formal name "T" type "typename" explicit_default_value ""
+        explicit_extends ""
+      formal name " int N" type "" explicit_default_value ""
+        explicit_extends ""
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "========================================================================================================
+ Klasse SimpleFadeValue:
+ Erreicht sein Zielwert nach N schritten. ( n Abfragen bzw. Samples )
+========================================================================================================"
+      attribute 128460 "up"
+	private explicit_type "bool"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 129996 "SimpleFadeValue"
+	cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw} : v(0), dst(0) {};
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 130124 "operator T"
+	cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${name}${(}${)}${const}${volatile}${throw}${abstract} { return getValue(); };
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 130252 "getValue"
+	cpp_inline public explicit_return_type "T"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} & ${name}${(}${)}${const}${volatile}${throw}${abstract} {
+		if (up &&  v>=dst) return dst;
+		if (!up && v<=dst) return dst;
+		v+=step;
+		return v;
+	};
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 130380 "operator ="
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "nV" explicit_type "T"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		if ( nV > v ) up = true;
+		else up = false;
+		dst = nV;
+		step = (nV - v)/N;
+	};
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 129612 "SimpleFadeValue<T,0>"
+      visibility package 
+      nformals 1
+      formal name "T" type "typename" explicit_default_value ""
+        explicit_extends ""
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "========================================================================================================"
+    end
+
+    class 129740 "ClockEdge"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "========================================================================================================
+ Namespace Clockedge :
+ Signal Flanke. Ist einmalig HIGH bzw. LOW bei einem 
+ Schaltvorgang von Positive ( 0 nach 1 ) / Negative( 1 nach 0 ) ansonsten 0.
+========================================================================================================"
+      extra_member 128076 "friend"
+	
+	cpp "
+friend class boost::serialization::access;" ""
+	java ""
+	php ""
+	python ""
+	idl ""
+      end
+
+      operation 130508 "serialize"
+	stereotype "template"
+	cpp_inline private explicit_return_type "void"
+	nparams 2
+	  param inout name "ar" explicit_type "Archive"
+	  param in name "version" explicit_type "uint"
+	cpp_decl "    ${comment}template<typename Archive>
+  ${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}, const ${t1} ${p1}${v1}${)}${const}${volatile}${throw}${abstract} { ar & fl; };
+"
+	
+	
+	
+	
+	comment "---------------------------------------------------------------------------------------------------"
+      end
+
+      attribute 128588 "fl"
+	private explicit_type "bool"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "------------------------------------------------------------------------------------------------"
+      end
+
+      class 129868 "EdgeValue"
+	visibility package stereotype "enum"
+	cpp_decl "${comment}enum ${name} {
+${items}
+};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	attribute 128716 "NONE"
+	  public type class_ref 129868 // EdgeValue
+	  cpp_decl "  ${name}${value},${comment}"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	attribute 128844 "HIGH"
+	  public type class_ref 129868 // EdgeValue
+	  cpp_decl "  ${name}${value},${comment}"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	attribute 128972 "LOW"
+	  public type class_ref 129868 // EdgeValue
+	  cpp_decl "  ${name}${value},${comment}"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+      end
+
+      operation 130636 "ClockEdge"
+	cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw} : fl(false) {};
+"
+	
+	
+	
+	
+	comment "------------------------------------------------------------------------------------------------"
+      end
+
+      operation 130764 "in"
+	cpp_inline public return_type class_ref 129868 // EdgeValue
+	nparams 1
+	  param in name "i" explicit_type "bool"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		if ( fl != i ){ fl = i; return i ? HIGH : LOW; }
+		return NONE;
+	};
+"
+	
+	
+	
+	
+	comment "------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 129996 "AFadeValue"
+      abstract visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "========================================================================================================
+ Abstrakte Klasse AFadeValue:
+ Erreicht sein Zielwert nach d mal getValue() abfragen.
+========================================================================================================"
+      extra_member 128204 "friend"
+	
+	cpp "
+friend class boost::serialization::access;" ""
+	java ""
+	php ""
+	python ""
+	idl ""
+      end
+
+      operation 130892 "serialize"
+	stereotype "template"
+	cpp_inline private explicit_return_type "void"
+	nparams 2
+	  param inout name "ar" explicit_type "Archive"
+	  param in name "version" explicit_type "uint"
+	cpp_decl "    ${comment}template<typename Archive>
+  ${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}, const ${t1} ${p1}${v1}${)}${const}${volatile}${throw}${abstract} {
+		ar & b;
+		ar & e;
+		ar & d;
+		ar & c;
+		ar & t;
+		ar & value;
+		ar & fin;
+	};
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      class 130124 "T"
+	visibility package stereotype "typedef" explicit_base_type "float"
+	cpp_decl "${comment}typedef ${type} ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+      end
+
+      operation 131020 "_getValue"
+	abstract cpp_virtual protected return_type class_ref 130124 // T
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}const ${type} & ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	
+	
+	
+	
+	comment " b = anfangswert, e = endwert, d = dauer (in samples), c = e - b
+----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 131148 "AFadeValue"
+	cpp_inline protected explicit_return_type ""
+	nparams 1
+	  param in name "initvalue" type class_ref 130124 // T
+	    defaultvalue "0 "
+	cpp_decl "    ${comment}${inline}explicit ${name}${(}const ${t0} & ${p0}${v0}${)}${volatile}${throw} : 
+	t(0), b(0), e(0), d(1), c(0), value(initvalue), fin(false) {};
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      attribute 129100 "fin"
+	protected explicit_type "bool"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 131276 "clone"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "n" type class_ref 129996 // AFadeValue
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		b = n.b;
+		e = n.e;
+		c = n.c;
+		t = n.t;
+		fin = n.fin;
+		value = n.value;
+	};
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 131404 "operator T"
+	cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${name}${(}${)}${const}${volatile}${throw}${abstract} { return getValue(); };
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 131532 "isFinished"
+	cpp_inline public explicit_return_type "bool"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return fin; };
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 131660 "getValue"
+	cpp_inline public return_type class_ref 130124 // T
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}const ${type} & ${name}${(}${)}${const}${volatile}${throw}${abstract} { 
+		if ( t > d )  { fin=true;return e; }
+		fin = false;
+		++t; 
+		return _getValue(); 
+	};
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 131788 "setValue"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "v" type class_ref 130124 // T
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		b = value;
+		e = v;
+		c = e - b;
+		t = 0;
+		fin = false;
+	};
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 131916 "resetEndValue"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "v" type class_ref 130124 // T
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		b = value;
+		e = v;
+		c = e - b;
+	};
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 132044 "getElapsedTime"
+	cpp_inline public explicit_return_type "float"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return t; };
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 132172 "setDuration"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "v" type class_ref 130124 // T
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { d = (v>1.0f)? v : 1.0f; };
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 132300 "operator ="
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "v" type class_ref 130124 // T
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { setValue (v); };
+"
+	
+	
+	
+	
+	comment " darf nicht 0 sein.
+----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 132428 "~AFadeValue"
+	cpp_virtual cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw} {};
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 130252 "FadeType"
+      visibility package stereotype "enum"
+      cpp_decl "${comment}enum ${name} {
+${items}
+};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "========================================================================================================
+ Klasse FadeValue:
+ Berechnungen nach Robert Penner: Motion, Tweening, and Easing.
+ http://www.robertpenner.com/easing/penner_chapter7_tweening.pdf
+========================================================================================================"
+      attribute 129228 "LIN"
+	public type class_ref 130252 // FadeType
+	cpp_decl "  ${name}${value},${comment}"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 129356 "QUAD"
+	public type class_ref 130252 // FadeType
+	cpp_decl "  ${name}${value},${comment}"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 129484 "CUB"
+	public type class_ref 130252 // FadeType
+	cpp_decl "  ${name}${value},${comment}"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 129612 "QUART"
+	public type class_ref 130252 // FadeType
+	cpp_decl "  ${name}${value},${comment}"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 129740 "QUINT"
+	public type class_ref 130252 // FadeType
+	cpp_decl "  ${name}${value},${comment}"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 129868 "EXP"
+	public type class_ref 130252 // FadeType
+	cpp_decl "  ${name}${value},${comment}"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+    end
+
+    class 130380 "FadeValue"
+      visibility package 
+      nformals 2
+      formal name " FadeType FType" type "" explicit_default_value ""
+        explicit_extends ""
+      formal name " int InitDurationInSamples" type "" explicit_default_value "1"
+        explicit_extends ""
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      classrelation 129228 // <generalisation>
+	relation 129228 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 129228 // <generalisation>
+	  b parent class_ref 129996 // AFadeValue
+      end
+
+      extra_member 128332 "friend"
+	
+	cpp "
+friend class boost::serialization::access;" ""
+	java ""
+	php ""
+	python ""
+	idl ""
+      end
+
+      operation 132556 "serialize"
+	stereotype "template"
+	cpp_inline private explicit_return_type "void"
+	nparams 2
+	  param inout name "ar" explicit_type "Archive"
+	  param in name "version" explicit_type "uint"
+	cpp_decl "    ${comment}template<typename Archive>
+  ${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}, const ${t1} ${p1}${v1}${)}${const}${volatile}${throw}${abstract} {
+		ar & boost::serialization::base_object< AFadeValue > ( *this );
+		ar & p;
+	};
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      attribute 129996 "p"
+	private explicit_type "T"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 132684 "FadeValue"
+	cpp_inline public explicit_return_type ""
+	nparams 1
+	  param in name "initValue" explicit_type "T"
+	    defaultvalue "0 "
+	cpp_decl "    ${comment}${inline}explicit ${name}${(}const ${t0} & ${p0}${v0}${)}${volatile}${throw} : AFadeValue( initValue ) {
+		setDuration ( (float)InitDurationInSamples );
+	};
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 132812 "_getValue"
+	cpp_virtual cpp_inline public explicit_return_type "T"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}const ${type} & ${name}${(}${)}${const}${volatile}${throw}${abstract} {
+		calc<FType>();
+		return value;
+	};
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 132940 "calc"
+	stereotype "template"
+	public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}template< FadeType F>
+  ${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 133068 "calc<LIN>"
+	stereotype "template"
+	cpp_inline public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}>
+  ${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { value = c*t/d + b; };
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 133196 "calc<QUAD>"
+	stereotype "template"
+	cpp_inline public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}>
+  ${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { p=t/d; value = c*p*p + b; };
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 133324 "calc<CUB>"
+	stereotype "template"
+	cpp_inline public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}>
+  ${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { p=t/d; value = c*p*p*p + b; };
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 133452 "calc<QUART>"
+	stereotype "template"
+	cpp_inline public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}>
+  ${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { p=t/d; value = c*p*p*p*p + b; };
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 133580 "calc<QUINT>"
+	stereotype "template"
+	cpp_inline public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}>
+  ${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { p=t/d; value = c*p*p*p*p*p + b; };
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 133708 "calc<EXP>"
+	stereotype "template"
+	cpp_inline public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}>
+  ${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { p=t/d; value = c * (float)pow(2.0, 10.0 * ( p - 1.0 )) + b; };
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 133836 "operator ="
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "v" explicit_type "T"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { setValue (v); };
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 130508 "ADSR"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "========================================================================================================
+ Klasse ADSR :
+ Attack, Decay, Sustain, Release bestehend aus FadeValue
+========================================================================================================"
+      classrelation 129356 // <generalisation>
+	relation 129356 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 129356 // <generalisation>
+	  b parent class_ref 130636 // HasParameter
+      end
+
+      extra_member 128460 "friend"
+	
+	cpp "
+friend class boost::serialization::access;" ""
+	java ""
+	php ""
+	python ""
+	idl ""
+      end
+
+      operation 133964 "getState"
+	cpp_inline private explicit_return_type "States"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return (States)state; };
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 134092 "save"
+	preserve_cpp_body_indent const private explicit_return_type "void"
+	nparams 2
+	  param inout name "ar" type class_ref 130764 // oArchive
+	  param in name "version" explicit_type "uint"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}, const ${t1} ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//--------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} & ${p0}, const ${t1} ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 134220 "load"
+	preserve_cpp_body_indent private explicit_return_type "void"
+	nparams 2
+	  param inout name "ar" type class_ref 130892 // iArchive
+	  param in name "version" explicit_type "uint"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}, const ${t1} ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//--------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} & ${p0}, const ${t1} ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      classrelation 129484 // graph (<unidirectional association>)
+	relation 129484 --->
+	  a role_name "graph" private
+	    comment "----------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} * ${name}${value};
+"
+	    classrelation_ref 129484 // graph (<unidirectional association>)
+	  b parent class_ref 131020 // Graph
+      end
+
+      attribute 130124 "state"
+	private explicit_type "int"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      classrelation 129612 // fader (<unidirectional association>)
+	relation 129612 --->
+	  a role_name "fader" private
+	    comment "----------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} * ${name}${value};
+"
+	    classrelation_ref 129612 // fader (<unidirectional association>)
+	  b parent class_ref 129996 // AFadeValue
+      end
+
+      class 131148 "anonymous1"
+	visibility package stereotype "enum"
+	cpp_decl "${comment}enum  {
+${items}
+};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	attribute 130252 "FADER_TYPES"
+	  public type class_ref 131148 // anonymous1
+	  init_value " 6 "
+	  cpp_decl "  ${name}${value},${comment}"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+      end
+
+      classrelation 129740 // faderType (<unidirectional association>)
+	relation 129740 --->
+	  a role_name "faderType" multiplicity "[FADER_TYPES]" private
+	    comment "----------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} * ${name}${multiplicity}${value};
+"
+	    classrelation_ref 129740 // faderType (<unidirectional association>)
+	  b parent class_ref 129996 // AFadeValue
+      end
+
+      classrelation 129868 // parameterMap (<unidirectional association>)
+	relation 129868 --->
+	  stereotype "vector"
+	  a role_name "parameterMap" private
+	    comment "----------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${stereotype}<${type}*> ${name}${value};
+"
+	    classrelation_ref 129868 // parameterMap (<unidirectional association>)
+	  b parent class_ref 131276 // Parameter
+      end
+
+      attribute 130380 "maxDurationInSec"
+	private explicit_type "float"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "----------------------------------------------------------------------------------------------------
+ trigger schwelle"
+      end
+
+      classrelation 129996 // trigger (<directional composition>)
+	relation 129996 *-->
+	  a role_name "trigger" private
+	    comment "----------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 129996 // trigger (<directional composition>)
+	  b parent class_ref 129740 // ClockEdge
+      end
+
+      classrelation 130124 // fadeFinished (<directional composition>)
+	relation 130124 *-->
+	  a role_name "fadeFinished" private
+	    comment "----------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 130124 // fadeFinished (<directional composition>)
+	  b parent class_ref 129740 // ClockEdge
+      end
+
+      operation 134348 "curveTypeChanged"
+	preserve_cpp_body_indent private explicit_return_type "void"
+	nparams 2
+	  param inout name "src" explicit_type "void"
+	  param in name "v" explicit_type "float"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//--------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 134476 "levelChanged"
+	preserve_cpp_body_indent private explicit_return_type "void"
+	nparams 2
+	  param inout name "src" explicit_type "void"
+	  param in name "v" explicit_type "float"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//--------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 134604 "durationChanged"
+	preserve_cpp_body_indent private explicit_return_type "void"
+	nparams 2
+	  param inout name "src" explicit_type "void"
+	  param in name "v" explicit_type "float"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//--------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 134732 "initFaderTypes"
+	preserve_cpp_body_indent private explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "// namespace musicalValues
+//========================================================================================================
+// Klasse ADSR :
+// Attack, Decay, Sustain, Release bestehend aus FadeValue
+//========================================================================================================
+//--------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 134860 "ADSR"
+	cpp_inline private explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw} : maxDurationInSec(0) {};
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 134988 "ADSR"
+	preserve_cpp_body_indent public explicit_return_type ""
+	nparams 2
+	  param inout name "graph" type class_ref 131020 // Graph
+	  param in name "maxD" explicit_type "float"
+	    defaultvalue "1.0f "
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} * ${p0}${v0}, ${t1} ${p1}${v1}${)}${volatile}${throw};
+"
+	cpp_def "//--------------------------------------------------------------------------------------------------------
+
+${inline}${class}::${name}${(}${t0} * ${p0}, ${t1} ${p1}${)} : 
+graph(graph), 
+in(0),
+state(R),
+maxDurationInSec ( maxD )
+${throw}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 135116 "~ADSR"
+	preserve_cpp_body_indent cpp_virtual public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "//--------------------------------------------------------------------------------------------------------
+
+${inline}${class}::${name}${(}${)}${throw}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 135244 "nextState"
+	cpp_inline public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { 
+		if (state!=S) setState ( (state+1)%NUM_STATES );
+	};
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 135372 "setState"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "state" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		ADSR::state = state;
+		VstTimeInfo *inf = graph->getVstTimeInfo(0);
+		int type = mapInteger ( *curveType[state], FADER_TYPES  );
+		faderType[type]->clone (*fader);
+		fader = faderType[type];
+		fader->setDuration ( (float)inf->sampleRate * *duration[state] * maxDurationInSec ); 
+		*fader = *level[state];
+	};
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 135500 "release"
+	cpp_inline public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { setState (R); };
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 135628 "setInput"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "v" explicit_type "float"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		value = v;
+		ClockEdge::EdgeValue e = trigger.in ( v > *threshold );
+		if ( e == ClockEdge::HIGH ) nextState();
+		if ( e == ClockEdge::LOW  ) release();
+	};
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 135756 "process"
+	cpp_inline public explicit_return_type "float"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} {
+		if ( state == R ) return *fader;
+		ClockEdge::EdgeValue n = fadeFinished.in ( fader->isFinished() );
+		if ( n == ClockEdge::HIGH ) nextState();
+		return *fader;
+	};
+"
+	
+	
+	
+	
+	comment "----------------------------------------------------------------------------------------------------"
+      end
+
+      operation 135884 "getParameter"
+	const cpp_virtual cpp_inline public return_type class_ref 131276 // Parameter
+	nparams 1
+	  param in name "nr" explicit_type "int"
+	    defaultvalue "0 "
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} * ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { 
+		if ( nr > (int)parameterMap.size() ) return NULL;
+		return parameterMap.at (nr);
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 136012 "getNumParameter"
+	const cpp_virtual cpp_inline public explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return parameterMap.size(); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 130764 "oArchive"
+      visibility package stereotype "typedef" explicit_base_type "boost::archive::binary_oarchive"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "------------------------------------------------------------------------------------------------------------"
+    end
+
+    class 130892 "iArchive"
+      visibility package stereotype "typedef" explicit_base_type "boost::archive::binary_iarchive"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "------------------------------------------------------------------------------------------------------------"
+    end
+
+    class 133324 "VstNumber"
+      visibility package stereotype "typedef" explicit_base_type "float"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+ struct Frame :
+ Hier kommt es auf Geschwindigkeit an. 
+ Deshalb sind alle Operationen inline und 
+ Schleifen in unlesrelicher pointer schreibweise gehalten.
+============================================================================================================
+VST Gleitkomma Typ"
+    end
+
+    class 133452 "Frame"
+      visibility package stereotype "struct"
+      cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      attribute 131148 "externData"
+	private explicit_type "bool"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment " Ist true wenn ein Frame erzeugt wird das Datenfeldpointer **data"
+      end
+
+      attribute 131276 "data"
+	public type class_ref 133324 // VstNumber
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} * * ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment " (ohne tiefe Kopie) extern uebernimmt [ Frame( **data, frameSize ) ]
+--------------------------------------------------------------------------------------------------------
+Sample nDimensionales Daten Feld. Fuer jeden kanal 
+eine Dimension. "
+      end
+
+      attribute 131404 "frameSize"
+	public explicit_type "VstInt32"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------
+groesse eines Frames"
+      end
+
+      operation 137804 "Frame"
+	cpp_inline public explicit_return_type ""
+	nparams 1
+	  param in name "frameSize" explicit_type "VstInt32"
+	    defaultvalue "0 "
+	cpp_decl "    ${comment}${inline}explicit ${name}${(}${t0} ${p0}${v0}${)}${volatile}${throw} {
+		externData = false;
+		Frame::frameSize = frameSize;
+		if (frameSize==0){
+			data = NULL;
+			return;
+		}
+		data = new VstNumber*[2];
+		data[0] = new VstNumber[frameSize];
+		data[1] = new VstNumber[frameSize];
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 137932 "Frame"
+	cpp_inline public explicit_return_type ""
+	nparams 2
+	  param inout name "data" type class_ref 133324 // VstNumber
+	  param in name "frameSize" explicit_type "VstInt32"
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} * * ${p0}${v0}, ${t1} ${p1}${v1}${)}${volatile}${throw} {
+		externData = true;
+		Frame::data = data;
+		Frame::frameSize = frameSize;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------
+Uebernimmt data zeiger(keine kopie) ins Frame Objekt."
+      end
+
+      operation 138060 "Frame"
+	cpp_inline public explicit_return_type ""
+	nparams 1
+	  param in name "source" type class_ref 133452 // Frame
+	cpp_decl "    ${comment}${inline}${name}${(}const ${t0} & ${p0}${v0}${)}${volatile}${throw} {
+		//initalisiere attr.
+		externData = false;
+		Frame::frameSize = source.frameSize;
+		data = new VstNumber*[2];
+		data[0] = new VstNumber[frameSize];
+		data[1] = new VstNumber[frameSize];
+		//kopiere elemente von data
+		VstInt32 i = source.frameSize;
+		VstNumber *src01 = source.data[0];
+		VstNumber *src02 = source.data[1];
+		VstNumber *dst01 = data[0];
+		VstNumber *dst02 = data[1];
+		while ( --i >= 0 ){
+			*(dst01++) = *(src01++);
+			*(dst02++) = *(src02++);
+		}
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------
+Copy Konstruktor"
+      end
+
+      operation 138188 "~Frame"
+	cpp_virtual cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw} {
+		if (data && !externData){
+			delete[] data[0];
+			delete[] data[1];
+			delete[] data;
+		}
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 138316 "setFrameSize"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "size" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		if ( size == frameSize ) return;
+		frameSize = size;
+		if (data){ // data schon alloziert?
+			// speicher re-allozieren
+			data[0] = (VstNumber*) realloc ( data[0], sizeof (VstNumber)*frameSize );
+			data[1] = (VstNumber*) realloc ( data[1], sizeof (VstNumber)*frameSize );
+		}else { // speicher neu allozieren
+			data = new VstNumber*[2];
+			data[0] = new VstNumber[frameSize];
+			data[1] = new VstNumber[frameSize];
+		}
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 138444 "operator ="
+	cpp_inline public return_type class_ref 133452 // Frame
+	nparams 1
+	  param in name "source" type class_ref 133452 // Frame
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} & ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		if (externData) data=NULL;
+		setFrameSize ( source.frameSize );
+		if (frameSize==0) return *this;
+		//kopiere elemente von data
+		VstInt32 i = source.frameSize;
+		VstNumber *src01 = source.data[0];
+		VstNumber *src02 = source.data[1];
+		VstNumber *dst01 = data[0];
+		VstNumber *dst02 = data[1];
+		while ( --i >= 0 ){
+			*(dst01++) = *(src01++);
+			*(dst02++) = *(src02++);
+		}
+		return *this;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 138572 "operator ="
+	cpp_inline public return_type class_ref 133452 // Frame
+	nparams 1
+	  param in name "v" type class_ref 133324 // VstNumber
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} & ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		VstInt32 i = frameSize;
+		VstNumber *dst01 = data[0];
+		VstNumber *dst02 = data[1];
+		while ( --i >= 0 ){
+			*(dst01++) = v;
+			*(dst02++) = v;
+		}
+		return *this;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 138700 "operator +"
+	cpp_inline public return_type class_ref 133452 // Frame
+	nparams 1
+	  param in name "b" type class_ref 133452 // Frame
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		if ( b.frameSize==0 && frameSize==0 ) return Frame();
+		if ( b.frameSize == 0 ) return Frame(*this);
+		if ( frameSize == 0 ) return Frame(b);
+		VstInt32 i,n,j;
+		VstNumber *laenger01, *kuerzer01, *laenger02, *kuerzer02;
+		if ( b.frameSize > frameSize ){
+			n = b.frameSize;
+			i = frameSize;
+			laenger01 = b.data[0];
+			laenger02 = b.data[1];
+			kuerzer01 = data[0];
+			kuerzer02 = data[1];
+		} else {
+			i = b.frameSize;
+			n = frameSize;
+			laenger01 = data[0];
+			laenger02 = data[1];
+			kuerzer01 = b.data[0];
+			kuerzer02 = b.data[1];
+		}
+		Frame tmp(n);
+		VstNumber *dst01 = tmp.data[0];
+		VstNumber *dst02 = tmp.data[1];
+		j=i;
+		while ( --j >= 0 ){
+			*(dst01++) = *(laenger01++) + *(kuerzer01++);
+			*(dst02++) = *(laenger02++) + *(kuerzer02++);
+		}
+		j = n-i;
+		while ( --j >= 0 ){
+			*(dst01++) = *(laenger01++);
+			*(dst02++) = *(laenger02++);
+		}
+		return tmp;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 138828 "operator -"
+	cpp_inline public return_type class_ref 133452 // Frame
+	nparams 1
+	  param in name "b" type class_ref 133452 // Frame
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		if ( b.frameSize==0 && frameSize==0 ) return Frame();
+		if ( b.frameSize == 0 ) return Frame(*this);
+		if ( frameSize == 0 ) return Frame(b);
+		VstInt32 i,n,j;
+		VstNumber *laenger01, *kuerzer01, *laenger02, *kuerzer02;
+		bool neg;
+		if ( b.frameSize > frameSize ){
+			n = b.frameSize;
+			i = frameSize;
+			laenger01 = b.data[0];
+			laenger02 = b.data[1];
+			kuerzer01 = data[0];
+			kuerzer02 = data[1];
+			neg=true;
+		} else {
+			i = b.frameSize;
+			n = frameSize;
+			laenger01 = data[0];
+			laenger02 = data[1];
+			kuerzer01 = b.data[0];
+			kuerzer02 = b.data[1];
+			neg=false;
+		}
+		Frame tmp(n);
+		VstNumber *dst01 = tmp.data[0];
+		VstNumber *dst02 = tmp.data[1];
+		j=i;
+		while ( --j >= 0 ){
+			*(dst01++) = *(laenger01++) - *(kuerzer01++);
+			*(dst02++) = *(laenger02++) - *(kuerzer02++);
+		}
+		j = n-i;
+		if (neg){
+			while ( --j >= 0 ){
+				*(dst01++) = - *(laenger01++);
+				*(dst02++) = - *(laenger02++);
+			}
+		} else{
+			while ( --j >= 0 ){
+				*(dst01++) = *(laenger01++);
+				*(dst02++) = *(laenger02++);
+			}
+		}
+
+		return tmp;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 138956 "operator *"
+	cpp_inline public return_type class_ref 133452 // Frame
+	nparams 1
+	  param in name "b" type class_ref 133452 // Frame
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		if ( b.frameSize==0 && frameSize==0 ) return Frame();
+		if ( b.frameSize == 0 ) return Frame(*this);
+		if ( frameSize == 0 ) return Frame(b);
+		VstInt32 i,n,j;
+		VstNumber *laenger01, *kuerzer01, *laenger02, *kuerzer02;
+		if ( b.frameSize > frameSize ){
+			n = b.frameSize;
+			i = frameSize;
+			laenger01 = b.data[0];
+			laenger02 = b.data[1];
+			kuerzer01 = data[0];
+			kuerzer02 = data[1];
+		} else {
+			i = b.frameSize;
+			n = frameSize;
+			laenger01 = data[0];
+			laenger02 = data[1];
+			kuerzer01 = b.data[0];
+			kuerzer02 = b.data[1];
+		}
+		Frame tmp(n);
+		VstNumber *dst01 = tmp.data[0];
+		VstNumber *dst02 = tmp.data[1];
+		j=i;
+		while ( --j >= 0 ){
+			*(dst01++) = *(laenger01++) * *(kuerzer01++);
+			*(dst02++) = *(laenger02++) * *(kuerzer02++);
+		}
+		j = n-i;
+		while ( --j >= 0 ){
+			*(dst01++) = 0.0;
+			*(dst02++) = 0.0;
+		}
+		return tmp;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 139084 "operator /"
+	cpp_inline public return_type class_ref 133452 // Frame
+	nparams 1
+	  param in name "b" type class_ref 133452 // Frame
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		if ( b.frameSize==0 && frameSize==0 ) return Frame();
+		if ( b.frameSize == 0 ) return Frame(*this);
+		if ( frameSize == 0 ) return Frame(b);
+		VstInt32 i,n,j;
+		VstNumber *laenger01, *kuerzer01, *laenger02, *kuerzer02, last;
+		if ( b.frameSize > frameSize ){
+			n = b.frameSize;
+			i = frameSize;
+			laenger01 = b.data[0];
+			laenger02 = b.data[1];
+			kuerzer01 = data[0];
+			kuerzer02 = data[1];
+			last=0.0;
+		} else {
+			i = b.frameSize;
+			n = frameSize;
+			laenger01 = data[0];
+			laenger02 = data[1];
+			kuerzer01 = b.data[0];
+			kuerzer02 = b.data[1];
+			last=1.0;
+		}
+		Frame tmp(n);
+		VstNumber *dst01 = tmp.data[0];
+		VstNumber *dst02 = tmp.data[1];
+		j=i;
+		while ( --j >= 0 ){
+			*(dst01++) = *(laenger01++) / *(kuerzer01++);
+			*(dst02++) = *(laenger02++) / *(kuerzer02++);
+		}
+		j = n-i;
+		while ( --j >= 0 ){
+			*(dst01++) = last;
+			*(dst02++) = last;
+		}
+
+		return tmp;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 139212 "operator +="
+	cpp_inline public return_type class_ref 133452 // Frame
+	nparams 1
+	  param in name "b" type class_ref 133452 // Frame
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} & ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		//kopiere elemente von data
+		VstInt32 i = ( b.frameSize>frameSize ) ? frameSize : b.frameSize;
+		VstNumber *src01 = b.data[0];
+		VstNumber *src02 = b.data[1];
+		VstNumber *dst01 = data[0];
+		VstNumber *dst02 = data[1];
+		while ( --i >= 0 ){
+			*dst01 = *(dst01++) + *(src01++);
+			*dst02 = *(dst02++) + *(src02++);
+		}
+		return *this;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 139340 "operator -="
+	cpp_inline public return_type class_ref 133452 // Frame
+	nparams 1
+	  param in name "b" type class_ref 133452 // Frame
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} & ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		//kopiere elemente von data
+		VstInt32 i = ( b.frameSize>frameSize ) ? frameSize : b.frameSize;
+		VstNumber *src01 = b.data[0];
+		VstNumber *src02 = b.data[1];
+		VstNumber *dst01 = data[0];
+		VstNumber *dst02 = data[1];
+		while ( --i >= 0 ){
+			*dst01 = *(dst01++) - *(src01++);
+			*dst02 = *(dst02++) - *(src02++);
+		}
+		return *this;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 139468 "operator *"
+	cpp_inline public return_type class_ref 133452 // Frame
+	nparams 1
+	  param in name "x" type class_ref 133324 // VstNumber
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} & ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		//kopiere elemente von data
+		VstInt32 i = frameSize;
+		VstNumber *dst01 = data[0];
+		VstNumber *dst02 = data[1];
+		while ( --i >= 0 ){
+			*dst01 = *(dst01++) * x;
+			*dst02 = *(dst02++) * x;
+		}
+		return *this;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 139596 "operator *="
+	cpp_inline public return_type class_ref 133452 // Frame
+	nparams 1
+	  param in name "x" type class_ref 133324 // VstNumber
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} & ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		return *this*x;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 139724 "operator =="
+	cpp_inline public explicit_return_type "bool"
+	nparams 1
+	  param in name "b" type class_ref 133452 // Frame
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		if ( frameSize != b.frameSize ) return false;
+		VstInt32 i = frameSize;
+		VstNumber *src01 = b.data[0];
+		VstNumber *src02 = b.data[1];
+		VstNumber *dst01 = data[0];
+		VstNumber *dst02 = data[1];
+		while ( --i >= 0 ){
+			if ( *(dst01++) != *(src01++) ) return false;
+			if ( *(dst02++) != *(src02++) ) return false;
+		}
+		return true;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 139852 "operator !="
+	cpp_inline public explicit_return_type "bool"
+	nparams 1
+	  param in name "b" type class_ref 133452 // Frame
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		return !(*this==b);
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 139980 "fillIn"
+	cpp_inline public explicit_return_type "void"
+	nparams 2
+	  param inout name "outputs" explicit_type "float"
+	  param in name "size" explicit_type "VstInt32"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * * ${p0}${v0}, ${t1} ${p1}${v1}${)}${const}${volatile}${throw}${abstract} {
+		VstInt32 i = size;
+		VstNumber *src01 = data[0];
+		VstNumber *src02 = data[1];
+		VstNumber *dst01 = outputs[0];
+		VstNumber *dst02 = outputs[1];
+		while ( --i >= 0 ){
+			*(dst01++) = *(src01++);
+			*(dst02++) = *(src02++);
+		}
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------
+ fuellt data in outputs."
+      end
+    end
+
+    class 133580 "LogFile"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+ class LogFile.
+============================================================================================================"
+      class 133708 "Ptr"
+	visibility package stereotype "typedef" base_type class_ref 133580 // LogFile
+	cpp_decl "${comment}typedef boost::shared_ptr<${type}> ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	classrelation 131020 // <dependency>
+	  relation 131020 -_->
+	    a default
+	      cpp default "#include in source"
+	      classrelation_ref 131020 // <dependency>
+	    b parent class_ref 133580 // LogFile
+	end
+      end
+
+      classrelation 131148 // buffer (<directional composition>)
+	relation 131148 *-->
+	  stereotype "list"
+	  a role_name "buffer" private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
+"
+	    classrelation_ref 131148 // buffer (<directional composition>)
+	  b parent class_ref 128972 // MyString
+      end
+
+      attribute 131532 "bffSize"
+	class_attribute private explicit_type "int"
+	init_value "= 1"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      attribute 131660 "filename"
+	class_attribute private explicit_type "string"
+	init_value "= LOGFILE"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      classrelation 131276 // once (<directional composition>)
+	relation 131276 *-->
+	  a role_name "once" class_relation private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 131276 // once (<directional composition>)
+	  b parent class_ref 133708 // Ptr
+      end
+
+      operation 140108 "LogFile"
+	cpp_inline private explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw} { std::remove ( filename.c_str() ); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 140236 "writeIn"
+	class_operation public explicit_return_type "void"
+	nparams 1
+	  param in name "str" explicit_type "string"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}const ${t0} & ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 140364 "flushBff"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 140492 "setFilename"
+	class_operation cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "name" explicit_type "string"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		filename = name;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 140620 "setBufferSize"
+	class_operation cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "size" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		bffSize = size;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 140748 "~LogFile"
+	cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw} { flushBff(); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 133836 "typedef1"
+      visibility package stereotype "typedef" explicit_base_type "string"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    class 133964 "NodeID"
+      visibility package stereotype "typedef" explicit_base_type "int"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "========================================================================================================
+NODEID"
+    end
+
+    class 134092 "ParameterIndex"
+      visibility package stereotype "typedef" explicit_base_type "int"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "Parameter Index"
+    end
+
+    class 134220 "Path"
+      visibility package stereotype "typedef" explicit_base_type "path"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "--------------------------------------------------------------------------------------------------------"
+    end
+
+    class 134348 "Filename"
+      visibility package stereotype "typedef" explicit_base_type "path"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "--------------------------------------------------------------------------------------------------------"
+    end
+
+    class 134476 "PathList"
+      visibility package stereotype "typedef" base_type class_ref 134220 // Path
+      cpp_decl "${comment}typedef list<${type}> ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "--------------------------------------------------------------------------------------------------------"
+      classrelation 131532 // <dependency>
+	relation 131532 -_->
+	  a default
+	    cpp default "#include in source"
+	    classrelation_ref 131532 // <dependency>
+	  b parent class_ref 134220 // Path
+      end
+    end
+
+    class 134604 "Filenames"
+      visibility package stereotype "typedef" base_type class_ref 134220 // Path
+      cpp_decl "${comment}typedef list<${type}> ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "--------------------------------------------------------------------------------------------------------"
+      classrelation 131660 // <dependency>
+	relation 131660 -_->
+	  a default
+	    cpp default "#include in source"
+	    classrelation_ref 131660 // <dependency>
+	  b parent class_ref 134220 // Path
+      end
+    end
+
+    class 134732 "FileFoundFuncPtr"
+      visibility package stereotype "typedef" explicit_base_type "boost::function< void ( const Filename& ) >"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "--------------------------------------------------------------------------------------------------------"
+    end
+
+    class 134860 "PluginCollectionPtr"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+ Event: PluginCollectionPtr
+ Grund : PluginCollection soll beim verlassen sich selbst speichern.
+ Serialisierung im Destruktor oder smart_pointer destroy callback loesen Assert aus.
+============================================================================================================"
+      classrelation 131788 // <generalisation>
+	relation 131788 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 131788 // <generalisation>
+	  b parent class_ref 134988 // typedef2
+      end
+
+      operation 142540 "PluginCollectionPtr"
+	cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 142668 "PluginCollectionPtr"
+	cpp_inline public explicit_return_type ""
+	nparams 1
+	  param inout name "p" type class_ref 135116 // PluginCollection
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} * ${p0}${v0}${)}${volatile}${throw} : boost::shared_ptr<PluginCollection>(p) {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 134988 "typedef2"
+      visibility package stereotype "typedef" explicit_base_type "boost::shared_ptr<PluginCollection>"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    class 135116 "PluginCollection"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+ Klasse PluginCollection : <Singleton>
+ Datenbank fuer Plugin Files.
+ Die festgelegten root verzeichnisse werden iteriert und alle vorhandenen Plugins
+ gesammelt. VSTPlugin objekte sind dann ueber die VST-UID aufrufbar.
+ Die angesammelten daten werden auf HD gespeichert und nur bei verzeichniss aenderung aktualisiert.
+============================================================================================================"
+      classrelation 132044 // <generalisation>
+	relation 132044 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 132044 // <generalisation>
+	  b parent class_ref 135628 // typedef4
+      end
+
+      extra_member 128844 "friend"
+	
+	cpp "
+friend class boost::serialization::access;" ""
+	java ""
+	php ""
+	python ""
+	idl ""
+      end
+
+      class 135756 "Ptr"
+	visibility package stereotype "typedef" base_type class_ref 135116 // PluginCollection
+	cpp_decl "${comment}typedef boost::shared_ptr<${type}> ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	classrelation 132172 // <dependency>
+	  relation 132172 -_->
+	    a default
+	      cpp default "#include in source"
+	      classrelation_ref 132172 // <dependency>
+	    b parent class_ref 135116 // PluginCollection
+	end
+      end
+
+      class 135884 "PathTree"
+	visibility package stereotype "typedef" explicit_base_type "bimap< multiset_of<Path>, set_of<VSTPlugProxy> >"
+	cpp_decl "${comment}typedef ${type} ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+      end
+
+      class 136012 "Info"
+	visibility package stereotype "struct"
+	cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	attribute 133324 "numAccessablePlugs"
+	  public explicit_type "size_t"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	attribute 133452 "numInaccessablePlugs"
+	  public explicit_type "size_t"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	operation 143820 "Info"
+	  cpp_inline public explicit_return_type ""
+	  nparams 0
+	  cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw} : numAccessablePlugs(0), numInaccessablePlugs (0) {};
+"
+	  
+	  
+	  
+	  
+	end
+      end
+
+      class 136140 "VSTPluginProxyList"
+	visibility package stereotype "typedef" base_type class_ref 135500 // VSTPlugProxy
+	cpp_decl "${comment}typedef list<${type}> ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	classrelation 132300 // <dependency>
+	  relation 132300 -_->
+	    a default
+	      cpp default "#include in source"
+	      classrelation_ref 132300 // <dependency>
+	    b parent class_ref 135500 // VSTPlugProxy
+	end
+      end
+
+      classrelation 132428 // info (<directional composition>)
+	relation 132428 *-->
+	  a role_name "info" private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 132428 // info (<directional composition>)
+	  b parent class_ref 136012 // Info
+      end
+
+      classrelation 132556 // blackList (<directional composition>)
+	relation 132556 *-->
+	  a role_name "blackList" private
+	    comment "--------------------------------------------------------------------------------------------------------
+PathList ;
+--------------------------------------------------------------------------------------------------------
+ files to skip "
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 132556 // blackList (<directional composition>)
+	  b parent class_ref 134604 // Filenames
+      end
+
+      classrelation 132684 // settings (<directional composition>)
+	relation 132684 *-->
+	  a role_name "settings" private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 132684 // settings (<directional composition>)
+	  b parent class_ref 136396 // Ptr
+      end
+
+      operation 143948 "isPlugFilename"
+	const cpp_inline private explicit_return_type "bool"
+	nparams 1
+	  param in name "filename" type class_ref 134348 // Filename
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { return filename.extension() == \".dll\"; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------
+ testet ob filename == plugfilename ( zb.: *.dll )"
+      end
+
+      operation 144076 "PluginCollection"
+	preserve_cpp_body_indent private explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "//============================================================================================================
+// Klasse PluginCollection : <Singleton>
+// Datenbank fuer Plugin Files.
+// Die festgelegten root verzeichnisse werden iteriert und alle vorhandenen Plugins gesammelt.
+// Die angesammelten daten werden auf HD gespeichert und nur bei verzeichniss aenderung aktualisiert.
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+
+${inline}${class}::${name}${(}${)} : settings( SETTINGS ) ${throw}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      classrelation 132812 // plugDirectories (<directional composition>)
+	relation 132812 *-->
+	  a role_name "plugDirectories" private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 132812 // plugDirectories (<directional composition>)
+	  b parent class_ref 134476 // PathList
+      end
+
+      classrelation 132940 // iteredDirectories (<directional composition>)
+	relation 132940 *-->
+	  a role_name "iteredDirectories" private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 132940 // iteredDirectories (<directional composition>)
+	  b parent class_ref 134476 // PathList
+      end
+
+      classrelation 133068 // oldPlugTree (<directional composition>)
+	relation 133068 *-->
+	  a role_name "oldPlugTree" private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 133068 // oldPlugTree (<directional composition>)
+	  b parent class_ref 135884 // PathTree
+      end
+
+      classrelation 133196 // plugTree (<directional composition>)
+	relation 133196 *-->
+	  a role_name "plugTree" private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 133196 // plugTree (<directional composition>)
+	  b parent class_ref 135884 // PathTree
+      end
+
+      operation 144204 "insertPlug"
+	preserve_cpp_body_indent private explicit_return_type "void"
+	nparams 2
+	  param in name "_path" type class_ref 134220 // Path
+	  param in name "proxy" type class_ref 135500 // VSTPlugProxy
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}const ${t0} & ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 144332 "__addFile__"
+	preserve_cpp_body_indent private explicit_return_type "void"
+	nparams 1
+	  param in name "filename" type class_ref 134348 // Filename
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}const ${t0} & ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------
+ Testet -ob file == plugin, - als plug ladbar, -ob schon vorhanden oder veraendert 
+ und fuegt ggf. file hinzu. ** Nur im update prozess aufrufen **"
+      end
+
+      operation 144460 "serialize"
+	stereotype "template"
+	cpp_inline private explicit_return_type "void"
+	nparams 2
+	  param inout name "ar" explicit_type "Archive"
+	  param in name "" explicit_type "uint"
+	cpp_decl "    ${comment}template<typename Archive>
+  ${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}, const ${t1} ${p1}${v1}${)}${const}${volatile}${throw}${abstract} {
+		ar & plugTree;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 144588 "create"
+	class_operation preserve_cpp_body_indent private return_type class_ref 135116 // PluginCollection
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} * ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} * ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------
+ erzeugt neue PluginCollection Instanz und laed falls vorhanden dump file."
+      end
+
+      operation 144716 "getPlugProxyByFilename"
+	class_operation preserve_cpp_body_indent private return_type class_ref 135500 // VSTPlugProxy
+	nparams 2
+	  param in name "tree" type class_ref 135884 // PathTree
+	  param in name "filename" type class_ref 134348 // Filename
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}const ${t0} & ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 144844 "appendLog"
+	class_operation preserve_cpp_body_indent private explicit_return_type "void"
+	nparams 1
+	  param in name "log_msg" explicit_type "string"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}const ${t0} & ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------
+ fuegt log zu ladenden filename hinzu. nach update wird file geloescht.
+ ist beim naechsten start file noch da, war der letzte eintrag wohl schuld an einem absturz
+ beim updatevorgang. Liefert false wenn filename neu angelegt wird."
+      end
+
+      operation 144972 "analyzeLog"
+	preserve_cpp_body_indent private explicit_return_type "string"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------
+ liefert den dateinamen der als letztes versucht wurde zu laden."
+      end
+
+      operation 145100 "getInfo"
+	cpp_inline public return_type class_ref 136012 // Info
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}const ${type} & ${name}${(}${)}${const}${volatile}${throw}${abstract} { return info; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 145228 "toString"
+	preserve_cpp_body_indent public explicit_return_type "string"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 145356 "update"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 145484 "getPlugProxyByFilename"
+	preserve_cpp_body_indent const cpp_inline public return_type class_ref 135500 // VSTPlugProxy
+	nparams 1
+	  param in name "filename" type class_ref 134348 // Filename
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}const ${t0} & ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 145612 "getDirectories"
+	const cpp_inline public return_type class_ref 134476 // PathList
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}const ${type} & ${name}${(}${)}${const}${volatile}${throw}${abstract} { return plugDirectories; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 145740 "getPlugTree"
+	cpp_inline public return_type class_ref 135884 // PathTree
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}const ${type} & ${name}${(}${)}${const}${volatile}${throw}${abstract} { return plugTree; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 145868 "saveDump"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 1
+	  param inout name "collection" type class_ref 135116 // PluginCollection
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 145996 "getPluginCollection"
+	class_operation preserve_cpp_body_indent public return_type class_ref 135756 // Ptr
+	nparams 1
+	  param inout name "listener" explicit_type "EventListener<OnLoadFile>"
+	    defaultvalue "NULL "
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------
+ benachrichtigt wenn dateieen geladen werden."
+      end
+
+      operation 146124 "~PluginCollection"
+	preserve_cpp_body_indent cpp_virtual public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${class}::${name}${(}${)}${throw}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 146252 "getDirectories"
+	cpp_inline public return_type class_ref 134476 // PathList
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}const ${type} & ${name}${(}${)}${const}${volatile}${throw}${abstract} { return iteredDirectories; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 146380 "getSubDirectories"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 2
+	  param in name "dir" type class_ref 134220 // Path
+	  param inout name "ret" type class_ref 134476 // PathList
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}, ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+// liefert unterverz. von dir wenn dir in PluginCollection vorkommt. ! case sensitive !
+
+${inline}${type} ${class}::${name}${(}const ${t0} & ${p0}, ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 146508 "getProxyList"
+	preserve_cpp_body_indent const public explicit_return_type "void"
+	nparams 3
+	  param in name "key" type class_ref 134220 // Path
+	  param inout name "l" type class_ref 136140 // VSTPluginProxyList
+	  param in name "accessableOnly" explicit_type "bool"
+	    defaultvalue "false "
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}, ${t1} & ${p1}${v1}, ${t2} ${p2}${v2}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}const ${t0} & ${p0}, ${t1} & ${p1}, ${t2} ${p2}${)}${const}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 135244 "OnLoadFile"
+      visibility package stereotype "struct"
+      cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+ Event: OnLoadFile
+============================================================================================================"
+      classrelation 131916 // <generalisation>
+	relation 131916 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 131916 // <generalisation>
+	  b parent class_ref 135372 // typedef3
+      end
+
+      attribute 131788 "filename"
+	public explicit_type "string"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      operation 142796 "OnLoadFile"
+	cpp_inline public explicit_return_type ""
+	nparams 1
+	  param in name "filename" explicit_type "string"
+	cpp_decl "    ${comment}${inline}${name}${(}const ${t0} & ${p0}${v0}${)}${volatile}${throw} : filename(filename) {};
+"
+	
+	
+	
+	
+      end
+    end
+
+    class 135372 "typedef3"
+      visibility package stereotype "typedef" explicit_base_type "Event"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    class 135500 "VSTPlugProxy"
+      visibility package stereotype "struct"
+      cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+ VSTPlugProxy
+============================================================================================================"
+      extra_member 128716 "friend"
+	
+	cpp "
+friend class boost::serialization::access;" ""
+	java ""
+	php ""
+	python ""
+	idl ""
+      end
+
+      operation 142924 "serialize"
+	stereotype "template"
+	cpp_inline private explicit_return_type "void"
+	nparams 2
+	  param inout name "ar" explicit_type "Archive"
+	  param in name "" explicit_type "uint"
+	cpp_decl "    ${comment}template<typename Archive>
+  ${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}, const ${t1} ${p1}${v1}${)}${const}${volatile}${throw}${abstract} {
+		ar & directory;
+		ar & filename;
+		ar & name;
+		ar & vendor;
+		ar & uid;
+		ar & isSynth;
+		ar & vstVersion;
+		ar & plugVersion;
+		ar & numParam;
+		ar & timestamp;
+		ar & access;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      attribute 131916 "directory"
+	public explicit_type "string"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 132044 "filename"
+	public explicit_type "string"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 132172 "name"
+	public explicit_type "string"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 132300 "vendor"
+	public explicit_type "string"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 132428 "uid"
+	public explicit_type "int"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 132556 "isSynth"
+	public explicit_type "bool"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 132684 "vstVersion"
+	public explicit_type "int"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 132812 "plugVersion"
+	public explicit_type "int"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 132940 "numParam"
+	public explicit_type "int"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 133068 "timestamp"
+	public explicit_type "time_t"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 133196 "access"
+	public explicit_type "bool"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment " konnte geladen werden"
+      end
+
+      operation 143052 "operator <"
+	const cpp_inline public explicit_return_type "bool"
+	nparams 1
+	  param in name "b" type class_ref 135500 // VSTPlugProxy
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { 
+		return MyString( directory + filename ).hash() < MyString( b.directory + b.filename ).hash();
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 143180 "VSTPlugProxy"
+	cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw} : 
+	access (false), uid('xxxx'), isSynth(0), vstVersion(0), plugVersion(0), numParam(0) {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 143308 "toString"
+	preserve_cpp_body_indent const public explicit_return_type "string"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "// es darf nur einen geben
+//============================================================================================================
+// VSTPlugProxy
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 143436 "isValid"
+	cpp_inline public explicit_return_type "bool"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return access; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 143564 "isEmpty"
+	cpp_inline public explicit_return_type "bool"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return ( directory + filename ).length() == 0; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 143692 "hasChanged"
+	cpp_inline public explicit_return_type "bool"
+	nparams 1
+	  param in name "t" explicit_type "time_t"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { return t != timestamp; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 135628 "typedef4"
+      visibility package stereotype "typedef" explicit_base_type "EventSender<OnLoadFile>"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    class 136268 "Settings"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+Enthaelt allgeimeine Einstellungs Variablen 
+( Singleton )
+============================================================================================================"
+      class 136396 "Ptr"
+	visibility package stereotype "typedef" base_type class_ref 136268 // Settings
+	cpp_decl "${comment}typedef boost::shared_ptr<${type}> ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	classrelation 135372 // <dependency>
+	  relation 135372 -_->
+	    a default
+	      cpp default "#include in source"
+	      classrelation_ref 135372 // <dependency>
+	    b parent class_ref 136268 // Settings
+	end
+      end
+
+      class 138828 "PathnameList"
+	visibility package stereotype "typedef" explicit_base_type "list<string>"
+	cpp_decl "${comment}typedef ${type} ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+      end
+
+      classrelation 135500 // settings (<directional composition>)
+	relation 135500 *-->
+	  a role_name "settings" class_relation private
+	    comment "--------------------------------------------------------------------------------------------------------
+ Singleton Settings Instanz"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 135500 // settings (<directional composition>)
+	  b parent class_ref 136396 // Ptr
+      end
+
+      operation 149196 "Settings"
+	preserve_cpp_body_indent private explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${class}::${name}${(}${)}${throw}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------
+ privater Konstruktor"
+      end
+
+      classrelation 135628 // pluginDirectories (<directional composition>)
+	relation 135628 *-->
+	  a role_name "pluginDirectories" private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 135628 // pluginDirectories (<directional composition>)
+	  b parent class_ref 138828 // PathnameList
+      end
+
+      attribute 133964 "WINDOW_WIDTH"
+	class_attribute const_attribute public explicit_type "int"
+	init_value "=  800"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${h_value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------
+ PPI Variablen"
+      end
+
+      attribute 134092 "WINDOW_HEIGHT"
+	class_attribute const_attribute public explicit_type "int"
+	init_value "=  600"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${h_value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 134220 "PR_NODE_WIDTH"
+	class_attribute const_attribute public explicit_type "int"
+	init_value "=  55"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${h_value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 134348 "PR_NODE_HEIGHT"
+	class_attribute const_attribute public explicit_type "int"
+	init_value "=  55"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${h_value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 134476 "GRIDSIZE"
+	class_attribute const_attribute public explicit_type "int"
+	init_value "=  15"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${h_value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 134604 "PRPR_CONNECTIONSIZE"
+	class_attribute const_attribute public explicit_type "int"
+	init_value "=  3"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${h_value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 134732 "STD_KNOB_SUBPIXMAPS"
+	class_attribute const_attribute public explicit_type "int"
+	init_value "=  100"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${h_value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 134860 "PROGRAM_PARAMETER"
+	class_attribute const_attribute public explicit_type "int"
+	init_value "=  25"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${h_value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 134988 "PPI_VERSION"
+	class_attribute const_attribute public explicit_type "int"
+	init_value "=  14"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${h_value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 135116 "NAME"
+	class_attribute const_attribute public explicit_type "string"
+	init_value "= \"PPI\""
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 135244 "PLUG_LOAD_LOGFILE"
+	class_attribute const_attribute public explicit_type "string"
+	init_value "= \"init_plug.log\""
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment " dateinamen"
+      end
+
+      attribute 135372 "CONFIG_FILE"
+	class_attribute const_attribute public explicit_type "string"
+	init_value "= \"c:/\" + NAME + \".conf\" "
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      attribute 135500 "plugCollectionDumpFile"
+	public explicit_type "string"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      class 138956 "Resource"
+	visibility package stereotype "struct"
+	cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	attribute 135628 "VSTPLUG_NODE"
+	  public explicit_type "long"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	attribute 135756 "VSTPLUG_INPUT"
+	  public explicit_type "long"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	attribute 135884 "VSTPLUG_OUTPUT"
+	  public explicit_type "long"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	attribute 136012 "MAIN_INPUT_NODE"
+	  public explicit_type "long"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	attribute 136140 "MAIN_OUTPUT_NODE"
+	  public explicit_type "long"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	attribute 136268 "STD_KNOB"
+	  public explicit_type "long"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	attribute 136396 "PASSIVE_KNOB"
+	  public explicit_type "long"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	attribute 136524 "EDIT_BUTTON"
+	  public explicit_type "long"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	attribute 136652 "CHILDW_ICON"
+	  public explicit_type "long"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	attribute 136780 "MENU_ROCKER"
+	  public explicit_type "long"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	attribute 136908 "TLBX_BK"
+	  public explicit_type "long"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	attribute 137036 "TLBX_BTN_USE"
+	  public explicit_type "long"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	attribute 137164 "TLBX_BTN_CNT"
+	  public explicit_type "long"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	attribute 137292 "TLBX_BTN_MOVE"
+	  public explicit_type "long"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+      end
+
+      class 139084 "HostInformation"
+	visibility package stereotype "struct"
+	cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	attribute 137420 "sampleRate"
+	  public explicit_type "float"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+
+	attribute 137548 "blockSize"
+	  public explicit_type "int"
+	  cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+      end
+
+      operation 149324 "loadConfigFile"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 149452 "saveConfigFile"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 149580 "getSettings"
+	class_operation preserve_cpp_body_indent public return_type class_ref 136396 // Ptr
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 149708 "init"
+	class_operation preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 2
+	  param inout name "resource" type class_ref 138956 // Resource
+	  param inout name "hInfo" type class_ref 139084 // HostInformation
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}, ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} & ${p0}, ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 149836 "getResource"
+	class_operation cpp_inline public return_type class_ref 138956 // Resource
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} & ${name}${(}${)}${const}${volatile}${throw}${abstract} {
+		return settings->resource;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 149964 "getHostInformation"
+	const cpp_inline public return_type class_ref 139084 // HostInformation
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}const ${type} & ${name}${(}${)}${const}${volatile}${throw}${abstract} {
+		return settings->hInfo;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 150092 "getPluginDirectoryList"
+	const cpp_inline public return_type class_ref 138828 // PathnameList
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}const ${type} & ${name}${(}${)}${const}${volatile}${throw}${abstract} { return pluginDirectories; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 150220 "setHostInformation"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "hInfo" type class_ref 139084 // HostInformation
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		Settings::hInfo = hInfo; 
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 150348 "versionToString"
+	class_operation preserve_cpp_body_indent public explicit_return_type "string"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 150476 "~Settings"
+	cpp_virtual cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      classrelation 135756 // resource (<directional composition>)
+	relation 135756 *-->
+	  a role_name "resource" private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 135756 // resource (<directional composition>)
+	  b parent class_ref 138956 // Resource
+      end
+
+      classrelation 135884 // hInfo (<directional composition>)
+	relation 135884 *-->
+	  a role_name "hInfo" private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 135884 // hInfo (<directional composition>)
+	  b parent class_ref 139084 // HostInformation
+      end
+    end
+
+    class 138700 "Serializable"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+ Schnittstelle Serializable:
+============================================================================================================"
+      operation 149068 "~Serializable"
+	cpp_virtual cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 139212 "TNull"
+      visibility package stereotype "struct"
+      cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "=============================================================================
+ TNull: Typenliste Null Eintrag
+============================================================================="
+      class 139340 "anonymous4"
+	visibility package stereotype "enum"
+	cpp_decl "${comment}enum  {
+${items}
+};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	attribute 137676 "NUM"
+	  public type class_ref 139340 // anonymous4
+	  init_value " 0 "
+	  cpp_decl "  ${name}${value},${comment}"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+      end
+    end
+
+    class 139468 "TList"
+      visibility package stereotype "struct"
+      nformals 2
+      formal name "H" type "class" explicit_default_value ""
+        explicit_extends ""
+      formal name "T" type "class" explicit_default_value ""
+        explicit_extends ""
+      cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "=============================================================================
+ TList: Typenliste
+============================================================================="
+      class 139596 "anonymous5"
+	visibility package stereotype "enum"
+	cpp_decl "${comment}enum  {
+${items}
+};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	attribute 137804 "NUM"
+	  public type class_ref 139596 // anonymous5
+	  init_value " 1 + T::NUM "
+	  cpp_decl "  ${name}${value},${comment}"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+      end
+
+      class 139724 "Head"
+	visibility package stereotype "typedef" explicit_base_type "H"
+	cpp_decl "${comment}typedef ${type} ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+      end
+
+      class 139852 "Tail"
+	visibility package stereotype "typedef" explicit_base_type "T"
+	cpp_decl "${comment}typedef ${type} ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+      end
+    end
+  end
+
+  deploymentview 128076 "com"
+    //deployment diagram settings
+    package_name_in_tab default show_context default write_horizontally default auto_label_position default draw_all_relations default shadow default
+    draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+    artifact 128076 "Command"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 128204 // AbstractActionContainer
+	class_ref 128332 // Command
+	class_ref 128716 // CmdNull
+	class_ref 128844 // CreateCommand
+	class_ref 128076 // AbstractAction
+	class_ref 129100 // ActionContainer
+	class_ref 129228 // CommandExecuter
+      end
+    end
+
+    artifact 128332 "dspTools"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 129484 // SimpleFadeValue
+	class_ref 129612 // SimpleFadeValue<T,0>
+	class_ref 129740 // ClockEdge
+	class_ref 129996 // AFadeValue
+	class_ref 130252 // FadeType
+	class_ref 130380 // FadeValue
+	class_ref 130508 // ADSR
+      end
+    end
+
+    artifact 128588 "Frame"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 133324 // VstNumber
+	class_ref 133452 // Frame
+      end
+    end
+
+    artifact 128716 "Log"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 133580 // LogFile
+      end
+    end
+
+    artifact 128844 "MyString"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 133836 // typedef1
+	class_ref 128972 // MyString
+      end
+    end
+
+    artifact 128972 "one4All"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 133964 // NodeID
+	class_ref 134092 // ParameterIndex
+	class_ref 134220 // Path
+	class_ref 134348 // Filename
+	class_ref 134476 // PathList
+	class_ref 134604 // Filenames
+	class_ref 134732 // FileFoundFuncPtr
+      end
+    end
+
+    artifact 129100 "PluginCollection"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 134988 // typedef2
+	class_ref 134860 // PluginCollectionPtr
+	class_ref 135372 // typedef3
+	class_ref 135244 // OnLoadFile
+	class_ref 135500 // VSTPlugProxy
+	class_ref 135628 // typedef4
+	class_ref 135116 // PluginCollection
+      end
+    end
+
+    artifact 129356 "Serialization"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 130764 // oArchive
+	class_ref 130892 // iArchive
+	class_ref 138700 // Serializable
+      end
+    end
+
+    artifact 129484 "Settings"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 136268 // Settings
+      end
+    end
+
+    artifact 129612 "TList"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 139212 // TNull
+	class_ref 139468 // TList
+      end
+    end
+  end
+
+  package_ref 128716 // com musicalValues
+
+  package_ref 129100 // com events
+
+  package_ref 129228 // com ppiError
+end

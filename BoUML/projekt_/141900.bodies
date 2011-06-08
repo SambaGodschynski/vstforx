@@ -1,0 +1,33 @@
+class GSelection
+!!!164300.cpp!!!	eventHandler(inout src : void, in ev : OnMouseDrag) : void
+
+	if ( ev.btn != kLButton ) return;
+	if ( ev.state == OnMouseDrag::DRAG ){
+		offset ( MyPoint(ev.p) - MyPoint(ev.dragDirection)  );
+		setObjectDirty();
+	}
+!!!164684.cpp!!!	addGObject(inout gObj : GObject) : void
+ 
+	if ( gObj == this ) return;
+	if ( contains(gObj) ) return;
+	if ( gObj->getZPos() == CircuidView::CONNECTIONS ) return; // keine connections
+	selection.push_back ( gObj ); 
+!!!165708.cpp!!!	getBoundingBox() : CRect
+
+	if ( selection.empty() ) return CRect ( 0, 0, 0, 0 );
+	int minLeft   = INT_MAX;
+	int minTop    = INT_MAX;
+	int maxRight  = INT_MIN;
+	int maxBottom = INT_MIN;
+	GObjectList::const_iterator it = selection.begin();
+	while ( it != selection.end() ){
+		CRect size = (*it)->getSize(); 
+		if ( size.left < minLeft ) minLeft = size.left;
+		if ( size.top < minTop ) minTop = size.top;
+		if ( size.right > maxRight ) maxRight = size.right;
+		if ( size.bottom > maxBottom ) maxBottom = size.bottom;
+		++it;
+	}
+	CRect tmp( minLeft, minTop, maxRight, maxBottom );
+	tmp.inset ( -8, -8 );
+	return tmp;

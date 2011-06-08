@@ -1,0 +1,16 @@
+class VSTPlugProxy
+!!!143308.cpp!!!	toString() : string
+
+	std::stringstream ss;
+	char uid_str[5] = { (uid&0xFF000000)>>24, (uid&0xFF0000)>>16, (uid&0xFF00)>>8, (uid&0xFF), '\0' };
+	ss<<"directory: "<<directory<<endl;
+	ss<<"filename: "<<filename<<endl;
+	ss<<"plugname: "<<name<<endl;
+	ss<<"vendor: "<<vendor<<endl;
+	ss<<"version: "<<plugVersion<<endl;
+	ss<<"parameter: "<<numParam<<endl;
+	ss<<"VST version: "<<vstVersion<<endl;
+	ss<<"isSynth: "<< ( (isSynth) ? "yes" : "no")<<endl;
+	ss<<"unique id: "<<uid_str<<"("<<uid<<")"<<endl;
+	ss<<"access successful: "<<( (access) ? "yes" : "no")<<endl;
+	return ss.str();

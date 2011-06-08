@@ -1,0 +1,79 @@
+class FrontController
+!!!183372.cpp!!!	FrontController(inout viewRelations : ViewRelations)
+
+	// initalisiere Controller
+	// GObject controller
+	controller[CTRL_GOBJECT] = new GObjectController ( *this );
+	// GKnob controller
+	controller[CTRL_GKNOB] = new GKnobController( *this );
+	controllerMap.insert ( pair<U, V> ( hash<GStdKnob>(), controller[CTRL_GKNOB] ) );
+	controllerMap.insert ( pair<U, V> ( hash<GPassiveKnob>(), controller[CTRL_GKNOB] ) );
+	// GIONode Controller
+	controller[CTRL_GIONODE] = new GIONodeController( *this );
+	controllerMap.insert ( pair<U, V> ( hash<GInputNode>(), controller[CTRL_GIONODE] ) );
+	controllerMap.insert ( pair<U, V> ( hash<GOutputNode>(), controller[CTRL_GIONODE] ) );
+	// GProcessorNodeController
+	controller[CTRL_GPROCESSOR] = new GProcessorNodeController( *this );
+	controllerMap.insert ( pair<U, V> ( hash<GVolumeNode>(), controller[CTRL_GPROCESSOR] ) );
+	controllerMap.insert ( pair<U, V> ( hash<GChannelSplitNode>(), controller[CTRL_GPROCESSOR] ) );
+	controllerMap.insert ( pair<U, V> ( hash<GPeakTracker>(), controller[CTRL_GPROCESSOR] ) );
+	controllerMap.insert ( pair<U, V> ( hash<GADSRTrigger>(), controller[CTRL_GPROCESSOR] ) );
+	// GConnection
+	controller[CTRL_GKNOB_CONNECTION] = new GKnobConnectionController( *this );
+	controllerMap.insert ( pair<U, V> ( hash<GConnectionPaPa>(), controller[CTRL_GKNOB_CONNECTION] ) );
+	controllerMap.insert ( pair<U, V> ( hash<GConnectionPrPa>(), controller[CTRL_GKNOB_CONNECTION] ) );
+	controller[CTRL_IO_CONNECTION] = new GIOConnectionController( *this );
+	controllerMap.insert ( pair<U, V> ( hash<GConnectionIO>(), controller[CTRL_IO_CONNECTION] ) );
+	controllerMap.insert ( pair<U, V> ( hash<GConnectionPrIn>(), controller[CTRL_IO_CONNECTION] ) );
+	controllerMap.insert ( pair<U, V> ( hash<GConnectionPrOut>(), controller[CTRL_IO_CONNECTION] ) );
+	// GStepNode
+	controller[CTRL_GSTEP_NODE] = new GStepNodeController( *this );
+	controllerMap.insert ( pair<U, V> ( hash<GStepNode>(), controller[CTRL_GSTEP_NODE] ) );
+	// GVSTPlugNode
+	controller[CTRL_GVST_PLUGIN] = new GVSTPluginController( *this );
+	controllerMap.insert ( pair<U, V> ( hash<GVSTPlugNode>(), controller[CTRL_GVST_PLUGIN] ) );
+	// ...
+		
+!!!183500.cpp!!!	~FrontController()
+
+	for ( int i=0; i<NUM_CTRL; ++i ) delete controller[i]; 
+!!!183756.cpp!!!	registerObject(inout vObj : GObject, inout mObj : PObject = NULL) : void
+
+	view2model.registerRelation ( vObj, mObj );
+	if (mObj) registerModelRelation ( vObj, mObj );
+	controller[CTRL_GOBJECT]->registerObject ( vObj, mObj );
+	IObjectController *ctrl = getController (vObj);
+	if (!ctrl) return;
+	ctrl->registerObject ( vObj, mObj );
+!!!183884.cpp!!!	unregisterObject(inout vObj : GObject) : void
+
+	PObject *pObj = getViewRelations().get<PObject> (vObj);
+	IObjectController *ctrl = getController (vObj);
+	if (ctrl) ctrl->unregisterObject ( vObj, pObj );
+	getViewRelations().unregisterRelation ( vObj, pObj );
+	if (!pObj) return;
+	pair < M2V::iterator, M2V::iterator > ret = model2view.equal_range ( pObj );
+	for ( M2V::iterator it = ret.first; it!=ret.second; ++it ) {
+		if ( it->second == vObj ) {
+			model2view.erase (it);
+			break;
+		}
+	}
+!!!184012.cpp!!!	getController(inout obj : GObject) : IObjectController
+
+	ControllerMap::iterator it = controllerMap.find ( hash(obj) );
+	if ( it == controllerMap.end() ) {
+		return NULL;
+	}
+	return (*it).second;
+!!!184140.cpp!!!	reRegisterObjects() : void
+
+	const ViewRelations::V2M &v2m = view2model.getV2M();
+	ViewRelations::V2M::const_iterator it = v2m.begin();
+	for ( ; it!=v2m.end(); ++it ){
+		controller[CTRL_GOBJECT]->registerObject ( (*it).first, (*it).second );
+		IObjectController *ctrl = getController ( it->first );
+		registerModelRelation ( (*it).first, (*it).second );
+		if (!ctrl) continue;
+		ctrl->registerObject ( it->first, it->second );
+	}

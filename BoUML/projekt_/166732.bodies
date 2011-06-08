@@ -1,0 +1,4 @@
+class GCmdAddPObject
+!!!226636.cpp!!!	_execute() : void
+
+	graph->add ( node );

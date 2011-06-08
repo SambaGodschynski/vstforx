@@ -1,0 +1,26 @@
+class ADSRTrigger
+!!!225100.cpp!!!	addToWindow(in n : VstNumber) : void
+
+	average += fabs(n);
+	if ( counter++ >= N ) {
+		counter = 0;
+		average/=(VstNumber)N;
+		adsr->setInput (average);
+		*out = adsr->process();
+		out->setLabel ( states[ adsr->getState() ] );
+		average = 0.0f;
+	} else { adsr->process(); }
+!!!225356.cpp!!!	processAdapter(inout frC : FrameContainer) : void
+
+	Frame *frame = frC.top(); frC.pop();
+	VstInt32 i = frame->frameSize;
+	VstNumber *r = frame->data[0];
+	VstNumber *l = frame->data[1];
+	VstNumber v;
+	while ( --i >= 0 ){
+		v = ( *(r) + *(l) )/2.0f;
+		addToWindow(v);
+		*(r++) = 0.0f;
+		*(l++) = 0.0f;
+	}
+	vNode->pushFrame(frame);

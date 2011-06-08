@@ -1,0 +1,6 @@
+class CmdRemoveGObject
+!!!209740.cpp!!!	_execute() : void
+ 
+	cView->removeGObject ( toRemove );
+	delete toRemove;
+	cView->CView::setDirty();

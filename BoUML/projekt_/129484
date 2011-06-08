@@ -1,0 +1,2111 @@
+format 75
+"ppiGui menu" // src::gui::ppiGui menu
+  revision 2
+  modified_by 76 "Samba"
+  // class settings
+  //class diagram settings
+  draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+  //use case diagram settings
+  package_name_in_tab default show_context default auto_label_position default draw_all_relations default class_drawing_mode default shadow default show_stereotype_properties default
+  //sequence diagram settings
+  show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default show_class_context_mode default show_msg_context_mode default
+  //collaboration diagram settings
+  show_full_operations_definition default show_hierarchical_rank default write_horizontally default drawing_language default package_name_in_tab default show_context default show_msg_context default draw_all_relations default shadow default show_stereotype_properties default
+  //object diagram settings
+   write_horizontally default package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default show_stereotype_properties default
+  //component diagram settings
+  package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default
+  draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+  //deployment diagram settings
+  package_name_in_tab default show_context default write_horizontally default auto_label_position default draw_all_relations default shadow default
+  draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+  //state diagram settings
+  package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  //activity diagram settings
+  package_name_in_tab default show_context default show_opaque_action_definition default auto_label_position default write_flow_label_horizontally default draw_all_relations default shadow default
+  show_infonote default drawing_language default show_stereotype_properties default
+  
+  cpp_h_dir "c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/gui/"
+  cpp_src_dir "c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/gui/"
+  cpp_namespace "ppiGui::menu"
+  classview 128972 "gui"
+    //class diagram settings
+    draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+    //collaboration diagram settings
+    show_full_operations_definition default show_hierarchical_rank default write_horizontally default drawing_language default package_name_in_tab default show_context default show_msg_context default draw_all_relations default shadow default show_stereotype_properties default
+    //object diagram settings
+     write_horizontally default package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default show_stereotype_properties default
+    //sequence diagram settings
+    show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default show_class_context_mode default show_msg_context_mode default
+    //state diagram settings
+    package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+    show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+    //class settings
+    //activity diagram settings
+    package_name_in_tab default show_context default show_opaque_action_definition default auto_label_position default write_flow_label_horizontally default draw_all_relations default shadow default
+    show_infonote default drawing_language default show_stereotype_properties default
+    class 141132 "CMenu"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment " namespace menu 
+ namespace ppiGui
+============================================================================================================
+	Klasse CMenu:
+============================================================================================================"
+      class 141260 "Ptr"
+	visibility package stereotype "typedef" base_type class_ref 141132 // CMenu
+	cpp_decl "${comment}typedef boost::shared_ptr<${type}> ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	classrelation 141644 // <dependency>
+	  relation 141644 -_->
+	    a default
+	      cpp default "#include in source"
+	      classrelation_ref 141644 // <dependency>
+	    b parent class_ref 141132 // CMenu
+	end
+      end
+
+      classrelation 139084 // <generalisation>
+	relation 139084 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 139084 // <generalisation>
+	  b parent class_ref 144076 // typedef14
+      end
+
+      classrelation 139212 // <generalisation>
+	relation 139212 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 139212 // <generalisation>
+	  b parent class_ref 144204 // IdleListener
+      end
+
+      classrelation 139340 // <generalisation>
+	relation 139340 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 139340 // <generalisation>
+	  b parent class_ref 144332 // typedef15
+      end
+
+      classrelation 139468 // <generalisation>
+	relation 139468 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 139468 // <generalisation>
+	  b parent class_ref 144460 // typedef16
+      end
+
+      classrelation 139596 // <generalisation>
+	relation 139596 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 139596 // <generalisation>
+	  b parent class_ref 144588 // typedef17
+      end
+
+      classrelation 139724 // <generalisation>
+	relation 139724 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 139724 // <generalisation>
+	  b parent class_ref 144716 // typedef18
+      end
+
+      classrelation 139852 // <generalisation>
+	relation 139852 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 139852 // <generalisation>
+	  b parent class_ref 144844 // typedef19
+      end
+
+      classrelation 139980 // <dependency>
+	relation 139980 -_->
+	  stereotype "friend"
+	  a default
+	    cpp default "${type}"
+	    classrelation_ref 139980 // <dependency>
+	  b parent class_ref 144972 // RemoveMenu
+      end
+
+      class 145228 "SubMenuListener"
+	visibility package stereotype "struct"
+	cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	classrelation 140236 // <generalisation>
+	  relation 140236 ---|>
+	    a public
+	      cpp default "${type}"
+	      classrelation_ref 140236 // <generalisation>
+	    b parent class_ref 145356 // typedef20
+	end
+
+	classrelation 140364 // <generalisation>
+	  relation 140364 ---|>
+	    a public
+	      cpp default "${type}"
+	      classrelation_ref 140364 // <generalisation>
+	    b parent class_ref 145484 // typedef21
+	end
+
+	classrelation 140492 // <generalisation>
+	  relation 140492 ---|>
+	    a public
+	      cpp default "${type}"
+	      classrelation_ref 140492 // <generalisation>
+	    b parent class_ref 145612 // typedef22
+	end
+
+	classrelation 140620 // parent (<unidirectional association>)
+	  relation 140620 --->
+	    a role_name "parent" public
+	      cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} * ${name}${value};
+"
+	      classrelation_ref 140620 // parent (<unidirectional association>)
+	    b parent class_ref 141132 // CMenu
+	end
+
+	operation 156108 "eventHandler"
+	  preserve_cpp_body_indent public explicit_return_type "void"
+	  nparams 2
+	    param inout name "src" explicit_type "void"
+	    param in name "ev" type class_ref 145740 // OnMouseEnter
+	  cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	  cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	  
+	  
+	  
+	  
+	end
+
+	operation 156236 "eventHandler"
+	  preserve_cpp_body_indent public explicit_return_type "void"
+	  nparams 2
+	    param inout name "src" explicit_type "void"
+	    param in name "ev" type class_ref 142668 // OnMouseLeave
+	  cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	  cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	  
+	  
+	  
+	  
+	end
+
+	operation 156364 "eventHandler"
+	  preserve_cpp_body_indent public explicit_return_type "void"
+	  nparams 2
+	    param inout name "src" explicit_type "void"
+	    param in name "ev" type class_ref 142540 // OnMouseClick
+	  cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	  cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	  
+	  
+	  
+	  
+	end
+      end
+
+      class 145356 "typedef20"
+	visibility package stereotype "typedef" explicit_base_type "EventListener<OnMouseEnter>"
+	cpp_decl "${comment}typedef ${type} ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+      end
+
+      class 145484 "typedef21"
+	visibility package stereotype "typedef" explicit_base_type "EventListener<OnMouseLeave>"
+	cpp_decl "${comment}typedef ${type} ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+      end
+
+      class 145612 "typedef22"
+	visibility package stereotype "typedef" explicit_base_type "EventListener<OnMouseClick>"
+	cpp_decl "${comment}typedef ${type} ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+      end
+
+      class 145868 "MenuView"
+	visibility package stereotype "struct"
+	cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	classrelation 140748 // <generalisation>
+	  relation 140748 ---|>
+	    a public
+	      cpp default "${type}"
+	      classrelation_ref 140748 // <generalisation>
+	    b parent class_ref 145996 // typedef23
+	end
+
+	classrelation 140876 // parent (<unidirectional association>)
+	  relation 140876 --->
+	    a role_name "parent" public
+	      cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} & ${name}${value};
+"
+	      classrelation_ref 140876 // parent (<unidirectional association>)
+	    b parent class_ref 141132 // CMenu
+	end
+
+	operation 156492 "MenuView"
+	  cpp_inline public explicit_return_type ""
+	  nparams 1
+	    param inout name "parent" type class_ref 141132 // CMenu
+	  cpp_decl "    ${comment}${inline}${name}${(}${t0} & ${p0}${v0}${)}${volatile}${throw} : parent(parent), CView ( CRect() ) {};
+"
+	  
+	  
+	  
+	  
+	end
+
+	operation 156620 "draw"
+	  public explicit_return_type "void"
+	  nparams 1
+	    param inout name "cD" explicit_type "CDrawContext"
+	  cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	  cpp_def "${comment}${inline}${type} ${class}::${name}${(}${t0} * ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	  
+	  
+	  
+	  
+	end
+      end
+
+      class 145996 "typedef23"
+	visibility package stereotype "typedef" explicit_base_type "CView"
+	cpp_decl "${comment}typedef ${type} ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+      end
+
+      attribute 139596 "hold"
+	private explicit_type "bool"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      attribute 139724 "focusTrigger"
+	private explicit_type "ClockEdge"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 156748 "_hide"
+	preserve_cpp_body_indent private explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 156876 "calcSize"
+	preserve_cpp_body_indent protected explicit_return_type "void"
+	nparams 1
+	  param inout name "point" explicit_type "CPoint"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} & ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------
+ berechnet menue frame."
+      end
+
+      operation 157004 "drawEntries"
+	cpp_inline protected explicit_return_type "void"
+	nparams 1
+	  param inout name "cc" explicit_type "CDrawContext"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${t0} * ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 157132 "drawFrame"
+	preserve_cpp_body_indent cpp_inline protected explicit_return_type "void"
+	nparams 2
+	  param inout name "cc" explicit_type "CDrawContext"
+	  param inout name "size" explicit_type "CRect"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}, ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      attribute 139852 "maxEntries"
+	class_attribute const_attribute protected explicit_type "int"
+	init_value "=  7"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${h_value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------
+ max. gleichzeitig angezeigte eintraege"
+      end
+
+      attribute 139980 "currMousePos"
+	protected explicit_type "CPoint"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      classrelation 141132 // scrollSwitch (<directional composition>)
+	relation 141132 *-->
+	  a role_name "scrollSwitch" protected
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 141132 // scrollSwitch (<directional composition>)
+	  b parent class_ref 146124 // CMenuScrollSwitch
+      end
+
+      classrelation 141260 // menuEntries (<directional composition>)
+	relation 141260 *-->
+	  a role_name "menuEntries" protected
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 141260 // menuEntries (<directional composition>)
+	  b parent class_ref 142284 // MenuEntryList
+      end
+
+      operation 157260 "CMenu"
+	preserve_cpp_body_indent protected explicit_return_type ""
+	nparams 1
+	  param inout name "frame" explicit_type "CFrame"
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} * ${p0}${v0}${)}${volatile}${throw};
+"
+	cpp_def "//============================================================================================================
+//	Klasse CMenu:
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+
+${inline}${class}::${name}${(}${t0} * ${p0}${)} : CView(CRect ()), hold(false) ${throw}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      classrelation 141388 // nullEntry (<directional composition>)
+	relation 141388 *-->
+	  a role_name "nullEntry" protected
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 141388 // nullEntry (<directional composition>)
+	  b parent class_ref 146252 // CNullEntry
+      end
+
+      classrelation 141516 // <unidirectional association>
+	relation 141516 --->
+	  a role_name "" multiplicity "*" protected
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${stereotype}<${type} *> ${name}${value};
+"
+	    classrelation_ref 141516 // <unidirectional association>
+	  b parent class_ref 143820 // CMenuEntry
+      end
+
+      attribute 140108 "visible"
+	protected explicit_type "bool"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      attribute 140236 "entr_offset"
+	protected explicit_type "int"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 157388 "getMenuEntries"
+	cpp_inline public return_type class_ref 142284 // MenuEntryList
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} & ${name}${(}${)}${const}${volatile}${throw}${abstract} { return menuEntries; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 157516 "create"
+	class_operation preserve_cpp_body_indent public return_type class_ref 141260 // Ptr
+	nparams 1
+	  param inout name "frame" explicit_type "CFrame"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 157644 "~CMenu"
+	preserve_cpp_body_indent cpp_virtual public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${class}::${name}${(}${)}${throw}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 157772 "draw"
+	preserve_cpp_body_indent cpp_virtual public explicit_return_type "void"
+	nparams 1
+	  param inout name "cc" explicit_type "CDrawContext"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 157900 "showAt"
+	cpp_virtual public explicit_return_type "void"
+	nparams 1
+	  param inout name "p" explicit_type "CPoint"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${t0} & ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 158028 "hide"
+	preserve_cpp_body_indent cpp_virtual public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 158156 "isVisible"
+	cpp_inline public explicit_return_type "bool"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return visible; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 158284 "hitTest"
+	cpp_virtual cpp_inline public explicit_return_type "bool"
+	nparams 1
+	  param inout name "p" explicit_type "CPoint"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { return ( isVisible() ) ? CView::hitTest(p) : false; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 158412 "entriesEmpty"
+	cpp_inline public explicit_return_type "bool"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return menuEntries.empty(); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 158540 "numEntries"
+	cpp_inline public explicit_return_type "bool"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return menuEntries.size(); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 158668 "moveTo"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 1
+	  param inout name "p" explicit_type "CPoint"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} & ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 158796 "clearEntries"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 158924 "addMenuEntry"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 1
+	  param in name "entry" type class_ref 143948 // MenuEntryPtr
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 159052 "addMenuEntryList"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 1
+	  param inout name "list" type class_ref 142284 // MenuEntryList
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} & ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 159180 "setMenuEntryList"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param inout name "list" type class_ref 142284 // MenuEntryList
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { clearEntries(); addMenuEntryList ( list ); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 159308 "onIdle"
+	preserve_cpp_body_indent cpp_virtual public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 159436 "scrollDwn"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 159564 "scrollUp"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 159692 "mouse"
+	cpp_virtual public explicit_return_type "void"
+	nparams 3
+	  param inout name "cc" explicit_type "CDrawContext"
+	  param inout name "p" explicit_type "CPoint"
+	  param in name "btn" explicit_type "long"
+	    defaultvalue "-1 "
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, ${t1} & ${p1}${v1}, ${t2} ${p2}${v2}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${t0} * ${p0}, ${t1} & ${p1}, ${t2} ${p2}${)}${const}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 159820 "eventHandler"
+	preserve_cpp_body_indent cpp_virtual public explicit_return_type "void"
+	nparams 2
+	  param inout name "src" explicit_type "void"
+	  param in name "ev" type class_ref 142540 // OnMouseClick
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 159948 "eventHandler"
+	preserve_cpp_body_indent cpp_virtual public explicit_return_type "void"
+	nparams 2
+	  param inout name "src" explicit_type "void"
+	  param in name "ev" type class_ref 145740 // OnMouseEnter
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 142284 "MenuEntryList"
+      visibility package stereotype "typedef" base_type class_ref 143948 // MenuEntryPtr
+      cpp_decl "${comment}typedef list<${type}> ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Def. MenuEntryList
+============================================================================================================"
+      classrelation 138956 // <dependency>
+	relation 138956 -_->
+	  a default
+	    cpp default "#include in source"
+	    classrelation_ref 138956 // <dependency>
+	  b parent class_ref 143948 // MenuEntryPtr
+      end
+    end
+
+    class 143820 "CMenuEntry"
+      abstract visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Klasse CMenuEntry:
+============================================================================================================"
+      classrelation 142028 // <generalisation>
+	relation 142028 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 142028 // <generalisation>
+	  b parent class_ref 144076 // typedef14
+      end
+
+      classrelation 142156 // <generalisation>
+	relation 142156 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 142156 // <generalisation>
+	  b parent class_ref 144588 // typedef17
+      end
+
+      attribute 140364 "action"
+	protected explicit_type "Command::Ptr"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 160332 "CMenuEntry"
+	cpp_inline public explicit_return_type ""
+	nparams 2
+	  param in name "size" explicit_type "CRect"
+	  param in name "action" explicit_type "Command::Ptr"
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} ${p0}${v0}, ${t1} ${p1}${v1}${)}${volatile}${throw} : CView(size), action(action) {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 160460 "~CMenuEntry"
+	cpp_virtual cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 160588 "draw"
+	abstract cpp_virtual public explicit_return_type "void"
+	nparams 2
+	  param inout name "cc" explicit_type "CDrawContext"
+	  param inout name "mousePos" explicit_type "CPoint"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------
+ Zeichnet eintrag. mouseOver = true wenn Maus uber Eintrag. "
+      end
+
+      operation 160716 "getAction"
+	cpp_inline public explicit_return_type "Command::Ptr"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return action; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 160844 "mouse"
+	cpp_virtual public explicit_return_type "void"
+	nparams 3
+	  param inout name "cc" explicit_type "CDrawContext"
+	  param inout name "p" explicit_type "CPoint"
+	  param in name "btn" explicit_type "long"
+	    defaultvalue "-1 "
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, ${t1} & ${p1}${v1}, ${t2} ${p2}${v2}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${t0} * ${p0}, ${t1} & ${p1}, ${t2} ${p2}${)}${const}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 143948 "MenuEntryPtr"
+      visibility package stereotype "typedef" base_type class_ref 143820 // CMenuEntry
+      cpp_decl "${comment}typedef boost::shared_ptr<${type}> ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Def. MenuEntryPtr
+============================================================================================================"
+      classrelation 138828 // <dependency>
+	relation 138828 -_->
+	  a default
+	    cpp default "#include in source"
+	    classrelation_ref 138828 // <dependency>
+	  b parent class_ref 143820 // CMenuEntry
+      end
+    end
+
+    class 144076 "typedef14"
+      visibility package stereotype "typedef" explicit_base_type "CView"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    class 144332 "typedef15"
+      visibility package stereotype "typedef" explicit_base_type "EventSender<OnMouseLeave>"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    class 144460 "typedef16"
+      visibility package stereotype "typedef" explicit_base_type "EventSender<OnMouseEnter>"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    class 144588 "typedef17"
+      visibility package stereotype "typedef" explicit_base_type "EventSender<OnMouseClick>"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    class 144716 "typedef18"
+      visibility package stereotype "typedef" explicit_base_type "EventListener<OnMouseClick>"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    class 144844 "typedef19"
+      visibility package stereotype "typedef" explicit_base_type "EventListener<OnMouseEnter>"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    class 144972 "RemoveMenu"
+      visibility package stereotype "struct"
+      cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment " remove menu from view command "
+      classrelation 185548 // <generalisation>
+	relation 185548 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 185548 // <generalisation>
+	  b parent class_ref 170188 // typedef54
+      end
+
+      classrelation 185676 // menu (<directional composition>)
+	relation 185676 *-->
+	  a role_name "menu" public
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 185676 // menu (<directional composition>)
+	  b parent class_ref 141260 // Ptr
+      end
+
+      operation 246732 "RemoveMenu"
+	cpp_inline public explicit_return_type ""
+	nparams 1
+	  param inout name "menu" type class_ref 141260 // Ptr
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} & ${p0}${v0}${)}${volatile}${throw} : menu(menu) {};
+"
+	
+	
+	
+	
+      end
+
+      operation 246860 "_execute"
+	cpp_inline public explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { menu->_hide(); };
+"
+	
+	
+	
+	
+      end
+    end
+
+    class 145100 "CSubMenu"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Klasse CSubMenu:
+============================================================================================================"
+      classrelation 141772 // <generalisation>
+	relation 141772 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 141772 // <generalisation>
+	  b parent class_ref 141132 // CMenu
+      end
+
+      classrelation 141900 // <dependency>
+	relation 141900 -_->
+	  stereotype "friend"
+	  a default
+	    cpp default "${type}"
+	    classrelation_ref 141900 // <dependency>
+	  b parent class_ref 146380 // CSubMenuEntry
+      end
+
+      operation 160076 "CSubMenu"
+	cpp_inline public explicit_return_type ""
+	nparams 1
+	  param inout name "parent" explicit_type "CFrame"
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} * ${p0}${v0}${)}${volatile}${throw} : CMenu (parent)  {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 160204 "create"
+	class_operation preserve_cpp_body_indent public explicit_return_type "Ptr"
+	nparams 1
+	  param inout name "frame" explicit_type "CFrame"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//============================================================================================================
+//	Klasse CSubMenu:
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 146124 "CMenuScrollSwitch"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Klasse CMenuScrollSwitch
+  Ein MenuEintrag der einen Scroll Rocker Switch enthaelt. Verschiebt bei betaetigung das Menu Offset.
+============================================================================================================"
+      classrelation 143692 // <generalisation>
+	relation 143692 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 143692 // <generalisation>
+	  b parent class_ref 143820 // CMenuEntry
+      end
+
+      classrelation 143820 // <generalisation>
+	relation 143820 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 143820 // <generalisation>
+	  b parent class_ref 147020 // typedef25
+      end
+
+      attribute 141004 "rSwitch"
+	private explicit_type "CRockerSwitch"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} * ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      classrelation 143948 // parent (<unidirectional association>)
+	relation 143948 --->
+	  a role_name "parent" private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} * ${name}${value};
+"
+	    classrelation_ref 143948 // parent (<unidirectional association>)
+	  b parent class_ref 141132 // CMenu
+      end
+
+      operation 163148 "CMenuScrollSwitch"
+	preserve_cpp_body_indent public explicit_return_type ""
+	nparams 1
+	  param inout name "parent" type class_ref 141132 // CMenu
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} * ${p0}${v0}${)}${volatile}${throw};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${class}::${name}${(}${t0} * ${p0}${)} : 
+	parent(parent),
+	CMenuEntry ( CRect(), Command::Ptr(new CmdNull()) ) 
+${throw}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 163276 "valueChanged"
+	cpp_virtual public explicit_return_type "void"
+	nparams 2
+	  param inout name "cd" explicit_type "CDrawContext"
+	  param inout name "cc" explicit_type "CControl"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, ${t1} * ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${t0} * ${p0}, ${t1} * ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 163404 "~CMenuScrollSwitch"
+	preserve_cpp_body_indent cpp_virtual public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${class}::${name}${(}${)}${throw}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 163532 "draw"
+	cpp_virtual public explicit_return_type "void"
+	nparams 2
+	  param inout name "cc" explicit_type "CDrawContext"
+	  param inout name "mousePos" explicit_type "CPoint"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${t0} * ${p0}, ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 163660 "mouse"
+	preserve_cpp_body_indent cpp_virtual public explicit_return_type "void"
+	nparams 3
+	  param inout name "cc" explicit_type "CDrawContext"
+	  param inout name "p" explicit_type "CPoint"
+	  param in name "btn" explicit_type "long"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, ${t1} & ${p1}${v1}, ${t2} ${p2}${v2}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//============================================================================================================
+//	Klasse CMenuScrollSwitch
+//  Ein MenuEintrag der einen Scroll Rocker Switch enthaelt. Verschiebt bei betaetigung das Menu Offset.
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}, ${t1} & ${p1}, ${t2} ${p2}${)}${const}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 146252 "CNullEntry"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Klasse CNullEntry
+  Leerer Menueintrag.
+============================================================================================================"
+      classrelation 144076 // <generalisation>
+	relation 144076 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 144076 // <generalisation>
+	  b parent class_ref 143820 // CMenuEntry
+      end
+
+      operation 163788 "CNullEntry"
+	cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw} : CMenuEntry ( CRect(0,0,0,0) , Command::Ptr( new CmdNull() ) ){ this->setMouseEnabled(false); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 163916 "CNullEntry"
+	cpp_inline public explicit_return_type ""
+	nparams 1
+	  param inout name "size" explicit_type "CRect"
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} & ${p0}${v0}${)}${volatile}${throw} : CMenuEntry ( size, Command::Ptr( new CmdNull() ) ){};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 164044 "draw"
+	cpp_virtual cpp_inline public explicit_return_type "void"
+	nparams 2
+	  param inout name "cc" explicit_type "CDrawContext"
+	  param inout name "mousePos" explicit_type "CPoint"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 164172 "~CNullEntry"
+	cpp_virtual cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 146380 "CSubMenuEntry"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Klasse CSubMenuEntry
+============================================================================================================"
+      classrelation 142412 // <generalisation>
+	relation 142412 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 142412 // <generalisation>
+	  b parent class_ref 146508 // CMenuLabel
+      end
+
+      classrelation 142540 // <generalisation>
+	relation 142540 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 142540 // <generalisation>
+	  b parent class_ref 144844 // typedef19
+      end
+
+      classrelation 142668 // <generalisation>
+	relation 142668 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 142668 // <generalisation>
+	  b parent class_ref 146636 // typedef24
+      end
+
+      classrelation 142796 // <generalisation>
+	relation 142796 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 142796 // <generalisation>
+	  b parent class_ref 144716 // typedef18
+      end
+
+      classrelation 142924 // <generalisation>
+	relation 142924 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 142924 // <generalisation>
+	  b parent class_ref 144460 // typedef16
+      end
+
+      classrelation 143052 // <generalisation>
+	relation 143052 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 143052 // <generalisation>
+	  b parent class_ref 144332 // typedef15
+      end
+
+      attribute 140876 "trigger"
+	private explicit_type "ClockEdge"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      classrelation 143180 // subMenu (<directional composition>)
+	relation 143180 *-->
+	  a role_name "subMenu" protected
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 143180 // subMenu (<directional composition>)
+	  b parent class_ref 141260 // Ptr
+      end
+
+      classrelation 143308 // mL (<directional composition>)
+	relation 143308 *-->
+	  a role_name "mL" protected
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 143308 // mL (<directional composition>)
+	  b parent class_ref 142284 // MenuEntryList
+      end
+
+      operation 161356 "CSubMenuEntry"
+	preserve_cpp_body_indent public explicit_return_type ""
+	nparams 3
+	  param in name "text" explicit_type "MyString"
+	  param inout name "subMenu" type class_ref 141260 // Ptr
+	  param in name "font" explicit_type "CFont"
+	    defaultvalue "kNormalFont "
+	cpp_decl "    ${comment}${inline}${name}${(}const ${t0} & ${p0}${v0}, ${t1} & ${p1}${v1}, ${t2} ${p2}${v2}${)}${volatile}${throw};
+"
+	cpp_def "//============================================================================================================
+//	Klasse CSubMenuEntry:
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+
+${inline}${class}::${name}${(}const ${t0} & ${p0}, ${t1} & ${p1}, ${t2} ${p2}${)} : 
+	CMenuLabel ( text, Command::Ptr(new CmdNull()), font ),
+	subMenu (subMenu)
+${throw}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 161484 "draw"
+	cpp_virtual public explicit_return_type "void"
+	nparams 2
+	  param inout name "cc" explicit_type "CDrawContext"
+	  param inout name "mousePos" explicit_type "CPoint"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${t0} * ${p0}, ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 161612 "getSubMenu"
+	cpp_inline public return_type class_ref 141260 // Ptr
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return subMenu; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 161740 "~CSubMenuEntry"
+	preserve_cpp_body_indent cpp_virtual public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${class}::${name}${(}${)}${throw}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 161868 "eventHandler"
+	preserve_cpp_body_indent cpp_virtual public explicit_return_type "void"
+	nparams 2
+	  param inout name "scr" explicit_type "void"
+	  param in name "ev" type class_ref 145740 // OnMouseEnter
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 161996 "eventHandler"
+	preserve_cpp_body_indent cpp_virtual public explicit_return_type "void"
+	nparams 2
+	  param inout name "scr" explicit_type "void"
+	  param in name "ev" type class_ref 142668 // OnMouseLeave
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 162124 "eventHandler"
+	preserve_cpp_body_indent cpp_virtual public explicit_return_type "void"
+	nparams 2
+	  param inout name "scr" explicit_type "void"
+	  param in name "ev" type class_ref 142540 // OnMouseClick
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 146508 "CMenuLabel"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Klasse CMenuLabel
+============================================================================================================"
+      classrelation 142284 // <generalisation>
+	relation 142284 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 142284 // <generalisation>
+	  b parent class_ref 143820 // CMenuEntry
+      end
+
+      attribute 140492 "text"
+	protected explicit_type "MyString"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      attribute 140620 "color"
+	protected explicit_type "CColor"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      attribute 140748 "font"
+	protected explicit_type "CFont"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 160972 "CMenuLabel"
+	preserve_cpp_body_indent public explicit_return_type ""
+	nparams 3
+	  param in name "text" explicit_type "MyString"
+	  param in name "action" explicit_type "Command::Ptr"
+	  param in name "font" explicit_type "CFont"
+	    defaultvalue "kNormalFont "
+	cpp_decl "    ${comment}${inline}${name}${(}const ${t0} & ${p0}${v0}, ${t1} ${p1}${v1}, ${t2} ${p2}${v2}${)}${volatile}${throw};
+"
+	cpp_def "//============================================================================================================
+//	Klasse CMenuLabel:
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+
+${inline}${class}::${name}${(}const ${t0} & ${p0}, ${t1} ${p1}, ${t2} ${p2}${)}: 
+text(text), CMenuEntry ( CRect(), action ) 
+${throw}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 161100 "draw"
+	cpp_virtual public explicit_return_type "void"
+	nparams 2
+	  param inout name "cc" explicit_type "CDrawContext"
+	  param inout name "mousePos" explicit_type "CPoint"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${t0} * ${p0}, ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 161228 "~CMenuLabel"
+	cpp_virtual cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 146636 "typedef24"
+      visibility package stereotype "typedef" explicit_base_type "EventListener<OnMouseLeave>"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    class 146764 "CMenuTitle"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Klasse CMenuTitle
+============================================================================================================"
+      classrelation 143436 // <generalisation>
+	relation 143436 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 143436 // <generalisation>
+	  b parent class_ref 146508 // CMenuLabel
+      end
+
+      operation 162252 "CMenuTitle"
+	preserve_cpp_body_indent public explicit_return_type ""
+	nparams 2
+	  param in name "text" explicit_type "MyString"
+	  param in name "font" explicit_type "CFont"
+	    defaultvalue "kNormalFont "
+	cpp_decl "    ${comment}${inline}${name}${(}const ${t0} & ${p0}${v0}, ${t1} ${p1}${v1}${)}${volatile}${throw};
+"
+	cpp_def "//============================================================================================================
+//	Klasse CMenuTitle:
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+
+${inline}${class}::${name}${(}const ${t0} & ${p0}, ${t1} ${p1}${)} : 
+	CMenuLabel ( text, Command::Ptr(new CmdNull()), font ) 
+${throw}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 162380 "draw"
+	cpp_virtual public explicit_return_type "void"
+	nparams 2
+	  param inout name "cc" explicit_type "CDrawContext"
+	  param inout name "mousePos" explicit_type "CPoint"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${t0} * ${p0}, ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 162508 "mouse"
+	cpp_virtual cpp_inline public explicit_return_type "void"
+	nparams 3
+	  param inout name "cc" explicit_type "CDrawContext"
+	  param inout name "p" explicit_type "CPoint"
+	  param in name "btn" explicit_type "long"
+	    defaultvalue "-1 "
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, ${t1} & ${p1}${v1}, ${t2} ${p2}${v2}${)}${const}${volatile}${throw}${abstract} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 146892 "MenuEntryContainer"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Klasse MenuEntryContainer:
+============================================================================================================"
+      classrelation 143564 // cMenuEntries (<directional composition>)
+	relation 143564 *-->
+	  a role_name "cMenuEntries" private
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 143564 // cMenuEntries (<directional composition>)
+	  b parent class_ref 142284 // MenuEntryList
+      end
+
+      operation 162636 "~MenuEntryContainer"
+	preserve_cpp_body_indent cpp_virtual public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${class}::${name}${(}${)}${throw}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 162764 "getMenuEntryList"
+	cpp_inline public return_type class_ref 142284 // MenuEntryList
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} & ${name}${(}${)}${const}${volatile}${throw}${abstract} { return cMenuEntries;  };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 162892 "addMenuEntry"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 1
+	  param in name "me" type class_ref 143948 // MenuEntryPtr
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//============================================================================================================
+//	Klasse MenuEntryContainer:
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 163020 "removeMenuEntry"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 1
+	  param in name "me" type class_ref 143948 // MenuEntryPtr
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 147020 "typedef25"
+      visibility package stereotype "typedef" explicit_base_type "CControlListener"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    class 170188 "typedef54"
+      visibility package stereotype "typedef" explicit_base_type "Command"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+  end
+
+  deploymentview 128716 "ppiGui menu"
+    //deployment diagram settings
+    package_name_in_tab default show_context default write_horizontally default auto_label_position default draw_all_relations default shadow default
+    draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+    artifact 129996 "CMenu"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 143948 // MenuEntryPtr
+	class_ref 142284 // MenuEntryList
+	class_ref 144076 // typedef14
+	class_ref 144332 // typedef15
+	class_ref 144460 // typedef16
+	class_ref 144588 // typedef17
+	class_ref 144716 // typedef18
+	class_ref 144844 // typedef19
+	class_ref 141132 // CMenu
+	class_ref 145100 // CSubMenu
+	class_ref 143820 // CMenuEntry
+	class_ref 146508 // CMenuLabel
+	class_ref 146636 // typedef24
+	class_ref 146380 // CSubMenuEntry
+	class_ref 146764 // CMenuTitle
+	class_ref 146892 // MenuEntryContainer
+	class_ref 147020 // typedef25
+	class_ref 146124 // CMenuScrollSwitch
+	class_ref 146252 // CNullEntry
+      end
+    end
+
+    artifact 132428 "typedef54"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 170188 // typedef54
+      end
+    end
+
+    artifact 132556 "RemoveMenu"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 144972 // RemoveMenu
+      end
+    end
+  end
+end

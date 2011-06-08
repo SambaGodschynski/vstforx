@@ -1,0 +1,82 @@
+class ProcessorNode
+!!!231500.cpp!!!	save(inout ar : oArchive, in version : uint) : void
+
+	ar << boost::serialization::base_object<PObject>(*this);
+	ar << isStart;
+	ar << isEnd;
+	ar << name;
+	ar << parents;
+	ar << childs;
+!!!231628.cpp!!!	load(inout ar : iArchive, in version : uint) : void
+
+	ar >> boost::serialization::base_object<PObject>(*this);
+	ar >> isStart;
+	ar >> isEnd;
+	ar >> name;
+	ProcessorNode::Container p;
+	ProcessorNode::Container c;
+	ar >> p;
+	ar >> c;
+	ProcessorNode::Container::iterator it;
+	for ( it = p.begin(); it != p.end(); ++it ) addParent ( *it );
+	for ( it = c.begin(); it != c.end(); ++it ) addChild  ( *it );
+!!!231884.cpp!!!	ProcessorNode(in name : string = "no name")
+
+	active = false;
+	isEnd = false;
+	isStart = false;
+	activeChilds = 0;
+	tmpFrame = new Frame();
+!!!232140.cpp!!!	processNode() : void
+
+	if (!isActive()) return;
+	if ( getNumParents() <=0 ) return;
+	// sonderfall: ein Parent.
+	// hier reicht es das original Frame weiterzureichen.
+	// Andernfalls muessen die eingehenden Frames kopiert werden
+	// da aenderungen in einem Parallelzweig das Original Frame
+	// beeinflussen wuerden.
+	if ( getNumParents() == 1 ){
+		processFrame ( parents[0]->popFrame() );//processFrame muss sich kuemern  
+		return;                                 //das ergebnissFrames auf den Stack 		                                         
+												//kommen.
+	}
+	// addiere alle ParentFrames ein neues Frame 
+	bool first = true;
+	for ( size_t i=0; i<parents.size(); ++i ){
+		if ( !parents[i]->isActive() ) continue;
+		if (first) {
+			*tmpFrame = *parents[i]->popFrame();
+			first = false;
+		} else (*tmpFrame)+=*parents[i]->popFrame();
+	}
+	processFrame ( tmpFrame ); //processFrame soll sich kuemern  
+					           //das ergebnissFrames auf den Stack 
+	                           //kommen.
+!!!232268.cpp!!!	addChild(inout node : ProcessorNode) : bool
+
+	if ( 
+		com::contains<ProcessorNode::Container, ProcessorNode*> (childs, node) 
+	) return false; 
+	childs.push_back ( node );
+	if ( getNumChilds()>1 ){ // mehr als eine abgehende Verbindung?
+		// ein zusaetzliches Frame muss erstellt werden.
+		frameContainer.push_back ( new Frame() );
+	}
+	resetCalculation();
+	return true;
+!!!232396.cpp!!!	addParent(inout node : ProcessorNode) : bool
+
+	if ( 
+		com::contains<ProcessorNode::Container, ProcessorNode*> (parents, node) 
+	) return false;  
+	parents.push_back ( node );
+	resetCalculation();
+	return true;
+!!!234444.cpp!!!	~ProcessorNode()
+
+	for ( unsigned int i=0; i<frameContainer.size(); i++ ){
+		delete frameContainer[i];
+	}
+	assert ( getFrameStackSize()==0 );
+	if (tmpFrame) delete tmpFrame;

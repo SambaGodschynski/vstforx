@@ -1,0 +1,3 @@
+class CMenuTitle
+!!!162252.cpp!!!	CMenuTitle(in text : MyString, in font : CFont = kNormalFont)
+

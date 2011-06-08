@@ -1,0 +1,15 @@
+class GPeakTracker
+!!!169804.cpp!!!	GPeakTracker(inout view : CircuidView)
+
+	name = "PeakTracker";
+	skin = new CBitmap (RESOURCE.VSTPLUG_NODE);
+	bBox = CRect ( 0,0, skin->getWidth(), skin->getHeight() );
+	focus = CPoint ( skin->getWidth()>>1, skin->getHeight()>>1 );
+	radius = skin->getWidth()>>1;
+	focus = CPoint (bBox.width()>>1, bBox.height()>>1);
+!!!169932.cpp!!!	render(inout cc : CDrawContext) : void
+
+	skin->draw ( cc, bBox );
+!!!170060.cpp!!!	~GPeakTracker()
+
+	delete skin;

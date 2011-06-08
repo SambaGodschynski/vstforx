@@ -1,0 +1,4 @@
+class ProcessAdapterNode
+!!!237900.cpp!!!	ProcessAdapterNode(inout processAdapter : ProcessAdapter)
+
+	adapter = processAdapter;

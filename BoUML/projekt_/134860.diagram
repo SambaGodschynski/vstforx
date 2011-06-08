@@ -1,0 +1,53 @@
+format 75
+
+classcanvas 128076 class_ref 177100 // Connectable
+  draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+  xyz 115 90 2000
+end
+classcanvas 128588 class_ref 163916 // ProcessorNode
+  draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+  xyz 101 223 2000
+end
+classcanvas 128844 class_ref 164556 // ProcessAdapterNode
+  draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+  xyz 427 436 2006
+end
+classcanvas 129100 class_ref 160972 // ProcessAdapter
+  draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+  xyz 650 381 3005
+end
+relationcanvas 128204 relation_ref 192204 // <unidirectional association>
+  from ref 128076 z 2001 stereotype "<<list>>" xyz 39 90.5 3000 to point 85 81
+  line 128332 z 2001 to point 85 135
+  line 128460 z 2001 to ref 128076
+  no_role_a no_role_b
+  multiplicity_a_pos 100 144 3000 no_multiplicity_b
+end
+relationcanvas 128716 relation_ref 192332 // <generalisation>
+  from ref 128588 z 2001 to ref 128076
+  no_role_a no_role_b
+  no_multiplicity_a no_multiplicity_b
+end
+relationcanvas 128972 relation_ref 182348 // <generalisation>
+  decenter_end 712
+  from ref 128844 z 2007 to ref 128588
+  no_role_a no_role_b
+  no_multiplicity_a no_multiplicity_b
+end
+relationcanvas 129228 relation_ref 181708 // <dependency>
+  decenter_begin 170
+  from ref 129100 z 3006 stereotype "<<friend>>" xyz 576.5 443 3006 to ref 128844
+  no_role_a no_role_b
+  no_multiplicity_a no_multiplicity_b
+end
+relationcanvas 129356 relation_ref 182604 // <dependency>
+  from ref 128844 z 3006 stereotype "<<friend>>" xyz 565.5 394.5 3006 to ref 129100
+  no_role_a no_role_b
+  no_multiplicity_a no_multiplicity_b
+end
+relationcanvas 129484 relation_ref 182732 // <unidirectional association>
+  from ref 128844 z 3006 to ref 129100
+  role_a_pos 602 482 3000 no_role_b
+  no_multiplicity_a no_multiplicity_b
+end
+end

@@ -1,0 +1,1637 @@
+format 75
+"parameter" // src::processing::parameter
+  revision 1
+  modified_by 76 "Samba"
+  // class settings
+  //class diagram settings
+  draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+  //use case diagram settings
+  package_name_in_tab default show_context default auto_label_position default draw_all_relations default class_drawing_mode default shadow default show_stereotype_properties default
+  //sequence diagram settings
+  show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default show_class_context_mode default show_msg_context_mode default
+  //collaboration diagram settings
+  show_full_operations_definition default show_hierarchical_rank default write_horizontally default drawing_language default package_name_in_tab default show_context default show_msg_context default draw_all_relations default shadow default show_stereotype_properties default
+  //object diagram settings
+   write_horizontally default package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default show_stereotype_properties default
+  //component diagram settings
+  package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default
+  draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+  //deployment diagram settings
+  package_name_in_tab default show_context default write_horizontally default auto_label_position default draw_all_relations default shadow default
+  draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+  //state diagram settings
+  package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  //activity diagram settings
+  package_name_in_tab default show_context default show_opaque_action_definition default auto_label_position default write_flow_label_horizontally default draw_all_relations default shadow default
+  show_infonote default drawing_language default show_stereotype_properties default
+  
+  cpp_h_dir "c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/processing/parameter/"
+  cpp_src_dir "c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/processing/parameter/"
+  cpp_namespace "processing::parameter"
+  classview 128332 "parameter"
+    //class diagram settings
+    draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+    //collaboration diagram settings
+    show_full_operations_definition default show_hierarchical_rank default write_horizontally default drawing_language default package_name_in_tab default show_context default show_msg_context default draw_all_relations default shadow default show_stereotype_properties default
+    //object diagram settings
+     write_horizontally default package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default show_stereotype_properties default
+    //sequence diagram settings
+    show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default show_class_context_mode default show_msg_context_mode default
+    //state diagram settings
+    package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+    show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+    //class settings
+    //activity diagram settings
+    package_name_in_tab default show_context default show_opaque_action_definition default auto_label_position default write_flow_label_horizontally default draw_all_relations default shadow default
+    show_infonote default drawing_language default show_stereotype_properties default
+    class 130636 "HasParameter"
+      abstract visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment " namespace parameter
+ namespace processing
+============================================================================================================
+ Schnitstelle: HasParameter.
+============================================================================================================"
+      operation 241356 "getParameter"
+	abstract const cpp_virtual public return_type class_ref 131276 // Parameter
+	nparams 1
+	  param in name "nr" explicit_type "int"
+	    defaultvalue "0 "
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} * ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 241484 "getNumParameter"
+	abstract const cpp_virtual public explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 131276 "Parameter"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      classrelation 184268 // <generalisation>
+	relation 184268 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 184268 // <generalisation>
+	  b parent class_ref 169932 // typedef53
+      end
+
+      classrelation 184396 // <generalisation>
+	relation 184396 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 184396 // <generalisation>
+	  b parent class_ref 166988 // PObject
+      end
+
+      classrelation 184524 // <generalisation>
+	relation 184524 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 184524 // <generalisation>
+	  b parent class_ref 138700 // Serializable
+      end
+
+      extra_member 134860 "friend"
+	
+	cpp "
+friend class boost::serialization::access;" ""
+	java ""
+	php ""
+	python ""
+	idl ""
+      end
+
+      attribute 156748 "mutex"
+	private explicit_type "boost::mutex"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      classrelation 184652 // connections (<directional composition>)
+	relation 184652 *-->
+	  a role_name "connections" private
+	    comment "--------------------------------------------------------------------------------------------------------
+ Parameter Connections"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 184652 // connections (<directional composition>)
+	  b parent class_ref 169676 // ParameterConnection
+      end
+
+      operation 243020 "_addConnection"
+	cpp_inline private explicit_return_type "bool"
+	nparams 1
+	  param inout name "dest" type class_ref 131276 // Parameter
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		if (!dest) return false;
+		pair < ParameterConnection::iterator, bool > ret = connections.insert ( 
+			pair< Parameter*, ConnectionOperator::SPtrContainer > ( dest, 
+																	list< ConnectionOperator::Ptr >() 
+															       ) 
+		);
+		return ret.second;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 243148 "_removeConnection"
+	preserve_cpp_body_indent private explicit_return_type "void"
+	nparams 1
+	  param inout name "dst" type class_ref 131276 // Parameter
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      classrelation 184780 // value (<directional composition>)
+	relation 184780 *-->
+	  a role_name "value" private
+	    comment "--------------------------------------------------------------------------------------------------------
+ Wert des Parameters;"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 184780 // value (<directional composition>)
+	  b parent class_ref 133324 // VstNumber
+      end
+
+      attribute 156876 "updateLock"
+	private explicit_type "bool"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------
+ updateConnection Sperre:
+ ist updateLock true werden setValue() aufrufe ignoriert.
+ Dies verhindert evntl.indirekte Rekursion beim 
+ aufruf von updateConnection die entshehen wenn 
+ Paramter Connection zyklisch sind."
+      end
+
+      attribute 157004 "nr"
+	private explicit_type "int"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      attribute 157132 "index"
+	private explicit_type "int"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------
+ fuer VST-Plugin Parameter kommunikation"
+      end
+
+      attribute 157260 "instances"
+	class_attribute private explicit_type "int"
+	init_value "= 0"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      classrelation 184908 // name (<directional composition>)
+	relation 184908 *-->
+	  a role_name "name" private
+	    comment "--------------------------------------------------------------------------------------------------------
+Stuff text with the name 
+(\"Time\", \"Gain\", \"RoomType\", etc...) of parameter index."
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 184908 // name (<directional composition>)
+	  b parent class_ref 128972 // MyString
+      end
+
+      classrelation 185036 // display (<directional composition>)
+	relation 185036 *-->
+	  a role_name "display" private
+	    comment "--------------------------------------------------------------------------------------------------------
+Stuff text with a string representation 
+(\"0.5\", \"-3\", \"PLATE\", etc...) of the value of parameter index."
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 185036 // display (<directional composition>)
+	  b parent class_ref 128972 // MyString
+      end
+
+      classrelation 185164 // strValue (<directional composition>)
+	relation 185164 *-->
+	  a role_name "strValue" private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp mutable default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 185164 // strValue (<directional composition>)
+	  b parent class_ref 128972 // MyString
+      end
+
+      classrelation 185292 // label (<directional composition>)
+	relation 185292 *-->
+	  a role_name "label" private
+	    comment "--------------------------------------------------------------------------------------------------------
+Stuff label with the units in which parameter index is displayed 
+(i.e. \"sec\", \"dB\", \"type\", etc...). "
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 185292 // label (<directional composition>)
+	  b parent class_ref 128972 // MyString
+      end
+
+      operation 243276 "updateConnections"
+	preserve_cpp_body_indent private explicit_return_type "void"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+// durchlaeuft alle Parameter in connections, setzt dort eigenen
+// Parameter wert und ruft operate() methoden
+// der Assoziierten ConnectionOperator Objekte auf.
+
+${inline}${type} ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------
+ durchlaeuft alle Parameter in connections, setzt dort eigenen
+ Parameter wert und ruft operate() methode
+ der Assoziierten ConnectionOperator Objekte auf."
+      end
+
+      operation 243404 "serialize"
+	stereotype "template"
+	private explicit_return_type "void"
+	nparams 2
+	  param inout name "ar" explicit_type "Archive"
+	  param in name "version" explicit_type "uint"
+	cpp_decl "    ${comment}template<typename Archive>
+  ${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}, const ${t1} ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "${comment}${inline}${type} ${class}::${name}${(}${t0} & ${p0}, const ${t1} ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      class 170060 "ParameterListenerFunction"
+	visibility package stereotype "typedef" base_type class_ref 133324 // VstNumber
+	cpp_decl "${comment}typedef ValueChangedSender<${type}>::ValueChangedFunction ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	classrelation 185420 // <dependency>
+	  relation 185420 -_->
+	    a default
+	      cpp default "#include in source"
+	      classrelation_ref 185420 // <dependency>
+	    b parent class_ref 133324 // VstNumber
+	end
+      end
+
+      operation 243532 "Parameter"
+	preserve_cpp_body_indent public explicit_return_type ""
+	nparams 1
+	  param in name "index" explicit_type "int"
+	    defaultvalue "0 "
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} ${p0}${v0}${)}${volatile}${throw};
+"
+	cpp_def "//============================================================================================================
+// Klasse: Parameter.
+// Repraesentiert alle PPI VST-Parameter die als schnitstelle zum
+// Host dienen. 
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+
+${inline}${class}::${name}${(}${t0} ${p0}${)}:
+updateLock(false), 
+_min(0.0f),
+_max(1.0f)
+${throw}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 243660 "~Parameter"
+	preserve_cpp_body_indent cpp_virtual public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${class}::${name}${(}${)}${throw}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 243788 "getParameterNr"
+	cpp_inline public explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return nr; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 243916 "getIndex"
+	const cpp_inline public explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return index; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 244044 "setIndex"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "i" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { index = i; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 244172 "getName"
+	const cpp_inline public return_type class_ref 128972 // MyString
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}const ${type} & ${name}${(}${)}${const}${volatile}${throw}${abstract} { return name; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 244300 "setName"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "name" type class_ref 128972 // MyString
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { Parameter::name = name.trim(); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 244428 "getLabel"
+	const cpp_inline public return_type class_ref 128972 // MyString
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}const ${type} & ${name}${(}${)}${const}${volatile}${throw}${abstract} { return label; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 244556 "setLabel"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "label" type class_ref 128972 // MyString
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { Parameter::label = label; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 244684 "getValue"
+	const cpp_inline public return_type class_ref 133324 // VstNumber
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return value; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 244812 "setValue"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "v" type class_ref 133324 // VstNumber
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		if ( updateLock ) return;
+		if ( v > _max ) v = _max; 
+		if ( v < _min ) v = _min; 
+		value = v;
+		notifyListeners(this, *this);
+		updateConnections();
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------
+ setzt den Parameterwert auf v.
+ Benachrichtigt alle verbundenen ProcessorNodes und Listener."
+      end
+
+      operation 244940 "operator ="
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "v" type class_ref 133324 // VstNumber
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { setValue (v); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 245068 "operator VstNumber"
+	cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${name}${(}${)}${const}${volatile}${throw}${abstract} { return getValue(); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 245196 "getDisplay"
+	const cpp_inline public return_type class_ref 128972 // MyString
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}const ${type} & ${name}${(}${)}${const}${volatile}${throw}${abstract} {
+		if (!display.empty()){
+			return display;
+		}
+		strValue = MyString( getValue() );
+		return strValue;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 245324 "setMin"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "v" type class_ref 133324 // VstNumber
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { _min = v; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 245452 "setMax"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "v" type class_ref 133324 // VstNumber
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { _max = v; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 245580 "getMin"
+	cpp_inline public return_type class_ref 133324 // VstNumber
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return _min; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 245708 "getMax"
+	cpp_inline public return_type class_ref 133324 // VstNumber
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return _max; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 245836 "setDisplay"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "display" type class_ref 128972 // MyString
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { Parameter::display = display; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 245964 "addBiConnection"
+	cpp_inline public explicit_return_type "bool"
+	nparams 1
+	  param inout name "dest" type class_ref 131276 // Parameter
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		if ( dest == this ) return false;
+		return _addConnection ( dest ) && dest->_addConnection ( this );
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 246092 "addConnectionOperator"
+	cpp_inline public explicit_return_type "void"
+	nparams 2
+	  param inout name "dst" type class_ref 131276 // Parameter
+	  param in name "pProcessor" type class_ref 169420 // Ptr
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract} {
+		boost::lock_guard<boost::mutex> lock(mutex);
+		ParameterConnection::iterator it = connections.find ( dst );
+		if ( it == connections.end() ) 
+			throw ppiError::IndexOutOfBoundException(\"No Connection\", __FILE__, __LINE__ );
+		(*it).second.push_back ( ConnectionOperator::Ptr(pProcessor) );
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 246220 "getConnectionOperatorContainer"
+	const cpp_inline public return_type class_ref 169548 // SPtrContainer
+	nparams 1
+	  param inout name "dst" type class_ref 131276 // Parameter
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}const ${type} & ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		ParameterConnection::const_iterator it = connections.find ( dst );
+		if ( it == connections.end() ) 
+			throw ppiError::IndexOutOfBoundException(\"No Connection\", __FILE__, __LINE__ );
+		return (*it).second;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 246348 "removeConnectionOperator"
+	cpp_inline public explicit_return_type "void"
+	nparams 2
+	  param inout name "src" type class_ref 131276 // Parameter
+	  param in name "pProcessor" type class_ref 169420 // Ptr
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract} {
+		ParameterConnection::iterator it = connections.find ( src );
+		if ( it == connections.end() ) return;
+		(*it).second.remove ( pProcessor );
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 246476 "removeBiConnection"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 1
+	  param inout name "dst" type class_ref 131276 // Parameter
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 246604 "getNumConnections"
+	cpp_inline public explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return connections.size(); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 168780 "InverseConnection"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+ Klasse: InverseConnection.
+ Umgekehrt Proportionale Verbindung.
+ 1.0 -> 0.0 | ... -> ... | 0.5 -> 0.5 | ...->... | 0.0 -> 1.0
+============================================================================================================"
+      classrelation 182860 // <generalisation>
+	relation 182860 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 182860 // <generalisation>
+	  b parent class_ref 168908 // ConnectionOperator
+      end
+
+      extra_member 134348 "friend"
+	
+	cpp "
+friend class boost::serialization::access;" ""
+	java ""
+	php ""
+	python ""
+	idl ""
+      end
+
+      operation 238412 "serialize"
+	stereotype "template"
+	cpp_inline private explicit_return_type "void"
+	nparams 2
+	  param inout name "ar" explicit_type "Archiv"
+	  param in name "version" explicit_type "uint"
+	cpp_decl "    ${comment}template<typename Archiv>
+  ${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}, const ${t1} ${p1}${v1}${)}${const}${volatile}${throw}${abstract} {
+		ar & boost::serialization::base_object<ConnectionOperator> ( *this );
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 238540 "InverseConnection"
+	cpp_inline private explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 238668 "operate"
+	cpp_virtual cpp_inline public explicit_return_type "float"
+	nparams 1
+	  param in name "dest" explicit_type "float"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		return 1.0 - dest;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 238796 "InverseConnection"
+	cpp_inline public explicit_return_type ""
+	nparams 2
+	  param inout name "u" type class_ref 131276 // Parameter
+	  param inout name "v" type class_ref 131276 // Parameter
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} * ${p0}${v0}, ${t1} * ${p1}${v1}${)}${volatile}${throw} : ConnectionOperator ( u, v ) {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 238924 "newInvereseOperator"
+	cpp_virtual cpp_inline public return_type class_ref 168908 // ConnectionOperator
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} * ${name}${(}${)}${const}${volatile}${throw}${abstract} { return new InverseConnection(u,v); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 168908 "ConnectionOperator"
+      abstract visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+ Schnitstelle: ConnectionOperator.
+============================================================================================================"
+      extra_member 134732 "friend"
+	
+	cpp "
+friend class boost::serialization::access;" ""
+	java ""
+	php ""
+	python ""
+	idl ""
+      end
+
+      operation 241996 "serialize"
+	stereotype "template"
+	cpp_inline private explicit_return_type "void"
+	nparams 2
+	  param inout name "ar" explicit_type "Archive"
+	  param in name "version" explicit_type "uint"
+	cpp_decl "    ${comment}template<typename Archive>
+  ${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}, const ${t1} ${p1}${v1}${)}${const}${volatile}${throw}${abstract} {
+		ar & u;
+		ar & v;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 242124 "ConnectionOperator"
+	cpp_inline protected explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 242252 "getParameterA"
+	const cpp_inline public return_type class_ref 131276 // Parameter
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} * ${name}${(}${)}${const}${volatile}${throw}${abstract} { return u; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 242380 "getParameterB"
+	const cpp_inline public return_type class_ref 131276 // Parameter
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} * ${name}${(}${)}${const}${volatile}${throw}${abstract} { return v; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      class 169420 "Ptr"
+	visibility package stereotype "typedef" base_type class_ref 168908 // ConnectionOperator
+	cpp_decl "${comment}typedef boost::shared_ptr<${type}> ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	classrelation 183884 // <dependency>
+	  relation 183884 -_->
+	    a default
+	      cpp default "#include in source"
+	      classrelation_ref 183884 // <dependency>
+	    b parent class_ref 168908 // ConnectionOperator
+	end
+      end
+
+      class 169548 "SPtrContainer"
+	visibility package stereotype "typedef" base_type class_ref 169420 // Ptr
+	cpp_decl "${comment}typedef list<${type}> ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	classrelation 184012 // <dependency>
+	  relation 184012 -_->
+	    a default
+	      cpp default "#include in source"
+	      classrelation_ref 184012 // <dependency>
+	    b parent class_ref 169420 // Ptr
+	end
+      end
+
+      operation 242508 "operate"
+	abstract cpp_virtual public explicit_return_type "float"
+	nparams 1
+	  param in name "f" explicit_type "float"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 242636 "newInvereseOperator"
+	abstract cpp_virtual public return_type class_ref 168908 // ConnectionOperator
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} * ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------
+ Liefert ConnectionOperator mit Umkehrfunktion. "
+      end
+
+      operation 242764 "ConnectionOperator"
+	preserve_cpp_body_indent public explicit_return_type ""
+	nparams 2
+	  param inout name "u" type class_ref 131276 // Parameter
+	  param inout name "v" type class_ref 131276 // Parameter
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} * ${p0}${v0}, ${t1} * ${p1}${v1}${)}${volatile}${throw};
+"
+	cpp_def "//============================================================================================================
+// Schnitstelle: ConnectionOperator.
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+
+${inline}${class}::${name}${(}${t0} * ${p0}, ${t1} * ${p1}${)} : u(u), v(v) ${throw}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 242892 "~ConnectionOperator"
+	cpp_virtual cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 169036 "ExpConnection"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+ Klasse: ExpConnection.
+ Proportionale Verbindung mit Exponentialen anstieg.
+============================================================================================================"
+      classrelation 182988 // <generalisation>
+	relation 182988 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 182988 // <generalisation>
+	  b parent class_ref 168908 // ConnectionOperator
+      end
+
+      classrelation 183116 // <generalisation>
+	relation 183116 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 183116 // <generalisation>
+	  b parent class_ref 130636 // HasParameter
+      end
+
+      extra_member 134476 "friend"
+	
+	cpp "
+friend class boost::serialization::access;" ""
+	java ""
+	php ""
+	python ""
+	idl ""
+      end
+
+      operation 239052 "load"
+	cpp_inline private explicit_return_type "void"
+	nparams 2
+	  param inout name "ar" explicit_type "iArchive"
+	  param in name "version" explicit_type "uint"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}, const ${t1} ${p1}${v1}${)}${const}${volatile}${throw}${abstract} {
+		ar >> boost::serialization::base_object<ConnectionOperator> ( *this );
+		ar >> a;
+		ar >> slope;
+		Parameter::ParameterListenerFunction f = 
+			boost::bind( &ExpConnection::parameterChanged, this, _1, _2 );
+		slope->addValueChangedListenerF (f);
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      classrelation 183244 // slope (<unidirectional association>)
+	relation 183244 --->
+	  a role_name "slope" private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} * ${name}${value};
+"
+	    classrelation_ref 183244 // slope (<unidirectional association>)
+	  b parent class_ref 131276 // Parameter
+      end
+
+      attribute 156492 "a"
+	private explicit_type "VstNumber"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 239180 "parameterChanged"
+	cpp_inline private explicit_return_type "void"
+	nparams 2
+	  param inout name "src" explicit_type "void"
+	  param in name "p" explicit_type "float"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract} { 
+		a = -log (p); 
+		u->setValue(u->getValue()); 
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 239308 "ExpConnection"
+	cpp_inline private explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 239436 "ExpConnection"
+	cpp_inline public explicit_return_type ""
+	nparams 2
+	  param inout name "u" type class_ref 131276 // Parameter
+	  param inout name "v" type class_ref 131276 // Parameter
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} * ${p0}${v0}, ${t1} * ${p1}${v1}${)}${volatile}${throw} : ConnectionOperator ( u, v )
+	 {
+		slope = new Parameter ();
+		*slope = STD_SLOPE;
+		slope->setMin(0.0001f);
+		slope->setMax(0.9999f);
+		a = -log ( *slope ); // == log (1/slope)
+		ExpConnection::slope->setName (\"EXP/LOG slope\");
+		Parameter::ParameterListenerFunction f = 
+			boost::bind( &ExpConnection::parameterChanged, this, _1, _2 );
+		ExpConnection::slope->addValueChangedListenerF (f);
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 239564 "~ExpConnection"
+	cpp_virtual cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw} { delete slope; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 239692 "operate"
+	cpp_virtual cpp_inline public explicit_return_type "float"
+	nparams 1
+	  param in name "x" explicit_type "float"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		if ( x == 0.0f ) return 0.0f; 
+		return exp( a*x ) * *slope;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 239820 "getParameter"
+	const cpp_virtual cpp_inline public return_type class_ref 131276 // Parameter
+	nparams 1
+	  param in name "index" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} * ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		if ( index != 0 ) return NULL;
+		return slope;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 239948 "getNumParameter"
+	const cpp_virtual cpp_inline public explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return 1; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 240076 "newInvereseOperator"
+	preserve_cpp_body_indent cpp_virtual public return_type class_ref 168908 // ConnectionOperator
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} * ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//============================================================================================================
+// Klasse: ExpConnection.
+// Proportionale Verbindung mit Exponentialen anstieg.
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} * ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 169164 "LogConnection"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+ Klasse: LogConnection.
+ Proportionale Verbindung mit Log anstieg.
+============================================================================================================"
+      classrelation 183372 // <generalisation>
+	relation 183372 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 183372 // <generalisation>
+	  b parent class_ref 168908 // ConnectionOperator
+      end
+
+      classrelation 183500 // <generalisation>
+	relation 183500 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 183500 // <generalisation>
+	  b parent class_ref 130636 // HasParameter
+      end
+
+      extra_member 134604 "friend"
+	
+	cpp "
+friend class boost::serialization::access;" ""
+	java ""
+	php ""
+	python ""
+	idl ""
+      end
+
+      operation 240204 "load"
+	cpp_inline private explicit_return_type "void"
+	nparams 2
+	  param inout name "ar" explicit_type "iArchive"
+	  param in name "version" explicit_type "uint"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} & ${p0}${v0}, const ${t1} ${p1}${v1}${)}${const}${volatile}${throw}${abstract} {
+		ar >> boost::serialization::base_object<ConnectionOperator> ( *this );
+		ar >> a;
+		ar >> slope;
+		Parameter::ParameterListenerFunction f = 
+			boost::bind( &LogConnection::parameterChanged, this, _1, _2 );
+		slope->addValueChangedListenerF (f);
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 240332 "LogConnection"
+	cpp_inline private explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      classrelation 183628 // slope (<unidirectional association>)
+	relation 183628 --->
+	  a role_name "slope" private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} * ${name}${value};
+"
+	    classrelation_ref 183628 // slope (<unidirectional association>)
+	  b parent class_ref 131276 // Parameter
+      end
+
+      attribute 156620 "a"
+	private explicit_type "VstNumber"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 240460 "parameterChanged"
+	cpp_inline private explicit_return_type "void"
+	nparams 2
+	  param inout name "src" explicit_type "void"
+	  param in name "p" explicit_type "float"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract} { 
+		a = log ( p ); 
+		u->setValue(u->getValue()); 
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 240588 "LogConnection"
+	cpp_inline public explicit_return_type ""
+	nparams 2
+	  param inout name "u" type class_ref 131276 // Parameter
+	  param inout name "v" type class_ref 131276 // Parameter
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} * ${p0}${v0}, ${t1} * ${p1}${v1}${)}${volatile}${throw} : ConnectionOperator ( u, v ) {	
+		slope = new Parameter();
+		*slope = STD_SLOPE;
+		slope->setMin(0.0001f);
+		slope->setMax(0.9999f);
+		slope->setName(\"LOG/EXP slope\");
+		a = log( *slope );
+		ValueChangedSender<float>::ValueChangedFunction f = 
+			boost::bind( &LogConnection::parameterChanged, this, _1, _2 );
+		LogConnection::slope->addValueChangedListenerF (f);
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 240716 "~LogConnection"
+	cpp_virtual cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw} { delete slope; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 240844 "operate"
+	cpp_virtual cpp_inline public explicit_return_type "float"
+	nparams 1
+	  param in name "x" explicit_type "float"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		if ( x == 0.0f ) return 0.0f; 
+		return -log( x ) / a  + 1;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 240972 "getParameter"
+	const cpp_virtual cpp_inline public return_type class_ref 131276 // Parameter
+	nparams 1
+	  param in name "index" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} * ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} {
+		if ( index != 0 ) return NULL;
+		return slope;
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 241100 "getNumParameter"
+	const cpp_virtual cpp_inline public explicit_return_type "int"
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${)}${const}${volatile}${throw}${abstract} { return 1; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 241228 "newInvereseOperator"
+	preserve_cpp_body_indent cpp_virtual public return_type class_ref 168908 // ConnectionOperator
+	nparams 0
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} * ${name}${(}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//============================================================================================================
+// Klasse: LogConnection.
+// Proportionale Verbindung mit Log anstieg.
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} * ${class}::${name}${(}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 169292 "InheritanceParameter"
+      visibility package 
+      nformals 1
+      formal name " int N" type "" explicit_default_value ""
+        explicit_extends ""
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+ Klasse: InheritanceParameter. Stellt N Parameter zur verfuegung.
+============================================================================================================"
+      classrelation 183756 // p (<unidirectional association>)
+	relation 183756 --->
+	  a role_name "p" multiplicity "[N]" private
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} * ${name}${multiplicity}${value};
+"
+	    classrelation_ref 183756 // p (<unidirectional association>)
+	  b parent class_ref 131276 // Parameter
+      end
+
+      operation 241612 "InheritanceParameter"
+	cpp_inline protected explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${name}${(}${)}${volatile}${throw} {
+		for ( int i=0; i<N; ++i ) p[i] = new Parameter();
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 241740 "pAt"
+	cpp_inline protected return_type class_ref 131276 // Parameter
+	nparams 1
+	  param in name "index" explicit_type "int"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} * ${name}${(}${t0} ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { return p[index]; };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 241868 "~InheritanceParameter"
+	cpp_virtual cpp_inline protected explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw} {
+		for ( int i=0; i<N; ++i ) delete p[i];
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 169676 "ParameterConnection"
+      visibility package stereotype "typedef" base_type class_ref 131276 // Parameter
+      cpp_decl "${comment}typedef map<${type}*,ConnectionOperator::SPtrContainer> ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+ Klasse: Parameter.
+ Repraesentiert alle PPI VST-Parameter die als schnitstelle zum
+ Host dienen.
+============================================================================================================
+ Ein paar Typendefinitionen"
+      classrelation 184140 // <dependency>
+	relation 184140 -_->
+	  a default
+	    cpp default "#include in source"
+	    classrelation_ref 184140 // <dependency>
+	  b parent class_ref 131276 // Parameter
+      end
+    end
+
+    class 169804 "ListenerContainer"
+      visibility package stereotype "typedef" explicit_base_type "list< ParameterListener * >"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+
+    class 169932 "typedef53"
+      visibility package stereotype "typedef" explicit_base_type "ValueChangedSender<float>"
+      cpp_decl "${comment}typedef ${type} ${name};
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+  end
+
+  deploymentview 129228 "parameter"
+    //deployment diagram settings
+    package_name_in_tab default show_context default write_horizontally default auto_label_position default draw_all_relations default shadow default
+    draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+    artifact 132172 "ConnectionOperators"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 168780 // InverseConnection
+	class_ref 169036 // ExpConnection
+	class_ref 169164 // LogConnection
+      end
+    end
+
+    artifact 132300 "parameter"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 130636 // HasParameter
+	class_ref 169292 // InheritanceParameter
+	class_ref 168908 // ConnectionOperator
+	class_ref 169676 // ParameterConnection
+	class_ref 169804 // ListenerContainer
+	class_ref 169932 // typedef53
+	class_ref 131276 // Parameter
+      end
+    end
+  end
+end

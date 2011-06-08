@@ -1,0 +1,4 @@
+class GCmdRemoveProcessorNodeConnection
+!!!226380.cpp!!!	_execute() : void
+
+	graph->removeConnection( output, input );

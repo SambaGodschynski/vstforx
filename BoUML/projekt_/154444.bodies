@@ -1,0 +1,8 @@
+class GIONodeController
+!!!185932.cpp!!!	registerObject(inout vObj : GObject, inout mObj : PObject) : void
+ 
+	vObj->EventSender<OnConnect>::addEventListener ( this );
+!!!186316.cpp!!!	eventHandler(inout src : void, in ev : OnConnect) : void
+ 
+	CmdConnectGIONode cnct( ev.src->getParentView(), ev.src, ev.dst, &frntCtrl ); 
+	cnct.execute();

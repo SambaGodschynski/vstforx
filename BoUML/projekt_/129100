@@ -1,0 +1,615 @@
+format 75
+"com events" // src::com::com events
+  revision 1
+  modified_by 76 "Samba"
+  // class settings
+  //class diagram settings
+  draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+  //use case diagram settings
+  package_name_in_tab default show_context default auto_label_position default draw_all_relations default class_drawing_mode default shadow default show_stereotype_properties default
+  //sequence diagram settings
+  show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default show_class_context_mode default show_msg_context_mode default
+  //collaboration diagram settings
+  show_full_operations_definition default show_hierarchical_rank default write_horizontally default drawing_language default package_name_in_tab default show_context default show_msg_context default draw_all_relations default shadow default show_stereotype_properties default
+  //object diagram settings
+   write_horizontally default package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default show_stereotype_properties default
+  //component diagram settings
+  package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default
+  draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+  //deployment diagram settings
+  package_name_in_tab default show_context default write_horizontally default auto_label_position default draw_all_relations default shadow default
+  draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+  //state diagram settings
+  package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+  show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+  //activity diagram settings
+  package_name_in_tab default show_context default show_opaque_action_definition default auto_label_position default write_flow_label_horizontally default draw_all_relations default shadow default
+  show_infonote default drawing_language default show_stereotype_properties default
+  
+  cpp_h_dir "c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/com/"
+  cpp_src_dir "c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/com/"
+  cpp_namespace "com::events"
+  classview 128588 "com"
+    //class diagram settings
+    draw_all_relations default hide_attributes default hide_operations default hide_getset_operations default show_members_full_definition default show_members_visibility default show_members_stereotype default show_members_context default show_members_multiplicity default show_members_initialization default show_attribute_modifiers default member_max_width 0 show_parameter_dir default show_parameter_name default package_name_in_tab default class_drawing_mode default drawing_language default show_context_mode default auto_label_position default show_relation_modifiers default show_relation_visibility default show_infonote default shadow default show_stereotype_properties default
+    //collaboration diagram settings
+    show_full_operations_definition default show_hierarchical_rank default write_horizontally default drawing_language default package_name_in_tab default show_context default show_msg_context default draw_all_relations default shadow default show_stereotype_properties default
+    //object diagram settings
+     write_horizontally default package_name_in_tab default show_context default auto_label_position default draw_all_relations default shadow default show_stereotype_properties default
+    //sequence diagram settings
+    show_full_operations_definition default write_horizontally default class_drawing_mode default drawing_language default draw_all_relations default shadow default show_stereotype_properties default show_class_context_mode default show_msg_context_mode default
+    //state diagram settings
+    package_name_in_tab default show_context default auto_label_position default write_trans_label_horizontally default show_trans_definition default draw_all_relations default shadow default
+    show_activities default region_horizontally default drawing_language default show_stereotype_properties default
+    //class settings
+    //activity diagram settings
+    package_name_in_tab default show_context default show_opaque_action_definition default auto_label_position default write_flow_label_horizontally default draw_all_relations default shadow default
+    show_infonote default drawing_language default show_stereotype_properties default
+    class 131404 "Event"
+      visibility package stereotype "struct"
+      cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment " namespace events
+ namespace com
+============================================================================================================
+	Klasse Event:
+============================================================================================================"
+      operation 136140 "~Event"
+	cpp_virtual cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      class 131532 "EventTypeVerification"
+	visibility package stereotype "enum"
+	cpp_decl "${comment}enum ${name} {
+${items}
+};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	attribute 130508 "verification"
+	  public type class_ref 131532 // EventTypeVerification
+	  cpp_decl "  ${name}${value},${comment}"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+      end
+    end
+
+    class 131660 "OnDestroy"
+      visibility package stereotype "struct"
+      nformals 1
+      formal name "T" type "typename" explicit_default_value ""
+        explicit_extends ""
+      cpp_decl "${comment}${template}struct ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+ Event Klasse OnDestroy :
+============================================================================================================"
+      classrelation 130252 // <generalisation>
+	relation 130252 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 130252 // <generalisation>
+	  b parent class_ref 131404 // Event
+      end
+
+      attribute 130636 "src"
+	public explicit_type "T"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${type} * ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+      end
+
+      operation 136268 "OnDestroy"
+	cpp_inline public explicit_return_type ""
+	nparams 1
+	  param inout name "src" explicit_type "T"
+	cpp_decl "    ${comment}${inline}${name}${(}${t0} * ${p0}${v0}${)}${volatile}${throw} : src(src) {};
+"
+	
+	
+	
+	
+      end
+    end
+
+    class 131788 "Listener"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Klasse Listener:
+  Oberklasse fuer alle Listener.
+============================================================================================================"
+      operation 136396 "~Listener"
+	cpp_virtual cpp_inline public explicit_return_type ""
+	nparams 0
+	cpp_decl "    ${comment}${inline}${virtual}${name}${(}${)}${volatile}${throw} {};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------"
+      end
+
+      class 131916 "ListenerContainer"
+	visibility package stereotype "typedef" base_type class_ref 131788 // Listener
+	cpp_decl "${comment}typedef list<${type}*> ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	classrelation 130380 // <dependency>
+	  relation 130380 -_->
+	    a default
+	      cpp default "#include in source"
+	      classrelation_ref 130380 // <dependency>
+	    b parent class_ref 131788 // Listener
+	end
+      end
+    end
+
+    class 132044 "ValueChangedListener"
+      abstract visibility package 
+      nformals 1
+      formal name "T" type "class" explicit_default_value ""
+        explicit_extends ""
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Template IValueChangedEvent:
+  Interface fuer alle das ereigniss Value Changed.
+============================================================================================================"
+      classrelation 130508 // <generalisation>
+	relation 130508 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 130508 // <generalisation>
+	  b parent class_ref 131788 // Listener
+      end
+
+      operation 136524 "valueChanged"
+	abstract cpp_virtual public explicit_return_type "void"
+	nparams 2
+	  param inout name "src" explicit_type "void"
+	  param in name "value" explicit_type "T"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 132172 "ValueChangedSender"
+      visibility package 
+      nformals 1
+      formal name "T" type "class" explicit_default_value ""
+        explicit_extends ""
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Template ValueChangedEventSender:
+============================================================================================================"
+      class 132300 "ValueChangedFunction"
+	visibility package stereotype "typedef" explicit_base_type "boost::function< void ( void*, const T& ) >"
+	cpp_decl "${comment}typedef ${type} ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+      end
+
+      attribute 130764 "listeners"
+	private explicit_type " ValueChangedListener<T>* "
+	stereotype "list"
+	cpp_decl "    ${comment}${static}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
+"
+	java_decl ""
+	php_decl ""
+	python_decl ""
+	idl_decl ""
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      classrelation 130636 // funcListeners (<directional composition>)
+	relation 130636 *-->
+	  stereotype "list"
+	  a role_name "funcListeners" private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${stereotype}<${type}> ${name}${value};
+"
+	    classrelation_ref 130636 // funcListeners (<directional composition>)
+	  b parent class_ref 132300 // ValueChangedFunction
+      end
+
+      operation 136652 "addValueChangedListener"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param inout name "vCl" explicit_type "ValueChangedListener<T>"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { listeners.push_back (vCl); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 136780 "removeValueChangedListener"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param inout name "vCl" explicit_type "ValueChangedListener<T>"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { listeners.remove (vCl); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 136908 "addValueChangedListenerF"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "vCl" type class_ref 132300 // ValueChangedFunction
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { funcListeners.push_back (vCl); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 137036 "removeValueChangedListenerF"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param in name "vCl" type class_ref 132300 // ValueChangedFunction
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}const ${t0} & ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { 
+		list< ValueChangedFunction >::iterator it = funcListeners.begin();
+		for ( ; it != funcListeners.end(); ){
+			if ( vCl.functor.func_ptr == (*it).functor.func_ptr ){
+				it = funcListeners.erase ( it );
+			} else ++it;
+		}
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 137164 "notifyListeners"
+	preserve_cpp_body_indent public explicit_return_type "void"
+	nparams 2
+	  param inout name "src" explicit_type "void"
+	  param in name "value" explicit_type "T"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	cpp_def "//============================================================================================================
+// Template Definitionen:
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+
+${inline}${type} ${class}::${name}${(}${t0} * ${p0}, const ${t1} & ${p1}${)}${const}${volatile}${throw}${staticnl}{
+  ${body}}
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 132428 "EventListener"
+      abstract visibility package 
+      nformals 1
+      formal name "EventType" type "typename" explicit_default_value ""
+        explicit_extends ""
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Klasse EventListener:
+============================================================================================================"
+      classrelation 130764 // <generalisation>
+	relation 130764 ---|>
+	  a public
+	    cpp default "${type}"
+	    classrelation_ref 130764 // <generalisation>
+	  b parent class_ref 131788 // Listener
+      end
+
+      class 132556 "anonymous2"
+	visibility package stereotype "enum"
+	cpp_decl "${comment}enum  {
+${items}
+};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	attribute 130892 "eventTypeVerification"
+	  public type class_ref 132556 // anonymous2
+	  init_value " EventType::verification "
+	  cpp_decl "  ${name}${value},${comment}"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+      end
+
+      operation 137292 "eventHandler"
+	abstract cpp_virtual public explicit_return_type "void"
+	nparams 2
+	  param inout name "src" explicit_type "void"
+	  param in name "ev" explicit_type "EventType"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 132684 "EventSender"
+      visibility package 
+      nformals 1
+      formal name "EventType" type "typename" explicit_default_value ""
+        explicit_extends ""
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Klasse EventSender:
+============================================================================================================"
+      class 132812 "anonymous3"
+	visibility package stereotype "enum"
+	cpp_decl "${comment}enum  {
+${items}
+};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+	attribute 131020 "eventTypeVerification"
+	  public type class_ref 132812 // anonymous3
+	  init_value " EventType::verification "
+	  cpp_decl "  ${name}${value},${comment}"
+	  java_decl ""
+	  php_decl ""
+	  python_decl ""
+	  idl_decl ""
+	end
+      end
+
+      class 132940 "ListenerType"
+	visibility package stereotype "typedef" explicit_base_type "list< EventListener<EventType>* >"
+	cpp_decl "${comment}typedef ${type} ${name};
+"
+	java_decl ""
+	php_decl ""
+	python_2_2 python_decl ""
+	idl_decl ""
+	explicit_switch_type ""
+	
+      end
+
+      classrelation 130892 // listeners (<directional composition>)
+	relation 130892 *-->
+	  a role_name "listeners" private
+	    comment "--------------------------------------------------------------------------------------------------------"
+	    cpp default "    ${comment}${static}${mutable}${volatile}${const}${type} ${name}${value};
+"
+	    classrelation_ref 130892 // listeners (<directional composition>)
+	  b parent class_ref 132940 // ListenerType
+      end
+
+      operation 137420 "addEventListener"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param inout name "eL" explicit_type "EventListener<EventType>"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { listeners.push_back (eL); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 137548 "removeEventListener"
+	cpp_inline public explicit_return_type "void"
+	nparams 1
+	  param inout name "eL" explicit_type "EventListener<EventType>"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}${)}${const}${volatile}${throw}${abstract} { listeners.remove (eL); };
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+
+      operation 137676 "notifyEventListeners"
+	cpp_inline public explicit_return_type "void"
+	nparams 2
+	  param inout name "src" explicit_type "void"
+	  param in name "ev" explicit_type "EventType"
+	cpp_decl "    ${comment}${friend}${static}${inline}${virtual}${type} ${name}${(}${t0} * ${p0}${v0}, const ${t1} & ${p1}${v1}${)}${const}${volatile}${throw}${abstract} {
+		ListenerType::iterator it = listeners.begin();
+		for ( ; it!=listeners.end(); ++it ) (*it)->eventHandler ( src, ev );
+	};
+"
+	
+	
+	
+	
+	comment "--------------------------------------------------------------------------------------------------------"
+      end
+    end
+
+    class 133068 "MultiEventSender"
+      visibility package 
+      nformals 1
+      formal name "TLIST" type "typename" explicit_default_value ""
+        explicit_extends ""
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+      comment "============================================================================================================
+	Klasse MultiEventSender :
+============================================================================================================"
+    end
+
+    class 133196 "MultiEventSender<TNull>"
+      visibility package 
+      cpp_decl "${comment}${template}class ${name}${inherit} {
+${members}};
+${inlines}
+"
+      java_decl ""
+      php_decl ""
+      python_2_2 python_decl ""
+      idl_decl ""
+      explicit_switch_type ""
+      
+    end
+  end
+
+  deploymentview 128332 "com events"
+    //deployment diagram settings
+    package_name_in_tab default show_context default write_horizontally default auto_label_position default draw_all_relations default shadow default
+    draw_component_as_icon default show_component_req_prov default show_component_rea default show_stereotype_properties default
+    artifact 128460 "Events"
+      stereotype "source"
+      cpp_h "#ifndef ${NAMESPACE}_${NAME}_H
+#define ${NAMESPACE}_${NAME}_H
+
+${comment}
+${includes}
+${declarations}
+${namespace_start}
+${definition}
+${namespace_end}
+#endif
+"
+      cpp_src "${comment}
+${includes}
+${namespace_start}
+${members}
+${namespace_end}"
+      associated_classes
+	class_ref 131404 // Event
+	class_ref 131660 // OnDestroy
+	class_ref 131788 // Listener
+	class_ref 132044 // ValueChangedListener
+	class_ref 132172 // ValueChangedSender
+	class_ref 132428 // EventListener
+	class_ref 132684 // EventSender
+	class_ref 133196 // MultiEventSender<TNull>
+      end
+    end
+  end
+end

@@ -1,0 +1,13 @@
+class CmdConnectGIONode
+!!!207180.cpp!!!	_execute() : void
+
+	GInputNode *input; GOutputNode *output; 
+	relate< GInputNode, GOutputNode, GObject > ( &input, &output, src, dst );
+	if ( !input || !output ) return;
+	GConnectionIO *gc = new GConnectionIO ( cView, input, output );
+	ctrl->registerObject ( gc );
+	cView->addGObject ( gc, CircuidView::CONNECTIONS );
+	ProcessorNode *in = ctrl->getViewRelations().get<ProcessorNode> ( input );
+	ProcessorNode *out = ctrl->getViewRelations().get<ProcessorNode> ( output );
+	Graph *g = getRelatedGraph( src->getParentView() );
+	g->addCommand ( Command::Ptr ( new GCmdConnectProcessorNodes ( g, in, out ) ) );

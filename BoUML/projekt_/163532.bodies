@@ -1,0 +1,160 @@
+class VSTPlugNode
+!!!213452.cpp!!!	save(inout ar : oArchive, in version : uint) : void
+
+	ar << boost::serialization::base_object< ProcessorNode > ( *this );
+	// filename
+	ar << fileName;
+	// parameter
+	vector<Parameter*> pl;
+	for ( int i=0; i<getNumParameter(); ++i ) pl.push_back( param[i] );
+	ar << pl;
+	// chunk
+	size_t size = 0;
+	if ( !can (effFlagsProgramChunks) ) {
+		ar << size;
+		return;
+	}
+	void *data;
+	//[ptr]: void** for chunk data address [index]: 0 for bank, 1 for program  @see AudioEffect::getChunk
+	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
+	size = aEff->dispatcher ( aEff, effGetChunk, 0, 0, &data, 0 );
+	ar << size;
+	if ( size ) ar.save_binary ( data, size );
+!!!213708.cpp!!!	getVSTPlugNode(inout aEff : AEffect) : VSTPlugNode
+
+	map < AEffect*, VSTPlugNode*>::iterator it = relatedPlugNode.find ( aEff );
+	if ( it == relatedPlugNode.end() ) return NULL;
+	return (*it).second;
+!!!213836.cpp!!!	initParameter() : void
+
+	char bff[255];
+	// initalisiere parameter
+	param = new Parameter*[numParam];
+	for ( size_t i=0; i<numParam; i++ ){
+		param[i] = new Parameter(i);
+		// hole Parameter wert
+		param[i]->setValue ( aEff->getParameter ( aEff, i ) );
+		// hole Parameter name
+		aEff->dispatcher ( aEff, effGetParamName, i, NULL, &bff[0], NULL );
+		param[i]->setName ( MyString(bff) );
+		// hole Parameter label
+		aEff->dispatcher ( aEff, effGetParamLabel, i, NULL, &bff[0], NULL );
+		param[i]->setLabel ( MyString(bff) );
+		// hole Parameter Display
+		aEff->dispatcher ( aEff, effGetParamDisplay, i, NULL, &bff[0], NULL );
+		param[i]->setDisplay( MyString(bff) );
+		param[i]->addValueChangedListener ( this );
+	}
+!!!213964.cpp!!!	extractNameFromFilename(in fileName : string) : MyString
+
+	boost::filesystem::path p(fileName);
+	return MyString ( p.stem() );
+!!!214092.cpp!!!	loadPlug(in plugFilename : string, inout plug : VSTPlugNode) : void
+
+	// Lade Plugin (.dll datei)
+	loadModule ( plugFilename.c_str(), &plug.hPlugin, &plug.aEff );
+	plug.aEff->dispatcher ( plug.aEff, effOpen, 0, 0, 0, 0.0 );
+	plug.pluginID = plug.aEff->uniqueID;
+	plug.numParam = plug.aEff->numParams;
+	// Objekt registrieren
+	relatedPlugNode.insert ( pair < AEffect*, VSTPlugNode* >( plug.aEff, &plug ) );
+	// setze samplerate  
+	plug.aEff->dispatcher ( plug.aEff, effSetSampleRate, 0, 0, 0, HOSTINFO.sampleRate );
+	// setze blockSize  
+	plug.aEff->dispatcher ( plug.aEff, effSetBlockSize, 0, HOSTINFO.blockSize, 0, 0 );
+	// Reset PlugIn
+	plug.resetPlugin();
+!!!214220.cpp!!!	peekVstPlugFile(in filename : string, inout proxy : VSTPlugProxy) : void
+
+	HMODULE hPlugin = NULL;
+	AEffect *aEff = NULL;
+	loadModule ( filename.c_str(), &hPlugin, &aEff );
+	if ( !aEff ) {
+		if ( hPlugin )
+		FreeLibrary ( hPlugin );
+		throw ppiError::DllError ("could not load: " + filename, __FILE__, __LINE__ );
+	}
+	// fuelle proxy :
+	proxy.uid = aEff->uniqueID;
+	proxy.isSynth = can ( effFlagsIsSynth, aEff );
+	//hole name und hersteller
+	char bff[ max(kVstMaxEffectNameLen, kVstMaxVendorStrLen) ];
+	bff[0] = '\0';
+	aEff->dispatcher ( aEff, effGetEffectName, 0, NULL, &bff[0], NULL );
+	proxy.name = string (bff);
+	if ( proxy.name.length() == 0 ) proxy.name = extractNameFromFilename( filename );
+	bff[0] = '\0';
+	aEff->dispatcher ( aEff, effGetVendorString, 0, NULL, &bff[0], NULL );
+	proxy.vendor = string (bff);
+	proxy.vstVersion = aEff->dispatcher  ( aEff, effGetVstVersion, 0, NULL, NULL, NULL );
+	proxy.plugVersion = aEff->dispatcher ( aEff, effGetVendorVersion, 0, NULL, NULL, NULL );
+	proxy.numParam = aEff->numParams;
+	// und schuess
+	FreeLibrary ( hPlugin );
+!!!214476.cpp!!!	processFrame(inout frame : Frame) : void
+ 
+	// Process Event
+	if ( can( effFlagsCanReplacing ) ) { 
+		//aEff->processReplacing ( *aEffect, **src, **dst, frameSize );
+		aEff->processReplacing ( aEff, frame->data, frame->data, frame->frameSize );
+	}else { 
+		aEff->__processDeprecated ( aEff, frame->data, frame->data, frame->frameSize );
+	}
+	pushFrame ( frame );
+!!!214604.cpp!!!	VSTPlugNode(in plugFilename : string)
+ 
+	loadPlug ( plugFilename, *this );
+	initParameter();
+	//hole name und hersteller
+	char bff[ max(kVstMaxEffectNameLen, kVstMaxVendorStrLen) ];
+	bff[0] = '\0';
+	aEff->dispatcher ( aEff, effGetEffectName, 0, NULL, &bff[0], NULL );
+	plugName = string (bff);
+	if ( plugName.length() == 0 ) plugName = extractNameFromFilename(plugFilename);
+	bff[0] = '\0';
+	aEff->dispatcher ( aEff, effGetVendorString, 0, NULL, &bff[0], NULL );
+	plugVendor = string (bff);
+!!!214860.cpp!!!	~VSTPlugNode()
+
+	relatedPlugNode.erase ( aEff );
+	aEff->dispatcher ( aEff, effClose, 0, 0, 0, 0.0 );
+	for ( size_t i=0; i<numParam; i++ ){
+		delete param[i];
+	}
+	delete param;
+	FreeLibrary ( hPlugin );
+!!!214988.cpp!!!	valueChanged(inout src : void, in v : float) : void
+
+	Parameter *p = (Parameter*) src;
+	size_t index = p->getIndex();
+	if ( index>=numParam || index<0 ) return;
+	Parameter *param = getParameter (index);
+	aEff->setParameter ( aEff, index, param->getValue() );	
+	char bff[255];
+	// hole Parameter name
+	aEff->dispatcher ( aEff, effGetParamName, index, NULL, &bff[0], NULL );
+	param->setName ( MyString(bff) );
+	// hole Parameter label
+	aEff->dispatcher ( aEff, effGetParamLabel, index, NULL, &bff[0], NULL );
+	param->setLabel ( MyString(bff) );
+	// hole Parameter Display
+	aEff->dispatcher ( aEff, effGetParamDisplay, index, NULL, &bff[0], NULL );
+	param->setDisplay( MyString(bff) );
+!!!215116.cpp!!!	editorParameterChanged(inout aEff : AEffect, in index : int, in value : float) : void
+
+	VSTPlugNode *plug = getVSTPlugNode ( aEff );
+	if (!plug) return;
+	if ( index > plug->getNumParameter() ) return;
+	plug->param[index]->setValue ( value );
+!!!215884.cpp!!!	hostInfoChanged() : void
+
+	map < AEffect*, VSTPlugNode*>::iterator it = relatedPlugNode.begin ();
+	for ( ; it!=relatedPlugNode.end(); ++it ){
+		AEffect *aEff = (*it).first;
+		// setze samplerate  
+		aEff->dispatcher ( aEff, effSetSampleRate, 0, 0, 0, HOSTINFO.sampleRate );
+		// setze blockSize  
+		aEff->dispatcher ( aEff, effSetBlockSize, 0, HOSTINFO.blockSize, 0, 0 );
+		// Reset PlugIn
+		(*it).second->resetPlugin();
+	}

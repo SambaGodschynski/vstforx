@@ -1,0 +1,15 @@
+class GADSRTrigger
+!!!170316.cpp!!!	GADSRTrigger(inout view : CircuidView)
+
+	name = "ADSR_Trigger";
+	skin = new CBitmap (RESOURCE.VSTPLUG_NODE);
+	bBox = CRect ( 0,0, skin->getWidth(), skin->getHeight() );
+	focus = CPoint ( skin->getWidth()>>1, skin->getHeight()>>1 );
+	radius = skin->getWidth()>>1;
+	focus = CPoint (bBox.width()>>1, bBox.height()>>1);
+!!!170444.cpp!!!	render(inout cc : CDrawContext) : void
+
+	skin->draw ( cc, bBox );
+!!!170572.cpp!!!	~GADSRTrigger()
+
+	delete skin;

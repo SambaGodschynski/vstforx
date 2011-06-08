@@ -1,0 +1,6 @@
+class CSubMenu
+!!!160204.cpp!!!	create(inout frame : CFrame) : Ptr
+
+	Ptr _new ( (CMenu*)new CSubMenu ( frame ) );
+	_new->self = _new;
+	return _new;

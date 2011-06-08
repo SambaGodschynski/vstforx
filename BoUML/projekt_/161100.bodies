@@ -1,0 +1,34 @@
+class CmdCreateVolumeNode
+!!!208204.cpp!!!	_execute() : void
+
+	create<GVolumeNode, VolumeAdapter, 1>();
+	// erzeugten VolumeAdapter holen
+	VolumeAdapter *vol = (VolumeAdapter*) newPrA;
+	// knob erzeugen
+	GKnob *knob = new GStdKnob ( cView );
+	// knob an erzeugte GVolumeNode pos. verschieben
+	CPoint p (newGPr->getPos());
+	p.offset ( newGPr->getSize().width(), -newGPr->getSize().height() ); 
+	knob->moveTo ( p );
+	//knob der view hinzufuegen
+	cView->addGObject ( knob );
+	// Knob Connection
+	cView->addGObject ( newGPr );
+	GConnection *gc = new GConnectionPrPa ( cView, newGPr, knob );
+	ctrl->registerObject ( gc );
+	//Knob Connection der view hinzufuegen
+	cView->addGObject ( (GObject*)gc, CircuidView::CONNECTIONS);
+	// volume Knob registrieren und init.
+	Parameter *param = vol->getParameter();
+	ctrl->registerObject ( knob, param );
+	param->setValue (1.0);
+	knob->setHeader ( param->getName() );
+	knob->setDisplay( param->getDisplay() );
+	//VolumeNode GIONodes der view hinzufuegen
+	list<GConnection*> l;
+	newGPr->addIONodesOnView( ins, outs, l );
+	// connections registr.
+	for ( list<GConnection*>::iterator it = l.begin(); it!=l.end(); ++it ) {
+		ctrl->registerObject ( *it );
+	}
+	cView->CView::setDirty();

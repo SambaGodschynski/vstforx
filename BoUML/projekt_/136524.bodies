@@ -1,0 +1,10 @@
+class PPIError
+!!!146636.cpp!!!	src2String() : string
+
+	return "source:" + src + " line:" + MyString(linenumber);
+!!!146892.cpp!!!	PPIError(in err : string = "unkown error.", in source : string = UKWNSRC, in line : long = -1)
+
+	error = err;
+	src = source;
+	linenumber = line;
+	TOLOG ( toString() ); 

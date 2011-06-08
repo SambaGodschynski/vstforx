@@ -1,0 +1,75 @@
+class VSTPlugView
+!!!212684.cpp!!!	VSTPlugView(inout ed : PpiEditor, inout vstPlugNode : VSTPlugNode)
+
+	aEff = vstPlugNode->getAEffect();
+	if (!vstPlugNode->can (effFlagsHasEditor)) 
+		throw ppiError::IllegalOperation ("Effect has no Editor.", __FILE__, __LINE__ );
+	
+	// Registriere Window Klasse
+	if ( hwnd2PlugView.empty() ){ // noch keine fensterklasse registriert
+		// regisitriere fensterklasse
+		wc.cbSize = sizeof(WNDCLASSEX);
+		wc.style= CS_HREDRAW | CS_VREDRAW;
+		wc.lpfnWndProc= WndProc;
+		wc.cbClsExtra= 0;
+		wc.cbWndExtra= 0;
+		wc.hInstance = (HINSTANCE)hInstance;
+		wc.hIcon = LoadIcon(wc.hInstance, MAKEINTRESOURCE( RESOURCE.CHILDW_ICON ));
+		wc.hCursor= LoadCursor(NULL, IDC_ARROW);
+		wc.hbrBackground= (HBRUSH)(COLOR_WINDOW+1);
+		wc.lpszMenuName= 0;
+		wc.lpszClassName= "wcPPIVstPlugEditor";
+		wc.hIconSm= 0;
+		RegisterClassEx(&wc);
+	}
+!!!212940.cpp!!!	__destroyWindow__(in hwnd : HWND) : void
+
+	// map eintrag finden :
+	map < HWND, VSTPlugView* >::iterator it = hwnd2PlugView.find ( hwnd );
+	if ( it == hwnd2PlugView.end() ) return;	
+	VSTPlugView *view = (*it).second;
+	// idle listener entf.
+	view->editor->removeIdleListener ( view );
+	// notify OnClose
+	view->EventSender<OnClose>::notifyEventListeners( view, OnClose() );
+	// rufe Editor Close im VSTPlugNode auf
+	view->aEff->dispatcher ( view->aEff, effEditClose, 0, 0, view->hwnd, 0);
+	view->hwnd = NULL;
+	view->forget();
+	hwnd2PlugView.erase (it);
+	// falls keine fenster mehr offen
+	if (hwnd2PlugView.empty()) UnregisterClass ( wc.lpszClassName, wc.hInstance );
+!!!213068.cpp!!!	openWindow() : void
+
+	HWND ptr = (HWND)editor->getSystemWindow();
+	// Initalisiere Window
+	hwnd = CreateWindow ( "wcPPIVstPlugEditor",  "VST PLUGIN",
+						  WS_VISIBLE | WS_POPUP |WS_SYSMENU| WS_CAPTION ,
+						  0, 0, 0, 0,
+						  ptr, 0, wc.hInstance, NULL
+	);
+	// rufe Editor Open im VSTPlugNode auf
+	VstIntPtr p=aEff->dispatcher ( aEff, effEditOpen, 0, 0, hwnd, 0);
+
+	// Hole PlugEditor FrameSize
+	ERect *size = NULL;
+	aEff->dispatcher ( aEff, effEditGetRect, 0, 0, &size, 0);
+	if ( !size ) throw ppiError::SystemError ("window creation failed.", __FILE__, __LINE__ );
+	
+	//setzte Window pos&groesse
+	SetWindowPos ( hwnd, HWND_TOP, size->left, size->top, size->right + 8, size->bottom + 27, 0 );
+	
+	// hwnd in ass. map speichern
+	hwnd2PlugView.insert ( pair< HWND, VSTPlugView*> ( hwnd, this ) ) ;
+	remember();
+	// Idle Listener regist.
+	editor->addIdleListener (this);
+	// notify OnOpen
+	EventSender<OnOpen>::notifyEventListeners( this, OnOpen() );
+!!!213196.cpp!!!	closeWindow() : void
+
+	if ( !hwnd ) return;
+	SendMessage ( hwnd, WM_CLOSE, 0, 0 );
+!!!213324.cpp!!!	onIdle() : void
+
+	aEff->dispatcher ( aEff, effEditIdle, 0, 0, 0, 0);

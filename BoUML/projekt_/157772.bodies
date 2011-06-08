@@ -1,0 +1,127 @@
+class PpiEditor
+!!!193740.cpp!!!	saveView() : void
+
+	viewbuffer.str("");
+	viewbuffer.clear();
+	oArchive oa(viewbuffer);
+	register_types<oArchive> (oa);
+	oa << circuidView;
+	circuidControl->save ( oa );
+	view2model.saveViewRelation ( oa );
+!!!193868.cpp!!!	loadView() : void
+
+	iArchive ia(viewbuffer);
+	register_types<iArchive> (ia);
+	ia >> circuidView;
+	addViewRelation ( circuidView, graph.get() ); // registriere View=>Graph
+	frame->addView ( (CView*)circuidView );
+	circuidControl = new CircuidControl ( circuidView, view2model );
+	circuidControl->load ( ia );
+	view2model.loadViewRelation ( ia );
+	circuidControl->getControllDirector().reRegisterObjects();
+!!!193996.cpp!!!	releaseView() : void
+
+	getMainCtrl()->getToolBox()->EventSender<MouseContextChanged>::removeEventListener ( circuidControl );
+	frame->removeView( circuidView, false );
+	removeViewRelation ( circuidView, graph.get() );
+	delete circuidView;	
+	delete circuidControl;
+!!!194124.cpp!!!	open(inout ptr : void) : bool
+
+	TOLOG ("open");
+	AEffGUIEditor::open (ptr);
+	CRect size (rect.left , rect.top, rect.right, rect.bottom);
+	ppiGui::MainCtrl * frame = new ppiGui::MainCtrl (size, ptr, this);
+	this->frame = frame;
+	CRect tmp ( -1,25, SETTINGS->WINDOW_WIDTH , SETTINGS->WINDOW_HEIGHT );
+	if ( firstInit ) {
+		firstInit = false;
+		//size.inset (0,-1);
+		circuidView = new CircuidView ( tmp );
+		addViewRelation ( circuidView, graph.get() ); // registriere View=>Graph
+		frame->addView ( (CView*)circuidView );
+		// erst nach addView weil: NULL Pointer bei getFrame()
+		// da addView() protected Member Atribute der View initalisiert.
+		circuidControl = new CircuidControl ( circuidView, view2model );
+		frame->getToolBox()->EventSender<MouseContextChanged>::addEventListener ( circuidControl );
+		circuidControl->initView();
+	}
+	else {
+		loadView();
+		MToolBox *t = getMainCtrl()->getToolBox();
+		t->EventSender<MouseContextChanged>::addEventListener ( circuidControl );
+	}
+	return true;
+!!!194252.cpp!!!	close() : void
+
+	try {
+		TOLOG ("close");
+		// serialisiere view
+		saveView();
+		frame->removeAll (false);
+		releaseView();
+		if (frame) delete frame;
+		frame = NULL;
+	} catch (...) {
+		throw com::ppiError::PPIError ( "Exception!" , __FILE__, __LINE__ );
+	}
+!!!194508.cpp!!!	save(inout ar : oArchive) : void
+
+	if ( frame ) saveView();
+	ar << view2model;
+	string viewStr = viewbuffer.str();
+	ar << viewStr;
+!!!194764.cpp!!!	load(inout ar : iArchive, inout graph : Graph::Ptr) : void
+
+	boost::lock_guard<boost::mutex> lock(mutex);
+	this->graph = graph;
+	firstInit = false; // !!
+	if ( frame ) {
+		//frame->advanceNextFocusView ( circuidView ); // ?? ohne dies -> probleme mit focus wenn vorher
+		releaseView();								 // menu offen war. 
+	}
+	ar >> view2model;
+	string viewStr;
+	ar >> viewStr;
+	viewbuffer.str("");
+	viewbuffer.clear();
+	viewbuffer.str(viewStr);
+	if ( frame ) {
+		loadView();
+		getMainCtrl()->getToolBox()->EventSender<MouseContextChanged>::addEventListener ( circuidControl );
+	}
+!!!194892.cpp!!!	PpiEditor(inout ptr : void, in graph : Graph::Ptr)
+
+	instances++;
+	PpiEditor::graph = graph;
+	LogFile::setBufferSize ( 1 );
+	rect.left   = 0;
+	rect.top    = 0;
+	rect.right  = SETTINGS->WINDOW_WIDTH;
+	rect.bottom = SETTINGS->WINDOW_HEIGHT;
+	frame = NULL;
+	TOLOG ( MyString ("+PPIEditor.") );
+	firstInit = true;
+	settings = Settings::getSettings();
+!!!195020.cpp!!!	~PpiEditor()
+
+	try {
+		graph.reset();
+	} catch ( ... ) {
+		throw com::ppiError::PPIError ( "Exception!" , __FILE__, __LINE__ );
+	}
+!!!195148.cpp!!!	idle() : void
+
+	//boost::lock_guard<boost::mutex> lock(mutex);
+	AEffGUIEditor::idle();
+	IdleListenerList::iterator it = idleListeners.begin();
+	for ( ; it!=idleListeners.end(); ++it ) {
+		(*it)->onIdle();
+		if (changed) {
+			it = *changed;
+			if ( it==idleListeners.end() ) break;
+			changed = NULL;
+		}
+	}
+	changed = NULL;
+	executeCommands();

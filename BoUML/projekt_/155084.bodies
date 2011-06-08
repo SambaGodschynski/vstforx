@@ -1,0 +1,64 @@
+class GVSTPluginController
+!!!188620.cpp!!!	openEdWindow(inout node : GVSTPlugNode) : void
+
+	VSTPlugViewMap::left_map::iterator it = vstPlugViewMap.left.find ( node );
+	if ( it == vstPlugViewMap.left.end() ) return;
+	(*it).second->openWindow();
+!!!188748.cpp!!!	closeEdWindow(inout node : GVSTPlugNode) : void
+
+	VSTPlugViewMap::left_map::iterator it = vstPlugViewMap.left.find ( node );
+	if ( it == vstPlugViewMap.left.end() ) return;
+	(*it).second->closeWindow();
+!!!189004.cpp!!!	registerObject(inout vObj : GObject, inout mObj : PObject) : void
+
+	GVSTPlugNode *node = (GVSTPlugNode*)vObj;
+	GButton *btn = node->getEButton();
+	btn->EventSender<OnMouseClick>::addEventListener (
+		(GObjectController*)frntCtrl.getController(FrontController::CTRL_GOBJECT)
+	);
+	// new VSTPlugView
+	VSTPlugNode *plug = frntCtrl.getViewRelations().get<VSTPlugNode> ( node );
+	// checken ob plug editor hatt
+	if ( !plug->can ( effFlagsHasEditor ) ) return; // !!! ENDET HIER WENN KEIN EDITOR !!!
+	node->EventSender<ButtonClicked>::addEventListener (this);
+	node->EventSender< OnDestroy<GObject> >::addEventListener (this);
+	PpiEditor *ed = (PpiEditor*)node->getParentView()->getEditor();
+	VSTPlugView *view = new VSTPlugView ( ed, plug );
+	vstPlugViewMap.insert ( VSTPlugViewMap::value_type( node, view ) );
+	view->EventSender<OnClose>::addEventListener (this);
+!!!189132.cpp!!!	unregisterObject(inout gObj : GObject, inout pObj : PObject) : void
+ 
+	GVSTPlugNode *node = (GVSTPlugNode*) gObj;
+	CircuidView *view = node->getParentView();
+	node->EventSender< OnDestroy<GObject> >::removeEventListener(this);
+	// entferne pobject
+	VSTPlugNode *plug = (VSTPlugNode*) pObj; 
+	
+	VSTPlugViewMap::left_map::iterator it = vstPlugViewMap.left.find ( node );
+	if ( it != vstPlugViewMap.left.end() ) {
+		(*it).second->closeWindow();
+		(*it).second->forget();
+		vstPlugViewMap.left.erase (it);
+	}
+	IObjectController *ctrl = frntCtrl.getController ( FrontController::CTRL_GPROCESSOR );
+	ctrl->unregisterObject ( gObj, pObj );
+!!!189260.cpp!!!	eventHandler(inout src : void, in ev : ButtonClicked) : void
+
+	GVSTPlugNode *node = (GVSTPlugNode*) src;
+	if ( ev.src->getValue() ){ // button on
+		openEdWindow ( node );
+	} else { // button off
+		closeEdWindow ( node );
+	}
+!!!189516.cpp!!!	eventHandler(inout src : void, in ev : OnClose) : void
+
+	VSTPlugView *view = (VSTPlugView*) src;
+	VSTPlugViewMap::right_map::iterator it = vstPlugViewMap.right.find ( view );
+	if ( it == vstPlugViewMap.right.end() ) return;
+	GButton *btn = (*it).second->getEButton();
+	if ( btn->getValue() == 0.0f ) return;
+	btn->setValue(0.0f);
+	btn->setObjectDirty();
+!!!189644.cpp!!!	getMenuEntryList(inout obj : GObject, inout mL : MenuEntryList) : void
+
+	frntCtrl.getController(FrontController::CTRL_GPROCESSOR)->getMenuEntryList (obj, mL);

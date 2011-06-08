@@ -1,0 +1,31 @@
+class GFlag
+!!!174028.cpp!!!	GFlag(inout view : CircuidView, inout parent : GObject)
+
+	GFlag::src = parent;
+	upper = "";
+	lower = "";
+	bBox = CRect ( 0, 0, 0, 16 );
+	CRect tmp = src->getSize();
+	bBox.offset( tmp.left + 35, tmp.top - 20 );
+	focus = CPoint (bBox.left, bBox.top );
+!!!174156.cpp!!!	render(inout cc : CDrawContext) : void
+
+	//laenge ermitteln
+	int maxStrLength = max(getUpperLabel().length(), getLowerLabel().length() );
+	if ( maxStrLength <= 0 ) return;
+	bBox.setWidth ( 6 * maxStrLength );
+	// linien zeichnen
+	cc->setLineStyle ( kLineSolid );
+	cc->setLineWidth ( 1 );
+	cc->setFrameColor ( lightGrey );
+	cc->moveTo ( src->getPos() );
+	cc->lineTo ( CPoint (bBox.left, bBox.top) );
+	cc->lineTo ( CPoint (bBox.right, bBox.top) );
+	// zeichne strings
+	CRect tmp = bBox;
+	cc->setFontColor ( black );
+	cc->setFont ( kNormalFontSmall );
+	tmp.offset ( 0 , - 13 );
+	cc->drawString ( upper.c_str(), tmp, false, kLeftText );
+	tmp.offset ( 0 ,   12 );
+	cc->drawString ( ( lower + " " ).c_str(), tmp, false, kLeftText );

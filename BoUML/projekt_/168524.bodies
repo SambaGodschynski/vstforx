@@ -1,0 +1,4 @@
+class NOPNode
+!!!235212.cpp!!!	processFrame(inout fr : Frame) : void
+
+	pushFrame ( fr );

@@ -1,0 +1,115 @@
+class ADSR
+!!!134092.cpp!!!	save(inout ar : oArchive, in version : uint) : void
+
+	ar << graph;
+	ar << state;
+	for ( int i=0; i<NUM_STATES; ++i ){
+		ar << duration[i];
+		ar << level[i];
+		ar << curveType[i];
+	}
+	ar << threshold;
+	for ( int i=0; i<FADER_TYPES; ++i ){
+		ar << faderType[i];
+	}
+	ar << fader;
+	ar << parameterMap;
+	ar << in;
+	ar << value;
+	ar << maxDurationInSec;
+	ar << trigger;
+	ar << fadeFinished;
+	
+!!!134220.cpp!!!	load(inout ar : iArchive, in version : uint) : void
+
+	Parameter::ParameterListenerFunction lC=boost::bind( &ADSR::levelChanged, this, _1, _2 );
+	Parameter::ParameterListenerFunction dC=boost::bind( &ADSR::durationChanged, this, _1, _2 );
+	Parameter::ParameterListenerFunction cT=boost::bind( &ADSR::curveTypeChanged, this, _1, _2 );
+	ar >> graph;
+	ar >> state;
+	for ( int i=0; i<NUM_STATES; ++i ){
+		ar >> duration[i];
+		ar >> level[i];
+		ar >> curveType[i];
+		duration[i]->addValueChangedListenerF ( dC );
+		level[i]->addValueChangedListenerF ( lC );
+		curveType[i]->addValueChangedListenerF ( cT );
+	}
+	ar >> threshold;
+	for ( int i=0; i<FADER_TYPES; ++i ){
+		ar >> faderType[i];
+	}
+	ar >> fader;
+	ar >> parameterMap;
+	ar >> in;
+	ar >> value;
+	ar >> maxDurationInSec;
+	ar >> trigger;
+	ar >> fadeFinished;
+!!!134348.cpp!!!	curveTypeChanged(inout src : void, in v : float) : void
+
+	Parameter *p = (Parameter*) src;
+	int type = mapInteger ( v, FADER_TYPES );
+	p->setDisplay ("type " + MyString(type+1) );
+!!!134476.cpp!!!	levelChanged(inout src : void, in v : float) : void
+
+	Parameter *p = (Parameter*) src;
+	if ( state == p->getIndex() ) fader->resetEndValue ( v );
+!!!134604.cpp!!!	durationChanged(inout src : void, in v : float) : void
+
+	Parameter *p = (Parameter*) src;
+	VstTimeInfo *inf = graph->getVstTimeInfo (0);
+	p->setDisplay( v * maxDurationInSec * inf->sampleRate / inf->sampleRate   );  
+!!!134732.cpp!!!	initFaderTypes() : void
+
+	faderType[0] = new FadeValue<LIN>();
+	faderType[1] = new FadeValue<QUAD>();
+	faderType[2] = new FadeValue<CUB>();
+	faderType[3] = new FadeValue<QUART>();
+	faderType[4] = new FadeValue<QUINT>();
+	faderType[5] = new FadeValue<EXP>();
+!!!134988.cpp!!!	ADSR(inout graph : Graph, in maxD : float = 1.0f)
+
+	initFaderTypes();
+	static const char bff[][15] = { {"attack"},{"decay"},{"sustain"},{"release"} };
+	Parameter::ParameterListenerFunction lC=boost::bind( &ADSR::levelChanged, this, _1, _2 );
+	Parameter::ParameterListenerFunction dC=boost::bind( &ADSR::durationChanged, this, _1, _2 );
+	Parameter::ParameterListenerFunction cT=boost::bind( &ADSR::curveTypeChanged, this, _1, _2 );
+	fader = faderType[0];
+	for ( int i=A; i<NUM_STATES; ++i ){
+		curveType[i] = new Parameter ();
+		curveType[i]->setIndex (i);
+		curveType[i]->setName (MyString(bff[i]) + " slope type"); 
+		curveType[i]->addValueChangedListenerF (cT); 
+		curveType[i]->setValue(0.0f); 
+		duration[i] = new Parameter ();
+		duration[i]->setIndex (i);
+		duration[i]->addValueChangedListenerF(dC);
+		duration[i]->setName (MyString(bff[i]) + " duration"); 
+		duration[i]->setLabel(" s"); 
+		duration[i]->setDisplay("?");
+		duration[i]->setValue (1.0f / maxD); 
+		level[i] = new Parameter ();
+		level[i]->setIndex (i);
+		level[i]->setValue (1.0f - (i*1.0f/4.0f) ); 
+		level[i]->setName (MyString(bff[i]) + " level"); 
+		level[i]->addValueChangedListenerF (lC);
+		parameterMap.push_back ( level[i] );
+		parameterMap.push_back ( duration[i] );
+		parameterMap.push_back ( curveType[i] );
+	}
+	threshold = new Parameter ();
+	*threshold = 0.001f;
+	threshold->setName ("trigger_threshold");
+	parameterMap.push_back ( threshold );
+	level[R]->setValue (0.0f); 
+	
+!!!135116.cpp!!!	~ADSR()
+
+	for (int i=0; i<FADER_TYPES; ++i ) delete faderType[i];
+	for ( int i=A; i<NUM_STATES; ++i ){
+		delete curveType[i]; 
+		delete duration[i]; 
+		delete level[i];
+	}
+	delete threshold;

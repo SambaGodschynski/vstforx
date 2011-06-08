@@ -1,0 +1,6 @@
+class GPassiveKnob
+!!!177100.cpp!!!	GPassiveKnob(inout view : CircuidView)
+
+	setRadius(12);
+	setEnabled(false);
+	cView->setListener ( this );
