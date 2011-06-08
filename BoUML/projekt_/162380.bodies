@@ -1,4 +1,0 @@
-class CmdMove
-!!!211020.cpp!!!	_execute() : void
-
-	obj->moveTo(pos);

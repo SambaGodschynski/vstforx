@@ -1,7 +1,0 @@
-class ValueChangedSender
-!!!137164.cpp!!!	notifyListeners(inout src : void, in value : T) : void
-
-	list < ValueChangedListener<T>* >::iterator it = listeners.begin();
-	for ( ; it!=listeners.end(); ++it ) (*it)->valueChanged ( src, value );
-	list < ValueChangedFunction  >::iterator it2 = funcListeners.begin();
-	for ( ; it2!=funcListeners.end(); ++it2 ) (*it2)( src, value );

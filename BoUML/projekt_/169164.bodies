@@ -1,6 +1,0 @@
-class LogConnection
-!!!241228.cpp!!!	newInvereseOperator() : ConnectionOperator
- 
-	ExpConnection *neu = new ExpConnection(v,u);
-	neu->getParameter(0)->addBiConnection ( getParameter(0) );
-	return neu;

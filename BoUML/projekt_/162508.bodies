@@ -1,9 +1,0 @@
-class CmdAddConnectionOperator
-!!!211276.cpp!!!	_execute() : void
-
-	ConnectionOperator::Ptr op =  ConnectionOperator::Ptr ( new OP ( parameterA, parameterB ) );
-	ConnectionOperator::Ptr inv = ConnectionOperator::Ptr ( op->newInvereseOperator() );
-	parameterA->addConnectionOperator ( parameterB, op );
-	parameterB->addConnectionOperator ( parameterA, inv );
-	parameterA->setValue ( parameterA->getValue() );
-	cView->CView::setDirty();

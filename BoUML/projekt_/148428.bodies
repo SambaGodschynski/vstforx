@@ -1,7 +1,0 @@
-class GIONode
-!!!203340.cpp!!!	GIONode(inout parent : CircuidView)
-
-	name = "GNode";
-	radius = 0;
-!!!203468.cpp!!!	~GIONode()
-

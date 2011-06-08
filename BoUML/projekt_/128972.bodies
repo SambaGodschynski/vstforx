@@ -1,4 +1,0 @@
-class MyString
-!!!141260.cpp!!!	trim() : MyString
-
-	return MyString ( boost::algorithm::trim_copy( (string)*this ) );

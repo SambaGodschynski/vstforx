@@ -1,9 +1,0 @@
-class GStepNodeController
-!!!188492.cpp!!!	getMenuEntryList(inout obj : GObject, inout mL : MenuEntryList) : void
-
-	menu::MenuEntryList add;
-	ADD_MENU_LABEL ( add, "add_new_step", 
-		new CmdAddStepNodeOutput ( obj->getParentView(), (GStepNode*)obj, &frntCtrl ) );
-	GProcessorNodeController *ctrl = 
-		(GProcessorNodeController*) frntCtrl.getController(FrontController::CTRL_GPROCESSOR);
-	ctrl->createMenu ( obj, mL, &add );

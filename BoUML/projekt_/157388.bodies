@@ -1,8 +1,0 @@
-class MAMove
-!!!192972.cpp!!!	onMouse(in ev : OnMouseDrag) : void
-
-	if ( ev.btn != kLButton ) return;
-	if ( ev.state == ev.DRAG ){
-		ev.src->moveTo ( ev.p );
-		ev.src->setObjectDirty();
-	}

@@ -1,5 +1,0 @@
-class GCmdRemovePObject
-!!!226892.cpp!!!	_execute() : void
-
-	if (graph->remove ( pObj ) )
-		delete pObj; // TODO : removed event listener...delete dann dort 
