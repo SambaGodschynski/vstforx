@@ -25,11 +25,18 @@ void ScanVisitor::insert ( const ScanVisitor::Path &path )
 	DataBase::Results res;
 	DB_QUERY (
 		// path schon in db ?
-		dbExe->execute ( TblFolder::getFolder( path ), res );
+		sambag::cpsqlite::ParameterList pL;
+		string q = TblFolder::getFolder( path, pL );
+		dbExe->execute ( q, pL, res );
 		if ( !res.empty() ) { // ja:
-			dbExe->execute( TblFolder::updateFolder(path) );
+			sambag::cpsqlite::ParameterList pL;
+			dbExe->execute( TblFolder::updateFolder(path, pL), pL );
 		}
-		else dbExe->execute( TblFolder::insertFolder(path) );
+		else {
+			sambag::cpsqlite::ParameterList pL;
+			string q = TblFolder::insertFolder( path, pL );
+			dbExe->execute(q, pL);
+		}
 	)
 	scannedFolders.push_back ( path );
 }
@@ -42,10 +49,13 @@ void ScanVisitor::setStartFolder ( const ScanVisitor::Path &startFolder ) {
 	DataBase::Results res;
 	DB_QUERY (
 		// folder schon in db ?
-		dbExe->execute ( TblFolder::getFolder( startFolder ), res );
-		if ( res.empty() ) // nein:
-			dbExe->execute( TblFolder::insertFolder( startFolder, PluginCollection::ROOT_FOLDER_ID ) );
-		else { // ja:
+		sambag::cpsqlite::ParameterList pL;
+		string q =  TblFolder::getFolder( startFolder, pL );
+		dbExe->execute ( q, pL, res );
+		if ( res.empty() ) { // nein:
+			sambag::cpsqlite::ParameterList pL;
+			dbExe->execute( TblFolder::insertFolder( startFolder, PluginCollection::ROOT_FOLDER_ID, pL ), pL );
+		} else { // ja:
 			// folder war mal child folder => update nach root
 			if ( res[0]->get("parentFolderId") != "NULL" )
 				dbExe->execute( TblFolder::updateParentFolderID( res[0]->getConv<FolderID>("id"), 
@@ -429,7 +439,9 @@ void PluginCollection::initDB() {
 		// create tables ( if not exsits ): // throws DataBaseQueryFailed, DataBaseQueryTimeout
 		exec->execute( TblFolder::create() ); 
 		exec->execute( TblPlugins::create() ); 
-		exec->execute ( TblFolder::getFolder( TblFolder::root() ), res );
+		sambag::cpsqlite::ParameterList pL;
+		string q = TblFolder::getFolder( TblFolder::root(), pL );
+		exec->execute ( q, pL, res );
 		if (  res.empty() ) { // exsists root
 			exec->execute( TblFolder::insertRoot() );
 			LOG_ASSERT ( exec->lastInsertRowId() == ROOT_FOLDER_ID );
@@ -493,7 +505,9 @@ PluginCollection::Folder PluginCollection::getFolder( const PluginCollection::Pa
 	DataBase::Executer::Ptr exec = database->getExecuter(); 
 	DataBase::Results res;
 	DB_QUERY (
-		exec->execute( TblFolder::getFolder(loc), res );
+		sambag::cpsqlite::ParameterList pL;
+		string q =  TblFolder::getFolder( loc, pL );
+		exec->execute( q, pL, res );
 	)
 	if ( res.empty() ) return Folder( "", NULL_FOLDER_ID );
 	return Folder( res[0]->get( TblFolder::name() ), res[0]->getConv<Int>( TblFolder::id() ) );
@@ -506,7 +520,9 @@ processing::PluginInfo PluginCollection::getPlugInfo ( const PluginCollection::P
 	DataBase::Executer::Ptr exec = database->getExecuter();
 	DataBase::Results results;
 	DB_QUERY (
-		exec->execute( TblPlugins::getPlugin( path.string() ), results );
+		sambag::cpsqlite::ParameterList pL;
+		string q = TblPlugins::getPlugin( path.string(), pL );
+		exec->execute( q, pL, results );
 	)
 	PluginInfoList l;
 	if ( extractAndAdd ( results, l ) ) return l.front();

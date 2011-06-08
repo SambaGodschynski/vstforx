@@ -50,29 +50,43 @@ struct TblFolder {
 		return ret;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	static string insertFolder ( const Path &path ) {
+	static string insertFolder ( const Path &path, sambag::cpsqlite::ParameterList &out_pL ) {
+		using namespace sambag::cpsqlite;
 		stringstream ss;
 		string parentFolderLoc = path2String( path.parent_path() );
-		string subQ = " ( SELECT id FROM folders WHERE location='" + parentFolderLoc + "' ) ";
-		ss<<"INSERT INTO folders ( name, parentFolderID, location ) VALUES ( '";
-		ss<<path.filename()<<"', " << subQ << ", '"<<path2String(path)<<"' );";
+
+		string subQ = "( SELECT id FROM folders WHERE location = ? )";
+		ss<<"INSERT INTO folders ( name, parentFolderID, location ) VALUES ( ?, "<<subQ<<", ? );";
+		size_t index = 1;
+		out_pL.push_back( TextParameter::create( index++, path.filename() ) );
+		out_pL.push_back( TextParameter::create( index++, parentFolderLoc ) );
+		out_pL.push_back( TextParameter::create( index++, path2String(path) ) );
+
 		return ss.str();
 	}
 	//--------------------------------------------------------------------------------------------------------
-	static string updateFolder ( const Path &path ) {
+	static string updateFolder ( const Path &path, sambag::cpsqlite::ParameterList &out_pL ) {
+		using namespace sambag::cpsqlite;
 		stringstream ss;
 		string parentFolderLoc = path2String( path.parent_path() );
-		string q_parentFolderID = "SELECT id FROM folders WHERE location='" + parentFolderLoc + "'";
-		ss<<"UPDATE folders SET parentFolderID=(" << q_parentFolderID << ") WHERE location='" << path << "';";
+		string q_parentFolderID = " SELECT id FROM folders WHERE location = ? ";
+		ss<<"UPDATE folders SET parentFolderID=(" << q_parentFolderID << ") WHERE location = ?;";
+		out_pL.push_back( TextParameter::create( 1, parentFolderLoc ) );
+		out_pL.push_back( TextParameter::create( 2, path2String(path) ) );
 		return ss.str();
 	}
 	//--------------------------------------------------------------------------------------------------------
-	static string insertFolder ( const Path &path, const Int &parentFolderID  ) {
-		stringstream ss;
-		string loc = path2String( path );
-		ss<<"INSERT INTO folders ( name, parentFolderID, location ) VALUES ( '"<<path.filename()<<"', ";
-		ss<< parentFolderID << ", '"<< loc <<"');";
-		return ss.str();
+	static string insertFolder ( 
+		const Path &path, 
+		const Int &parentFolderID, 
+		sambag::cpsqlite::ParameterList &out_pL ) 
+	{
+		using namespace sambag::cpsqlite;
+		string q = "INSERT INTO folders ( name, parentFolderID, location ) VALUES ( ?, ?, ? );";
+		out_pL.push_back( TextParameter::create( 1, path.filename() ) );
+		out_pL.push_back( IntParameter::create( 2, parentFolderID ) );
+		out_pL.push_back( TextParameter::create( 3, path2String( path ) ) );
+		return q;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	static string updateParentFolderID ( const Int &folderID, const Int &newParentFolderID ) {
@@ -87,9 +101,11 @@ struct TblFolder {
 		return ss.str();
 	}
 	//--------------------------------------------------------------------------------------------------------
-	static string getFolder ( const string &name ) {
+	static string getFolder ( const string &name, sambag::cpsqlite::ParameterList &out_pL ) {
+		using namespace sambag::cpsqlite;
 		stringstream ss;
-		ss<<"SELECT * FROM folders WHERE name = '"<<name<<"';";
+		ss<<"SELECT * FROM folders WHERE name = ?;";
+		out_pL.push_back( TextParameter::create( 1, name ) ); 
 		return ss.str();
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -115,10 +131,12 @@ struct TblFolder {
 		return ss.str();
 	}
 	//--------------------------------------------------------------------------------------------------------
-	static string getFolder ( const Path &location ) {
+	static string getFolder ( const Path &location, sambag::cpsqlite::ParameterList &out_pL ) {
+		using namespace sambag::cpsqlite;
 		stringstream ss;
 		string loc = path2String( location );
-		ss<<"SELECT * FROM folders WHERE location = '"<<loc<<"';";
+		ss<<"SELECT * FROM folders WHERE location = ?;";
+		out_pL.push_back( TextParameter::create( 1, loc ) ); 
 		return ss.str();
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -144,9 +162,15 @@ struct TblFolder {
 		return ss.str();
 	}
 	//--------------------------------------------------------------------------------------------------------
-	static string getFolder ( const string &name, const Int &parentFolderID ) {
+	static string getFolder ( 
+		const string &name, 
+		const Int &parentFolderID, 
+		sambag::cpsqlite::ParameterList &out_pL ) 
+	{
+		using namespace sambag::cpsqlite;
 		stringstream ss;
-		ss<<"SELECT * FROM folders WHERE parentFolderID = "<<parentFolderID<<" AND name='"<<name<<"';";
+		ss<<"SELECT * FROM folders WHERE parentFolderID = "<<parentFolderID<<" AND name = ?;";
+		out_pL.push_back( TextParameter::create( 1, name ) ); 
 		return ss.str();
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -269,11 +293,11 @@ struct TblPlugins {
 		return q;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	static string getPlugin ( const string &location ) 
-	{
-		stringstream ss;
-		ss<<"SELECT * FROM plugins WHERE location = '" << location << "';";
-		return ss.str();
+	static string getPlugin ( const string &location, sambag::cpsqlite::ParameterList &pL ) {
+		using namespace sambag::cpsqlite;
+		string q = "SELECT * FROM plugins WHERE location = ?;";
+		pL.push_back( TextParameter::create( 1, location ) );
+		return q;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	static string getNumPlugins () 

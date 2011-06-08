@@ -79,11 +79,15 @@ void PluginCollectionTest::eventHandler( void *src, const com::ScanFinished &ev 
 }
 
 /* 
+	07-12-2011 Changed because bug: 0000084
+	caused by SQL Exception ( ' character in filenames )
+
    Ordner Struktur:
    ----------------
    \testVstFolder           <- no plugs
    \testVstFolder\A         <- mda collection
-   \testVstFolder\B         <- mda collection + no plug files
+   \testVstFolder\B         <- mda collection + no plug files 
+   \testVstFolder\C'		<- one plug that filename has special character
    \testVstFolder\B\B1
    \testVstFolder\B\B1\B1_1 <- textfile
    \testVstFolder\B\B2		<- mda collection but overdrive == PLUGIN_LOACTION_1 => renamed
@@ -92,6 +96,7 @@ void PluginCollectionTest::eventHandler( void *src, const com::ScanFinished &ev 
 	
 	Testplugins = mda PluginCollection = win(31)/mac(36) plugins 
 */
+
 
 #if WIN32
 static const size_t NUM_PLUG_COLLECTION = 31;
@@ -193,13 +198,14 @@ void PluginCollectionTest::testScan() {
 	exp = map_list_of ( "root", "testVstFolder" )
 					  ( "testVstFolder", "A" )
 				      ( "testVstFolder", "B" )
+					  ( "testVstFolder", "C'" )
 					 // ( "B", "B1" ) <= empty
 					  ( "B", "B2" );
 					// ( "B", "B3" ); <= no plug files
 
 	CPPUNIT_ASSERT ( !exp.empty() );
 	checkTree( pC, exp );
-	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3, pC->getNumSucceed() );
+	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 1, pC->getNumSucceed() );
 	CPPUNIT_ASSERT_EQUAL ( (size_t)2, pC->getNumFailed() );
 	CPPUNIT_ASSERT_EQUAL ( (size_t)0, pC->getNumNotChecked() );
 	CPPUNIT_ASSERT ( pC->isAllScanned() );
@@ -239,6 +245,7 @@ void PluginCollectionTest::testFastScan() {
 	exp = map_list_of ( "root", "testVstFolder" )
 					  ( "testVstFolder", "A" )
 				      ( "testVstFolder", "B" )
+					  ( "testVstFolder", "C'" )
 					  // ( "B", "B1" ) <= empty
 					  ( "B", "B2" )
 					  ( "B", "B3" ); // <= no plug files but not checked
@@ -248,7 +255,7 @@ void PluginCollectionTest::testFastScan() {
 	CPPUNIT_ASSERT ( exp.empty() );
 	CPPUNIT_ASSERT_EQUAL ( (size_t)0, pC->getNumSucceed() );
 	CPPUNIT_ASSERT_EQUAL ( (size_t)0, pC->getNumFailed() );
-	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 2, pC->getNumNotChecked() );
+	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 3, pC->getNumNotChecked() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>check pluginfo list
 	PluginCollection::PluginInfoList pL;
 	com::Path pathA = com::Path( path.string() + "/A" );
@@ -277,7 +284,7 @@ void PluginCollectionTest::testFolderIntegrity1(){
 	settings->clearVSTFolders();
 	settings->addVSTFolder( pathA.string() );
 	pC->update( graph.get() );
-	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3, pC->getNumSucceed() );
+	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 1, pC->getNumSucceed() );
 	//>>>>>>>>>>>>>>>>has to throw something like "given folder == sub folder"
 	com::Path pathB =  boost::filesystem::complete("testVstFolder/A");
 	settings->addVSTFolder( pathA.string() );
@@ -302,7 +309,7 @@ void PluginCollectionTest::testFolderIntegrity1(){
 	settings->clearVSTFolders();
 	settings->addVSTFolder( pathA.string() );
 	pC->update( graph.get() );
-	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3, pC->getNumSucceed() );
+	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 1, pC->getNumSucceed() );
 	CPPUNIT_ASSERT_EQUAL ( (size_t)2, pC->getNumFailed() );
 	CPPUNIT_ASSERT_EQUAL ( (size_t)0, pC->getNumNotChecked() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>detected bug during man. test in with GUI:
@@ -356,7 +363,7 @@ void PluginCollectionTest::testFolderIntegrity2(){
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan
 	pC->update( graph.get() );
 	try {
-		CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 2, pC->getNumSucceed() );
+		CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 3, pC->getNumSucceed() );
 		CPPUNIT_ASSERT_EQUAL ( (size_t)2, pC->getNumFailed() );
 		CPPUNIT_ASSERT_EQUAL ( (size_t)0, pC->getNumNotChecked() );
 	} catch (...) {
@@ -369,7 +376,7 @@ void PluginCollectionTest::testFolderIntegrity2(){
 			    pathB.string() + "/" + filename2 );
 	pC->update( graph.get() );
 	try {
-		CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 1, pC->getNumSucceed() );
+		CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 2, pC->getNumSucceed() );
 		CPPUNIT_ASSERT_EQUAL ( (size_t)2 + 1, pC->getNumFailed() );
 		CPPUNIT_ASSERT_EQUAL ( (size_t)0, pC->getNumNotChecked() );
 	} catch (...) {
@@ -381,7 +388,7 @@ void PluginCollectionTest::testFolderIntegrity2(){
 	///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan
 	pC->update( graph.get() );
 	try {
-		CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 1, pC->getNumSucceed() );
+		CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 2, pC->getNumSucceed() );
 		CPPUNIT_ASSERT_EQUAL ( (size_t)2, pC->getNumFailed() );
 		CPPUNIT_ASSERT_EQUAL ( (size_t)0, pC->getNumNotChecked() );
 	} catch (...) {
@@ -392,7 +399,7 @@ void PluginCollectionTest::testFolderIntegrity2(){
 	remove_all ( pathB );
 	///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan
 	pC->update( graph.get() );
-	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3, pC->getNumSucceed() );
+	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 1, pC->getNumSucceed() );
 	CPPUNIT_ASSERT_EQUAL ( (size_t)2, pC->getNumFailed() );
 	CPPUNIT_ASSERT_EQUAL ( (size_t)0, pC->getNumNotChecked() );
 	
