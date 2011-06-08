@@ -1,0 +1,194 @@
+#ifndef GOBJECT_SERIALIZATIONS_FUNC
+#define GOBJECT_SERIALIZATIONS_FUNC
+
+
+#define LOAD_CONNECTION(type)	ppiGui::CircuidView *view;			\
+	                            GObject::Ptr a, b;   				\
+								ar >> view;							\
+								ar >> a;							\
+								ar >> b;							\
+								::new(t)ppiGui::type ( view, a, b ); 
+#include "ConcreteGObjects.h"
+#include "CircuidView.h"
+using namespace std;
+namespace ppiGui{
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GStdKnob
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GStdKnob * t, const unsigned int file_version ){
+	ppiGui::CircuidView *view;
+	ar >> view;
+	::new(t)ppiGui::GStdKnob ( view ); 
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GPassiveKnob
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GPassiveKnob * t, const unsigned int file_version ){
+	ppiGui::CircuidView *view;
+	ar >> view;
+	::new(t)ppiGui::GPassiveKnob ( view ); 
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GConnectionPaPa
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GConnectionPaPa * t, const unsigned int file_version ){
+	LOAD_CONNECTION( GConnectionPaPa );
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GConnectionIO
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GConnectionIO * t, const unsigned int file_version ){
+	LOAD_CONNECTION( GConnectionIO );
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GConnectionPrIn
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GConnectionPrIn * t, const unsigned int file_version ){
+	LOAD_CONNECTION( GConnectionPrIn );
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GConnectionPrOut
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GConnectionPrOut * t, const unsigned int file_version ){
+	LOAD_CONNECTION( GConnectionPrOut );
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GConnectionPrPa
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GConnectionPrPa * t, const unsigned int file_version ){
+	LOAD_CONNECTION( GConnectionPrPa );
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GConnectionCoPa
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void save_construct_data( oArchive & ar, const GConnectionCoPa * t, const unsigned int file_version ){
+	SAVE_CONNECTION
+}
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GConnectionCoPa * t, const unsigned int file_version ){
+	LOAD_CONNECTION( GConnectionCoPa );
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GInputNode
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GInputNode * t, const unsigned int file_version ){
+	ppiGui::CircuidView *view;
+	Resources::BitmapID resId; 
+	ar >> view;
+	ar >> resId;
+	::new(t)ppiGui::GInputNode ( view, resId ); 
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GOutputNode
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GOutputNode * t, const unsigned int file_version ){
+	ppiGui::CircuidView *view;
+	Resources::BitmapID resId; 
+	ar >> view;
+	ar >> resId;
+	::new(t)ppiGui::GOutputNode ( view, resId ); 
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GVolumeNode
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GVolumeNode * t, const unsigned int file_version ){
+	ppiGui::CircuidView *view;
+	ar >> view;
+	::new(t)ppiGui::GVolumeNode ( view ); 
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GVSTPlugNode
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GVSTPlugNode * t, const unsigned int file_version ){
+	ppiGui::CircuidView *view;
+	ar >> view;
+	::new(t)ppiGui::GVSTPlugNode ( view ); 
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GPanAdapter
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GPanAdapter * t, const unsigned int file_version ){
+	ppiGui::CircuidView *view;
+	ar >> view;
+	::new(t)ppiGui::GPanAdapter ( view ); 
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GOutputStepNode
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GOutputStepNode * t, const unsigned int file_version ){
+	ppiGui::CircuidView *view;
+	ar >> view;
+	::new(t)ppiGui::GOutputStepNode ( view ); 
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GInputStepNode
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GInputStepNode * t, const unsigned int file_version ){
+	ppiGui::CircuidView *view;
+	ar >> view;
+	::new(t)ppiGui::GInputStepNode ( view ); 
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GOutputSwitch
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GOutputSwitch * t, const unsigned int file_version ){
+	ppiGui::CircuidView *view;
+	ar >> view;
+	::new(t)ppiGui::GOutputSwitch ( view ); 
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GInputSwitch
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GInputSwitch * t, const unsigned int file_version ){
+	ppiGui::CircuidView *view;
+	ar >> view;
+	::new(t)ppiGui::GInputSwitch ( view ); 
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GPeakTracker
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GPeakTracker * t, const unsigned int file_version ){
+	ppiGui::CircuidView *view;
+	ar >> view;
+	::new(t)ppiGui::GPeakTracker ( view ); 
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GADSRTrigger
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GADSRTrigger * t, const unsigned int file_version ){
+	ppiGui::CircuidView *view;
+	ar >> view;
+	::new(t)ppiGui::GADSRTrigger ( view ); 
+}
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GADSRTrigger
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void load_construct_data( iArchive & ar, GMidiProcessor * t, const unsigned int file_version ){
+	ppiGui::CircuidView *view;
+	ar >> view;
+	::new(t)ppiGui::GMidiProcessor ( view ); 
+}
+} //namespace ppiGui
+#endif
+
+

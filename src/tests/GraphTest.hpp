@@ -1,0 +1,88 @@
+
+#ifndef GRAPH_TEST_H
+#define GRAPH_TEST_H
+
+#include <cppunit/extensions/HelperMacros.h>
+#include "AudioEffectX.h"
+#include "com/PPIError.h"
+#include "processing/processing.h"
+#include "processing/Graph.h"
+#include "processing/ConcreteProcessAdapter.h"
+#include "processing/IHostInfo.h"
+#include "DummyFX.h"
+
+namespace tests {
+//=============================================================================
+// extra VolumeAdapter: bruch NUMERATOR/DENOMINATOR == initvalue.
+// wird fuer Creator Klassen benoetig.
+template< int NUMERATOR, int DENOMINATOR >
+class VolumeAdapterX : public processing::VolumeAdapter {
+//============================================================================
+public:
+	//-------------------------------------------------------------------------
+	typedef boost::shared_ptr<VolumeAdapterX> Ptr;
+protected:
+	//-------------------------------------------------------------------------
+	VolumeAdapterX( processing::IHostInfo * g ) : 
+		 VolumeAdapter( g, NUMERATOR / (float)DENOMINATOR ) {}
+public:
+	//-------------------------------------------------------------------------
+	static Ptr create(  processing::IHostInfo * g ) {
+		Ptr neu( new VolumeAdapterX(g) );
+		neu->self = neu;
+		return neu;
+	}
+};
+//=============================================================================
+//=============================================================================
+class GraphTest : public CPPUNIT_NS::TestFixture {
+//=============================================================================
+	CPPUNIT_TEST_SUITE( GraphTest );
+	CPPUNIT_TEST( testConstructor );
+	CPPUNIT_TEST( testAddRemoveNodes );
+	CPPUNIT_TEST( testConnectNodes );
+	CPPUNIT_TEST( testSignalProcessPath );
+	CPPUNIT_TEST( testDelayAdapter );
+	CPPUNIT_TEST( testDelayCompensationSimple );
+	CPPUNIT_TEST( testDelayCompensationTree );
+	CPPUNIT_TEST( testDelayCompensationComplex1 );
+	CPPUNIT_TEST( testGraphConsistency );
+	CPPUNIT_TEST( testJanitorCreate );
+	CPPUNIT_TEST( testGraphSeries );
+	CPPUNIT_TEST( testGraphParallel );
+	CPPUNIT_TEST( testGraphComplex1 );
+	CPPUNIT_TEST( testGraphComplex2 );
+	CPPUNIT_TEST( testGraphComplex3 );
+	CPPUNIT_TEST( testSerialization );
+	CPPUNIT_TEST_EXCEPTION( testJanitorLock, com::ppiError::DeadlockException );
+	CPPUNIT_TEST_SUITE_END();
+private:
+	processing::DummyFX *dummyFX;
+	processing::Graph::Ptr createGraph( int blockSize, float samplerate );
+public:
+	GraphTest();
+	~GraphTest();
+	void setUp(){}
+	void tearDown(){}
+	void testConstructor();
+	void testAddRemoveNodes();
+	void testSignalProcessPath();
+	void testConnectNodes();
+	void testDelayCompensationSimple();
+	void testDelayCompensationTree();
+	void testSerialization();
+	void testDelayCompensationComplex1();
+	void testDelayAdapter();
+	void testJanitorCreate();
+	void testJanitorLock();
+	//void testGraphTestBuilder(); wird von testGraphSeries/testGraphParallel/testGraphComplex mitgetestet
+	void testGraphSeries();
+	void testGraphParallel();
+	void testGraphConsistency(); // mehrfach verkuepfungen / feedback / etc...
+	void testReleaseGraphObjects();
+	void testGraphComplex1();
+	void testGraphComplex2();
+	void testGraphComplex3();
+};
+} // namespace tests
+#endif 

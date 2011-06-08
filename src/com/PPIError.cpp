@@ -1,0 +1,26 @@
+#include "PPIError.h"
+#include "Log.h"
+#include "One4All.h"
+
+namespace com{
+namespace ppiError{
+//============================================================================================================
+// Klasse: PPIError.
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+PPIError::PPIError (string err, string source, long line ){
+	error = err;
+	src = source;
+	linenumber = line;
+	TOLOG ( toString() ); 
+}
+//------------------------------------------------------------------------------------------------------------
+string PPIError::src2String() const {
+	return "source:" + src + " line:" + MyString((int)linenumber);
+}
+//------------------------------------------------------------------------------------------------------------
+void PPIError::showMessage() {
+	com::MessageBox ( "Error!", error, MSG_ALERT ); 
+};
+} //namespace ppiError
+} //namespace com

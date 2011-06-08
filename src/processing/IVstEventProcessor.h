@@ -1,0 +1,15 @@
+#ifndef IVSTEVENTPROCESSOR_H_
+#define IVSTEVENTPROCESSOR_H_
+
+#include "aeffectx.h"
+
+//============================================================================================================
+// Schnittstelle IVstEventProcessor
+//============================================================================================================
+class IVstEventProcessor {
+public:
+	//--------------------------------------------------------------------------------------------------------
+	virtual void processEvents( VstEvents * events ) = 0;
+};
+
+#endif
