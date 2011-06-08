@@ -30,16 +30,6 @@ void SetupDialog::initControls() {
 	listBox->setViewSize ( r );
 	listBox->setMouseableArea ( r );
 	
-	/*/ TEMP
-	char x = '!';
-	for ( int i=0; i<=126-33; ++i ) {
-		string str;
-		for ( int j=1; j<i; j++ ) str+=x;
-		if ( ++x > '~' ) x = '!';
-		listBox.addString ( str );
-	}
-	// TEMP*/
-	
 	addView (listBox);
 	// Add Dir Button ========--------........
 	static const CCoord X = 495;

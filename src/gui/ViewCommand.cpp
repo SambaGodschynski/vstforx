@@ -297,7 +297,7 @@ void CmdCreateOStepNode::_execute(){
 	create<GOutputStepNode, StepOutputAdapter, 1, 2>();
 	gObjs.push_back( newGPr );
 	newGPr->getIOs ( gObjs );
-	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
+	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );   
 	cView->addGObject ( pG );
 	cView->CView::setDirty();
 }

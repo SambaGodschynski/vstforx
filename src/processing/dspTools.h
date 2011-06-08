@@ -408,6 +408,7 @@ public:
 		}	
 	}
 	//----------------------------------------------------------------------------------------------------
+	// increments faders t value and returns fader value of t. 
 	float process (){
 		if ( state == R ) return fader;
 		ClockEdge::EdgeValue n = fadeFinished.in ( fader.isFinished() );

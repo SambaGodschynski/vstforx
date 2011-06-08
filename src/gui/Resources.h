@@ -51,6 +51,7 @@ public:
 		DLG_SCAN_NOW,
 		MIDI_RECEIVER,
 		BACKGROUND,
+		ADSR_SWITCH,
 		NUM_BITMAPS
 	};	
 	//--------------------------------------------------------------------------------------------------------

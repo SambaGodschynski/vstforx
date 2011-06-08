@@ -152,7 +152,7 @@ bool GLine::hitTest ( const CPoint &q ) const {
 	U.y = U.y / Len
 	# Orthogonal Projizieren
 	Lambda = (Q.x - P1.x) * U.x + (Q.y - P1.y) * U.y
-	# Fuﬂpunkt ausrechnen
+	# Fusspunkt ausrechnen
 	D.x = P1.x + Lambda * U.x
 	D.y = P1.y + Lambda * U.y
 */	

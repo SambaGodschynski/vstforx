@@ -647,6 +647,14 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	// Dupliziert iFrame nach *fr[numSteps] * step_Faktor
 	inline void processFrames ( Frame *iFrame, OutputMatrix &fr, Processor::Int sampleFrames );
+	//----------------------------------------------------------------------------------------------------
+	// skims one sample of step duration samples and switches to next state if duration samples == 0
+	void skimStepDuration() {
+		if ( cStep->skimDuration() <= 0 ) {
+			cStep->nextStep();
+			cStep->setDuration();
+		}
+	}
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	// anzahl der Steps == Ausgaenge == anz. der ProcessAdapterNode

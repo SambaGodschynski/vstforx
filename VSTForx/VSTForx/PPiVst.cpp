@@ -53,6 +53,7 @@ CBitmap ** loadResources() {
 	bitmaps[Resources::CHANNEL_SPLIT_ADAPTER]	= new CBitmap (IDB_PNG3);
 	bitmaps[Resources::MIDI_RECEIVER]	        = new CBitmap (IDB_PNG35);
 	bitmaps[Resources::BACKGROUND]			    = new CBitmap (IDB_PNG36);
+	bitmaps[Resources::ADSR_SWITCH]			    = new CBitmap (IDB_PNG2);
 	
 	// toolbox
 	bitmaps[Resources::EDIT_BUTTON]				= new CBitmap (IDB_PNG11);

@@ -180,7 +180,7 @@ void load_construct_data( iArchive & ar, GADSRTrigger * t, const unsigned int fi
 	::new(t)ppiGui::GADSRTrigger ( view ); 
 }
 //============================================================================================================
-// Frei stehende Methoden fuer boost archive: GADSRTrigger
+// Frei stehende Methoden fuer boost archive: GMidiProcessor
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
 void load_construct_data( iArchive & ar, GMidiProcessor * t, const unsigned int file_version ){

@@ -480,10 +480,7 @@ inline void StepOutputAdapter::processFrames ( Frame *iFrame, OutputMatrix &fr, 
 	VstNumber *l = (*iFrame)[0];
 	VstNumber *r = (*iFrame)[1];
 	for ( int i=0; i<sampleFrames; ++i ) {
-		if ( cStep->skimDuration() <= 0 ) {
-			cStep->nextStep();
-			cStep->setDuration();
-		}
+		skimStepDuration();
 		for ( int j=0; j<cStep->getNumSteps(); j++ ){
 			float fac = cStep->getFaderValueAndIncT(j); // mit jedem lesezugriff wird fader::t erhoet!
 			if (!fr[j]) continue; // !!Wichtig
