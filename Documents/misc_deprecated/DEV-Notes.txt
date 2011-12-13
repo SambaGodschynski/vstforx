@@ -1,0 +1,33 @@
+PpiEditor:
+
+    - GuiHaupt Klasse
+    - enthaelt :
+          o MainCtrl
+          o CircuidView
+          o CircuidControl
+MainCtrl/CFrame :
+    - Oberste Control Ebene. steuert und enthaelt:
+          o Menu,
+          o ContextMenu,
+          o Toolbox
+    - es besteht die moeglichkeit einen MouseMotion Listener anzumelden.
+      Dieser Meldet dann in der Update phase des CFrames die aktuelle Maus position.
+
+    Toolbox:
+        - Kommunikation ueber ValueChangedListener :  
+          umstaendlich aber wahr:
+          ( (MainCtrl*)cView->getFrame() )->getToolbox()->addValueChangedListener
+    
+    ContextMenu:
+        - Eintrag = MenuEntry = CView + action(Command*).
+          holt sich MainCtrl direkt aus dem GObject sofern GObject == MenuEntryContainer.
+          Initalisierung der MenuEntry Objekte in Konstruktor des GObjects.
+
+CicruidView :
+    - "Schaltplan" ansicht.
+    - bestehend aus GObject Objekten die ueber eine add() Methode hinzugefuegt werden.
+    - GObject Objekte werden beim zerstoeren von CircuidView zerstoert. ( kein Reference counter )
+CircuidControl :
+    - Control fuer CircuidView
+    - Hatt unterschiedliche Mausaktionen die uber die Toolbox umgeschaltet werden koennen.
+    - Je nach Mausaktion reagiert eine Dragaktion auf einem Objekt anders. z.Z Connect, Move, Use

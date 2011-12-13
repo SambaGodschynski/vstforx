@@ -1,0 +1,136 @@
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+01234567890123456789012345678901234567890123456789012345678901234567890123456789
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
+	| - offen
+	| x erledigt
+	| # eingefroren
+	? mal sehen
+	
+
+  x Kopieren zweier Leerer Frames : NULL pointer
+  x Inkonsitenz beim hinzufuegen und entfernen von knoten und verbindungen 
+    in bezug auf frameContainer
+  x Fangen von ausnahmen ( faengt zwar bei angabe von (...)  
+    aber nicht Konkrete angabe der Klasse )
+  x Ausfuehren alter VST Plugins funktioniert nicht. Vermutung: 
+    processReplacing Methode nicht vorhanden (o.ä).
+  x getGObjectAt ( point )
+  x zugriff auf ressourcen vom gui packet aus?
+  # CircuidView Background als GObject in Ebene
+  x GObjectStageBuffer: stage erstellen -> stage leer aber nicht loeschen -> 
+    iterrieren -> error. (begin())
+  x error C2243: 'Typumwandlung': Konvertierung von 'ppiGui::GConnection *' 
+    zu 'ppiGui::GObject *' ist bereits vorhanden, aber es kann nicht 
+    darauf zugegriffen werden. .. ? => privat geerbt
+  x getActiveNodes() in processing::ProcessorNode ist inEffektiv.
+  x einige Plugins gehen nicht. Vermutung: nicht beantwortete 
+    fragen an den host. zb. Timelineangaben etc.
+	L: Plugs nicht richtig initalisiert : 
+	samplerate, blockgroesse setzten -> an/aus.
+  x Views muessen beim schliessen und neu oeffnen neu initalisert werden. 
+    grund pointerfehler. macht sich bemerkbar wenn mehr als
+    2 editor instanzen vorhanden.
+  x Classic Plugin serie liefert ein Editor rect groesse 0.
+  x MyString = zuweisung funktioniert nicht korrekt.
+  x schnelle abfolge von Editor::open(), Editor::close() -> 
+    GObjectStageBuffer in getRawData auf einmal leer.
+  x com::PPIError::StackUnderflow wenn teile des graphes nicht komplett verbunden.
+  x Min/Max fuer Knobs.
+  x PlaceGObject soll in der lage sein mehrere objekte zu plazieren. 
+  x entfernen von objekten/verbindungen
+  x QuickAndDirty Loesung fuer FileSelector -> besser machen.
+    ( plugin db anstatt auswahl einzelner files )
+  x stuerzt beim laden von plug verz. ab so soll beim naechsten start betreffende datei 
+    ermittelt und -bei bedarf- ausgeschlossen werdenz
+  # "feedback verdrahtung"
+  A
+  +-- hatt funzt. aber ergebniss klingt scheisse 
+- stabilitaet in bezug auf hostinfochanged 
+  # einheitliche Connectable<T> schnittstelle. ( auch fuer ProcessorNode )
+  x neuer Parameter operator : relative 
+              |
+              V
+  +------funzt. net!
+  V
+# verbindungsmodi: absolute, relative
+
+  x ADSRTrigger neuer parameter: hold ( in bezug auf trigger )
+ 
+  x Midi verarbeitung, verwendung von instrumenten.
+    . ProcessorNode Schnitstelle um canEvent() erweitern
+    . midi-event an canEvent objs weiterleiten
+    . channel select als zusaetzlicher param. bei canEvent objs
+
+- VSTPlugNode: reagieren auf IOChanged; loeschen/hinzufuegen von I/O Nodes 
+- meldungen: 
+            - am besten ohne dialoge zb. rote schrift links unten oder so.
+            - stapelnd/ weg-klickbar ( bei groesseren stapeln => mehrere nacheinander wegklicken )
+  x unregister bei mehrfach vorhandenen Objekten ( Knobs ) fehlerhaft. siehe: unregister multimap M2V
+  # gleichbehandlung von VSTPlugNode & ProcessorNode ( getInput(...) etc. )
+  x submenus
+  x menu schliesst beim verlassen des focus
+  x seltener fehler: beim laden von view waehrend menu noch sichtbar
+  x CircuidView sammelt objekte als shared_ptr; -> erzeugen von GObjects ueber create() siehe CMenuEntry
+  # audioMasterCallback nicht mehr global benutzen; sollte so laufen da unterschl. 
+    host unterschl. instanzen erzeugen
+    
+  x kontextmenu waehrend placeObject
+  x quick-set: parameter direkt im menu einstellbar 
+  x kapselung sytemspezifischer aufrufe bzw. variablen in seperates modul :
+            OSSpecific.h
+               #define OS_MSG_BOX IMPL_MSG_BOX
+                                    je nach #include
+                                               |
+                                               +--OSWindows
+                                               |
+                                               +--OSxxx
+  # kontext menu vstplugin: e-button im weg.
+
+  # outputsw; step; zeitangaben der parameter 0 .. 11 ( uebernehmen 1zu1 parameter string )
+
+
+umbenennen :
+	x PPIError -> ppiError
+	x PeakTracker -> PeakTracker
+	x FrontController -> FrontController
+
+
+					A
+					|
+		 zwischen spaeter und eher 
+
+- verbindungen farbinformation ( lautstaerke )
+  # stepnode : anzeige welcher aktueller step
+  # HostInformationChanged Event
+  A
+  |
+  +----umstaendlicher als die bisherige loesung; kaum vorteile
+  x verschachtelbarkeit
+  - Objekte duplizieren
+  - operationen auf mehrfachauswahl
+					|
+					V
+
+
+
+bezahlversion bzw. zusaetzliche komp.:
+--------------
+
+- pitch detection ( pitch2value )
+- pitch shifter   ( fft-pitch shift ) 
+- crossfader
+
+
+mal sehen :
+----------------------
+- tape recorder
+	. kann eingang aufnehmen o. wave file laden
+	. wiedergabe durch scratch regler
+	. als seperates VST-Plugin
+- verbindungen farbinformation ( lautstaerke )
+
+- verschiedene arbeitsbereiche ( wie bei ubuntun )
+- FFT note tracker
+- Executer: ist als einziger berechtigt commands auszufuehren; undo/redo
+- Instrumenten version mit mehreren parametern

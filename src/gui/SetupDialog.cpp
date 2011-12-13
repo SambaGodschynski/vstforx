@@ -348,6 +348,7 @@ void SetupCtrl::setupOk( long tag ) {
 }
 //------------------------------------------------------------------------------------------------------------
 void SetupCtrl::scan() {
+	// TODO: boolean lock wont work.
 	if (scanLock) return; // avoid double execution ( happens e.g when doubleclicked on fastscan )
 	scanLock = true;
 	PluginCollection::Ptr pC = PluginCollection::getPluginCollection();

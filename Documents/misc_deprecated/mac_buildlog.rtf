@@ -1,0 +1,81 @@
+{\rtf1\ansi\ansicpg1252\cocoartf949\cocoasubrtf540
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\froman\fcharset0 Times-Roman;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue255;}
+{\*\listtable{\list\listtemplateid1\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc2\leveljcn2\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}.}{\leveltext\leveltemplateid0\'02\'05.;}{\levelnumbers\'01;}}{\listname ;}\listid1}
+{\list\listtemplateid2\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc2\leveljcn2\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}.}{\leveltext\leveltemplateid0\'02\'05.;}{\levelnumbers\'01;}}{\listname ;}\listid2}
+{\list\listtemplateid3\listhybrid{\listlevel\levelnfc0\levelnfcn0\leveljc2\leveljcn2\levelfollow0\levelstartat1\levelspace360\levelindent0{\*\levelmarker \{decimal\}.}{\leveltext\leveltemplateid0\'02\'05.;}{\levelnumbers\'01;}}{\listname ;}\listid3}}
+{\*\listoverridetable{\listoverride\listid1\listoverridecount0\ls1}{\listoverride\listid2\listoverridecount0\ls2}{\listoverride\listid3\listoverridecount0\ls3}}
+\paperw11900\paperh16840\margl1440\margr1440\vieww8640\viewh7540\viewkind0
+\pard\tx566\tx1133\tx1700\tx2267\tx2834\tx3401\tx3968\tx4535\tx5102\tx5669\tx6236\tx6803\ql\qnatural\pardirnatural
+
+\f0\b\fs24 \cf0 \
+Buildlog Mac OSX 10.5\
+\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\ql\qnatural\pardirnatural
+
+\b0 \cf0 1. Setting up boost library\
+\
+    > boost-1-42-0 downloaded\
+    > build of bjam fails :\
+    	- gcc not found > setting PATH variable in ~/.bash_profiles\
+         - no header found in /usr/include > made symbolic links from\
+           /Developer/SDKs/MacOSX10.5.sdk/usr/include to /usr/include using :\
+          \
+          #!/bin/sh\
+          for x in $(ls)\
+          do\
+              ln -s $(pwd)/$x $1/$x\
+          done\
+        - crt????.o file not found > same way like the header issue with:\
+          /Developer/SDKs/MacOSX10.5.sdk/usr/lib to /usr/lib\
+\
+2. Setting up XCode for VST-Plugin: \
+    \
+    > used following tutorial:\
+	\
+
+\f1\b\fs48 \cf2 Getting a VST Project set up in XCode\
+\pard\pardeftab720\sa240\ql\qnatural
+
+\fs24 \cf2 UPDATE: I actually found a webpage where this was explained really well so I setup my project in this manner too
+\b0 \
+
+\b This is for development with the Steinberg VST SDK v2.4 and NOT 3.0.
+\b0 \
+\pard\tx220\tx720\pardeftab720\li720\fi-720\ql\qnatural
+\ls1\ilvl0\cf2 {\listtext	1.	}Start a new project (Carbon bundle).\
+{\listtext	2.	}Remove main.c, <PLUGIN_NAME>_Prefix.pch (Source) and InfoPlist.strings (Resources) files.\
+{\listtext	3.	}Go to 'Project->Edit Active Target '<PLUGIN_NAME>'', and select the 'Build' tab.\
+{\listtext	4.	}Point 'Header Search Paths' to the folder you've got the VST SDK in.\
+{\listtext	5.	}Change 'Wrapper Extension' from bundle to vst.\
+{\listtext	6.	}Change 'Installation Directory' to $(HOME)/Library/Audio/Plug-Ins/VST/, or wherever you want the plugin installed to.\
+{\listtext	7.	}Create a blank text file in the 'Resources' section, put BNDL???? in it, and save it as PkgInfo. This is to make sure the OS X Finder sees the plugin as an actual executable, and not just another folder of stuff (which is what a bundle is, really).\
+{\listtext	8.	}Go to 'Project->New Build Phase->New Run Script Build Phase', and make sure the shell script appears at the end of the list of phases in the 'Targets-><PLUGIN_NAME>' part of the 'Groups & Files' section. In the window that appears, put cp PkgInfo build/<PLUGIN_NAME>.vst/Contents/ in the Script editor. This is to make sure the PkgInfo file gets copied into the bundle.\
+{\listtext	9.	}Add another shell script, the same way as before, again making sure it appears at the end of the list. In the window that appears, put cp -r build/<PLUGIN_NAME>.vst $HOME/Library/Audio/Plug-Ins/VST/ in the Script editor. This is is to copy the plugin over to your default plugins folder.\
+{\listtext	10.	}Now, you have to create references to your source files and files belonging to the VST SDK. In the Groups and Files menu, right click on the Source folder and add (or create) the source files required for your project. From the VST SDK folder, add the files in the public.sdk/source/vst2.x and pluginterfaces/vst2.x folders to your project.\
+\pard\pardeftab720\sa280\ql\qnatural
+
+\b\fs36 \cf2 VSTGUI Notes\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\ql\qnatural
+\ls2\ilvl0
+\b0\fs24 \cf2 {\listtext	1.	}Add the ApplicationServices and Quicktime frameworks.\
+{\listtext	2.	}For any images you use, they must be named (i.e. the filename) very specifically:\
+{\listtext	3.	}bmp<RESOURCE_NUM>.bmp\
+\pard\pardeftab720\sa240\ql\qnatural
+\cf2 Where <RESOURCE_NUM> is the resource number you've assigned them in your VSTGUI editor. The other thing to note is that the resource number in the filename must consist of 5 digits, so if you had a resource number of 100, the filename would be: bmp00100.bmp. This all applies to .png images as well (i.e. they have to be named like bmp00100.png, not png00100.png).\
+\pard\pardeftab720\sa280\ql\qnatural
+
+\b\fs36 \cf2 Configurations/Build Styles Notes\
+\pard\tx220\tx720\pardeftab720\li720\fi-720\ql\qnatural
+\ls3\ilvl0
+\b0\fs24 \cf2 {\listtext	1.	}On the 'Build Results' window there's a drop down box named either 'Active Build Style' or 'Active Configuration', depending which version of XCode you're using. Setting this to Development means your plugin will be compiled with debug symbols etc. so you can debug it, while setting it to Deployment will compile it without debug symbols, and with optimisation. You can set which options apply to these build styles/configurations by ctrl-clicking the main project icon in the 'Groups & Files' section (it should be the first entry) and selecting 'Get Info'.\
+\ls3\ilvl0\cf0 \
+    note: deactivate: Precompile Prefix Header\
+\
+    > removed many errors caused by the different interpretations of C++ standard\
+       beetween mircosoft compiler and gcc. Mainly :\
+          - template def. ( ptr->template method(x,y) )\
+          - const correctness \
+          - namespaces\
+    > works for now with gcc 4.0.  Errors with gcc 4.2 ( mainly method definitions not found )\
+}

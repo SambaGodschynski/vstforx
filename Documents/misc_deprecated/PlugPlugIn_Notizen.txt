@@ -1,0 +1,103 @@
+###########################
+#PlugPlugIN (Arbeitstitel)#
+###########################
+
+1. Beschreibung
+---------------
+PPI ist ein VST -Effekt- Plugin das weiter VST Plugins aufnehemen kann. P={ VSTPlugin(x), VSTPlugin(x+1), ... , VSTPlugin(n) }
+Die Aufgabe von PPI liegt dann darin, eingehendes Audio Material durch P zu vearbeiten.
+Die verabeitungs Reihenfolge von P kann beliebig über eine GUI definiert werden. 
+Dabei wird P als Module dargestellt die beliebig "verdrahted" werden kann. Die darstellung Orientiert sich an E-Schaltplänen.
+Die P Module verfügen über ein kontext menu mit dessen hilfe die Plugin Schnittstellen 
+sprich Parameter als Modul Eingänge auswählbar gemacht werden können.
+PPI selbst hatt eine fest vorgegebene anzahl von Parametern. Diese werden im Schaltplan als Steuer Module angezeigt und können
+mit P Modul Eingängen verbunden werden. So ist es zb. möglich unterschiedliche Parameter verschiedener Plugins mit einem PPI 
+Parameter zu Steuern.
+Desweiteren wird es zusätzliche Module geben die den Signalfluss von EIN-Ausgaengen bzw. Parameter beeinflussen:
+	    - Wellenform Modulation ( Parameter )
+     	    - Step Sequencer ( Signal )
+     	    - Bedingungen/Schalter ( Signal )
+	    - Channel Spliter ( Signal )
+	    - ...
+
+Kann:
+
+  - Markierungen: Geometrische Objekte, Freihand Pinsel
+
+
+
+Meilensteine:
+----------------------
+
+
+1. Signal Processing Stufe 1 --abgehakt-- :
+   - Erstellen von Graph und Nodes
+   - Berechnung des Graphen
+   - Laden von VST Plugins
+   - Zuweisen von Parametern
+   - Veknüpfen von Parametern.
+
+2. GUI Stufe 1 --abgehakt--:
+   - erstellen/entfernen von ProcessorNodes     
+   - verschieben von ProcessorNodes        
+   - verbinden von ProcessorNodes
+
+3. Control Ebene:
+   - verbindung zwischen GUI und Graph unter 
+     einhaltung des MVC Pattern
+
+
+
+
+
+
+
+
+
+
+X. Technische Notizen --ÜBERHOLT--:
+----------------------
+
+  Signal Processing:
+  P ist ein gerichteter Graph. Jeder Plugin-Knoten hatt Vorgänger und Nachfolger.
+  Wird ein Garph erstellt bzw. Geändert so wird über einen Rekursiven durchlauf geprüft welche Knoten
+  das Ergebniss beeinflussen und welche nicht. Diese werden dann über ein entsprechendes Knoten-Attribut aktiviert/deaktiviert.
+  S ist der Warte Stack, benötigt ein Knoten zur Berechnung das Ergebniss eines Vorgänger Knotens so komm dieser auf den Warte Stack
+  Q ist die Durchlauf Queue. Die abarbeitung der Knoten Orientiert sich an den Breitensuch Algorithmus.
+  Jeder Knoten hatt ein ergebniss Stack. Die Adresse eines errechneten Frames wird hier gelagert.
+  Hatt ein Knoten mehr als ein Nachfolger so muss das errechnete Frame kopiert und auf den Stack gelegt werden.
+  Wird ein Knoten aufgefordert die Adresse eines Frames zu liefern so wird diese vom Stack geholt.
+
+
+  processPluginChain( startKnoten ):
+    Q = leere Queue
+    S = leerer Stack
+    S.push ( startKnoten )
+  while ( !Q.isEmpty ):
+    k = Q.pop()
+    Q.push ( alle Nachbar von k )
+    if !k.active(): continue
+    if (!processNode ( k )): continue
+    for ( int i=0; i<S.size(); i++ ):
+    	processNode ( S.pop() )
+
+
+  processNode ( k ):
+    if ein Vorgänger von k in Queue:
+       S.push (k)
+       return False
+    if ( k.anzVorgänger > 1 ):
+       for ( x in k.vorgänger ): tmpFrame+=x.getFrame()
+       k.process( tmpFrame )
+    else: k.process ( k.vogänger[0].getFrame() )
+    return True
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,20 @@
+1. change version variable in com/Settings.h
+
+2. build:
+   - VSTForx
+   - iVSTForx
+   - ConfigTool
+
+3. change version variable in NSIS_Installer/installVstForx.nsi
+
+4. build installer
+
+5. short installer and plugin check
+
+6. upload on server
+
+7. add version in mantis
+
+8. add version entry in mysql forx_beta_download table
+
+9. spread "new version" message

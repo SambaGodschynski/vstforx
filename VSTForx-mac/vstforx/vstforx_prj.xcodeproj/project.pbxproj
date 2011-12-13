@@ -23,6 +23,30 @@
 
 /* Begin PBXBuildFile section */
 		8D01CCCE0486CAD60068D4B7 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08EA7FFBFE8413EDC02AAC07 /* Carbon.framework */; };
+		A28B82FA149FCDD2003F0F88 /* FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28B82F9149FCDD2003F0F88 /* FileSystem.cpp */; };
+		A28B82FB149FCDD2003F0F88 /* FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28B82F9149FCDD2003F0F88 /* FileSystem.cpp */; };
+		A2B2F8E0149F67D900EB3714 /* DataBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8DC149F67D900EB3714 /* DataBase.cpp */; };
+		A2B2F8E1149F67D900EB3714 /* sambag_sqlite.c in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8DF149F67D900EB3714 /* sambag_sqlite.c */; };
+		A2B2F8E2149F67D900EB3714 /* DataBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8DC149F67D900EB3714 /* DataBase.cpp */; };
+		A2B2F8E3149F67D900EB3714 /* sambag_sqlite.c in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8DF149F67D900EB3714 /* sambag_sqlite.c */; };
+		A2B2F8EB149F684600EB3714 /* aeffguieditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8E4149F684600EB3714 /* aeffguieditor.cpp */; };
+		A2B2F8EC149F684600EB3714 /* cfileselector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8E5149F684600EB3714 /* cfileselector.cpp */; };
+		A2B2F8ED149F684600EB3714 /* cscrollview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8E6149F684600EB3714 /* cscrollview.cpp */; };
+		A2B2F8EE149F684600EB3714 /* ctabview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8E7149F684600EB3714 /* ctabview.cpp */; };
+		A2B2F8F0149F684600EB3714 /* vstcontrols.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8E9149F684600EB3714 /* vstcontrols.cpp */; };
+		A2B2F8F1149F684600EB3714 /* vstgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8EA149F684600EB3714 /* vstgui.cpp */; };
+		A2B2F8F2149F684600EB3714 /* aeffguieditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8E4149F684600EB3714 /* aeffguieditor.cpp */; };
+		A2B2F8F3149F684600EB3714 /* cfileselector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8E5149F684600EB3714 /* cfileselector.cpp */; };
+		A2B2F8F4149F684600EB3714 /* cscrollview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8E6149F684600EB3714 /* cscrollview.cpp */; };
+		A2B2F8F5149F684600EB3714 /* ctabview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8E7149F684600EB3714 /* ctabview.cpp */; };
+		A2B2F8F7149F684600EB3714 /* vstcontrols.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8E9149F684600EB3714 /* vstcontrols.cpp */; };
+		A2B2F8F8149F684600EB3714 /* vstgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8EA149F684600EB3714 /* vstgui.cpp */; };
+		A2B2F8FC149F688900EB3714 /* audioeffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8F9149F688900EB3714 /* audioeffect.cpp */; };
+		A2B2F8FD149F688900EB3714 /* audioeffectx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8FA149F688900EB3714 /* audioeffectx.cpp */; };
+		A2B2F8FE149F688900EB3714 /* vstplugmain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8FB149F688900EB3714 /* vstplugmain.cpp */; };
+		A2B2F8FF149F688900EB3714 /* audioeffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8F9149F688900EB3714 /* audioeffect.cpp */; };
+		A2B2F900149F688900EB3714 /* audioeffectx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8FA149F688900EB3714 /* audioeffectx.cpp */; };
+		A2B2F901149F688900EB3714 /* vstplugmain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8FB149F688900EB3714 /* vstplugmain.cpp */; };
 		A86A9CC11300032100CAC71A /* bmp10034.png in Resources */ = {isa = PBXBuildFile; fileRef = A86A9C9F1300032100CAC71A /* bmp10034.png */; };
 		A86A9CC21300032100CAC71A /* bmp10033.png in Resources */ = {isa = PBXBuildFile; fileRef = A86A9CA01300032100CAC71A /* bmp10033.png */; };
 		A86A9CC31300032100CAC71A /* bmp10032.png in Resources */ = {isa = PBXBuildFile; fileRef = A86A9CA11300032100CAC71A /* bmp10032.png */; };
@@ -219,25 +243,10 @@
 		A86FBBA71341D2D3007D82DE /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08EA7FFBFE8413EDC02AAC07 /* Carbon.framework */; };
 		A86FBBAA1341D2F8007D82DE /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AB71B512BBF02200431252 /* AppKit.framework */; };
 		A86FBBAB1341D2F8007D82DE /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AB71B612BBF02200431252 /* QuickTime.framework */; };
-		A86FBBAF1341D31F007D82DE /* aeffguieditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999C4712B80A7D003A5EDC /* aeffguieditor.cpp */; };
-		A86FBBB01341D31F007D82DE /* cfileselector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999C4812B80A7D003A5EDC /* cfileselector.cpp */; };
-		A86FBBB11341D31F007D82DE /* cscrollview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999C4912B80A7D003A5EDC /* cscrollview.cpp */; };
-		A86FBBB21341D31F007D82DE /* ctabview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999C4A12B80A7D003A5EDC /* ctabview.cpp */; };
-		A86FBBB31341D31F007D82DE /* vstcontrols.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999C4C12B80A7D003A5EDC /* vstcontrols.cpp */; };
-		A86FBBB41341D31F007D82DE /* vstgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999C4D12B80A7D003A5EDC /* vstgui.cpp */; };
-		A86FBBB51341D32C007D82DE /* audioeffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999C4112B80A0D003A5EDC /* audioeffect.cpp */; };
-		A86FBBB61341D32C007D82DE /* audioeffectx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999C4212B80A0D003A5EDC /* audioeffectx.cpp */; };
-		A86FBBB71341D32C007D82DE /* vstplugmain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999C4312B80A0D003A5EDC /* vstplugmain.cpp */; };
 		A8827AC013B511AA00B08463 /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8827ABE13B511AA00B08463 /* Font.cpp */; };
 		A8827AC113B511AA00B08463 /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8827ABE13B511AA00B08463 /* Font.cpp */; };
 		A8827AC313B511CB00B08463 /* bmp10036.png in Resources */ = {isa = PBXBuildFile; fileRef = A8827AC213B511CB00B08463 /* bmp10036.png */; };
 		A8827AC413B511CB00B08463 /* bmp10036.png in Resources */ = {isa = PBXBuildFile; fileRef = A8827AC213B511CB00B08463 /* bmp10036.png */; };
-		A8867093139CD6E400B5CBDD /* DataBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8867091139CD6E400B5CBDD /* DataBase.cpp */; };
-		A8867094139CD6E400B5CBDD /* sambag_sqlite.c in Sources */ = {isa = PBXBuildFile; fileRef = A8867092139CD6E400B5CBDD /* sambag_sqlite.c */; };
-		A8867095139CD6E400B5CBDD /* DataBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8867091139CD6E400B5CBDD /* DataBase.cpp */; };
-		A8867096139CD6E400B5CBDD /* sambag_sqlite.c in Sources */ = {isa = PBXBuildFile; fileRef = A8867092139CD6E400B5CBDD /* sambag_sqlite.c */; };
-		A8867098139CD70000B5CBDD /* FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8867097139CD70000B5CBDD /* FileSystem.cpp */; };
-		A8867099139CD70000B5CBDD /* FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8867097139CD70000B5CBDD /* FileSystem.cpp */; };
 		A88670A8139CDEFA00B5CBDD /* Graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A88670A3139CDEFA00B5CBDD /* Graph.cpp */; };
 		A88670A9139CDEFA00B5CBDD /* Graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A88670A3139CDEFA00B5CBDD /* Graph.cpp */; };
 		A88EB08C136D6DA40067E099 /* dspTools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A88EB08A136D6DA30067E099 /* dspTools.cpp */; };
@@ -283,15 +292,6 @@
 		A897C84B131D8F6E0006416C /* xml_wiarchive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A897C6F4131D8F6C0006416C /* xml_wiarchive.cpp */; };
 		A897C84C131D8F6E0006416C /* xml_woarchive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A897C6F5131D8F6C0006416C /* xml_woarchive.cpp */; };
 		A8999BAE12B7F9E3003A5EDC /* PPiVst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999BAC12B7F9E3003A5EDC /* PPiVst.cpp */; };
-		A8999C4412B80A0D003A5EDC /* audioeffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999C4112B80A0D003A5EDC /* audioeffect.cpp */; };
-		A8999C4512B80A0D003A5EDC /* audioeffectx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999C4212B80A0D003A5EDC /* audioeffectx.cpp */; };
-		A8999C4612B80A0D003A5EDC /* vstplugmain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999C4312B80A0D003A5EDC /* vstplugmain.cpp */; };
-		A8999C4E12B80A7D003A5EDC /* aeffguieditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999C4712B80A7D003A5EDC /* aeffguieditor.cpp */; };
-		A8999C4F12B80A7D003A5EDC /* cfileselector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999C4812B80A7D003A5EDC /* cfileselector.cpp */; };
-		A8999C5012B80A7D003A5EDC /* cscrollview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999C4912B80A7D003A5EDC /* cscrollview.cpp */; };
-		A8999C5112B80A7D003A5EDC /* ctabview.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999C4A12B80A7D003A5EDC /* ctabview.cpp */; };
-		A8999C5312B80A7D003A5EDC /* vstcontrols.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999C4C12B80A7D003A5EDC /* vstcontrols.cpp */; };
-		A8999C5412B80A7D003A5EDC /* vstgui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999C4D12B80A7D003A5EDC /* vstgui.cpp */; };
 		A8AB71B712BBF02200431252 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AB71B512BBF02200431252 /* AppKit.framework */; };
 		A8AB71B812BBF02200431252 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AB71B612BBF02200431252 /* QuickTime.framework */; };
 		A8E9C21913B08DA60038F83D /* bmp10035.png in Resources */ = {isa = PBXBuildFile; fileRef = A8E9C21813B08DA60038F83D /* bmp10035.png */; };
@@ -319,6 +319,20 @@
 
 /* Begin PBXFileReference section */
 		08EA7FFBFE8413EDC02AAC07 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		A28B82F9149FCDD2003F0F88 /* FileSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileSystem.cpp; sourceTree = "<group>"; };
+		A2B2F8DC149F67D900EB3714 /* DataBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataBase.cpp; sourceTree = "<group>"; };
+		A2B2F8DD149F67D900EB3714 /* DataBase.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DataBase.hpp; sourceTree = "<group>"; };
+		A2B2F8DE149F67D900EB3714 /* Parameter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Parameter.hpp; sourceTree = "<group>"; };
+		A2B2F8DF149F67D900EB3714 /* sambag_sqlite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sambag_sqlite.c; sourceTree = "<group>"; };
+		A2B2F8E4149F684600EB3714 /* aeffguieditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = aeffguieditor.cpp; sourceTree = "<group>"; };
+		A2B2F8E5149F684600EB3714 /* cfileselector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cfileselector.cpp; sourceTree = "<group>"; };
+		A2B2F8E6149F684600EB3714 /* cscrollview.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cscrollview.cpp; sourceTree = "<group>"; };
+		A2B2F8E7149F684600EB3714 /* ctabview.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ctabview.cpp; sourceTree = "<group>"; };
+		A2B2F8E9149F684600EB3714 /* vstcontrols.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vstcontrols.cpp; sourceTree = "<group>"; };
+		A2B2F8EA149F684600EB3714 /* vstgui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vstgui.cpp; sourceTree = "<group>"; };
+		A2B2F8F9149F688900EB3714 /* audioeffect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audioeffect.cpp; sourceTree = "<group>"; };
+		A2B2F8FA149F688900EB3714 /* audioeffectx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = audioeffectx.cpp; sourceTree = "<group>"; };
+		A2B2F8FB149F688900EB3714 /* vstplugmain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vstplugmain.cpp; sourceTree = "<group>"; };
 		A86A9C9F1300032100CAC71A /* bmp10034.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bmp10034.png; path = Resources/bmp10034.png; sourceTree = "<group>"; };
 		A86A9CA01300032100CAC71A /* bmp10033.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bmp10033.png; path = Resources/bmp10033.png; sourceTree = "<group>"; };
 		A86A9CA11300032100CAC71A /* bmp10032.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bmp10032.png; path = Resources/bmp10032.png; sourceTree = "<group>"; };
@@ -448,9 +462,6 @@
 		A8827ABE13B511AA00B08463 /* Font.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Font.cpp; sourceTree = "<group>"; };
 		A8827ABF13B511AA00B08463 /* Font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Font.h; sourceTree = "<group>"; };
 		A8827AC213B511CB00B08463 /* bmp10036.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = bmp10036.png; path = Resources/bmp10036.png; sourceTree = "<group>"; };
-		A8867091139CD6E400B5CBDD /* DataBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DataBase.cpp; path = ../../../../../sambag/src/sambag/cpsqlite/DataBase.cpp; sourceTree = SOURCE_ROOT; };
-		A8867092139CD6E400B5CBDD /* sambag_sqlite.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sambag_sqlite.c; path = ../../../../../sambag/src/sambag/cpsqlite/sambag_sqlite.c; sourceTree = SOURCE_ROOT; };
-		A8867097139CD70000B5CBDD /* FileSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FileSystem.cpp; path = ../../../../../sambag/src/sambag/com/FileSystem.cpp; sourceTree = SOURCE_ROOT; };
 		A88670A2139CDEFA00B5CBDD /* BglGraph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BglGraph.h; sourceTree = "<group>"; };
 		A88670A3139CDEFA00B5CBDD /* Graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Graph.cpp; sourceTree = "<group>"; };
 		A88670A4139CDEFA00B5CBDD /* Graph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Graph.h; sourceTree = "<group>"; };
@@ -502,15 +513,6 @@
 		A897C6F5131D8F6C0006416C /* xml_woarchive.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = xml_woarchive.cpp; sourceTree = "<group>"; };
 		A8999BAC12B7F9E3003A5EDC /* PPiVst.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PPiVst.cpp; path = src/PPiVst.cpp; sourceTree = "<group>"; };
 		A8999BAD12B7F9E3003A5EDC /* PPiVst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PPiVst.h; path = src/PPiVst.h; sourceTree = "<group>"; };
-		A8999C4112B80A0D003A5EDC /* audioeffect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = audioeffect.cpp; path = ../../../../vstsdk2.4/public.sdk/source/vst2.x/audioeffect.cpp; sourceTree = SOURCE_ROOT; };
-		A8999C4212B80A0D003A5EDC /* audioeffectx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = audioeffectx.cpp; path = ../../../../vstsdk2.4/public.sdk/source/vst2.x/audioeffectx.cpp; sourceTree = SOURCE_ROOT; };
-		A8999C4312B80A0D003A5EDC /* vstplugmain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vstplugmain.cpp; path = ../../../../vstsdk2.4/public.sdk/source/vst2.x/vstplugmain.cpp; sourceTree = SOURCE_ROOT; };
-		A8999C4712B80A7D003A5EDC /* aeffguieditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = aeffguieditor.cpp; path = ../../../../vstsdk2.4/vstgui.sf/vstgui/aeffguieditor.cpp; sourceTree = SOURCE_ROOT; };
-		A8999C4812B80A7D003A5EDC /* cfileselector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cfileselector.cpp; path = ../../../../vstsdk2.4/vstgui.sf/vstgui/cfileselector.cpp; sourceTree = SOURCE_ROOT; };
-		A8999C4912B80A7D003A5EDC /* cscrollview.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = cscrollview.cpp; path = ../../../../vstsdk2.4/vstgui.sf/vstgui/cscrollview.cpp; sourceTree = SOURCE_ROOT; };
-		A8999C4A12B80A7D003A5EDC /* ctabview.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ctabview.cpp; path = ../../../../vstsdk2.4/vstgui.sf/vstgui/ctabview.cpp; sourceTree = SOURCE_ROOT; };
-		A8999C4C12B80A7D003A5EDC /* vstcontrols.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vstcontrols.cpp; path = ../../../../vstsdk2.4/vstgui.sf/vstgui/vstcontrols.cpp; sourceTree = SOURCE_ROOT; };
-		A8999C4D12B80A7D003A5EDC /* vstgui.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vstgui.cpp; path = ../../../../vstsdk2.4/vstgui.sf/vstgui/vstgui.cpp; sourceTree = SOURCE_ROOT; };
 		A8AB71B512BBF02200431252 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		A8AB71B612BBF02200431252 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
 		A8B50E7012F84460008F61ED /* VSTForx.vst */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VSTForx.vst; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -628,6 +630,25 @@
 			);
 			name = Products;
 			sourceTree = "<group>";
+		};
+		A28B82F6149FCD5D003F0F88 /* com */ = {
+			isa = PBXGroup;
+			children = (
+				A28B82F9149FCDD2003F0F88 /* FileSystem.cpp */,
+			);
+			name = com;
+			path = src/sambag/com;
+			sourceTree = "<group>";
+		};
+		A2B2F8D6149F66A300EB3714 /* sambag */ = {
+			isa = PBXGroup;
+			children = (
+				A28B82F6149FCD5D003F0F88 /* com */,
+				A8867090139CD6C300B5CBDD /* cpsqlite */,
+			);
+			name = sambag;
+			path = ../../../sambag;
+			sourceTree = SOURCE_ROOT;
 		};
 		A86B7D211323AB4A00C19E74 /* filesystem */ = {
 			isa = PBXGroup;
@@ -825,14 +846,17 @@
 			path = plugNodes;
 			sourceTree = "<group>";
 		};
-		A8867090139CD6C300B5CBDD /* sambag */ = {
+		A8867090139CD6C300B5CBDD /* cpsqlite */ = {
 			isa = PBXGroup;
 			children = (
-				A8867097139CD70000B5CBDD /* FileSystem.cpp */,
-				A8867091139CD6E400B5CBDD /* DataBase.cpp */,
-				A8867092139CD6E400B5CBDD /* sambag_sqlite.c */,
+				A2B2F8DC149F67D900EB3714 /* DataBase.cpp */,
+				A2B2F8DD149F67D900EB3714 /* DataBase.hpp */,
+				A2B2F8DE149F67D900EB3714 /* Parameter.hpp */,
+				A2B2F8DF149F67D900EB3714 /* sambag_sqlite.c */,
 			);
-			name = sambag;
+			includeInIndex = 1;
+			name = cpsqlite;
+			path = src/sambag/cpsqlite;
 			sourceTree = "<group>";
 		};
 		A897C5C7131D8C7E0006416C /* boost_1_42_0 */ = {
@@ -843,7 +867,7 @@
 				A897C638131D8F3D0006416C /* system */,
 			);
 			name = boost_1_42_0;
-			path = ../../../../../boost_1_42_0;
+			path = ../../../../clibs/boost_1_42_0;
 			sourceTree = "<group>";
 		};
 		A897C638131D8F3D0006416C /* system */ = {
@@ -922,44 +946,47 @@
 		A8999BAF12B7F9FF003A5EDC /* EXT */ = {
 			isa = PBXGroup;
 			children = (
-				A8867090139CD6C300B5CBDD /* sambag */,
+				A2B2F8D6149F66A300EB3714 /* sambag */,
 				A86FBA271341D228007D82DE /* PPI */,
 				A897C5C7131D8C7E0006416C /* boost_1_42_0 */,
-				A8999BB112B7FA1C003A5EDC /* vst-sdk */,
+				A8999BB112B7FA1C003A5EDC /* vstsdk2.4 */,
 			);
 			name = EXT;
 			sourceTree = "<group>";
 		};
-		A8999BB112B7FA1C003A5EDC /* vst-sdk */ = {
+		A8999BB112B7FA1C003A5EDC /* vstsdk2.4 */ = {
 			isa = PBXGroup;
 			children = (
-				A8999C4012B809DB003A5EDC /* gui */,
-				A8999C3F12B809CC003A5EDC /* sdk */,
+				A8999C4012B809DB003A5EDC /* vstgui */,
+				A8999C3F12B809CC003A5EDC /* vst2.x */,
 			);
-			name = "vst-sdk";
+			name = vstsdk2.4;
+			path = ../../../../clibs/vstsdk2.4;
 			sourceTree = "<group>";
 		};
-		A8999C3F12B809CC003A5EDC /* sdk */ = {
+		A8999C3F12B809CC003A5EDC /* vst2.x */ = {
 			isa = PBXGroup;
 			children = (
-				A8999C4112B80A0D003A5EDC /* audioeffect.cpp */,
-				A8999C4212B80A0D003A5EDC /* audioeffectx.cpp */,
-				A8999C4312B80A0D003A5EDC /* vstplugmain.cpp */,
+				A2B2F8F9149F688900EB3714 /* audioeffect.cpp */,
+				A2B2F8FA149F688900EB3714 /* audioeffectx.cpp */,
+				A2B2F8FB149F688900EB3714 /* vstplugmain.cpp */,
 			);
-			name = sdk;
+			name = vst2.x;
+			path = public.sdk/source/vst2.x;
 			sourceTree = "<group>";
 		};
-		A8999C4012B809DB003A5EDC /* gui */ = {
+		A8999C4012B809DB003A5EDC /* vstgui */ = {
 			isa = PBXGroup;
 			children = (
-				A8999C4712B80A7D003A5EDC /* aeffguieditor.cpp */,
-				A8999C4812B80A7D003A5EDC /* cfileselector.cpp */,
-				A8999C4912B80A7D003A5EDC /* cscrollview.cpp */,
-				A8999C4A12B80A7D003A5EDC /* ctabview.cpp */,
-				A8999C4C12B80A7D003A5EDC /* vstcontrols.cpp */,
-				A8999C4D12B80A7D003A5EDC /* vstgui.cpp */,
+				A2B2F8E4149F684600EB3714 /* aeffguieditor.cpp */,
+				A2B2F8E5149F684600EB3714 /* cfileselector.cpp */,
+				A2B2F8E6149F684600EB3714 /* cscrollview.cpp */,
+				A2B2F8E7149F684600EB3714 /* ctabview.cpp */,
+				A2B2F8E9149F684600EB3714 /* vstcontrols.cpp */,
+				A2B2F8EA149F684600EB3714 /* vstgui.cpp */,
 			);
-			name = gui;
+			name = vstgui;
+			path = vstgui.sf/vstgui;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -972,7 +999,6 @@
 				8D01CCC90486CAD60068D4B7 /* Resources */,
 				8D01CCCB0486CAD60068D4B7 /* Sources */,
 				8D01CCCD0486CAD60068D4B7 /* Frameworks */,
-				A88EB09A136D72BE0067E099 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -991,7 +1017,6 @@
 				A86FBA181341CFC3007D82DE /* Resources */,
 				A86FBA191341CFC3007D82DE /* Sources */,
 				A86FBA1A1341CFC3007D82DE /* Frameworks */,
-				A86BEF4313431F9C00E054F7 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1009,7 +1034,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 4FADC23708B4156C00ABE55E /* Build configuration list for PBXProject "vstforx_prj" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 089C166AFE841209C02AAC07 /* vstforx_prj */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -1114,50 +1146,12 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		A86BEF4313431F9C00E054F7 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "#src=/Users/forx2000/eigene_progs\n#dst=\"/Eigene VSTS\"\n\n#cp -f -r $src/VST/Apps/PPI/VSTForx-mac/vstforx-ppc/build/Debug/iVSTForx.vst \"/Eigene VSTS/VSTForx/iVSTForx.vst\"";
-		};
-		A88EB09A136D72BE0067E099 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\ncp -r -f /Users/forx2000/eigene_progs/VST/Apps/PPI/VSTForx-mac/vstforx-ppc/build/Debug/VSTForx.vst/ \"/Eigene VSTS/VSTForx.beta/VSTForx.vst/\"\n";
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		8D01CCCB0486CAD60068D4B7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				A8999BAE12B7F9E3003A5EDC /* PPiVst.cpp in Sources */,
-				A8999C4412B80A0D003A5EDC /* audioeffect.cpp in Sources */,
-				A8999C4512B80A0D003A5EDC /* audioeffectx.cpp in Sources */,
-				A8999C4612B80A0D003A5EDC /* vstplugmain.cpp in Sources */,
-				A8999C4E12B80A7D003A5EDC /* aeffguieditor.cpp in Sources */,
-				A8999C4F12B80A7D003A5EDC /* cfileselector.cpp in Sources */,
-				A8999C5012B80A7D003A5EDC /* cscrollview.cpp in Sources */,
-				A8999C5112B80A7D003A5EDC /* ctabview.cpp in Sources */,
-				A8999C5312B80A7D003A5EDC /* vstcontrols.cpp in Sources */,
-				A8999C5412B80A7D003A5EDC /* vstgui.cpp in Sources */,
 				A897C651131D8F3D0006416C /* error_code.cpp in Sources */,
 				A897C825131D8F6E0006416C /* archive_exception.cpp in Sources */,
 				A897C826131D8F6E0006416C /* basic_archive.cpp in Sources */,
@@ -1239,12 +1233,21 @@
 				A86FBABE1341D228007D82DE /* VSTPlugNode2x.cpp in Sources */,
 				A86FBABF1341D228007D82DE /* processing.cpp in Sources */,
 				A88EB08C136D6DA40067E099 /* dspTools.cpp in Sources */,
-				A8867093139CD6E400B5CBDD /* DataBase.cpp in Sources */,
-				A8867094139CD6E400B5CBDD /* sambag_sqlite.c in Sources */,
-				A8867098139CD70000B5CBDD /* FileSystem.cpp in Sources */,
 				A88670A8139CDEFA00B5CBDD /* Graph.cpp in Sources */,
 				A8E9C25813B09E0F0038F83D /* MidiEventProcessor.cpp in Sources */,
 				A8827AC013B511AA00B08463 /* Font.cpp in Sources */,
+				A2B2F8E0149F67D900EB3714 /* DataBase.cpp in Sources */,
+				A2B2F8E1149F67D900EB3714 /* sambag_sqlite.c in Sources */,
+				A2B2F8EB149F684600EB3714 /* aeffguieditor.cpp in Sources */,
+				A2B2F8EC149F684600EB3714 /* cfileselector.cpp in Sources */,
+				A2B2F8ED149F684600EB3714 /* cscrollview.cpp in Sources */,
+				A2B2F8EE149F684600EB3714 /* ctabview.cpp in Sources */,
+				A2B2F8F0149F684600EB3714 /* vstcontrols.cpp in Sources */,
+				A2B2F8F1149F684600EB3714 /* vstgui.cpp in Sources */,
+				A2B2F8FC149F688900EB3714 /* audioeffect.cpp in Sources */,
+				A2B2F8FD149F688900EB3714 /* audioeffectx.cpp in Sources */,
+				A2B2F8FE149F688900EB3714 /* vstplugmain.cpp in Sources */,
+				A28B82FA149FCDD2003F0F88 /* FileSystem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1333,22 +1336,22 @@
 				A86FBB681341D27B007D82DE /* basic_archive.cpp in Sources */,
 				A86FBB691341D27B007D82DE /* archive_exception.cpp in Sources */,
 				A86FBB6A1341D286007D82DE /* error_code.cpp in Sources */,
-				A86FBBAF1341D31F007D82DE /* aeffguieditor.cpp in Sources */,
-				A86FBBB01341D31F007D82DE /* cfileselector.cpp in Sources */,
-				A86FBBB11341D31F007D82DE /* cscrollview.cpp in Sources */,
-				A86FBBB21341D31F007D82DE /* ctabview.cpp in Sources */,
-				A86FBBB31341D31F007D82DE /* vstcontrols.cpp in Sources */,
-				A86FBBB41341D31F007D82DE /* vstgui.cpp in Sources */,
-				A86FBBB51341D32C007D82DE /* audioeffect.cpp in Sources */,
-				A86FBBB61341D32C007D82DE /* audioeffectx.cpp in Sources */,
-				A86FBBB71341D32C007D82DE /* vstplugmain.cpp in Sources */,
 				A88EB08D136D6DA40067E099 /* dspTools.cpp in Sources */,
-				A8867095139CD6E400B5CBDD /* DataBase.cpp in Sources */,
-				A8867096139CD6E400B5CBDD /* sambag_sqlite.c in Sources */,
-				A8867099139CD70000B5CBDD /* FileSystem.cpp in Sources */,
 				A88670A9139CDEFA00B5CBDD /* Graph.cpp in Sources */,
 				A8E9C25913B09E0F0038F83D /* MidiEventProcessor.cpp in Sources */,
 				A8827AC113B511AA00B08463 /* Font.cpp in Sources */,
+				A2B2F8E2149F67D900EB3714 /* DataBase.cpp in Sources */,
+				A2B2F8E3149F67D900EB3714 /* sambag_sqlite.c in Sources */,
+				A2B2F8F2149F684600EB3714 /* aeffguieditor.cpp in Sources */,
+				A2B2F8F3149F684600EB3714 /* cfileselector.cpp in Sources */,
+				A2B2F8F4149F684600EB3714 /* cscrollview.cpp in Sources */,
+				A2B2F8F5149F684600EB3714 /* ctabview.cpp in Sources */,
+				A2B2F8F7149F684600EB3714 /* vstcontrols.cpp in Sources */,
+				A2B2F8F8149F684600EB3714 /* vstgui.cpp in Sources */,
+				A2B2F8FF149F688900EB3714 /* audioeffect.cpp in Sources */,
+				A2B2F900149F688900EB3714 /* audioeffectx.cpp in Sources */,
+				A2B2F901149F688900EB3714 /* vstplugmain.cpp in Sources */,
+				A28B82FB149FCDD2003F0F88 /* FileSystem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1387,12 +1390,10 @@
 				GCC_VERSION = 4.0;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../src",
-					"$(SRCROOT)/../../../../zlib",
-					"$(SRCROOT)/../../../../vstsdk2.4/**",
-					"$(SRCROOT)/../../../../lpng1239",
-					"$(SRCROOT)/../../../../../boost_1_42_0",
-					"$(SRCROOT)/../../../../../sambag/src",
-					"$(SRCROOT)/../../../../../sqlite",
+					"$(SRCROOT)/../../../../clibs/vstsdk2.4/**",
+					"$(SRCROOT)/../../../../clibs/boost_1_42_0",
+					"$(SRCROOT)/../../../sambag/src",
+					"$(SRCROOT)/../../../../clibs/sqlite",
 				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
@@ -1453,6 +1454,7 @@
 		4FADC23808B4156C00ABE55E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = (
 					ppc,
 					i386,
@@ -1460,6 +1462,7 @@
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "";
 				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				PRELINK_FLAGS = "";
@@ -1525,12 +1528,10 @@
 				GCC_VERSION = 4.0;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../src",
-					"$(SRCROOT)/../../../../zlib",
-					"$(SRCROOT)/../../../../vstsdk2.4/**",
-					"$(SRCROOT)/../../../../lpng1239",
-					"$(SRCROOT)/../../../../../boost_1_42_0",
-					"$(SRCROOT)/../../../../../sambag/src",
-					"$(SRCROOT)/../../../../../sqlite",
+					"$(SRCROOT)/../../../../clibs/vstsdk2.4/**",
+					"$(SRCROOT)/../../../../clibs/boost_1_42_0",
+					"$(SRCROOT)/../../../sambag/src",
+					"$(SRCROOT)/../../../../clibs/sqlite",
 				);
 				INFOPLIST_FILE = "iVSTForx-Info.plist";
 				INSTALL_PATH = "$(HOME)/Library/Bundles";

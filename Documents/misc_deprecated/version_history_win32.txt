@@ -1,0 +1,59 @@
+0.2.124
+-------
+changed:
+    > ConfigTool only scans directories
+      ( not anly longer VSTForx/iVSTForx )
+bugfixes:
+    > long delay on popup-menu ( if very large plug-directories are setted )
+    > settings modification only accept after 'ConfigTool' restart
+    > add plug menu shows directories with no content
+    
+0.2.120
+-------
+bugfixes:
+    > editor doesn't open on some sequencers
+    > noisy output on some sequencers ( concerns especially Fruiy Loops )
+changed:
+    > skip-scan changed to skip-validation ( slight difference )
+
+0.2.118
+-------
+bugfix:
+    > buffer error while directory scanning fixed
+workaround:
+    > option to skip directory scan and load plugins manually
+changed:
+    > scanned plugs will be saved during scan
+
+
+0.2.117
+-------
+bugfix:
+    > problems with some plugs fixed ( especially glitch )
+changed:
+    > increased max. visible contextmenu entries
+    > step/switch fader minimum time changed down to 0.0
+
+
+0.2.115
+-------
+changes:
+   > some important changes around "plugs-editor" handling
+
+
+0.2.109
+-------
+new:
+   > load VSTi'S
+   > plugs are able to receive MIDI data ( assigned by MIDI channel )
+   > Pan-Node
+   > ADSR-Trigger "hold" parameter
+   > Step-Input Node
+   > Switch-Input Node
+changed:
+   > ChannelSplit.node removed
+   > ADSR-trigger / Peak-Tracker calculation changed
+bugfixes:
+   > concurency problems while removing kobs
+   > Step-Node duration calculation after reset
+   > concurency problems while unloading some specific plug's
