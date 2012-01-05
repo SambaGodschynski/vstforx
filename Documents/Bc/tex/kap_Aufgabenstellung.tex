@@ -1,2 +1,15 @@
 % !TEX encoding = UTF-8 Unicode
-\section{Aufgabenstellung}
+\section{Anforderungen}
+\subsection{VST}
+Da VSTForx ein VST-Plugin werden soll muss es natürlich den Schnittstellen des VST Standards entsprechen. Es stehen hierbei zwei Versionen zur Auswahl: VST2.x und VST3.x.
+\paragraph{VST2.x}
+Das VST2.x SDK hatte im Jahre 2006 sein letztes Update erfahren(\cite{stein06}). Seine Ursprünge reichen bis in das Jahr 1990 zurück als die VST Schnittstelle entwickelt wurde.
+Da in den 90er Jahren die Rechenleistung begrenzt war, war ein wesentliches Entwurfsziel die Performance. So ist ein Großteil des SDKs ist in C geschrieben \footnote{es existieren aber - um die Implementierung zu vereinfachen - C++ Wrapperklassen.}.
+Aus heutiger Sicht können viele in der VST2.x SDK verwendete Techniken als veraltet betrachtet werden. So wird zum Beispiel zur 'Host nach Plugin Kommunikation' lediglich eine Methode verwendet die über sogenannte Opcodes\footnote{Abkürzung für Operation Code. Jede aufrufbare Operation wird durch einen Code Symbolisiert und als Parameter übergeben.} parametrisiert werden. Es werden sehr häufig '*void' Zeiger benutzt was zusammen mit einer schlechten Dokumentation schnell zu schwer auffindbaren Fehlern führen kann. 
+\paragraph{VST3.x}
+Das VST3.x SDK wurde im Jahre 2008 eingeführt und ist eine vollständige Neuentwicklung\cite{stein08}.Es ist komplett Objekt orientiert und bietet dem Entwickler eine Reihe an neuen Features die, die Entwicklung von VST-Plugins vereinfachen. 
+\\\\
+Obwohl aus rein technischer Sicht die Entwicklung eines VST3.x-Plugins lukrativer wäre, viel die Wahl dennoch auf die VST2.x Version. VST2.x-Plugins sind weiter verbreitet und werden von fast allen DAWs unterstützt.
+Ein VST-Plugin tritt in der Form einer Dynamisch ladbaren Bibliothek auf. Je nach System ist es unter Windows eine ''.dll'' Datei oder unter Mac OSX ein sogenanntes ''Ressource Bundle''.
+
+\subsection{Alternative Schnitstellen}

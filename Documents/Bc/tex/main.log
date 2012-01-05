@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011) (format=pdflatex 2011.7.3)  3 JAN 2012 11:49
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011) (format=pdflatex 2011.7.3)  4 JAN 2012 17:29
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -337,68 +337,38 @@ File: babel.def 2008/07/06 v3.8l Babel common definitions
 \l@naustrian = a dialect from \language\l@ngerman 
 Package babel Info: Making " an active character on input line 92.
 ))
-(/usr/local/texlive/2011/texmf-dist/tex/latex/amsmath/amsmath.sty
-Package: amsmath 2000/07/18 v2.13 AMS math features
-\@mathmargin=\skip47
+(/usr/local/texlive/2011/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
 
-For additional information on amsmath, use the `?' option.
-(/usr/local/texlive/2011/texmf-dist/tex/latex/amsmath/amstext.sty
-Package: amstext 2000/06/29 v2.01
+(/usr/local/texlive/2011/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
 
-(/usr/local/texlive/2011/texmf-dist/tex/latex/amsmath/amsgen.sty
-File: amsgen.sty 1999/11/30 v2.0
-\@emptytoks=\toks17
-\ex@=\dimen104
+(/usr/local/texlive/2011/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/usr/local/texlive/2011/texmf-dist/tex/latex/latexconfig/graphics.cfg
+File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
+)
+Package graphics Info: Driver file: pdftex.def on input line 91.
+
+(/usr/local/texlive/2011/texmf-dist/tex/latex/pdftex-def/pdftex.def
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
+
+(/usr/local/texlive/2011/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/message (HO)
+)
+(/usr/local/texlive/2011/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2011/04/18 v1.20 LaTeX kernel commands for general use (HO)
+)
+\Gread@gobject=\count89
 ))
-(/usr/local/texlive/2011/texmf-dist/tex/latex/amsmath/amsbsy.sty
-Package: amsbsy 1999/11/29 v1.2d
-\pmbraise@=\dimen105
+\Gin@req@height=\dimen104
+\Gin@req@width=\dimen105
 )
-(/usr/local/texlive/2011/texmf-dist/tex/latex/amsmath/amsopn.sty
-Package: amsopn 1999/12/14 v2.01 operator names
-)
-\inf@bad=\count89
-LaTeX Info: Redefining \frac on input line 211.
-\uproot@=\count90
-\leftroot@=\count91
-LaTeX Info: Redefining \overline on input line 307.
-\classnum@=\count92
-\DOTSCASE@=\count93
-LaTeX Info: Redefining \ldots on input line 379.
-LaTeX Info: Redefining \dots on input line 382.
-LaTeX Info: Redefining \cdots on input line 467.
-\Mathstrutbox@=\box27
-\strutbox@=\box28
-\big@size=\dimen106
-LaTeX Font Info:    Redeclaring font encoding OML on input line 567.
-LaTeX Font Info:    Redeclaring font encoding OMS on input line 568.
-\macc@depth=\count94
-\c@MaxMatrixCols=\count95
-\dotsspace@=\muskip10
-\c@parentequation=\count96
-\dspbrk@lvl=\count97
-\tag@help=\toks18
-\row@=\count98
-\column@=\count99
-\maxfields@=\count100
-\andhelp@=\toks19
-\eqnshift@=\dimen107
-\alignsep@=\dimen108
-\tagshift@=\dimen109
-\tagwidth@=\dimen110
-\totwidth@=\dimen111
-\lineht@=\dimen112
-\@envbody=\toks20
-\multlinegap=\skip48
-\multlinetaggap=\skip49
-\mathdisplay@stack=\toks21
-LaTeX Info: Redefining \[ on input line 2666.
-LaTeX Info: Redefining \] on input line 2667.
-) (./main.aux
-(./kap_einleitung.aux) (./kap_Aufgabenstellung.aux) (./kap_FachlichesUmfeld.aux
-) (./kap_Loesungsansaetze.aux) (./kap_Anforderungsdefinition.aux)
-(./kap_Systementwurf.aux) (./kap_Realisierung.aux)
-(./kap_Bedienungsanleitung.aux) (./kap_Fazit.aux)
+(./main.aux (./kap_einleitung.aux) (./kap_Aufgabenstellung.aux)
+(./kap_FachlichesUmfeld.aux) (./kap_Loesungsansaetze.aux)
+(./kap_Anforderungsdefinition.aux) (./kap_Systementwurf.aux)
+(./kap_Realisierung.aux) (./kap_Bedienungsanleitung.aux) (./kap_Fazit.aux)
 (./kap_LiteraturVerzeichnis.aux) (./kap_Index.aux) (./kap_Programmlistings.aux)
 )
 \openout1 = `main.aux'.
@@ -415,10 +385,83 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 13.
 LaTeX Font Info:    ... okay on input line 13.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 13.
 LaTeX Font Info:    ... okay on input line 13.
+ (/usr/local/texlive/2011/texmf-dist/tex/context/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count90
+\scratchdimen=\dimen106
+\scratchbox=\box27
+\nofMPsegments=\count91
+\nofMParguments=\count92
+\everyMPshowfont=\toks17
+\MPscratchCnt=\count93
+\MPscratchDim=\dimen107
+\MPnumerator=\count94
+\makeMPintoPDFobject=\count95
+\everyMPtoPDFconversion=\toks18
+) (/usr/local/texlive/2011/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
+Package: pdftexcmds 2011/04/22 v0.16 Utilities of pdfTeX for LuaTeX (HO)
+
+(/usr/local/texlive/2011/texmf-dist/tex/generic/oberdiek/ifluatex.sty
+Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+)
+(/usr/local/texlive/2011/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
+Package ifpdf Info: pdfTeX in PDF mode is detected.
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)
+(/usr/local/texlive/2011/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
+
+(/usr/local/texlive/2011/texmf-dist/tex/latex/oberdiek/grfext.sty
+Package: grfext 2010/08/19 v1.1 Managing graphics extensions (HO)
+
+(/usr/local/texlive/2011/texmf-dist/tex/generic/oberdiek/kvdefinekeys.sty
+Package: kvdefinekeys 2011/04/07 v1.3 Defining keys (HO)
+))
+(/usr/local/texlive/2011/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+Package: kvoptions 2010/12/23 v3.10 Keyval support for LaTeX options (HO)
+
+(/usr/local/texlive/2011/texmf-dist/tex/generic/oberdiek/kvsetkeys.sty
+Package: kvsetkeys 2011/04/07 v1.13 Key value parser (HO)
+
+(/usr/local/texlive/2011/texmf-dist/tex/generic/oberdiek/etexcmds.sty
+Package: etexcmds 2011/02/16 v1.5 Prefix for e-TeX command names (HO)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
+)))
+Package grfext Info: Graphics extension search list:
+(grfext)             [.png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 452.
+
+(/usr/local/texlive/2011/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
 LaTeX Font Info:    Try loading font information for T1+cmss on input line 16.
- (/usr/local/texlive/2011/texmf-dist/tex/latex/base/t1cmss.fd
+
+(/usr/local/texlive/2011/texmf-dist/tex/latex/base/t1cmss.fd
 File: t1cmss.fd 1999/05/25 v2.5h Standard LaTeX font definitions
-) (./main.toc)
+)
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <14.4> on input line 16.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 16.
+ (./main.toc
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 3.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 3.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 3.
+)
 \tf@toc=\write3
 \openout3 = `main.toc'.
 
@@ -430,104 +473,184 @@ File: t1cmss.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 \openout2 = `kap_einleitung.aux'.
 
 
-(./kap_einleitung.tex) [2
+(./kap_einleitung.tex
+<../graphics/free_order.png, id=11, 1284.8pt x 1540.154pt>
+File: ../graphics/free_order.png Graphic file (type png)
 
-]
+<use ../graphics/free_order.png>
+Package pdftex.def Info: ../graphics/free_order.png used on input line 6.
+(pdftex.def)             Requested size: 154.16934pt x 184.8105pt.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <9> on input line 10.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <5> on input line 10.
+
+<../graphics/send-pre.png, id=13, 1304.072pt x 1220.56pt>
+File: ../graphics/send-pre.png Graphic file (type png)
+
+<use ../graphics/send-pre.png>
+Package pdftex.def Info: ../graphics/send-pre.png used on input line 18.
+(pdftex.def)             Requested size: 195.60236pt x 183.0761pt.
+
+<../graphics/send-post.png, id=14, 1307.284pt x 1191.652pt>
+File: ../graphics/send-post.png Graphic file (type png)
+
+<use ../graphics/send-post.png>
+Package pdftex.def Info: ../graphics/send-post.png used on input line 21.
+(pdftex.def)             Requested size: 196.08414pt x 178.74008pt.
+
+<../graphics/solution_vstforx.png, id=15, 1475.914pt x 1283.194pt>
+File: ../graphics/solution_vstforx.png Graphic file (type png)
+
+<use ../graphics/solution_vstforx.png>
+Package pdftex.def Info: ../graphics/solution_vstforx.png used on input line 34
+.
+(pdftex.def)             Requested size: 295.17757pt x 256.63425pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 10--44
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 10--44
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 10--44
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 10--44
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 10--44
+
+ []
+
+[2
+
+ <../graphics/free_order.png>] [3 <../graphics/send-pre.png> <../graphics/send-
+post.png>]) [4 <../graphics/solution_vstforx.png>]
 \openout2 = `kap_Aufgabenstellung.aux'.
 
- (./kap_Aufgabenstellung.tex) [3
+
+(./kap_Aufgabenstellung.tex
+Underfull \hbox (badness 10000) in paragraph at lines 10--13
+
+ []
+
+) [5
 
 
 ]
 \openout2 = `kap_FachlichesUmfeld.aux'.
 
-
-(./kap_FachlichesUmfeld.tex) [4
+ (./kap_FachlichesUmfeld.tex) [6
 
 
 ]
 \openout2 = `kap_Loesungsansaetze.aux'.
 
- (./kap_Loesungsansaetze.tex) [5
+ (./kap_Loesungsansaetze.tex) [7
 
 
 ]
 \openout2 = `kap_Anforderungsdefinition.aux'.
 
 
-(./kap_Anforderungsdefinition.tex) [6
+(./kap_Anforderungsdefinition.tex) [8
 
 
 ]
 \openout2 = `kap_Systementwurf.aux'.
 
- (./kap_Systementwurf.tex) [7
+ (./kap_Systementwurf.tex) [9
 
 
 ]
 \openout2 = `kap_Realisierung.aux'.
 
 
-(./kap_Realisierung.tex) [8
+(./kap_Realisierung.tex) [10
 
 
 ]
 \openout2 = `kap_Bedienungsanleitung.aux'.
 
- (./kap_Bedienungsanleitung.tex) [9
+ (./kap_Bedienungsanleitung.tex) [11
 
 
 ]
 \openout2 = `kap_Fazit.aux'.
 
 
-(./kap_Fazit.tex) [10
+(./kap_Fazit.tex) [12
 
 
 ]
 \openout2 = `kap_LiteraturVerzeichnis.aux'.
 
- (./kap_LiteraturVerzeichnis.tex) [11
+ (./kap_LiteraturVerzeichnis.tex
+Underfull \hbox (badness 5077) in paragraph at lines 12--15
+[]\T1/cmr/m/n/10.95 Steinberg Me-dia Tech-no-lo-gies GmbH. \T1/cmr/m/it/10.95 S
+tein-berg re-lea-ses VST3 SDK\T1/cmr/m/n/10.95 .
+ []
+
+
+Overfull \hbox (29.46645pt too wide) in paragraph at lines 12--15
+\T1/cmr/m/n/10.95 http://www.steinberg.net/en/company/press/archive/2008/steinb
+erg_vst3_sdk.html,
+ []
+
+) [13
 
 
 ]
 \openout2 = `kap_Index.aux'.
 
- (./kap_Index.tex)
-[12
+ (./kap_Index.tex) [14
 
 
 ]
 \openout2 = `kap_Programmlistings.aux'.
 
- (./kap_Programmlistings.tex) [13
+ (./kap_Programmlistings.tex) [15
 
 
-] (./main.aux (./kap_einleitung.aux)
-(./kap_Aufgabenstellung.aux) (./kap_FachlichesUmfeld.aux)
-(./kap_Loesungsansaetze.aux) (./kap_Anforderungsdefinition.aux)
+] (./main.aux
+(./kap_einleitung.aux) (./kap_Aufgabenstellung.aux) (./kap_FachlichesUmfeld.aux
+) (./kap_Loesungsansaetze.aux) (./kap_Anforderungsdefinition.aux)
 (./kap_Systementwurf.aux) (./kap_Realisierung.aux)
 (./kap_Bedienungsanleitung.aux) (./kap_Fazit.aux)
 (./kap_LiteraturVerzeichnis.aux) (./kap_Index.aux) (./kap_Programmlistings.aux)
 ) ) 
 Here is how much of TeX's memory you used:
- 2773 strings out of 493633
- 38072 string characters out of 3143378
- 113233 words of memory out of 3000000
- 5991 multiletter control sequences out of 15000+200000
- 9935 words of font info for 26 fonts, out of 3000000 for 9000
+ 3492 strings out of 493633
+ 51580 string characters out of 3143378
+ 132493 words of memory out of 3000000
+ 6648 multiletter control sequences out of 15000+200000
+ 16590 words of font info for 40 fonts, out of 3000000 for 9000
  831 hyphenation exceptions out of 8191
- 35i,6n,35p,245b,206s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 46i,9n,37p,587b,282s stack positions out of 5000i,500n,10000p,200000b,50000s
 {/usr/local/texlive/2011/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc
-}</usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb><
-/usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb></u
-sr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfsx1095.pfb></usr
-/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfsx1440.pfb></usr/l
-ocal/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfsx2074.pfb>
-Output written on main.pdf (13 pages, 91669 bytes).
+}</usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb><
+/usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></u
+sr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr
+/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/l
+ocal/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb></usr/loc
+al/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfsx1095.pfb></usr/local
+/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfsx1200.pfb></usr/local/t
+exlive/2011/texmf-dist/fonts/type1/public/cm-super/sfsx1440.pfb></usr/local/tex
+live/2011/texmf-dist/fonts/type1/public/cm-super/sfsx2074.pfb></usr/local/texli
+ve/2011/texmf-dist/fonts/type1/public/cm-super/sfti1095.pfb>
+Output written on main.pdf (15 pages, 460921 bytes).
 PDF statistics:
- 68 PDF objects out of 1000 (max. 8388607)
- 47 compressed objects within 1 object stream
+ 103 PDF objects out of 1000 (max. 8388607)
+ 67 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 21 words of extra memory for PDF output out of 10000 (max. 10000000)
 

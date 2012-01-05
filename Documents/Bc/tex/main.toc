@@ -1,13 +1,21 @@
 \select@language {ngerman}
 \contentsline {section}{\numberline {1}Einleitung}{2}
-\contentsline {section}{\numberline {2}Aufgabenstellung}{3}
-\contentsline {section}{\numberline {3}Fachliches Umfeld}{4}
-\contentsline {section}{\numberline {4}L\IeC {\"o}sungsans\IeC {\"a}tze}{5}
-\contentsline {section}{\numberline {5}Anforderungsdefinition}{6}
-\contentsline {section}{\numberline {6}Systementwurf}{7}
-\contentsline {section}{\numberline {7}Realisierung}{8}
-\contentsline {section}{\numberline {8}Bedienungsanleitung}{9}
-\contentsline {section}{\numberline {9}Fazit}{10}
-\contentsline {section}{\numberline {10}Literatur Verzeichnis}{11}
-\contentsline {section}{\numberline {11}Index}{12}
-\contentsline {section}{\numberline {12}Programmlistings}{13}
+\contentsline {subsection}{\numberline {1.1}Motivation}{2}
+\contentsline {subsection}{\numberline {1.2}Der Name}{4}
+\contentsline {paragraph}{VST}{4}
+\contentsline {paragraph}{Forx}{4}
+\contentsline {section}{\numberline {2}Anforderungen}{5}
+\contentsline {subsection}{\numberline {2.1}VST}{5}
+\contentsline {paragraph}{VST2.x}{5}
+\contentsline {paragraph}{VST3.x}{5}
+\contentsline {subsection}{\numberline {2.2}Alternative Schnitstellen}{5}
+\contentsline {section}{\numberline {3}Fachliches Umfeld}{6}
+\contentsline {section}{\numberline {4}L\IeC {\"o}sungsans\IeC {\"a}tze}{7}
+\contentsline {section}{\numberline {5}Anforderungsdefinition}{8}
+\contentsline {section}{\numberline {6}Systementwurf}{9}
+\contentsline {section}{\numberline {7}Realisierung}{10}
+\contentsline {section}{\numberline {8}Bedienungsanleitung}{11}
+\contentsline {section}{\numberline {9}Fazit}{12}
+\contentsline {section}{\numberline {10}Literatur Verzeichnis}{13}
+\contentsline {section}{\numberline {11}Index}{14}
+\contentsline {section}{\numberline {12}Programmlistings}{15}
