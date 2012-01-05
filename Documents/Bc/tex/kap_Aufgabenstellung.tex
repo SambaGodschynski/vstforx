@@ -1,15 +1,90 @@
 % !TEX encoding = UTF-8 Unicode
 \section{Anforderungen}
-\subsection{VST}
-Da VSTForx ein VST-Plugin werden soll muss es natürlich den Schnittstellen des VST Standards entsprechen. Es stehen hierbei zwei Versionen zur Auswahl: VST2.x und VST3.x.
+\subsection{Was implementiert werden muss}
+\subsubsection{Die Pluginschnittstelle}
+Da VSTForx ein VST-Plugin werden soll muss es dem VST Standard entsprechen. Es stehen hierbei zwei Versionen zur Auswahl: VST2.x und VST3.x.
 \paragraph{VST2.x}
-Das VST2.x SDK hatte im Jahre 2006 sein letztes Update erfahren(\cite{stein06}). Seine Ursprünge reichen bis in das Jahr 1990 zurück als die VST Schnittstelle entwickelt wurde.
+Das VST2.x SDK hatte im Jahre 2006 sein letztes Update erfahren\cite{stein06}. Seine Ursprünge reichen bis in das Jahr 1990 zurück als die VST Schnittstelle erstmals entwickelt wurde.
 Da in den 90er Jahren die Rechenleistung begrenzt war, war ein wesentliches Entwurfsziel die Performance. So ist ein Großteil des SDKs ist in C geschrieben \footnote{es existieren aber - um die Implementierung zu vereinfachen - C++ Wrapperklassen.}.
-Aus heutiger Sicht können viele in der VST2.x SDK verwendete Techniken als veraltet betrachtet werden. So wird zum Beispiel zur 'Host nach Plugin Kommunikation' lediglich eine Methode verwendet die über sogenannte Opcodes\footnote{Abkürzung für Operation Code. Jede aufrufbare Operation wird durch einen Code Symbolisiert und als Parameter übergeben.} parametrisiert werden. Es werden sehr häufig '*void' Zeiger benutzt was zusammen mit einer schlechten Dokumentation schnell zu schwer auffindbaren Fehlern führen kann. 
+Aus heutiger Sicht können viele in der VST2.x SDK verwendete Techniken als veraltet betrachtet werden. So wird zum Beispiel zur 'Host nach Plugin Kommunikation' lediglich eine einzige Methode verwendet die über sogenannte Opcodes\footnote{Abkürzung für Operation Code. Jede aufrufbare Operation wird durch einen Code Symbolisiert und als Parameter übergeben.} parametrisiert werden. Es werden sehr häufig '*void' Zeiger benutzt was zusammen mit einer schlechten Dokumentation schnell zu schwer auffindbaren Fehlern führen kann. 
 \paragraph{VST3.x}
-Das VST3.x SDK wurde im Jahre 2008 eingeführt und ist eine vollständige Neuentwicklung\cite{stein08}.Es ist komplett Objekt orientiert und bietet dem Entwickler eine Reihe an neuen Features die, die Entwicklung von VST-Plugins vereinfachen. 
+Das VST3.x SDK wurde im Jahre 2008 eingeführt und ist eine vollständige Neuentwicklung\cite{stein08}.Es ist komplett Objektorientiert und bietet eine Menge neuer Funktionen die dabei helfen VST-Plugins schneller und komfortabler zu entwickeln. 
 \\\\
-Obwohl aus rein technischer Sicht die Entwicklung eines VST3.x-Plugins lukrativer wäre, viel die Wahl dennoch auf die VST2.x Version. VST2.x-Plugins sind weiter verbreitet und werden von fast allen DAWs unterstützt.
-Ein VST-Plugin tritt in der Form einer Dynamisch ladbaren Bibliothek auf. Je nach System ist es unter Windows eine ''.dll'' Datei oder unter Mac OSX ein sogenanntes ''Ressource Bundle''.
+Obwohl aus rein technischer Sicht die Entwicklung eines VST3.x-Plugins lukrativer wäre, fiel die Wahl dennoch auf die VST2.x Version. VST2.x-Plugins sind weiter verbreitet und werden von fast allen DAWs unterstützt.\\
+Ein VST-Plugin tritt in der Form einer Dynamisch ladbaren Bibliothek auf. Je nach System ist es unter Windows eine ''.dll'' Datei oder unter Mac OSX ein sogenanntes ''Ressource Bundle''. 
+\subsubsection{Der Editor}
+Der Editor ist die Graphische Schnittstelle zu VSTForx. Er sollte folgende Dinge beinhalten:
+\paragraph{Die Bühne}
+Die Bühne ist die Hauptaktionsebene und sollte somit den größten Teil des Editorfensters ausmachen. Die Effektverkettung wird hier erstellt, dargestellt und kann von hier aus auch verändert werden. Plugin Parameter lassen sich als Regler platzieren und bedienen. Ausserdem sollte es von der Bühne aus möglich sein die Editoren der geladenen Plugins zu öffnen und zu benutzen. 
+\paragraph{Die Toolbox}
+Um die Bühnenfunktionalität umzusetzen bedarf es einer Unterscheidung von verschiedenen Mausaktionen. So ist es ein Unterschied ob man zum Beispiel einen Regler dreht oder ihn verschiebt. Die Mausaktion ist aber in beiden fällen das ''ziehen\footnote{engl.: Drag}''. Es werden also verschiedene Mauskontexte benötigt. Diese lassen sich in der Toolbox in Form von Knöpfen auswählen.
+\paragraph{Das Menu}
+Über ein ein Menü sollten folgende Funktionen erreichbar sein:
+\begin{itemize}
+	\item hinzufügen und entfernen von Bühnenobjekten
+	\item manipulation bzw. anpassen von Bühnenobjekten
+\end{itemize} 
+Da die meisten Menüfunktionen abhängig vom jeweiligen Bühnenobjekt sind, ist es empfehlenswert das Menü in Form eines Kontextmenus zu implementieren. Ausserdem sollte es zur Übersichtlichkeit möglich sein das Menü in Unterpunkte aufzuteilen.
+\paragraph{Der Setupdialog}
+Von hier aus lassen sich VST-Pluginverzeichnisse festlegen und der ''Scanvorgang'' (siehe \ref{pdb}) kann von hier aus gestartet werden. Es sollte von hier aus auch möglich sein die Editorfenstergröße zu bestimmen.
+\subsubsection{\label{pdb}Die Plugindatenbank}
+Um ein Plugin öffnen zu können würde es im einfachsten Fall ausreichen das Plugin mittels eines ''Datei öffnen'' Dialoges zu lokalisieren.
+Dies würde aber schnell umständlich da mit jedem zu öffnenden Plugin durch eine Ordnerstruktur navigiert werden müsste, die zum Großteil aus (Plugin-) uninteressanten Informationen besteht. Ausserdem kann - zumindest unter Windows - nicht zwischen einer System ".dll" Datei und einer VST-Plugin Datei unterschieden werden. Hier bestünde die ''Gefahr'' eine Datei öffnen zu wollen die gar kein VST-Plugin ist.\\
+Ein weiteres Problem ist es dass VSTForx in der Lage sein soll den kompletten Bühneninhalt zu speichern und zu einem späteren Zeitpunkt wieder zu laden. Würde nun in solch einer Speicherdatei auf absolute Pfade verwiesen, bestünde die Gefahr dass zu einem späteren Zeitpunkt sich die Ordnerstruktur\footnote{oder die Speicherdatei wird auf einem anderen Gerät geöffnet} geändert hat und der gesicherte Pfad somit ungültig wäre.
+\\\\
+Sicherer wäre es eine Datenbank zu haben die alle ladbaren Plugins enthält und zur Verfügung stellt. Durch einen einmaligen ''Scanvorgang'' würde die bestehende Ordnerstruktur durchlaufen und alle gefundenen Plugindateien würden der Datenbank hinzugefügt werden. Sollte sich einmal die Ordnerstruktur ändern müsste nur der ''Scanvorgang'' wiederholt werden. Für Speicherdateien wäre das Plugin weiterhin verfügbar.
+\subsubsection{Programmparameter}
+Alle Objekte die in VSTForx durch Parameter steuerbar sind sollten ihre Parameter als Regler für die ''Bühne'' verfügbar machen.
+Diese Regler sind verbindbar. \\
+Ausserdem sollte das Programm eine Menge an (VST-)Parametern bieten. Diese lassen sich ebenfalls auf der ''Bühne'' als Regler ablegen. Somit ist es möglich alles ''regelbare'' in VSTForx von der DAW aus zu steuern.\\
+\subsubsection{Parameter Verbindungen}
+Um noch mehr Möglichkeiten zu haben wäre es sinnvoll in eine Parameterverbindungen Operatoren, die das Verhalten einer Verbindung beeinflussen, einfügen zu können. Wäre zum Beispiel Regler A mit Regler B verbunden, würde bei einem ''Inverse'' Operator, Regler B zudrehen wenn Regler A aufgedreht würde.
+\\\\
+Mögliche Operatoren wären:
+\begin{itemize}
+	\item Inverse
+	\item Exponential/Logarithmisch \footnote{eine Operation hat zwei Richtungen (''A zu B'' und ''B zu A'') wobei ''B zu A'' die Inverse Operation von ''A zu B'' sein muss. }
+	\item Logarithmisch/Exponential
+	\item Offset (ein fester Verschiebungswert)
+\end{itemize}
+\subsubsection{Zusätzliche Module}
+Zusätzliche Module könnten als ''interne Effekte'' bezeichnet werden. Sie können wie Plugins in den Signalweg eingebunden werden und haben die Möglichkeit diesen zu manipulieren. Genau wie Plugins besitzen Module eine Menge an Parametern durch die Modulspezifische Einstellungen möglich sind.\\\\
+Mögliche Module:
+\begin{itemize}
+	\item VolumeNode - ermöglicht die Lautstärkeregelung vom Signalweg
+	\item PanNode - ermöglicht die Stereoverteilung vom Signalweg
+	\item Schalter - ermöglichen das umschalten beliebig vieler Eingänge/Ausgänge.
+	\item Stepsequencer - ermöglichen das automatische rhythmische Umschalten beliebig vieler Eingänge/Ausgänge.
+\end{itemize}
 
-\subsection{Alternative Schnitstellen}
+\subsubsection{Persistenz}
+Das Programm sollte in der Lage alle Einstellungen und Konstruktionen dauerhaft zu speichern. Dabei ist zu beachten dass - wird VSTForx in einem DAW Projekt benutzt - VSTForx Bestandteil dieses Projektes ist. Wird also einen solches Projekt gespeichert, sollten mit dem erneuten öffnen des Projektes, alle vorherigen VSTForx Konstruktionen vollständig wiederhergestellt werden. 
+\subsubsection{Latenz Kompensation}
+\begin{figure}[ht]
+	\centering
+ 	\includegraphics[scale=0.15]{../graphics/latenz.png}
+	\caption{Darstellung des Latenzproblemes: die Signalausgabe aus ''Effekt B'' ist um 10 ms verzögert.}
+	\label{latenz}
+\end{figure}
+Werden in VSTForx zwei Plugins parallel verbunden kann es unter umständen zu einem Problem kommen:
+es gibt Plugins die eine Latenzzeit größer 0 aufweisen. Das heisst die Pluginausgabe ist - technisch bedingt - zeitlich verzögert.
+Bei einer Parallelschaltung kann diese Latenz nun bewirken dass zum Beispiel in einem Signalpfad eine Verzögerung auftritt, im anderen aber nicht (siehe Abbildung \ref{latenz}). Das Signal erklingt daher doppelt. Diese Verzögerung gilt es auszugleichen.
+
+\subsection{Was implementiert werden kann}
+\subsubsection{Weitere zusätzliche Module}
+\begin{itemize}
+	\item Peak2Value - transformiert den Ausschlag (engl. Peak) eines Signals in ein Parameterwert. Solch ein Parameterwert wird als (nicht veränderbarer) Regler dargestellt und kann mit anderen Reglern verbunden werden.
+	\item ADSR2Value - wird an einem Signalpfad ein Schwellwert überschritten, startet dieses Modul eine ADSR\footnote{ADSR - Attack, Decay, Sustain, Release: idealisierten Phasen der Hüllkurve eines Klanges} Sequenz. Wie schon beim ''Peak2Value'' Modul wird der Wert dieser Sequenz in einen Parameterwert transformiert.
+	\item Midi2Value - transformiert MIDI-ereignisse wie Modulation oder Pitch in einen Parameterwert.
+\end{itemize}
+
+\subsubsection{Unterstützung alternativer Pluginformate}
+Denkbar wäre es weitere bekannte (Audio-) Pluginformate zu unterstützen. Sowohl in der Form dass VSTForx alternative Pluginformate kennt und öffnen kann, als auch dass VSTForx in einem alternativen Pluginformat in compilierbar ist.
+\\\\
+Alternative Pluginformate wären:
+\begin{itemize}
+\item VST3.x
+\item AudioUnit (Mac OSX exclusives Pluginformat)
+\item DirectX Plugin 
+\item LV2 (ist eine OpenSource Audio-Plugin Variante und Weiterentwicklung von LADSPA\footnote{Abkürzung für: Linux Audio Developers Simple Plugin API})
+\end{itemize}

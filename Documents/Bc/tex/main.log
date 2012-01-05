@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011) (format=pdflatex 2011.7.3)  4 JAN 2012 17:29
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011) (format=pdflatex 2011.7.3)  6 JAN 2012 12:50
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -366,11 +366,7 @@ Package: ltxcmds 2011/04/18 v1.20 LaTeX kernel commands for general use (HO)
 \Gin@req@width=\dimen105
 )
 (./main.aux (./kap_einleitung.aux) (./kap_Aufgabenstellung.aux)
-(./kap_FachlichesUmfeld.aux) (./kap_Loesungsansaetze.aux)
-(./kap_Anforderungsdefinition.aux) (./kap_Systementwurf.aux)
-(./kap_Realisierung.aux) (./kap_Bedienungsanleitung.aux) (./kap_Fazit.aux)
-(./kap_LiteraturVerzeichnis.aux) (./kap_Index.aux) (./kap_Programmlistings.aux)
-)
+(./kap_LiteraturVerzeichnis.aux) (./kap_AbbildungsVerzeichnis.aux))
 \openout1 = `main.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 13.
@@ -385,7 +381,8 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 13.
 LaTeX Font Info:    ... okay on input line 13.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 13.
 LaTeX Font Info:    ... okay on input line 13.
- (/usr/local/texlive/2011/texmf-dist/tex/context/base/supp-pdf.mkii
+
+(/usr/local/texlive/2011/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count90
 \scratchdimen=\dimen106
@@ -445,16 +442,20 @@ G,.JBIG2,.JB2,.eps]
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-LaTeX Font Info:    Try loading font information for T1+cmss on input line 16.
+LaTeX Font Info:    Try loading font information for T1+cmss on input line 15.
 
 (/usr/local/texlive/2011/texmf-dist/tex/latex/base/t1cmss.fd
 File: t1cmss.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <14.4> on input line 16.
+(Font)              <14.4> on input line 15.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 16.
- (./main.toc
+(Font)              <7> on input line 15.
+ [1
+
+
+{/usr/local/texlive/2011/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] (./main
+.toc
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <10.95> on input line 3.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -465,16 +466,12 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 \tf@toc=\write3
 \openout3 = `main.toc'.
 
-
-[1
-
-
-{/usr/local/texlive/2011/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+ [2]
 \openout2 = `kap_einleitung.aux'.
 
 
 (./kap_einleitung.tex
-<../graphics/free_order.png, id=11, 1284.8pt x 1540.154pt>
+<../graphics/free_order.png, id=14, 1284.8pt x 1540.154pt>
 File: ../graphics/free_order.png Graphic file (type png)
 
 <use ../graphics/free_order.png>
@@ -485,21 +482,21 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 10.
 
-<../graphics/send-pre.png, id=13, 1304.072pt x 1220.56pt>
+<../graphics/send-pre.png, id=16, 1304.072pt x 1220.56pt>
 File: ../graphics/send-pre.png Graphic file (type png)
 
 <use ../graphics/send-pre.png>
 Package pdftex.def Info: ../graphics/send-pre.png used on input line 18.
 (pdftex.def)             Requested size: 195.60236pt x 183.0761pt.
 
-<../graphics/send-post.png, id=14, 1307.284pt x 1191.652pt>
+<../graphics/send-post.png, id=17, 1307.284pt x 1191.652pt>
 File: ../graphics/send-post.png Graphic file (type png)
 
 <use ../graphics/send-post.png>
 Package pdftex.def Info: ../graphics/send-post.png used on input line 21.
 (pdftex.def)             Requested size: 196.08414pt x 178.74008pt.
 
-<../graphics/solution_vstforx.png, id=15, 1475.914pt x 1283.194pt>
+<../graphics/solution_vstforx.png, id=18, 1475.914pt x 1283.194pt>
 File: ../graphics/solution_vstforx.png Graphic file (type png)
 
 <use ../graphics/solution_vstforx.png>
@@ -531,67 +528,60 @@ Underfull \hbox (badness 10000) in paragraph at lines 10--44
 
  []
 
-[2
+[3
 
- <../graphics/free_order.png>] [3 <../graphics/send-pre.png> <../graphics/send-
-post.png>]) [4 <../graphics/solution_vstforx.png>]
+ <../graphics/free_order.png>] [4 <../graphics/send-pre.png> <../graphics/send-
+post.png>]) [5 <../graphics/solution_vstforx.png>]
 \openout2 = `kap_Aufgabenstellung.aux'.
 
 
 (./kap_Aufgabenstellung.tex
-Underfull \hbox (badness 10000) in paragraph at lines 10--13
+Underfull \hbox (badness 10000) in paragraph at lines 11--15
 
  []
 
-) [5
+[6
 
 
 ]
-\openout2 = `kap_FachlichesUmfeld.aux'.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 24.
+ (/usr/local/texlive/2011/texmf-dist/tex/latex/base/omscmr.fd
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 24.
 
- (./kap_FachlichesUmfeld.tex) [6
+Underfull \hbox (badness 10000) in paragraph at lines 31--36
 
-
-]
-\openout2 = `kap_Loesungsansaetze.aux'.
-
- (./kap_Loesungsansaetze.tex) [7
-
-
-]
-\openout2 = `kap_Anforderungsdefinition.aux'.
+ []
 
 
-(./kap_Anforderungsdefinition.tex) [8
+Underfull \hbox (badness 10000) in paragraph at lines 37--40
+
+ []
+
+[7]
+Underfull \hbox (badness 10000) in paragraph at lines 41--44
+
+ []
 
 
-]
-\openout2 = `kap_Systementwurf.aux'.
+Underfull \hbox (badness 10000) in paragraph at lines 51--53
 
- (./kap_Systementwurf.tex) [9
+ []
 
+[8] <../graphics/latenz.png, id=47, 2190.0pt x 2008.23pt>
+File: ../graphics/latenz.png Graphic file (type png)
 
-]
-\openout2 = `kap_Realisierung.aux'.
+<use ../graphics/latenz.png>
+Package pdftex.def Info: ../graphics/latenz.png used on input line 65.
+(pdftex.def)             Requested size: 328.48582pt x 301.2215pt.
+ [9 <../graphics/latenz.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 82--85
 
+ []
 
-(./kap_Realisierung.tex) [10
-
-
-]
-\openout2 = `kap_Bedienungsanleitung.aux'.
-
- (./kap_Bedienungsanleitung.tex) [11
-
-
-]
-\openout2 = `kap_Fazit.aux'.
-
-
-(./kap_Fazit.tex) [12
-
-
-]
+) [10]
 \openout2 = `kap_LiteraturVerzeichnis.aux'.
 
  (./kap_LiteraturVerzeichnis.tex
@@ -606,51 +596,47 @@ Overfull \hbox (29.46645pt too wide) in paragraph at lines 12--15
 erg_vst3_sdk.html,
  []
 
-) [13
+) [11
 
 
 ]
-\openout2 = `kap_Index.aux'.
+\openout2 = `kap_AbbildungsVerzeichnis.aux'.
 
- (./kap_Index.tex) [14
+ (./kap_AbbildungsVerzeichnis.tex (./main.lof)
+\tf@lof=\write4
+\openout4 = `main.lof'.
 
-
-]
-\openout2 = `kap_Programmlistings.aux'.
-
- (./kap_Programmlistings.tex) [15
+) [12
 
 
 ] (./main.aux
-(./kap_einleitung.aux) (./kap_Aufgabenstellung.aux) (./kap_FachlichesUmfeld.aux
-) (./kap_Loesungsansaetze.aux) (./kap_Anforderungsdefinition.aux)
-(./kap_Systementwurf.aux) (./kap_Realisierung.aux)
-(./kap_Bedienungsanleitung.aux) (./kap_Fazit.aux)
-(./kap_LiteraturVerzeichnis.aux) (./kap_Index.aux) (./kap_Programmlistings.aux)
-) ) 
+(./kap_einleitung.aux) (./kap_Aufgabenstellung.aux)
+(./kap_LiteraturVerzeichnis.aux) (./kap_AbbildungsVerzeichnis.aux)) ) 
 Here is how much of TeX's memory you used:
- 3492 strings out of 493633
- 51580 string characters out of 3143378
- 132493 words of memory out of 3000000
- 6648 multiletter control sequences out of 15000+200000
+ 3448 strings out of 493633
+ 50344 string characters out of 3143378
+ 130629 words of memory out of 3000000
+ 6653 multiletter control sequences out of 15000+200000
  16590 words of font info for 40 fonts, out of 3000000 for 9000
  831 hyphenation exceptions out of 8191
- 46i,9n,37p,587b,282s stack positions out of 5000i,500n,10000p,200000b,50000s
-{/usr/local/texlive/2011/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc
-}</usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb><
-/usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></u
-sr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr
-/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/l
-ocal/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb></usr/loc
-al/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfsx1095.pfb></usr/local
-/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfsx1200.pfb></usr/local/t
-exlive/2011/texmf-dist/fonts/type1/public/cm-super/sfsx1440.pfb></usr/local/tex
-live/2011/texmf-dist/fonts/type1/public/cm-super/sfsx2074.pfb></usr/local/texli
-ve/2011/texmf-dist/fonts/type1/public/cm-super/sfti1095.pfb>
-Output written on main.pdf (15 pages, 460921 bytes).
+ 46i,9n,37p,595b,282s stack positions out of 5000i,500n,10000p,200000b,50000s
+{/usr/loca
+l/texlive/2011/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/local/
+texlive/2011/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/t
+exlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb></usr/local/tex
+live/2011/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/local/texli
+ve/2011/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/local/texlive
+/2011/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2
+011/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb></usr/local/texlive/201
+1/texmf-dist/fonts/type1/public/cm-super/sfsx1095.pfb></usr/local/texlive/2011/
+texmf-dist/fonts/type1/public/cm-super/sfsx1200.pfb></usr/local/texlive/2011/te
+xmf-dist/fonts/type1/public/cm-super/sfsx1440.pfb></usr/local/texlive/2011/texm
+f-dist/fonts/type1/public/cm-super/sfsx2074.pfb></usr/local/texlive/2011/texmf-
+dist/fonts/type1/public/cm-super/sfti1095.pfb>
+Output written on main.pdf (12 pages, 564415 bytes).
 PDF statistics:
- 103 PDF objects out of 1000 (max. 8388607)
- 67 compressed objects within 1 object stream
+ 99 PDF objects out of 1000 (max. 8388607)
+ 63 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 21 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 26 words of extra memory for PDF output out of 10000 (max. 10000000)
 
