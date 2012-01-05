@@ -23,5 +23,10 @@
 \contentsline {subsection}{\numberline {2.2}Was implementiert werden kann}{10}
 \contentsline {subsubsection}{\numberline {2.2.1}Weitere zus\IeC {\"a}tzliche Module}{10}
 \contentsline {subsubsection}{\numberline {2.2.2}Unterst\IeC {\"u}tzung alternativer Pluginformate}{10}
-\contentsline {section}{\numberline {3}Literatur Verzeichnis}{11}
-\contentsline {section}{\numberline {4}Abbildungs Verzeichnis}{12}
+\contentsline {section}{\numberline {3}Begriffe der diskreten Audioverarbeitung}{11}
+\contentsline {subsection}{\numberline {3.1}das Sample}{11}
+\contentsline {subsection}{\numberline {3.2}die Samplefreuqenz}{11}
+\contentsline {subsection}{\numberline {3.3}die Sampleaufl\IeC {\"o}sung}{11}
+\contentsline {subsection}{\numberline {3.4}der Sampleblock}{11}
+\contentsline {section}{\numberline {4}Literatur Verzeichnis}{12}
+\contentsline {section}{\numberline {5}Abbildungs Verzeichnis}{13}

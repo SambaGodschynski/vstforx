@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011) (format=pdflatex 2011.7.3)  6 JAN 2012 12:50
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011) (format=pdflatex 2011.7.3)  9 JAN 2012 10:41
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -366,7 +366,8 @@ Package: ltxcmds 2011/04/18 v1.20 LaTeX kernel commands for general use (HO)
 \Gin@req@width=\dimen105
 )
 (./main.aux (./kap_einleitung.aux) (./kap_Aufgabenstellung.aux)
-(./kap_LiteraturVerzeichnis.aux) (./kap_AbbildungsVerzeichnis.aux))
+(./kap_FachlichesUmfeld.aux) (./kap_LiteraturVerzeichnis.aux)
+(./kap_AbbildungsVerzeichnis.aux))
 \openout1 = `main.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 13.
@@ -582,6 +583,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 82--85
  []
 
 ) [10]
+\openout2 = `kap_FachlichesUmfeld.aux'.
+
+ (./kap_FachlichesUmfeld.tex) [11
+
+
+]
 \openout2 = `kap_LiteraturVerzeichnis.aux'.
 
  (./kap_LiteraturVerzeichnis.tex
@@ -596,7 +603,7 @@ Overfull \hbox (29.46645pt too wide) in paragraph at lines 12--15
 erg_vst3_sdk.html,
  []
 
-) [11
+) [12
 
 
 ]
@@ -606,37 +613,37 @@ erg_vst3_sdk.html,
 \tf@lof=\write4
 \openout4 = `main.lof'.
 
-) [12
+) [13
 
 
 ] (./main.aux
-(./kap_einleitung.aux) (./kap_Aufgabenstellung.aux)
-(./kap_LiteraturVerzeichnis.aux) (./kap_AbbildungsVerzeichnis.aux)) ) 
+(./kap_einleitung.aux) (./kap_Aufgabenstellung.aux) (./kap_FachlichesUmfeld.aux
+) (./kap_LiteraturVerzeichnis.aux) (./kap_AbbildungsVerzeichnis.aux)) ) 
 Here is how much of TeX's memory you used:
- 3448 strings out of 493633
- 50344 string characters out of 3143378
- 130629 words of memory out of 3000000
- 6653 multiletter control sequences out of 15000+200000
+ 3459 strings out of 493633
+ 50631 string characters out of 3143378
+ 130866 words of memory out of 3000000
+ 6657 multiletter control sequences out of 15000+200000
  16590 words of font info for 40 fonts, out of 3000000 for 9000
  831 hyphenation exceptions out of 8191
  46i,9n,37p,595b,282s stack positions out of 5000i,500n,10000p,200000b,50000s
-{/usr/loca
-l/texlive/2011/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/local/
-texlive/2011/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/t
-exlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb></usr/local/tex
-live/2011/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/local/texli
-ve/2011/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/local/texlive
-/2011/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2
-011/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb></usr/local/texlive/201
-1/texmf-dist/fonts/type1/public/cm-super/sfsx1095.pfb></usr/local/texlive/2011/
-texmf-dist/fonts/type1/public/cm-super/sfsx1200.pfb></usr/local/texlive/2011/te
-xmf-dist/fonts/type1/public/cm-super/sfsx1440.pfb></usr/local/texlive/2011/texm
-f-dist/fonts/type1/public/cm-super/sfsx2074.pfb></usr/local/texlive/2011/texmf-
-dist/fonts/type1/public/cm-super/sfti1095.pfb>
-Output written on main.pdf (12 pages, 564415 bytes).
+{/usr/lo
+cal/texlive/2011/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/loca
+l/texlive/2011/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local
+/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb></usr/local/t
+exlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/local/tex
+live/2011/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/local/texli
+ve/2011/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive
+/2011/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb></usr/local/texlive/2
+011/texmf-dist/fonts/type1/public/cm-super/sfsx1095.pfb></usr/local/texlive/201
+1/texmf-dist/fonts/type1/public/cm-super/sfsx1200.pfb></usr/local/texlive/2011/
+texmf-dist/fonts/type1/public/cm-super/sfsx1440.pfb></usr/local/texlive/2011/te
+xmf-dist/fonts/type1/public/cm-super/sfsx2074.pfb></usr/local/texlive/2011/texm
+f-dist/fonts/type1/public/cm-super/sfti1095.pfb>
+Output written on main.pdf (13 pages, 569347 bytes).
 PDF statistics:
- 99 PDF objects out of 1000 (max. 8388607)
- 63 compressed objects within 1 object stream
+ 103 PDF objects out of 1000 (max. 8388607)
+ 66 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  26 words of extra memory for PDF output out of 10000 (max. 10000000)
 
