@@ -1,7 +1,31 @@
 % !TEX encoding = UTF-8 Unicode
 \section{Begriffe der diskreten Audioverarbeitung}
-\subsection{das Sample}
-\subsection{die Samplefreuqenz}
-\subsection{die Sampleauflösung}
-\subsection{der Sampleblock}
-
+\begin{figure}[ht]
+	\centering
+ 	\includegraphics[scale=0.2]{../graphics/abtast.png}
+	\caption{Darstellung eines zeitkontinuierlichen Signals mit seinen Abtastpunkten}
+	\label{abtast}
+\end{figure}
+\subsection{Das Sample}
+Um ein zeitkontinuierlichen Signal digital verarbeiten zu können, muss es in (zeit-) diskrete Werte umgewandelt werden(siehe Abbildung \ref{abtast}). Ein digitales Audiosignal besteht demnach aus einer Menge einzelner Werte. Ein einzelner Wert dieser Menge wird als Sample bezeichnet. 
+\subsection{Die Samplefreuqenz}
+Die Samplefreuqenz (oder auch Abtastrate) bezeichnet wie oft pro Sekunde ein Signal abgetastet wird. So wird  ein einsekündiges Signal, bei einer Abtastrate von 44100kHz, in eine Wertemenge bestehend aus 44100 Samples, umgewandelt.  
+\subsection{Die Sampleauflösung}
+Die Sampleauflösung gibt den Wertebereich eines Samples an. So kann bei einer Sampleauflösung von 16-bit, ein Sample, einen Wert in einem Bereich von -32.768 bis 32.767
+%TODO: beleg für Fußnote
+\footnote{Das VST-SDK verwendet anstelle von Ganzzahlen mit Gleitkommazahlen (in einem Bereich von -1.0 bis +1.0). } annehmen.
+\subsection{Der Sampleblock}
+Der Sampleblock stellt die Menge an Samples dar die von einem VST-Plugin auf einmal bearbeitet werden kann. Die Größe des Sampleblockes ist Ausschlaggebend für die Performance und die Latenz\footnote{die Verzögerung zwischen Signalein- und ausgabe.} einer DAW Umgebung. Je niedriger die Blockgröße desto niedriger die Latenz, desto höher die CPU Auslastung.
+\subsection{\label{Prozess}Der Prozess}
+In der Terminologie des VST-SDK, ist mit Prozess der Teil eines Plugins gemeint, der für die Bearbeitung aller Pluginein- und ausgänge verantwortlich ist.
+\\\\
+Im VST2.x SDK ist dies eine Methode namens ''processReplacing''. Ihr werden als Parameter die Eingangs- und ausgangssampleblöcke übergeben. Die Anzahl der Sampleblöcke ist abhängig von der Anzahl der Pluginein- sowie ausgangskanäle. So werden zum Beispiel einem Stereoplugin zwei Eingangsampleblöcke übergeben, jeweils ein Block für ''Rechts'' und ein Block für ''Links''.
+\\\\
+Der Ablauf eines Prozesses kann wie folgt Skizziert werden:
+\begin{itemize}
+	\item die DAW füllt die Plugin-Eingangssampleblöcke mit den Daten eines Audiokanals
+	\item die DAW ruft die ''processReplacing'' Methode des Plugins auf.
+	\item das Plugin verarbeitet die Eingangssampleblöcke und schreibt die Ergebnisse in die entsprechenden Ausgangssampleblöcke
+	\item die DAW verarbeitet die Ausgangssampleblöcke weiter
+\end{itemize}
+Dieser Vorgang wird, während eine DAW im ''Abspielmodus'', ist ständig wiederholt.

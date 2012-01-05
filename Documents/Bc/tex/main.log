@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011) (format=pdflatex 2011.7.3)  9 JAN 2012 10:41
+This is pdfTeX, Version 3.1415926-2.3-1.40.12 (TeX Live 2011) (format=pdflatex 2011.7.3)  11 JAN 2012 12:40
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -366,8 +366,8 @@ Package: ltxcmds 2011/04/18 v1.20 LaTeX kernel commands for general use (HO)
 \Gin@req@width=\dimen105
 )
 (./main.aux (./kap_einleitung.aux) (./kap_Aufgabenstellung.aux)
-(./kap_FachlichesUmfeld.aux) (./kap_LiteraturVerzeichnis.aux)
-(./kap_AbbildungsVerzeichnis.aux))
+(./kap_FachlichesUmfeld.aux) (./kap_Loesungsansaetze.aux)
+(./kap_LiteraturVerzeichnis.aux) (./kap_AbbildungsVerzeichnis.aux))
 \openout1 = `main.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 13.
@@ -585,25 +585,80 @@ Underfull \hbox (badness 10000) in paragraph at lines 82--85
 ) [10]
 \openout2 = `kap_FachlichesUmfeld.aux'.
 
- (./kap_FachlichesUmfeld.tex) [11
+ (./kap_FachlichesUmfeld.tex
+<../graphics/abtast.png, id=55, 1320.935pt x 590.205pt>
+File: ../graphics/abtast.png Graphic file (type png)
+
+<use ../graphics/abtast.png>
+Package pdftex.def Info: ../graphics/abtast.png used on input line 5.
+(pdftex.def)             Requested size: 264.18231pt x 118.0389pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 20--25
+
+ []
 
 
-]
+Underfull \hbox (badness 10000) in paragraph at lines 20--25
+
+ []
+
+[11
+
+
+ <../graphics/abtast.png>]) [12]
+\openout2 = `kap_Loesungsansaetze.aux'.
+
+ (./kap_Loesungsansaetze.tex
+<../graphics/g01.png, id=63, 694.90384pt x 1072.23663pt>
+File: ../graphics/g01.png Graphic file (type png)
+
+<use ../graphics/g01.png>
+Package pdftex.def Info: ../graphics/g01.png used on input line 11.
+(pdftex.def)             Requested size: 69.49445pt x 107.22993pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 8--20
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 8--20
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 8--20
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 29--36
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 29--36
+
+ []
+
+[13
+
+
+ <../graphics/g01.png>]) [14]
 \openout2 = `kap_LiteraturVerzeichnis.aux'.
 
  (./kap_LiteraturVerzeichnis.tex
-Underfull \hbox (badness 5077) in paragraph at lines 12--15
+Underfull \hbox (badness 5077) in paragraph at lines 12--16
 []\T1/cmr/m/n/10.95 Steinberg Me-dia Tech-no-lo-gies GmbH. \T1/cmr/m/it/10.95 S
 tein-berg re-lea-ses VST3 SDK\T1/cmr/m/n/10.95 .
  []
 
 
-Overfull \hbox (29.46645pt too wide) in paragraph at lines 12--15
+Overfull \hbox (29.46645pt too wide) in paragraph at lines 12--16
 \T1/cmr/m/n/10.95 http://www.steinberg.net/en/company/press/archive/2008/steinb
 erg_vst3_sdk.html,
  []
 
-) [12
+) [15
 
 
 ]
@@ -613,37 +668,38 @@ erg_vst3_sdk.html,
 \tf@lof=\write4
 \openout4 = `main.lof'.
 
-) [13
+) [16
 
 
 ] (./main.aux
 (./kap_einleitung.aux) (./kap_Aufgabenstellung.aux) (./kap_FachlichesUmfeld.aux
-) (./kap_LiteraturVerzeichnis.aux) (./kap_AbbildungsVerzeichnis.aux)) ) 
+) (./kap_Loesungsansaetze.aux) (./kap_LiteraturVerzeichnis.aux)
+(./kap_AbbildungsVerzeichnis.aux)) ) 
 Here is how much of TeX's memory you used:
- 3459 strings out of 493633
- 50631 string characters out of 3143378
- 130866 words of memory out of 3000000
- 6657 multiletter control sequences out of 15000+200000
+ 3486 strings out of 493633
+ 51192 string characters out of 3143378
+ 131149 words of memory out of 3000000
+ 6675 multiletter control sequences out of 15000+200000
  16590 words of font info for 40 fonts, out of 3000000 for 9000
  831 hyphenation exceptions out of 8191
- 46i,9n,37p,595b,282s stack positions out of 5000i,500n,10000p,200000b,50000s
-{/usr/lo
-cal/texlive/2011/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}</usr/loca
-l/texlive/2011/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local
-/texlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm0600.pfb></usr/local/t
-exlive/2011/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/local/tex
-live/2011/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/local/texli
-ve/2011/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive
-/2011/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb></usr/local/texlive/2
-011/texmf-dist/fonts/type1/public/cm-super/sfsx1095.pfb></usr/local/texlive/201
-1/texmf-dist/fonts/type1/public/cm-super/sfsx1200.pfb></usr/local/texlive/2011/
-texmf-dist/fonts/type1/public/cm-super/sfsx1440.pfb></usr/local/texlive/2011/te
-xmf-dist/fonts/type1/public/cm-super/sfsx2074.pfb></usr/local/texlive/2011/texm
-f-dist/fonts/type1/public/cm-super/sfti1095.pfb>
-Output written on main.pdf (13 pages, 569347 bytes).
+ 46i,9n,37p,725b,282s stack positions out of 5000i,500n,10000p,200000b,50000s
+{/usr/local/texlive/2011/texmf-dist/fonts/e
+nc/dvips/cm-super/cm-super-t1.enc}</usr/local/texlive/2011/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2011/texmf-dist/fonts/type
+1/public/cm-super/sfrm0600.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/
+public/cm-super/sfrm0800.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/pu
+blic/cm-super/sfrm0900.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/publ
+ic/cm-super/sfrm1095.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public
+/cm-super/sfrm1440.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/c
+m-super/sfsx1095.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-
+super/sfsx1200.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-su
+per/sfsx1440.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-supe
+r/sfsx2074.pfb></usr/local/texlive/2011/texmf-dist/fonts/type1/public/cm-super/
+sfti1095.pfb>
+Output written on main.pdf (16 pages, 682838 bytes).
 PDF statistics:
- 103 PDF objects out of 1000 (max. 8388607)
- 66 compressed objects within 1 object stream
+ 116 PDF objects out of 1000 (max. 8388607)
+ 72 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 26 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 36 words of extra memory for PDF output out of 10000 (max. 10000000)
 
