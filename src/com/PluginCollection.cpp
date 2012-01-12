@@ -5,6 +5,7 @@
 #include "PluginCollectionSQL.h"
 #include <boost/filesystem.hpp>
 
+
 #define DB_QUERY(x)											\
 	try {x}													\
 	catch ( ::sambag::cpsqlite::DataBaseQueryFailed &ex ) { \
@@ -30,15 +31,14 @@ void ScanVisitor::insert ( const ScanVisitor::Path &path )
 		dbExe->execute ( q, pL, res );
 		if ( !res.empty() ) { // ja:
 			sambag::cpsqlite::ParameterList pL;
-			dbExe->execute( TblFolder::updateFolder(path, pL), pL );
+			dbExe->execute( TblFolder::updateFolder(path, client->scanStamp, pL), pL );
 		}
 		else {
 			sambag::cpsqlite::ParameterList pL;
-			string q = TblFolder::insertFolder( path, pL );
+			string q = TblFolder::insertFolder( path, client->scanStamp, pL );
 			dbExe->execute(q, pL);
 		}
 	)
-	scannedFolders.push_back ( path );
 }
 //------------------------------------------------------------------------------------------------------------
 void ScanVisitor::setStartFolder ( const ScanVisitor::Path &startFolder ) {
@@ -54,7 +54,11 @@ void ScanVisitor::setStartFolder ( const ScanVisitor::Path &startFolder ) {
 		dbExe->execute ( q, pL, res );
 		if ( res.empty() ) { // nein:
 			sambag::cpsqlite::ParameterList pL;
-			dbExe->execute( TblFolder::insertFolder( startFolder, PluginCollection::ROOT_FOLDER_ID, pL ), pL );
+			dbExe->execute( TblFolder::insertFolder(
+				startFolder, 
+				PluginCollection::ROOT_FOLDER_ID, 
+				client->scanStamp,
+				pL ), pL );
 		} else { // ja:
 			// folder war mal child folder => update nach root
 			if ( res[0]->get("parentFolderId") != "NULL" )
@@ -62,7 +66,6 @@ void ScanVisitor::setStartFolder ( const ScanVisitor::Path &startFolder ) {
 				                                                 PluginCollection::ROOT_FOLDER_ID ) );
 		}
 	)
-	scannedFolders.push_back ( startFolder );
 }
 //------------------------------------------------------------------------------------------------------------
 ScanVisitor::ScanVisitor ( PluginCollection *client ) : 
@@ -88,7 +91,6 @@ void ScanVisitor::file ( const ScanVisitor::Path &loc ) {
 	PluginCollection::Folder folder = client->getFolder( id );
 	if ( folder == PluginCollection::NULL_FOLDER ) throw TreeError();
 	client->checkFile ( loc, folder );
-	scannedFiles.push_back ( loc );
 }
 //============================================================================================================
 // Klasse PluginCollection : <Singleton>
@@ -107,15 +109,22 @@ namespace {
 boost::weak_ptr<PluginCollection> highlander; // es darf nur einen geben
 }
 //------------------------------------------------------------------------------------------------------------
-PluginCollection::PluginCollection() : settings( SETTINGS ), tmpHostInfo(NULL), abortScan(false) {
+PluginCollection::PluginCollection() : 
+	settings( SETTINGS ), tmpHostInfo(NULL), abortScan(false), scanStamp(0)
+{
 	using namespace sambag::cpsqlite;
+	using namespace com::sqlcommands;
 	try {
 		database = DataBase::getDataBase ( settings->getPlugCollectionDumpFilename() );
 		// test access
 		checkDataBaseIntegrity(); // throws database connection failed
+		// check whether timestamp exists. throws DataBaseQueryFailed if not
+		DataBase::Executer::Ptr exec(database->getExecuter());
+		DataBase::Results res;
+		exec->execute(TblLastScan::getScanStamp(), res);
 		// init db
 		initDB();
-	} catch ( ... ){
+	} catch ( ... ) {
 		// remove file, try again
 		database.reset();
 		boost::filesystem::remove( settings->getPlugCollectionDumpFilename() );
@@ -167,8 +176,8 @@ void PluginCollection::scanDirectories ( const Settings::PathnameSet &pathSet ) 
 	// scan complete now clean up db
 	EventSender<CleaningUpDataBase>::notifyEventListeners ( this, CleaningUpDataBase() );
 
-	removeUnusedPlugins( vis.getScannedFiles() );   // 1. removes intersection
-	removeUnusedFolders( vis.getScannedFolders() ); // 2. removes intersection
+	removeUnusedPlugins();  
+	removeUnusedFolders();
 }
 //------------------------------------------------------------------------------------------------------------
 void PluginCollection::scanDirectory ( const ScanVisitor::Path &path, ScanVisitor &vis ) {
@@ -180,19 +189,19 @@ void PluginCollection::scanDirectory ( const ScanVisitor::Path &path, ScanVisito
 void PluginCollection::update(  processing::IHostInfo *hostInfo ) {
 	TRY_TO_LOCK_TIMED (mutex);
 	TOLOG ( "update plugin collection." );
-
 	processScanLogFile();
 	appendLog ( "plugin init log:" );
 	// hole plugin verzeichnisse aus settings
 	Settings::PathnameSet const &pathSet = settings->getPluginDirectoryList();
-	
 	//!!
 	tmpHostInfo = hostInfo;
+	
+	updateScanStamp();
 	//!!
 	// scan setted directories
 	try {
 		if ( pathSet.empty() ) {
-			removeUnusedFolders( ScanVisitor::PathList() );
+			removeUnusedFolders();
 		} else scanDirectories( pathSet );
 	} catch ( const sambag::cpsqlite::DataBaseException &ex ) {
 		// send interrupt
@@ -209,12 +218,9 @@ void PluginCollection::update(  processing::IHostInfo *hostInfo ) {
 		);
 		return;
 	}
-
-
 	//!!
 	tmpHostInfo = NULL;
 	//!!
-
 	try {
 		std::remove ( Settings::getPlugInitLogFilename().c_str() ); // log wieder loeschen
 	} catch (...) {
@@ -352,6 +358,8 @@ void PluginCollection::checkFile( const PluginCollection::Path &path, const Plug
 			EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
 			return;
 		}
+		updatePlugScanStamp(tmp);
+		EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
 		return; // already in db => return
 	}
 	
@@ -362,6 +370,7 @@ void PluginCollection::checkFile( const PluginCollection::Path &path, const Plug
 		info.timestamp = last_write_time ( path );
 		info.access = PluginInfo::FAILED;
 		insertPlug ( folder, info );
+		EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), info ) );
 		return;
 	}
 	//
@@ -415,19 +424,18 @@ void PluginCollection::checkDataBaseIntegrity() {
 	if ( res[0]->get("integrity_check") != "ok" ) throw DataBaseConnectionFailed();
 }
 //------------------------------------------------------------------------------------------------------------
-void PluginCollection::removeUnusedFolders( const ScanVisitor::PathList &scannedFolders ) {	
+void PluginCollection::removeUnusedFolders() {	
 	using namespace sambag::cpsqlite;
 	using namespace sqlcommands;
 
 	// remove unused folders
 	ParameterList pL;
-	std::string q = TblFolder::removeUnusedFolders( scannedFolders, pL );
+	std::string q = TblFolder::removeUnusedFolders(scanStamp);
 	DataBase::Executer::Ptr exec = database->getExecuter();
 	DB_QUERY(
-		exec->execute( q, pL ); 
+		exec->execute(q); 
 	)
 	
-
 	// reset folder visibility
 	DB_QUERY(
 		exec->execute( TblFolder::resetFolderVisibility() ); 
@@ -450,14 +458,13 @@ void PluginCollection::removeUnusedFolders( const ScanVisitor::PathList &scanned
 	)
 }
 //------------------------------------------------------------------------------------------------------------
-void PluginCollection::removeUnusedPlugins( const ScanVisitor::PathList &scannedFiles ) {	
+void PluginCollection::removeUnusedPlugins() {	
 	using namespace sambag::cpsqlite;
 	using namespace sqlcommands;
-	ParameterList pL;
-	std::string q = TblPlugins::removeUnusedPlugins( scannedFiles, pL );
+	std::string q = TblPlugins::removeUnusedPlugins( scanStamp );
 	DataBase::Executer::Ptr exec = database->getExecuter();
 	DB_QUERY(
-		exec->execute( q, pL ); 
+		exec->execute( q ); 
 	)
 }
 //------------------------------------------------------------------------------------------------------------
@@ -472,6 +479,7 @@ void PluginCollection::initDB() {
 		// create tables ( if not exsits ): // throws DataBaseQueryFailed, DataBaseQueryTimeout
 		exec->execute( TblFolder::create() ); 
 		exec->execute( TblPlugins::create() ); 
+		exec->execute( TblLastScan::create() ); 
 		sambag::cpsqlite::ParameterList pL;
 		string q = TblFolder::getFolder( TblFolder::root(), pL );
 		exec->execute ( q, pL, res );
@@ -479,6 +487,37 @@ void PluginCollection::initDB() {
 			exec->execute( TblFolder::insertRoot() );
 			LOG_ASSERT ( exec->lastInsertRowId() == ROOT_FOLDER_ID );
 		}
+	)
+}
+//------------------------------------------------------------------------------------------------------------
+void PluginCollection::updateScanStamp() {
+	DB_QUERY (
+		// get/update timestamp:
+		// this timestamp will be setted while scanning to every plugin entry.
+		// so its easy to detect the plugins which are removed from folder:
+		// all plugins where plugin::timestamp!=LastScan::timestamp
+		DataBase::Executer::Ptr exec = database->getExecuter(); 
+		DataBase::Results res;
+		time_t oldTimestamp;
+		exec->execute(TblLastScan::getScanStamp(), res);
+		if ( res.empty() ) {
+			oldTimestamp = 0;
+		} else {
+			oldTimestamp = res[0]->getConv<time_t>(TblLastScan::scanstamp(), 0);
+		}
+		scanStamp = oldTimestamp;
+		while (scanStamp==oldTimestamp) {
+			scanStamp = ::time(NULL);
+			if (scanStamp==0) {
+				LOG_ASSERT(false);
+				break;
+			}
+		}
+		if (oldTimestamp==0) { // first entry
+			exec->execute(TblLastScan::insertScanStamp(scanStamp));
+			return;
+		} 
+		exec->execute(TblLastScan::updateScanStamp(scanStamp));
 	)
 }
 //------------------------------------------------------------------------------------------------------------
@@ -622,6 +661,7 @@ void PluginCollection::insertPlug ( const PluginCollection::Folder &folder, cons
 											  pi.pluginType,
 											  GET_FOLDER_ID(folder),
 											  pi.timestamp,
+											  scanStamp,
 											  pi.access,
 											  pL );
 	DB_QUERY (
@@ -646,8 +686,27 @@ void PluginCollection::updatePlug ( processing::PluginInfo &pi ) {
 											  pi.isSynth,
 											  pi.pluginType,
 											  pi.timestamp,
+											  scanStamp,
 											  pi.access,
 											  pL );
+	DB_QUERY (
+		exec->execute( query, pL );
+	)
+}
+//------------------------------------------------------------------------------------------------------------
+void PluginCollection::updatePlugScanStamp ( processing::PluginInfo &pi ) {
+	using namespace sambag::cpsqlite;
+	using namespace sqlcommands;
+	using namespace processing;
+
+	if ( !pi.isValid() ) return;
+	
+	//get pluginfo by open plugin
+	ParameterList pL;
+	DataBase::Executer::Ptr exec = database->getExecuter(); 
+	string query = TblPlugins::updateScanStamp ( pi.location, 
+											     scanStamp,
+											     pL );
 	DB_QUERY (
 		exec->execute( query, pL );
 	)

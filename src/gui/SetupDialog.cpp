@@ -4,9 +4,57 @@
 #include "com/one4All.h"
 #include "PpiEditor.h"
 #include "OS_Specific/OS_gui.h"
+#include <fstream>
+#include <time.h>
 
 namespace {
-	enum { ROCKER_RESIZE = 10 };
+enum { ROCKER_RESIZE = 10 };
+struct ScanLogger {
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	* creates new logfile.
+	*/
+	void static createNewFile() {
+		try {
+			std::fstream f( (getHomeDirectory() + Settings::SCAN_REPORT_FILENAME).c_str(), 
+							std::ios::out | std::ios::trunc );
+			time_t t; time(&t);
+			string str_time( ctime(&t) );
+			str_time.at( str_time.length() - 1 ) = '+'; // "\n" entfernen
+			f<<"::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"<<std::endl;
+			f<<" VSTForx "<<Settings::versionToString()<<" last scan on:"<<std::endl;
+			f<< " ++ " << str_time << " ++" << std::endl;
+			f<<"::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"<<std::endl;
+			f.close();
+		} catch (...) {
+		}
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	*	Writes every scanned file to log.
+	*   Opens steam on every entry because it can be that a scanning interrupts.
+	*/
+	void static pluginScanned(void *src, const com::OnFileLoaded &ev) {
+		try {
+			std::fstream f( (getHomeDirectory() + Settings::SCAN_REPORT_FILENAME).c_str(),
+							std::ios::out | std::ios::app );
+			
+			f<<ev.filename<<"->";
+			switch (ev.info.access) {
+				case processing::PluginInfo::SUCCEED :
+					f<<"SUCCEED"; break;
+				case processing::PluginInfo::FAILED  :
+					f<<"FAILED"; break;
+				default                              :
+					f<<"IGNORED"; break;
+			}
+			f<<endl;
+			f.close();
+		} catch (...) {
+		}
+		
+	}
+}; // scanlogger
 }
 
 namespace ppiGui {
@@ -372,9 +420,11 @@ void SetupCtrl::scan() {
 	modView->setDirty();
 	pC->EventSender<OnLoadFile>::addEventListener ( dlgScanning );
 	pC->EventSender<OnFileLoaded>::addEventListener ( dlgScanning );
+	pC->EventSender<OnFileLoaded>::addEventListenerF ( &ScanLogger::pluginScanned );
 	pC->EventSender<ScanFinished>::addEventListener ( this );
 	pC->EventSender<CleaningUpDataBase>::addEventListener ( this );
-	
+	// create new scanlog 
+	ScanLogger::createNewFile();
 	ed->addExtraTimerCmd ( SystemCommand::Ptr( new CmdUpdatePluginCollection( pC, ed->getGraph() ) ) );
 }
 //------------------------------------------------------------------------------------------------------------
@@ -384,6 +434,7 @@ void SetupCtrl::eventHandler(void *src, const com::ScanFinished &ev) {
 	pC->EventSender<OnLoadFile>::removeEventListener ( dlgScanning ); // wichtig!
 	pC->EventSender<OnFileLoaded>::removeEventListener ( dlgScanning );
 	pC->EventSender<ScanFinished>::removeEventListener ( this );
+	pC->EventSender<OnFileLoaded>::removeEventListenerF ( &ScanLogger::pluginScanned );
 	pC->EventSender<CleaningUpDataBase>::removeEventListener ( this );
 	ListBox &lB = dlgScanning->getListBox();
 	// suma sumarum
@@ -391,6 +442,7 @@ void SetupCtrl::eventHandler(void *src, const com::ScanFinished &ev) {
 	lB.addString( MyString( pC->getNumSucceed() )     + " succeed." );
 	lB.addString( MyString( pC->getNumFailed() )      + " failed." );
 	lB.addString( MyString( pC->getNumNotChecked() )  + " not checked." );
+	lB.addString( std::string("see scan report: ") + getHomeDirectory() + Settings::SCAN_REPORT_FILENAME);
 	lB.addString("=========================================================");
 	lB.addString( "Don't forget to rescan when folder content changed!" );
 
@@ -412,6 +464,7 @@ SetupCtrl::~SetupCtrl() {
 	pC->EventSender<OnLoadFile>::removeEventListener ( dlgScanning ); // wichtig!
 	pC->EventSender<OnFileLoaded>::removeEventListener ( dlgScanning );
 	pC->EventSender<ScanFinished>::removeEventListener ( this );
+	pC->EventSender<OnFileLoaded>::removeEventListenerF ( &ScanLogger::pluginScanned );
 	pC->EventSender<CleaningUpDataBase>::removeEventListener ( this );
 	
 	if ( pC->isScanning() ) {
