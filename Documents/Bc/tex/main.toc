@@ -38,6 +38,7 @@
 \contentsline {subsection}{\numberline {4.4}Portabilit\IeC {\"a}t}{14}
 \contentsline {paragraph}{Der Pr\IeC {\"a}prozessor}{14}
 \contentsline {paragraph}{Die Abstrakte Fabrik}{15}
+\contentsline {paragraph}{Die L\IeC {\"o}sung}{16}
 \contentsline {subsection}{\numberline {4.5}Nebenl\IeC {\"a}ufigkeit}{16}
 \contentsline {section}{\numberline {5}Literatur Verzeichnis}{17}
 \contentsline {section}{\numberline {6}Abbildungs Verzeichnis}{18}

@@ -76,28 +76,28 @@ Ein plattformspezifischer Aufruf sähe demnach wie folgt aus:
 %TODO: make beauty
 \begin{lstlisting}[caption={Beispiel eines plattformspezifischen Methodenaufrufes mittels ''Abstrakte Fabrik''}]
 
-// Datei: OsWindows.h
-class WindowsInterface : public OsInterface {
-public:
-	virtual void aufruf() {
-		windowsAufruf();
-	}
-};
+	// Datei: OsWindows.h
+	class WindowsInterface : public OsInterface {
+	public:
+		virtual void aufruf() {
+			windowsAufruf();
+		}
+	};
 
-// Datei: OsMac.h
-class MacInterface : public OsInterface {
-public:
-	virtual void aufruf() {
-		macAufruf();
-	}
-};
+	// Datei: OsMac.h
+	class MacInterface : public OsInterface {
+	public:
+		virtual void aufruf() {
+			macAufruf();
+		}
+	};
 
-// Datei: ProgrammImpl.c
-void eineFuntion {
-	IOsFactory *factory = IOsFactory::getOsFactory();
-	OsInterface *osInterface = factory->createOsInterface();
-	osInterface->aufruf();
-}
+	// Datei: ProgrammImpl.c
+	void eineFuntion {
+		IOsFactory *factory = IOsFactory::getOsFactory();
+		OsInterface *osInterface = factory->createOsInterface();
+		osInterface->aufruf();
+	}
 \end{lstlisting}
 Der Vorteil dieser Lösung ist dass keinerlei Abhängigkeiten bei der Erzeugung der Objekte entstehen. Es könnte sogar zur Laufzeit einfach das Fabrikobjekt ausgetauscht werden und somit zwischen verschieden Implementierungen gewechselt werden.
 \\\\
