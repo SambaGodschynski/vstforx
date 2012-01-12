@@ -19,26 +19,23 @@
 \contentsline {subsubsection}{\numberline {2.1.5}Parameter Verbindungen}{8}
 \contentsline {subsubsection}{\numberline {2.1.6}Zus\IeC {\"a}tzliche Module}{8}
 \contentsline {subsubsection}{\numberline {2.1.7}Persistenz}{9}
-\contentsline {subsubsection}{\numberline {2.1.8}Latenz Kompensation}{9}
-\contentsline {subsection}{\numberline {2.2}Was implementiert werden kann}{10}
-\contentsline {subsubsection}{\numberline {2.2.1}Weitere zus\IeC {\"a}tzliche Module}{10}
-\contentsline {subsubsection}{\numberline {2.2.2}Unterst\IeC {\"u}tzung alternativer Pluginformate}{10}
-\contentsline {section}{\numberline {3}Begriffe der diskreten Audioverarbeitung}{11}
-\contentsline {subsection}{\numberline {3.1}Das Sample}{11}
-\contentsline {subsection}{\numberline {3.2}Die Samplefreuqenz}{11}
-\contentsline {subsection}{\numberline {3.3}Die Sampleaufl\IeC {\"o}sung}{11}
-\contentsline {subsection}{\numberline {3.4}Der Sampleblock}{11}
-\contentsline {subsection}{\numberline {3.5}Der Prozess}{12}
-\contentsline {section}{\numberline {4}Ausgew\IeC {\"a}hlte Problemstellungen}{13}
-\contentsline {subsection}{\numberline {4.1}Die Effektverkettung}{13}
-\contentsline {paragraph}{Das Modell}{13}
-\contentsline {paragraph}{Die Berechnungsreihenfolge}{13}
-\contentsline {paragraph}{R\IeC {\"u}ckkopplungen}{14}
-\contentsline {paragraph}{Inaktive Knoten}{14}
-\contentsline {subsection}{\numberline {4.2}Das Latenzproblem}{14}
+\contentsline {subsection}{\numberline {2.2}Was implementiert werden kann}{9}
+\contentsline {subsubsection}{\numberline {2.2.1}Weitere zus\IeC {\"a}tzliche Module}{9}
+\contentsline {subsubsection}{\numberline {2.2.2}Unterst\IeC {\"u}tzung alternativer Pluginformate}{9}
+\contentsline {section}{\numberline {3}Begriffe der diskreten Audioverarbeitung}{10}
+\contentsline {subsection}{\numberline {3.1}Das Sample}{10}
+\contentsline {subsection}{\numberline {3.2}Die Samplefreuqenz}{10}
+\contentsline {subsection}{\numberline {3.3}Die Sampleaufl\IeC {\"o}sung}{10}
+\contentsline {subsection}{\numberline {3.4}Der Sampleblock}{10}
+\contentsline {subsection}{\numberline {3.5}Der Prozess}{11}
+\contentsline {section}{\numberline {4}Ausgew\IeC {\"a}hlte Problemstellungen}{12}
+\contentsline {subsection}{\numberline {4.1}Die Effektverkettung}{12}
+\contentsline {paragraph}{Das Modell}{12}
+\contentsline {paragraph}{Die Berechnungsreihenfolge}{12}
+\contentsline {paragraph}{R\IeC {\"u}ckkopplungen}{13}
+\contentsline {subsection}{\numberline {4.2}Das Latenzproblem}{13}
 \contentsline {subsection}{\numberline {4.3}Persistenz}{14}
 \contentsline {subsection}{\numberline {4.4}Portabilit\IeC {\"a}t}{14}
 \contentsline {subsection}{\numberline {4.5}Nebenl\IeC {\"a}ufigkeit}{14}
-\contentsline {subsection}{\numberline {4.6}Verwendung von Speicherdateien auf unterschiedlichen Systemen}{14}
 \contentsline {section}{\numberline {5}Literatur Verzeichnis}{15}
 \contentsline {section}{\numberline {6}Abbildungs Verzeichnis}{16}

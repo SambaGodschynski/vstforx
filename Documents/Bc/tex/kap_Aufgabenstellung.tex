@@ -59,17 +59,6 @@ Mögliche Module:
 
 \subsubsection{Persistenz}
 Das Programm sollte in der Lage alle Einstellungen und Konstruktionen dauerhaft zu speichern. Dabei ist zu beachten dass - wird VSTForx in einem DAW Projekt benutzt - VSTForx Bestandteil dieses Projektes ist. Wird also einen solches Projekt gespeichert, sollten mit dem erneuten öffnen des Projektes, alle vorherigen VSTForx Konstruktionen vollständig wiederhergestellt werden. 
-\subsubsection{Latenz Kompensation}
-\begin{figure}[ht]
-	\centering
- 	\includegraphics[scale=0.15]{../graphics/latenz.png}
-	\caption{Darstellung des Latenzproblemes: die Signalausgabe aus ''Effekt B'' ist um 10 ms verzögert}
-	\label{latenz}
-\end{figure}
-Werden in VSTForx zwei Plugins parallel verbunden kann es unter umständen zu einem Problem kommen:
-es gibt Plugins die eine Latenzzeit größer 0 aufweisen. Das heisst die Pluginausgabe ist - technisch bedingt - zeitlich verzögert.
-Bei einer Parallelschaltung kann diese Latenz nun bewirken dass zum Beispiel in einem Signalpfad eine Verzögerung auftritt, im anderen aber nicht (siehe Abbildung \ref{latenz}). Das Signal erklingt daher doppelt. Diese Verzögerung gilt es auszugleichen.
-
 \subsection{Was implementiert werden kann}
 \subsubsection{Weitere zusätzliche Module}
 \begin{itemize}

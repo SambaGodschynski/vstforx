@@ -9,7 +9,7 @@ Wie bereits in Kapitel \ref{Prozess} beschrieben erzeugt ein Plugin seine Ausgab
 \begin{figure}[h]
 	\centering
  	\includegraphics[scale=0.1]{../graphics/g01.png}
-	\caption{Beispiel eines Plugin Graphen}
+	\caption{Beispiel eines Plugin-Graphen}
 	\label{g01}
 \end{figure}
 Gegeben sei folgendes Beispiel:
@@ -30,20 +30,29 @@ Wie in Schritt \ref{PlugC} zu sehen ist zur korrekten Ausführung von Plugin-C n
 In der Graphentheorie gibt es einen Algorithmus der in der Lage ist Abhängigkeiten aufzulösen: Die Topologische Sortierung.
 \\\\
 Die Topologische Sortierung basiert auf der Durchlaufstrategie Tiefensuche\footnote{oder auch DFS - engl.: Depth First Search}. \\
-''Sie erzeugt eine lineare Anordnung von Knoten eines Graphen. Existiert eine Kante zwischen den Knoten (u, v),  so wird u vor v geordnet."\cite{bgl01}\\
+''Sie erzeugt eine lineare Anordnung von Knoten eines Graphen. Existiert eine Kante zwischen den Knoten (u, v),  so wird u vor v geordnet."\footnote{\label{bglTopo}vergl. \cite{bgl01}, S. 176 f.}\\
 Das Resultat der Topologischen Sortierung ist daher eine sortierte Menge an Knoten deren Reihenfolge  genau ihren Abhängigkeiten entspricht.
-In unsrem Beispiel würde die Topologische Sortierung die (Plugin-)Knotenmenge \{A, B, C\}\footnote{vorausgesetzt Knoten A ist der Startknoten der Topologischen Sortierung} ergeben.
+In unsrem Beispiel würde die Topologische Sortierung die (Plugin-)Knotenmenge \{A, B, C\}\footnote{vorausgesetzt Knoten A ist der Startknoten der Topologischen Sortierung} ergeben. \\
+Die Topologische Sortierung hat ein Laufzeitverhalten von $\mathcal O(|V| + |E|)$\footnotemark[14] \footnote{wobei |V| die Menge aller Knoten und |E| die Menge aller Kanten ist}, und ist somit eher ungeeignet um in Echtzeit sehr häufig ausgeführt zu werden. Allerdings ändert sich die Ergebnismenge auch nur sobald sich der Graph verändert hat.
+Die Ergebnismenge wird daher auch nur nach einer Graphänderung erstellt und in einer Liste gespeichert. Diese Liste wird während des Prozesses einfach iteriert. Somit ergibt sich eine Laufzeit von $\mathcal O(|V|)$ 
 \paragraph{Rückkopplungen}
-Eine Einschränkung der Topologischen Sortierung ist es, dass die zu sortierenden Graphen keine Zykel enthalten dürfen. Dies hat für VSTForx zur Auswirkung dass keine Rückkopplungen ''geschaltet'' werden können. Eine Rückkopplung wäre es zum Beispiel, wenn der Ausgang eines Plugins, direkt oder über Umwege, wieder an seinem Eingang liegen würde. Sollten Rückkopplungsschaltungen unterstützt werden, könnte man die betreffenden Knoten lokalisieren und in einen Subgraphen substituieren. Dieser Subgraph könnte dann die Knoten durch einen alternativen Algorithmus, einen der Rückkopplungen unterstützt, behandeln. Dies ist jedoch nicht vorgesehen. \\
-Die Topologischen Sortierung ist es allerdings in der Lage zu erkennen ob ein Graph Zyklisch ist. Zur Vermeidung von Fehlverhalten werden daher Zyklische Graphen nicht zugelassen.  
-\paragraph{Inaktive Knoten}
+Eine Einschränkung der Topologischen Sortierung ist es, dass die zu sortierenden Graphen keine Zykel enthalten dürfen. Dies hat für VSTForx zur Auswirkung dass keine Rückkopplungen ''geschaltet'' werden können. Eine Rückkopplung wäre es zum Beispiel, wenn der Ausgang eines Plugins, direkt oder über Umwege, wieder an seinem Eingang liegen würde. Sollten Rückkopplungsschaltungen unterstützt werden, könnte man die betreffenden Knoten lokalisieren und durch einen Subgraphen substituieren. Dieser Subgraph könnte dann die Knoten durch einen alternativen Algorithmus, einen der Rückkopplungen unterstützt, bearbeiten. Dies ist jedoch, aufgrund der Komplexität des Problemes, nicht vorgesehen. \\
+Die Topologischen Sortierung ist es allerdings in der Lage zu erkennen ob ein Graph Zyklisch ist (vergl. \cite{bgl01}, S. 176 f. ). Zur Vermeidung von Fehlverhalten werden daher Zyklische Graphen nicht zugelassen.  \\
 %%%%%%
 \subsection{Das Latenzproblem}
+\begin{figure}[ht]
+	\centering
+ 	\includegraphics[scale=0.15]{../graphics/latenz.png}
+	\caption{Darstellung des Latenzproblemes: die Signalausgabe aus ''Effekt B'' ist um 10 ms verzögert}
+	\label{latenz}
+\end{figure}
+Werden in VSTForx zwei Plugins parallel verbunden kann es unter umständen zu einem Problem kommen:
+es gibt Plugins die eine Latenzzeit größer 0 aufweisen. Das heisst die Pluginausgabe ist - technisch bedingt - zeitlich verzögert.
+Bei einer Parallelschaltung kann diese Latenz nun bewirken dass zum Beispiel in einem Signalpfad eine Verzögerung auftritt, im anderen aber nicht (siehe Abbildung \ref{latenz}). Die Signale erklingen daher versetzt. Diese Verzögerung gilt es auszugleichen.
+
 %%%%%%
 \subsection{Persistenz}
 %%%%%%
 \subsection{Portabilität}
 %%%%%%
 \subsection{Nebenläufigkeit}
-%%%%%%
-\subsection{Verwendung von Speicherdateien auf unterschiedlichen Systemen}
