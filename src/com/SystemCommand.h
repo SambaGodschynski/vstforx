@@ -50,7 +50,7 @@ protected:
 	processing::Graph::Ptr graph;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	CmdUpdatePluginCollection( const com::PluginCollection::Ptr &pC, const processing::Graph::Ptr &graph ) :
+	CmdUpdatePluginCollection( com::PluginCollection::Ptr pC, const processing::Graph::Ptr &graph ) :
 		pC(pC), graph(graph) {}
 };
 } // namespace 

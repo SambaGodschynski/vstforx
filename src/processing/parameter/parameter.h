@@ -11,6 +11,7 @@
 #include "boost/bind.hpp"
 #include "boost/function.hpp"
 #include "processing/PObject.h"
+#include <boost/math/special_functions/fpclassify.hpp>
 
 namespace processing {
 namespace parameter {
@@ -215,6 +216,11 @@ public:
 	// Benachrichtigt alle verbundenen ProcessorNodes und Listener.
 	virtual void setValue( VstNumber v ){
 		if ( updateLock ) return;
+		// avoid NaN. problems with serialize and deserialize
+		// see: issue #113
+		if ( !boost::math::isfinite(v) ) { 
+			v = 0;
+		}
 		value = com::getMin<VstNumber>( _max, com::getMax<VstNumber>( _min, v ) );
 		notifyListeners(this, *this);
 		updateConnections();

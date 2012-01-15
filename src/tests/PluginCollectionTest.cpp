@@ -16,7 +16,7 @@
 #define VSTPLUG_EXT ".vst"
 #endif
 
-#define FAST_SCAN_TIME 2.0 //two seconds
+#define FAST_SCAN_TIME 12.0 //two seconds
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::PluginCollectionTest );
@@ -456,8 +456,8 @@ void PluginCollectionTest::testPortability() {
 	pC->update( graph.get() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>getPlugin_1 has to be found
 	PlugNode::Ptr plug = pC->getPlugNode ( graph.get(), plugLocation.string() );
-	PluginInfo pluginInfo = plug->getPluginInfo();
 	CPPUNIT_ASSERT ( plug );
+	PluginInfo pluginInfo = plug->getPluginInfo();
 	plugLocation = path.string() + PLUGIN_LOACTION_1;
 	CPPUNIT_ASSERT_EQUAL ( plugLocation.string(), plug->getLocation() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>clear folders

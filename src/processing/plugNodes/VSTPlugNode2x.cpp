@@ -12,6 +12,8 @@
 #include <boost/filesystem.hpp> 
 #include "com/PluginCollection.h"
 #include <float.h>
+#include <boost/foreach.hpp>
+#include <limits>
 
 
 #define MAX_BFF_STR 2048
@@ -217,9 +219,9 @@ void VSTPlugNode::initParameter(){
 		aEff->dispatcher ( aEff, effGetParamLabel, i, NULL, &bff[0], NULL );
 		param[i]->setLabel ( MyString(bff) );
 		// hole Parameter Display
-		aEff->dispatcher ( aEff, effGetParamDisplay, i, NULL, &bff[0], NULL );
-		param[i]->setDisplay( MyString(bff) );
-		param[i]->addValueChangedListener ( this );
+		//aEff->dispatcher ( aEff, effGetParamDisplay, i, NULL, &bff[0], NULL );
+		//param[i]->setDisplay( MyString(bff) );
+		//param[i]->addValueChangedListener ( this );
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -299,6 +301,7 @@ void VSTPlugNode::save(com::oArchive &ar, const unsigned int version) const {
 	// save plugInfo
 	const PluginInfo plugInfo = getPluginInfo();
 	ar << plugInfo;
+
 	// parameter
 	ar << param;
 	// chunk
@@ -339,6 +342,7 @@ void VSTPlugNode::load(com::iArchive &ar, const unsigned int version) {
 		hostInfo->getAudioEffectX() ) 
 	);
 	
+	param.clear();
 	initPlug ( *this );
 
 	// parameter

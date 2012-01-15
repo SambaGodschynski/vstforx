@@ -3,10 +3,12 @@
 #include "OS_Specific/OS_gui.h"
 #include "ppiGui.h"
 #include "MainCtrl.h"
+#include <boost/foreach.hpp>
 
 const CColor colBk = { 144, 162, 191, 255 };
 const CColor colSysMenBk = { 170, 170, 170, 255 };
 static const int SYS_MENU_HEIGHT = 25;
+static const int SCANLISTBOX_MAX_NUM_ENTRIES = 31;
 
 namespace ppiGui {
 //============================================================================================================
@@ -185,8 +187,9 @@ void ListBox::ListBoxView::draw(VSTGUI::CDrawContext *cD) {
 	cD->fillRect ( r );
 	// draw entries
 	CPoint p = CPoint( r.left, r.top );
-	for ( int i=0; i<cntCol.size(); ++i ) {
-		VSTGUI::CRect eSize = cntCol[i]->getViewSize();
+	size_t i = 0;
+	BOOST_FOREACH( ListBoxContent::Ptr cnt, cntCol ) {
+		VSTGUI::CRect eSize = cnt->getViewSize();
 		eSize.setWidth ( getWidth() );
 		//selection
 		if ( i == selection ) {
@@ -195,9 +198,10 @@ void ListBox::ListBoxView::draw(VSTGUI::CDrawContext *cD) {
 			cD->fillRect ( eSize );
 		}
 		
-		cntCol[i]->offset( p.x, p.y );
-		cntCol[i]->draw( cD );
+		cnt->offset( p.x, p.y );
+		cnt->draw( cD );
 		p.y+= eSize.getHeight();
+		++i;
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -205,8 +209,9 @@ void ListBox::ListBoxView::findSelection ( const CPoint & mP ) {
 	VSTGUI::CRect r; getViewSize(r);
 	// draw entries
 	CPoint p = CPoint( r.left, r.top );
-	for ( int i=0; i<cntCol.size(); ++i ) {
-		VSTGUI::CRect eSize = cntCol[i]->getViewSize();
+	size_t i = 0;
+	BOOST_FOREACH( ListBoxContent::Ptr cnt, cntCol ) {
+		VSTGUI::CRect eSize = cnt->getViewSize();
 		eSize.setWidth ( getWidth() );
 		eSize.offset( p.x, p.y );
 		if ( eSize.pointInside ( mP ) ) {
@@ -214,6 +219,7 @@ void ListBox::ListBoxView::findSelection ( const CPoint & mP ) {
 			break;
 		}
 		p.y+= eSize.getHeight();
+		++i;
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -224,14 +230,27 @@ void ListBox::ListBoxView::mouse( VSTGUI::CDrawContext *cD, VSTGUI::CPoint &p, l
 //------------------------------------------------------------------------------------------------------------
 void ListBox::ListBoxView::addListBoxContent ( const ListBoxContent::Ptr &ptr ) {
 	cntCol.push_back ( ptr );
-	VSTGUI::CRect neu = calcSize();
-	setViewSize( neu );
-	setMouseableArea( neu );
+	// workaround for issue #116
+	if ( cntCol.size() > SCANLISTBOX_MAX_NUM_ENTRIES ) {
+		cntCol.pop_front();
+	}
+	// update view size
+	VSTGUI::CRect r; getViewSize(r);
+	r.bottom+= ptr->getViewSize().getHeight();
+	int w = ptr->getViewSize().getWidth();
+	r.right = ( w > r.right ) ? w : r.right;
+	setViewSize( r );
+	setMouseableArea( r );
 }
 //------------------------------------------------------------------------------------------------------------
 ListBoxContent::Ptr ListBox::ListBoxView::getListBoxContent(size_t index) const {
 	if ( index > cntCol.size() ) return ListBoxContent::Ptr();
-	return cntCol[index];
+	size_t i = 0;
+	BOOST_FOREACH( ListBoxContent::Ptr cnt, cntCol ) {
+		if ( i++ == index )
+			return cnt;
+	}
+	return ListBoxContent::Ptr();
 }
 //------------------------------------------------------------------------------------------------------------
 void ListBox::ListBoxView::removeEntry(size_t index) {
@@ -249,16 +268,23 @@ void ListBox::ListBoxView::removeEntry(size_t index) {
 //------------------------------------------------------------------------------------------------------------
 void ListBox::ListBoxView::changeEntry( size_t index, const ListBoxContent::Ptr &ptr ) {
 	if ( index > cntCol.size() ) return;
-	cntCol[index] = ptr;
+	ContentCollection::iterator it = cntCol.begin();
+	size_t c = 0;
+	while ( true ) {
+		if ( c++ == index ) break;
+		++it;
+	}
+	cntCol.insert( it, ptr );
+	cntCol.erase ( it );
 	selection = -1;
 }
 //------------------------------------------------------------------------------------------------------------
 VSTGUI::CRect ListBox::ListBoxView::calcSize() {
 	VSTGUI::CRect r; getViewSize(r);
 	r.bottom = 0;
-	for ( int i=0; i<cntCol.size(); ++i ) {
-		r.bottom+= cntCol[i]->getViewSize().getHeight();
-		int w = cntCol[i]->getViewSize().getWidth();
+	BOOST_FOREACH( ListBoxContent::Ptr cnt, cntCol ) {
+		r.bottom+= cnt->getViewSize().getHeight();
+		int w = cnt->getViewSize().getWidth();
 		r.right = ( w > r.right ) ? w : r.right;
 	}
 	return r;

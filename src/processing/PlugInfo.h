@@ -37,7 +37,7 @@ public:
 	int isSynth;
 	int uid;
 	time_t timestamp;
-	AccessState access; // konnte geladen werden
+	AccessState access; // konnte geladen werden?
 	//--------------------------------------------------------------------------------------------------------
 	bool isValid() const {
 		return location != "";
