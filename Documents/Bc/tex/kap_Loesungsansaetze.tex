@@ -48,59 +48,6 @@ Werden zwei Plugins parallel verbunden kann es unter umständen zu einem Problem
 es gibt Plugins die eine Latenzzeit größer 0 aufweisen. Das bedeutet die Pluginausgabe ist zeitlich verzögert.
 Bei einer Parallelschaltung kann diese Latenz nun bewirken dass zum Beispiel in einem Signalpfad eine Verzögerung auftritt, im anderen aber nicht (siehe Abbildung \ref{latenz}). Die Signale erklingen daher versetzt. In diesem Beispiel kann die Verzögerung ausgeglichen werden indem, dem Pfad ohne Verzögerung eine Künstliche Verzögerung hinzugefügt wird. Beide Signale erklingen nun gleichzeitig. Zu beachten ist das nun VSTForx selbst eine Latenz 10ms aufweist. Jeder Knoten benötigt daher einen Buffer der eine Größe von Bockgröße + ( sampleFrequenz * Latenz ) aufweist.
 %%%%%%
-\subsection{Portabilität}
-VSTForx soll unter Windows und MacOSX lauffähig sein. Das VST-SDK sowie das zum VST-SDK passende VST-GUI Entwicklungs Packet ist für beide Plattformen compilierbar. Trotzdem gibt es einige Funktionen die Plattformspezifisch implementiert werden müssen.\\ Hierfür gibt es mehrere Ansätze: 
-\paragraph{Der Präprozessor}
-Das VST2.x SDK löst dieses Problem indem es in einer Funktion die Systemspezifischen Aufrufe, mittels Präprozessorbedingungen, separiert: 
-\lstset{language = C++}
-%TODO: make beauty
-\begin{lstlisting}[caption={Beispiel einer Funktion die mittels Präprozessor für zwei Plattformen compilierbar ist}]
-void eineVSTFunktion() {
-	aufruf01();
-	void* handle = 0;
-#ifdef WIN
-	handle = windowsAufruf();
-#elif MAC
-	handle = macAufruf();
-#endif
-}
-\end{lstlisting}
-Der Nachteil dieser Methode ist dass der Quelltest schwer les- und wartbar ist. Da jede Plattform unterschiedliche Datentypen benutzt, ist es erforderlich unsichere 'void' Zeiger zu verwenden. Diese Vorgehensweise wird daher nicht angewandt.
-\paragraph{Die Abstrakte Fabrik}
-Die Abstrakte Fabrik zählt zu den Standart Entwurfsmustern und ist ein Erzeugungsmuster. Die Abstrakte Fabrik bietet eine Schnittstelle zum erzeugen von konkreten Objekten (vgl. \cite{gof04}). So müssten plattformspezifische Aufrufe sinnvoll in einer Schnittstellenklasse zusammengefasst werden. Diese Schnittstellenklasse könnte je nach Platform in einer konkreten Klasse implementiert werden. Die konkreten Objekte einer solchen Klasse würden von einem Fabrikklassenobjekt erzeugt. Für solch eine Fabrikklasse gäbe es ebenfalls eine Schnitstellen-Oberklasse - die Abstrakte Fabrik. Eine Singleton (siehe \cite{gof04}) Klasse könnte dann ein Fabrikobjekt zur Verfügung stellen. \\
-Ein plattformspezifischer Aufruf sähe demnach wie folgt aus:
-%TODO: make beauty
-\begin{lstlisting}[caption={Beispiel eines plattformspezifischen Methodenaufrufes mittels ''Abstrakte Fabrik''}]
-
-// Datei: OsWindows.h
-class WindowsInterface : public OsInterface {
-public:
-	virtual void aufruf() {
-		windowsAufruf();
-	}
-};
-
-// Datei: OsMac.h
-class MacInterface : public OsInterface {
-public:
-	virtual void aufruf() {
-		macAufruf();
-	}
-};
-
-// Datei: ProgrammImpl.c
-void eineFuntion {
-	IOsFactory *factory = IOsFactory::getOsFactory();
-	OsInterface *osInterface = factory->createOsInterface();
-	osInterface->aufruf();
-}
-	
-\end{lstlisting}
-Der Vorteil dieser Lösung ist dass keinerlei Abhängigkeiten bei der Erzeugung der Objekte entstehen. Es könnte sogar zur Laufzeit einfach das Fabrikobjekt ausgetauscht werden und somit zwischen verschieden Implementierungen gewechselt werden.
-\\\\
-Der Nachteil ist es dass viele neue Schnittstellen erstellt und implementiert werden müssen. 
-\paragraph{Die Lösung}
-%%%%%%
 \subsection{Nebenläufigkeit}
 Ein VST-Plugin kann optional einen Editor implementieren. Ein Editor ist ein eigenständiges Fenster welches die Benutzeroberfläche des Plugins enthält und wird von der DAW bei bedarf geöffnet. Da Eingaben auf der Benutzeroberfläche zu einem unbestimmten Zeitpunkt geschehen, der Pluginprozess aber kontinuierlich (nebenläufig\footnote{ob als eigenständiger Prozess oder Thread ist DAW abhängig}) abgearbeitet wird, liegt hier ein Nebenläufigkeitsproblem vor. Wird der Effekt-Graph geändert während er bearbeitet wird, verursacht dies ein undefiniertes Verhalten. \\
 Folgend sollen drei verschiedene Lösungsansätze beschrieben werden:
