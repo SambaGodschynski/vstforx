@@ -31,6 +31,9 @@
 #include <com/boostPathSerialization.hpp> 
 
 namespace com {
+/*
+	Text archive to increase portability.
+*/
 //------------------------------------------------------------------------------------------------------------
 typedef boost::archive::text_oarchive oArchive;
 //------------------------------------------------------------------------------------------------------------

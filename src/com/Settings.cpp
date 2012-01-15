@@ -47,6 +47,7 @@ const string Settings::PLUG_LOAD_LOGFILE = "init_plug.log";
 const string Settings::CONFIG_FILE = NAME + ".conf" ;
 const string Settings::FX_BUNDLE_ID = "com.samba_godschynski.VSTForx";
 const string Settings::I_BUNDLE_ID = "com.samba_godschynski.iVSTForx";
+const string Settings::SCAN_REPORT_FILENAME = "scanReport.txt";
 static size_t KILO = 1000;
 //------------------------------------------------------------------------------------------------------------
 Settings::Settings() : 
@@ -181,7 +182,7 @@ string Settings::versionToString( const unsigned int version ) {
 	ss.str("");
 	ss.clear();
 	ss.fill (' ');
-	ss<<tmp[0]<<tmp[1]<<"."<<tmp[2]<<tmp[3]<<"."<<tmp[4]<<tmp[5]<<tmp[6];
+	ss<<tmp[0]<<tmp[1]<<"."<<tmp[2]<<tmp[3]<<"."<<tmp[4]<<tmp[5]<<tmp[6]<<PPI_VERSION_EXTRA_CHAR;
 	return ss.str();
 }
 

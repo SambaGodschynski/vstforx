@@ -4,6 +4,7 @@
 #include <sambag/cpsqlite/DataBase.hpp>
 #include <list>
 #include "com/one4All.h" 
+#include <time.h>
 
 namespace com {
 namespace sqlcommands {
@@ -11,6 +12,36 @@ typedef sambag::cpsqlite::DataBase::Int Int;
 typedef sambag::cpsqlite::DataBase::Path Path;
 typedef list<Path> PathList;
 using namespace std;
+//============================================================================================================
+struct TblLastScan {
+//============================================================================================================
+	//--------------------------------------------------------------------------------------------------------
+	static string tblName() { return "currentscan"; }
+	//--------------------------------------------------------------------------------------------------------
+	static string scanstamp() { return "scanstamp"; }
+	//--------------------------------------------------------------------------------------------------------
+	static string create () {
+		return string ("CREATE TABLE IF NOT EXISTS currentscan ( ") +
+		"scanstamp INTEGER UNSIGNED NULL);";
+	}
+	//--------------------------------------------------------------------------------------------------------
+	static string getScanStamp() {
+		return string("SELECT * FROM currentscan;");
+	}
+	//--------------------------------------------------------------------------------------------------------
+	static string insertScanStamp( time_t timestamp ) {
+		stringstream ss;
+		ss<<"INSERT INTO currentscan (scanstamp) VALUES("<<timestamp<<");";
+		return ss.str();
+	}
+	//--------------------------------------------------------------------------------------------------------
+	static string updateScanStamp( time_t timestamp ) {
+		stringstream ss;
+		ss<<"UPDATE currentscan SET scanstamp = "<<timestamp<<";";
+		return ss.str();
+	}
+
+};
 //============================================================================================================
 struct TblFolder {
 //============================================================================================================
@@ -25,6 +56,8 @@ struct TblFolder {
 	//--------------------------------------------------------------------------------------------------------
 	static string location() { return "location"; }
 	//--------------------------------------------------------------------------------------------------------
+	static string scanstamp() { return "scanstamp"; }
+	//--------------------------------------------------------------------------------------------------------
 	static string visible() { return "visible"; }
 	//--------------------------------------------------------------------------------------------------------
 	static string parentFolderID() { return "parentFolderID"; }
@@ -35,6 +68,7 @@ struct TblFolder {
 		"parentFolderID INTEGER UNSIGNED NULL,"
 		"name VARCHAR(45) NOT NULL, " + 
 		"location TEXT NOT NULL, " +
+		"scanstamp INTEGER UNSIGNED NULL, " +
 		"visible BOOLEAN NOT NULL DEFAULT 1, " + // 0=invisible 1=visible
 		"FOREIGN KEY(parentFolderID) REFERENCES folders(id) ON UPDATE CASCADE  ON DELETE CASCADE, " +
 		"UNIQUE ( location ) );";
@@ -50,48 +84,55 @@ struct TblFolder {
 		return ret;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	static string insertFolder ( const Path &path, sambag::cpsqlite::ParameterList &out_pL ) {
+	static string insertFolder ( const Path &path, time_t scanstamp, sambag::cpsqlite::ParameterList &out_pL ) 
+	{
 		using namespace sambag::cpsqlite;
 		stringstream ss;
 		string parentFolderLoc = path2String( path.parent_path() );
 
 		string subQ = "( SELECT id FROM folders WHERE location = ? )";
-		ss<<"INSERT INTO folders ( name, parentFolderID, location ) VALUES ( ?, "<<subQ<<", ? );";
+		ss<<"INSERT INTO folders ( name, parentFolderID, location, scanstamp ) VALUES ( ?, "<<subQ<<", ?, ? );";
 		size_t index = 1;
 		out_pL.push_back( TextParameter::create( index++, path.filename() ) );
 		out_pL.push_back( TextParameter::create( index++, parentFolderLoc ) );
 		out_pL.push_back( TextParameter::create( index++, path2String(path) ) );
+		out_pL.push_back( IntParameter::create( index++, scanstamp ) );
 
 		return ss.str();
 	}
 	//--------------------------------------------------------------------------------------------------------
-	static string updateFolder ( const Path &path, sambag::cpsqlite::ParameterList &out_pL ) {
+	static string updateFolder ( const Path &path, time_t scanstamp, sambag::cpsqlite::ParameterList &out_pL ) 
+	{
 		using namespace sambag::cpsqlite;
 		stringstream ss;
 		string parentFolderLoc = path2String( path.parent_path() );
 		string q_parentFolderID = " SELECT id FROM folders WHERE location = ? ";
-		ss<<"UPDATE folders SET parentFolderID=(" << q_parentFolderID << ") WHERE location = ?;";
+		ss<<"UPDATE folders SET parentFolderID=(" << q_parentFolderID << "), scanstamp=? WHERE location = ?;";
 		out_pL.push_back( TextParameter::create( 1, parentFolderLoc ) );
-		out_pL.push_back( TextParameter::create( 2, path2String(path) ) );
+		out_pL.push_back( IntParameter::create( 2, scanstamp ) );
+		out_pL.push_back( TextParameter::create( 3, path2String(path) ) );
 		return ss.str();
 	}
 	//--------------------------------------------------------------------------------------------------------
 	static string insertFolder ( 
 		const Path &path, 
 		const Int &parentFolderID, 
+		time_t scanstamp,
 		sambag::cpsqlite::ParameterList &out_pL ) 
 	{
 		using namespace sambag::cpsqlite;
-		string q = "INSERT INTO folders ( name, parentFolderID, location ) VALUES ( ?, ?, ? );";
+		string q = "INSERT INTO folders ( name, parentFolderID, location, scanstamp ) VALUES ( ?, ?, ?, ? );";
 		out_pL.push_back( TextParameter::create( 1, path.filename() ) );
 		out_pL.push_back( IntParameter::create( 2, parentFolderID ) );
 		out_pL.push_back( TextParameter::create( 3, path2String( path ) ) );
+		out_pL.push_back( IntParameter::create( 4, scanstamp ) );
 		return q;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	static string updateParentFolderID ( const Int &folderID, const Int &newParentFolderID ) {
 		stringstream ss;
-		ss<<"UPDATE folders SET parentFolderID = "<<newParentFolderID<<" WHERE id="<<folderID<<";";
+		ss<<"UPDATE folders SET parentFolderID = "<<newParentFolderID;
+		ss<<", scanstamp=(SELECT scanstamp FROM currentscan) WHERE id="<<folderID<<";";
 		return ss.str();
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -178,17 +219,10 @@ struct TblFolder {
 		return ss.str();
 	}
 	//--------------------------------------------------------------------------------------------------------
-	static string removeUnusedFolders ( const PathList &scannedFolders, sambag::cpsqlite::ParameterList &out_pL ) {
+	static string removeUnusedFolders ( time_t scanStamp ) {
 		using namespace sambag::cpsqlite;
 		stringstream ss; 
-		ss<<"DELETE FROM folders WHERE id != 1";	
-		PathList::const_iterator it=scannedFolders.begin();
-		size_t index = 1;
-		for ( ; it!=scannedFolders.end(); ++it ) {
-			ss<<" AND location != ?";
-			out_pL.push_back( TextParameter::create( index++, path2String(*it) ) );
-		}
-		ss<<";";
+		ss<<"DELETE FROM folders WHERE id!=1 AND scanstamp!="<<scanStamp<<";";
 		return ss.str();
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -229,7 +263,9 @@ struct TblPlugins {
 	//--------------------------------------------------------------------------------------------------------
 	static string pluginType() { return "plugin_type"; }
 	//--------------------------------------------------------------------------------------------------------
-	static string timestamp() { return "timestamp"; }
+	static string timestamp() { return "timestamp"; } // last changed on filesystem
+	//--------------------------------------------------------------------------------------------------------
+	static string scanstamp() { return "scanstamp"; }
 	//--------------------------------------------------------------------------------------------------------
 	static string id() { return "id"; }
 	//--------------------------------------------------------------------------------------------------------
@@ -246,6 +282,7 @@ struct TblPlugins {
 		"name VARCHAR(50) NOT NULL, " + 
 		"access INTEGER DEFAULT 0, " + // 0=NOT_CHECKED; 1=SUCCEED; 2=FAILED
 		"timestamp INTEGER NOT NULL DEFAULT 0, " + 
+		"scanstamp INTEGER NOT NULL DEFAULT 0, " + 
 		"FOREIGN KEY(folderID) REFERENCES folders(id) ON UPDATE CASCADE  ON DELETE CASCADE," +
 		"UNIQUE ( location ) );";
 	}
@@ -257,18 +294,21 @@ struct TblPlugins {
 								 const Int &plugType,
 								 const Int &folderID,
 								 const time_t &timestamp,
+								 const time_t &scanstamp,
 								 const Int &access,
 								 sambag::cpsqlite::ParameterList &pL ) 
 	{
 		using namespace sambag::cpsqlite;
-		string q("INSERT INTO plugins ( location, name, folderID, access, timestamp, uid, plugin_type, is_synth )");
-		q += " VALUES (?,?,?,?,?,?,?,?);";
+		string q = string("INSERT INTO plugins(location, name, folderID, access, ") + 
+			"timestamp, scanstamp, uid, plugin_type, is_synth)";
+		q += " VALUES (?,?,?,?,?,?,?,?,?);";
 		size_t index = 1;
 		pL.push_back( TextParameter::create( index++, location ) );
 		pL.push_back( TextParameter::create( index++, name ) );
 		pL.push_back( IntParameter::create( index++, folderID ) );
 		pL.push_back( IntParameter::create( index++, access ) );
 		pL.push_back( Int64Parameter::create( index++, timestamp ) );
+		pL.push_back( Int64Parameter::create( index++, scanstamp ) );
 		pL.push_back( IntParameter::create( index++, uid ) );
 		pL.push_back( IntParameter::create( index++, plugType ) );
 		pL.push_back( IntParameter::create( index++, isSynth ) );
@@ -281,18 +321,33 @@ struct TblPlugins {
 								 const Int &isSynth,
 								 const Int &plugType,
 								 const time_t &timestamp,
+								 const time_t &scanstamp,
 								 const Int &access,
 								 sambag::cpsqlite::ParameterList &pL ) 
 	{
 		using namespace sambag::cpsqlite;
-		string q ("UPDATE plugins SET name=?, access=?, timestamp=?, uid=?, plugin_type=?, is_synth=? WHERE location = ?");
+		string q = string("UPDATE plugins SET name=?, access=?, timestamp=?, ") +
+			      "scanstamp=?, uid=?, plugin_type=?, is_synth=? WHERE location=?";
 		size_t index = 1;
 		pL.push_back( TextParameter::create( index++, name ) );
 		pL.push_back( IntParameter::create( index++, access ) );
 		pL.push_back( Int64Parameter::create( index++, timestamp ) );
+		pL.push_back( Int64Parameter::create( index++, scanstamp ) );
 		pL.push_back( IntParameter::create( index++, uid ) );
 		pL.push_back( IntParameter::create( index++, plugType ) );
 		pL.push_back( IntParameter::create( index++, isSynth ) );
+		pL.push_back( TextParameter::create( index++, location ) );
+		return q;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	static string updateScanStamp ( const string &location, 
+		                            const time_t &scanstamp,  
+									sambag::cpsqlite::ParameterList &pL )
+	{
+		using namespace sambag::cpsqlite;
+		string q("UPDATE plugins SET scanstamp=? WHERE location=?;");
+		size_t index = 1;
+		pL.push_back( Int64Parameter::create( index++, scanstamp ) );
 		pL.push_back( TextParameter::create( index++, location ) );
 		return q;
 	}
@@ -359,20 +414,10 @@ struct TblPlugins {
 		return ss.str();
 	}
 	//--------------------------------------------------------------------------------------------------------
-	static string removeUnusedPlugins ( const PathList &scannedFiles, sambag::cpsqlite::ParameterList &out_pL ) {
-		if ( scannedFiles.empty() ) return "DELETE FROM plugins;";
-		using namespace sambag::cpsqlite;
-		stringstream ss; 
-		ss<<"DELETE FROM plugins WHERE location != ?";	
-		PathList::const_iterator it=scannedFiles.begin();
-		size_t index = 1;
-		out_pL.push_back( TextParameter::create( index++, it->string() ) );
-		++it;
-		for ( ; it!=scannedFiles.end(); ++it ) {
-			ss<<" AND location != ?";
-			out_pL.push_back( TextParameter::create( index++, it->string() ) );
-		}
-		ss<<";";
+	static string removeUnusedPlugins ( time_t scanstamp ) {
+		// removes all plugins plugin::scanstamp!=scanstamp 
+		stringstream ss;
+		ss<<"DELETE FROM plugins WHERE scanstamp!="<<scanstamp;
 		return ss.str();
 	}
 };

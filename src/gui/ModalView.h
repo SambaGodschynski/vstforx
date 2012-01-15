@@ -163,7 +163,7 @@ public:
 class ListBox : public MyScrollView {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<ListBoxContent::Ptr> ContentCollection;
+	typedef list<ListBoxContent::Ptr> ContentCollection;
 private:
 	//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 	class ListBoxView : public CView {
