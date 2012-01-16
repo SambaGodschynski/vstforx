@@ -46,7 +46,24 @@ Die Topologischen Sortierung ist es allerdings in der Lage zu erkennen ob ein Gr
 \end{figure}
 Werden zwei Plugins parallel verbunden kann es unter umständen zu einem Problem kommen:
 es gibt Plugins die eine Latenzzeit größer 0 aufweisen. Das bedeutet die Pluginausgabe ist zeitlich verzögert.
-Bei einer Parallelschaltung kann diese Latenz nun bewirken dass zum Beispiel in einem Signalpfad eine Verzögerung auftritt, im anderen aber nicht (siehe Abbildung \ref{latenz}). Die Signale erklingen daher versetzt. In diesem Beispiel kann die Verzögerung ausgeglichen werden indem, dem Pfad ohne Verzögerung eine Künstliche Verzögerung hinzugefügt wird. Beide Signale erklingen nun gleichzeitig. Zu beachten ist das nun VSTForx selbst eine Latenz 10ms aufweist. Jeder Knoten benötigt daher einen Buffer der eine Größe von Bockgröße + ( sampleFrequenz * Latenz ) aufweist.
+Bei einer Parallelschaltung kann diese Latenz nun bewirken dass zum Beispiel in einem Signalpfad eine Verzögerung auftritt, im anderen aber nicht (siehe Abbildung \ref{latenz}). Die Signale erklingen daher versetzt. 
+\\\\
+Um unterschiedliche Latenzen in einem komplexen Graph auszugleichen, muss folgendes implementiert werden:
+\begin{itemize}
+	\item einen berechneten Latenzwert je Knoten
+	\begin{description}
+		\item[=] Maximaler Latenzwert der Vorgängerknoten, addiert zum eigenen (realen) Latenzewert
+	\end{description}
+	\item einen Buffer je Knoten dessen Größe = Sampleblockgröße + berechneter Latenzwert ist.
+	\item die Ausgaben aller Vorgängerknoten, je nach Vorgängerlatenz an unterschiedlichen Position, dem Buffer hinzufügen (siehe Abbildung \ref{dc})
+	\item Buffer als Eingabe weiterverarbeiten
+\end{itemize}
+\begin{figure}[h]
+	\centering
+ 	\includegraphics[scale=0.1]{../graphics/dc.png}
+	\caption{Ausgleich unterschiedlicher Latenzen in einem komplexen Graph}
+	\label{dc}
+\end{figure}
 %%%%%%
 \subsection{Nebenläufigkeit}
 Ein VST-Plugin kann optional einen Editor implementieren. Ein Editor ist ein eigenständiges Fenster welches die Benutzeroberfläche des Plugins enthält und wird von der DAW bei bedarf geöffnet. Da Eingaben auf der Benutzeroberfläche zu einem unbestimmten Zeitpunkt geschehen, der Pluginprozess aber kontinuierlich (nebenläufig\footnote{ob als eigenständiger Prozess oder Thread ist DAW abhängig}) abgearbeitet wird, liegt hier ein Nebenläufigkeitsproblem vor. Wird der Effekt-Graph geändert während er bearbeitet wird, verursacht dies ein undefiniertes Verhalten. \\
@@ -149,12 +166,13 @@ public:
 };	
 \end{lstlisting} 
 Da es möglich ist ein VST-Plugin über die DAW in einen Standbymodus\footnote{die Prozess Methode wird nicht mehr ausgeführt} zu schalten, kann es mit diesem Verfahren passieren, dass die entgegengenommenen Befehlsobjekte nicht mehr ausgeführt werden. Der Graph würde nicht mehr bearbeitet. Daher ist diese Vorgehensweise nicht geeignet.
-\paragraph{Der Janitor}
-Der Janitor\footnote{engl.: Hausmeister} ist eine Klasse er alle Graph verändernden Methoden enthält. Der Konstruktor des Janitors blockiert die Prozessmethode, der Destruktor gibt sie wieder frei. Somit kann sichergestellt werden, dass solange ein Janitior-Objekt existiert der Graph nicht weiter verarbeitet werden kann. siehe Listing \ref{janitor}).
+\paragraph{Automatisches Blockieren und Freigeben}
+Mittels Konstruktor/Destruktor Mechanismen ist es möglich eine Lösung zu entwerfen, die dafür sorgt dass kritische Ressourcen, automatisch blockiert und automatisch freigegeben werden. Realisiert wird dies durch eine Klasse die ''Janitor'' gennant wurde.
+Die Janitor\footnote{engl.: Hausmeister}-Klasse enthält alle Graph verändernden Methoden. Der Konstruktor des Janitors blockiert die Prozessmethode, der Destruktor gibt sie wieder frei. Somit kann sichergestellt werden, dass solange ein Janitior-Objekt existiert der Graph nicht weiter abgearbeitet werden kann. siehe Listing \ref{janitor}).
 \\\
 Zusammen mit einem ''Shared Pointer'' Mechanismus\footnote{Shared Pointer sind Mechanismen die dafür sorgen dass allozierte Objekte automatisch freigegeben werden, sobald sie nicht mehr verwendet werden (vgl. \cite{boostSmart}). } und dem Singleton Entwurfsmuster kann man dafür sorgen, dass ein Janitor-Objekt, von mehreren Stellen aus, gleichzeitig benutzt werden kann.\\
-Ein weiterer Vorteil ist es ausserdem dass nach jeder Graphränderung eine Prozess-Liste (siehe \ref|{process}) erstellt werden muss.
-Dieser Vorgang könnte somit ebenfalls mit dem Destruktor des Janitors abgearbeitet werden. Somit würde ebenfalls Automatisch die Prozessliste nach jeder Änderung angepasst werden.
+Da nach jeder Graphränderung eine Prozess-Liste (siehe \ref{process}) erstellt werden muss, existiert mit dieser Lösung ein weiterer Vorteil:
+Die Prozesslisten Erstellung könnte ebenfalls mit dem Destruktor des Janitors abgearbeitet werden. Somit würde Automatisch die Prozessliste nach jeder Änderung angepasst werden.
 \\\\
 \begin{lstlisting}[label=janitor, caption=Lösung des Nebenläufigkeitsproblemes durch den Janitor]
 
@@ -171,6 +189,8 @@ public:
 	}
 	
 	virtual ~Janitior() {
+		// Prozessliste erstellen
+		// ...
 		// Graph-Prozess entsperren
 		graph->mutex.unlock();
 	}

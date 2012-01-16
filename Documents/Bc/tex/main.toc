@@ -34,9 +34,9 @@
 \contentsline {paragraph}{Die Berechnungsreihenfolge}{12}
 \contentsline {paragraph}{R\IeC {\"u}ckkopplungen}{13}
 \contentsline {subsection}{\numberline {4.2}Das Latenzproblem}{13}
-\contentsline {subsection}{\numberline {4.3}Nebenl\IeC {\"a}ufigkeit}{14}
+\contentsline {subsection}{\numberline {4.3}Nebenl\IeC {\"a}ufigkeit}{15}
 \contentsline {paragraph}{Blockieren des Prozesses}{15}
-\contentsline {paragraph}{Das Befehl Entwurfsmuster}{16}
-\contentsline {paragraph}{Der Janitor}{17}
-\contentsline {section}{\numberline {5}Literatur Verzeichnis}{20}
-\contentsline {section}{\numberline {6}Abbildungs Verzeichnis}{21}
+\contentsline {paragraph}{Das Befehl Entwurfsmuster}{17}
+\contentsline {paragraph}{Automatisches Blockieren und Freigeben}{18}
+\contentsline {section}{\numberline {5}Literatur Verzeichnis}{21}
+\contentsline {section}{\numberline {6}Abbildungs Verzeichnis}{22}
