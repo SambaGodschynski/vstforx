@@ -2,7 +2,6 @@
 \contentsline {figure}{\numberline {1}{\ignorespaces Beispiel einer Effektverkettung, wie sie in der Realit\IeC {\"a}t m\IeC {\"o}glich w\IeC {\"a}re}}{3}
 \contentsline {figure}{\numberline {2}{\ignorespaces Effektkette mit 'send' Abzweigung, jeweils als 'pre' und als 'post' Variante (v.l.n.r)}}{4}
 \contentsline {figure}{\numberline {3}{\ignorespaces Die Idee - freie Verdrahtung als Effekt}}{5}
-\contentsline {figure}{\numberline {4}{\ignorespaces Darstellung eines zeitkontinuierlichen Signals mit seinen Abtastpunkten}}{10}
-\contentsline {figure}{\numberline {5}{\ignorespaces Beispiel eines Plugin-Graphen}}{12}
-\contentsline {figure}{\numberline {6}{\ignorespaces Darstellung des Latenzproblemes: die Signalausgabe aus ''Effekt B'' ist um 10 ms verz\IeC {\"o}gert}}{14}
-\contentsline {figure}{\numberline {7}{\ignorespaces Ausgleich unterschiedlicher Latenzen in einem komplexen Graph}}{15}
+\contentsline {figure}{\numberline {4}{\ignorespaces Beispiel eines Plugin-Graphen}}{11}
+\contentsline {figure}{\numberline {5}{\ignorespaces Darstellung des Latenzproblemes: die Signalausgabe aus ''Effekt B'' ist um 10 ms verz\IeC {\"o}gert}}{13}
+\contentsline {figure}{\numberline {6}{\ignorespaces Ausgleich unterschiedlicher Latenzen in einem komplexen Graph}}{14}
