@@ -1,21 +1,7 @@
 % !TEX encoding = UTF-8 Unicode
-\section{Begriffe der diskreten Audioverarbeitung}
-\begin{figure}[ht]
-	\centering
- 	\includegraphics[scale=0.2]{../graphics/abtast.png}
-	\caption{Darstellung eines zeitkontinuierlichen Signals mit seinen Abtastpunkten}
-	\label{abtast}
-\end{figure}
-\subsection{Das Sample}
-Um ein zeitkontinuierlichen Signal digital verarbeiten zu können, muss es in (zeit-) diskrete Werte umgewandelt werden(siehe Abbildung \ref{abtast}). Ein digitales Audiosignal besteht demnach aus einer Menge einzelner Werte. Ein einzelner Wert dieser Menge wird als Sample bezeichnet. 
-\subsection{Die Samplefreuqenz}
-Die Samplefreuqenz (oder auch Abtastrate) bezeichnet wie oft pro Sekunde ein Signal abgetastet wird. So wird  ein einsekündiges Signal, bei einer Abtastrate von 44100kHz, in eine Wertemenge bestehend aus 44100 Samples, umgewandelt.  
-\subsection{Die Sampleauflösung}
-Die Sampleauflösung gibt den Wertebereich eines Samples an. So kann bei einer Sampleauflösung von 16-bit, ein Sample, einen Wert in einem Bereich von -32.768 bis 32.767
-%TODO: beleg für Fußnote
-\footnote{Das VST-SDK verwendet anstelle von Ganzzahlen mit Gleitkommazahlen (in einem Bereich von -1.0 bis +1.0). } annehmen.
+\section{Fachliches Umfeld}
 \subsection{Der Sampleblock}
-Der Sampleblock stellt die Menge an Samples dar die von einem VST-Plugin auf einmal bearbeitet werden kann. Die Größe des Sampleblockes ist Ausschlaggebend für die Performance und die Latenz\footnote{die Verzögerung zwischen Signalein- und ausgabe.} einer DAW Umgebung. Je niedriger die Blockgröße desto niedriger die Latenz, desto höher die CPU Auslastung.
+Ein digitales Audiosignal besteht aus einer Menge einzelner Werte, den Samples. Der Sampleblock stellt die Menge an Samples dar, die von einem VST-Plugin auf einmal bearbeitet werden kann. Die Größe des Sampleblockes ist Ausschlaggebend für die Performance und die Latenz\footnote{die Verzögerung zwischen Signalein- und ausgabe.} einer DAW Umgebung. Je niedriger die Blockgröße desto niedriger die Latenz, desto höher die CPU Auslastung.
 \subsection{\label{Prozess}Der Prozess}
 In der Terminologie des VST-SDK, ist mit Prozess der Teil eines Plugins gemeint, der für die Bearbeitung aller Pluginein- und ausgänge verantwortlich ist.
 \\\\

@@ -5,7 +5,7 @@
 \paragraph{Das Modell}
 VSTForx soll Plugins laden und mittels ''virtueller'' Kabel verbinden können. Als mathematisches Modell ist für diese Aufgabe der gerichtete Graph geeignet. Die Knoten repräsentieren die Plugins und die Kanten ihre Verbindungen. Eine gerichtete Kante entspricht einer Verbindung von Pluginausgang zu Plugineingang. 
 \paragraph{\label{process}Die Berechnungsreihenfolge}
-Wie bereits in Kapitel \ref{Prozess} beschrieben erzeugt ein Plugin seine Ausgabe anhand einer ''processReplace'' Methode. Das Programm muss nun den beschriebenen Prozessablauf mit den geladenen Plugins durchführen. Doch in welcher Reihenfolge sollten diese Aufrufe stattfinden?\\\\
+Wie bereits in Kapitel \ref{Prozess} beschrieben, erzeugt ein Plugin seine Ausgabe anhand einer ''processReplace'' Methode. Das Programm muss nun den beschriebenen Prozessablauf mit den geladenen Plugins durchführen. Doch in welcher Reihenfolge sollten diese Aufrufe stattfinden?\\\\
 \begin{figure}[h]
 	\centering
  	\includegraphics[scale=0.1]{../graphics/g01.png}
@@ -24,18 +24,19 @@ Der erforderliche Prozessablauf für Abbildung \ref{g01} wäre:
 	\item führe ''processReplace'' mit Plugin-C aus
 	\item übertrage die Ausgabe von Plugin-C in die Programm(VSTForx) Ausgabesampleblöcke
 \end{enumerate}
-Wie in Schritt \ref{PlugC} zu sehen ist zur korrekten Ausführung von Plugin-C notwendig, dass die Plugins A und C bereits bearbeitet wurden. Das bedeutet: Plugin-C ist von Plugin-A und Plugin-B abhängig. \\\\
+Wie in Schritt \ref{PlugC} zu sehen, ist zur korrekten Ausführung von Plugin-C notwendig, dass die Plugins A und C bereits bearbeitet wurden. Das bedeutet: Plugin-C ist von Plugin-A und Plugin-B abhängig. \\\\
 In der Graphentheorie gibt es einen Algorithmus der in der Lage ist Abhängigkeiten aufzulösen: Die Topologische Sortierung.
 \\\\
 Die Topologische Sortierung basiert auf der Durchlaufstrategie Tiefensuche\footnote{oder auch DFS - engl.: Depth First Search}. \\
 ''Sie erzeugt eine lineare Anordnung von Knoten eines Graphen. Existiert eine Kante zwischen den Knoten (u, v),  so wird u vor v geordnet."\footnote{\label{bglTopo}vergl. \cite{bgl01}, S. 176 f.}\\
-Das Resultat der Topologischen Sortierung ist daher eine sortierte Menge an Knoten deren Reihenfolge  genau ihren Abhängigkeiten entspricht.
-In unsrem Beispiel würde die Topologische Sortierung die (Plugin-)Knotenmenge \{A, B, C\}\footnote{vorausgesetzt Knoten A ist der Startknoten der Topologischen Sortierung} ergeben. \\
-Die Topologische Sortierung hat ein Laufzeitverhalten von $\mathcal O(|V| + |E|)$\footnotemark[14] \footnote{wobei |V| die Menge aller Knoten und |E| die Menge aller Kanten ist}, und ist somit eher ungeeignet um in Echtzeit sehr häufig ausgeführt zu werden. Allerdings ändert sich die Ergebnismenge auch nur sobald sich der Graph verändert hat.
-Die Ergebnismenge wird daher auch nur nach einer Graphänderung erstellt und in einer Liste gespeichert. Solch eine Prozess-Liste wird während des Prozesses einfach iteriert. Somit ergibt sich eine Laufzeit von $\mathcal O(|V|)$.
+Das Resultat der Topologischen Sortierung ist daher, eine sortierte Menge an Knoten, deren Reihenfolge genau ihren Abhängigkeiten entspricht.
+In unsrem Beispiel würde die Topologische Sortierung die gewünschte (Plugin-)Knotenmenge \{A, B, C\}\footnote{vorausgesetzt Knoten A ist der Startknoten der Topologischen Sortierung} ergeben. \\
+Die Topologische Sortierung hat ein Laufzeitverhalten von $\mathcal O(|V| + |E|)$\footnotemark[13] \footnote{wobei |V| die Menge aller Knoten und |E| die Menge aller Kanten ist}, und ist somit eher ungeeignet um in Echtzeit sehr häufig ausgeführt zu werden. Allerdings ändert sich die Ergebnismenge auch nur dann, wenn sich der Graph verändert.
+Die Ergebnismenge sollte daher ausschließlich nach einer Graphänderung erstellt und in einer Liste gespeichert werden. Solch eine ''Prozess-Liste'' wird während des Prozesses einfach iteriert. Somit ergibt sich eine Laufzeit von $\mathcal O(|V|)$.
 \paragraph{Rückkopplungen}
-Eine Einschränkung der Topologischen Sortierung ist es, dass die zu sortierenden Graphen keine Zykel enthalten dürfen. Dies hat für VSTForx zur Auswirkung dass keine Rückkopplungen ''geschaltet'' werden können. Eine Rückkopplung wäre es zum Beispiel, wenn der Ausgang eines Plugins, direkt oder über Umwege, wieder an seinem Eingang liegen würde. Sollten Rückkopplungsschaltungen unterstützt werden, könnte man die betreffenden Knoten lokalisieren und durch einen Subgraphen substituieren. Dieser Subgraph könnte dann die Knoten durch einen alternativen Algorithmus, einen der Rückkopplungen unterstützt, bearbeiten. Dies ist jedoch, aufgrund der Komplexität des Problemes, nicht vorgesehen. \\
-Die Topologischen Sortierung ist es allerdings in der Lage zu erkennen ob ein Graph Zyklisch ist \footnotemark[14]. Zur Vermeidung von Fehlverhalten werden daher Zyklische Graphen nicht zugelassen.  \\
+Eine Einschränkung der Topologischen Sortierung ist es, dass die zu sortierenden Graphen keine Zykel enthalten dürfen. Dies hat für VSTForx zur Auswirkung, dass keine Rückkopplungen ''geschaltet'' werden können. Eine Rückkopplung wäre es zum Beispiel, wenn der Ausgang eines Plugins, direkt oder über Umwege, wieder an seinem Eingang liegen würde. Sollten Rückkopplungsschaltungen unterstützt werden, könnte man die betreffenden Knoten lokalisieren und durch einen Subgraphen substituieren. Dieser Subgraph könnte dann die Knoten durch einen alternativen Algorithmus, einen der Rückkopplungen unterstützt, bearbeiten. Dies ist jedoch, aufgrund der Komplexität des Problemes, nicht vorgesehen. 
+\\\\
+Die Topologischen Sortierung ist allerdings in der Lage zu erkennen ob ein Graph Zyklisch ist \footnotemark[13]. Zur Vermeidung von Fehlverhalten werden daher Zyklische Graphen nicht zugelassen.  \\
 %%%%%%
 \subsection{Das Latenzproblem}
 \begin{figure}[ht]
@@ -44,68 +45,32 @@ Die Topologischen Sortierung ist es allerdings in der Lage zu erkennen ob ein Gr
 	\caption{Darstellung des Latenzproblemes: die Signalausgabe aus ''Effekt B'' ist um 10 ms verzögert}
 	\label{latenz}
 \end{figure}
-Werden zwei Plugins parallel verbunden kann es unter umständen zu einem Problem kommen:
+Werden Plugins parallel verbunden, kann es unter umständen zu einem Problem kommen:
 es gibt Plugins die eine Latenzzeit größer 0 aufweisen. Das bedeutet die Pluginausgabe ist zeitlich verzögert.
-Bei einer Parallelschaltung kann diese Latenz nun bewirken dass zum Beispiel in einem Signalpfad eine Verzögerung auftritt, im anderen aber nicht (siehe Abbildung \ref{latenz}). Die Signale erklingen daher versetzt. In diesem Beispiel kann die Verzögerung ausgeglichen werden indem, dem Pfad ohne Verzögerung eine Künstliche Verzögerung hinzugefügt wird. Beide Signale erklingen nun gleichzeitig. Zu beachten ist das nun VSTForx selbst eine Latenz 10ms aufweist. Jeder Knoten benötigt daher einen Buffer der eine Größe von Bockgröße + ( sampleFrequenz * Latenz ) aufweist.
-%%%%%%
-\subsection{Portabilität}
-VSTForx soll unter Windows und MacOSX lauffähig sein. Das VST-SDK sowie das zum VST-SDK passende VST-GUI Entwicklungs Packet ist für beide Plattformen compilierbar. Trotzdem gibt es einige Funktionen die Plattformspezifisch implementiert werden müssen.\\ Hierfür gibt es mehrere Ansätze: 
-\paragraph{Der Präprozessor}
-Das VST2.x SDK löst dieses Problem indem es in einer Funktion die Systemspezifischen Aufrufe, mittels Präprozessorbedingungen, separiert: 
-\lstset{language = C++}
-%TODO: make beauty
-\begin{lstlisting}[caption={Beispiel einer Funktion die mittels Präprozessor für zwei Plattformen compilierbar ist}]
-void eineVSTFunktion() {
-	aufruf01();
-	void* handle = 0;
-#ifdef WIN
-	handle = windowsAufruf();
-#elif MAC
-	handle = macAufruf();
-#endif
-}
-\end{lstlisting}
-Der Nachteil dieser Methode ist dass der Quelltest schwer les- und wartbar ist. Da jede Plattform unterschiedliche Datentypen benutzt, ist es erforderlich unsichere 'void' Zeiger zu verwenden. Diese Vorgehensweise wird daher nicht angewandt.
-\paragraph{Die Abstrakte Fabrik}
-Die Abstrakte Fabrik zählt zu den Standart Entwurfsmustern und ist ein Erzeugungsmuster. Die Abstrakte Fabrik bietet eine Schnittstelle zum erzeugen von konkreten Objekten (vgl. \cite{gof04}). So müssten plattformspezifische Aufrufe sinnvoll in einer Schnittstellenklasse zusammengefasst werden. Diese Schnittstellenklasse könnte je nach Platform in einer konkreten Klasse implementiert werden. Die konkreten Objekte einer solchen Klasse würden von einem Fabrikklassenobjekt erzeugt. Für solch eine Fabrikklasse gäbe es ebenfalls eine Schnitstellen-Oberklasse - die Abstrakte Fabrik. Eine Singleton (siehe \cite{gof04}) Klasse könnte dann ein Fabrikobjekt zur Verfügung stellen. \\
-Ein plattformspezifischer Aufruf sähe demnach wie folgt aus:
-%TODO: make beauty
-\begin{lstlisting}[caption={Beispiel eines plattformspezifischen Methodenaufrufes mittels ''Abstrakte Fabrik''}]
-
-// Datei: OsWindows.h
-class WindowsInterface : public OsInterface {
-public:
-	virtual void aufruf() {
-		windowsAufruf();
-	}
-};
-
-// Datei: OsMac.h
-class MacInterface : public OsInterface {
-public:
-	virtual void aufruf() {
-		macAufruf();
-	}
-};
-
-// Datei: ProgrammImpl.c
-void eineFuntion {
-	IOsFactory *factory = IOsFactory::getOsFactory();
-	OsInterface *osInterface = factory->createOsInterface();
-	osInterface->aufruf();
-}
-	
-\end{lstlisting}
-Der Vorteil dieser Lösung ist dass keinerlei Abhängigkeiten bei der Erzeugung der Objekte entstehen. Es könnte sogar zur Laufzeit einfach das Fabrikobjekt ausgetauscht werden und somit zwischen verschieden Implementierungen gewechselt werden.
+Bei einer Parallelschaltung kann diese Latenz nun bewirken, dass zum Beispiel in einem Signalpfad eine Verzögerung auftritt, im anderen aber nicht (siehe Abbildung \ref{latenz}). Die Signale erklingen daher versetzt. 
 \\\\
-Der Nachteil ist es dass viele neue Schnittstellen erstellt und implementiert werden müssen. 
-\paragraph{Die Lösung}
+Um unterschiedliche Latenzen in einem komplexen Graph auszugleichen, wäre folgendes notwendig:
+\begin{itemize}
+	\item hinzufügen eines berechneten Latenzwert je Knoten
+	\begin{description}
+		\item[=] Maximaler Latenzwert der Vorgängerknoten, addiert zum eigenen (realen) Latenzewert
+	\end{description}
+	\item hinzufügen eines Buffers je Knoten dessen Größe = Sampleblockgröße + berechneter Latenzwert ist.
+	\item die Ausgaben aller Vorgängerknoten, je nach Vorgängerlatenz an unterschiedlichen Position, dem Buffer hinzufügen (siehe Abbildung \ref{dc})
+	\item den Buffer als Eingabe weiterverarbeiten
+\end{itemize}
+\begin{figure}[h]
+	\centering
+ 	\includegraphics[scale=0.1]{../graphics/dc.png}
+	\caption{Ausgleich unterschiedlicher Latenzen in einem komplexen Graph}
+	\label{dc}
+\end{figure}
 %%%%%%
 \subsection{Nebenläufigkeit}
-Ein VST-Plugin kann optional einen Editor implementieren. Ein Editor ist ein eigenständiges Fenster welches die Benutzeroberfläche des Plugins enthält und wird von der DAW bei bedarf geöffnet. Da Eingaben auf der Benutzeroberfläche zu einem unbestimmten Zeitpunkt geschehen, der Pluginprozess aber kontinuierlich (nebenläufig\footnote{ob als eigenständiger Prozess oder Thread ist DAW abhängig}) abgearbeitet wird, liegt hier ein Nebenläufigkeitsproblem vor. Wird der Effekt-Graph geändert während er bearbeitet wird, verursacht dies ein undefiniertes Verhalten. \\
+Ein VST-Plugin kann optional einen Editor implementieren. Ein Editor ist ein eigenständiges Fenster, welches die Benutzeroberfläche des Plugins enthält und wird von der DAW bei bedarf geöffnet. Da Eingaben auf der Benutzeroberfläche zu einem unbestimmten Zeitpunkt geschehen, der Pluginprozess aber kontinuierlich (nebenläufig\footnote{ob als eigenständiger Prozess oder Thread ist DAW abhängig}) abgearbeitet wird, liegt hier ein Nebenläufigkeitsproblem vor. Wird der Effekt-Graph geändert, während er vom Prozess bearbeitet wird, kann dies ein undefiniertes Verhalten verursachen. \\
 Folgend sollen drei verschiedene Lösungsansätze beschrieben werden:
 \paragraph{Blockieren des Prozesses}
-Es wäre möglich jede Graphverändernde Methode solange zu blockieren wie die Prozessmethode abgearbeitet wird. Umgekehrt wird die Abarbeitung der Prozessmethode blockiert solange eine Graphverändernde Methode abgearbeitet wird. Ein Verfahren welches solch eine Blockierung unterstützt ist das Mutex (siehe \cite[tan09]).
+Es wäre möglich jede Graphverändernde Methode solange zu blockieren, wie die Prozessmethode abgearbeitet wird. Umgekehrt wird die Abarbeitung der Prozessmethode blockiert, solange eine Graphverändernde Methode abgearbeitet wird. Ein Verfahren welches solch eine Blockierung unterstützt ist das Mutex (siehe \cite{tan09}).
 \\\\
 \begin{lstlisting}[caption={Beispiel einer gegenseitigen Blockierung}]
 	
@@ -127,7 +92,7 @@ public:
 };	
 		
 \end{lstlisting}
-Der Nachteil dieser Methode ist, je komplexer die Graphklasse und ihre enthaltenden Methoden wird, so höher ist die Gefahr dass es vergessen wird ein gesperrtes Mutex wieder zu entsperren (siehe Listing \ref{block02}). Ein Deadlock wäre die folge.
+Der Nachteil dieser Methode ist, je komplexer die Graphklasse und ihre enthaltenden Methoden, so höher ist die Gefahr dass es vergessen wird ein gesperrtes Mutex wieder zu entsperren (siehe Listing \ref{block02}). Ein Deadlock wäre die folge.
 \\\\
 \begin{lstlisting}[label=block02, caption=Beispiel eines potentiellen Deadlocks]
 	
@@ -153,8 +118,8 @@ public:
 \end{lstlisting} 
 \paragraph{Das Befehl Entwurfsmuster}
 Das Befehl Entwurfsmuster gehört zu den Verhaltensmustern der ''GoF'' Entwurfsmuster.  Es dient dazu Programmbefehle in einem Objekt zu Kapseln (vgl. \cite{gof04}). \\
-Der Graph würde seine verändernden Befehle nicht mehr als öffentliche Methoden anbieten sondern nur noch Befehlsobjekte entgegennehmen.
-Solch ein Objekt, würde dann vom Graph zu einem sicheren Zeitpunkt (zum Beispiel nach Abschluss der Prozessmethode) ausgeführt (siehe Listing \ref{command}).
+Der Graph würde seine verändernden Befehle nicht mehr als öffentliche Methoden anbieten, sondern nur noch Befehlsobjekte entgegennehmen.
+Solch ein Objekt würde dann vom Graph, zu einem sicheren Zeitpunkt (zum Beispiel nach Abschluss der Prozessmethode) ausgeführt (siehe Listing \ref{command}).
 
 \begin{lstlisting}[label=command, caption=Lösung des Nebenläufigkeitsproblemes durch das Befehl Entwurfsmuster]
 
@@ -202,12 +167,14 @@ public:
 };	
 \end{lstlisting} 
 Da es möglich ist ein VST-Plugin über die DAW in einen Standbymodus\footnote{die Prozess Methode wird nicht mehr ausgeführt} zu schalten, kann es mit diesem Verfahren passieren, dass die entgegengenommenen Befehlsobjekte nicht mehr ausgeführt werden. Der Graph würde nicht mehr bearbeitet. Daher ist diese Vorgehensweise nicht geeignet.
-\paragraph{Der Janitor}
-Der Janitor\footnote{engl.: Hausmeister} ist eine Klasse er alle Graph verändernden Methoden enthält. Der Konstruktor des Janitors blockiert die Prozessmethode, der Destruktor gibt sie wieder frei. Somit kann sichergestellt werden, dass solange ein Janitior-Objekt existiert der Graph nicht weiter verarbeitet werden kann. siehe Listing \ref{janitor}).
-\\\
-Zusammen mit einem ''Shared Pointer'' Mechanismus\footnote{Shared Pointer sind Mechanismen die dafür sorgen dass allozierte Objekte automatisch freigegeben werden, sobald sie nicht mehr verwendet werden (vgl. \cite{boostSmart}). } und dem Singleton Entwurfsmuster kann man dafür sorgen, dass ein Janitor-Objekt, von mehreren Stellen aus, gleichzeitig benutzt werden kann.\\
-Ein weiterer Vorteil ist es ausserdem dass nach jeder Graphränderung eine Prozess-Liste (siehe \ref|{process}) erstellt werden muss.
-Dieser Vorgang könnte somit ebenfalls mit dem Destruktor des Janitors abgearbeitet werden. Somit würde ebenfalls Automatisch die Prozessliste nach jeder Änderung angepasst werden.
+
+\paragraph{Automatisches Blockieren und Freigeben}
+Mittels Konstruktor/Destruktor Mechanismen ist es möglich eine Lösung zu entwerfen, die dafür sorgt, dass der Prozess automatisch blockiert und wieder freigegeben wird solange der Graph verändert wird. Realisiert wird dies durch eine Klasse die ''Janitor\footnote{engl.: Hausmeister}'' gennant wurde.
+Die Janitor-Klasse enthält alle Graph verändernden Methoden. Der Konstruktor des Janitors blockiert die Prozessmethode, der Destruktor gibt sie wieder frei. Somit kann sichergestellt werden, dass solange ein Janitior-Objekt existiert der Graph nicht weiter abgearbeitet werden kann (siehe Listing \ref{janitor}).
+\\\\
+Zusammen mit einem ''Shared Pointer'' Mechanismus\footnote{Shared Pointer sind Mechanismen die dafür sorgen dass allozierte Objekte automatisch freigegeben werden, sobald sie nicht mehr verwendet werden (vgl. \cite{boostSmart}). } und dem Singleton Entwurfsmuster (siehe \cite{gof04}) kann man dafür sorgen, dass ein Janitor-Objekt, von mehreren Stellen aus, gleichzeitig benutzt werden kann.\\
+Da nach jeder Graphränderung eine Prozess-Liste (siehe \ref{process}) erstellt werden muss, existiert mit dieser Lösung ein weiterer Vorteil:
+Die Prozesslisten Erstellung könnte ebenfalls mit dem Destruktor des Janitors abgearbeitet werden. Somit würde Automatisch die Prozessliste nach jeder Änderung angepasst werden.
 \\\\
 \begin{lstlisting}[label=janitor, caption=Lösung des Nebenläufigkeitsproblemes durch den Janitor]
 
@@ -224,6 +191,8 @@ public:
 	}
 	
 	virtual ~Janitior() {
+		// Prozessliste erstellen
+		// ...
 		// Graph-Prozess entsperren
 		graph->mutex.unlock();
 	}
@@ -239,6 +208,7 @@ class Graph {
 friend class Janitor;
 public:
 private:
+	Mutex mutex;
 	void veraenderGraph() {
 		// ...
 	}
