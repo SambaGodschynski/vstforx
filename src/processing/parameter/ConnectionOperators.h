@@ -247,7 +247,14 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual float operate ( float x ){
 		if ( x == 0.0f ) return 0.0f; 
-		return -log( x ) / a  + 1;
+		float v = -log( x ) / a  + 1;
+		// problem with ambience reverb when using log/exp to dry/wet.
+		// soundoutput will stop. following limitation will handle it:		
+		/*if (v<0.0f) 
+			return 0.0f;
+		if (v>1.0f)
+			return 1.0f;*/
+		return v;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	virtual Parameter::Ptr getParameter ( size_t index ) const {

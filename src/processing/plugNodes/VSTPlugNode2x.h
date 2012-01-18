@@ -159,12 +159,12 @@ public:
 	///-------------------------------------------------------------------------------------------------------
 	// Liefert VSTPlugIn wahrheitswert von flag.
 	bool can ( VstInt32 flag ) const {
-		return aEff->flags & flag;
+		return isFlag(flag, aEff->flags); 
 	}
 	///-------------------------------------------------------------------------------------------------------
 	// Liefert VSTPlugIn wahrheitswert von flag.
 	static bool can ( VstInt32 flag, AEffect *aEff ) {
-		return aEff->flags & flag;
+		return isFlag(flag, aEff->flags); 
 	}
 	//--------------------------------------------------------------------------------------------------------
 	static void plugRequestWindowResize (  AEffect* effect, size_t w, size_t h );

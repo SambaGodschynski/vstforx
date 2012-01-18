@@ -114,7 +114,11 @@ namespace com {
 	//========================================================================================================
 	// Bildet einen bruch wert von 0..1 auf einen ganzahligen wert von 0..n ab. 
 	//========================================================================================================
-	inline int mapInteger(float value, int n){ return int( n * min (value,0.99999f) ); }
+	inline size_t mapInteger(float value, size_t n){ 
+		if (value <= 0. )
+			return 0;
+		return int( n * min (value,0.99999f) ); 
+	}
 	//========================================================================================================
  	template<class T>
 	inline void xChange( T &x, T &y  ){
@@ -124,14 +128,17 @@ namespace com {
 		y = tmp;
 	}
 	//========================================================================================================
+	// returns true if flag setted in flags.
+	inline bool isFlag ( int flag, int flags ) {
+		return ( (flag & flags) == flag );
+	}
+	//========================================================================================================
  	template<typename T>
 	inline bool compareTolerant( const T &x, const T &y, const T &tolereance ){
 		T abs = x - y;
 		if ( abs < 0 ) abs*=-1;
 		return  abs <= tolereance ;
 	}
-	//========================================================================================================
-	inline bool isFlag ( int value, int flag ) { return (value&flag)==flag; }
 	//========================================================================================================
 	// Ordnet Oberklassen Zeiger V o1, o2 Unterklassen Zeiger t und u zu
 	template < typename T, typename U, typename V >

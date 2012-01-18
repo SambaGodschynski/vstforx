@@ -202,14 +202,25 @@ void VSTPlugNode::valueChanged(void *src, const float &v) {
 	param->setDisplay( MyString(bff) );
 }
 //------------------------------------------------------------------------------------------------------------
+VstParameterProperties * getVSTParameterProperties( AEffect *aEff, size_t index ) {
+	if (index > aEff->numParams) 
+		return NULL;
+
+	VstParameterProperties *res = NULL;
+	int ret = aEff->dispatcher ( aEff, effGetParameterProperties, index, NULL, res, NULL );
+	if (ret!=1)
+		return NULL;
+	return res;
+}
+//------------------------------------------------------------------------------------------------------------
 void VSTPlugNode::initParameter(){
 	char bff[255];
 	param = ParameterContainer ( aEff->numParams );
 	// initalisiere parameter
 	for ( size_t i=0; i<param.size(); i++ ){
 		param[i] = Parameter::create(i);
-		param[i]->setMin( -FLT_MAX ); //entferne min, max ( siehe issue: 0000049 )
-		param[i]->setMax( FLT_MAX );
+		param[i]->setMin( (VstNumber)INT_MIN ); //entferne min, max ( siehe issue: 0000049 )
+		param[i]->setMax( (VstNumber)INT_MAX );
 		// hole Parameter wert
 		param[i]->setValue ( aEff->getParameter ( aEff, i ) );
 		// hole Parameter name
@@ -219,9 +230,19 @@ void VSTPlugNode::initParameter(){
 		aEff->dispatcher ( aEff, effGetParamLabel, i, NULL, &bff[0], NULL );
 		param[i]->setLabel ( MyString(bff) );
 		// hole Parameter Display
-		//aEff->dispatcher ( aEff, effGetParamDisplay, i, NULL, &bff[0], NULL );
-		//param[i]->setDisplay( MyString(bff) );
-		//param[i]->addValueChangedListener ( this );
+		aEff->dispatcher ( aEff, effGetParamDisplay, i, NULL, &bff[0], NULL );
+		param[i]->setDisplay( MyString(bff) );
+		// add listener
+		param[i]->addValueChangedListener ( this );
+		// get properties
+		VstParameterProperties *prop = getVSTParameterProperties(aEff, i);
+		if (!prop)
+			continue;
+		// (re)setMinMax
+		if ( isFlag(kVstParameterUsesIntegerMinMax, prop->flags) ) {
+			param[i]->setMin( (float)prop->minInteger ); 
+			param[i]->setMax( (float)prop->maxInteger );
+		}
 	}
 }
 //------------------------------------------------------------------------------------------------------------
