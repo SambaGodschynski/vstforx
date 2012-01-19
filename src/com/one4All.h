@@ -31,6 +31,7 @@
 #include <boost/thread.hpp>
 #include <float.h>
 #include "TList.h"
+#include <sambag/com/FileSystem.hpp>
 using namespace std;
 
 #define MAX_STR 50 // char str[MAX_STR]
@@ -149,19 +150,17 @@ namespace com {
 	}
 	using namespace boost::filesystem;
 	//--------------------------------------------------------------------------------------------------------
-	typedef path Path;
-	//--------------------------------------------------------------------------------------------------------
 	template < typename T >
 	T getMax( const T& a, const T &b) { return (a > b) ? a : b; }
 	//--------------------------------------------------------------------------------------------------------
 	template < typename T >
 	T getMin( const T& a, const T &b) { return (a < b) ? a : b; }
 	//--------------------------------------------------------------------------------------------------------
-	typedef path Filename;
+	typedef sambag::com::Location Filename;
 	//--------------------------------------------------------------------------------------------------------
-	typedef set<Path> UniquePathList;
+	typedef set<sambag::com::Location> UniquePathList;
 	//--------------------------------------------------------------------------------------------------------
-	typedef list<Path> PathNameList;
+	typedef list<sambag::com::Location> PathNameList;
 	//--------------------------------------------------------------------------------------------------------
 	typedef list<Filename> Filenames;
 	//--------------------------------------------------------------------------------------------------------
@@ -169,7 +168,7 @@ namespace com {
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::function< void ( const Filename& ) > FileFoundFuncPtr;
 	//========================================================================================================
-	bool isSubDirectory ( const Path &parent, const Path &sub );
+	bool isSubDirectory ( const sambag::com::Location &parent, const sambag::com::Location &sub );
 	//========================================================================================================
 	//	Klasse IHasState:
 	//========================================================================================================

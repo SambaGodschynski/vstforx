@@ -158,10 +158,10 @@ struct TblFolder {
 		ss<<"SELECT * FROM folders WHERE location = ?";
 		typename PathContainer::const_iterator it = c.begin();
 		size_t index = 1;
-		out_pL.push_back( TextParameter::create( index++, com::Path(*it++).string() ) ); 
+		out_pL.push_back( TextParameter::create( index++, sambag::com::Location(*it++).string() ) ); 
 		for ( ; it!=c.end(); ++it ) {
 			ss<<" OR location = ?";
-			out_pL.push_back( TextParameter::create( index++, com::Path(*it).string() ) ); 
+			out_pL.push_back( TextParameter::create( index++, sambag::com::Location(*it).string() ) ); 
 		}
 		return ss.str() + ";";
 	}

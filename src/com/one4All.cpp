@@ -4,7 +4,7 @@
 
 namespace com {
 //============================================================================================================
-bool isSubDirectory ( const Path &parent,  const Path &sub ) {
+bool isSubDirectory ( const sambag::com::Location &parent,  const sambag::com::Location &sub ) {
 	string p = parent.string();
 	string s = sub.string();
 	if ( p==s ) return false;

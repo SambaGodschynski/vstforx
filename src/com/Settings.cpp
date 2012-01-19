@@ -68,7 +68,7 @@ void Settings::addVSTFolder ( const string &path ) {
 	// testen ob path == unterverz. von schon vorhandenen pfad
 	PathnameSet::iterator it = pluginDirectories.begin();
 	for ( ; it!=pluginDirectories.end(); ++it ) {
-		if ( isSubDirectory( Path(*it), Path(path) ) ) {
+		if ( isSubDirectory( sambag::com::Location(*it), sambag::com::Location(path) ) ) {
 			throw ppiError::SettingsException ( 
 				"given folder is subfolder of " + path,
 				__FILE__,

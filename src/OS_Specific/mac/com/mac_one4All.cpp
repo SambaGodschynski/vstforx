@@ -13,7 +13,7 @@ bool isPlugFilename ( const string &filename ) {
 } 
 //------------------------------------------------------------------------------------------------------------
 bool isDirectory ( const string &filename ) {
-	Path p(filename);
+	sambag::com::Location p(filename);
 	boost::filesystem::file_status s = boost::filesystem::status(p); 
 	// unter OSX sind plugs und apps verzeichnisse
 	return is_directory (s) &&  p.extension() != ".vst" &&  p.extension() != ".app";
