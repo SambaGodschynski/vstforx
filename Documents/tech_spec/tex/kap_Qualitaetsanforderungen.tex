@@ -1,0 +1,78 @@
+% !TEX encoding = UTF-8 Unicode
+\section{Qualitätsanforderungen}
+
+
+\newcommand{\haupt}[1]{\textbf{#1}		&				& 			&			& 	 			    \\}
+\newcommand{\noteA}[1]{\hline#1			&		X		& 			&			& 	 			    \\}
+\newcommand{\noteB}[1]{\hline#1			&		 		& 	   X		&			& 	 			    \\}
+\newcommand{\noteC}[1]{\hline#1			&				& 			&	   X		& 	 			    \\}
+\newcommand{\noteD}[1]{\hline#1			&				& 			&			& 	 	X		    \\}
+\newcommand{\noteX}[1]{\hline#1			&		-		& 	    -		&	    -     	& 	 	-		    \\}
+
+\neupunkt{QF}
+Die Qualitätsanforderungen sind in der Tabelle \ref{quali} aufgeführt.
+\punkt{QF} Alle Reaktionszeiten auf Benutzeraktionen müssen unter 100ms liegen.
+
+\begin{table}[htdp]
+\caption{Qualitätsanforderungen an VSTForx}
+\begin{center}
+\begin{tabular}{c|c|c|c|c}
+
+Systemqualität				&	sehr gut	& 	gut		&	normal	& 	nicht relevant \\
+\hline 
+\hline 
+\haupt{Funktionalität}	
+\noteA{Angemessenheit} 	
+\noteC{Genauigkeit}				
+\noteA{Interoperabilität}
+\noteD{Sicherheit}
+\noteB{Konformität}
+
+\hline
+\hline 
+\haupt{Zuverlässigkeit}
+\noteA{Reife}
+\noteB{Fehlertoleranz}
+\noteD{Wiederherstellbarkeit}
+\noteB{Konformität}
+
+\hline 
+\hline
+\haupt{Benutzbarkeit}
+\noteC{Verständlichkeit}
+\noteB{Erlernbarkeit}
+\noteA{Bedienbarkeit}
+\noteC{Attraktivität}
+\noteB{Konformität}
+
+\hline 
+\hline
+\haupt{Effizienz}
+\noteA{Zeitverhalten}
+\noteA{Verbrauchsverhalten}
+\noteA{Konformität}
+
+\hline 
+\hline
+\haupt{Wartbarkeit}
+\noteC{Analysierbarkeit}
+\noteB{Änderbarkeit}
+\noteA{Stabilität}
+\noteA{Testbarkeit}
+\noteB{Konformität}
+
+\hline 
+\hline
+\haupt{Portabilität}
+\noteA{Anpassbarkeit}
+\noteA{InstalIierbarkeit}
+\noteA{Koexistenz}
+\noteD{Austauschbarkeit}
+\noteA{Konformität}
+
+
+
+\end{tabular}
+\end{center}
+\label{quali}
+\end{table}

@@ -1,0 +1,25 @@
+% !TEX encoding = UTF-8 Unicode
+%% Erläuterungen zu den Befehlen erfolgen unter
+%% diesem Beispiel.
+\documentclass{scrartcl}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{graphicx}
+\usepackage{listings}
+\title{VSTForx Pflichtenheft}
+\author{Johannes Unger}
+\date{\today}
+\begin{document}
+\maketitle
+\tableofcontents
+
+\newcommand{\neupunkt}[1]{\newcounter{#1}}
+\newcommand{\punkt}[2][10]{\paragraph{/#2\arabic{#2}/}\addtocounter{#2}{#1}}
+\newpage
+\input{kap_Ziele}
+\input{kap_Rahmenbedingungen}
+\input{kap_FunktionaleAnforderungen}
+\input{kap_Qualitaetsanforderungen}
+\input{kap_Abnahmekriterien}
+\end{document}

@@ -1,0 +1,81 @@
+% !TEX encoding = UTF-8 Unicode
+\section{Funktionale Anforderungen}
+
+\neupunkt{F}
+
+\punkt{F} Das System soll VST2.x-Plugins zu laden können. Diese sollen beliebig miteinander verknüpfbar sein. Eine Verknüpfung entspricht dabei einer Ausgang/Eingang Verdrahtung wie sie bei reell existierenden Effektgeräten möglich sind. Ausgeschlossen hiervon sind jedoch Rückkopplungsschaltungen.
+
+\punkt[1]{F} Rückkopplungsschaltungen werden vom System nicht zugelassen.
+
+\punkt[9]{F} Das System soll ein (Effekt-)Szenario grafisch repräsentieren können. Solch eine Repräsentation soll direkt manipulierbar sein, d.h. das Szenario wird über die Repräsentation erzeugt und verändert.
+
+\punkt{F} Das System soll, auf Anforderung vom Benutzer, Effekt/Modul-Parameter in Form von Drehreglern grafisch darstellen können. Diese Darstellungen (und somit auch die repräsentierten Parameter) sind direkt manipulierbar.
+
+\punkt[1]{F}  Parameterdarstellung sollen verknüpfbar sein. Eine Parameterverknüpfung hat zur Folge, dass im Falle einer Parameteränderungen, der neue Parameterwert an den verknüpften Parameternachbarn weitergegeben wird.
+Beide Parameter verhalten sich somit identisch. Parameterverknüpfungen sind Bidirektional.
+
+\punkt[1]{F} Das System soll in der Lage sein, Parameterverküpfungen über ihre grafische Repräsentationen mit Operatoren zu belegen. Ein Operator beeinflusst die Werteübertragung einer Parameterverknüpfung. Ein Operator muss, da Parameterverknüpfungen Bidirektional, die jeweilige Werteübertragungsrichtung beachten. Das Bedeutet: die Rückrichtungsoperation muss die Inverse der Hinrichtungsoperation sein.
+
+\punkt[1]{F} Das System soll folgende Parameterveknüpfungsoperatoren implementieren:
+			  \begin{itemize}
+			  	\item Inverse
+				\item Exponential / Logarithmisch
+				\item Logarithmisch / Exponential
+				\item Versatz (Verschiebung um einen festlegbaren Wert)
+			  \end{itemize}
+
+\punkt[7]{F} Das System soll in der Lage sein, beliebig viele Pluginverzeichnisse nach benutzbaren VST2.x-Plugins zu durchsuchen. Die 
+Ergebnisse einer solchen Durchsuchung, sollen dauerhaft in einer Datenbank gespeichert werden. Relevante Informationen sind hierbei: 
+
+\begin{itemize}
+	\item Speicherort des Plugins 
+	\item eine eindeutige Idendifikationsnummer
+	\item Plugintyp
+	\item Zeitstempel der letzten Dateiänderung
+	\item konnte Plugin geladen werden (ja, nein, übersprungen) 
+\end{itemize}
+
+\punkt[1]{F} Das System soll dem Benutzer die Möglichkeit bieten, die Verzeichnisdurchsuchung zu beschleunigen indem, das Untersuchen gefundener Plugins übersprungen wird.
+
+\punkt[1]{F} Das System soll, während einer Durchsuchung, die Dateien überspringen dessen Informationen schon in der Datenbank vorhanden sind. Wurde eine Datei allerdings geändert (z.B. nach einem Update), so muss diese erneut Untersucht werden.
+
+\punkt[8]{F} Die Prozessorauslastung einer DAW, die entsteht wenn VSTForx N-viele Plugins geladen hat, soll maximal 5\% höher sein, als die Auslastung die entstehen würde, wenn dieselben Plugins direkt (ohne VSTForx) in der DAW ausgeführt würden.
+
+\punkt{F} Das System soll in der Lage sein, ein Effekt-Szenario und dessen Grafische Repräsentation, dauerhaft zu speichern und zu einem beliebigen Zeitpunk wiederherzustellen.
+
+\punkt[1]{F} Das System soll in der Lage sein, den Speicher- und Ladevorgang Synchron mit der DAW auszuführen. So dass ein Effekt-Szenario mit einem DAW-Projekt gesichert und geladen wird.
+
+\punkt[1]{F} Sollte sich der Speicherort eines VST-Plugins zwischenzeitlich geändert haben, darf dies (nach einer erneuten Pluginverzeichnisdurchsuchung), keine Auswirkung auf das wiederherstellen zuvor gesicherter Szenarios haben.
+
+\punkt[8]{F} Das System soll über zusätzliche (interne) Module verfügen. Alle Zusatzmodule werden, analog zu den Effekt-Plugins, über Parameter gesteuert.
+
+\punkt[1]{F} Das System soll über zusätzliche Module verfügen die zwischen verschiedenen Signalwegen schalten können. Dazu gehören:
+\begin{itemize}
+	\item Eingangs-Schalter - ermöglichen das Umschalten beliebig vieler Eingänge auf einen Ausgang.
+	\item Ausgangs-Schalter - ermöglichen das Umschalten eines Einganges auf beliebig viele Ausgänge.
+	\item Eingangs-Stepsequencer - ermöglichen das automatische rhythmische Umschalten beliebig vieler Eingänge auf einen Ausgang.
+	\item Ausgangs-Stepsequencer - ermöglichen das automatische rhythmische Umschalten eines Einganges auf beliebig viele Ausgänge.
+\end{itemize}
+
+\punkt[1]{F} Das System soll über zusätzliche Module verfügen die, wie Effekt-Plugins, das anliegende Audiosignal manipulieren können. Dazu gehören:
+\begin{itemize}
+ 	\item Lautstärke Modul - ermöglicht die Lautstärkeregelung eines Signalweges
+	\item Pan Modul - ermöglicht die Stereoverteilung eines Signalweges
+\end{itemize}
+
+\punkt[8]{F} Das System soll die Möglichkeit bieten, die Benutzerschnittstellen(GUI) der vom System geladenen VST-Plugins, zu öffnen und zu bedienen.
+
+\punkt{F} Das System soll es ermöglichen, die VST-Parameter des Systemes als Drehregler in die grafische Repräsentation einzubinden. Es gelten hierfür die gleichen Verknüpfungsmöglichkeiten die durch die VST-Plugin/Modul Parameter geboten werden.
+
+
+
+
+
+
+
+
+
+
+
+
+
