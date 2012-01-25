@@ -6,7 +6,6 @@
 #ifndef COM_ONE4ALL_H
 #define COM_ONE4ALL_H
 #include "Log.h"
-#include "Frame.h"
 #include <stdio.h>
 #include <list>
 #include <string>

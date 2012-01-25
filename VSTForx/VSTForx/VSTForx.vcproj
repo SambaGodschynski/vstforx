@@ -517,6 +517,14 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\src\processing\Frame.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\processing\Frame.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\processing\Graph.cpp"
 						>
 					</File>
@@ -590,14 +598,6 @@
 					</File>
 					<File
 						RelativePath="..\..\src\com\Events.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\Frame.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\Frame.h"
 						>
 					</File>
 					<File

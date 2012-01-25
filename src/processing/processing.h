@@ -20,6 +20,7 @@
 #include "PObject.h"
 #include "IVstEventProcessor.h"
 #include "BglGraph.h"
+#include "Frame.h"
 
 //============================================================================================================
 //	Vorwaerts Deklarationen
