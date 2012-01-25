@@ -13,7 +13,7 @@
 using namespace std;
 
 namespace ppiGui{
-Graph::Ptr getRelatedGraph ( CircuidView* );
+processing::Graph::Ptr getRelatedGraph ( CircuidView* );
 //============================================================================================================
 //	Klasse CircuidView:
 //  Haupt View in der die ProcessorNode Schaltung erstellt, bearbeitet, entfernt werden kann.

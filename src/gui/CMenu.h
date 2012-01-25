@@ -153,7 +153,7 @@ friend class CSubMenu;
 	//--------------------------------------------------------------------------------------------------------
 	CMenu *subMenu; // jedes menu obj. darf ein submenu anzeigen
 	//--------------------------------------------------------------------------------------------------------
-	ClockEdge focusTrigger;
+	processing::ClockEdge focusTrigger;
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	boost::weak_ptr<CMenu> self;
@@ -340,16 +340,16 @@ public:
 class CParameterEntry : public CMenuLabel {
 private:
 	//--------------------------------------------------------------------------------------------------------
-	CParameterEntry ( Parameter::Ptr p, Command::Ptr action, const ppiGui::Font & font  );
+	CParameterEntry ( processing::parameter::Parameter::Ptr p, Command::Ptr action, const ppiGui::Font & font  );
 	//--------------------------------------------------------------------------------------------------------
-	Parameter::Ptr par;
+	processing::parameter::Parameter::Ptr par;
 	//--------------------------------------------------------------------------------------------------------
 	bool onDrag;
 	//--------------------------------------------------------------------------------------------------------
 	CPoint dragPos;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	static Ptr create ( Parameter::Ptr p, Command::Ptr action, const ppiGui::Font & font = ppiGui::NORMAL_FONT ) {
+	static Ptr create ( processing::parameter::Parameter::Ptr p, Command::Ptr action, const ppiGui::Font & font = ppiGui::NORMAL_FONT ) {
 		Ptr neu = Ptr ( new CParameterEntry ( p, action, font ) );
 		neu->setPtr ( neu );
 		return neu;
@@ -379,7 +379,7 @@ class CSubMenuEntry : public CMenuLabel,
 {
 private:
 	//--------------------------------------------------------------------------------------------------------
-	DelayedClockEdge delayedClockEdge;
+	processing::DelayedClockEdge delayedClockEdge;
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	CMenu::Ptr subMenu;

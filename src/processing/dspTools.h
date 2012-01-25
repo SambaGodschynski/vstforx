@@ -11,7 +11,7 @@
 #include <boost/timer.hpp>
 #include <map>
 
-namespace com {
+namespace processing {
 	//====================================================================================================
 	namespace musicalValues {
 	//====================================================================================================
@@ -301,13 +301,11 @@ public:
 	//----------------------------------------------------------------------------------------------------
 	void operator = ( const T &v ) { setValue (v); }
 };
-using namespace processing;
-using namespace processing::parameter;
 //========================================================================================================
 // Klasse ADSR :
 // Attack, Decay, Sustain, Release bestehend aus FadeValue
 //========================================================================================================
-class ADSR : public HasParameter {
+class ADSR : public processing::parameter::HasParameter {
 friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
@@ -327,7 +325,7 @@ private:
 	//----------------------------------------------------------------------------------------------------
 	int state;
 	//----------------------------------------------------------------------------------------------------
-	Parameter::Ptr duration[NUM_STATES],
+	processing::parameter::Parameter::Ptr duration[NUM_STATES],
 				   level[NUM_STATES], 
 		           curveType[NUM_STATES], 
 			       threshold, 
@@ -340,7 +338,7 @@ private:
 	//----------------------------------------------------------------------------------------------------
 	enum { FADER_TYPES = FadeValue::NUM_FADE_TYPES };
 	//----------------------------------------------------------------------------------------------------
-	vector<Parameter::Ptr> parameterMap;
+	vector<processing::parameter::Parameter::Ptr> parameterMap;
 	//----------------------------------------------------------------------------------------------------
 	int blockSize;
 	//----------------------------------------------------------------------------------------------------
@@ -416,8 +414,8 @@ public:
 		return fader;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const { 
-		if ( nr > parameterMap.size() ) return Parameter::Ptr();
+	virtual processing::parameter::Parameter::Ptr getParameter ( size_t nr = 0 ) const { 
+		if ( nr > parameterMap.size() ) return processing::parameter::Parameter::Ptr();
 		return parameterMap.at (nr);
 	}
 	//--------------------------------------------------------------------------------------------------------

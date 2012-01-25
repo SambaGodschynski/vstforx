@@ -12,7 +12,7 @@ bool isPlugFilename ( const string &filename ) {
 } 
 //------------------------------------------------------------------------------------------------------------
 bool isDirectory ( const string &filename ) { 
-	boost::filesystem::file_status s = boost::filesystem::status( Path(filename) ); 
+	boost::filesystem::file_status s = boost::filesystem::status( sambag::com::Location(filename) ); 
 	return is_directory (s);
 } 
 //------------------------------------------------------------------------------------------------------------

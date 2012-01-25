@@ -6,7 +6,7 @@
 #define NT(x) N((x/2))/3.0
 
 //------------------------------------------------------------------------------------------------------------
-namespace com {
+namespace processing {
 	namespace musicalValues {
 		//----------------------------------------------------------------------------------------------------
 		const NoteLength noteLengthTable[] = {
@@ -60,6 +60,9 @@ blockSize( hostInfo->getBlockSize() ),
 sampleRate ( hostInfo->getSampleRate() ),
 attackVal(0.0f)
 {
+	using namespace processing;
+	using namespace processing::parameter;
+
 	static const char bff[][15] = { {"attack"},{"decay"},{"sustain"},{"release"} };
 	Parameter::ParameterListenerFunction lC=boost::bind( &ADSR::levelChanged, this, _1, _2 );
 	Parameter::ParameterListenerFunction dC=boost::bind( &ADSR::durationChanged, this, _1, _2 );
@@ -135,6 +138,9 @@ void ADSR::save ( oArchive &ar, const unsigned int version ) const {
 }
 //--------------------------------------------------------------------------------------------------------
 void ADSR::load ( iArchive &ar, const unsigned int version ) {
+	using namespace processing;
+	using namespace processing::parameter;
+
 	Parameter::ParameterListenerFunction lC=boost::bind( &ADSR::levelChanged, this, _1, _2 );
 	Parameter::ParameterListenerFunction dC=boost::bind( &ADSR::durationChanged, this, _1, _2 );
 	Parameter::ParameterListenerFunction cT=boost::bind( &ADSR::curveTypeChanged, this, _1, _2 );
@@ -168,6 +174,9 @@ void ADSR::load ( iArchive &ar, const unsigned int version ) {
 }
 //--------------------------------------------------------------------------------------------------------
 void ADSR::curveTypeChanged(void *src, const float &v){
+	using namespace processing;
+	using namespace processing::parameter;
+
 	Parameter *p = (Parameter*) src;
 	int type = mapInteger ( v, FADER_TYPES );
 	fader.setType ( (FadeValue::FadeType)type );
@@ -175,6 +184,9 @@ void ADSR::curveTypeChanged(void *src, const float &v){
 }
 //--------------------------------------------------------------------------------------------------------
 void ADSR::levelChanged(void *src, const float &v ){
+	using namespace processing;
+	using namespace processing::parameter;
+
 	Parameter *p = (Parameter*) src;
 	if ( state == p->getIndex() ) fader.resetEndValue ( v );
 }
@@ -188,6 +200,9 @@ void ADSR::holdChanged(void *src, const float &v ){
 }
 //--------------------------------------------------------------------------------------------------------
 void ADSR::durationChanged(void *src, const float &v ){
+	using namespace processing;
+	using namespace processing::parameter;
+
 	Parameter *p = (Parameter*) src;
 	p->setDisplay( v * maxDurationInSec * sampleRate / sampleRate   );  
 }
@@ -246,8 +261,6 @@ std::string getCCName ( size_t index ) {
 	if ( it==ccNamesMap.end() ) return "unnamed";
 	return it->second;
 }
-
-
 
 } // namespace musicalValues
 } // namespace com
