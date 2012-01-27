@@ -1,6 +1,6 @@
 step {
-	Step Type | fix, sync
-	Step x duration | 10ms .. 1000ms , 1/128 .. 1/1
+	Step Type | fix .. sync
+	Step x duration | 10ms\1/128 .. 1000ms\1/1
 	fade-in duration 0ms .. 1000ms
 	fade-in curve type x | type1 .. type6
 	fade-out duration x | 0ms .. 1000ms
