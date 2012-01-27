@@ -15,7 +15,7 @@ switch {
 }
 
 peak_tracker {
-	offset 0 .. 1
+	offset | 0 .. 1
 }
 
 adsr_trigger {

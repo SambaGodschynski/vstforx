@@ -1,60 +1,99 @@
 % !TEX encoding = UTF-8 Unicode
+\newcommand{\aktion}[1]{ \paragraph{#1} }
+\newcommand{\bParameterlist}{\begin{description}}
+\newcommand{\paramName}[1]{\item[#1:]}
+\newcommand{\paramMin}[1]{#1}
+\newcommand{\paramMax}[1]{#1}
+\newcommand{\eParameterlist}{\end{description}}
+
 \section{Module}
-%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Das Plugin}
-\subsubsection{?}
+\aktion{MIDI Eigenschaften}
 	\untermenupunkt{midi properties}
-\subsubsection{?}
-	\untermenupunkt{PluginName Parameter}
-\subsubsection{?}
+\aktion{Plugin Parameter}
+	\untermenupunkt{Plugin-Name Parameter}
+\aktion{Plugin Programme}
 	\untermenupunkt{programms}
-\subsubsection{?}
+\aktion{Plugin-Editor Eigenschaften}
 	\untermenupunkt{editor window}
-%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Das Lautstärke Modul}
-\subsubsection{?}
+\aktion{Parameter}
 	\untermenupunkt{volume parameter}
-%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Das Pan Modul}
-\subsubsection{?}
+\aktion{Parameter}
 	\untermenupunkt{pan parameter}
-%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Das Eingangs-Step Modul} 
-\subsubsection{?}
+\aktion{Einen weiteren Eingang hinzufügen}
 	\menupunkt{add\_input\_node}
-\subsubsection{?}
+\aktion{Parameter}
 	\untermenupunkt{input\_step parameter}
-%
+	\bParameterlist
+		\paramName{Step Type}\paramMin{fix} oder \paramMax{sync}
+		\paramName{Step x duration}\paramMin{10ms} ... \paramMax{1000ms} bzw. \paramMin{1/128} ... \paramMax{1/1}
+		\paramName{fade-in curve type x}\paramMin{type1} ... \paramMax{type6}
+		\paramName{fade-out duration x}\paramMin{0ms} ... \paramMax{1000ms}
+		\paramName{fade-out curve type x}\paramMin{type 1} ... \paramMax{type6}
+	\eParameterlist
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Das Ausgangs-Step Modul}
-\subsubsection{?}
+\aktion{Einen weiteren Ausgang hinzufügen}
 	\menupunkt{add\_output\_node}
-\subsubsection{?}
+\aktion{Parameter}
 	\untermenupunkt{output\_step parameter}
-%
+	\bParameterlist
+		\paramName{Step Type}\paramMin{fix} oder \paramMax{sync}
+		\paramName{Step x duration}\paramMin{10ms} ... \paramMax{1000ms} bzw. \paramMin{1/128} ... \paramMax{1/1}
+		\paramName{fade-in curve type x}\paramMin{type1} ... \paramMax{type6}
+		\paramName{fade-out duration x}\paramMin{0ms} ... \paramMax{1000ms}
+		\paramName{fade-out curve type x}\paramMin{type 1} ... \paramMax{type6}
+	\eParameterlist
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Das Eingangs-Switch Modul} 
-\subsubsection{?}
+\aktion{Einen weiteren Eingang hinzufügen}
 	\menupunkt{add\_input\_node}
-\subsubsection{?}
+\aktion{Parameter}
 	\untermenupunkt{input\_switch parameter}
-%
+	\bParameterlist
+		\paramName{fade-in curve type x}\paramMin{type1} ... \paramMax{type6}
+		\paramName{fade-out duration x}\paramMin{0ms} ... \paramMax{1000ms}
+		\paramName{fade-out curve type x}\paramMin{type 1} ... \paramMax{type6}
+	\eParameterlist
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Das Ausgangs-Switch Modul}
-\subsubsection{?}
+\aktion{Einen weiteren Ausgang hinzufügen}
 	\menupunkt{add\_output\_node}
-\subsubsection{?}
+\aktion{Parameter}
 	\untermenupunkt{output\_switch parameter}
-%
+	\bParameterlist
+		\paramName{fade-in curve type x}\paramMin{type1} ... \paramMax{type6}
+		\paramName{fade-out duration x}\paramMin{0ms} ... \paramMax{1000ms}
+		\paramName{fade-out curve type x}\paramMin{type 1} ... \paramMax{type6}
+	\eParameterlist
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Das Peak Tracker Modul}
-\subsubsection{?}
+\aktion{Parameter}
 	\untermenupunkt{peak\_tracker parameter}
-%
-\subsection{Das ADSR Trigger Modul}
-\subsubsection{?}
+	\bParameterlist
+		\paramName{offset}\paramMin{0} ... \paramMax{1}
+	\eParameterlist
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\subsection{Das ADSR Trigger Modul}
+\aktion{Parameter}
 	\untermenupunkt{adsr\_trigger parameter}
-%
+	\bParameterlist
+		\paramName{x level}\paramMin{0} ... \paramMax{1}
+		\paramName{x duration}\paramMin{0s} ... \paramMax{5s}
+		\paramName{x slope type}\paramMin{type1} ... \paramMax{type6}
+	\eParameterlist
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Das Midi Receiver Modul}
-\subsubsection{?}
+\aktion{?}
 	\untermenupunkt{midi properties}
-\subsubsection{?}
+\aktion{?}
 	\untermenupunkt{midi\_receiver parameter}
 
 
