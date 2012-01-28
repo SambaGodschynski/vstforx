@@ -1,14 +1,14 @@
 % !TEX encoding = UTF-8 Unicode
-\newcommand{\aktion}[1]{ \paragraph{#1} }
+\newcommand{\aktion}[1]{ \subsubsection{#1} }
 \newcommand{\bParameterlist}{\\\\ \begin{tabular}[t]{||l|l} Parameter & Wertebereich \\ \hline}
 \newcommand{\paramName}[1]{\emph{#1} &}
 \newcommand{\paramMin}[1]{\emph{#1}}
 \newcommand{\paramMax}[1]{\emph{#1} \\}
 \newcommand{\eParameterlist}{\end{tabular}\\\\}
 
-\section{Module}
+\kap{Module}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Das Plugin}
+\ukap{Das Plugin}
 \aktion{MIDI Eigenschaften}
 \aktion{Plugin Parameter}
 	\untermenupunkt{Plugin-Name Parameter}
@@ -17,18 +17,18 @@
 \aktion{Plugin-Editor Eigenschaften}
 	\untermenupunkt{editor window}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Das Lautstärke Modul}
-\aktion{Parameter}
+\ukap{Das Lautstärke Modul}
+\aktion{Modul Parameter}
 	\untermenupunkt{volume parameter}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Das Pan Modul}
-\aktion{Parameter}
+\ukap{Das Pan Modul}
+\aktion{Modul Parameter}
 	\untermenupunkt{pan parameter}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Das Eingangs-Step Modul} 
+\ukap{Das Eingangs-Step Modul} 
 \aktion{Einen weiteren Eingang hinzufügen}
 	\menupunkt{add\_input\_node}
-\aktion{Parameter}
+\aktion{Modul Parameter}
 	\untermenupunkt{input\_step parameter}
 	\bParameterlist
 		\paramName{Step Type}\paramMin{fix}/\paramMax{sync}
@@ -41,10 +41,10 @@
 	\textup{*} : einmal pro Stepeingang\\
 	\textup{**} : jeweils zusätzliche Varianten punktiert (D) und triolisch(T)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Das Ausgangs-Step Modul}
+\ukap{Das Ausgangs-Step Modul}
 \aktion{Einen weiteren Ausgang hinzufügen}
 	\menupunkt{add\_output\_node}
-\aktion{Parameter}
+\aktion{Modul Parameter}
 	\untermenupunkt{output\_step parameter}
 	\bParameterlist
 		\paramName{Step Type}\paramMin{fix}/\paramMax{sync}
@@ -57,10 +57,10 @@
 	\textup{*} : einmal pro Stepausgang \\ 
 	\textup{**} : jeweils zusätzliche Varianten punktiert (D) und triolisch(T)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Das Eingangs-Switch Modul} 
+\ukap{Das Eingangs-Switch Modul} 
 \aktion{Einen weiteren Eingang hinzufügen}
 	\menupunkt{add\_input\_node}
-\aktion{Parameter}
+\aktion{Modul Parameter}
 	\untermenupunkt{input\_switch parameter}
 	\bParameterlist
 		\paramName{fade-in curve type x\textup{*}}\paramMin{type1} ... \paramMax{type6}
@@ -69,10 +69,10 @@
 	\eParameterlist
 	\textup{*} : einmal pro Switcheingang 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Das Ausgangs-Switch Modul}
+\ukap{Das Ausgangs-Switch Modul}
 \aktion{Einen weiteren Ausgang hinzufügen}
 	\menupunkt{add\_output\_node}
-\aktion{Parameter}
+\aktion{Modul Parameter}
 	\untermenupunkt{output\_switch parameter}
 	\bParameterlist
 		\paramName{fade-in curve type x\textup{*}}\paramMin{type1} ... \paramMax{type6}
@@ -81,14 +81,14 @@
 	\eParameterlist
 	\textup{*} : einmal pro Switchausgang 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Das Peak Tracker Modul}
-\aktion{Parameter}
+\ukap{Das Peak Tracker Modul}
+\aktion{Modul Parameter}
 	\untermenupunkt{peak\_tracker parameter}
 	\bParameterlist
 		\paramName{offset}\paramMin{0} ... \paramMax{1}
 	\eParameterlist
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\subsection{Das ADSR Trigger Modul}
-\aktion{Parameter}
+\aktion{Modul Parameter}
 	\untermenupunkt{adsr\_trigger parameter}
 	\bParameterlist
 		\paramName{x level\textup{*}}\paramMin{0} ... \paramMax{1}
@@ -97,11 +97,19 @@
 	\eParameterlist
 	\textup{*} : jeweils für Attack, Decay, Sustain, Release
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Das Midi Receiver Modul}
+\ukap{Das Midi Receiver Modul}
 \aktion{MIDI Eigenschaften}
 	\untermenupunkt{midi properties}
-\aktion{Parameter}
+\aktion{Modul Parameter}
 	\untermenupunkt{midi\_receiver parameter}
+
+\begin{figure}[pth]
+\begin{center}
+	\includegraphics[scale=1.6]{../graphics/curvetypes}
+\caption{default}
+\label{default}
+\end{center}
+\end{figure}
 
 
 

@@ -8,7 +8,7 @@ fi
 rep() {
 	for x in $1/*.tex; do
 		mv $x $x.bak
-		sed 's/^[ ]*\\'$2'[ ]*{\(.*\)}/\'$3'{\1}/' $x.bak > $x
+		sed 's/^[ ]*\\'$2'[ ]*{\(.*\)}/\\'$3'{\1}/' $x.bak > $x 
 		rm $x.bak
 	done
 }
