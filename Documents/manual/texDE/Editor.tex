@@ -45,46 +45,55 @@ Wichtige Meneüelemente sind:
 Das Hauptmenü können Sie öffnen, indem Sie an einer leeren Stelle der ''Bühne'' das Kontextmenü aufrufen (siehe Abbildung \ref{main_menu}). 
 \\\\
 
-\newcommand{\faul}[2]{Wählen Sie den Menüpunkt \menupunkt{#1} um #2 auf der ''Bühne'' zu platzieren.}
+\newcommand{\faulh}[1]{#1 & }
+\newcommand{\faul}[2]{\menupunkt{#1} \\ \hline}
+\newcommand{\ufaul}[2]{\untermenupunkt{#1} \\ \hline}
 
-Folgende Aktionen können Sie mit dem Hauptmenü ausführen:
-\subsubsection{ein Plugin hinzufügen} Verwenden Sie den Menüpunkt  \untermenupunkt{add\_plugin},
-um die gefundenen Plugins, des in Kapitel \ref{scanconfig} beschriebenen Scanvorganges, in einem Untermenü auszuwählen.
+Folgende Aktionen können Sie mit dem Hauptmenü ausführen: \\\\
 
-\subsubsection{ein Lautstärke Modul hinzufügen}
+
+\begin{tabular}{l|l}
+Aktion & Menüpunkt \\
+\hline
+\hline
+\faulh{ein Plugin hinzufügen:} 
+\ufaul{add\_plugin}{ein Plugin}
+
+\faulh{ein Lautstärke Modul hinzufügen:}
 \faul{add\_volume\_node}{ein Lautstärke Modul}
 
-\subsubsection{ein Pan Modul hinzufügen}
+\faulh{ein Pan Modul hinzufügen:}
 \faul{add\_pan\_node}{ein Pan Modul}
 
-\subsubsection{ein Eingangs-Step Modul hinzufügen} 
+\faulh{ein Eingangs-Step Modul hinzufügen:} 
 \faul{add\_input\_step\_node}{ein Eingangs-Step Modul}
 
-\subsubsection{ein Ausgangs-Step Modul hinzufügen}
+\faulh{ein Ausgangs-Step Modul hinzufügen:}
 \faul{add\_output\_step\_node}{ein Ausgangs-Step Modul}
 
-\subsubsection{ein Eingangs-Switch Modul hinzufügen} 
+\faulh{ein Eingangs-Switch Modul hinzufügen:} 
 \faul{add\_input\_step\_node}{ein Eingangs-Switch Modul}
 
-\subsubsection{ein Ausgangs-Switch Modul hinzufügen}
+\faulh{ein Ausgangs-Switch Modul hinzufügen:}
 \faul{add\_output\_step\_node}{ein Ausgangs-Switch Modul}
 
-\subsubsection{ein Peak Tracker Modul hinzufügen}
+\faulh{ein Peak Tracker Modul hinzufügen:}
 \faul{add\_peak\_tracker}{ein Peak Tracker Modul}
 
-\subsubsection{ein ADSR Trigger Modul hinzufügen}
+\faulh{ein ADSR Trigger Modul hinzufügen:}
 \faul{add\_adsr\_trigger}{ein ADSR Trigger Modul}
 
-\subsubsection{ein Midi Tracker Modul hinzufügen}
+\faulh{ein Midi Tracker Modul hinzufügen:}
 \faul{add\_midi\_tracker}{ein Midi Tracker Modul}
 
-\subsubsection{ein Drehregler hinzufügen}
-\faul{add\_free\_knob}{ein Drehregler}. Es können beliebig viele Drehregler hinzugefügt werden.
+\faulh{ein Drehregler hinzufügen:}
+\faul{add\_free\_knob}{ein Drehregler}
 
-\subsubsection{ein Host-Drehregler hinzufügen}
-Wählen Sie aus dem Untermenü \untermenupunkt{host\_knobs} einen ''Host-Parameter'' aus, um ihn auf der ''Bühne'' zu platzieren.
+\faulh{ein Host-Drehregler hinzufügen}
+\ufaul{host\_knobs}{ein Host-Drehregler}
 
-
+\end{tabular}
+\\\\
 
 
 
