@@ -1,7 +1,7 @@
 % !TEX encoding = UTF-8 Unicode
 %% Erläuterungen zu den Befehlen erfolgen unter
 %% diesem Beispiel.
-\documentclass{report}
+\documentclass{book}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[ngerman]{babel}
@@ -18,6 +18,10 @@
 \newcommand{\ukap}[1]{\section{#1}}
 \newcommand{\uukap}[1]{\subsection{#1}}
 
+\newcommand{\tip}[1]{\textbf{#1}}
+\newcommand{\stern}{\textup{{\footnotesize *}}}
+\newcommand{\sstern}{\textup{{\footnotesize **}}}
+\newcommand{\ssstern}{\textup{{\footnotesize ***}}}
 
 \title{
          \includegraphics[scale=2]{../graphics/logo}
@@ -32,6 +36,7 @@
 \include{License}
 \include{Installation}
 \include{Editor}
+\include {Parameter}
 \include{Processors}
 
 \end{document}
