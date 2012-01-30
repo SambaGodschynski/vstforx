@@ -1,0 +1,13 @@
+
+Entwurf:
+ - Warum MVC? -> Serialisierungs problem : ein prozess
+ - Graph: warum extrinistisch (BGL)?
+ - Frames
+ - Serialization
+ - SQLite vs. map
+ - Smart Pointer-> problem: wann objekt löschen?
+ - warum CircuidView CView nur als wrapper.
+ - warum GObject parentView?
+Impl.:
+Ausblick.:
+Peak2Value blockgroessen abhaengig
