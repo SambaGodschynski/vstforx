@@ -11,3 +11,13 @@ Entwurf:
 Impl.:
 Ausblick.:
 Peak2Value blockgroessen abhaengig
+
+umbenennen:
+
+PlugNode -> PluginNode
+VST"" -> VST""
+Frame -> Frames
+processFrame() -> processFrames()
+OutputStepAdapter -> InputStep
+Input"" -> Input""
+sampleFrames -> numSamples
