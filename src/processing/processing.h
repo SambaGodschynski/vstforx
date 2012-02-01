@@ -122,8 +122,7 @@ protected:
 	// Hier lagern alle Frames die vom ProcesserNode 
 	// erzeugt werden. Dies geschieht wenn eine neue
 	// abgehende Verbindung (child) hinzugefuegt wird
-	// und wenn mehr als eine verbindung existiert.
-	// (abgehende knoten werden parallel geschaltet.)
+	// und mehr als eine verbindung existiert.
 	typedef list<Frame::Ptr> FrameContainer;
 	FrameContainer frameContainer;	//< ProcessorNode besitzt diese frames
 	//--------------------------------------------------------------------------------------------------------

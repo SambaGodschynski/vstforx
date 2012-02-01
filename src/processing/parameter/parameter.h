@@ -81,7 +81,8 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	ConnectionOperator(){}
 	//--------------------------------------------------------------------------------------------------------
-	Parameter *u,*v; // nicht shared_ptr! sonst haelt op. param. der op haelt => leak 
+	Parameter *u,*v; // nicht shared_ptr! sonst haelt op. param. der op haelt => leak
+				     // TODO: existeren nur zur OperatorParamter(zb.:slope) nach ConnectionParameter rückkoplung, überdenken!!
 public:
 	//--------------------------------------------------------------------------------------------------------
 	const string getName() const { return name; }
@@ -121,7 +122,7 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	typedef ConnectionOperator::Container V; //Operatoren
 	//--------------------------------------------------------------------------------------------------------
-	typedef map <U, V> ParameterConnection;
+	typedef map <U, V> ParameterConnection; // TODO: als multimap impl.
 	//--------------------------------------------------------------------------------------------------------
 	VstNumber _min, _max;
 	//--------------------------------------------------------------------------------------------------------
