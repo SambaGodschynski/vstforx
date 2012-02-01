@@ -21,3 +21,4 @@ processFrame() -> processFrames()
 OutputStepAdapter -> InputStep
 Input"" -> Input""
 sampleFrames -> numSamples
+ProcessAdapterNode::adapter -> parent
