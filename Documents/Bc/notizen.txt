@@ -9,7 +9,8 @@ Entwurf:
  - warum CircuidView CView nur als wrapper.
  - warum GObject parentView?
 Impl.:
-- allgemeine hilfsmittel
+- allgemeine hilfsmittel:
+- shared_ptr vs. CReferenceCounter
 - tests
 - serialization
 - Parameter::setValue( VstNumber v ) avoid NaN. problems with serialize and deserialize
