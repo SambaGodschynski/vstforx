@@ -23,6 +23,8 @@
 
 /* Begin PBXBuildFile section */
 		8D01CCCE0486CAD60068D4B7 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08EA7FFBFE8413EDC02AAC07 /* Carbon.framework */; };
+		A28ADE2F14D97FC0003A22D8 /* Frame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28ADE2D14D97FC0003A22D8 /* Frame.cpp */; };
+		A28ADE3014D97FC0003A22D8 /* Frame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28ADE2D14D97FC0003A22D8 /* Frame.cpp */; };
 		A28B82FA149FCDD2003F0F88 /* FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28B82F9149FCDD2003F0F88 /* FileSystem.cpp */; };
 		A28B82FB149FCDD2003F0F88 /* FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28B82F9149FCDD2003F0F88 /* FileSystem.cpp */; };
 		A2B2F8E0149F67D900EB3714 /* DataBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8DC149F67D900EB3714 /* DataBase.cpp */; };
@@ -89,7 +91,6 @@
 		A86FBA261341D187007D82DE /* PPiVst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A8999BAC12B7F9E3003A5EDC /* PPiVst.cpp */; };
 		A86FBA971341D228007D82DE /* Command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA2A1341D228007D82DE /* Command.cpp */; };
 		A86FBA991341D228007D82DE /* Events.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA2E1341D228007D82DE /* Events.cpp */; };
-		A86FBA9A1341D228007D82DE /* Frame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA301341D228007D82DE /* Frame.cpp */; };
 		A86FBA9B1341D228007D82DE /* Log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA321341D228007D82DE /* Log.cpp */; };
 		A86FBA9C1341D228007D82DE /* MyString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA341341D228007D82DE /* MyString.cpp */; };
 		A86FBA9D1341D228007D82DE /* one4All.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA361341D228007D82DE /* one4All.cpp */; };
@@ -126,7 +127,6 @@
 		A86FBABF1341D228007D82DE /* processing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA901341D228007D82DE /* processing.cpp */; };
 		A86FBAC21341D228007D82DE /* Command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA2A1341D228007D82DE /* Command.cpp */; };
 		A86FBAC41341D228007D82DE /* Events.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA2E1341D228007D82DE /* Events.cpp */; };
-		A86FBAC51341D228007D82DE /* Frame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA301341D228007D82DE /* Frame.cpp */; };
 		A86FBAC61341D228007D82DE /* Log.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA321341D228007D82DE /* Log.cpp */; };
 		A86FBAC71341D228007D82DE /* MyString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA341341D228007D82DE /* MyString.cpp */; };
 		A86FBAC81341D229007D82DE /* one4All.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA361341D228007D82DE /* one4All.cpp */; };
@@ -319,6 +319,8 @@
 
 /* Begin PBXFileReference section */
 		08EA7FFBFE8413EDC02AAC07 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		A28ADE2D14D97FC0003A22D8 /* Frame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frame.cpp; sourceTree = "<group>"; };
+		A28ADE2E14D97FC0003A22D8 /* Frame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Frame.h; sourceTree = "<group>"; };
 		A28B82F9149FCDD2003F0F88 /* FileSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileSystem.cpp; sourceTree = "<group>"; };
 		A2B2F8DC149F67D900EB3714 /* DataBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataBase.cpp; sourceTree = "<group>"; };
 		A2B2F8DD149F67D900EB3714 /* DataBase.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DataBase.hpp; sourceTree = "<group>"; };
@@ -380,8 +382,6 @@
 		A86FBA2B1341D228007D82DE /* Command.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Command.h; sourceTree = "<group>"; };
 		A86FBA2E1341D228007D82DE /* Events.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Events.cpp; sourceTree = "<group>"; };
 		A86FBA2F1341D228007D82DE /* Events.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Events.h; sourceTree = "<group>"; };
-		A86FBA301341D228007D82DE /* Frame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frame.cpp; sourceTree = "<group>"; };
-		A86FBA311341D228007D82DE /* Frame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Frame.h; sourceTree = "<group>"; };
 		A86FBA321341D228007D82DE /* Log.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Log.cpp; sourceTree = "<group>"; };
 		A86FBA331341D228007D82DE /* Log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Log.h; sourceTree = "<group>"; };
 		A86FBA341341D228007D82DE /* MyString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MyString.cpp; sourceTree = "<group>"; };
@@ -683,8 +683,6 @@
 				A86FBA2B1341D228007D82DE /* Command.h */,
 				A86FBA2E1341D228007D82DE /* Events.cpp */,
 				A86FBA2F1341D228007D82DE /* Events.h */,
-				A86FBA301341D228007D82DE /* Frame.cpp */,
-				A86FBA311341D228007D82DE /* Frame.h */,
 				A86FBA321341D228007D82DE /* Log.cpp */,
 				A86FBA331341D228007D82DE /* Log.h */,
 				A86FBA341341D228007D82DE /* MyString.cpp */,
@@ -802,6 +800,8 @@
 		A86FBA801341D228007D82DE /* processing */ = {
 			isa = PBXGroup;
 			children = (
+				A28ADE2D14D97FC0003A22D8 /* Frame.cpp */,
+				A28ADE2E14D97FC0003A22D8 /* Frame.h */,
 				A8E9C25713B09E0F0038F83D /* MidiEventProcessor.cpp */,
 				A88670A2139CDEFA00B5CBDD /* BglGraph.h */,
 				A88670A3139CDEFA00B5CBDD /* Graph.cpp */,
@@ -1198,7 +1198,6 @@
 				A86B7D2A1323AB4A00C19E74 /* utf8_codecvt_facet.cpp in Sources */,
 				A86FBA971341D228007D82DE /* Command.cpp in Sources */,
 				A86FBA991341D228007D82DE /* Events.cpp in Sources */,
-				A86FBA9A1341D228007D82DE /* Frame.cpp in Sources */,
 				A86FBA9B1341D228007D82DE /* Log.cpp in Sources */,
 				A86FBA9C1341D228007D82DE /* MyString.cpp in Sources */,
 				A86FBA9D1341D228007D82DE /* one4All.cpp in Sources */,
@@ -1248,6 +1247,7 @@
 				A2B2F8FD149F688900EB3714 /* audioeffectx.cpp in Sources */,
 				A2B2F8FE149F688900EB3714 /* vstplugmain.cpp in Sources */,
 				A28B82FA149FCDD2003F0F88 /* FileSystem.cpp in Sources */,
+				A28ADE2F14D97FC0003A22D8 /* Frame.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1258,7 +1258,6 @@
 				A86FBA261341D187007D82DE /* PPiVst.cpp in Sources */,
 				A86FBAC21341D228007D82DE /* Command.cpp in Sources */,
 				A86FBAC41341D228007D82DE /* Events.cpp in Sources */,
-				A86FBAC51341D228007D82DE /* Frame.cpp in Sources */,
 				A86FBAC61341D228007D82DE /* Log.cpp in Sources */,
 				A86FBAC71341D228007D82DE /* MyString.cpp in Sources */,
 				A86FBAC81341D229007D82DE /* one4All.cpp in Sources */,
@@ -1352,6 +1351,7 @@
 				A2B2F900149F688900EB3714 /* audioeffectx.cpp in Sources */,
 				A2B2F901149F688900EB3714 /* vstplugmain.cpp in Sources */,
 				A28B82FB149FCDD2003F0F88 /* FileSystem.cpp in Sources */,
+				A28ADE3014D97FC0003A22D8 /* Frame.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

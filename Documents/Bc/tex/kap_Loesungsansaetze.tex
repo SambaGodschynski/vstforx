@@ -38,7 +38,7 @@ Eine Einschränkung der Topologischen Sortierung ist es, dass die zu sortierende
 \\\\
 Die Topologischen Sortierung ist allerdings in der Lage zu erkennen ob ein Graph Zyklisch ist \footnotemark[13]. Zur Vermeidung von Fehlverhalten werden daher Zyklische Graphen nicht zugelassen.  \\
 %%%%%%
-\subsection{Das Latenzproblem}
+\subsection{\label{Latenzproblem}Das Latenzproblem}
 \begin{figure}[ht]
 	\centering
  	\includegraphics[scale=0.15]{../graphics/latenz.png}
@@ -55,9 +55,9 @@ Um unterschiedliche Latenzen in einem komplexen Graph auszugleichen, wäre folge
 	\begin{description}
 		\item[=] Maximaler Latenzwert der Vorgängerknoten, addiert zum eigenen (realen) Latenzewert
 	\end{description}
-	\item hinzufügen eines Buffers je Knoten dessen Größe = Sampleblockgröße + berechneter Latenzwert ist.
+	\item hinzufügen eines Buffers je Knoten, dessen Größe = Sampleblockgröße + berechneter Latenzwert ist.
 	\item die Ausgaben aller Vorgängerknoten, je nach Vorgängerlatenz an unterschiedlichen Position, dem Buffer hinzufügen (siehe Abbildung \ref{dc})
-	\item den Buffer als Eingabe weiterverarbeiten
+	\item Sampledatenmenge des Buffer als Eingabe weiterverarbeiten
 \end{itemize}
 \begin{figure}[h]
 	\centering
