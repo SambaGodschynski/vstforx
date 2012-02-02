@@ -144,8 +144,10 @@ inline void CircuidControl::spanSelectionRect ( const OnMouseDrag &ev ){
 //------------------------------------------------------------------------------------------------------------
 inline void CircuidControl::showContextMenu( GObject::Ptr obj, CPoint& point ){
 	menu::MenuEntryList &mList = contextMenu->getMenuEntries();
-	if ( obj ) gObjCtrlDirector->getMenuEntryList ( mList, obj );
-	else getMenuEntryList ( mList );
+	if ( obj ) 
+		gObjCtrlDirector->getMenuEntryList ( mList, obj );
+	else
+		getMenuEntryList ( mList );
 	contextMenu->showAt ( point );
 }
 //------------------------------------------------------------------------------------------------------------

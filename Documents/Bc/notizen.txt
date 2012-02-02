@@ -29,7 +29,13 @@ Input"" -> Input""
 sampleFrames -> numSamples
 ProcessAdapterNode::adapter -> parent
 getConnectionOperatorContainer -> getConnectionOperators
+GObject::render() -> draw()
+IOBjectController->ObjectController
+GProcessorNode, GProcessorNodeController -> GProcessModule
 
+
+Controll eigenen namespace
 DCStream::flush() variante für Frames objekt hinzufügen
 Parameter::ParameterConnection als multimap oder so wie im modell
 ConnectionOperator::Parameter *u,*v; existeren nur zur OperatorParamter(zb.:slope) nach ConnectionParameter rückkoplung, überdenken!!
+FrontController::M2V -> ViewRelations
