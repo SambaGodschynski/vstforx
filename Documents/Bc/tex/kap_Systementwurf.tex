@@ -113,10 +113,15 @@ Es wurde sich allerdings dagegen entschieden. So ist einzig die CircuidView-Klas
 	\item weniger direkte Abhängikeiten zum Vst-Gui SDKs (was eine eventuelle Immigration zu einem anderen/besseren Framework erleichtern würde)
 \end{itemize}
 \paragraph{GObject}
+Die GObject-Klasse ist die Oberklasse, aller Objekte die von der CircuidView aufgenommen werden können. Sie bildet das Gegenstück zur PObject Klasse.
 \paragraph{GProcessModule}
+Die GProcessModule-Klasse ist die graphische Repräsentation der ProcessAdaptor-Objekte.
 \paragraph{GIONode}
+Die GIONode-Klassen repräsentieren die Input-/OutputNode Objekte.
 \paragraph{GConnection}
-\paragraph{CControlWrapper}
+Die GConnection-Klassen repräsentieren die Verbindungen zwischen den GObjecten.
+\paragraph{CViewWrapper}
+Wie bereits beschrieben, implementiert die CircuidView-Klasse die Bühnedarstellung, unabhängig von den CView-Klassen. Die CircuidView nimmt ausschließlich GObject-Objekte auf. Dies bedeutet jedoch, dass Vst-Gui SDK Steuerungs-Elemente, nicht mit der CircuidView verwendet werden können. Diesen Nachteil behebt die CViewWrapper-Klasse. Sie hüllt ein CView-Objekt in ein GObject-Objekt. Über ein Template-Parameter wird festgelegt, welche GObject-Klasse Oberklasse ist. Somit ist es möglich, Eine CView-Klasse mit den Eigenschaften von GCircle zu umhüllen.
 \begin{figure}[htbp]
 \begin{center}
 	\includegraphics[scale=0.45]{../graphics/gui_overview}

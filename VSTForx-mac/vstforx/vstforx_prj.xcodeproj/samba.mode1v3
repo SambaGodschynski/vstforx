@@ -216,10 +216,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>A28D1F5E14DAD11C00606F51</string>
+						<string>A25C4FC414DAF4EA003AEA33</string>
 						<key>history</key>
 						<array>
-							<string>A28ADE3914D9939E003A22D8</string>
+							<string>A28D1F5E14DAD11C00606F51</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -256,10 +256,10 @@
 						<key>_historyCapacity</key>
 						<integer>0</integer>
 						<key>bookmark</key>
-						<string>A28D1F5F14DAD11C00606F51</string>
+						<string>A25C4FC514DAF4EA003AEA33</string>
 						<key>history</key>
 						<array>
-							<string>A28ADE3A14D9939E003A22D8</string>
+							<string>A28D1F5F14DAD11C00606F51</string>
 						</array>
 					</dict>
 					<key>SplitCount</key>
@@ -356,7 +356,7 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
-									<integer>29</integer>
+									<integer>31</integer>
 									<integer>7</integer>
 									<integer>5</integer>
 									<integer>3</integer>
@@ -400,7 +400,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>1CE0B20306471E060097A5F4</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>Frame.h</string>
+								<string>PpiGui.h</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -408,11 +408,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>1CE0B20406471E060097A5F4</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>Frame.h</string>
+										<string>PpiGui.h</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>A28D1F5D14DAD11C00606F51</string>
+										<string>A25C4FC114DAF4EA003AEA33</string>
 										<key>history</key>
 										<array>
 											<string>A229153614C739FA000FD3B6</string>
@@ -426,7 +426,9 @@
 											<string>A269BD4C14D833A1000A2F8A</string>
 											<string>A28ADE1F14D90A12003A22D8</string>
 											<string>A28ADE3214D9939E003A22D8</string>
-											<string>A28ADE3414D9939E003A22D8</string>
+											<string>A25C4FBE14DAF4EA003AEA33</string>
+											<string>A25C4FBF14DAF4EA003AEA33</string>
+											<string>A25C4FC014DAF4EA003AEA33</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -438,14 +440,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 0}, {1375, 710}}</string>
+								<string>{{0, 0}, {1375, 705}}</string>
 								<key>RubberWindowFrame</key>
 								<string>4 56 1676 972 0 0 1680 1028 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
 							<key>Proportion</key>
-							<string>710pt</string>
+							<string>705pt</string>
 						</dict>
 						<dict>
 							<key>ContentConfiguration</key>
@@ -458,14 +460,14 @@
 							<key>GeometryConfiguration</key>
 							<dict>
 								<key>Frame</key>
-								<string>{{0, 715}, {1375, 216}}</string>
+								<string>{{0, 710}, {1375, 221}}</string>
 								<key>RubberWindowFrame</key>
 								<string>4 56 1676 972 0 0 1680 1028 </string>
 							</dict>
 							<key>Module</key>
 							<string>XCDetailModule</string>
 							<key>Proportion</key>
-							<string>216pt</string>
+							<string>221pt</string>
 						</dict>
 					</array>
 					<key>Proportion</key>
@@ -484,9 +486,9 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>A28D1F5014DAD0E500606F51</string>
+				<string>A25C4FC214DAF4EA003AEA33</string>
 				<string>1CE0B1FE06471DED0097A5F4</string>
-				<string>A28D1F5114DAD0E500606F51</string>
+				<string>A25C4FC314DAF4EA003AEA33</string>
 				<string>1CE0B20306471E060097A5F4</string>
 				<string>1CE0B20506471E060097A5F4</string>
 			</array>
@@ -707,7 +709,7 @@
 			<key>TableOfContents</key>
 			<array>
 				<string>A2D683C214C077810020ACF4</string>
-				<string>A28D1F5714DAD0E500606F51</string>
+				<string>A25C4FC614DAF4EA003AEA33</string>
 				<string>1CD0528F0623707200166675</string>
 				<string>XCMainBuildResultsModuleGUID</string>
 			</array>
