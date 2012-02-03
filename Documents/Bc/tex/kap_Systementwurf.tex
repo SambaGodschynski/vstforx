@@ -125,12 +125,49 @@ Wie bereits beschrieben, implementiert die CircuidView-Klasse die Bühnedarstell
 \begin{figure}[htbp]
 \begin{center}
 	\includegraphics[scale=0.45]{../graphics/gui_overview}
-\caption{Parameter-Klassen Modell}
+\caption{die GUI-Klassen Modell}
 \label{parameterModel}
 \end{center}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Die Control Ebene}
-\paragraph{CircuidControl}
+Das MVC-Architekturmuster dient der losen Kopplung zwischen, Geschäfts-Logik und der Benutzeroberfläche. Die Notwendigkeit dieser Architektur wird bei einem VST-Plugin besonders deutlich: der Editor kann Wahlweise geöffnet oder geschlossen sein, während das Plugin weiterhin arbeitet. Dies bedeutet, Modell-und Viewobjekte haben unterschiedliche Lebenszeiten. 
+\\\\
+
+\begin{figure}[htbp]
+\begin{center}
+	\includegraphics[scale=0.45]{../graphics/ControlModell}
+\caption{die Control-Klassen Modell}
+\label{parameterModel}
+\end{center}
+\end{figure}
+\paragraph{ViewRelations}
+Die Problemstellung, beim öffnen des Editors, in einem bereits bestehenden Szenario ist, wiederhergestellte View-Objekte den richtigen Model-Objekten zuzuordnen. Diese Aufgabe übernimmt die Klasse ViewRelations. Sie liefert für jedes Model-Objekt das passende View-Objekt und umgekehrt.
 \paragraph{FrontController}
-%gründe für mvc
+Da es viele unterschiedliche Objekte auf der ''Bühne'' gibt und jedes dieser Objekte unterschiedliche Funktionen bietet, wäre es umständlich und unübersichtlich, für alle Bühnenobjekte eine einzige Controller-Klasse zu verwenden.
+Deshalb wurde sich dafür entschieden, mehrere Control-Klassen für unterschiedliche Bühnenobjekte zu implementieren: die ObjectControl-Klassen. 
+\\\\
+Für jeden Bühnenobjekttyp existiert, zur Laufzeit, ein passendes ObjectControl-Objekt. 
+Der FrontController kümmert sich nun, um die Zuordnung zwischen Bühnen- und Controlobjekt. Die Methode getController(GObject *obj) liefert den passenden Controller (siehe Abbildung \ref{seqCtrl}). 
+\begin{figure}[htbp]
+\begin{center}
+	\includegraphics[scale=0.45]{../graphics/ctrlSeq}
+\caption{Beispiel zur Nutzung der FrontControl-Klasse, anhand eines Kontextmenüaufrufes}
+\label{parameterModel}
+\end{center}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Gemeinsam genutzte Elemente}
+Neben den Hauptebenen (MVC), existiert noch eine Menge an gemeinsam genutzten Hilfsklassen und (frei stehenden) Funktionen.
+Die wichtigsten sollen hier kurz aufgeführt werden:
+\paragraph{PluginCollection}
+Die PluginCollection-Klasse Implementiert die PluginDatenbank. Sie existiert zur Laufzeit als Singleton-Objekt. Plugin-Objekte werden ausschließlich über die PluginCollection erzeugt. 
+\paragraph{Settings}
+Die Settings-Klasse ist ebenfalls als Singleton Implementiert. Sie ist für die Programmkonfiguration und dem dauerhaften Speichern derselbigen verantwortlich.
+
+
+
+
+
+

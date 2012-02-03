@@ -40,3 +40,8 @@ DCStream::flush() variante für Frames objekt hinzufügen
 Parameter::ParameterConnection als multimap oder so wie im modell
 ConnectionOperator::Parameter *u,*v; existeren nur zur OperatorParamter(zb.:slope) nach ConnectionParameter rückkoplung, überdenken!!
 FrontController::M2V -> ViewRelations
+
+Modell:
+Parameter <- Connection | Parameter als attribute
+sequences : return values
+frontcontroller->objectcontroller kardinalität nicht * sondern bezug 1 auf einzel. konkreten cntrl 
