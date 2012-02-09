@@ -1,11 +1,19 @@
 % !TEX encoding = UTF-8 Unicode
 \section{Realisierung}
-%\paragraph{Inaktive Knoten}
-%\begin{figure}[h]
-%	\centering
-% 	\includegraphics[scale=0.17]{../graphics/g03.png}
-%	\caption{Beispiel eines Plugin-Graphen dessen Plugins zum Teil keine Auswirkung auf die Programmausgabe haben.}
-%	\label{g03}
-%\end{figure}
-%Da einige Plugins sehr viel Rechenleistung in Anspruch nehmen, ist es notwendig nur die Plugins zu bearbeiten die auch die Audioausgabe beeinflussen. Man stelle sich eine Situation vor, in der sehr viele Plugins auf die Bühne geladen wurden, aber keines davon ist an den (VSTForx-)Ausgang angeschlossen (siehe Abbildung \ref{g03}). Da aber die Topologische Sortierung den gesamten Graph bearbeitet,  werden alle vorhanden Knoten in der Ergebnismenge aufgenommen.
-%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Externe Bibliotheken}
+%Smart Pointer-> problem: wann objekt löschen?(shared_ptr vs. CReferenceCounter)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Der Graph}
+\paragraph{Testen}
+%graph creator
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Die Plugindatenbank}
+\paragraph{Testen}
+\paragraph{Probleme}
+%string längen
+%Parameter::setValue( VstNumber v ) avoid NaN. problems with serialize and deserialize issue #113
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Die Benutzerschnitstelle}
+\paragraph{Probleme}
+%Serialisierungs problem : ein prozess
