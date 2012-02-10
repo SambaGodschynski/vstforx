@@ -221,7 +221,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	bool isVisible() const { return visible; }
 	//--------------------------------------------------------------------------------------------------------
-	virtual void render ( CDrawContext *pContext ) = 0;
+	virtual void draw ( CDrawContext *pContext ) = 0;
 	//--------------------------------------------------------------------------------------------------------
 	void moveTo ( const CPoint &p ){
 		CCoord w = bBox.width()>>1;
@@ -294,7 +294,7 @@ public:
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	virtual void render( CDrawContext *pContext );
+	virtual void draw( CDrawContext *pContext );
 	//--------------------------------------------------------------------------------------------------------
 	void setColor ( CColor col ){ color = col; }
 	//--------------------------------------------------------------------------------------------------------
@@ -354,7 +354,7 @@ public:
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	virtual void render( CDrawContext *pContext );
+	virtual void draw( CDrawContext *pContext );
 	//--------------------------------------------------------------------------------------------------------
 	void setColor ( CColor col ){ color = col; }
 	//--------------------------------------------------------------------------------------------------------
@@ -391,7 +391,7 @@ protected:
 	}
 public:
 	//--------------------------------------------------------------------------------------------------------
-	virtual void render ( CDrawContext *pContext );
+	virtual void draw ( CDrawContext *pContext );
 	//--------------------------------------------------------------------------------------------------------
 	static Ptr create( CircuidView *view, Resources::BitmapID bmpID ) {
 		GBitmap::Ptr neu( new GBitmap(view, bmpID ) );
@@ -440,9 +440,9 @@ public:
 		return x*x + y*y <= radius*radius;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	void render ( CDrawContext *cc, int renderRadius  );
+	void draw ( CDrawContext *cc, int renderRadius  );
 	//--------------------------------------------------------------------------------------------------------
-	virtual void render ( CDrawContext *cc ) { render(cc, radius); }
+	virtual void draw ( CDrawContext *cc ) { draw(cc, radius); }
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~GCircle(){}
 };
@@ -469,7 +469,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	~GIONode ();
 	//--------------------------------------------------------------------------------------------------------
-	virtual void render( CDrawContext *pContext ) = 0;
+	virtual void draw( CDrawContext *pContext ) = 0;
 };
 
 //============================================================================================================
@@ -564,8 +564,8 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~CViewWrapper();
 	//--------------------------------------------------------------------------------------------------------
-	virtual void render ( CDrawContext *cc ) {
-		for ( unsigned int i = 0; i<GOBJECT::subObjects.size(); i++ ) GOBJECT::subObjects[i]->render ( cc );
+	virtual void draw ( CDrawContext *cc ) {
+		for ( unsigned int i = 0; i<GOBJECT::subObjects.size(); i++ ) GOBJECT::subObjects[i]->draw ( cc );
 		cView->draw ( cc );
 	}
 };

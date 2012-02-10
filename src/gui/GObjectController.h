@@ -72,17 +72,17 @@ public:
 // class IObjectController:
 // Interface fuer Kontroller.
 //============================================================================================================
-class IObjectController {
+class ObjectController {
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	FrontController &frntCtrl;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef list<IObjectController*> Container;
+	typedef list<ObjectController*> Container;
 	//--------------------------------------------------------------------------------------------------------
-	IObjectController ( FrontController &frntCtrl ) : frntCtrl( frntCtrl ) {}
+	ObjectController ( FrontController &frntCtrl ) : frntCtrl( frntCtrl ) {}
 	//--------------------------------------------------------------------------------------------------------
-	virtual ~IObjectController() {}
+	virtual ~ObjectController() {}
 	//--------------------------------------------------------------------------------------------------------
 	virtual void registerObject ( GObject::Ptr vObj, PObject::Ptr mObject ) = 0;
 	//--------------------------------------------------------------------------------------------------------
@@ -97,7 +97,7 @@ public:
 // Kontroller fuer GObject objekte.
 //============================================================================================================
 class GObjectController : 
-	public IObjectController,
+	public ObjectController,
 	public EventListener<OnMouseClick>,
 	public EventListener<OnMouseDrag>,
 	public EventListener<OnRemove>
@@ -113,7 +113,7 @@ public:
 	typedef list<GObjectController*> Container;
 	//--------------------------------------------------------------------------------------------------------
 	GObjectController ( FrontController &frntCtrl ) : 
-	IObjectController( frntCtrl ), mAction(NULL) {}
+	ObjectController( frntCtrl ), mAction(NULL) {}
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~GObjectController() {}
 	//--------------------------------------------------------------------------------------------------------
@@ -179,9 +179,9 @@ private:
 		return MyString(type_name).hash();
 	}
 	//--------------------------------------------------------------------------------------------------------
-	IObjectController *controller[NUM_CTRL];
+	ObjectController *controller[NUM_CTRL];
 	//--------------------------------------------------------------------------------------------------------
-	typedef long U; typedef IObjectController* V;
+	typedef long U; typedef ObjectController* V;
 	//--------------------------------------------------------------------------------------------------------
 	typedef map<U, V> ControllerMap;
 	//--------------------------------------------------------------------------------------------------------
@@ -189,10 +189,10 @@ private:
 	ControllerMap controllerMap;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	IObjectController * getController ( ControllerId id ){ return controller[id]; }
+	ObjectController * getController ( ControllerId id ){ return controller[id]; }
 	//--------------------------------------------------------------------------------------------------------
 	void getMenuEntryList ( menu::MenuEntryList &mE, GObject::Ptr obj ){ 
-		IObjectController *ctrl = getController(obj);
+		ObjectController *ctrl = getController(obj);
 		if (!ctrl) return;
 		ctrl->getMenuEntryList(obj, mE); 
 	}
@@ -216,7 +216,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	void unregisterObject ( GObject::Ptr gObj );
 	//--------------------------------------------------------------------------------------------------------
-	IObjectController * getController ( GObject::Ptr obj );
+	ObjectController * getController ( GObject::Ptr obj );
 	//--------------------------------------------------------------------------------------------------------
 	// registriert alle ViewRelations Objekte neu.	
 	void reRegisterObjects();
@@ -245,7 +245,7 @@ public:
 // class GKnobController:
 //============================================================================================================
 class GKnobController : 
-	public IObjectController, 
+	public ObjectController, 
 	public EventListener<OnConnect>, 
 	public EventListener< OnDestroy<GObject> >
 {
@@ -254,7 +254,7 @@ private:
 	bool isPassiveKnob( GKnob *knb ) { return dynamic_cast<GPassiveKnob*> (knb); }
 public:
 	//--------------------------------------------------------------------------------------------------------
-	GKnobController ( FrontController &frntCtrl ) : IObjectController(frntCtrl) {}
+	GKnobController ( FrontController &frntCtrl ) : ObjectController(frntCtrl) {}
 	//--------------------------------------------------------------------------------------------------------
 	void knobValueChanged ( void *src, const float &value );
 	//--------------------------------------------------------------------------------------------------------
@@ -274,12 +274,12 @@ public:
 // class GIONodeController:
 //============================================================================================================
 class GIONodeController : 
-	public IObjectController, 
+	public ObjectController, 
 	public EventListener<OnConnect>
 {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	GIONodeController ( FrontController &frntCtrl ) : IObjectController(frntCtrl) {}
+	GIONodeController ( FrontController &frntCtrl ) : ObjectController(frntCtrl) {}
 	//--------------------------------------------------------------------------------------------------------
 	virtual void registerObject ( GObject::Ptr vObj, PObject::Ptr mObj );
 	//--------------------------------------------------------------------------------------------------------
@@ -292,11 +292,11 @@ public:
 //============================================================================================================
 // class GProcessorNodeController:
 //============================================================================================================
-class GProcessorNodeController : public IObjectController {
+class GProcessorNodeController : public ObjectController {
 private:
 public:
 	//--------------------------------------------------------------------------------------------------------
-	GProcessorNodeController ( FrontController &frntCtrl ) : IObjectController(frntCtrl) {}
+	GProcessorNodeController ( FrontController &frntCtrl ) : ObjectController(frntCtrl) {}
 	//--------------------------------------------------------------------------------------------------------
 	virtual void registerObject ( GObject::Ptr vObj, PObject::Ptr mObj ){}
 	//--------------------------------------------------------------------------------------------------------
@@ -318,13 +318,13 @@ public:
 //============================================================================================================
 // class GKnobConnectionController:
 //============================================================================================================
-class GKnobConnectionController : public IObjectController 
+class GKnobConnectionController : public ObjectController 
 {
 private:
 public:
 	//--------------------------------------------------------------------------------------------------------
 	GKnobConnectionController ( FrontController &frntCtrl ) : 
-	  IObjectController(frntCtrl) {}
+	  ObjectController(frntCtrl) {}
 	//--------------------------------------------------------------------------------------------------------
 	virtual void registerObject ( GObject::Ptr vObj, PObject::Ptr mObj );
 	//--------------------------------------------------------------------------------------------------------
@@ -335,12 +335,12 @@ public:
 //============================================================================================================
 // class GIOConnectionController:
 //============================================================================================================
-class GIOConnectionController : public IObjectController {
+class GIOConnectionController : public ObjectController {
 private:
 public:
 	//--------------------------------------------------------------------------------------------------------
 	GIOConnectionController ( FrontController &frntCtrl ) : 
-	  IObjectController(frntCtrl) {}
+	  ObjectController(frntCtrl) {}
 	//--------------------------------------------------------------------------------------------------------
 	virtual void registerObject ( GObject::Ptr vObj, PObject::Ptr mObj );
 	//--------------------------------------------------------------------------------------------------------
@@ -352,7 +352,7 @@ public:
 // class GSwitchNodeController:
 //============================================================================================================
 class GSwitchNodeController : 
-	public IObjectController, 
+	public ObjectController, 
 	public EventListener<OnIdle>,
 	public EventListener< OnDestroy<GObject> >
 {
@@ -368,7 +368,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void eventHandler ( void *src, const OnIdle &ev );
 	//--------------------------------------------------------------------------------------------------------
-	GSwitchNodeController ( FrontController &frntCtrl ) : IObjectController(frntCtrl) {}
+	GSwitchNodeController ( FrontController &frntCtrl ) : ObjectController(frntCtrl) {}
 	//--------------------------------------------------------------------------------------------------------
 	virtual void registerObject ( GObject::Ptr vObj, PObject::Ptr mObj );
 	//--------------------------------------------------------------------------------------------------------
@@ -380,7 +380,7 @@ public:
 // class GPluginController:
 //============================================================================================================
 class GPluginController : 
-	public IObjectController,
+	public ObjectController,
 	public EventListener< ButtonClicked >,
 	public EventListener< OnDestroy<GObject> >,
 	public EventListener< OnClose >,
@@ -411,7 +411,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	void eventHandler ( void *src, const OnMoving &ev );
 	//--------------------------------------------------------------------------------------------------------
-	GPluginController ( FrontController &frntCtrl ) : IObjectController(frntCtrl) {}
+	GPluginController ( FrontController &frntCtrl ) : ObjectController(frntCtrl) {}
 	//--------------------------------------------------------------------------------------------------------
 	virtual void registerObject ( GObject::Ptr vObj, PObject::Ptr mObj );
 	//--------------------------------------------------------------------------------------------------------

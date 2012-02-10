@@ -55,7 +55,7 @@ void CircuidView::draw(CDrawContext *pContext){
 	drawBackground(pContext);
 	GObjectStageBuffer::iterator it = gObjectBuffer.begin();
 	while ( it != gObjectBuffer.end() ){
-		if ( (*it).second->isVisible() ) (*it).second->render ( pContext );
+		if ( (*it).second->isVisible() ) (*it).second->draw ( pContext );
 		++it;
 	}
 	setDirty(false);

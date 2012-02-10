@@ -360,7 +360,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\processing\plugNodes\NullAEffect.cpp"
+					RelativePath="..\..\src\processing\pluginTypes\NullAEffect.cpp"
 					>
 				</File>
 				<File
@@ -372,11 +372,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\processing\PlugNode.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\PlugNode.h"
+					RelativePath="..\..\src\processing\Plugin.cpp"
 					>
 				</File>
 				<File
@@ -392,7 +388,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\processing\plugNodes\VSTPlugNode2x.cpp"
+					RelativePath="..\..\src\processing\pluginTypes\VSTPlugin2x.cpp"
 					>
 				</File>
 			</Filter>
@@ -400,7 +396,7 @@
 				Name="OS"
 				>
 				<File
-					RelativePath="..\..\src\OS_Specific\windows\processing\OS_VSTPlugNode2x.cpp"
+					RelativePath="..\..\src\OS_Specific\windows\processing\OS_VSTPlugin2x.cpp"
 					>
 				</File>
 				<File

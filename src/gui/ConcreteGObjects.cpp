@@ -86,7 +86,7 @@ inline void GSelection::drawBorders(CDrawContext *cd) {
 	cc.drawString ( text.c_str(), textRect, false, kLeftText );
 }
 //------------------------------------------------------------------------------------------------------------
-void GSelection::render(CDrawContext *cd) {
+void GSelection::draw(CDrawContext *cd) {
 	if ( !isVisible() || selection.empty() ) return;
 	drawBorders(cd);
 }
@@ -150,11 +150,11 @@ void GVSTPlugNode::setName ( const string &name ) {
 	GObject::setName ( name );
 }
 //------------------------------------------------------------------------------------------------------------
-void GVSTPlugNode::render(CDrawContext *cc){
+void GVSTPlugNode::draw(CDrawContext *cc){
 	if (!isVisible()) return;
-	subObjects[ FLAG ]->render ( cc );
+	subObjects[ FLAG ]->draw ( cc );
 	skin->draw ( cc, bBox );
-	subObjects[ EBTN ]->render ( cc );
+	subObjects[ EBTN ]->draw ( cc );
 }
 //============================================================================================================
 //	Klasse GConnection:
@@ -167,7 +167,7 @@ o2( o2 ),
 onMouse ( false ),
 GLine ( parent ){}
 //------------------------------------------------------------------------------------------------------------
-void GConnection::render(CDrawContext *cc){
+void GConnection::draw(CDrawContext *cc){
 	drawConnection ( cc );
 }
 //============================================================================================================
@@ -181,7 +181,7 @@ void GConnectionIO::drawConnection(CDrawContext *cc){
 	setColor ( black );
 	setWidth ( onMouse ? 6 : 4 );
 	lineTo ( o1->getPos(), o2->getPos() );
-	GLine::render (cc);
+	GLine::draw (cc);
 }
 //============================================================================================================
 // Klasse GConnectionPrIn
@@ -194,7 +194,7 @@ void GConnectionPrIn::drawConnection(CDrawContext *cc){
 	setColor ( black );
 	setWidth ( 6 );
 	lineTo ( o1->getPos(), o2->getPos() );
-	GLine::render (cc);
+	GLine::draw (cc);
 }
 //============================================================================================================
 // Klasse GConnectionPrOut
@@ -207,7 +207,7 @@ void GConnectionPrOut::drawConnection(CDrawContext *cc){
 	setColor ( black );
 	setWidth ( 2 );
 	lineTo ( o1->getPos(), o2->getPos() );
-	GLine::render (cc);
+	GLine::draw (cc);
 }
 //============================================================================================================
 // Klasse GConnectionPaPa
@@ -221,7 +221,7 @@ void GConnectionPaPa::drawConnection(CDrawContext *cc) {
 	setColor ( col );
 	setWidth ( onMouse ? 2 : 1 );
 	lineTo ( o1->getPos(), o2->getPos() );
-	GLine::render (cc);
+	GLine::draw (cc);
 }
 //============================================================================================================
 // Klasse GConnectionPrPa
@@ -234,7 +234,7 @@ void GConnectionPrPa::drawConnection(CDrawContext *cc){
 	setColor ( black );
 	setWidth ( 1 );
 	lineTo ( o1->getPos(), o2->getPos() );
-	GLine::render (cc);
+	GLine::draw (cc);
 }
 //============================================================================================================
 // Klasse GConnectionCoPa
@@ -247,7 +247,7 @@ void GConnectionCoPa::drawConnection(CDrawContext *cc){
 	setColor ( black );
 	setWidth ( 1 );
 	lineTo ( o1->getPos(), o2->getPos() );
-	GLine::render (cc);
+	GLine::draw (cc);
 }
 //============================================================================================================
 // Klasse GInputNode:
@@ -269,7 +269,7 @@ skinResID(skinResID), GIONode ( parent )
 GInputNode::~GInputNode(){
 }
 //------------------------------------------------------------------------------------------------------------
-void GInputNode::render(CDrawContext *cc){
+void GInputNode::draw(CDrawContext *cc){
 	if (!isVisible()) return;
 	skin->draw ( cc, bBox );
 }
@@ -292,7 +292,7 @@ skinResID(skinResID), GIONode ( parent ){
 GOutputNode::~GOutputNode() {
 }
 //------------------------------------------------------------------------------------------------------------
-void GOutputNode::render (CDrawContext *cc){
+void GOutputNode::draw (CDrawContext *cc){
 	if (!isVisible()) return;
 	skin->draw ( cc, bBox );
 }
@@ -309,7 +309,7 @@ GVolumeNode::GVolumeNode(ppiGui::CircuidView *view ) : GProcessorNode ( view ){
 	focus = CPoint (bBox.width()>>1, bBox.height()>>1);
 }
 //------------------------------------------------------------------------------------------------------------
-void GVolumeNode::render ( CDrawContext *cc ){
+void GVolumeNode::draw ( CDrawContext *cc ){
 	skin->draw ( cc, bBox );
 }
 //------------------------------------------------------------------------------------------------------------
@@ -328,7 +328,7 @@ GPanAdapter::GPanAdapter( ppiGui::CircuidView *view ) : GProcessorNode ( view ){
 	focus = CPoint (bBox.width()>>1, bBox.height()>>1);
 }
 //------------------------------------------------------------------------------------------------------------
-void GPanAdapter::render ( CDrawContext *cc ){
+void GPanAdapter::draw ( CDrawContext *cc ){
 	skin->draw ( cc, bBox );
 }
 //------------------------------------------------------------------------------------------------------------
@@ -351,15 +351,15 @@ glow( GBitmap::create ( view, Resources::VSTPLUG_OUTPUT_GLOW ) )
 	focus = CPoint ( bBox.width()>>1, bBox.height()>>1 );
 }
 //------------------------------------------------------------------------------------------------------------
-void GOutputStepNode::render ( CDrawContext *cd ){
+void GOutputStepNode::draw ( CDrawContext *cd ){
 	skin->draw ( cd, bBox );
 	const OutputNodeContainer &oc = getOutputNodes();
-	// render active ONode mark
+	// draw active ONode mark
 	if ( aONodeID >= oc.size() ) return;
 	GObject::Ptr o = oc.at(aONodeID);
 	CPoint p = o->getPos();
 	glow->moveTo (p);
-	glow->render(cd);
+	glow->draw(cd);
 }
 //------------------------------------------------------------------------------------------------------------
 GOutputStepNode::~GOutputStepNode(){
@@ -381,15 +381,15 @@ glow( GBitmap::create ( view, Resources::VSTPLUG_OUTPUT_GLOW ) )
 	focus = CPoint ( bBox.width()>>1, bBox.height()>>1 );
 }
 //------------------------------------------------------------------------------------------------------------
-void GInputStepNode::render ( CDrawContext *cd ){
+void GInputStepNode::draw ( CDrawContext *cd ){
 	skin->draw ( cd, bBox );
 	const InputNodeContainer &ic = getInputNodes();
-	// render active ONode mark
+	// draw active ONode mark
 	if ( aINodeID >= ic.size() ) return;
 	GObject::Ptr o = ic.at(aINodeID);
 	CPoint p = o->getPos();
 	glow->moveTo (p);
-	glow->render(cd);
+	glow->draw(cd);
 }
 //------------------------------------------------------------------------------------------------------------
 GInputStepNode::~GInputStepNode(){
@@ -411,15 +411,15 @@ glow( GBitmap::create ( view, Resources::VSTPLUG_OUTPUT_GLOW ) )
 	focus = CPoint ( bBox.width()>>1, bBox.height()>>1 );
 }
 //------------------------------------------------------------------------------------------------------------
-void GOutputSwitch::render ( CDrawContext *cc ){
+void GOutputSwitch::draw ( CDrawContext *cc ){
 	skin->draw ( cc, bBox );
 	const OutputNodeContainer &oc = getOutputNodes();
-	// render active ONode mark
+	// draw active ONode mark
 	if ( aONodeID >= oc.size() ) return;
 	GObject::Ptr o = oc.at(aONodeID);
 	CPoint p = o->getPos();
 	glow->moveTo (p);
-	glow->render(cc);
+	glow->draw(cc);
 }
 //------------------------------------------------------------------------------------------------------------
 GOutputSwitch::~GOutputSwitch(){
@@ -441,15 +441,15 @@ glow( GBitmap::create ( view, Resources::VSTPLUG_OUTPUT_GLOW ) )
 	focus = CPoint ( bBox.width()>>1, bBox.height()>>1 );
 }
 //------------------------------------------------------------------------------------------------------------
-void GInputSwitch::render ( CDrawContext *cc ){
+void GInputSwitch::draw ( CDrawContext *cc ){
 	skin->draw ( cc, bBox );
 	const InputNodeContainer &oc = getInputNodes();
-	// render active ONode mark
+	// draw active ONode mark
 	if ( aINodeID >= oc.size() ) return;
 	GObject::Ptr o = oc.at(aINodeID);
 	CPoint p = o->getPos();
 	glow->moveTo (p);
-	glow->render(cc);
+	glow->draw(cc);
 }
 //------------------------------------------------------------------------------------------------------------
 GInputSwitch::~GInputSwitch(){
@@ -467,7 +467,7 @@ GPeakTracker::GPeakTracker(ppiGui::CircuidView *view ) : GProcessorNode ( view )
 	focus = CPoint (bBox.width()>>1, bBox.height()>>1);
 }
 //------------------------------------------------------------------------------------------------------------
-void GPeakTracker::render ( CDrawContext *cc ){
+void GPeakTracker::draw ( CDrawContext *cc ){
 	skin->draw ( cc, bBox );
 }
 //------------------------------------------------------------------------------------------------------------
@@ -487,7 +487,7 @@ GADSRTrigger::GADSRTrigger(ppiGui::CircuidView *view ) : GProcessorNode ( view )
 	focus = CPoint (bBox.width()>>1, bBox.height()>>1);
 }
 //------------------------------------------------------------------------------------------------------------
-void GADSRTrigger::render ( CDrawContext *cc ){
+void GADSRTrigger::draw ( CDrawContext *cc ){
 	skin->draw ( cc, bBox );
 }
 //------------------------------------------------------------------------------------------------------------
@@ -506,7 +506,7 @@ GMidiProcessor::GMidiProcessor(ppiGui::CircuidView *view ) : GProcessorNode ( vi
 	focus = CPoint (bBox.width()>>1, bBox.height()>>1);
 }
 //------------------------------------------------------------------------------------------------------------
-void GMidiProcessor::render ( CDrawContext *cc ){
+void GMidiProcessor::draw ( CDrawContext *cc ){
 	skin->draw ( cc, bBox );
 }
 //------------------------------------------------------------------------------------------------------------
@@ -639,7 +639,7 @@ void GFlag::setPos ( float angle, int distance ) {
 	bBox = VSTGUI::CRect ( x.x, x.y, x.x, x.y + 16 );
 }
 //------------------------------------------------------------------------------------------------------------
-void GFlag::render ( CDrawContext *cd ){
+void GFlag::draw ( CDrawContext *cd ){
 	CDrawContextPlus cc(*cd);
 	//laenge ermitteln
 	int maxStrLength = com::getMax<size_t>(getUpperLabel().length(), getLowerLabel().length() );
@@ -725,7 +725,7 @@ void PlaceGObject::offset ( const CCoord &x, const CCoord &y ){
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-void PlaceGObject::render ( CDrawContext *cd ){
+void PlaceGObject::draw ( CDrawContext *cd ){
 	CDrawContextPlus cc(*cd);
 	cc.setLineWidth ( 2 );
 	cc.setFrameColor ( red );
@@ -735,7 +735,7 @@ void PlaceGObject::render ( CDrawContext *cd ){
 	cc.drawRect ( r );
 	GObjectList::iterator it = gObjList.begin();
 	for ( ; it!=gObjList.end(); ++it ) {
-		(*it)->render ( cd );	
+		(*it)->draw ( cd );	
 	}
 	cc.setLineStyle ( kLineSolid );
 }

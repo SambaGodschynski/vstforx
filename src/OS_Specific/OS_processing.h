@@ -4,9 +4,9 @@
 #include "OS_Specific/OS_Specific.h"
 
 #ifdef OS_WINDOWS
-#include "windows/processing/OS_VSTPlugNode2x.h"
+#include "windows/processing/OS_VSTPlugin2x.h"
 #else ifdef OS_MAC
-#include "mac/processing/OS_VSTPlugNode2x.h"
+#include "mac/processing/OS_VSTPlugin2x.h"
 #endif
 
 

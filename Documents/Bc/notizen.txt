@@ -23,32 +23,32 @@ script Erweiterung
 
 refactor:
 
-<??>PlugNode -> Plugin (auch processing/plugnodes und OS_...)
+<ok>PlugNode -> Plugin (auch processing/plugnodes und OS_...)
 <ok>VST"" -> VST""
+<ok>PlugNode.h -> Plugin.h
 <ok>Plugnode::tmpFrame->tmpFrames
 <ok>Frame -> Frames
 <ok>processFrame() -> processFrames()
-mixInputsToFrame -> mixInputsToFrames
+<ok>mixInputsToFrame -> mixInputsToFrames
 <ok>OutputStepAdapter -> OutputStep
 <ok>Input"" -> Input""
 <oK>sampleFrames -> numSamples
 <ok>VolumeAdapter->Volume
 <ok>PanAdapter -> Pan
-<??>ProcessAdapterNode::adapter -> parent
-<??>getConnectionOperatorContainer -> getConnectionOperators
-GObject::render() -> draw()
-IOBjectController->ObjectController
-<??>GProcessorNode, GProcessorNodeController -> GProcessModule
+<ok>ProcessAdapterNode::adapter -> parent
+<ok>getConnectionOperatorContainer -> getConnectionOperators
+<ok>GObject::render() -> draw()
+<ok>IOBjectController->ObjectController
+<ok>GProcessorNode, GProcessorNodeController -> GProcessModule
 
 
 Controll eigenen namespace
 DCStream::flush() variante fuer Frames objekt hinzfuegen
 Parameter::ParameterConnection als multimap oder so wie im modell
 ConnectionOperator::Parameter *u,*v; existeren nur zur OperatorParamter(zb.:slope) nach ConnectionParameter rueckkoplung, ueberdenken!!
-FrontController::M2V -> ViewRelations
-
-Modell:
-Parameter <- Connection | Parameter als attribute
+FrontController::M2V -> add V2M
+<ok>Parameter <- Connection | Parameter als attribute
 
 sequences : return values
-frontcontroller->objectcontroller kardinalität nicht * sondern bezug 1 auf einzel. konkreten cntrl 
+
+#frontcontroller->objectcontroller kardinalität nicht * sondern bezug 1 auf einzel. konkreten cntrl 

@@ -152,14 +152,14 @@ void FrontController::registerObject( GObject::Ptr vObj, PObject::Ptr mObj) {
 	view2model.registerRelation ( vObj, mObj );
 	if (mObj) registerModelRelation ( vObj, mObj );
 	controller[CTRL_GOBJECT]->registerObject ( vObj, mObj );
-	IObjectController *ctrl = getController (vObj);
+	ObjectController *ctrl = getController (vObj);
 	if (!ctrl) return;
 	ctrl->registerObject ( vObj, mObj );
 }
 //------------------------------------------------------------------------------------------------------------
 void FrontController::unregisterObject( GObject::Ptr vObj ) {
 	PObject::Ptr pObj = getViewRelations().get<PObject> (vObj);
-	IObjectController *ctrl = getController (vObj);
+	ObjectController *ctrl = getController (vObj);
 	if (ctrl) ctrl->unregisterObject ( vObj, pObj );
 	getViewRelations().unregisterRelation ( vObj, pObj );
 	if (!pObj) return;
@@ -172,7 +172,7 @@ void FrontController::unregisterObject( GObject::Ptr vObj ) {
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-IObjectController * FrontController::getController( GObject::Ptr obj ){
+ObjectController * FrontController::getController( GObject::Ptr obj ){
 	ControllerMap::iterator it = controllerMap.find ( hash(obj) );
 	if ( it == controllerMap.end() ) {
 		LOG_ASSERT (0);
@@ -197,7 +197,7 @@ void FrontController::reRegisterObjects(){
 	ViewRelations::V2M::const_iterator it = v2m.begin();
 	for ( ; it!=v2m.end(); ++it ){
 		controller[CTRL_GOBJECT]->registerObject ( (*it).first, (*it).second );
-		IObjectController *ctrl = getController ( it->first );
+		ObjectController *ctrl = getController ( it->first );
 		registerModelRelation ( (*it).first, (*it).second );
 		if (!ctrl) continue;
 		ctrl->registerObject ( it->first, it->second );
@@ -557,7 +557,7 @@ void GKnobConnectionController::getMenuEntryList ( GObject::Ptr obj, menu::MenuE
 		new CmdAddConnectionOperator<parameter::LogConnection> (a,b, view ) ); 
 	ADD_MENU_LABEL ( mL, "remove connection", new CmdRemoveGObject( view, gc ) );
 	// connection op. parameter:
-	ConnectionOperator::Container l = a->getConnectionOperatorContainer( b.get() );
+	ConnectionOperator::Container l = a->getConnectionOperators( b.get() );
 	ConnectionOperator::Container::iterator it = l.begin();
 	MenuEntryList aMl;
 	ADD_MENU_TITLE ( aMl, "operator parameter:" );
@@ -832,7 +832,7 @@ void GPluginController::unregisterObject ( GObject::Ptr gObj, PObject::Ptr pObj 
 		view->EventSender<OnMoving>::removeEventListener (this);
 		vstPlugViewMap.left.erase (it);
 	}
-	IObjectController *ctrl = frntCtrl.getController ( FrontController::CTRL_GPROCESSOR );
+	ObjectController *ctrl = frntCtrl.getController ( FrontController::CTRL_GPROCESSOR );
 	ctrl->unregisterObject ( gObj, pObj ); // entfernt pobj aus graph
 }
 //------------------------------------------------------------------------------------------------------------

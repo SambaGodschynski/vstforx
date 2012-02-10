@@ -1,7 +1,7 @@
 #ifndef VSTPLUGVIEW_H
 #define VSTPLUGVIEW_H
 
-#include "processing/plugNodes/VSTPlugNode2x.h" 
+#include "processing/pluginTypes/VSTPlugin2x.h" 
 #include "processing/parameter/Parameter.h"
 #include "OS_Specific/OS_processing.h"
 #include "OS_Specific/OS_gui.h"

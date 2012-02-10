@@ -212,7 +212,7 @@ public:
 //     +--------------------------+------------+
 //    
 //  - buffer wird zyklisch gelesen und geschrieben
-//  - beim schreiben werden stroeme addiert.
+//  - beim schreiben widr strom addiert.
 //  - ist lesevorgang abgeschlossen wird buffer auf 0 gesetzt und 
 //    startpos+=frameSize
 //============================================================================================================

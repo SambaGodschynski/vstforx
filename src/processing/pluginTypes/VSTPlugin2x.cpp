@@ -7,7 +7,7 @@
 //============================================================================================================
 
 #include "processing/processing.h"
-#include "VSTPlugNode2x.h"
+#include "VSTPlugin2x.h"
 #include "com/Settings.h"
 #include <boost/filesystem.hpp> 
 #include "com/PluginCollection.h"

@@ -271,7 +271,7 @@ public:
 		(*it).second.push_back ( ConnectionOperator::Ptr(pProcessor) );
 	}
 	//--------------------------------------------------------------------------------------------------------
-	virtual const ConnectionOperator::Container & getConnectionOperatorContainer ( Parameter *dst ) const {
+	virtual const ConnectionOperator::Container & getConnectionOperators ( Parameter *dst ) const {
 		ParameterConnection::const_iterator it = connections.find ( dst );
 		if ( it == connections.end() ) 
 			throw ppiError::IndexOutOfBoundException("No Connection", __FILE__, __LINE__ );

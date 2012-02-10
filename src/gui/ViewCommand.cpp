@@ -2,7 +2,7 @@
 #include "ConcreteGObjects.h"
 #include "CircuidView.h"
 #include "CircuidControl.h"
-#include "processing/PlugNode.h"
+#include "processing/Plugin.h"
 #include "processing/ConcreteProcessAdapter.h"
 #include "processing/parameter/parameter.h"
 #include "processing/parameter/ConnectionOperators.h"

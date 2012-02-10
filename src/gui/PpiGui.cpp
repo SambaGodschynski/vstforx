@@ -130,7 +130,7 @@ GIONode::~GIONode(){
 //  Stellt eine Linie dar.
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-void GLine::render(CDrawContext *pContext){
+void GLine::draw(CDrawContext *pContext){
 	CDrawContextPlus cD (*pContext);
 	if (!isVisible()) return;
 	cD.setLineStyle ( style );
@@ -179,7 +179,7 @@ bool GLine::hitTest ( const CPoint &q ) const {
 //  Stellt ein Rechteck dar.
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-void GRect::render(CDrawContext *pContext) {
+void GRect::draw(CDrawContext *pContext) {
 	if (!isVisible()) return;
 	CDrawContextPlus cD ( *pContext );
 	cD.setLineStyle ( lineStyle );
@@ -193,14 +193,14 @@ void GRect::render(CDrawContext *pContext) {
 //	Klasse GBitmap:
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-void GBitmap::render( CDrawContext *pContext ) {
+void GBitmap::draw( CDrawContext *pContext ) {
 	bmp->draw ( pContext, bBox, CPoint() );
 }
 //============================================================================================================
 //	Klasse GCircle:
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-void GCircle::render ( CDrawContext *cc, int renderRadius ) {
+void GCircle::draw ( CDrawContext *cc, int renderRadius ) {
 	cc->setFillColor (color);
 	VSTGUI::CRect tmp = bBox;
 	int d = radius - renderRadius;

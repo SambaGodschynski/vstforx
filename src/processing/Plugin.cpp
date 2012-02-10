@@ -1,6 +1,6 @@
-#include "PlugNode.h"
+#include "Plugin.h"
 #include "OS_Specific/os_processing.h"
-#include "plugNodes/VSTPlugNode2x.h"
+#include "pluginTypes/VSTPlugin2x.h"
 #include "com/One4All.h"
 #include <boost/filesystem.hpp>
 

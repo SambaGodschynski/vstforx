@@ -43,7 +43,7 @@ void ProcessorNode::processNode( Processor::Int numSamples ) {
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
 ProcessAdapterNode::ProcessAdapterNode(ProcessAdapter * processAdapter) {
-	adapter = processAdapter;
+	parent = processAdapter;
 }
 //------------------------------------------------------------------------------------------------------------
 ProcessAdapterNode::~ProcessAdapterNode() {}

@@ -484,11 +484,11 @@
 						Name="processing"
 						>
 						<File
-							RelativePath="..\..\src\OS_Specific\windows\processing\OS_VSTPlugNode2x.cpp"
+							RelativePath="..\..\src\OS_Specific\windows\processing\OS_VSTPlugin2x.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\..\src\OS_Specific\windows\processing\OS_VSTPlugNode2x.h"
+							RelativePath="..\..\src\OS_Specific\windows\processing\OS_VSTPlugin2x.h"
 							>
 						</File>
 					</Filter>
@@ -557,6 +557,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\src\processing\Plugin.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\processing\PObject.h"
 						>
 					</File>
@@ -589,30 +593,22 @@
 						</File>
 					</Filter>
 					<Filter
-						Name="plugNodes"
+						Name="pluginTypes"
 						>
 						<File
-							RelativePath="..\..\src\processing\plugNodes\NullAEffect.cpp"
+							RelativePath="..\..\src\processing\pluginTypes\NullAEffect.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\..\src\processing\plugNodes\NullAEffect.h"
+							RelativePath="..\..\src\processing\pluginTypes\NullAEffect.h"
 							>
 						</File>
 						<File
-							RelativePath="..\..\src\processing\PlugInfo.h"
+							RelativePath="..\..\src\processing\pluginTypes\VSTPlugin2x.cpp"
 							>
 						</File>
 						<File
-							RelativePath="..\..\src\processing\PlugNode.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\PlugNode.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\plugNodes\VSTPlugNode2x.cpp"
+							RelativePath="..\..\src\processing\pluginTypes\VSTPlugin2x.h"
 							>
 						</File>
 					</Filter>

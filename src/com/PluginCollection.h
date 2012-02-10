@@ -13,7 +13,7 @@
 #include "sambag/com/FileSystem.hpp"
 #include "sambag/cpsqlite/DataBase.hpp"
 #include "processing/PlugInfo.h"
-#include "processing/PlugNode.h"
+#include "processing/Plugin.h"
 #include "boost/tuple/tuple.hpp"
 #include "boost/tuple/tuple_comparison.hpp"
 

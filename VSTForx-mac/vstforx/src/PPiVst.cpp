@@ -197,16 +197,16 @@ void PPIVst::close() {
 	graph.reset();
 }
 //---------------------------------------------------------------------------------------
-void PPIVst::processReplacing(float ** inputs, float ** outputs, VstInt32 sampleFrames) {
+void PPIVst::processReplacing(float ** inputs, float ** outputs, VstInt32 numSamples) {
 	if ( !graph ) return;
 	TRY_TO_LOCK_TIMED( graph->getProcessingLock() );
-	Frame fr ( inputs, sampleFrames );
+	Frames fr ( inputs, numSamples );
 	if ( !graph->getEndNode()->isActive() ){
-		fr.setZero ( sampleFrames );
-		fr.getBlock ( outputs, sampleFrames );
+		fr.setZero ( numSamples );
+		fr.getBlock ( outputs, numSamples );
 	} 
-	graph->pushAndCopy ( &fr, sampleFrames );
-	graph->processGraph( outputs, sampleFrames  );
+	graph->pushAndCopy ( &fr, numSamples );
+	graph->processGraph( outputs, numSamples  );
 }
 //---------------------------------------------------------------------------------------
 void PPIVst::setParameter(VstInt32 index, float value) {

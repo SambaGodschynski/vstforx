@@ -7,7 +7,7 @@
 #include <list>
 #include <vector>
 #include "SetupDialog.h"
-#include "processing/PlugNode.h"
+#include "processing/Plugin.h"
 
 namespace ppiGui{
 //============================================================================================================

@@ -3,7 +3,7 @@
 
 #include "com/one4All.h"
 #include "processing/processing.h"
-#include "processing/PlugNode.h"
+#include "processing/Plugin.h"
 #include "processing/parameter/parameter.h"
 #include "boost/unordered_map.hpp"
 #include "OS_Specific/os_processing.h"

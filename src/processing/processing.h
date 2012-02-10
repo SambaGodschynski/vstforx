@@ -487,12 +487,12 @@ private:
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){
 		ar & boost::serialization::base_object< ProcessorNode > ( *this );
-		ar & adapter;
+		ar & parent;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	ProcessAdapterNode() {}
 	//--------------------------------------------------------------------------------------------------------
-	ProcessAdapter *adapter;
+	ProcessAdapter *parent;
 	//--------------------------------------------------------------------------------------------------------
 	ProcessAdapterNode( ProcessAdapter *processAdapter );
 public:
@@ -505,13 +505,13 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~ProcessAdapterNode();
 	//--------------------------------------------------------------------------------------------------------
-	virtual size_t getProcessDelay() const { return adapter->getProcessDelay(); }
+	virtual size_t getProcessDelay() const { return parent->getProcessDelay(); }
 	//--------------------------------------------------------------------------------------------------------
-	ProcessAdapter * getAdatper(){ return adapter; }
+	ProcessAdapter * getAdatper(){ return parent; }
 	//--------------------------------------------------------------------------------------------------------
 	virtual void processFrames ( Frames*, Processor::Int numSamples ) {}
 	//--------------------------------------------------------------------------------------------------------
-	virtual void processNode( Processor::Int numSamples ) { adapter->processAdapter( numSamples ); }
+	virtual void processNode( Processor::Int numSamples ) { parent->processAdapter( numSamples ); }
 }; //class ProcessAdapterNode
 } // namespace Processing
 
