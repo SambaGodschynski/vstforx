@@ -9,10 +9,10 @@ namespace processing{
 enum { ALL_CHANNEL = 16 };
 	
 //============================================================================================================
-// PlugNode
+// Plugin
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-PlugNode::PlugNode ( IHostInfo *hostInfo, const string &location, size_t numInputs , size_t numOutputs ) :
+Plugin::Plugin ( IHostInfo *hostInfo, const string &location, size_t numInputs , size_t numOutputs ) :
 ProcessAdapter ( hostInfo, numInputs, numOutputs ),
 editorPosX ( processing::parameter::Parameter::create() ),
 editorPosY ( processing::parameter::Parameter::create() ),
@@ -28,16 +28,16 @@ editorOpen ( processing::parameter::Parameter::create() )
 	*editorPosY = 0.72f; // 0.5 = 0 SCREEN_Y
 	// register editor pos parameter in plugin
 	parameter::Parameter::ParameterListenerFunction xC = boost::bind( 
-		&PlugNode::paramEditorPosXChanged, this, _1, _2 
+		&Plugin::paramEditorPosXChanged, this, _1, _2 
 	);
 	parameter::Parameter::ParameterListenerFunction yC = boost::bind( 
-		&PlugNode::paramEditorPosYChanged, this, _1, _2 
+		&Plugin::paramEditorPosYChanged, this, _1, _2 
 	);
 	Parameter::ParameterListenerFunction oC = boost::bind( 
-		&PlugNode::paramEditorOpenChanged, this, _1, _2 
+		&Plugin::paramEditorOpenChanged, this, _1, _2 
 	);
 	Parameter::ParameterListenerFunction dC = boost::bind( 
-		&PlugNode::paramEditorOpenDisplayChanged, this, _1, _2 
+		&Plugin::paramEditorOpenDisplayChanged, this, _1, _2 
 	);
 	editorPosX->addValueChangedListenerF( xC );
 	editorPosY->addValueChangedListenerF( yC );
@@ -46,16 +46,16 @@ editorOpen ( processing::parameter::Parameter::create() )
 	*editorOpen = 0.0f;
 }
 //------------------------------------------------------------------------------------------------------------
-PlugNode::~PlugNode() {
+Plugin::~Plugin() {
 	// unregister editor pos parameter in plugin
 	Parameter::ParameterListenerFunction xC = boost::bind( 
-		&PlugNode::paramEditorPosXChanged, this, _1, _2 
+		&Plugin::paramEditorPosXChanged, this, _1, _2 
 	);
 	Parameter::ParameterListenerFunction yC = boost::bind( 
-		&PlugNode::paramEditorPosYChanged, this, _1, _2 
+		&Plugin::paramEditorPosYChanged, this, _1, _2 
 	);
 	Parameter::ParameterListenerFunction oC = boost::bind( 
-		&PlugNode::paramEditorOpenChanged, this, _1, _2 
+		&Plugin::paramEditorOpenChanged, this, _1, _2 
 	);
 	editorPosX->removeValueChangedListenerF( xC );
 	editorPosY->removeValueChangedListenerF( yC );
@@ -66,14 +66,14 @@ PlugNode::~PlugNode() {
 // erzeugt plugin.
 //============================================================================================================
 //--------------------------------------------------------------------------------------------------------
-PlugNode::Ptr PluginFactory::createVST2xPlugNode ( IHostInfo *hostInfo, const string &filename ) {
-	return VSTPlugNode::create( hostInfo, filename );
+Plugin::Ptr PluginFactory::createVST2xPlugNode ( IHostInfo *hostInfo, const string &filename ) {
+	return VSTPlugin::create( hostInfo, filename );
 	
 	// ... weitere Plugs TODO: VST3.x
 
 }
 //------------------------------------------------------------------------------------------------------------
-PlugNode::Ptr PluginFactory::createPlugNode (  IHostInfo *hostInfo, const string &filename ) {
+Plugin::Ptr PluginFactory::createPlugNode (  IHostInfo *hostInfo, const string &filename ) {
 	return createVST2xPlugNode ( hostInfo, filename ); 
 	/*
 	switch ( pI.pluginType ) {

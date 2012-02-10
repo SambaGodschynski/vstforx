@@ -80,7 +80,7 @@ private:
 	ULONG_PTR gdiplusToken; 
 public:
 	//---------------------------------------------------------------------------------------
-	virtual void processReplacing(float ** inputs, float ** outputs, VstInt32 sampleFrames);
+	virtual void processReplacing(float ** inputs, float ** outputs, VstInt32 numSamples);
 	//---------------------------------------------------------------------------------------
 	virtual void setParameter(VstInt32 index, float value);
     //---------------------------------------------------------------------------------------

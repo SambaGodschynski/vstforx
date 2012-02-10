@@ -38,12 +38,12 @@ AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, fl
 }
 //------------------------------------------------------------------------------------------------------------
 void NullAEffect::_aEffectProcessProc(
-AEffect* effect, float** inputs, float** outputs, VstInt32 sampleFrames)
+AEffect* effect, float** inputs, float** outputs, VstInt32 numSamples)
 {
 }
 //------------------------------------------------------------------------------------------------------------
 void NullAEffect::_aEffectProcessDoubleProc(
-AEffect* effect, double** inputs, double** outputs, VstInt32 sampleFrames)
+AEffect* effect, double** inputs, double** outputs, VstInt32 numSamples)
 {
 }
 //------------------------------------------------------------------------------------------------------------

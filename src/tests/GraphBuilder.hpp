@@ -15,7 +15,7 @@
 	CreateAdapter<Adapter>		=> erzeugt ProcessAdapter
 	
 	bsp.:
-	CreateSerial< Create<VolumeAdapter>, 3 > creator(graph, entryNode, exitNode);
+	CreateSerial< Create<Volume>, 3 > creator(graph, entryNode, exitNode);
 
 */
 

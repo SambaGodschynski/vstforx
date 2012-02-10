@@ -220,9 +220,9 @@ private:
 public:
 	//--------------------------------------------------------------------------------------------------------
 	// liefert Plugin Ptr zu id.
-	processing::PlugNode::Ptr getPlugNode ( processing::IHostInfo *hostInfo, const PluginIdType &location );
+	processing::Plugin::Ptr getPlugNode ( processing::IHostInfo *hostInfo, const PluginIdType &location );
 	//--------------------------------------------------------------------------------------------------------
-	processing::PlugNode::Ptr restorePlugNode ( processing::IHostInfo *hostInfo, processing::PluginInfo &pI );
+	processing::Plugin::Ptr restorePlugNode ( processing::IHostInfo *hostInfo, processing::PluginInfo &pI );
 	//--------------------------------------------------------------------------------------------------------
 	processing::PluginInfo restorePluginInfo ( processing::IHostInfo *hostInfo, processing::PluginInfo &pI );
 	//--------------------------------------------------------------------------------------------------------

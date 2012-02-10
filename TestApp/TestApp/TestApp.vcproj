@@ -280,10 +280,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\com\Frame.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\src\com\Log.cpp"
 					>
 				</File>
@@ -341,6 +337,14 @@
 				</File>
 				<File
 					RelativePath="..\..\src\processing\dspTools.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\Frames.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\Frames.h"
 					>
 				</File>
 				<File
@@ -407,10 +411,6 @@
 			<Filter
 				Name="VSTGUI"
 				>
-				<File
-					RelativePath="..\..\..\..\vstsdk2.4\vstgui.sf\vstgui\cfileselector.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="VSTSDK"

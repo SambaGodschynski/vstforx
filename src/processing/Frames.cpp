@@ -1,11 +1,11 @@
-#include "Frame.h"
+#include "Frames.h"
 #include "processing/processing.h"
 
 namespace processing {
 //============================================================================================================
-// Klasse Frame:
+// Klasse Frames:
 //============================================================================================================
 ONLY_FOR_FORX_TEST(
-	size_t Frame::num_copyintos = 0;
+	size_t Frames::num_copyintos = 0;
 )
 } //com

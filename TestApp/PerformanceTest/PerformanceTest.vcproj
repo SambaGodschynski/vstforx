@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\cppunit-1.12.1\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\boost_1_42_0&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\..\sqlite\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\\vstgui.sf\vstgui&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\sambag\src&quot;;&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\cppunit-1.12.1\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\boost_1_42_0&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\..\sqlite\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\\vstgui.sf\vstgui&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -116,7 +116,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\cppunit-1.12.1\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\boost_1_42_0&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\..\sqlite\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\\vstgui.sf\vstgui&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\sambag\src&quot;;&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\cppunit-1.12.1\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\boost_1_42_0&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\..\sqlite\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\\vstgui.sf\vstgui&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -210,10 +210,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\com\Frame.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\src\com\Log.cpp"
 					>
 				</File>
@@ -270,6 +266,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\src\processing\MidiEventProcessor.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\MidiEventProcessor.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\src\processing\parameter\parameter.cpp"
 					>
 				</File>
@@ -301,10 +305,6 @@
 			<Filter
 				Name="VSTGUI"
 				>
-				<File
-					RelativePath="..\..\..\..\vstsdk2.4\vstgui.sf\vstgui\cfileselector.cpp"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="VSTSDK"

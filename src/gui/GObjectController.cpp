@@ -28,7 +28,7 @@ namespace {
 								    size_t num_entries );
 	//------------------------------------------------------------------------------------------------------------
 	struct PlugProgram_Tag {
-		typedef PlugNode::Ptr TagType;
+		typedef Plugin::Ptr TagType;
 		enum { MAX_ENTRIES = 100 };
 		static string getPrefix() { return "program"; }
 	};
@@ -624,12 +624,12 @@ void GIOConnectionController::unregisterObject ( GObject::Ptr gObj, PObject::Ptr
 //------------------------------------------------------------------------------------------------------------
 void GPluginController::getMenuEntryList( GObject::Ptr obj, ppiGui::menu::MenuEntryList &mL ) {
 	frntCtrl.getController(FrontController::CTRL_GPROCESSOR)->getMenuEntryList (obj, mL);
-	PlugNode::Ptr plug = frntCtrl.getViewRelations().get<PlugNode> ( obj );
+	Plugin::Ptr plug = frntCtrl.getViewRelations().get<Plugin> ( obj );
 	// programs
 	getPluginMenu(plug, obj, mL);
 }
 //------------------------------------------------------------------------------------------------------------
-void GPluginController::getPluginMenu ( PlugNode::Ptr plug,
+void GPluginController::getPluginMenu ( Plugin::Ptr plug,
 										GObject::Ptr obj, 
 										ppiGui::menu::MenuEntryList &mL ) 
 {
@@ -679,7 +679,7 @@ void GPluginController::registerObject( GObject::Ptr vObj, processing::PObject::
 	);
 	// new VSTPlugView
 	// TODO: VSTPlugview > oberklasse == PlugView
-	VSTPlugNode::Ptr plug = frntCtrl.getViewRelations().get<VSTPlugNode> ( gPlug );
+	VSTPlugin::Ptr plug = frntCtrl.getViewRelations().get<VSTPlugin> ( gPlug );
 	gPlug->setName ( plug->getPlugName() ); // nochmal name holen; koennte fehlermeldung enthalten
 	// checken ob plug editor hatt
 	//######################!!! ENDET HIER WENN KEIN EDITOR !!!
@@ -719,11 +719,11 @@ void GPluginController::eventHandler(void *src, const ppiGui::OnClose &ev) {
 		btn->setObjectDirty();
 	}
 	// get related plugNode
-	PlugNode::Ptr plug = frntCtrl.getViewRelations().get<PlugNode>( gPlug );
+	Plugin::Ptr plug = frntCtrl.getViewRelations().get<Plugin>( gPlug );
 	if (!plug) return;
 	// notify parameter skipping listener function:
 	Parameter::ParameterListenerFunction oC = boost::bind( 
-		&PlugNode::paramEditorOpenChanged, plug.get(), _1, _2 
+		&Plugin::paramEditorOpenChanged, plug.get(), _1, _2 
 	);
 	// search whether keepOpenState contains plug
 	PlugNodeList::iterator pIt = com::find<PlugNodeList> ( keepOpenState, plug );
@@ -733,7 +733,7 @@ void GPluginController::eventHandler(void *src, const ppiGui::OnClose &ev) {
 }
 //------------------------------------------------------------------------------------------------------------
 void GPluginController::eventHandler(void *src, const EditorOpenParameterChanged &ev) {
-	PlugNode::Ptr node = boost::shared_dynamic_cast<PlugNode, PObject> ( ((PObject*)src)->getPtr() );
+	Plugin::Ptr node = boost::shared_dynamic_cast<Plugin, PObject> ( ((PObject*)src)->getPtr() );
 	if (!node) return;
 	// get GVSTPlugNode
 	list<GVSTPlugNode::Ptr> l;
@@ -767,7 +767,7 @@ void GPluginController::eventHandler(void *src, const ppiGui::OnDestroy<GObject>
 	GObject::Ptr gO = ev.src->getPtr();
 	GVSTPlugNode::Ptr gPlug = boost::shared_dynamic_cast<GVSTPlugNode, GObject>( gO );
 	if ( !gPlug ) return;
-	PlugNode::Ptr plug = frntCtrl.getViewRelations().get<PlugNode>( gPlug );
+	Plugin::Ptr plug = frntCtrl.getViewRelations().get<Plugin>( gPlug );
 	if ( !plug ) return;
 	//
 	VSTPlugViewMap::left_map::iterator it = vstPlugViewMap.left.find ( gPlug );
@@ -792,7 +792,7 @@ void GPluginController::eventHandler(void *src, const ppiGui::OnMoving &ev) {
 	VSTPlugView::Ptr view = ( (VSTPlugView*)src )->getPtr();
 	VSTPlugViewMap::right_map::iterator it = vstPlugViewMap.right.find ( view );
 	if ( it == vstPlugViewMap.right.end() ) return;
-	PlugNode::Ptr plug = frntCtrl.getViewRelations().get<PlugNode>( it->second );
+	Plugin::Ptr plug = frntCtrl.getViewRelations().get<Plugin>( it->second );
 	if ( !plug ) return;
 	pair<float, float> fp = screenCoord2Float ( ev.newPos );
 	plug->getEditorPosX()->setValue(fp.first);
@@ -818,7 +818,7 @@ void GPluginController::eventHandler(void *src, const ppiGui::EditorPositionEven
 //------------------------------------------------------------------------------------------------------------
 void GPluginController::unregisterObject ( GObject::Ptr gObj, PObject::Ptr pObj ) { 
 	GVSTPlugNode::Ptr gPlug = boost::shared_dynamic_cast<GVSTPlugNode, GObject> (gObj);
-	PlugNode::Ptr plug = boost::shared_dynamic_cast<PlugNode, PObject> (pObj);
+	Plugin::Ptr plug = boost::shared_dynamic_cast<Plugin, PObject> (pObj);
 	// unregister listener
 	gPlug->EventSender< OnDestroy<GObject> >::removeEventListener(this);
 	plug->EventSender<EditorPositionEvent>::removeEventListener (this);
@@ -843,11 +843,11 @@ void GPluginController::openEdWindow ( const GVSTPlugNode::Ptr &gPlug ) {
 	VSTPlugView::Ptr view = it->second;
 	if ( view->isOpen() ) return;
 	// get related plugNode
-	PlugNode::Ptr plug = frntCtrl.getViewRelations().get<PlugNode>( gPlug );
+	Plugin::Ptr plug = frntCtrl.getViewRelations().get<Plugin>( gPlug );
 	if (!plug) return;
 	// notify parameter skipping listener function:
 	Parameter::ParameterListenerFunction oC = boost::bind( 
-		&PlugNode::paramEditorOpenChanged, plug.get(), _1, _2 
+		&Plugin::paramEditorOpenChanged, plug.get(), _1, _2 
 	);
 	plug->getEditorOpen()->setValue ( 1.0f, oC ); 
 	// set (e) button

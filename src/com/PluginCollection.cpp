@@ -263,13 +263,13 @@ string PluginCollection::analyzeLog() {
 	return str;
 }
 //------------------------------------------------------------------------------------------------------------
-processing::PlugNode::Ptr PluginCollection::getPlugNode ( processing::IHostInfo *hostInfo, 
+processing::Plugin::Ptr PluginCollection::getPlugNode ( processing::IHostInfo *hostInfo, 
 														  const PluginCollection::PluginIdType &location ) 
 {
 	using namespace processing;
 	PluginInfo pI = getPlugInfo ( location );
 	// plugin not in db => return NULL
-	if ( !pI.isValid() ) return processing::PlugNode::Ptr();
+	if ( !pI.isValid() ) return processing::Plugin::Ptr();
 	return PluginFactory::createPlugNode ( hostInfo, pI.location ); 
 }
 //------------------------------------------------------------------------------------------------------------
@@ -289,12 +289,12 @@ processing::PluginInfo PluginCollection::restorePluginInfo ( processing::IHostIn
 	return info;
 }
 //------------------------------------------------------------------------------------------------------------
-processing::PlugNode::Ptr PluginCollection::restorePlugNode ( processing::IHostInfo *hostInfo, 
+processing::Plugin::Ptr PluginCollection::restorePlugNode ( processing::IHostInfo *hostInfo, 
 															 processing::PluginInfo &info ) 
 {
 	using namespace processing;
 	PluginInfo pI = restorePluginInfo ( hostInfo, info );
-	if ( !pI.isValid() ) return processing::PlugNode::Ptr(); // NULL
+	if ( !pI.isValid() ) return processing::Plugin::Ptr(); // NULL
 	return PluginFactory::createPlugNode ( hostInfo, info.location ); 
 }
 //------------------------------------------------------------------------------------------------------------
@@ -320,7 +320,7 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, processing::
 	}
 	TOLOG ("peek " + out_info.location );
 	appendLog ( out_info.location );		   // eintrag ins scan log	
-	PlugNode::Ptr n = PluginFactory::createPlugNode ( hostinfo, out_info.location );
+	Plugin::Ptr n = PluginFactory::createPlugNode ( hostinfo, out_info.location );
 	if ( !n ) { // loading failed
 		appendLog ( "?" + out_info.location );
 		                                   // nochmal ins log damit nach einem evntl. absturz

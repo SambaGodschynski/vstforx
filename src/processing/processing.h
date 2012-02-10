@@ -20,7 +20,7 @@
 #include "PObject.h"
 #include "IVstEventProcessor.h"
 #include "BglGraph.h"
-#include "Frame.h"
+#include "Frames.h"
 
 //============================================================================================================
 //	Vorwaerts Deklarationen
@@ -30,7 +30,7 @@ namespace processing {
 	// Die Klasse Graph
 	class Graph;
 	//--------------------------------------------------------------------------------------------------------
-	//Implementiert die processFrame Methode indem es die processFrame Methode
+	//Implementiert die processFrames Methode indem es die processFrames Methode
 	//des im Konstruktor uebergebenen Processor Objektes aufruft.
 	class ProcessAdapterNode;
 } // namespace processing
@@ -38,21 +38,21 @@ namespace processing {
 namespace processing {
 //============================================================================================================
 // Schnittstelle: Processor.
-// Alle Unterklassen muessen processFrame implementieren.
-// Diese Methode bearbeitet Die Audio Daten die im Frame gelagert sind.
+// Alle Unterklassen muessen processFrames implementieren.
+// Diese Methode bearbeitet Die Audio Daten die im Frames gelagert sind.
 //============================================================================================================
 class Processor {
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef unsigned int Int; 
 	//--------------------------------------------------------------------------------------------------------
-	virtual void processFrame(Frame * frame, Int sampleFrames ) = 0;
+	virtual void processFrames(Frames * frames, Int numSamples ) = 0;
 
 }; //class Processor
 
 //============================================================================================================
 //Klasse: ProcessorNode.
-//Oberklasse fuer alle Knoten die processFrame() implementieren.
+//Oberklasse fuer alle Knoten die processFrames() implementieren.
 //Kann n Node Vorgaenger und m Node Nachfolger aufnehmen.
 //============================================================================================================
 class ProcessorNode : public Processor, public PObject {
@@ -68,7 +68,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef vector<ProcessorNode*> Container;
 	//--------------------------------------------------------------------------------------------------------
-	typedef list<ProcessorNode*> Parents;   // wird in DFSVisitor bzw. über updateGraph ermittelt
+	typedef list<ProcessorNode*> Parents;   // wird in DFSVisitor bzw. ï¿½ber updateGraph ermittelt
 private:
 	//--------------------------------------------------------------------------------------------------------
 	Parents parents;
@@ -83,8 +83,8 @@ private:
 	template < typename Archive >
 	void save ( Archive &ar, const unsigned int version ) const {
 		ar << boost::serialization::base_object<PObject>(*this);
-		// ar << parents;  wird in DFSVisitor bzw. über updateGraph ermittelt
-		// ar << activeChildren; wird in DFSVisitor bzw. über updateGraph ermittelt
+		// ar << parents;  wird in DFSVisitor bzw. ï¿½ber updateGraph ermittelt
+		// ar << activeChildren; wird in DFSVisitor bzw. ï¿½ber updateGraph ermittelt
 		size_t numChildFrames = frameContainer.size();
 		ar << numChildFrames;
 	}
@@ -93,7 +93,7 @@ private:
 	void load ( Archive &ar, const unsigned int version ) {
 		ar >> boost::serialization::base_object<PObject>(*this);
 		// ar >> parents;
-		// ar >> activeChildren; wird in DFSVisitor bzw. über updateGraph ermittelt
+		// ar >> activeChildren; wird in DFSVisitor bzw. ï¿½ber updateGraph ermittelt
 		size_t numChildFrames;
 		ar >> numChildFrames;
 		prepareFrameContainer( numChildFrames );
@@ -105,7 +105,7 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	size_t activeChildren; //anzahl der activen Knoten Nachfolger wird in DFSVisitor bzw. ermittelt
 	//--------------------------------------------------------------------------------------------------------
-	Frame *tmpFrame; // benutzt in processNode
+	Frames *tmpFrames; // benutzt in processNode
 	//--------------------------------------------------------------------------------------------------------
 	size_t delay;
 	//--------------------------------------------------------------------------------------------------------
@@ -114,22 +114,22 @@ private:
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	//Jeder Knoten hatt ein ergebniss Stack. Die Adresse eines errechneten Frames wird hier gelagert.
-	//Hatt ein Knoten mehr als ein Nachfolger so muss das errechnete Frame kopiert und auf den Stack gelegt werden.
+	//Hatt ein Knoten mehr als ein Nachfolger so muss das errechnete Frames kopiert und auf den Stack gelegt werden.
 	//Wird ein Knoten aufgefordert die Adresse eines Frames zu liefern so wird diese vom Stack geholt.
-	typedef stack<Frame*> FrameStack;
+	typedef stack<Frames*> FrameStack;
 	FrameStack frameStack; //< hier lagern frames zum austausch
 	//--------------------------------------------------------------------------------------------------------
 	// Hier lagern alle Frames die vom ProcesserNode 
 	// erzeugt werden. Dies geschieht wenn eine neue
 	// abgehende Verbindung (child) hinzugefuegt wird
 	// und mehr als eine verbindung existiert.
-	typedef list<Frame::Ptr> FrameContainer;
+	typedef list<Frames::Ptr> FrameContainer;
 	FrameContainer frameContainer;	//< ProcessorNode besitzt diese frames
 	//--------------------------------------------------------------------------------------------------------
-	Frame * mixInputsToFrame( Processor::Int sampleFrames ) {
+	Frames * mixInputsToFrames( Processor::Int numSamples ) {
 		if ( parents.empty() ) {
-			tmpFrame->setZero( sampleFrames );
-			return tmpFrame;
+			tmpFrames->setZero( numSamples );
+			return tmpFrames;
 		}
 		ProcessorNode *n;
 		if ( parents.size() == 1 ) { // sonderzug nach pankow:
@@ -141,13 +141,13 @@ protected:
 		for ( ; it!=parents.end(); ++it ) {
 			n = *it;
 			if ( !n->isActive() ) continue;
-			stream.addFrame ( n->popFrame(), sampleFrames, getNodeDelay() - n->getNodeDelay() );
+			stream.addFrame ( n->popFrame(), numSamples, getNodeDelay() - n->getNodeDelay() );
 		}
-		stream.flush ( sampleFrames, tmpFrame->getData() );
-		return tmpFrame;
+		stream.flush ( numSamples, tmpFrames->getData() );
+		return tmpFrames;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	virtual void processNode( Processor::Int sampleFrames );
+	virtual void processNode( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	ProcessorNode ( const string &name="unnamed" );
 public:
@@ -162,7 +162,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	size_t getNumPreparedChildren() { return frameContainer.size(); }
 	//--------------------------------------------------------------------------------------------------------
-	virtual void processFrame(Frame * frame, Processor::Int sampleFrames) = 0;
+	virtual void processFrames(Frames * frames, Processor::Int numSamples) = 0;
 	//--------------------------------------------------------------------------------------------------------
 	int getFrameStackSize() const { return frameStack.size(); }
 	//--------------------------------------------------------------------------------------------------------
@@ -177,29 +177,29 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~ProcessorNode();
 	//--------------------------------------------------------------------------------------------------------
-	Frame * popFrame() {
+	Frames * popFrame() {
 		if ( getFrameStackSize() <= 0 ) 
 			throw com::ppiError::StackUnderflow(
 			   "StackUnderflow", __FILE__, __LINE__ );
-		Frame *fr = frameStack.top();
+		Frames *fr = frameStack.top();
 		frameStack.pop();
 		return fr;
 	}
 	
 	//--------------------------------------------------------------------------------------------------------
-	// pusht frame in den Ergebniss Stack.
-	// hatt ein Knoten mehr als 1 Kind Knoten werden Frames kopiert
-	// und in den Stack gepusht.
-	inline void pushAndCopy( Frame * frame, Processor::Int sampleFrames ) {
+	// lagert frames in den Ergebniss Stack.
+	// hatt ein Knoten mehr als 1 Kind-Knoten werden Frames kopiert
+	// und in den Stack gelagert.
+	inline void pushAndCopy( Frames * frames, Processor::Int numSamples ) {
 		if ( isEndNode() ){
-			frameStack.push (frame);
+			frameStack.push (frames);
 			return;
 		}
 		if ( getNumActiveChildren() == 0 ) return;
-		frameStack.push (frame);
+		frameStack.push (frames);
 		FrameContainer::iterator it = frameContainer.begin();
 		for ( int i=0; i<getNumActiveChildren() - 1; i++ ) { // kopiere weitere frames in stack
-			(*it)->copyIntoFrom ( *frame, sampleFrames );
+			(*it)->copyIntoFrom ( *frames, numSamples );
 			frameStack.push ( (*it++).get() );
 		}
 	}
@@ -251,7 +251,7 @@ public:
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	void processFrame ( Frame *fr, Processor::Int sampleFrames );
+	void processFrames ( Frames *fr, Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	~NOPNode(){}
 };
@@ -298,7 +298,7 @@ private:
 		ar & boost::serialization::base_object< NOPNode > ( *this );
 	}
 	//--------------------------------------------------------------------------------------------------------
-	virtual void processNode( Processor::Int sampleFrames);
+	virtual void processNode( Processor::Int numSamples);
 	//--------------------------------------------------------------------------------------------------------
 	EndNode() : NOPNode ("endNode") {}
 public:
@@ -349,7 +349,7 @@ public:
 		}
 		// Outputnodes haben keiene processNode() meth. da sie die 
 		// frames ueber den adapter erhalten.
-		virtual void processNode( Processor::Int sampleFrames ) {};
+		virtual void processNode( Processor::Int numSamples ) {};
 		virtual ~OutputNode(){}
 		ProcessAdapter::Ptr getProcessAdapter() { 
 			ProcessAdapter::Ptr p = 
@@ -389,7 +389,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef vector<InputNode::Ptr> InputNodes;
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<Frame*> InputFrames;
+	typedef vector<Frames*> InputFrames;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	template < typename Archive >
@@ -434,12 +434,12 @@ protected:
 	// fuegt neuen ProcessAdapterNode hinzu und liefert Zeiger.
 	InputNode::Ptr createInputNode( const string &name = "unnamed" );
 	//--------------------------------------------------------------------------------------------------------
-	void processAdapter( Processor::Int sampleFrames ) {
-		_processAdapter ( sampleFrames );
+	void processAdapter( Processor::Int numSamples ) {
+		_processAdapter ( numSamples );
 	}	
 public:
 	//--------------------------------------------------------------------------------------------------------
-	virtual void _processAdapter ( Processor::Int sampleFrames ) = 0;
+	virtual void _processAdapter ( Processor::Int numSamples ) = 0;
 	//--------------------------------------------------------------------------------------------------------
 	IHostInfo * getHostInfo() const { return hostInfo; } 
 	//--------------------------------------------------------------------------------------------------------
@@ -471,7 +471,7 @@ public:
 }; //class ProcessAdapter
 //============================================================================================================
 //Klasse: ProcessAdapterNode.
-//Implementiert die processFrame Methode indem es die processFrame Methode
+//Implementiert die processFrames Methode indem es die processFrames Methode
 //des im Konstruktor uebergebenen ProcessAdapter Objektes aufruft.
 //============================================================================================================
 class ProcessAdapterNode : public ProcessorNode, public Serializable {
@@ -509,9 +509,9 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	ProcessAdapter * getAdatper(){ return adapter; }
 	//--------------------------------------------------------------------------------------------------------
-	virtual void processFrame ( Frame*, Processor::Int sampleFrames ) {}
+	virtual void processFrames ( Frames*, Processor::Int numSamples ) {}
 	//--------------------------------------------------------------------------------------------------------
-	virtual void processNode( Processor::Int sampleFrames ) { adapter->processAdapter( sampleFrames ); }
+	virtual void processNode( Processor::Int numSamples ) { adapter->processAdapter( numSamples ); }
 }; //class ProcessAdapterNode
 } // namespace Processing
 

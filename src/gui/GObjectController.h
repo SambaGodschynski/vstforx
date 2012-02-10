@@ -396,7 +396,7 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::bimap<U, V> VSTPlugViewMap;
 	//--------------------------------------------------------------------------------------------------------
-	typedef list<processing::PlugNode::Ptr> PlugNodeList;
+	typedef list<processing::Plugin::Ptr> PlugNodeList;
 	//--------------------------------------------------------------------------------------------------------
 	PlugNodeList keepOpenState; // keeps openParameter on 1.0f when closing forced
 	//--------------------------------------------------------------------------------------------------------
@@ -406,7 +406,7 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	void closeEdWindow ( const GVSTPlugNode::Ptr &node ); 
 	//--------------------------------------------------------------------------------------------------------
-	void getPluginMenu (PlugNode::Ptr plug, GObject::Ptr obj, menu::MenuEntryList &mL );
+	void getPluginMenu (Plugin::Ptr plug, GObject::Ptr obj, menu::MenuEntryList &mL );
 public:
 	//--------------------------------------------------------------------------------------------------------
 	void eventHandler ( void *src, const OnMoving &ev );

@@ -46,9 +46,9 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	VSTPlugView() {}
 	//--------------------------------------------------------------------------------------------------------
-	VSTPlugView ( PpiEditor *ed, processing::VSTPlugNode::Ptr vstPlugNode );
+	VSTPlugView ( PpiEditor *ed, processing::VSTPlugin::Ptr vstPlugNode );
 	//--------------------------------------------------------------------------------------------------------
-	processing::VSTPlugNode::Ptr vstPlugNode;
+	processing::VSTPlugin::Ptr vstPlugNode;
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	boost::weak_ptr<VSTPlugView> self;
@@ -59,7 +59,7 @@ public:
 		return win->isOpen();
 	}
 	//--------------------------------------------------------------------------------------------------------
-	static Ptr create ( PpiEditor *ed, processing::VSTPlugNode::Ptr vstPlugNode ); 
+	static Ptr create ( PpiEditor *ed, processing::VSTPlugin::Ptr vstPlugNode ); 
 	//--------------------------------------------------------------------------------------------------------
 	Ptr getPtr() { return self.lock(); }
 	//--------------------------------------------------------------------------------------------------------

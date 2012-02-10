@@ -22,11 +22,11 @@ private:
 	void serialize ( Archive &ar, const unsigned int version ){
 		ar & boost::serialization::base_object< ProcessAdapter > ( *this );
 		if ( Archive::is_loading::value ) {
-			stream = new com::DCStream ( hostInfo->getBlockSize(), _DELAY );
+			stream = new processing::DCStream ( hostInfo->getBlockSize(), _DELAY );
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------
-	com::DCStream *stream;
+	processing::DCStream *stream;
 	//--------------------------------------------------------------------------------------------------------
 	DelayAdapter() : ProcessAdapter() {}
 protected:
@@ -35,7 +35,7 @@ protected:
 		ProcessAdapter( hostInfo, 1, 1 )
 	{
 		setName ("DelayAdapter");
-		stream = new com::DCStream ( hostInfo->getBlockSize(), _DELAY );
+		stream = new processing::DCStream ( hostInfo->getBlockSize(), _DELAY );
 	}
 	//--------------------------------------------------------------------------------------------------------
 	virtual void hostInfoChanged() {
@@ -52,7 +52,7 @@ public:
 	virtual size_t getProcessDelay() const { return stream->getMaxDelay(); }
 	//--------------------------------------------------------------------------------------------------------
 	virtual void _processAdapter( Processor::Int sampleFrames ) {
-		Frame *fr = getInputNode(0)->popFrame();
+		Frames *fr = getInputNode(0)->popFrame();
 		stream->addFrame ( fr, sampleFrames, stream->getMaxDelay() );
 		stream->flush ( sampleFrames, fr->getData() );
 		outputNodes[0]->pushAndCopy( fr, sampleFrames );

@@ -19,9 +19,9 @@
 
 namespace processing {
 //============================================================================================================
-// Klasse Frame:
+// Klasse Frames:
 //============================================================================================================
-class Frame {
+class Frames {
 friend class DCStream;
 public:
 	ONLY_FOR_FORX_TEST( 
@@ -32,7 +32,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef size_t Int;
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<Frame> Ptr;
+	typedef boost::shared_ptr<Frames> Ptr;
 	//--------------------------------------------------------------------------------------------------------
 	static const Int CHANNELS = 2;
 private:
@@ -69,7 +69,7 @@ public:
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------
-	void applySize ( const Frame & f ) {
+	void applySize ( const Frames & f ) {
 		if ( getSize() == f.getSize() ) return;
 		reAlloc ( f.getSize() );
 	}
@@ -92,12 +92,12 @@ public:
 		return &data[channel][0];
 	}
 	//--------------------------------------------------------------------------------------------------------
-	Frame( Int size=0 ) : ___size_(size), externData(false)
+	Frames( Int size=0 ) : ___size_(size), externData(false)
 	{
 		allocData ( ___size_ );
 	}
 	//--------------------------------------------------------------------------------------------------------
-	Frame( const Frame & f ) : ___size_( f.getSize() ), externData(false)
+	Frames( const Frames & f ) : ___size_( f.getSize() ), externData(false)
 	{
 		allocData ( ___size_ );
 		for ( Int i=0; i<CHANNELS; ++i ) {
@@ -105,7 +105,7 @@ public:
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------
-	const Frame & operator = ( const Frame &f ) {
+	const Frames & operator = ( const Frames &f ) {
 		setSize ( f.getSize() );
 		for ( Int i=0; i<CHANNELS; ++i ) {
 			memcpy ( data[i], f.data[i], sizeof (T) * f.getSize() );
@@ -113,11 +113,11 @@ public:
 		return *this;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	Frame( T **data, Int size  ) : ___size_(size), externData(true) {
-		for ( Int i=0; i<CHANNELS; ++i ) Frame::data[i] = data[i];
+	Frames( T **data, Int size  ) : ___size_(size), externData(true) {
+		for ( Int i=0; i<CHANNELS; ++i ) Frames::data[i] = data[i];
 	}
 	//--------------------------------------------------------------------------------------------------------
-	void copyIntoFrom ( const Frame &f, Int sampleFrames  ) {
+	void copyIntoFrom ( const Frames &f, Int numSamples  ) {
 
 		ONLY_FOR_FORX_TEST(num_copyintos++;)
 
@@ -125,40 +125,40 @@ public:
 			reAlloc ( f.getSize() );
 		}
 		for ( Int i=0; i<CHANNELS; ++i ) {
-			memcpy ( data[i], f.data[i], sizeof (T) * sampleFrames );
+			memcpy ( data[i], f.data[i], sizeof (T) * numSamples );
 			// den rest auf 0 setzen
-			memset ( &data[i][sampleFrames], 0, sizeof (T) * ( getSize() - sampleFrames ) );
+			memset ( &data[i][numSamples], 0, sizeof (T) * ( getSize() - numSamples ) );
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------
-	void setZero ( Int sampleFrames ) {
+	void setZero ( Int numSamples ) {
 		for ( Int i=0; i<CHANNELS; ++i ) {
-			memset( &data[i][0], 0, sizeof(T) * sampleFrames );
+			memset( &data[i][0], 0, sizeof(T) * numSamples );
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------
-	void setBlock ( T **_data, Int sampleFrames ) {
+	void setBlock ( T **_data, Int numSamples ) {
 		for ( Int i=0; i<CHANNELS; ++i ) {
-			memcpy ( &data[i][0], _data[i], sizeof(T) * sampleFrames );
+			memcpy ( &data[i][0], _data[i], sizeof(T) * numSamples );
 			// den rest auf 0 setzen
-			memset ( &data[i][sampleFrames], 0, sizeof (T) * ( getSize() - sampleFrames ) );
+			memset ( &data[i][numSamples], 0, sizeof (T) * ( getSize() - numSamples ) );
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------
-	void getBlock ( T **dst, Int sampleFrames ) {
+	void getBlock ( T **dst, Int numSamples ) {
 		for ( Int i=0; i<CHANNELS; ++i ) {
-			memcpy ( dst[i], &data[i][0], sizeof(T) * sampleFrames );
+			memcpy ( dst[i], &data[i][0], sizeof(T) * numSamples );
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------
-	virtual ~Frame() {
+	virtual ~Frames() {
 		if ( externData ) return;
 		if ( getSize()==0 ) return; 
 		for ( Int i=0; i<CHANNELS; ++i ) delete[] data[i];
 	}
 	//--------------------------------------------------------------------------------------------------------
-	Frame & add ( Frame &b, Int sampleFrames ) {
-		for ( Int i=0; i<sampleFrames; ++ i ) {
+	Frames & add ( Frames &b, Int numSamples ) {
+		for ( Int i=0; i<numSamples; ++ i ) {
 			for ( Int j=0; j<CHANNELS; ++j ) {
 				(*this)[j][i]+=b[j][i];
 			}
@@ -166,8 +166,8 @@ public:
 		return *this;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	Frame & mul ( Frame &b, Int sampleFrames ) {
-		for ( Int i=0; i<sampleFrames; ++ i ) {
+	Frames & mul ( Frames &b, Int numSamples ) {
+		for ( Int i=0; i<numSamples; ++ i ) {
 			for ( Int j=0; j<CHANNELS; ++j ) {
 				(*this)[j][i]*=b[j][i];
 			}
@@ -175,8 +175,8 @@ public:
 		return *this;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	Frame & mul ( const T &v, Int sampleFrames ) {
-		for ( Int i=0; i<sampleFrames; ++ i ) {
+	Frames & mul ( const T &v, Int numSamples ) {
+		for ( Int i=0; i<numSamples; ++ i ) {
 			for ( Int j=0; j<CHANNELS; ++j ) {
 				(*this)[j][i]*=v;
 			}
@@ -184,16 +184,16 @@ public:
 		return *this;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	void mixAllToMono( Int sampleFrames ) {
-		for ( Int i=0; i<sampleFrames; ++ i ) {
+	void mixAllToMono( Int numSamples ) {
+		for ( Int i=0; i<numSamples; ++ i ) {
 			for ( Int j=1; j<CHANNELS; ++j ) {
 				(*this)[0][i] += (*this)[j][i] / (T)CHANNELS;
 			}
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------
-	void mixMonoToAll( Int sampleFrames ) {
-		for ( Int i=0; i<sampleFrames; ++ i ) {
+	void mixMonoToAll( Int numSamples ) {
+		for ( Int i=0; i<numSamples; ++ i ) {
 			for ( Int j=1; j<CHANNELS; ++j ) {
 				(*this)[j][i] = (*this)[0][i];
 			}
@@ -219,14 +219,14 @@ public:
 class DCStream {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef Frame::T T;
+	typedef Frames::T T;
 	//--------------------------------------------------------------------------------------------------------
-	typedef Frame::Int Int;
+	typedef Frames::Int Int;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	Int norm( Int i ) { return i%getBufferSize(); }
 	//--------------------------------------------------------------------------------------------------------
-	static const Int CHANNELS = Frame::CHANNELS;
+	static const Int CHANNELS = Frames::CHANNELS;
 	//--------------------------------------------------------------------------------------------------------
 	Int frameSize, maxDelay, cursor;
 	//--------------------------------------------------------------------------------------------------------
@@ -264,12 +264,12 @@ private:
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------
-	void incrCursor ( Int sampleFrames ) {
-		cursor = ( cursor + sampleFrames ) % getBufferSize(); 
+	void incrCursor ( Int numSamples ) {
+		cursor = ( cursor + numSamples ) % getBufferSize(); 
 	}
 	//--------------------------------------------------------------------------------------------------------
-	void decrCursor ( Int sampleFrames ) {
-		cursor = ( cursor - sampleFrames ) % getBufferSize(); 
+	void decrCursor ( Int numSamples ) {
+		cursor = ( cursor - numSamples ) % getBufferSize(); 
 	}
 	//--------------------------------------------------------------------------------------------------------
 	void releaseBuffer() { 
@@ -305,24 +305,24 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	Int getNumChannels() const { return CHANNELS; }
 	//--------------------------------------------------------------------------------------------------------
-	void addFrame ( Frame *frame, Int sampleFrames, Int delay ) {
+	void addFrame ( Frames *frames, Int numSamples, Int delay ) {
 		assert ( delay <= maxDelay );
 		Int s = cursor + delay;
-		Int e = cursor + sampleFrames + delay;
+		Int e = cursor + numSamples + delay;
 		Int c = 0;
 		Int n = 0;
 		for ( Int i=s; i<e; ++i ) {
 			n = norm(i);
 			for ( Int j=0; j<CHANNELS; ++j ) {
-				buff[j][n] += (*frame)[j][c];
+				buff[j][n] += (*frames)[j][c];
 			}
 			++c;
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------
-	void flush( Int sampleFrames, T **data = NULL ) {
+	void flush( Int numSamples, T **data = NULL ) {
 		Int s = cursor;
-		Int e = cursor + sampleFrames;
+		Int e = cursor + numSamples;
 		Int c = 0;
 		Int n = 0;
 		for ( Int i=s; i<e; ++i ) {
@@ -333,7 +333,7 @@ public:
 			}
 			++c;
 		}
-		incrCursor( sampleFrames );
+		incrCursor( numSamples );
 	}
 };
 } // processing

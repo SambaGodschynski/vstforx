@@ -21,7 +21,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( tests::GraphTest );
 
 namespace {
 //=============================================================================
-void fillFrame ( com::Frame *f, float left, float right ) {
+void fillFrame ( processing::Frames *f, float left, float right ) {
 //=============================================================================
 	using namespace com;
 	for ( size_t i = 0; i<f->getSize(); ++i ) {
@@ -68,8 +68,8 @@ void processGraph ( processing::Graph *graph,
 {
 	if ( !graph->isActive() ) 
 		throw ProcessException("graph inactive.");
-	com::Frame fIn ( blockSize );
-	com::Frame fOut ( blockSize );
+	processing::Frames fIn ( blockSize );
+	processing::Frames fOut ( blockSize );
 	fillFrame ( &fIn, inLeft, inRight );
 	while ( repeat-- > 0 ) {
 		fillFrame ( &fIn, inLeft, inRight );
@@ -327,10 +327,10 @@ void GraphTest::testSignalProcessPath() {
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> std constr.
 	Graph::Ptr graph = createGraph( 512, 44100.0f );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>create adapter
-	StepOutputAdapter::Ptr adapter[] = { 
-		StepOutputAdapter::create( graph.get(), 4 ),
-		StepOutputAdapter::create( graph.get(), 4 ),
-		StepOutputAdapter::create( graph.get(), 4 )};
+	OutputStep::Ptr adapter[] = { 
+		OutputStep::create( graph.get(), 4 ),
+		OutputStep::create( graph.get(), 4 ),
+		OutputStep::create( graph.get(), 4 )};
 	const size_t NUM_ADAPTER = sizeof(adapter) / sizeof(adapter[0]);
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add adapter to graph
 	Graph::Janitor::Ptr jan = graph->getJanitor();
@@ -523,7 +523,7 @@ void GraphTest::testDelayAdapter() {
 	CPPUNIT_ASSERT( graph->isActive() );
 	CPPUNIT_ASSERT_EQUAL( (size_t)DELAY, graph->getGraphDelay() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>prepare frames
-	Frame inFr, outFr;
+	Frames inFr, outFr;
 	inFr.setSize( BLOCKSIZE );
 	outFr.setSize( BLOCKSIZE );
 	fillFrame ( &inFr, 0.5, 0.5 );
@@ -555,7 +555,7 @@ void GraphTest::testDelayCompensationSimple() {
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>prepare graph
 	Graph::Ptr graph = createGraph( BLOCKSIZE, 44100.0f );
 	DelayAdapter<DELAY>::Ptr delay( DelayAdapter<DELAY>::create( graph.get() ) );
-	VolumeAdapter::Ptr noDelay( VolumeAdapter::create( graph.get() ) );
+	Volume::Ptr noDelay( Volume::create( graph.get() ) );
 	Graph::Janitor::Ptr jan = graph->getJanitor();
 	jan->add( delay );
 	jan->connectNodes ( graph->getStartNode(), delay->getInputNode(0) );
@@ -571,7 +571,7 @@ void GraphTest::testDelayCompensationSimple() {
 	CPPUNIT_ASSERT( graph->isActive() );
 	CPPUNIT_ASSERT_EQUAL( (size_t)DELAY, graph->getGraphDelay() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>prepare frames
-	Frame inFr, outFr;
+	Frames inFr, outFr;
 	inFr.setSize( BLOCKSIZE );
 	outFr.setSize( BLOCKSIZE );
 	fillFrame ( &inFr, 0.5, 0.5 );
@@ -617,7 +617,7 @@ void GraphTest::testDelayCompensationTree() {
 	CPPUNIT_ASSERT( graph->isActive() );
 	CPPUNIT_ASSERT_EQUAL( graph->getGraphDelay(), (size_t)GRAPH_DELAY );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>prepare frames
-	Frame inFr, outFr;
+	Frames inFr, outFr;
 	inFr.setSize( BLOCKSIZE );
 	outFr.setSize( BLOCKSIZE );
 	fillFrame ( &inFr, INPUT, INPUT );
@@ -659,7 +659,7 @@ void GraphTest::testDelayCompensationComplex1() {
 	Graph::Ptr graph = createGraph( BLOCKSIZE, 44100.0f );
 	typedef CreateAdapter< DelayAdapter<D1> > AdapterD1;
 	typedef CreateAdapter< DelayAdapter<D2> > AdapterD2;
-	VolumeAdapter::Ptr nd = VolumeAdapter::create( graph.get(), 1.0f );
+	Volume::Ptr nd = Volume::create( graph.get(), 1.0f );
 	Graph::Janitor::Ptr jan = graph->getJanitor();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add Adapter
 	jan->add(nd);
@@ -671,7 +671,7 @@ void GraphTest::testDelayCompensationComplex1() {
 	CPPUNIT_ASSERT( graph->isActive() );
 	CPPUNIT_ASSERT_EQUAL( graph->getGraphDelay(), (size_t)GRAPH_DELAY );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>prepare frames
-	Frame inFr, outFr;
+	Frames inFr, outFr;
 	inFr.setSize( BLOCKSIZE );
 	outFr.setSize( BLOCKSIZE );
 	fillFrame ( &inFr, INPUT, INPUT );
@@ -757,7 +757,7 @@ void GraphTest::testGraphConsistency() {
 	for ( int i=0; i<101; ++i ) {
 		// ...add
 		Graph::Janitor::Ptr janitor = graph->getJanitor();
-		StepOutputAdapter::Ptr ad = StepOutputAdapter::create( graph.get() );
+		OutputStep::Ptr ad = OutputStep::create( graph.get() );
 		CPPUNIT_ASSERT ( janitor->add ( ad ) == SUCCEED );
 		// start-, endNode, In, Adapter, Out1, Out2 = 6
 		CPPUNIT_ASSERT_EQUAL ( (size_t)6, graph->getNumNodes() );
@@ -769,7 +769,7 @@ void GraphTest::testGraphConsistency() {
 	CPPUNIT_ASSERT_EQUAL ( (size_t)0, graph->getNumEdges() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add Adapter
 	Graph::Janitor::Ptr janitor = graph->getJanitor();
-	StepOutputAdapter::Ptr ad = StepOutputAdapter::create( graph.get() );
+	OutputStep::Ptr ad = OutputStep::create( graph.get() );
 	CPPUNIT_ASSERT ( janitor->add ( ad ) == SUCCEED );
 	// start-, endNode, In, Adapter, Out1, Out2 = 6
 	size_t numNodes = 6; 
@@ -880,7 +880,7 @@ void GraphTest::testGraphConsistency() {
 	janitor->hostInfoChanged();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>connect with non graph object
 	janitor = graph->getJanitor();
-	StepOutputAdapter::Ptr ad2 = StepOutputAdapter::create( graph.get() );
+	OutputStep::Ptr ad2 = OutputStep::create( graph.get() );
 	CPPUNIT_ASSERT ( 
 		janitor->connectNodes ( startNode.get(), ad2->getInputNode(0).get() ) == FAILED
 	);
@@ -917,7 +917,7 @@ void GraphTest::testGraphConsistency() {
 	CPPUNIT_ASSERT_THROW ( ad2->getInputNode(1), ppiError::IndexOutOfBoundException );
 }	 
 //=============================================================================
-// check with extra static "num_copyintos" variable in Frame. Which only exists
+// check with extra static "num_copyintos" variable in Frames. Which only exists
 // when _FORX_TESTSUITE #defined.
 void GraphTest::testGraphSeries() { 
 //=============================================================================
@@ -929,7 +929,7 @@ void GraphTest::testGraphSeries() {
 	Graph::Ptr graph = createGraph( blockSize, 44100.0f );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>create GRAPH_DEPTH VolumeAdapters series:
 	// 
-	CreateSeries< CreateAdapter<VolumeAdapter>, GRAPH_DEPTH > 
+	CreateSeries< CreateAdapter<Volume>, GRAPH_DEPTH > 
 		series( graph, graph->getStartNode(), graph->getEndNode() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> check creation
 	//                              4 = input + adapter + output + helper ( created by CreateSeries )
@@ -937,19 +937,19 @@ void GraphTest::testGraphSeries() {
 	CPPUNIT_ASSERT_EQUAL ( (size_t)(4 * GRAPH_DEPTH + 2), graph->getNumNodes() );
 	CPPUNIT_ASSERT ( graph->isActive() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> process
-	Frame inFrame( blockSize );
-	Frame outFrame( blockSize );
+	Frames inFrame( blockSize );
+	Frames outFrame( blockSize );
 	fillFrame ( &inFrame, 0.5f, -0.5f );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph. expect frame num copied = 0
-	Frame::num_copyintos = 0; // reset copy_counter
+	Frames::num_copyintos = 0; // reset copy_counter
 	graph->pushAndCopy ( &inFrame, blockSize );
 	graph->processGraph( outFrame.getData(), blockSize  );
-	CPPUNIT_ASSERT_EQUAL ( (size_t) 0, Frame::num_copyintos );
+	CPPUNIT_ASSERT_EQUAL ( (size_t) 0, Frames::num_copyintos );
 	CPPUNIT_ASSERT_EQUAL ( (float) 0.5f, isFilledWith<float>( outFrame[0], outFrame.getSize(), 0.5  ) );
 	CPPUNIT_ASSERT_EQUAL ( (float)-0.5f, isFilledWith<float>( outFrame[1], outFrame.getSize(), -0.5 ) );
 }	
 //=============================================================================
-// check with extra static "num_copyintos" variable in Frame. Which only exists
+// check with extra static "num_copyintos" variable in Frames. Which only exists
 // when _FORX_TESTSUITE #defined.
 void GraphTest::testGraphParallel() { 
 //=============================================================================
@@ -961,7 +961,7 @@ void GraphTest::testGraphParallel() {
 	Graph::Ptr graph = createGraph( blockSize, 44100.0f );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>create GRAPH_DEPTH VolumeAdapters parallel:
 	// 
-	CreateParallel< CreateAdapter<VolumeAdapter>, GRAPH_DEPTH > 
+	CreateParallel< CreateAdapter<Volume>, GRAPH_DEPTH > 
 		parallel( graph, graph->getStartNode(), graph->getEndNode() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> check creation
 	//                              3= input + adapter + output  
@@ -969,19 +969,19 @@ void GraphTest::testGraphParallel() {
 	CPPUNIT_ASSERT_EQUAL ( (size_t)(3 * GRAPH_DEPTH + 2), graph->getNumNodes() );
 	CPPUNIT_ASSERT ( graph->isActive() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> process
-	Frame inFrame( blockSize );
-	Frame outFrame( blockSize );
+	Frames inFrame( blockSize );
+	Frames outFrame( blockSize );
 	fillFrame ( &inFrame, 0.5f, -0.5f );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph. expect frame num copied = GRAPH_DEPTH - 1
-	Frame::num_copyintos = 0; // reset copy_counter
+	Frames::num_copyintos = 0; // reset copy_counter
 	graph->pushAndCopy ( &inFrame, blockSize );
 	graph->processGraph( outFrame.getData(), blockSize  );
-	CPPUNIT_ASSERT_EQUAL ( (size_t)GRAPH_DEPTH - 1, Frame::num_copyintos );
+	CPPUNIT_ASSERT_EQUAL ( (size_t)GRAPH_DEPTH - 1, Frames::num_copyintos );
 	CPPUNIT_ASSERT_EQUAL ( (float) 0.5f * GRAPH_DEPTH, isFilledWith<float>( outFrame[0], outFrame.getSize(), 0.5 * GRAPH_DEPTH ) );
 	CPPUNIT_ASSERT_EQUAL ( (float)-0.5f * GRAPH_DEPTH, isFilledWith<float>( outFrame[1], outFrame.getSize(), -0.5 * GRAPH_DEPTH ) );
 }	
 //=============================================================================
-// check with extra static "num_copyintos" variable in Frame. Which only exists
+// check with extra static "num_copyintos" variable in Frames. Which only exists
 // when _FORX_TESTSUITE #defined.
 void GraphTest::testGraphComplex1() { 
 //=============================================================================
@@ -1016,19 +1016,19 @@ void GraphTest::testGraphComplex1() {
 	CPPUNIT_ASSERT_EQUAL ( (size_t)Creator::NUM_CREATED_ADAPTER, graph->getNumAdapter() );
 	CPPUNIT_ASSERT ( graph->isActive() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> process
-	Frame inFrame( blockSize );
-	Frame outFrame( blockSize );
+	Frames inFrame( blockSize );
+	Frames outFrame( blockSize );
 	fillFrame ( &inFrame, X,  -X );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph. expect frame num copied = N - 1
-	Frame::num_copyintos = 0; // reset copy_counter
+	Frames::num_copyintos = 0; // reset copy_counter
 	graph->pushAndCopy ( &inFrame, blockSize );
 	graph->processGraph( outFrame.getData(), blockSize  );
-	CPPUNIT_ASSERT_EQUAL ( (size_t)N - 1, Frame::num_copyintos );
+	CPPUNIT_ASSERT_EQUAL ( (size_t)N - 1, Frames::num_copyintos );
 	CPPUNIT_ASSERT_EQUAL ( SUM, isFilledWith<float>( outFrame[0], outFrame.getSize(), SUM ) );
 	CPPUNIT_ASSERT_EQUAL ( -SUM, isFilledWith<float>( outFrame[1], outFrame.getSize(), -SUM ) );
 }	
 //=============================================================================
-// check with extra static "num_copyintos" variable in Frame. Which only exists
+// check with extra static "num_copyintos" variable in Frames. Which only exists
 // when _FORX_TESTSUITE #defined.
 void GraphTest::testGraphComplex2() { 
 //=============================================================================
@@ -1067,19 +1067,19 @@ void GraphTest::testGraphComplex2() {
 	CPPUNIT_ASSERT_EQUAL ( (size_t)Creator::NUM_CREATED_ADAPTER, graph->getNumAdapter() );
 	CPPUNIT_ASSERT ( graph->isActive() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> process
-	Frame inFrame( blockSize );
-	Frame outFrame( blockSize );
+	Frames inFrame( blockSize );
+	Frames outFrame( blockSize );
 	fillFrame ( &inFrame, X,  -X );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph. expect frame num copied = (N-1) * N
-	Frame::num_copyintos = 0; // reset copy_counter
+	Frames::num_copyintos = 0; // reset copy_counter
 	graph->pushAndCopy ( &inFrame, blockSize );
 	graph->processGraph( outFrame.getData(), blockSize  );
-	CPPUNIT_ASSERT_EQUAL ( (size_t)(N-1)*N, Frame::num_copyintos );
+	CPPUNIT_ASSERT_EQUAL ( (size_t)(N-1)*N, Frames::num_copyintos );
 	CPPUNIT_ASSERT_EQUAL ( SUM, isFilledWith<float>( outFrame[0], outFrame.getSize(), SUM ) );
 	CPPUNIT_ASSERT_EQUAL ( -SUM, isFilledWith<float>( outFrame[1], outFrame.getSize(), -SUM ) );
 }	
 //=============================================================================
-// check with extra static "num_copyintos" variable in Frame. Which only exists
+// check with extra static "num_copyintos" variable in Frames. Which only exists
 // when _FORX_TESTSUITE #defined.
 void GraphTest::testGraphComplex3() { 
 //=============================================================================
@@ -1118,14 +1118,14 @@ void GraphTest::testGraphComplex3() {
 	CPPUNIT_ASSERT_EQUAL ( NUM_NODES, graph->getNumNodes() );
 	CPPUNIT_ASSERT ( graph->isActive() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> process
-	Frame inFrame( blockSize );
-	Frame outFrame( blockSize );
+	Frames inFrame( blockSize );
+	Frames outFrame( blockSize );
 	fillFrame ( &inFrame, X,  -X );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph. expect frame num copied = NUM_BINARY - 1
-	Frame::num_copyintos = 0; // reset copy_counter
+	Frames::num_copyintos = 0; // reset copy_counter
 	graph->pushAndCopy ( &inFrame, blockSize );
 	graph->processGraph( outFrame.getData(), blockSize  );
-	CPPUNIT_ASSERT_EQUAL ( (size_t)Creator::NUM_CREATED_ADAPTER/2, Frame::num_copyintos );
+	CPPUNIT_ASSERT_EQUAL ( (size_t)Creator::NUM_CREATED_ADAPTER/2, Frames::num_copyintos );
 	CPPUNIT_ASSERT_EQUAL ( SUM, isFilledWith<float>( outFrame[0], outFrame.getSize(), SUM ) );
 	CPPUNIT_ASSERT_EQUAL ( -SUM, isFilledWith<float>( outFrame[1], outFrame.getSize(), -SUM ) );
 }	
@@ -1147,11 +1147,11 @@ void register_types( A &ar ){
 	ar.template register_type<StartNode>();
 	ar.template register_type<EndNode>();
 	ar.template register_type<ProcessAdapterNode>();
-	ar.template register_type<VolumeAdapter>();
-	//ar.template register_type<VSTPlugNode>();
-	ar.template register_type<PanAdapter>();
-	ar.template register_type<StepOutputAdapter>();
-	ar.template register_type<StepInputAdapter>();
+	ar.template register_type<Volume>();
+	//ar.template register_type<VSTPlugin>();
+	ar.template register_type<Pan>();
+	ar.template register_type<OutputStep>();
+	ar.template register_type<InputStep>();
 	ar.template register_type<OutputSwitch>();
 	ar.template register_type<InputSwitch>();
 	ar.template register_type<PeakTracker>();
@@ -1173,7 +1173,7 @@ void GraphTest::testSerialization() {
 	Graph::Ptr graph = createGraph( blockSize, 44100.0f );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>create GRAPH_DEPTH VolumeAdapters series:
 	// 
-	CreateSeries< CreateAdapter<VolumeAdapter>, GRAPH_DEPTH > 
+	CreateSeries< CreateAdapter<Volume>, GRAPH_DEPTH > 
 		series( graph, graph->getStartNode(), graph->getEndNode() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> check creation
 	//                              4 = input + adapter + output + helper ( created by CreateSeries )
@@ -1181,8 +1181,8 @@ void GraphTest::testSerialization() {
 	CPPUNIT_ASSERT_EQUAL ( (size_t)(4 * GRAPH_DEPTH + 2), graph->getNumNodes() );
 	CPPUNIT_ASSERT ( graph->isActive() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> process
-	Frame inFrame( blockSize );
-	Frame outFrame( blockSize );
+	Frames inFrame( blockSize );
+	Frames outFrame( blockSize );
 	fillFrame ( &inFrame, 0.5f, -0.5f );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph. 
 	graph->pushAndCopy ( &inFrame, blockSize );

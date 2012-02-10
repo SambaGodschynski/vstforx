@@ -13,10 +13,10 @@ class NullAEffect : public AEffect {
 	static VstIntPtr _aEffectDispatcherProc(AEffect* effect, VstInt32 opcode, VstInt32 index, 
 		                                    VstIntPtr value, void* ptr, float opt);
 	//--------------------------------------------------------------------------------------------------------
-	static void _aEffectProcessProc(AEffect* effect, float** inputs, float** outputs, VstInt32 sampleFrames);
+	static void _aEffectProcessProc(AEffect* effect, float** inputs, float** outputs, VstInt32 numSamples);
 	//--------------------------------------------------------------------------------------------------------
 	static void _aEffectProcessDoubleProc(AEffect* effect, double** inputs, 
-		                                  double** outputs, VstInt32 sampleFrames);
+		                                  double** outputs, VstInt32 numSamples);
 	//--------------------------------------------------------------------------------------------------------
 	static void _aEffectSetParameterProc(AEffect* effect, VstInt32 index, float parameter);
 	//--------------------------------------------------------------------------------------------------------

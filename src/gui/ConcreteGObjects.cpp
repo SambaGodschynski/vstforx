@@ -597,7 +597,7 @@ GButton::GButton ( CircuidView *parent, CMovieButton *btn ) :  CControlWrapper<G
 	name = "Button";
 }
 //------------------------------------------------------------------------------------------------------------
-// erzeugt VSTPlugNode Edit-Button.
+// erzeugt VSTPlugin Edit-Button.
 GButton::Ptr GButton::createNewEditButton(ppiGui::CircuidView *view){
 	CBitmap *bmp = resources->getResourceBitmap( Resources::EDIT_BUTTON );
 	VSTGUI::CRect size ( 0, 0, bmp->getWidth(), bmp->getHeight() / 2 );

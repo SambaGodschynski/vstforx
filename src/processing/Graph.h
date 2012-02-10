@@ -208,11 +208,11 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void processEvents(VstEvents * events);
 	//--------------------------------------------------------------------------------------------------------
-	// Liefert das Ergebniss Frame des Endknoten.
+	// Liefert das Ergebniss Frames des Endknoten.
 	// Und Startet damit indirekt die Prozess Ablaufkette. 
-	void processGraph( float **outputs, Processor::Int sampleFrames );
+	void processGraph( float **outputs, Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
-	void pushAndCopy( Frame *fr, Processor::Int sampleFrames );
+	void pushAndCopy( Frames *fr, Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	bool contains(PObject::Ptr obj) const;
 	//--------------------------------------------------------------------------------------------------------
@@ -394,7 +394,7 @@ public:
 		n->setActive( false );
 		n->parents.clear();
 		n->activeChildren = 0;
-		n->tmpFrame->setSize( graph->getBlockSize() );
+		n->tmpFrames->setSize( graph->getBlockSize() );
 	}
 };
 } // namespace Processing

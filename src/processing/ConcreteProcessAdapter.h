@@ -17,25 +17,25 @@ using namespace std;
 using namespace com;
 using namespace parameter;
 //============================================================================================================
-//VolumeAdapter
-//Die processFrame Methode mulipliziert den Inhalt des Frames umden faktor Volume.
+//Volume
+//Die processFrames Methode mulipliziert den Inhalt des Frames umden faktor Volume.
 //============================================================================================================
-class VolumeAdapter;
+class Volume;
 //============================================================================================================
 //Volume2Parameter
 //Tranformiert Signal Lautstaerke in Parameter wert.
 //============================================================================================================
 class PeakTracker;
 //============================================================================================================
-//	Klasse PanAdapter:
+//	Klasse Pan:
 //	Splittet signal in R und L
 //============================================================================================================
-class PanAdapter;
+class Pan;
 //============================================================================================================
-//	Klasse StepOutputAdapter:
+//	Klasse OutputStep:
 //	Hatt mehrere Ausgaenge. Zordung des Input-Signals ist zustands abhaengig.
 //============================================================================================================
-class StepOutputAdapter;
+class OutputStep;
 //============================================================================================================
 //	Schnittstelle ValueTranslator:
 //	Transformiert einen eingabewert im bereich 0..1 in eine Zeitangabe in Samples.
@@ -50,10 +50,10 @@ class MidiProcessor;
 namespace processing {
 using namespace parameter;
 //============================================================================================================
-//VolumeAdapter
-//Die processFrame Methode mulipliziert den Inhalt des Frames umden faktor Volume.
+//Volume
+//Die processFrames Methode mulipliziert den Inhalt des Frames umden faktor Volume.
 //============================================================================================================
-class VolumeAdapter : 
+class Volume : 
 public ProcessAdapter, 
 public HasParameter, 
 public Serializable,
@@ -62,7 +62,7 @@ public events::ValueChangedListener<float>
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<VolumeAdapter> Ptr;
+	typedef boost::shared_ptr<Volume> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	template < typename Archive >
@@ -76,7 +76,7 @@ private:
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------
-	VolumeAdapter (){} // wird nur von boost::serial. benutzt
+	Volume (){} // wird nur von boost::serial. benutzt
 	//--------------------------------------------------------------------------------------------------------
 	FadeValue fader;
 protected:
@@ -86,10 +86,10 @@ protected:
 		return one_ms*5.0f;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	VolumeAdapter ( IHostInfo *hostInfo, float initValue ) : 
+	Volume ( IHostInfo *hostInfo, float initValue ) : 
 		ProcessAdapter( hostInfo, 1, 1 ), fader( initValue ) 
 	{
-		setName ("VolumeAdapter");
+		setName ("Volume");
 		volume = Parameter::create();
 		volume->setName ("Volume");
 		volume->addValueChangedListener (this);
@@ -105,7 +105,7 @@ protected:
 public:
 	//--------------------------------------------------------------------------------------------------------
 	static Ptr create( IHostInfo *hostInfo, float initValue = 1.0f ) {
-		Ptr neu( new VolumeAdapter(hostInfo, initValue ) );
+		Ptr neu( new Volume(hostInfo, initValue ) );
 		neu->self = neu;
 		return neu;
 	}
@@ -116,24 +116,24 @@ public:
 		fader.setDuration( getFaderDuration( hostInfo->getSampleRate() ) );  
 	}
 	//--------------------------------------------------------------------------------------------------------
-	virtual void _processAdapter( Processor::Int sampleFrames );
+	virtual void _processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const { return volume; }
 	//--------------------------------------------------------------------------------------------------------
 	virtual size_t getNumParameter () const { return 1; }
 	//--------------------------------------------------------------------------------------------------------
-	virtual ~VolumeAdapter (){
+	virtual ~Volume (){
 		TOLOG ( "-" + getName() );
 	}
 };
 //============================================================================================================
-//	Klasse PanAdapter:
+//	Klasse Pan:
 //============================================================================================================
-class PanAdapter : public ProcessAdapter, public Serializable, public HasParameter  {
+class Pan : public ProcessAdapter, public Serializable, public HasParameter  {
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<PanAdapter> Ptr;
+	typedef boost::shared_ptr<Pan> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	template < typename Archive >
@@ -144,26 +144,26 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	Parameter::Ptr pan;
 	//--------------------------------------------------------------------------------------------------------
-	PanAdapter() {}
+	Pan() {}
 protected:
 	//--------------------------------------------------------------------------------------------------------
-	PanAdapter ( IHostInfo *hostInfo );
+	Pan ( IHostInfo *hostInfo );
 public:
 	//--------------------------------------------------------------------------------------------------------
 	static Ptr create( IHostInfo *hostInfo ) {
-		Ptr neu( new PanAdapter(hostInfo) );
+		Ptr neu( new Pan(hostInfo) );
 		neu->self = neu;
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
     //ruft die processReplacing Methode des zugeordneten Processor Objekt auf.
-    virtual void _processAdapter( Processor::Int sampleFrames );
+    virtual void _processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const { return pan; }
 	//--------------------------------------------------------------------------------------------------------
 	virtual size_t getNumParameter () const { return 1; }
 	//--------------------------------------------------------------------------------------------------------
-	virtual ~PanAdapter() {
+	virtual ~Pan() {
 		TOLOG ( "-" + getName() );
 	}
 
@@ -307,13 +307,13 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	OutputSwitch() {};
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<Frame*> OutputMatrix;
+	typedef vector<Frames*> OutputMatrix;
 	//--------------------------------------------------------------------------------------------------------
 	Mutex mutex;
 	//--------------------------------------------------------------------------------------------------------
 	OutputMatrix outpMatrix;
 	//--------------------------------------------------------------------------------------------------------
-	inline void _processFrames ( Frame *iFrame, OutputMatrix &fr, Processor::Int sampleFrames );
+	inline void _processFrames ( Frames *iFrame, OutputMatrix &fr, Processor::Int numSamples );
 private:
 protected:
 	//--------------------------------------------------------------------------------------------------------
@@ -334,7 +334,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void valueChanged ( void *src, const float &val );
 	//--------------------------------------------------------------------------------------------------------
-    virtual void _processAdapter( Processor::Int sampleFrames );
+    virtual void _processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~OutputSwitch();
 	//--------------------------------------------------------------------------------------------------------
@@ -375,15 +375,15 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	InputSwitch() {};
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<Frame*> InputMatrix;
+	typedef vector<Frames*> InputMatrix;
 	//--------------------------------------------------------------------------------------------------------
 	Mutex mutex;
 	//--------------------------------------------------------------------------------------------------------
 	InputMatrix inputMatrix;
 	//--------------------------------------------------------------------------------------------------------
-	Frame tmpFrame;
+	Frames tmpFrame;
 	//--------------------------------------------------------------------------------------------------------
-	inline void _processFrames ( InputMatrix &fr, Processor::Int sampleFrames );
+	inline void _processFrames ( InputMatrix &fr, Processor::Int numSamples );
 private:
 protected:
 	//--------------------------------------------------------------------------------------------------------
@@ -409,7 +409,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void valueChanged ( void *src, const float &val );
 	//--------------------------------------------------------------------------------------------------------
-    virtual void _processAdapter( Processor::Int sampleFrames );
+    virtual void _processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~InputSwitch();
 	//--------------------------------------------------------------------------------------------------------
@@ -605,10 +605,10 @@ public:
 	}
 };
 //============================================================================================================
-//	Klasse StepOutputAdapter:
+//	Klasse OutputStep:
 //	Hatt mehrere Ausgaenge. Zuordung des Input-Signals ist zustands abhaengig.
 //============================================================================================================
-class StepOutputAdapter: 
+class OutputStep: 
 public ProcessAdapter, 
 public HasParameter, 
 public Serializable, 
@@ -619,14 +619,14 @@ friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<StepOutputAdapter> Ptr;
+	typedef boost::shared_ptr<OutputStep> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	void save ( oArchive &ar, const unsigned int version ) const;
 	//--------------------------------------------------------------------------------------------------------
 	void load ( iArchive &ar, const unsigned int version );
 	//--------------------------------------------------------------------------------------------------------
-	StepOutputAdapter() : fixTimeValue(0.0f) {};
+	OutputStep() : fixTimeValue(0.0f) {};
 private:
 	//--------------------------------------------------------------------------------------------------------
 	Mutex mutex;
@@ -641,12 +641,12 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	void typeChanged ( void *src, const float& v );
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<Frame*> OutputMatrix;
+	typedef vector<Frames*> OutputMatrix;
 	//--------------------------------------------------------------------------------------------------------
 	OutputMatrix outpMatrix;
 	//--------------------------------------------------------------------------------------------------------
 	// Dupliziert iFrame nach *fr[numSteps] * step_Faktor
-	inline void processFrames ( Frame *iFrame, OutputMatrix &fr, Processor::Int sampleFrames );
+	inline void processFrames ( Frames *iFrame, OutputMatrix &fr, Processor::Int numSamples );
 	//----------------------------------------------------------------------------------------------------
 	// skims one sample of step duration samples and switches to next state if duration samples == 0
 	void skimStepDuration() {
@@ -670,11 +670,11 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void setState ( size_t ignore ) {} 
 	//--------------------------------------------------------------------------------------------------------
-	StepOutputAdapter( IHostInfo *hostInfo, int initSteps = 2 );
+	OutputStep( IHostInfo *hostInfo, int initSteps = 2 );
 public:
 	//--------------------------------------------------------------------------------------------------------
 	static Ptr create( IHostInfo *hostInfo, int initSteps = 2 ) {
-		Ptr neu( new StepOutputAdapter(hostInfo, initSteps) );
+		Ptr neu( new OutputStep(hostInfo, initSteps) );
 		neu->self = neu;
 		return neu;
 	}
@@ -686,9 +686,9 @@ public:
 	}
 	//--------------------------------------------------------------------------------------------------------
     //ruft die processReplacing Methode des zugeordneten Processor Objekt auf.
-    virtual void _processAdapter( Processor::Int sampleFrames );
+    virtual void _processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
-	virtual ~StepOutputAdapter();
+	virtual ~OutputStep();
 	//--------------------------------------------------------------------------------------------------------
 	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const {return parameterMap.at(nr);}
 	//--------------------------------------------------------------------------------------------------------
@@ -699,10 +699,10 @@ public:
 	ProcessorNode::Ptr addOutputNode();
 };
 //============================================================================================================
-//	Klasse StepInputAdapter:
+//	Klasse InputStep:
 //	Hatt mehrere Ausgaenge. Zordung des Input-Signals ist zustands abhaengig.
 //============================================================================================================
-class StepInputAdapter: 
+class InputStep: 
 public ProcessAdapter, 
 public HasParameter, 
 public Serializable, 
@@ -713,14 +713,14 @@ friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<StepInputAdapter> Ptr;
+	typedef boost::shared_ptr<InputStep> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	void save ( oArchive &ar, const unsigned int version ) const;
 	//--------------------------------------------------------------------------------------------------------
 	void load ( iArchive &ar, const unsigned int version );
 	//--------------------------------------------------------------------------------------------------------
-	StepInputAdapter() : fixTimeValue(0.0f) {}
+	InputStep() : fixTimeValue(0.0f) {}
 private:
 	//--------------------------------------------------------------------------------------------------------
 	Mutex mutex;
@@ -731,18 +731,18 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	void init();
 	//--------------------------------------------------------------------------------------------------------
-	Frame tmpFrame;
+	Frames tmpFrame;
 	//--------------------------------------------------------------------------------------------------------
 	inline void reset();
 	//--------------------------------------------------------------------------------------------------------
 	void typeChanged ( void *src, const float& v );
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<Frame*> InputMatrix;
+	typedef vector<Frames*> InputMatrix;
 	//--------------------------------------------------------------------------------------------------------
 	InputMatrix inputMatrix;
 	//--------------------------------------------------------------------------------------------------------
 	// Dupliziert iFrame nach *fr[numSteps] * step_Faktor
-	inline void processFrames ( InputMatrix &fr, Processor::Int sampleFrames );
+	inline void processFrames ( InputMatrix &fr, Processor::Int numSamples );
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	// anzahl der Steps == Ausgaenge == anz. der ProcessAdapterNode
@@ -758,11 +758,11 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void setState ( size_t ignore ) {} 
 	//--------------------------------------------------------------------------------------------------------
-	StepInputAdapter( IHostInfo *hostInfo, int initSteps = 2 );
+	InputStep( IHostInfo *hostInfo, int initSteps = 2 );
 public:
 	//--------------------------------------------------------------------------------------------------------
 	static Ptr create( IHostInfo *hostInfo, int initSteps = 2 ) {
-		Ptr neu( new StepInputAdapter(hostInfo, initSteps) );
+		Ptr neu( new InputStep(hostInfo, initSteps) );
 		neu->self = neu;
 		return neu;
 	}
@@ -775,9 +775,9 @@ public:
 	}
 	//--------------------------------------------------------------------------------------------------------
     //ruft die processReplacing Methode des zugeordneten Processor Objekt auf.
-    virtual void _processAdapter( Processor::Int sampleFrames );
+    virtual void _processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
-	virtual ~StepInputAdapter();
+	virtual ~InputStep();
 	//--------------------------------------------------------------------------------------------------------
 	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const {return parameterMap.at(nr);}
 	//--------------------------------------------------------------------------------------------------------
@@ -825,7 +825,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	//ruft die processReplacing Methode des zugeordneten 
 	//Processor Objekt auf.
-	virtual void _processAdapter( Processor::Int sampleFrames );
+	virtual void _processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const { return offset; }
 	//--------------------------------------------------------------------------------------------------------
@@ -879,7 +879,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	//ruft die processReplacing Methode des zugeordneten 
 	//Processor Objekt auf.
-	virtual void _processAdapter( Processor::Int sampleFrames );
+	virtual void _processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const { 
 		if ( nr > adsr->getNumParameter() ) return Parameter::Ptr();
@@ -953,7 +953,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual Parameter::Ptr getMidiChannelParameter() { return channelSelector; }
 	//--------------------------------------------------------------------------------------------------------
-	virtual void _processAdapter( Processor::Int sampleFrames ) {}
+	virtual void _processAdapter( Processor::Int numSamples ) {}
 	//--------------------------------------------------------------------------------------------------------
 	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const { return midiParameters[nr]; }
 	//--------------------------------------------------------------------------------------------------------

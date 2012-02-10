@@ -3,12 +3,12 @@
 
 namespace processing{
 //============================================================================================================
-// class VolumeAdapter
+// class Volume
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-void VolumeAdapter::_processAdapter( Processor::Int sampleFrames ) { 
-	Frame *fr = getInputNode(0)->popFrame();
-	VstInt32 i = sampleFrames;
+void Volume::_processAdapter( Processor::Int numSamples ) { 
+	Frames *fr = getInputNode(0)->popFrame();
+	VstInt32 i = numSamples;
 	VstNumber *r = (*fr)[0];
 	VstNumber *l = (*fr)[1];
 	while ( --i >= 0 ){
@@ -16,14 +16,14 @@ void VolumeAdapter::_processAdapter( Processor::Int sampleFrames ) {
 		*(r++) *= f;
 		*(l++) *= f;
 	}
-	outputNodes[0]->pushAndCopy( fr, sampleFrames );
+	outputNodes[0]->pushAndCopy( fr, numSamples );
 }
 //============================================================================================================
-// class PanAdapter
+// class Pan
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-PanAdapter::PanAdapter ( IHostInfo *hostInfo ) : ProcessAdapter( hostInfo, 1, 1 ) {
-	setName ("PanAdapter");
+Pan::Pan ( IHostInfo *hostInfo ) : ProcessAdapter( hostInfo, 1, 1 ) {
+	setName ("Pan");
 	getOutputNode(0)->setName ("PanAdapter_Output");
 	getInputNode(0)->setName ("PanAdapter_Input");
 	TOLOG ( "+" + getName() );
@@ -33,17 +33,17 @@ PanAdapter::PanAdapter ( IHostInfo *hostInfo ) : ProcessAdapter( hostInfo, 1, 1 
 	pan->setValue (0.5);
 }
 //------------------------------------------------------------------------------------------------------------
-void PanAdapter::_processAdapter( Processor::Int sampleFrames ) {
-	Frame *fr = getInputNode(0)->popFrame();
+void Pan::_processAdapter( Processor::Int numSamples ) {
+	Frames *fr = getInputNode(0)->popFrame();
 	float *l = (*fr)[0];
 	float *r = (*fr)[1];
-	Frame::Int c = sampleFrames;
+	Frames::Int c = numSamples;
 	while ( c-- > 0 ) {
 		*l = *l * ( 1.0f - *pan );
 		*r = *r * *pan;
 		l++; r++;
 	}
-	getOutputNode(0)->pushAndCopy ( fr, sampleFrames );
+	getOutputNode(0)->pushAndCopy ( fr, numSamples );
 }
 //============================================================================================================
 // Klasse Switch:
@@ -155,7 +155,7 @@ void OutputSwitch::valueChanged ( void *src, const float &val ) {
 //------------------------------------------------------------------------------------------------------------
 OutputSwitch::OutputSwitch( IHostInfo *hostInfo, int initStates ) : 
 ProcessAdapter( hostInfo, 1, initStates ), 
-Switch ( initStates, hostInfo->getSampleRate() ), outpMatrix( OutputMatrix(initStates, (Frame*)NULL) )
+Switch ( initStates, hostInfo->getSampleRate() ), outpMatrix( OutputMatrix(initStates, (Frames*)NULL) )
 {
 	setName ( "OutputSwitch" );
 	selector = Parameter::create();
@@ -174,10 +174,10 @@ Switch ( initStates, hostInfo->getSampleRate() ), outpMatrix( OutputMatrix(initS
 	TOLOG ( "+" + getName() );
 }
 //--------------------------------------------------------------------------------------------------------
-inline void OutputSwitch::_processFrames ( Frame *iFrame, OutputMatrix &fr, Processor::Int sampleFrames ) {
+inline void OutputSwitch::_processFrames ( Frames *iFrame, OutputMatrix &fr, Processor::Int numSamples ) {
 	VstNumber *l = (*iFrame)[0];
 	VstNumber *r = (*iFrame)[1];
-	for ( int i=0; i<sampleFrames; ++i ){
+	for ( int i=0; i<numSamples; ++i ){
 		for ( size_t j=0; j<getNumStates(); j++ ){
 			float fac = getFaderValueAndIncT(j); // mit jedem lesezugriff wird fader::t erhoet!
 			if (!fr[j]) continue; // !!Wichtig
@@ -188,12 +188,12 @@ inline void OutputSwitch::_processFrames ( Frame *iFrame, OutputMatrix &fr, Proc
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-void OutputSwitch::_processAdapter( Processor::Int sampleFrames ) {
+void OutputSwitch::_processAdapter( Processor::Int numSamples ) {
 	TRY_TO_LOCK_TIMED (mutex); // gleichzeitigen zugriff von addOutputNode blocken
-	Frame *frame = getInputNode(0)->popFrame();
-	Frame iFrame;
-	iFrame.copyIntoFrom ( *frame, sampleFrames );
-	aNode->pushAndCopy ( frame, sampleFrames );
+	Frames *frame = getInputNode(0)->popFrame();
+	Frames iFrame;
+	iFrame.copyIntoFrom ( *frame, numSamples );
+	aNode->pushAndCopy ( frame, numSamples );
 	size_t steps = getNumStates();
 	for ( int i=0; i<steps; ++i ) { // bilde InputFrames auf Matrix ab.
 		if ( !outputNodes[i]->isActive() ) {
@@ -203,10 +203,10 @@ void OutputSwitch::_processAdapter( Processor::Int sampleFrames ) {
 		outpMatrix[i] = aNode->popFrame();
 	}
 	// berechne OutputFrames
-	_processFrames( &iFrame, outpMatrix, sampleFrames );
+	_processFrames( &iFrame, outpMatrix, numSamples );
 	for ( int i=0; i<steps; ++i ) {
 		if ( !outputNodes[i]->isActive() ) continue;
-		outputNodes[i]->pushAndCopy ( outpMatrix[i], sampleFrames ); // knoten Frame zuweisen*/
+		outputNodes[i]->pushAndCopy ( outpMatrix[i], numSamples ); // knoten Frames zuweisen*/
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -257,7 +257,7 @@ void InputSwitch::valueChanged ( void *src, const float &val ) {
 //------------------------------------------------------------------------------------------------------------
 InputSwitch::InputSwitch( IHostInfo *hostInfo, int initStates ) : 
 ProcessAdapter( hostInfo, initStates, 1 ), 
-Switch ( initStates, hostInfo->getSampleRate() ), inputMatrix( InputMatrix(initStates, (Frame*)NULL) )
+Switch ( initStates, hostInfo->getSampleRate() ), inputMatrix( InputMatrix(initStates, (Frames*)NULL) )
 {
 	setName ( "InputSwitch" );
 	selector = Parameter::create();
@@ -278,10 +278,10 @@ Switch ( initStates, hostInfo->getSampleRate() ), inputMatrix( InputMatrix(initS
 	tmpFrame.setSize ( hostInfo->getBlockSize() );
 }
 //--------------------------------------------------------------------------------------------------------
-inline void InputSwitch::_processFrames ( InputMatrix &fr, Processor::Int sampleFrames ) {
+inline void InputSwitch::_processFrames ( InputMatrix &fr, Processor::Int numSamples ) {
 	VstNumber *l = tmpFrame[0];
 	VstNumber *r = tmpFrame[1];
-	for ( int i=0; i<sampleFrames; ++i ){
+	for ( int i=0; i<numSamples; ++i ){
 		*l = 0.0f; *r = 0.0f;
 		for ( int j=0; j<getNumStates(); j++ ){
 			float fac = getFaderValueAndIncT(j); // mit jedem lesezugriff wird fader::t erhoet!
@@ -293,7 +293,7 @@ inline void InputSwitch::_processFrames ( InputMatrix &fr, Processor::Int sample
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-void InputSwitch::_processAdapter( Processor::Int sampleFrames ) {
+void InputSwitch::_processAdapter( Processor::Int numSamples ) {
 	TRY_TO_LOCK_TIMED (mutex); // gleichzeitigen zugriff von addOutputNode blocken
 
 	for ( int i=0; i<getNumStates(); ++i ) { // bilde InputFrames auf Matrix ab.
@@ -304,8 +304,8 @@ void InputSwitch::_processAdapter( Processor::Int sampleFrames ) {
 		inputMatrix[i] = inputNodes[i]->popFrame();
 	}
 	// berechne OutputFrames
-	_processFrames( inputMatrix, sampleFrames );
-	outputNodes[0]->pushAndCopy ( &tmpFrame, sampleFrames );
+	_processFrames( inputMatrix, numSamples );
+	outputNodes[0]->pushAndCopy ( &tmpFrame, numSamples );
 }
 //------------------------------------------------------------------------------------------------------------
 InputSwitch::~InputSwitch() {
@@ -386,11 +386,11 @@ void Step::durationParameterChanged ( void *src, const float &v ){
 	p->setDisplay ( currTranslator->translateAsString(v) );
 }
 //============================================================================================================
-//	Klasse StepOutputAdapter:
+//	Klasse OutputStep:
 //	Hatt mehrere Ausgaenge. Zordung des Input-Signals ist zustands abhaengig.
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-void StepOutputAdapter::typeChanged ( void *src, const float &v ){
+void OutputStep::typeChanged ( void *src, const float &v ){
 	Parameter *pP = (Parameter*) src;
 	int n = mapInteger ( v, 2);
 	switch (n){
@@ -406,18 +406,18 @@ void StepOutputAdapter::typeChanged ( void *src, const float &v ){
 	cStep->resetLabel();
 }
 //------------------------------------------------------------------------------------------------------------
-void StepOutputAdapter::init(){
+void OutputStep::init(){
 	// Type Parameter:
 	type->setName ("Step Type");
 	type->setDisplay("fix");
 	parameterMap.push_back (type);
 	Parameter::ParameterListenerFunction f = boost::bind( 
-			&StepOutputAdapter::typeChanged, this, _1, _2 
+			&OutputStep::typeChanged, this, _1, _2 
 	);
 	type->addValueChangedListenerF (f);
 	// Adapter Nodes:
 	for ( int i=0; i<steps; ++i ) {
-		outputNodes[i]->setName("StepOutputNode["+MyString(i+1)+"]");
+		outputNodes[i]->setName("StepOutputode["+MyString(i+1)+"]");
 		if ( i<steps ) {
 			parameterMap.push_back ( cStep->getParameter(i) );
 			parameterMap.push_back ( cStep->Switch::getDurationParameterIN(i) );
@@ -428,7 +428,7 @@ void StepOutputAdapter::init(){
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-ProcessorNode::Ptr StepOutputAdapter::addOutputNode(){
+ProcessorNode::Ptr OutputStep::addOutputNode(){
 	TRY_TO_LOCK_TIMED (mutex);
 	OutputNode::Ptr neu = ProcessAdapter::createOutputNode ( 
 		"StepOutput outputNode("+MyString(getNumOutputNodes()+2) + ")"
@@ -445,11 +445,11 @@ ProcessorNode::Ptr StepOutputAdapter::addOutputNode(){
 	return neu;
 }
 //------------------------------------------------------------------------------------------------------------
-StepOutputAdapter::StepOutputAdapter(IHostInfo *hostInfo, int initSteps) : 
+OutputStep::OutputStep(IHostInfo *hostInfo, int initSteps) : 
 ProcessAdapter( hostInfo, 1, initSteps ), 
 steps(initSteps),
 type ( Parameter::create() ),
-outpMatrix ( OutputMatrix ( initSteps, (Frame*)NULL ) ),
+outpMatrix ( OutputMatrix ( initSteps, (Frames*)NULL ) ),
 fixTimeValue( hostInfo->getSampleRate() )
 {
 	setName ( "StepOutputAdapter" );
@@ -461,7 +461,7 @@ fixTimeValue( hostInfo->getSampleRate() )
 	TOLOG ( "+" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
-void StepOutputAdapter::reset(){
+void OutputStep::reset(){
   	cStep->reset();
 	// ermittle anzahl der samples bis zu naechsten 1/4 note
 	VstTimeInfo *inf = hostInfo->getVstTimeInfo( kVstPpqPosValid || kVstTempoValid );
@@ -476,10 +476,10 @@ void StepOutputAdapter::reset(){
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-inline void StepOutputAdapter::processFrames ( Frame *iFrame, OutputMatrix &fr, Processor::Int sampleFrames ) {
+inline void OutputStep::processFrames ( Frames *iFrame, OutputMatrix &fr, Processor::Int numSamples ) {
 	VstNumber *l = (*iFrame)[0];
 	VstNumber *r = (*iFrame)[1];
-	for ( int i=0; i<sampleFrames; ++i ) {
+	for ( int i=0; i<numSamples; ++i ) {
 		skimStepDuration();
 		for ( int j=0; j<cStep->getNumSteps(); j++ ){
 			float fac = cStep->getFaderValueAndIncT(j); // mit jedem lesezugriff wird fader::t erhoet!
@@ -491,17 +491,17 @@ inline void StepOutputAdapter::processFrames ( Frame *iFrame, OutputMatrix &fr, 
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-void StepOutputAdapter::_processAdapter( Processor::Int sampleFrames ) {
+void OutputStep::_processAdapter( Processor::Int numSamples ) {
 	TRY_TO_LOCK_TIMED (mutex); // gleichzeitigen zugriff von addOutputNode blocken
 	VstTimeInfo *inf = hostInfo->getVstTimeInfo(0);
 	ClockEdge::EdgeValue t = transport.in ( isFlag(inf->flags,kVstTransportPlaying) );
 	if (t == ClockEdge::HIGH ){ // Transport: play flanke
 		reset();
 	}
-	Frame *frame = getInputNode(0)->popFrame();
-	Frame iFrame;
-	iFrame.copyIntoFrom ( *frame, sampleFrames );
-	aNode->pushAndCopy ( frame, sampleFrames );
+	Frames *frame = getInputNode(0)->popFrame();
+	Frames iFrame;
+	iFrame.copyIntoFrom ( *frame, numSamples );
+	aNode->pushAndCopy ( frame, numSamples );
 	for ( int i=0; i<steps; ++i ) { // bilde InputFrames auf Matrix ab.
 		if ( !outputNodes[i]->isActive() ) {
 			outpMatrix[i] = NULL;
@@ -510,17 +510,17 @@ void StepOutputAdapter::_processAdapter( Processor::Int sampleFrames ) {
 		outpMatrix[i] = aNode->popFrame();
 	}
 	// berechne OutputFrames
-	processFrames( &iFrame, outpMatrix, sampleFrames );
-	for ( int i=0; i<steps; ++i ) outputNodes[i]->pushAndCopy ( outpMatrix[i], sampleFrames ); // knoten Frame zuweisen
+	processFrames( &iFrame, outpMatrix, numSamples );
+	for ( int i=0; i<steps; ++i ) outputNodes[i]->pushAndCopy ( outpMatrix[i], numSamples ); // knoten Frames zuweisen
 }
 //------------------------------------------------------------------------------------------------------------
-StepOutputAdapter::~StepOutputAdapter(){
+OutputStep::~OutputStep(){
 	delete cStep;
 	delete sync;
 	TOLOG ( "-" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
-void StepOutputAdapter::save(com::oArchive &ar, const unsigned int version) const {
+void OutputStep::save(com::oArchive &ar, const unsigned int version) const {
 	ar << boost::serialization::base_object< ProcessAdapter > ( *this );
 	ar << parameterMap;
 	ar << type;
@@ -531,7 +531,7 @@ void StepOutputAdapter::save(com::oArchive &ar, const unsigned int version) cons
 	ar << cStep;
 }
 //------------------------------------------------------------------------------------------------------------
-void StepOutputAdapter::load(com::iArchive &ar, const unsigned int version) {
+void OutputStep::load(com::iArchive &ar, const unsigned int version) {
 	ar >> boost::serialization::base_object< ProcessAdapter > ( *this );
 	ar >> parameterMap;
 	ar >> type;
@@ -540,17 +540,17 @@ void StepOutputAdapter::load(com::iArchive &ar, const unsigned int version) {
 	ar >> sync;
 	ar >> cStep;
 	Parameter::ParameterListenerFunction f = boost::bind( 
-			&StepOutputAdapter::typeChanged, this, _1, _2 
+			&OutputStep::typeChanged, this, _1, _2 
 	);
 	type->addValueChangedListenerF ( f );
-	outpMatrix = OutputMatrix( steps, (Frame*)NULL );
+	outpMatrix = OutputMatrix( steps, (Frames*)NULL );
 }
 //============================================================================================================
-//	Klasse StepInputAdapter:
+//	Klasse InputStep:
 //	Hatt mehrere Ausgaenge. Zordung des Input-Signals ist zustands abhaengig.
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-void StepInputAdapter::typeChanged ( void *src, const float &v ){
+void InputStep::typeChanged ( void *src, const float &v ){
 	Parameter *pP = (Parameter*) src;
 	int n = mapInteger ( v, 2);
 	switch (n){
@@ -566,13 +566,13 @@ void StepInputAdapter::typeChanged ( void *src, const float &v ){
 	cStep->resetLabel();
 }
 //------------------------------------------------------------------------------------------------------------
-void StepInputAdapter::init(){
+void InputStep::init(){
 	// Type Parameter:
 	type->setName ("Step Type");
 	type->setDisplay("fix");
 	parameterMap.push_back (type);
 	Parameter::ParameterListenerFunction f = boost::bind( 
-			&StepInputAdapter::typeChanged, this, _1, _2 
+			&InputStep::typeChanged, this, _1, _2 
 	);
 	type->addValueChangedListenerF (f);
 	// Adapter Nodes:
@@ -588,7 +588,7 @@ void StepInputAdapter::init(){
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-ProcessorNode::Ptr StepInputAdapter::addInputNode(){
+ProcessorNode::Ptr InputStep::addInputNode(){
 	TRY_TO_LOCK_TIMED (mutex);
 	InputNode::Ptr neu = ProcessAdapter::createInputNode ( 
 		"stepinput inputNode("+MyString(getNumInputNodes()+2) + ")"
@@ -605,11 +605,11 @@ ProcessorNode::Ptr StepInputAdapter::addInputNode(){
 	return neu;
 }
 //------------------------------------------------------------------------------------------------------------
-StepInputAdapter::StepInputAdapter(IHostInfo *hostInfo, int initSteps) : 
+InputStep::InputStep(IHostInfo *hostInfo, int initSteps) : 
 ProcessAdapter( hostInfo, initSteps, 1 ), 
 steps(initSteps),
 type ( Parameter::create() ),
-inputMatrix ( InputMatrix ( initSteps, (Frame*)NULL ) ),
+inputMatrix ( InputMatrix ( initSteps, (Frames*)NULL ) ),
 fixTimeValue( hostInfo->getSampleRate() )
 {
 	setName ( "StepInputAdapter" );
@@ -622,7 +622,7 @@ fixTimeValue( hostInfo->getSampleRate() )
 	tmpFrame.setSize ( hostInfo->getBlockSize() );
 }
 //------------------------------------------------------------------------------------------------------------
-void StepInputAdapter::reset(){
+void InputStep::reset(){
 	cStep->reset();
 	// ermittle anzahl der samples bis zu naechsten 1/4 note
 	VstTimeInfo *inf = hostInfo->getVstTimeInfo( kVstPpqPosValid || kVstTempoValid );
@@ -637,10 +637,10 @@ void StepInputAdapter::reset(){
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-inline void StepInputAdapter::processFrames ( InputMatrix &fr, Processor::Int sampleFrames ) {
+inline void InputStep::processFrames ( InputMatrix &fr, Processor::Int numSamples ) {
 	VstNumber *l = tmpFrame[0];
 	VstNumber *r = tmpFrame[1];
-	for ( int i=0; i<sampleFrames; ++i ){
+	for ( int i=0; i<numSamples; ++i ){
 		*l = 0.0f; *r = 0.0f;
 		if ( cStep->skimDuration() <= 0 ) {
 			cStep->nextStep();
@@ -656,7 +656,7 @@ inline void StepInputAdapter::processFrames ( InputMatrix &fr, Processor::Int sa
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-void StepInputAdapter::_processAdapter( Processor::Int sampleFrames ) {
+void InputStep::_processAdapter( Processor::Int numSamples ) {
 	TRY_TO_LOCK_TIMED (mutex); // gleichzeitigen zugriff von addOutputNode blocken
 	VstTimeInfo *inf = hostInfo->getVstTimeInfo(0);
 	ClockEdge::EdgeValue t = transport.in ( isFlag(inf->flags,kVstTransportPlaying) );
@@ -671,17 +671,17 @@ void StepInputAdapter::_processAdapter( Processor::Int sampleFrames ) {
 		inputMatrix[i] = inputNodes[i]->popFrame();
 	}
 	// berechne OutputFrames
-	processFrames( inputMatrix, sampleFrames );
-	outputNodes[0]->pushAndCopy ( &tmpFrame, sampleFrames );
+	processFrames( inputMatrix, numSamples );
+	outputNodes[0]->pushAndCopy ( &tmpFrame, numSamples );
 }
 //------------------------------------------------------------------------------------------------------------
-StepInputAdapter::~StepInputAdapter(){
+InputStep::~InputStep(){
 	delete cStep;
 	delete sync;
 	TOLOG ( "-" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
-void StepInputAdapter::save(com::oArchive &ar, const unsigned int version) const {
+void InputStep::save(com::oArchive &ar, const unsigned int version) const {
 	ar << boost::serialization::base_object< ProcessAdapter > ( *this );
 	ar << parameterMap;
 	ar << type;
@@ -692,7 +692,7 @@ void StepInputAdapter::save(com::oArchive &ar, const unsigned int version) const
 	ar << cStep;
 }
 //------------------------------------------------------------------------------------------------------------
-void StepInputAdapter::load(com::iArchive &ar, const unsigned int version) {
+void InputStep::load(com::iArchive &ar, const unsigned int version) {
 	ar >> boost::serialization::base_object< ProcessAdapter > ( *this );
 	ar >> parameterMap;
 	ar >> type;
@@ -702,10 +702,10 @@ void StepInputAdapter::load(com::iArchive &ar, const unsigned int version) {
 	ar >> cStep;
 	tmpFrame.setSize ( hostInfo->getBlockSize() );
 	Parameter::ParameterListenerFunction f = boost::bind( 
-			&StepInputAdapter::typeChanged, this, _1, _2 
+			&InputStep::typeChanged, this, _1, _2 
 	);
 	type->addValueChangedListenerF ( f );
-	inputMatrix = InputMatrix( steps, (Frame*)NULL );
+	inputMatrix = InputMatrix( steps, (Frames*)NULL );
 }
 //============================================================================================================
 //PeakTracker
@@ -723,9 +723,9 @@ PeakTracker::PeakTracker( IHostInfo *hostInfo ) : ProcessAdapter(hostInfo,1,1) {
 	TOLOG ( "+" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
-void PeakTracker::_processAdapter( Processor::Int sampleFrames ) {
-	Frame *frame = getInputNode(0)->popFrame();
-	VstInt32 i = sampleFrames;
+void PeakTracker::_processAdapter( Processor::Int numSamples ) {
+	Frames *frame = getInputNode(0)->popFrame();
+	VstInt32 i = numSamples;
 	VstNumber *r = (*frame)[0];
 	VstNumber *l = (*frame)[1];
 	VstNumber average = 0.0f;
@@ -736,7 +736,7 @@ void PeakTracker::_processAdapter( Processor::Int sampleFrames ) {
 	}
 	average = average / (float)frame->getSize();
 	*out = average + *offset;
-	outputNodes[0]->pushAndCopy(frame, sampleFrames);
+	outputNodes[0]->pushAndCopy(frame, numSamples);
 }
 //============================================================================================================
 //ADSRTrigger
@@ -754,9 +754,9 @@ ADSRTrigger::ADSRTrigger( IHostInfo *hostInfo ) : ProcessAdapter(hostInfo) {
 	TOLOG ( "+" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
-void ADSRTrigger::_processAdapter( Processor::Int sampleFrames ) {
-	Frame *frame = getInputNode(0)->popFrame();
-	VstInt32 i = sampleFrames;
+void ADSRTrigger::_processAdapter( Processor::Int numSamples ) {
+	Frames *frame = getInputNode(0)->popFrame();
+	VstInt32 i = numSamples;
 	VstNumber *r = (*frame)[0];
 	VstNumber *l = (*frame)[1];
 	VstNumber average = 0.0f;
@@ -772,7 +772,7 @@ void ADSRTrigger::_processAdapter( Processor::Int sampleFrames ) {
 	*out = com::getMin<VstNumber>( 1.0f, com::getMax<VstNumber> ( 0.0f, adsr->process() ) );
 	out->setLabel ( states[ adsr->getState() ] );
 	// outputnode
-	outputNodes[0]->pushAndCopy(frame, sampleFrames);
+	outputNodes[0]->pushAndCopy(frame, numSamples);
 }
 //============================================================================================================
 // MidiProcessor:

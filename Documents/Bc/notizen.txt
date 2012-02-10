@@ -23,18 +23,22 @@ script Erweiterung
 
 refactor:
 
-PlugNode -> PluginNode
-VST"" -> VST""
-Frame -> Frames
-processFrame() -> processFrames()
-OutputStepAdapter -> InputStep
-Input"" -> Input""
-sampleFrames -> numSamples
-ProcessAdapterNode::adapter -> parent
-getConnectionOperatorContainer -> getConnectionOperators
+<??>PlugNode -> Plugin (auch processing/plugnodes und OS_...)
+<ok>VST"" -> VST""
+<ok>Plugnode::tmpFrame->tmpFrames
+<ok>Frame -> Frames
+<ok>processFrame() -> processFrames()
+mixInputsToFrame -> mixInputsToFrames
+<ok>OutputStepAdapter -> OutputStep
+<ok>Input"" -> Input""
+<oK>sampleFrames -> numSamples
+<ok>VolumeAdapter->Volume
+<ok>PanAdapter -> Pan
+<??>ProcessAdapterNode::adapter -> parent
+<??>getConnectionOperatorContainer -> getConnectionOperators
 GObject::render() -> draw()
 IOBjectController->ObjectController
-GProcessorNode, GProcessorNodeController -> GProcessModule
+<??>GProcessorNode, GProcessorNodeController -> GProcessModule
 
 
 Controll eigenen namespace
@@ -45,5 +49,6 @@ FrontController::M2V -> ViewRelations
 
 Modell:
 Parameter <- Connection | Parameter als attribute
+
 sequences : return values
 frontcontroller->objectcontroller kardinalität nicht * sondern bezug 1 auf einzel. konkreten cntrl 

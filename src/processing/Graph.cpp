@@ -110,13 +110,13 @@ bool Graph::contains ( PObject::Ptr obj ) const {
 	return false;
 }
 //------------------------------------------------------------------------------------------------------------
-void Graph::processGraph( float **outputs, Processor::Int sampleFrames ){
+void Graph::processGraph( float **outputs, Processor::Int numSamples ){
 	if ( endNode->isActive() ) {
 		SignalProcessPath::iterator it = signalProcessPath.begin();
 		for ( ; it!=signalProcessPath.end(); ++it ) { // process path
-			(*it)->processNode( sampleFrames );
+			(*it)->processNode( numSamples );
 		}
-		endNode->getDCStream().flush( sampleFrames, outputs );
+		endNode->getDCStream().flush( numSamples, outputs );
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -128,9 +128,9 @@ EndNode::Ptr Graph::getEndNode() {
 	return endNode;
 }
 //------------------------------------------------------------------------------------------------------------
-void Graph::pushAndCopy ( Frame *fr, Processor::Int sampleFrames ){
+void Graph::pushAndCopy ( Frames *fr, Processor::Int numSamples ){
 	if (!endNode->isActive()) return;
-	startNode->pushAndCopy ( fr, sampleFrames );
+	startNode->pushAndCopy ( fr, numSamples );
 }
 //------------------------------------------------------------------------------------------------------------
 // Re-Initalisiert Graph:

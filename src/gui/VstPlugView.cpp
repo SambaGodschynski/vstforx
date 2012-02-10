@@ -11,7 +11,7 @@ namespace ppiGui{
 //  Oeffnet ein neues Fenster und zeigt externen AEffGUIEditor Editor an. 
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-VSTPlugView::VSTPlugView( PpiEditor *ed, processing::VSTPlugNode::Ptr vstPlugNode ) : 
+VSTPlugView::VSTPlugView( PpiEditor *ed, processing::VSTPlugin::Ptr vstPlugNode ) : 
 vstPlugNode(vstPlugNode),
 editor (ed)
 {
@@ -24,7 +24,7 @@ editor (ed)
 
 }
 //------------------------------------------------------------------------------------------------------------
-VSTPlugView::Ptr VSTPlugView::create( PpiEditor *ed, processing::VSTPlugNode::Ptr vstPlugNode ) {
+VSTPlugView::Ptr VSTPlugView::create( PpiEditor *ed, processing::VSTPlugin::Ptr vstPlugNode ) {
 	Ptr neu = Ptr ( new VSTPlugView ( ed, vstPlugNode ) );
 	neu->self = neu;
 	return neu;

@@ -13,10 +13,10 @@
 
 namespace tests {
 //=============================================================================
-// extra VolumeAdapter: bruch NUMERATOR/DENOMINATOR == initvalue.
+// extra Volume: bruch NUMERATOR/DENOMINATOR == initvalue.
 // wird fuer Creator Klassen benoetig.
 template< int NUMERATOR, int DENOMINATOR >
-class VolumeAdapterX : public processing::VolumeAdapter {
+class VolumeAdapterX : public processing::Volume {
 //============================================================================
 public:
 	//-------------------------------------------------------------------------
@@ -24,7 +24,7 @@ public:
 protected:
 	//-------------------------------------------------------------------------
 	VolumeAdapterX( processing::IHostInfo * g ) : 
-		 VolumeAdapter( g, NUMERATOR / (float)DENOMINATOR ) {}
+		 Volume( g, NUMERATOR / (float)DENOMINATOR ) {}
 public:
 	//-------------------------------------------------------------------------
 	static Ptr create(  processing::IHostInfo * g ) {

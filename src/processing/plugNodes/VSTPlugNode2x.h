@@ -23,12 +23,12 @@ using namespace com;
 using namespace processing;
 using namespace parameter;
 //============================================================================================================
-// Klasse: VSTPlugNode.
+// Klasse: VSTPlugin.
 // Represaentriert ein VST-Plugin.
 //============================================================================================================
-class VSTPlugNode: 
+class VSTPlugin: 
 	public OS_VSTPlugNode2x,
-	public PlugNode, 
+	public Plugin, 
 	public ValueChangedListener<float>,
 	public Serializable
 {
@@ -38,7 +38,7 @@ friend class ppiGui::GPluginController;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<VSTPlugNode> Ptr;
+	typedef boost::shared_ptr<VSTPlugin> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	typedef vector<string> ProgramNames;
@@ -47,13 +47,13 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	void initProgramNames();
 	//--------------------------------------------------------------------------------------------------------
-	Frame nullFrame; // fuer nicht genutzte eingaenge ( beim frame=>float[] )
+	Frames nullFrame; // fuer nicht genutzte eingaenge ( beim frame=>float[] )
 	//--------------------------------------------------------------------------------------------------------
 	void load ( iArchive &ar, const unsigned int version );
 	//--------------------------------------------------------------------------------------------------------
 	void save ( oArchive &ar, const unsigned int version ) const;
 	//--------------------------------------------------------------------------------------------------------
-	VSTPlugNode() : onPlugChangeParameterIndex(-1) {}
+	VSTPlugin() : onPlugChangeParameterIndex(-1) {}
 	//--------------------------------------------------------------------------------------------------------
 	Mutex mutex;
 	//--------------------------------------------------------------------------------------------------------
@@ -63,15 +63,15 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	int blockSize;
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<Frame> Framebuffer;
+	typedef vector<Frames> Framebuffer;
 	//--------------------------------------------------------------------------------------------------------
 	Framebuffer framebuffer;
 	//--------------------------------------------------------------------------------------------------------
-	static VSTPlugNode * getVSTPlugNode ( AEffect *aEff ); // ermittelt ueber Aeffect=>vstplugnode map
+	static VSTPlugin * getVSTPlugNode ( AEffect *aEff ); // ermittelt ueber Aeffect=>vstplugnode map
 	//--------------------------------------------------------------------------------------------------------
 	void initParameter();
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::unordered_map < AEffect*, VSTPlugNode* > RelatedPlugNode;
+	typedef boost::unordered_map < AEffect*, VSTPlugin* > RelatedPlugNode;
 	//--------------------------------------------------------------------------------------------------------
 	static RelatedPlugNode relatedPlugNode;
 	//--------------------------------------------------------------------------------------------------------
@@ -87,18 +87,18 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	void initOutputs();
 	//--------------------------------------------------------------------------------------------------------
-	static void initPlug ( VSTPlugNode &pln ); 
+	static void initPlug ( VSTPlugin &pln ); 
 	//--------------------------------------------------------------------------------------------------------
 	void setupFramebuffer();
 	//--------------------------------------------------------------------------------------------------------
 	int onPlugChangeParameterIndex; // sperre plug => parameter => plug
 protected:
 	//--------------------------------------------------------------------------------------------------------
-	VSTPlugNode( IHostInfo *hostInfo, const string &filename );
+	VSTPlugin( IHostInfo *hostInfo, const string &filename );
 public:
 	//--------------------------------------------------------------------------------------------------------
 	static Ptr create( IHostInfo *hostInfo, const string &filename ) {
-		Ptr neu( new VSTPlugNode(hostInfo, filename) );
+		Ptr neu( new VSTPlugin(hostInfo, filename) );
 		if ( !neu ) return Ptr();
 		neu->self = neu;
 		return neu;
@@ -124,7 +124,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void _processAdapter( Processor::Int sampleFrames );
 	//--------------------------------------------------------------------------------------------------------
-	virtual ~VSTPlugNode();
+	virtual ~VSTPlugin();
 	//--------------------------------------------------------------------------------------------------------
 	virtual void valueChanged ( void *src, const float &value );
 	//--------------------------------------------------------------------------------------------------------
@@ -175,7 +175,7 @@ public:
 									VstIntPtr value, 
 									void* ptr, 
 									float opt ); 
-}; // class VSTPlugNode
+}; // class VSTPlugin
 } // namespace processing
 
 #endif

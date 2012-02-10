@@ -75,8 +75,8 @@ void CmdAddVSTPlugNodeMan::_execute(){
 	
 	Graph::Ptr graph = getRelatedGraph ( cView );
 
-	// erstelle VSTPlugNode
-	PlugNode::Ptr adapter;
+	// erstelle VSTPlugin
+	Plugin::Ptr adapter;
 	try {
 		adapter = PluginFactory::createPlugNode( graph.get(), filename );
 	} catch (...){
@@ -141,7 +141,7 @@ void CmdAddVSTPlugNode::_execute(){
 	PluginCollection::Ptr pC = PluginCollection::getPluginCollection();
 	Graph::Ptr graph = getRelatedGraph ( cView );
 	// get plugin from database
-	PlugNode::Ptr adapter = pC->restorePlugNode( graph.get(), plugInfo ); 
+	Plugin::Ptr adapter = pC->restorePlugNode( graph.get(), plugInfo ); 
 	
 	// adapter im graph einfuegen ( danach janitor freigeben um graph::processingLock freizugeben )
 	Graph::Janitor::Ptr updater = graph->getJanitor(); // <-------------------------Graph::processingLock-Start
@@ -247,9 +247,9 @@ void CmdCreateProcessorNode::create(){
 //------------------------------------------------------------------------------------------------------------
 void CmdCreateVolumeNode::_execute(){
 	GObjectList gObjs;
-	create<GVolumeNode, VolumeAdapter, 1, 1>();
-	// erzeugten VolumeAdapter holen
-	VolumeAdapter::Ptr vol = boost::shared_dynamic_cast<VolumeAdapter, PObject>(newPrA);
+	create<GVolumeNode, Volume, 1, 1>();
+	// erzeugten Volume holen
+	Volume::Ptr vol = boost::shared_dynamic_cast<Volume, PObject>(newPrA);
 	// knob erzeugen
 	GKnob::Ptr knob = GStdKnob::create ( cView );
 	// knob an erzeugte GVolumeNode pos. verschieben
@@ -281,7 +281,7 @@ void CmdCreateVolumeNode::_execute(){
 //------------------------------------------------------------------------------------------------------------
 void CmdCreatePanAdapter::_execute(){
 	GObjectList gObjs;
-	create<GPanAdapter, PanAdapter, 1, 1>();
+	create<GPanAdapter, Pan, 1, 1>();
 	gObjs.push_back( newGPr );
 	newGPr->getIOs ( gObjs );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
@@ -294,7 +294,7 @@ void CmdCreatePanAdapter::_execute(){
 //------------------------------------------------------------------------------------------------------------
 void CmdCreateOStepNode::_execute(){
 	GObjectList gObjs;
-	create<GOutputStepNode, StepOutputAdapter, 1, 2>();
+	create<GOutputStepNode, OutputStep, 1, 2>();
 	gObjs.push_back( newGPr );
 	newGPr->getIOs ( gObjs );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );   
@@ -307,7 +307,7 @@ void CmdCreateOStepNode::_execute(){
 //------------------------------------------------------------------------------------------------------------
 void CmdCreateIStepNode::_execute(){
 	GObjectList gObjs;
-	create<GInputStepNode, StepInputAdapter, 2, 1>();
+	create<GInputStepNode, InputStep, 2, 1>();
 	gObjs.push_back( newGPr );
 	newGPr->getIOs ( gObjs );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
@@ -499,7 +499,7 @@ void CmdPlaceGKnob::_execute() {
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
 void CmdAddOutput::_execute(){
-	// StepOutputAdapter holen:
+	// OutputStep holen:
 	ProcessAdapter::Ptr adapter = ctrl->getViewRelations().get<ProcessAdapter> (vObj);
 	VariableOutputAdapter *sa = dynamic_cast<VariableOutputAdapter*> ( adapter.get() );
 	if ( !sa ) throw com::ppiError::TypeError( "TypeError", __FILE__, __LINE__ );
@@ -539,7 +539,7 @@ void CmdAddOutput::_execute(){
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
 void CmdAddInput::_execute(){
-	// StepInputAdapter holen:
+	// InputStep holen:
 	ProcessAdapter::Ptr adapter = ctrl->getViewRelations().get<ProcessAdapter> (vObj);
 	VariableInputAdapter *sa = dynamic_cast<VariableInputAdapter*> ( adapter.get() );
 	if ( !sa ) throw com::ppiError::TypeError( "TypeError", __FILE__, __LINE__ );
@@ -603,7 +603,7 @@ void CmdRemoveMenu::_execute() {
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
 void CmdSetProgram::_execute() {
-	PlugNode::Ptr plug = ctrl->getViewRelations().get<PlugNode> ( obj );
+	Plugin::Ptr plug = ctrl->getViewRelations().get<Plugin> ( obj );
 	if (!plug) return;
 	plug->setProgram( programIndex );
 }

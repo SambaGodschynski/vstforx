@@ -30,10 +30,10 @@ struct EditorOpenParameterChanged : public com::events::Event {
 	EditorOpenParameterChanged( bool open ) : open(open) {}
 };
 //============================================================================================================
-// Klasse: PlugNode.
+// Klasse: Plugin.
 // Oberklasse fuer Plugin.
 //============================================================================================================
-class PlugNode: 
+class Plugin: 
 	public ProcessAdapter,
 	public HasParameter,
 	public MidiEventProcessor,
@@ -44,7 +44,7 @@ class PlugNode:
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<PlugNode> Ptr;
+	typedef boost::shared_ptr<Plugin> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	PluginInfo pluginInfo;
@@ -68,16 +68,16 @@ private:
 		if ( Archive::is_loading::value ) {
 			// register editor pos parameter in plugin
 			Parameter::ParameterListenerFunction xC = boost::bind( 
-				&PlugNode::paramEditorPosXChanged, this, _1, _2 
+				&Plugin::paramEditorPosXChanged, this, _1, _2 
 			);
 			Parameter::ParameterListenerFunction yC = boost::bind( 
-				&PlugNode::paramEditorPosYChanged, this, _1, _2 
+				&Plugin::paramEditorPosYChanged, this, _1, _2 
 			);
 			Parameter::ParameterListenerFunction oC = boost::bind( 
-				&PlugNode::paramEditorOpenChanged, this, _1, _2 
+				&Plugin::paramEditorOpenChanged, this, _1, _2 
 			);
 			Parameter::ParameterListenerFunction dC = boost::bind( 
-				&PlugNode::paramEditorOpenDisplayChanged, this, _1, _2 
+				&Plugin::paramEditorOpenDisplayChanged, this, _1, _2 
 			);
 			editorPosX->addValueChangedListenerF( xC );
 			editorPosY->addValueChangedListenerF( yC );
@@ -87,9 +87,9 @@ private:
 	}
 protected:
 	//--------------------------------------------------------------------------------------------------------
-	PlugNode() {}
+	Plugin() {}
 	//--------------------------------------------------------------------------------------------------------
-	PlugNode( IHostInfo *hostInfo, const string &location, size_t numInputs = 1, size_t numOutputs = 1 );
+	Plugin( IHostInfo *hostInfo, const string &location, size_t numInputs = 1, size_t numOutputs = 1 );
 public:
 	//--------------------------------------------------------------------------------------------------------
 	processing::parameter::Parameter::Ptr getEditorPosX() const { return editorPosX; }
@@ -150,11 +150,11 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual bool canHandleMidiEvent() const = 0;
 	//--------------------------------------------------------------------------------------------------------
-	virtual void _processAdapter( Processor::Int sampleFrames ) = 0;
+	virtual void _processAdapter( Processor::Int numSamples ) = 0;
 	//--------------------------------------------------------------------------------------------------------
 	virtual void processMidiEvents( VstEvents * events ) = 0;
 	//--------------------------------------------------------------------------------------------------------
-	virtual ~PlugNode();
+	virtual ~Plugin();
 	//--------------------------------------------------------------------------------------------------------
 	virtual bool hasEditor() const = 0;
 	//--------------------------------------------------------------------------------------------------------
@@ -180,10 +180,10 @@ public:
 class PluginFactory {
 private:
 	//--------------------------------------------------------------------------------------------------------
-	static PlugNode::Ptr createVST2xPlugNode ( IHostInfo *hostInfo, const string &filename );
+	static Plugin::Ptr createVST2xPlugNode ( IHostInfo *hostInfo, const string &filename );
 public:
 	//--------------------------------------------------------------------------------------------------------
-	static PlugNode::Ptr createPlugNode ( IHostInfo *hostInfo, const string &filename );
+	static Plugin::Ptr createPlugNode ( IHostInfo *hostInfo, const string &filename );
 }; // pluginfactory
 }// namespace processing
 

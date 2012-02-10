@@ -15,7 +15,7 @@ namespace processing {
 ProcessorNode::ProcessorNode ( const string &name ) : PObject(name), bglVertex(Graph::nullVertex) {
 	active = false;
 	activeChildren = 0;
-	tmpFrame = new Frame();
+	tmpFrames = new Frames();
 	delay = 0;
 }
 //------------------------------------------------------------------------------------------------------------
@@ -23,20 +23,20 @@ ProcessorNode::~ProcessorNode() {
 	if ( getFrameStackSize()!=0 ) {
 		TOLOG ( getName() + " FrameStack Error: " + MyString( getFrameStackSize() ) + " frames left" );
 	}
-	if (tmpFrame) delete tmpFrame;
+	if (tmpFrames) delete tmpFrames;
 }
 //------------------------------------------------------------------------------------------------------------
 void ProcessorNode::prepareFrameContainer( size_t num ) {
 	size_t c = abs( (int)num - (int)frameContainer.size() );
 	bool add = num > frameContainer.size();
 	while ( c-- > 0 ) {
-		if (add) frameContainer.push_back ( Frame::Ptr( new Frame() ) );
+		if (add) frameContainer.push_back ( Frames::Ptr( new Frames() ) );
 		else frameContainer.pop_back();
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-void ProcessorNode::processNode( Processor::Int sampleFrames ) {
-	processFrame ( mixInputsToFrame(sampleFrames), sampleFrames );
+void ProcessorNode::processNode( Processor::Int numSamples ) {
+	processFrames ( mixInputsToFrames(numSamples), numSamples );
 }
 //============================================================================================================
 // class ProcessAdapterNode
@@ -53,20 +53,20 @@ ProcessAdapterNode::~ProcessAdapterNode() {}
 //------------------------------------------------------------------------------------------------------------
 NOPNode::NOPNode(const string &name) : ProcessorNode ( name ){}
 //------------------------------------------------------------------------------------------------------------
-void NOPNode::processFrame ( Frame *fr, Processor::Int sampleFrames ){
-	pushAndCopy ( fr, sampleFrames );
+void NOPNode::processFrames ( Frames *fr, Processor::Int numSamples ){
+	pushAndCopy ( fr, numSamples );
 }
 //============================================================================================================
 // class EndNode
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-void EndNode::processNode( Processor::Int sampleFrames ) {
+void EndNode::processNode( Processor::Int numSamples ) {
 	Parents::iterator it = parents.begin();
 	ProcessorNode *n;
 	for ( ; it!=parents.end(); ++it ) {
 		n = *it;
 		if ( !n->isActive() ) continue;
-		stream.addFrame ( n->popFrame(), sampleFrames,  getNodeDelay() - n->getNodeDelay() );
+		stream.addFrame ( n->popFrame(), numSamples,  getNodeDelay() - n->getNodeDelay() );
 	}
 }
 //============================================================================================================

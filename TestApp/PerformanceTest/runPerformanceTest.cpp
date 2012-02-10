@@ -25,10 +25,11 @@ const string SEPERATOR2("-----------------------------------");
 processing::Graph::Ptr createGraph( int blockSize, float samplerate ) 
 {
 //-----------------------------------------------------------------------------
-	Graph::Ptr graph = Graph::create ( dummyFX, NULL );
+	Graph::Ptr graph = Graph::create ( dummyFX );
 	Graph::Janitor::Ptr janitor = graph->getJanitor();
-	janitor->setSampleRate ( samplerate );
-	janitor->setBlockSize ( blockSize );
+	dummyFX->setSampleRate ( samplerate );
+	dummyFX->setBlockSize ( blockSize );
+	janitor->hostInfoChanged();
 	return graph;
 }
 //-----------------------------------------------------------------------------
@@ -66,8 +67,8 @@ void buildAndProcessGraph() {
 	janitor.reset();
 	stopTimer(timer);
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> process
-	Frame inFrame( blockSize );
-	Frame outFrame( blockSize );
+	Frames inFrame( blockSize );
+	Frames outFrame( blockSize );
 	graph->pushAndCopy ( &inFrame, blockSize );
 	startTimer("process graph", timer);
 	graph->processGraph( outFrame.getData(), blockSize  );
@@ -93,7 +94,7 @@ int main ( int argc, char ** argv ) {
 	cout<<"version: " << com::Settings::versionToString() << endl << endl;
 	
 	dummyFX = new DummyFX( NULL );
-	typedef CreateAdapter<VolumeAdapter> Adapter;
+	typedef CreateAdapter<Volume> Adapter;
 	// runs test(s)
 	//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 	startTest< CreateParallel< CreateSeries < Adapter, 15 >, 15 > >("complex1");

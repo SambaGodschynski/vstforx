@@ -10,7 +10,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( tests::FrameTest );
 
 namespace {
 //=============================================================================
-void fillFrame ( com::Frame *f, float left, float right ) {
+void fillFrame ( processing::Frames *f, float left, float right ) {
 //=============================================================================
 	using namespace com;
 	for ( size_t i = 0; i<f->getSize(); ++i ) {
@@ -46,8 +46,8 @@ void processGraph ( processing::Graph *graph,
 {
 	if ( !graph->isActive() ) 
 		throw ProcessException("graph inactive.");
-	com::Frame fIn ( blockSize );
-	com::Frame fOut ( blockSize );
+	processing::Frames fIn ( blockSize );
+	processing::Frames fOut ( blockSize );
 	fillFrame ( &fIn, inLeft, inRight );
 	while ( repeat-- > 0 ) {
 		fillFrame ( &fIn, inLeft, inRight );
@@ -102,14 +102,14 @@ void FrameTest::testConstructor() {
 	using namespace com;
 	using namespace processing;
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> std constr.
-	Frame fr;
+	Frames fr;
 	CPPUNIT_ASSERT ( fr.getSize() == 0 );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> with given size + assign op.
-	fr = Frame( 512 );
-	CPPUNIT_ASSERT_EQUAL ( (Frame::Int)512, fr.getSize() );
+	fr = Frames( 512 );
+	CPPUNIT_ASSERT_EQUAL ( (Frames::Int)512, fr.getSize() );
 	FILL_AND_CHECK (fr, 1.0f);
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> with extern data
-	Frame fr2 ( fr.getData(), fr.getSize()/2 );
+	Frames fr2 ( fr.getData(), fr.getSize()/2 );
 	CPPUNIT_ASSERT ( isFilledWith<float>( fr2[0], fr2.getSize(),  1.0 ) ); 
 	CPPUNIT_ASSERT ( isFilledWith<float>( fr2[0], fr2.getSize(), -1.0 ) ); 
 }
@@ -120,11 +120,11 @@ void FrameTest::testResize() {
 	using namespace com;
 	using namespace processing;
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> std constr.
-	Frame fr;
+	Frames fr;
 	CPPUNIT_ASSERT ( fr.getSize() == 0 );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> with given size + assign op.
-	fr = Frame( 512 );
-	CPPUNIT_ASSERT_EQUAL ( (Frame::Int)512, fr.getSize() );
+	fr = Frames( 512 );
+	CPPUNIT_ASSERT_EQUAL ( (Frames::Int)512, fr.getSize() );
 	FILL_AND_CHECK (fr, 1.0f);
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> resize
 	fr.setSize( 1034 );

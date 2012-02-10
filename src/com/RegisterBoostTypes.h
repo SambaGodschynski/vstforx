@@ -22,11 +22,11 @@ void register_types( A &ar ){
 	ar.template register_type<StartNode>();
 	ar.template register_type<EndNode>();
 	ar.template register_type<ProcessAdapterNode>();
-	ar.template register_type<VolumeAdapter>();
-	ar.template register_type<VSTPlugNode>();
-	ar.template register_type<PanAdapter>();
-	ar.template register_type<StepOutputAdapter>();
-	ar.template register_type<StepInputAdapter>();
+	ar.template register_type<Volume>();
+	ar.template register_type<VSTPlugin>();
+	ar.template register_type<Pan>();
+	ar.template register_type<OutputStep>();
+	ar.template register_type<InputStep>();
 	ar.template register_type<OutputSwitch>();
 	ar.template register_type<InputSwitch>();
 	ar.template register_type<PeakTracker>();

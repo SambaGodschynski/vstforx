@@ -497,6 +497,10 @@
 					Name="processing"
 					>
 					<File
+						RelativePath="..\..\src\processing\BglGraph.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\processing\ConcreteProcessAdapter.cpp"
 						>
 						<FileConfiguration
@@ -509,6 +513,10 @@
 						</FileConfiguration>
 					</File>
 					<File
+						RelativePath="..\..\src\processing\ConcreteProcessAdapter.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\processing\dspTools.cpp"
 						>
 					</File>
@@ -517,15 +525,19 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\processing\Frame.cpp"
+						RelativePath="..\..\src\processing\Frames.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\processing\Frame.h"
+						RelativePath="..\..\src\processing\Frames.h"
 						>
 					</File>
 					<File
 						RelativePath="..\..\src\processing\Graph.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\processing\Graph.h"
 						>
 					</File>
 					<File
@@ -552,6 +564,10 @@
 						RelativePath="..\..\src\processing\processing.cpp"
 						>
 					</File>
+					<File
+						RelativePath="..\..\src\processing\processing.h"
+						>
+					</File>
 					<Filter
 						Name="parameter"
 						>
@@ -560,7 +576,15 @@
 							>
 						</File>
 						<File
+							RelativePath="..\..\src\processing\parameter\ConnectionOperators.h"
+							>
+						</File>
+						<File
 							RelativePath="..\..\src\processing\parameter\parameter.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\processing\parameter\parameter.h"
 							>
 						</File>
 					</Filter>
@@ -576,7 +600,15 @@
 							>
 						</File>
 						<File
+							RelativePath="..\..\src\processing\PlugInfo.h"
+							>
+						</File>
+						<File
 							RelativePath="..\..\src\processing\PlugNode.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\processing\PlugNode.h"
 							>
 						</File>
 						<File

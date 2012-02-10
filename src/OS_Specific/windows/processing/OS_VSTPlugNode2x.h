@@ -56,7 +56,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	AEffect * getAEffect (){ return aEff; }
 
-}; // class VSTPlugNode
+}; // class VSTPlugin
 } // namespace processing
 
 #endif

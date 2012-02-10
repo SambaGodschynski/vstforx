@@ -185,7 +185,7 @@ void PluginCollectionTest::testScan() {
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan whole folder. expect 93 plugs 
 	// setup folders
 	settings->clearVSTFolders();
-	com::Path path = boost::filesystem::complete("testVstFolder");
+	sambag::com::Location path = boost::filesystem::complete("testVstFolder");
 	settings->addVSTFolder( path.string() );
 	// start scan
 	PluginCollection::Ptr pC( PluginCollection::getPluginCollection() );
@@ -233,7 +233,7 @@ void PluginCollectionTest::testFastScan() {
 	// setup folders
 	settings->clearVSTFolders();
 	settings->fastScan = true;
-	com::Path path =  boost::filesystem::complete("testVstFolder");
+	sambag::com::Location path =  boost::filesystem::complete("testVstFolder");
 	settings->addVSTFolder( path.string() );
 	// start scan
 	boost::timer timer; 
@@ -259,7 +259,7 @@ void PluginCollectionTest::testFastScan() {
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 3, pC->getNumNotChecked() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>check pluginfo list
 	PluginCollection::PluginInfoList pL;
-	com::Path pathA = com::Path( path.string() + "/A" );
+	sambag::com::Location pathA = sambag::com::Location( path.string() + "/A" );
 	pC->getPlugInfoList( pC->getFolder( pathA ), pL, true );
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION, pL.size() );
 }
@@ -271,10 +271,10 @@ void PluginCollectionTest::testFolderIntegrity1(){
 	using namespace com;
 	using namespace processing;
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>open corrupt database file
-	com::Path pathA =  boost::filesystem::complete("testVstFolder");
-	com::Path db = settings->getPlugCollectionDumpFilename();
+	sambag::com::Location pathA =  boost::filesystem::complete("testVstFolder");
+	sambag::com::Location db = settings->getPlugCollectionDumpFilename();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>copy corrupt file to database file
-	com::Path corruptDatabase =  boost::filesystem::complete("testVstFolder/corrupt_database");
+	sambag::com::Location corruptDatabase =  boost::filesystem::complete("testVstFolder/corrupt_database");
 	if ( exists( db ) ) remove(db);
 	copy_file ( corruptDatabase, db ); 
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>start scan
@@ -287,7 +287,7 @@ void PluginCollectionTest::testFolderIntegrity1(){
 	pC->update( graph.get() );
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 1, pC->getNumSucceed() );
 	//>>>>>>>>>>>>>>>>has to throw something like "given folder == sub folder"
-	com::Path pathB =  boost::filesystem::complete("testVstFolder/A");
+	sambag::com::Location pathB =  boost::filesystem::complete("testVstFolder/A");
 	settings->addVSTFolder( pathA.string() );
 	CPPUNIT_ASSERT_THROW ( 
 		settings->addVSTFolder( pathB.string() ), 
@@ -349,8 +349,8 @@ void PluginCollectionTest::testFolderIntegrity2(){
 	resetPluginCollection( graph );
 	////>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>setup folders
 	settings->clearVSTFolders();
-	com::Path pathA =  boost::filesystem::complete("testVstFolder");
-	com::Path pathB =  pathA.string() + "/NeuFolder";
+	sambag::com::Location pathA =  boost::filesystem::complete("testVstFolder");
+	sambag::com::Location pathB =  pathA.string() + "/NeuFolder";
 	create_directory(pathB);
 	string filename1  = string("mda Delay")  + VSTPLUG_EXT;
 	string filename2  = string("mda Detune") + VSTPLUG_EXT;
@@ -445,8 +445,8 @@ void PluginCollectionTest::testPortability() {
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>set/scan folder(A). 
 	// setup folders
 	settings->clearVSTFolders();
-	com::Path path =  boost::filesystem::complete("testVstFolder/A");
-	com::Path plugLocation = path.string() + PLUGIN_LOACTION_1;
+	sambag::com::Location path =  boost::filesystem::complete("testVstFolder/A");
+	sambag::com::Location plugLocation = path.string() + PLUGIN_LOACTION_1;
 	settings->addVSTFolder( path.string() );
 	// start scan
 	PluginCollection::Ptr pC( PluginCollection::getPluginCollection() );
@@ -455,7 +455,7 @@ void PluginCollectionTest::testPortability() {
 	pC->EventSender<com::ScanFinished>::addEventListener( this );
 	pC->update( graph.get() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>getPlugin_1 has to be found
-	PlugNode::Ptr plug = pC->getPlugNode ( graph.get(), plugLocation.string() );
+	Plugin::Ptr plug = pC->getPlugNode ( graph.get(), plugLocation.string() );
 	CPPUNIT_ASSERT ( plug );
 	PluginInfo pluginInfo = plug->getPluginInfo();
 	plugLocation = path.string() + PLUGIN_LOACTION_1;
@@ -520,9 +520,9 @@ void PluginCollectionTest::testMultipleDirectories() {
 	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>setup folders
 	settings->clearVSTFolders();
 	resetPluginCollection(graph);
-	com::Path pathB1 = boost::filesystem::complete("testVstFolder/B/B1");
-	com::Path pathB2 = boost::filesystem::complete("testVstFolder/B/B2");
-	com::Path pathA = boost::filesystem::complete("testVstFolder/A");
+	sambag::com::Location pathB1 = boost::filesystem::complete("testVstFolder/B/B1");
+	sambag::com::Location pathB2 = boost::filesystem::complete("testVstFolder/B/B2");
+	sambag::com::Location pathA = boost::filesystem::complete("testVstFolder/A");
 	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add B2
 	// detected bug:
 	// path comparisation in isAllScanned failed because db saves "/" 
