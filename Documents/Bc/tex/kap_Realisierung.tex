@@ -1,107 +1,33 @@
 % !TEX encoding = UTF-8 Unicode
 \section{Realisierung}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\subsection{Externe Bibliotheken}
-%Smart Pointer-> problem: wann objekt löschen?(shared_ptr vs. CReferenceCounter)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Der Graph}
-Wie in Kapitel \ref{sysProcessing} beschrieben, wurde zur Implementierung der Graph-Struktur, die \emph{Boost Graph Library} verwendet. Da dessen Benutzung nicht sehr intuitiv ist, soll folgend kurz darauf eingegangen werden. 
-\\\\
-Der Ausdruck \emph{typedef boost::adjacency\_list<EC, VC, D, VP, EP> G;} vereinbart eine Graphklasse G. Über die Template-Parameter des Ausdruckes, können verschiedene Grapheigenschaften bestimmt werden:
-\begin{description}
-	\item[EC] (EdgeContainerType) bestimmt den Containertyp fur die Graphkanten.
-			 Mögliche Typen sind:
-			 \begin{description}
-				 \item[vecS] = std::vector 
-				 \item[listS] = std::list 
-				 \item[setS] = std::set 
-				 \item[hash\_setS] = boost::unordered\_set 
-			 \end{description}
-	\item[VC] (VertexContainerType) bestimmt den Containertyp für die Graphknoten. (Mögliche Typen: siehe EC)
-	\item[D] (Direction) bestimmt die Kantendaten die auf einen Knoten abgebildet werden:
-		\begin{description}
-			 \item[undirectedS] = ungerichtet 
-			 \item[directedS] = gerichtet / alle ausgehenden Kanten 
-			 \item[bidirectionalS] = gerichtet / alle ein- sowie ausgehenden Kanten
-		 \end{description}
-	\item[VP] (VertexProperties)[optional] zusätzliche Konteneigenschaften
-	\item[EP] (EdgeProperties)[optional] zusätzliche Kanteneigenschaften
-\end{description}
-Jedem Graphknoten muss ein \emph{ProcessorNode} Objekt zugewiesen werden. Dies wird mittels des VertexProperties Template-Parameters\footnote{The Boost Graph Library User Guide and Reference Manual, Jeremy G.Siek, Addison-Wesely, 2002, Seite 277 ff.} realisiert. Ist solch ein Parameter angegeben, steht der Graphklasse eine PropertyMap\footnote{The Boost Library, http://www.boost.org/doc/libs/1\_48\_0/libs/property\_map/doc/property\_map.html} zur Verfügung (siehe Listing \ref{BGL01}).  
-\\\\
-\begin{lstlisting}[label=BGL01, caption={Beispiel einer BGL-Graph Deklaration mit zusätzlicher Knoten-Eigenschaft}]
+\subsection{SDK Probleme}
+%string längen
+%Parameter::setValue( VstNumber v ) avoid NaN. problems with serialize and deserialize issue #113
+%midi receive
+%getLocation
+%fruity
+%Cant add vst-directories in VSTForx configuration dialog
+Da VSTForx sowohl ein Plugin, als auch ein Host für Plugins ist, existieren gleich zwei potentielle Fehlerquellen. Zum einen muss sichergestellt werden, dass jede Host-Anwendung VSTForx Laden und Ausführen kann. Zum anderen sollte auch VSTForx in der Lage sein, jedes Plugin zu Laden und Auszuführen. Unglücklicherweise ist eine große schwäche des VST2.x-SKDs, die schlechte Dokumentation. So sind viele Funktionen ungenügend oder gar nicht beschrieben. Auch bleibt ungeklärt, in welcher Reihenfolge Operationen ausgeführt werden(siehe Abschnitt: Initalisierungsreihenfolge). Da es eine große Menge an Plugins und Host-Anwendungen gibt, führte dies zu einer Reihe an Problemen, die erst durch viel ausprobieren ermittelt und behoben werden konnten. 
+\paragraph{Initalisierungsreihenfolge}
+Wie bereits in Kapitel \ref{kapAnforderungen} beschrieben, existiert zur Kommunikation zwischen Host und Plugin lediglich eine Methode: \funktion{dispatcher()}.
 
-// Vereinbarung einer Knoten-Eigenschaften Tag-klasse 
-struct ProcessorNode_t { 
-	typedef boost::vertex_property_tag kind; 
-};
-
-// Knoteneigenschaft = ProcessorNode 
-typedef boost::property<ProcessorNode_t, ProcessorNode*> OwnProperty;
-
-// BGL-Graphklasse 
-typedef boost::adjacency_list< 
-	boost::listS, 
-	boost::vecS, 
-	boost::bidirectionalS,  
-	OwnProperty 
-> G;
-
-// Vertex2ProcesorNode
-typedef boost::property_map<G, ProcessorNode_t>::type ProcessorNodeMap;
-
-// Vertex alias
-typedef boost::graph_traits<G>::vertex_descriptor Vertex;
+// reihenfolge wichtig! ( ueber debugger ermittelt )
+// setze samplerate  
+plug.aEff->dispatcher ( plug.aEff, effSetSampleRate, 0, 0, 0, plug.hostInfo->getSampleRate() );
+// setze blockSize  
+plug.aEff->dispatcher ( plug.aEff, effSetBlockSize, 0, plug.hostInfo->getBlockSize(), 0, 0 );
+// open
+plug.aEff->dispatcher ( plug.aEff, effOpen, 0, 0, 0, 0.0 );
+aEff->dispatcher ( aEff, effMainsChanged, 0, 1, 0, 0 ); // turn on
+aEff->dispatcher ( aEff, effMainsChanged, 0, 0, 0, 0 ); // turn off
+aEff->dispatcher ( aEff, effMainsChanged, 0, 1, 0, 0 ); // turn on
 
 
-// Beispiel Aufruf
-void addVertex(G &g) { 
-	Vertex v = g.add_vertex(g)
-	
-	// hole map
-	ProcessorNodeMap map = get( ProcessorNode_t(), g ); 
-	map[v] = new ProcessorNode();
-}
-
-\end{lstlisting}
-\paragraph{Testen}
-%ProcessorNodeExpection
-\subparagraph{Graph Builder}
-\begin{lstlisting}[label=BGL01, caption={Beispiel einer BGL-Graph Deklaration mit zusätzlicher Knoten-Eigenschaft}]
-
-// Vereinbarung einer Knoten-Eigenschaften Tag-klasse 
-struct ProcessorNode_t { 
-	typedef boost::vertex_property_tag kind; 
-};
-
-// Knoteneigenschaft = ProcessorNode 
-typedef boost::property<ProcessorNode_t, ProcessorNode*> OwnProperty;
-
-// BGL-Graphklasse 
-typedef boost::adjacency_list< 
-	boost::listS, 
-	boost::vecS, 
-	boost::bidirectionalS,  
-	OwnProperty 
-> G;
-
-// Vertex2ProcesorNode
-typedef boost::property_map<G, ProcessorNode_t>::type ProcessorNodeMap;
-
-// Vertex alias
-typedef boost::graph_traits<G>::vertex_descriptor Vertex;
-
-
-// Beispiel Aufruf
-void addVertex(G &g) { 
-	Vertex v = g.add_vertex(g)
-	
-	// hole map
-	ProcessorNodeMap map = get( ProcessorNode_t(), g ); 
-	map[v] = new ProcessorNode();
-}
-
-\end{lstlisting}
+\paragraph{String längen}
+\paragraph{NaN Probleme}
+\paragraph{Kein Midi-Empfang}
+\paragraph{Wo bin ich?}
+\paragraph{Verzeichnisauswahl}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Persistenz}
@@ -110,8 +36,6 @@ void addVertex(G &g) {
 \subsection{Die Plugindatenbank}
 \paragraph{Testen}
 \paragraph{Probleme}
-%string längen
-%Parameter::setValue( VstNumber v ) avoid NaN. problems with serialize and deserialize issue #113
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Die Benutzerschnitstelle}
 \paragraph{Probleme}

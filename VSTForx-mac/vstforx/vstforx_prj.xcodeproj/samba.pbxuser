@@ -48,6 +48,18 @@
 			A269BD4B14D833A1000A2F8A = A269BD4B14D833A1000A2F8A /* PBXTextBookmark */;
 			A28ADE1F14D90A12003A22D8 = A28ADE1F14D90A12003A22D8 /* PBXTextBookmark */;
 			A28ADE3214D9939E003A22D8 = A28ADE3214D9939E003A22D8 /* PBXTextBookmark */;
+			A28E4A2514E962CB00EEBE68 /* PBXTextBookmark */ = A28E4A2514E962CB00EEBE68 /* PBXTextBookmark */;
+			A28E4A2614E962CB00EEBE68 /* PBXTextBookmark */ = A28E4A2614E962CB00EEBE68 /* PBXTextBookmark */;
+			A28E4A2814E962CB00EEBE68 /* PBXTextBookmark */ = A28E4A2814E962CB00EEBE68 /* PBXTextBookmark */;
+			A28E4A2914E962CB00EEBE68 /* PBXTextBookmark */ = A28E4A2914E962CB00EEBE68 /* PBXTextBookmark */;
+			A28E4A2A14E962CB00EEBE68 /* PBXTextBookmark */ = A28E4A2A14E962CB00EEBE68 /* PBXTextBookmark */;
+			A28E4A2B14E962CB00EEBE68 /* PBXTextBookmark */ = A28E4A2B14E962CB00EEBE68 /* PBXTextBookmark */;
+			A28E4A2D14E962CB00EEBE68 /* PBXTextBookmark */ = A28E4A2D14E962CB00EEBE68 /* PBXTextBookmark */;
+			A28E4A2E14E962CB00EEBE68 /* PBXTextBookmark */ = A28E4A2E14E962CB00EEBE68 /* PBXTextBookmark */;
+			A28E4A2F14E962CB00EEBE68 /* PBXBookmark */ = A28E4A2F14E962CB00EEBE68 /* PBXBookmark */;
+			A28E4A3014E962CB00EEBE68 /* PBXTextBookmark */ = A28E4A3014E962CB00EEBE68 /* PBXTextBookmark */;
+			A28E4A3514E962CB00EEBE68 /* PBXTextBookmark */ = A28E4A3514E962CB00EEBE68 /* PBXTextBookmark */;
+			A28E4A3614E962CB00EEBE68 /* PBXTextBookmark */ = A28E4A3614E962CB00EEBE68 /* PBXTextBookmark */;
 			A29A3EA514E2878C00B1CCF4 = A29A3EA514E2878C00B1CCF4 /* PBXTextBookmark */;
 			A29A3EA614E2878C00B1CCF4 = A29A3EA614E2878C00B1CCF4 /* PBXTextBookmark */;
 			A29A3EA814E2878C00B1CCF4 = A29A3EA814E2878C00B1CCF4 /* PBXTextBookmark */;
@@ -83,7 +95,7 @@
 	};
 	A25C4FBE14DAF4EA003AEA33 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
-		fRef = A28ADE2E14D97FC0003A22D8 /* Frame.h */;
+		fRef = A28ADE2E14D97FC0003A22D8 /* Frames.h */;
 		name = "Frame.h: 323";
 		rLen = 35;
 		rLoc = 13485;
@@ -171,7 +183,7 @@
 		vrLen = 2884;
 		vrLoc = 11183;
 	};
-	A28ADE2E14D97FC0003A22D8 /* Frame.h */ = {
+	A28ADE2E14D97FC0003A22D8 /* Frames.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1517, 4420}}";
 			sepNavSelRange = "{2235, 0}";
@@ -188,6 +200,132 @@
 		rType = 0;
 		vrLen = 2718;
 		vrLoc = 3929;
+	};
+	A28E4A2514E962CB00EEBE68 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = A88670A2139CDEFA00B5CBDD /* BglGraph.h */;
+		name = "BglGraph.h: 24";
+		rLen = 14;
+		rLoc = 1094;
+		rType = 0;
+		vrLen = 3136;
+		vrLoc = 0;
+	};
+	A28E4A2614E962CB00EEBE68 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = A28E4A2714E962CB00EEBE68 /* adjacency_list.hpp */;
+		name = "adjacency_list.hpp: 332";
+		rLen = 4;
+		rLoc = 9016;
+		rType = 0;
+		vrLen = 1972;
+		vrLoc = 8039;
+	};
+	A28E4A2714E962CB00EEBE68 /* adjacency_list.hpp */ = {
+		isa = PBXFileReference;
+		name = adjacency_list.hpp;
+		path = /Users/johannesunger/clibs/boost_1_42_0/boost/graph/adjacency_list.hpp;
+		sourceTree = "<absolute>";
+	};
+	A28E4A2814E962CB00EEBE68 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = A86FBA901341D228007D82DE /* processing.cpp */;
+		name = "processing.cpp: 55";
+		rLen = 72;
+		rLoc = 2901;
+		rType = 0;
+		vrLen = 2620;
+		vrLoc = 3924;
+	};
+	A28E4A2914E962CB00EEBE68 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = A88670A3139CDEFA00B5CBDD /* Graph.cpp */;
+		name = "Graph.cpp: 107";
+		rLen = 0;
+		rLoc = 4515;
+		rType = 0;
+		vrLen = 1965;
+		vrLoc = 10847;
+	};
+	A28E4A2A14E962CB00EEBE68 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = A29A3EB214E2878C00B1CCF4 /* GraphTest.cpp */;
+		name = "GraphTest.cpp: 406";
+		rLen = 22;
+		rLoc = 16832;
+		rType = 0;
+		vrLen = 2761;
+		vrLoc = 39428;
+	};
+	A28E4A2B14E962CB00EEBE68 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = A28E4A2C14E962CB00EEBE68 /* runPerformanceTest.cpp */;
+		name = "runPerformanceTest.cpp: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 1931;
+		vrLoc = 2798;
+	};
+	A28E4A2C14E962CB00EEBE68 /* runPerformanceTest.cpp */ = {
+		isa = PBXFileReference;
+		name = runPerformanceTest.cpp;
+		path = /Users/johannesunger/workspace/vstforx/TestApp/PerformanceTest/runPerformanceTest.cpp;
+		sourceTree = "<absolute>";
+	};
+	A28E4A2D14E962CB00EEBE68 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = A29A3EB614E2878C00B1CCF4 /* GraphBuilder.hpp */;
+		name = "GraphBuilder.hpp: 236";
+		rLen = 0;
+		rLoc = 10565;
+		rType = 0;
+		vrLen = 1955;
+		vrLoc = 8988;
+	};
+	A28E4A2E14E962CB00EEBE68 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = A86FBA8F1341D228007D82DE /* VSTPlugin2x.h */;
+		name = "VSTPlugin2x.h: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 1948;
+		vrLoc = 0;
+	};
+	A28E4A2F14E962CB00EEBE68 /* PBXBookmark */ = {
+		isa = PBXBookmark;
+		fRef = A86FBA8E1341D228007D82DE /* VSTPlugin2x.cpp */;
+	};
+	A28E4A3014E962CB00EEBE68 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = A86FBA8E1341D228007D82DE /* VSTPlugin2x.cpp */;
+		name = "VSTPlugin2x.cpp: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 2210;
+		vrLoc = 1360;
+	};
+	A28E4A3514E962CB00EEBE68 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = A88670A2139CDEFA00B5CBDD /* BglGraph.h */;
+		name = "BglGraph.h: 35";
+		rLen = 75;
+		rLoc = 1685;
+		rType = 0;
+		vrLen = 3142;
+		vrLoc = 0;
+	};
+	A28E4A3614E962CB00EEBE68 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = A88670A2139CDEFA00B5CBDD /* BglGraph.h */;
+		name = "BglGraph.h: 31";
+		rLen = 57;
+		rLoc = 1355;
+		rType = 0;
+		vrLen = 3142;
+		vrLoc = 0;
 	};
 	A29A3EA514E2878C00B1CCF4 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
@@ -310,12 +448,17 @@
 		name = GraphTest.cpp;
 		path = /Users/johannesunger/workspace/vstforx/src/tests/GraphTest.cpp;
 		sourceTree = "<absolute>";
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1314, 16718}}";
+			sepNavSelRange = "{16832, 22}";
+			sepNavVisRange = "{39428, 2761}";
+		};
 	};
 	A29A3EB314E2878C00B1CCF4 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = A29A3EB414E2878C00B1CCF4 /* GraphBuilder.hpp */;
 		rLen = 0;
-		rLoc = 11603;
+		rLoc = 11615;
 		rType = 0;
 	};
 	A29A3EB414E2878C00B1CCF4 /* GraphBuilder.hpp */ = {
@@ -342,9 +485,9 @@
 		path = /Users/johannesunger/workspace/vstforx/src/tests/GraphBuilder.hpp;
 		sourceTree = "<absolute>";
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1314, 3471}}";
-			sepNavSelRange = "{10346, 0}";
-			sepNavVisRange = "{9781, 1811}";
+			sepNavIntBoundsRect = "{{0, 0}, {1314, 3341}}";
+			sepNavSelRange = "{10565, 0}";
+			sepNavVisRange = "{8988, 1955}";
 		};
 	};
 	A29A3EB914E2878C00B1CCF4 /* PBXTextBookmark */ = {
@@ -359,7 +502,7 @@
 	};
 	A29A3EBA14E2878C00B1CCF4 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
-		fRef = A28ADE2E14D97FC0003A22D8 /* Frame.h */;
+		fRef = A28ADE2E14D97FC0003A22D8 /* Frames.h */;
 		name = "Frame.h: 60";
 		rLen = 0;
 		rLoc = 2235;
@@ -403,7 +546,7 @@
 	};
 	A2F11EC014DC4CA1008BD836 /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
-		fRef = A28ADE2E14D97FC0003A22D8 /* Frame.h */;
+		fRef = A28ADE2E14D97FC0003A22D8 /* Frames.h */;
 		name = "Frame.h: 60";
 		rLen = 0;
 		rLoc = 2235;
@@ -486,42 +629,57 @@
 			sepNavWindowFrame = "{{19, 0}, {1576, 1028}}";
 		};
 	};
+	A86FBA8E1341D228007D82DE /* VSTPlugin2x.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1314, 6136}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{1360, 2210}";
+		};
+	};
+	A86FBA8F1341D228007D82DE /* VSTPlugin2x.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1314, 2561}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRange = "{0, 1948}";
+		};
+	};
 	A86FBA901341D228007D82DE /* processing.cpp */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {1314, 1664}}";
 			sepNavSelRange = "{2901, 72}";
-			sepNavVisRange = "{3929, 2718}";
+			sepNavVisRange = "{3924, 2620}";
 			sepNavWindowFrame = "{{19, 0}, {1523, 1028}}";
 		};
 	};
 	A86FBA911341D228007D82DE /* processing.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1464, 6552}}";
+			sepNavIntBoundsRect = "{{0, 0}, {1464, 6565}}";
 			sepNavSelRange = "{6962, 59}";
-			sepNavVisRange = "{5569, 4461}";
-			sepNavWindowFrame = "{{19, 0}, {1523, 1028}}";
+			sepNavVisRange = "{5467, 4463}";
+			sepNavWindowFrame = "{{18, 0}, {1523, 1028}}";
 		};
 	};
 	A88670A2139CDEFA00B5CBDD /* BglGraph.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1314, 693}}";
-			sepNavSelRange = "{0, 0}";
+			sepNavIntBoundsRect = "{{0, 0}, {1517, 900}}";
+			sepNavSelRange = "{1355, 57}";
 			sepNavVisRange = "{0, 3142}";
 		};
 	};
 	A88670A3139CDEFA00B5CBDD /* Graph.cpp */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1314, 5421}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{4209, 2333}";
+			sepNavIntBoundsRect = "{{0, 0}, {1314, 5486}}";
+			sepNavSelRange = "{4515, 0}";
+			sepNavVisRange = "{10847, 1965}";
 			sepNavWindowFrame = "{{19, 0}, {1523, 1028}}";
 		};
 	};
 	A88670A4139CDEFA00B5CBDD /* Graph.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1314, 5538}}";
-			sepNavSelRange = "{0, 0}";
-			sepNavVisRange = "{139, 2103}";
+			sepNavIntBoundsRect = "{{0, 0}, {1517, 5473}}";
+			sepNavSelRange = "{4693, 35}";
+			sepNavVisRange = "{2537, 4228}";
+			sepNavWindowFrame = "{{104, 0}, {1576, 1028}}";
 		};
 	};
 	A88670A5139CDEFA00B5CBDD /* IVstEventProcessor.h */ = {

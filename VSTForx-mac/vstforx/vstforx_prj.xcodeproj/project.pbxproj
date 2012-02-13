@@ -23,8 +23,8 @@
 
 /* Begin PBXBuildFile section */
 		8D01CCCE0486CAD60068D4B7 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08EA7FFBFE8413EDC02AAC07 /* Carbon.framework */; };
-		A28ADE2F14D97FC0003A22D8 /* Frame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28ADE2D14D97FC0003A22D8 /* Frame.cpp */; };
-		A28ADE3014D97FC0003A22D8 /* Frame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28ADE2D14D97FC0003A22D8 /* Frame.cpp */; };
+		A28ADE2F14D97FC0003A22D8 /* Frames.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28ADE2D14D97FC0003A22D8 /* Frames.cpp */; };
+		A28ADE3014D97FC0003A22D8 /* Frames.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28ADE2D14D97FC0003A22D8 /* Frames.cpp */; };
 		A28B82FA149FCDD2003F0F88 /* FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28B82F9149FCDD2003F0F88 /* FileSystem.cpp */; };
 		A28B82FB149FCDD2003F0F88 /* FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28B82F9149FCDD2003F0F88 /* FileSystem.cpp */; };
 		A2B2F8E0149F67D900EB3714 /* DataBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8DC149F67D900EB3714 /* DataBase.cpp */; };
@@ -121,9 +121,9 @@
 		A86FBAB91341D228007D82DE /* ConcreteProcessAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA811341D228007D82DE /* ConcreteProcessAdapter.cpp */; };
 		A86FBABA1341D228007D82DE /* ConnectionOperators.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA851341D228007D82DE /* ConnectionOperators.cpp */; };
 		A86FBABB1341D228007D82DE /* parameter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA871341D228007D82DE /* parameter.cpp */; };
-		A86FBABC1341D228007D82DE /* PlugNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA891341D228007D82DE /* PlugNode.cpp */; };
+		A86FBABC1341D228007D82DE /* Plugin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA891341D228007D82DE /* Plugin.cpp */; };
 		A86FBABD1341D228007D82DE /* NullAEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA8C1341D228007D82DE /* NullAEffect.cpp */; };
-		A86FBABE1341D228007D82DE /* VSTPlugNode2x.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA8E1341D228007D82DE /* VSTPlugNode2x.cpp */; };
+		A86FBABE1341D228007D82DE /* VSTPlugin2x.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA8E1341D228007D82DE /* VSTPlugin2x.cpp */; };
 		A86FBABF1341D228007D82DE /* processing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA901341D228007D82DE /* processing.cpp */; };
 		A86FBAC21341D228007D82DE /* Command.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA2A1341D228007D82DE /* Command.cpp */; };
 		A86FBAC41341D228007D82DE /* Events.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA2E1341D228007D82DE /* Events.cpp */; };
@@ -157,9 +157,9 @@
 		A86FBAE41341D229007D82DE /* ConcreteProcessAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA811341D228007D82DE /* ConcreteProcessAdapter.cpp */; };
 		A86FBAE51341D229007D82DE /* ConnectionOperators.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA851341D228007D82DE /* ConnectionOperators.cpp */; };
 		A86FBAE61341D229007D82DE /* parameter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA871341D228007D82DE /* parameter.cpp */; };
-		A86FBAE71341D229007D82DE /* PlugNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA891341D228007D82DE /* PlugNode.cpp */; };
+		A86FBAE71341D229007D82DE /* Plugin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA891341D228007D82DE /* Plugin.cpp */; };
 		A86FBAE81341D229007D82DE /* NullAEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA8C1341D228007D82DE /* NullAEffect.cpp */; };
-		A86FBAE91341D229007D82DE /* VSTPlugNode2x.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA8E1341D228007D82DE /* VSTPlugNode2x.cpp */; };
+		A86FBAE91341D229007D82DE /* VSTPlugin2x.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA8E1341D228007D82DE /* VSTPlugin2x.cpp */; };
 		A86FBAEA1341D229007D82DE /* processing.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA901341D228007D82DE /* processing.cpp */; };
 		A86FBAED1341D261007D82DE /* utf8_codecvt_facet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86B7D251323AB4A00C19E74 /* utf8_codecvt_facet.cpp */; };
 		A86FBAEE1341D261007D82DE /* portability.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86B7D241323AB4A00C19E74 /* portability.cpp */; };
@@ -319,8 +319,8 @@
 
 /* Begin PBXFileReference section */
 		08EA7FFBFE8413EDC02AAC07 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		A28ADE2D14D97FC0003A22D8 /* Frame.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frame.cpp; sourceTree = "<group>"; };
-		A28ADE2E14D97FC0003A22D8 /* Frame.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Frame.h; sourceTree = "<group>"; };
+		A28ADE2D14D97FC0003A22D8 /* Frames.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frames.cpp; sourceTree = "<group>"; };
+		A28ADE2E14D97FC0003A22D8 /* Frames.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Frames.h; sourceTree = "<group>"; };
 		A28B82F9149FCDD2003F0F88 /* FileSystem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileSystem.cpp; sourceTree = "<group>"; };
 		A2B2F8DC149F67D900EB3714 /* DataBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataBase.cpp; sourceTree = "<group>"; };
 		A2B2F8DD149F67D900EB3714 /* DataBase.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DataBase.hpp; sourceTree = "<group>"; };
@@ -451,12 +451,12 @@
 		A86FBA861341D228007D82DE /* ConnectionOperators.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionOperators.h; sourceTree = "<group>"; };
 		A86FBA871341D228007D82DE /* parameter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = parameter.cpp; sourceTree = "<group>"; };
 		A86FBA881341D228007D82DE /* parameter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = parameter.h; sourceTree = "<group>"; };
-		A86FBA891341D228007D82DE /* PlugNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PlugNode.cpp; sourceTree = "<group>"; };
-		A86FBA8A1341D228007D82DE /* PlugNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlugNode.h; sourceTree = "<group>"; };
+		A86FBA891341D228007D82DE /* Plugin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Plugin.cpp; sourceTree = "<group>"; };
+		A86FBA8A1341D228007D82DE /* Plugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Plugin.h; sourceTree = "<group>"; };
 		A86FBA8C1341D228007D82DE /* NullAEffect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NullAEffect.cpp; sourceTree = "<group>"; };
 		A86FBA8D1341D228007D82DE /* NullAEffect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NullAEffect.h; sourceTree = "<group>"; };
-		A86FBA8E1341D228007D82DE /* VSTPlugNode2x.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VSTPlugNode2x.cpp; sourceTree = "<group>"; };
-		A86FBA8F1341D228007D82DE /* VSTPlugNode2x.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VSTPlugNode2x.h; sourceTree = "<group>"; };
+		A86FBA8E1341D228007D82DE /* VSTPlugin2x.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VSTPlugin2x.cpp; sourceTree = "<group>"; };
+		A86FBA8F1341D228007D82DE /* VSTPlugin2x.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VSTPlugin2x.h; sourceTree = "<group>"; };
 		A86FBA901341D228007D82DE /* processing.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = processing.cpp; sourceTree = "<group>"; };
 		A86FBA911341D228007D82DE /* processing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = processing.h; sourceTree = "<group>"; };
 		A8827ABE13B511AA00B08463 /* Font.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Font.cpp; sourceTree = "<group>"; };
@@ -800,8 +800,8 @@
 		A86FBA801341D228007D82DE /* processing */ = {
 			isa = PBXGroup;
 			children = (
-				A28ADE2D14D97FC0003A22D8 /* Frame.cpp */,
-				A28ADE2E14D97FC0003A22D8 /* Frame.h */,
+				A28ADE2D14D97FC0003A22D8 /* Frames.cpp */,
+				A28ADE2E14D97FC0003A22D8 /* Frames.h */,
 				A8E9C25713B09E0F0038F83D /* MidiEventProcessor.cpp */,
 				A88670A2139CDEFA00B5CBDD /* BglGraph.h */,
 				A88670A3139CDEFA00B5CBDD /* Graph.cpp */,
@@ -815,9 +815,9 @@
 				A86FBA821341D228007D82DE /* ConcreteProcessAdapter.h */,
 				A86FBA831341D228007D82DE /* IHostInfo.h */,
 				A86FBA841341D228007D82DE /* parameter */,
-				A86FBA891341D228007D82DE /* PlugNode.cpp */,
-				A86FBA8A1341D228007D82DE /* PlugNode.h */,
-				A86FBA8B1341D228007D82DE /* plugNodes */,
+				A86FBA891341D228007D82DE /* Plugin.cpp */,
+				A86FBA8A1341D228007D82DE /* Plugin.h */,
+				A86FBA8B1341D228007D82DE /* pluginTypes */,
 				A86FBA901341D228007D82DE /* processing.cpp */,
 				A86FBA911341D228007D82DE /* processing.h */,
 			);
@@ -835,15 +835,15 @@
 			path = parameter;
 			sourceTree = "<group>";
 		};
-		A86FBA8B1341D228007D82DE /* plugNodes */ = {
+		A86FBA8B1341D228007D82DE /* pluginTypes */ = {
 			isa = PBXGroup;
 			children = (
 				A86FBA8C1341D228007D82DE /* NullAEffect.cpp */,
 				A86FBA8D1341D228007D82DE /* NullAEffect.h */,
-				A86FBA8E1341D228007D82DE /* VSTPlugNode2x.cpp */,
-				A86FBA8F1341D228007D82DE /* VSTPlugNode2x.h */,
+				A86FBA8E1341D228007D82DE /* VSTPlugin2x.cpp */,
+				A86FBA8F1341D228007D82DE /* VSTPlugin2x.h */,
 			);
-			path = plugNodes;
+			path = pluginTypes;
 			sourceTree = "<group>";
 		};
 		A8867090139CD6C300B5CBDD /* cpsqlite */ = {
@@ -1227,9 +1227,9 @@
 				A86FBAB91341D228007D82DE /* ConcreteProcessAdapter.cpp in Sources */,
 				A86FBABA1341D228007D82DE /* ConnectionOperators.cpp in Sources */,
 				A86FBABB1341D228007D82DE /* parameter.cpp in Sources */,
-				A86FBABC1341D228007D82DE /* PlugNode.cpp in Sources */,
+				A86FBABC1341D228007D82DE /* Plugin.cpp in Sources */,
 				A86FBABD1341D228007D82DE /* NullAEffect.cpp in Sources */,
-				A86FBABE1341D228007D82DE /* VSTPlugNode2x.cpp in Sources */,
+				A86FBABE1341D228007D82DE /* VSTPlugin2x.cpp in Sources */,
 				A86FBABF1341D228007D82DE /* processing.cpp in Sources */,
 				A88EB08C136D6DA40067E099 /* dspTools.cpp in Sources */,
 				A88670A8139CDEFA00B5CBDD /* Graph.cpp in Sources */,
@@ -1247,7 +1247,7 @@
 				A2B2F8FD149F688900EB3714 /* audioeffectx.cpp in Sources */,
 				A2B2F8FE149F688900EB3714 /* vstplugmain.cpp in Sources */,
 				A28B82FA149FCDD2003F0F88 /* FileSystem.cpp in Sources */,
-				A28ADE2F14D97FC0003A22D8 /* Frame.cpp in Sources */,
+				A28ADE2F14D97FC0003A22D8 /* Frames.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1287,9 +1287,9 @@
 				A86FBAE41341D229007D82DE /* ConcreteProcessAdapter.cpp in Sources */,
 				A86FBAE51341D229007D82DE /* ConnectionOperators.cpp in Sources */,
 				A86FBAE61341D229007D82DE /* parameter.cpp in Sources */,
-				A86FBAE71341D229007D82DE /* PlugNode.cpp in Sources */,
+				A86FBAE71341D229007D82DE /* Plugin.cpp in Sources */,
 				A86FBAE81341D229007D82DE /* NullAEffect.cpp in Sources */,
-				A86FBAE91341D229007D82DE /* VSTPlugNode2x.cpp in Sources */,
+				A86FBAE91341D229007D82DE /* VSTPlugin2x.cpp in Sources */,
 				A86FBAEA1341D229007D82DE /* processing.cpp in Sources */,
 				A86FBAED1341D261007D82DE /* utf8_codecvt_facet.cpp in Sources */,
 				A86FBAEE1341D261007D82DE /* portability.cpp in Sources */,
@@ -1351,7 +1351,7 @@
 				A2B2F900149F688900EB3714 /* audioeffectx.cpp in Sources */,
 				A2B2F901149F688900EB3714 /* vstplugmain.cpp in Sources */,
 				A28B82FB149FCDD2003F0F88 /* FileSystem.cpp in Sources */,
-				A28ADE3014D97FC0003A22D8 /* Frame.cpp in Sources */,
+				A28ADE3014D97FC0003A22D8 /* Frames.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
