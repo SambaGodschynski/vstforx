@@ -15,7 +15,7 @@
 	CreateAdapter<Adapter>		=> erzeugt ProcessAdapter
 	
 	bsp.:
-	CreateSerial< Create<Volume>, 3 > creator(graph, entryNode, exitNode);
+	CreateSerial< CreateAdapter<Volume>, 3 > creator(graph, entryNode, exitNode);
 
 */
 
@@ -232,7 +232,7 @@ CreateSeries<_Creator, N>::CreateSeries( Graph::Ptr graph,
 	    |
 	    O <- exitNode
 		----------------
-		N-1 bekommt helperNode als entry und exit als exit
+		N-1 bekommt helperNode als entry und exitNode als exit,
 		ist N == 0 wird entry mit exit verbunden.
 	*/
 	HelperNode::Ptr hl = HelperNode::create();

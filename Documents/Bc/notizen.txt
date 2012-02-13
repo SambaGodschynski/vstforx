@@ -41,7 +41,7 @@ refactor:
 <ok>IOBjectController->ObjectController
 <ok>GProcessorNode, GProcessorNodeController -> GProcessModule
 
-
+fadevalue ins statt operator
 Controll eigenen namespace
 DCStream::flush() variante fuer Frames objekt hinzfuegen
 Parameter::ParameterConnection als multimap oder so wie im modell

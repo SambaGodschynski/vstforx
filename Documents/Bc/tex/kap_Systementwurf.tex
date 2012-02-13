@@ -16,7 +16,7 @@ Lediglich einige Namen wurden angepasst:
 	\item View -> GUI\footnote{Anm.: da der ursprüngliche Arbeitstitel des Programmes ''PPI'' war, findet sich im Quelltext häufig die Bezeichnung ppiGui}
 \end{itemize}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Die Processing-Ebene}
+\subsection{\label{sysProcessing}Die Processing-Ebene}
 \begin{figure}[htbp]
 \begin{center}
 	\includegraphics[scale=0.37]{../graphics/graph_overview}
@@ -24,12 +24,14 @@ Lediglich einige Namen wurden angepasst:
 \label{graphoverview}
 \end{center}
 \end{figure}
-\paragraph{Die Graph-Klasse} Das Hauptelement in der Processing-Ebene ist der Graph. Mit ''Graph'' ist in diesem Fall nicht die Mathematische Struktur gemeint, sondern vielmehr die Repräsentation der ''Bühne'' (dessen Inhalte im Prinzip einen großen Graph darstellen). Er besteht aus allen Processing-Objekte die von der ''Bühne'' aus erzeugt werden. Die Elternklasse dieser Objektklassen ist, die PObject-Klase\footnote{PObject = Processing Object}(siehe Abbildung \ref{graphoverview}).  
+
+\paragraph{Die Graph-Klasse} Das Hauptelement in der Processing-Ebene ist der Graph. Die Graphklasse dient als Container, für alle auf der ''Bühne'' erzeugten Geschäftslogik-Objekte. Die Oberklasse dieser Objektklassen ist, die PObject-Klase\footnote{PObject = Processing Object}(siehe Abbildung \ref{graphoverview}).  
 
 \paragraph{Die G-Klasse}
-Die G-Klasse repräsentiert das Mathematische Modell des (Prozess-)Graphen. Aus ihm wird, die in Abschnitt \ref{process} beschriebene Prozess-Liste erstellt. Ursprünglich war es geplant, das Graph-Modell mittels Kompositum-Muster zu implementieren. Da Knoten auf ihre Eltern-Knoten zugriff haben müssen (siehe Abschnitt Optimierung). Jeder Knoten verweist demnach auf seine Eltern- bzw. Kindknoten. Dies erwies sich in der Realisierung jedoch als sehr umständlich. Soll zum Beispiel ermittelt werden, welche Knoten nicht in die Prozesskette eingebunden sind, muss aufwändig durch die Knoten-Struktur traversiert werden, um jene Knoten auszuschließen. 
-\\
-Umgesetzt wurde schließlich die für Graphstrukturen übliche extrinistische Variante: die Knoten bzw. Kanten werden in einer Adjazent-Datenstruktur aufgenommen. Die Knoten selbst haben nur noch Zugriff, zu den (für den Ablauf benötigten) Eltern-Knoten. 
+Ursprünglich war es geplant, das Graph-Modell mittels Kompositum-Muster zu implementieren. 
+Daher: der Graph kennt n Knoten, Knoten kennen n Eltern bzw. n Kinder.
+Dieser Ansatz verursacht allerdings einige Probleme. Um einzelne Knoten zu erreichen, muss erst durch eine Knoten-Struktur traversiert werden. So werden einfache Aufgaben, wie das kopieren einer Graphstrukur, schnell sehr aufwändig. \\
+Umgesetzt wurde schließlich die für Graphstrukturen übliche extrinistische Variante: die Knoten bzw. Kanten werden in einer Adjazent-Datenstruktur aufgenommen. Diese Datenstruktur wird durch die G-Klasse repräsentiert. 
 \\\\
 Eine sehr gute Graph Implementation bietet die Boost Graph Library.
 Sie bietet mehrere Vorteile: 
