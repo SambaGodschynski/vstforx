@@ -117,7 +117,7 @@
 		A86FBAB21341D228007D82DE /* VstPlugView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA631341D228007D82DE /* VstPlugView.cpp */; };
 		A86FBAB31341D228007D82DE /* mac_one4All.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA681341D228007D82DE /* mac_one4All.cpp */; };
 		A86FBAB41341D228007D82DE /* mac_Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA6B1341D228007D82DE /* mac_Window.cpp */; };
-		A86FBAB51341D228007D82DE /* OS_VSTPlugNode2x.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA6E1341D228007D82DE /* OS_VSTPlugNode2x.cpp */; };
+		A86FBAB51341D228007D82DE /* OS_VSTPlugin2x.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA6E1341D228007D82DE /* OS_VSTPlugin2x.cpp */; };
 		A86FBAB91341D228007D82DE /* ConcreteProcessAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA811341D228007D82DE /* ConcreteProcessAdapter.cpp */; };
 		A86FBABA1341D228007D82DE /* ConnectionOperators.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA851341D228007D82DE /* ConnectionOperators.cpp */; };
 		A86FBABB1341D228007D82DE /* parameter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA871341D228007D82DE /* parameter.cpp */; };
@@ -153,7 +153,7 @@
 		A86FBADD1341D229007D82DE /* VstPlugView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA631341D228007D82DE /* VstPlugView.cpp */; };
 		A86FBADE1341D229007D82DE /* mac_one4All.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA681341D228007D82DE /* mac_one4All.cpp */; };
 		A86FBADF1341D229007D82DE /* mac_Window.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA6B1341D228007D82DE /* mac_Window.cpp */; };
-		A86FBAE01341D229007D82DE /* OS_VSTPlugNode2x.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA6E1341D228007D82DE /* OS_VSTPlugNode2x.cpp */; };
+		A86FBAE01341D229007D82DE /* OS_VSTPlugin2x.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA6E1341D228007D82DE /* OS_VSTPlugin2x.cpp */; };
 		A86FBAE41341D229007D82DE /* ConcreteProcessAdapter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA811341D228007D82DE /* ConcreteProcessAdapter.cpp */; };
 		A86FBAE51341D229007D82DE /* ConnectionOperators.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA851341D228007D82DE /* ConnectionOperators.cpp */; };
 		A86FBAE61341D229007D82DE /* parameter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA871341D228007D82DE /* parameter.cpp */; };
@@ -436,8 +436,8 @@
 		A86FBA691341D228007D82DE /* mac_one4All.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mac_one4All.h; sourceTree = "<group>"; };
 		A86FBA6B1341D228007D82DE /* mac_Window.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mac_Window.cpp; sourceTree = "<group>"; };
 		A86FBA6C1341D228007D82DE /* mac_Window.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mac_Window.h; sourceTree = "<group>"; };
-		A86FBA6E1341D228007D82DE /* OS_VSTPlugNode2x.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OS_VSTPlugNode2x.cpp; sourceTree = "<group>"; };
-		A86FBA6F1341D228007D82DE /* OS_VSTPlugNode2x.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OS_VSTPlugNode2x.h; sourceTree = "<group>"; };
+		A86FBA6E1341D228007D82DE /* OS_VSTPlugin2x.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OS_VSTPlugin2x.cpp; sourceTree = "<group>"; };
+		A86FBA6F1341D228007D82DE /* OS_VSTPlugin2x.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OS_VSTPlugin2x.h; sourceTree = "<group>"; };
 		A86FBA701341D228007D82DE /* MessageBoxDef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageBoxDef.h; sourceTree = "<group>"; };
 		A86FBA711341D228007D82DE /* OS_com.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OS_com.h; sourceTree = "<group>"; };
 		A86FBA721341D228007D82DE /* OS_gui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OS_gui.h; sourceTree = "<group>"; };
@@ -791,8 +791,8 @@
 		A86FBA6D1341D228007D82DE /* processing */ = {
 			isa = PBXGroup;
 			children = (
-				A86FBA6E1341D228007D82DE /* OS_VSTPlugNode2x.cpp */,
-				A86FBA6F1341D228007D82DE /* OS_VSTPlugNode2x.h */,
+				A86FBA6E1341D228007D82DE /* OS_VSTPlugin2x.cpp */,
+				A86FBA6F1341D228007D82DE /* OS_VSTPlugin2x.h */,
 			);
 			path = processing;
 			sourceTree = "<group>";
@@ -1223,7 +1223,7 @@
 				A86FBAB21341D228007D82DE /* VstPlugView.cpp in Sources */,
 				A86FBAB31341D228007D82DE /* mac_one4All.cpp in Sources */,
 				A86FBAB41341D228007D82DE /* mac_Window.cpp in Sources */,
-				A86FBAB51341D228007D82DE /* OS_VSTPlugNode2x.cpp in Sources */,
+				A86FBAB51341D228007D82DE /* OS_VSTPlugin2x.cpp in Sources */,
 				A86FBAB91341D228007D82DE /* ConcreteProcessAdapter.cpp in Sources */,
 				A86FBABA1341D228007D82DE /* ConnectionOperators.cpp in Sources */,
 				A86FBABB1341D228007D82DE /* parameter.cpp in Sources */,
@@ -1283,7 +1283,7 @@
 				A86FBADD1341D229007D82DE /* VstPlugView.cpp in Sources */,
 				A86FBADE1341D229007D82DE /* mac_one4All.cpp in Sources */,
 				A86FBADF1341D229007D82DE /* mac_Window.cpp in Sources */,
-				A86FBAE01341D229007D82DE /* OS_VSTPlugNode2x.cpp in Sources */,
+				A86FBAE01341D229007D82DE /* OS_VSTPlugin2x.cpp in Sources */,
 				A86FBAE41341D229007D82DE /* ConcreteProcessAdapter.cpp in Sources */,
 				A86FBAE51341D229007D82DE /* ConnectionOperators.cpp in Sources */,
 				A86FBAE61341D229007D82DE /* parameter.cpp in Sources */,

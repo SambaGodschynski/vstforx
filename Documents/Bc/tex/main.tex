@@ -7,10 +7,28 @@
 \usepackage[ngerman]{babel}
 \usepackage{graphicx}
 \usepackage{listings}
+\usepackage{boxedminipage}
 
 \newcommand{\funktion}[1]{\emph{#1}}
+\newcommand{\codeinsert}[1]{
+	%\begin{boxedminipage}{14,86cm}{
+	%\centering
+	%\emph{#1}
+	%}\end{boxedminipage}
+	\begin{center}
+	\emph{#1}
+	\end{center}
+}
 
-
+\lstset{literate=%
+{Ö}{{\"O}}1 
+{Ä}{{\"A}}1 
+{Ü}{{\"U}}1 
+{ß}{{\ss}}2 
+{ü}{{\"u}}1 
+{ä}{{\"a}}1 
+{ö}{{\"o}}1
+}
 
 \title{Entwicklung eines graphischen Editors für die Audiosignalverarbeitung durch VST-Plugins}
 \author{Johannes Unger}

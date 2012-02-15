@@ -9,9 +9,9 @@
 	Klassen zum erstellen von Komplexen Graph Konstrukten.
 
 	Creator						=> Basis fuer alle ersteller;
-	CreateSeries<Creator, N>	=> erzeugt seriell veknuepfungen aus dem vom creator erzeugten
-	CreateParallel<Creator, N>	=> erzeugt parallel veknuepfungen aus dem vom creator erzeugten
-	CreateTree<Creator, N>		=> erzeugt baum veknuepfungen aus dem vom creator erzeugten
+	CreateSeries<Creator, N>	=> erzeugt N seriell veknuepfungen aus dem vom creator erzeugten
+	CreateParallel<Creator, N>	=> erzeugt N parallel veknuepfungen aus dem vom creator erzeugten
+	CreateTree<Creator, N>		=> erzeugt baum veknuepfungen der Tiefe N aus dem vom creator erzeugten
 	CreateAdapter<Adapter>		=> erzeugt ProcessAdapter
 	
 	bsp.:

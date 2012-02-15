@@ -336,7 +336,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ){
 std::string getHomeDirectory() {
 	if ( home_dir == "" ) {
 		//AudioEffectX::getDirectory(); Ableton Live liefert hier "" 
-		const size_t N = 512; 
+		const size_t N = 2048; 
 		char _d[N];
 		HINSTANCE instance = GetInstance();
 		LOG_ASSERT ( instance );

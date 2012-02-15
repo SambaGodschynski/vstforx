@@ -1,5 +1,5 @@
-#include "OS_VSTPlugNode2x.h" 
-#include "processing/plugNodes/NullAEffect.h"
+#include "OS_VSTPlugin2x.h" 
+#include "processing/pluginTypes/NullAEffect.h"
 
 
 // Callback Methode fuer VST-Plugin.

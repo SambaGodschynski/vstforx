@@ -40,7 +40,7 @@ refactor:
 <ok>GObject::render() -> draw()
 <ok>IOBjectController->ObjectController
 <ok>GProcessorNode, GProcessorNodeController -> GProcessModule
-
+<-->BuildGraph: Creator Base noetig?
 fadevalue ins statt operator
 Controll eigenen namespace
 DCStream::flush() variante fuer Frames objekt hinzfuegen
