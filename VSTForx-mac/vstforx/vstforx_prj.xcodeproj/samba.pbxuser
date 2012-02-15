@@ -171,7 +171,7 @@
 		fRef = A28C125914EAA80F00C7FEBE /* GraphBuilder.hpp */;
 		name = "GraphBuilder.hpp: 15";
 		rLen = 0;
-		rLoc = 578;
+		rLoc = 584;
 		rType = 0;
 		vrLen = 1903;
 		vrLoc = 0;
@@ -265,7 +265,7 @@
 		fRef = A28C125914EAA80F00C7FEBE /* GraphBuilder.hpp */;
 		name = "GraphBuilder.hpp: 15";
 		rLen = 0;
-		rLoc = 578;
+		rLoc = 584;
 		rType = 0;
 		vrLen = 1872;
 		vrLoc = 0;
@@ -277,9 +277,9 @@
 		path = /Users/johannesunger/workspace/vstforx/src/tests/GraphBuilder.hpp;
 		sourceTree = "<absolute>";
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1314, 3536}}";
-			sepNavSelRange = "{578, 0}";
-			sepNavVisRange = "{0, 1903}";
+			sepNavIntBoundsRect = "{{0, 0}, {1314, 3510}}";
+			sepNavSelRange = "{447, 0}";
+			sepNavVisRange = "{1271, 2335}";
 		};
 	};
 	A28E4A2514E962CB00EEBE68 /* PBXTextBookmark */ = {
@@ -351,7 +351,7 @@
 		fRef = A29A3EB614E2878C00B1CCF4 /* GraphBuilder.hpp */;
 		name = "GraphBuilder.hpp: 236";
 		rLen = 0;
-		rLoc = 10581;
+		rLoc = 10587;
 		rType = 0;
 		vrLen = 1955;
 		vrLoc = 8988;

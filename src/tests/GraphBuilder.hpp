@@ -11,7 +11,7 @@
 	Creator						=> Basis fuer alle ersteller;
 	CreateSeries<Creator, N>	=> erzeugt N seriell veknuepfungen aus dem vom creator erzeugten
 	CreateParallel<Creator, N>	=> erzeugt N parallel veknuepfungen aus dem vom creator erzeugten
-	CreateTree<Creator, N>		=> erzeugt baum veknuepfungen der Tiefe N aus dem vom creator erzeugten
+	CreateBinaryTree<Creator, N>		=> erzeugt baum veknuepfungen der Tiefe N aus dem vom creator erzeugten
 	CreateAdapter<Adapter>		=> erzeugt ProcessAdapter
 	
 	bsp.:

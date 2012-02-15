@@ -87,16 +87,30 @@ CreateSeries< VolumeAdapter, 4 >
 
 // erzeugt 4 seriell verknüpfte Subgraphen, bestehend aus
 // 2 parallel verknüpften ProcessAdapter-Objekten 
-CreateSeries< CreateParallel< VolumeAdapter, 2 >, 4 > 
+CreateSeries< CreateParallel< VolumeAdapter, 2 > , 4 > 
 (graph, entry, exit);
 
 \end{lstlisting} 
 
-\paragraph{addRemoveNodes}
+\paragraph{testAddRemoveNodes} 
+In diesem Test werden Knoten dem Graph hinzugefügt und entfernt. Es wird geprüft, ob die Knoten wie erwartet von der Graphstruktur aufgenommen werden. Auch wird das hinzufügen ungültiger Knoten (NULL-Zeiger) getestet. Solche Knoten sollten nicht vom Graph aufgenommen werden.  
+\paragraph{testConnectNodes}
+Dieser Test arbeitet ähnlich wie \emph{testConnectNodes}. Getestet wird zusätzlich das Verbinden von Knoten. Folgende Operationen sollten vom Graph verweigert werden:
+\begin{itemize}
+	\item verbinden eines Knoten mit einem ''NULL''-Knoten
+	\item verbinden eines Knoten mit einem Knotenobjekt das nicht vom Graph aufgenommen wurde.
+	\item erzeugen einer bereits vorhandenen Verbindung
+	\item erzeugen einer ''Rückkoppelnden'' Verbindung
+\end{itemize}
 \paragraph{testSignalProcessPath}
-\paragraph{testDelayCompensationSimple}
-\paragraph{testJanitorLock}
+In diesem Test, wird die vom Graph erstellte Prozess-Liste auf Korrektheit überprüft. Es werden verschiedene Szenarien erstellt und die jeweiligen Ausgaben mit entsprechenden Erwartungsergebnissen verglichen.
+\paragraph{testDelayAdapter}
+Zum Testen der Delay-Compensation, wurde eigens ein ProcessAdapter implementiert. Den DelayAdapter. Dieser verzögert die Ausgabe eines Signals um N Millisekunden. Diese Funktionalität wird in diesem Test getestet.
+\paragraph{testDelayCompensation}
+In diesem Test, wird die Delay-Compensation getestet. Hierfür werden mehrere DelayAdapter Objekte, in verschiedenen Szenarien eingefügt. Es wird geprüft, ob die Verzögerung des Graph-Ausgabesignals, gleich der Verzögerung, des DelayAdapters mit dem größten Verzögerungswert ist.
 \paragraph{testGraphConsistency}
+In diesem Test, wird der Graph auf Stabilität geprüft. Es werden hintereinander, viele Objekte hinzugefügt und wieder entfernt. Es werden NULL-Objekte hinzugefügt. Es wird mehrfach die Samplerate und die Blockgröße geändert (auch mit ungültigen werten).
 \paragraph{testGraphSeries}
 \paragraph{testSerialization}
-\paragraph{testConnectNodes}
+Es wird die Persistierungs-Funktionalität des Graphen getestet. Dazu wird ein Graphszenario, mit allen
+verfügbaren Graph-Objekten erstellt. Danach wird eine Referenz-Ausgabe-Ergebnismenge erstellt. Nun wird der Graph Serialisiert und gelöscht. Anschließend wird der Graph Deserialisiert und erneut eine Ausgabe-Ergebnismenge erstellt. Diese wird schließlich, mit der vorher erstellten Referenzmenge auf Gleichheit überprüft.

@@ -19,7 +19,10 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::GraphTest );
 
 
-namespace {
+namespace { 
+//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+// GraphTest Helfer-Funktionen 
+//:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 //=============================================================================
 void fillFrame ( processing::Frames *f, float left, float right ) {
 //=============================================================================
@@ -276,10 +279,13 @@ void GraphTest::testConnectNodes() {
 // helfer
 //.............................................................................
 namespace signalProcessTest {
-typedef boost::tuple < processing::ProcessorNode::Ptr, bool, size_t > 
-	ProcessorNodeExpection;
+typedef boost::tuple < 
+	processing::ProcessorNode::Ptr,  // node
+	bool, // is_active 
+	size_t // numActiveChildren
+>  ProcessorNodeExpection;
 //.............................................................................
-ProcessorNodeExpection makeExpected ( processing::ProcessorNode *nPtr ) {
+ProcessorNodeExpection getNodeExpectionInfo ( processing::ProcessorNode *nPtr ) {
 	using namespace processing;
 	ProcessorNode::Ptr n = 
 		boost::shared_dynamic_cast< ProcessorNode, PObject> ( nPtr->getPtr() );
@@ -354,7 +360,7 @@ void GraphTest::testSignalProcessPath() {
 	for ( ; it!=sPath.end(); ++it ) {
 		CPPUNIT_ASSERT ( !expectations.empty() );
 		ProcessorNodeExpection soll = expectations.top();
-		ProcessorNodeExpection ist = makeExpected(*it);
+		ProcessorNodeExpection ist = getNodeExpectionInfo(*it);
 		bool res = compare (soll,ist); // wegen errMsg erst auswerten dann assert
 		CPPUNIT_ASSERT_MESSAGE ( errMsg, res );
 		expectations.pop();
@@ -385,7 +391,7 @@ void GraphTest::testSignalProcessPath() {
 	for ( ; it!=sPath.end(); ++it ) {
 		CPPUNIT_ASSERT ( !expectations.empty() );
 		ProcessorNodeExpection soll = expectations.top();
-		ProcessorNodeExpection ist = makeExpected(*it);
+		ProcessorNodeExpection ist = getNodeExpectionInfo(*it);
 		bool res = compare(soll,ist); // wegen errMsg erst auswerten dann assert
 		CPPUNIT_ASSERT_MESSAGE ( errMsg, res );
 		expectations.pop();
@@ -412,7 +418,7 @@ void GraphTest::testSignalProcessPath() {
 	for ( ; it!=sPath.end(); ++it ) {
 		CPPUNIT_ASSERT ( !expectations.empty() );
 		ProcessorNodeExpection soll = expectations.top();
-		ProcessorNodeExpection ist = makeExpected(*it);
+		ProcessorNodeExpection ist = getNodeExpectionInfo(*it);
 		bool res = compare(soll,ist); // wegen errMsg erst auswerten dann assert
 		CPPUNIT_ASSERT_MESSAGE ( errMsg, res );
 		expectations.pop();
@@ -466,7 +472,7 @@ void GraphTest::testSignalProcessPath() {
 	for ( ; it!=sPath.end(); ++it ) {
 		CPPUNIT_ASSERT ( !expectations.empty() );
 		ProcessorNodeExpection soll = expectations.top();
-		ProcessorNodeExpection ist = makeExpected(*it);
+		ProcessorNodeExpection ist = getNodeExpectionInfo(*it);
 		bool res = compare(soll,ist); // wegen errMsg erst auswerten dann assert
 		CPPUNIT_ASSERT_MESSAGE ( errMsg, res );
 		expectations.pop();
