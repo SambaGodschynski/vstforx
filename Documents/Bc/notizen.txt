@@ -41,6 +41,8 @@ refactor:
 <ok>IOBjectController->ObjectController
 <ok>GProcessorNode, GProcessorNodeController -> GProcessModule
 <-->BuildGraph: Creator Base noetig?
+<-->ComplexTest<N>
+
 fadevalue ins statt operator
 Controll eigenen namespace
 DCStream::flush() variante fuer Frames objekt hinzfuegen

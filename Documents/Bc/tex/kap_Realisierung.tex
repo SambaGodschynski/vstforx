@@ -41,12 +41,12 @@ Nachdem die ermittelte Reihenfolge übernommen wurde, waren keine Abstürze an d
 
 \subsubsection{Stringoperation}
 Ein weiter Grund für Abstürze beim öffnen von Plugins, war das Anfordern von String-Informationen.
-So wird zum Beispiel der Pluginname mittels \funktion{dispatcher(effGetEffectName, dstChar)} Aufruf angefordert. Beim Parameter \emph{dstChar} handelt es sich um einen Zeiger auf eine \emph{char}-Reihung.
+So wird zum Beispiel der Pluginname mittels \codeinsert{\funktion{dispatcher(effGetEffectName, dstChar)}} Aufruf angefordert. Beim Parameter \emph{dstChar} handelt es sich um einen Zeiger auf eine \emph{char}-Reihung.
 Leider bietet das VST-SDK keinen Aufruf zum erfragen von String längen, sodass man gezwungen ist einer solchen Reihung eine feste länge zuzuweisen. Das VST-SDK gibt hierfür die Größen vor. So existiert für jeden Stringaufruf, eine Stringlängen-Konstante (zum Beispiel: \emph{kVstMaxEffectNameLen} für den Effektnamen oder \emph{kVstMaxVendorStrLen} für den Hersteller). Allerdings scheint es einige Plugins zu geben, die größere \emph{char}-Reihungen benötigen, als im VST-SDK angegeben. In solch einem Fall, kommt es zu einem Bufferüberlauf und somit zu einem Absturz. Behoben werden konnte dies, indem der entsprechenden Reihung mehr Speicher zugewiesen wurde (2048 Zeichen statt 64). Der Fehler ist somit Potentiell noch vorhanden, allerdings bietet das VST-SDK auch keine bessere Lösungsmöglichkeit.
 
 \subsubsection{Ausführungsverzeichnis}
 In einigen Fällen, ist es für ein VST-Plugin erforderlich, zu wissen in welchem Verzeichnis es sich befindend.
-Hierfür bietet das VST-SDK eine Operation: \funktion{AudioEffectX::getDirectory()}. Diese Methode veranlasst, einen ''Plugin nach Host''-\emph{dispatcher} Aufruf mit dem Opcode: \emph{audioMasterGetDirectory}.
+Hierfür bietet das VST-SDK eine Operation: \codeinsert{\funktion{AudioEffectX::getDirectory().}} Diese Methode veranlasst, einen ''Plugin nach Host''-\emph{dispatcher} Aufruf mit dem Opcode: \emph{audioMasterGetDirectory}.
 \emph{Cubase} und andere Hostanwendungen, liefern hierfür die gewünschte Information. Der weit verbreitete Sequenzer \emph{Ableton Live} liefert jedoch einen leeren String. Somit ist es notwendig, über plattformspezifische Aufrufe an die erforderliche Information zu gelangen.
 
 \subsubsection{Verzeichnisauswahl}
@@ -103,14 +103,43 @@ Dieser Test arbeitet ähnlich wie \emph{testConnectNodes}. Getestet wird zusätz
 	\item erzeugen einer ''Rückkoppelnden'' Verbindung
 \end{itemize}
 \paragraph{testSignalProcessPath}
-In diesem Test, wird die vom Graph erstellte Prozess-Liste auf Korrektheit überprüft. Es werden verschiedene Szenarien erstellt und die jeweiligen Ausgaben mit entsprechenden Erwartungsergebnissen verglichen.
+In diesem Test wird die vom Graph erstellte Prozess-Liste auf Korrektheit überprüft. Es werden verschiedene Szenarien erstellt und die jeweiligen Ausgaben mit entsprechenden Erwartungsergebnissen verglichen.
 \paragraph{testDelayAdapter}
 Zum Testen der Delay-Compensation, wurde eigens ein ProcessAdapter implementiert. Den DelayAdapter. Dieser verzögert die Ausgabe eines Signals um N Millisekunden. Diese Funktionalität wird in diesem Test getestet.
 \paragraph{testDelayCompensation}
-In diesem Test, wird die Delay-Compensation getestet. Hierfür werden mehrere DelayAdapter Objekte, in verschiedenen Szenarien eingefügt. Es wird geprüft, ob die Verzögerung des Graph-Ausgabesignals, gleich der Verzögerung, des DelayAdapters mit dem größten Verzögerungswert ist.
+In diesem Test wird die Delay-Compensation getestet. Hierfür werden mehrere DelayAdapter Objekte, in verschiedenen Szenarien eingefügt. Es wird geprüft, ob die Verzögerung des Graph-Ausgabesignals, gleich der Verzögerung, des DelayAdapters mit dem größten Verzögerungswert ist.
 \paragraph{testGraphConsistency}
-In diesem Test, wird der Graph auf Stabilität geprüft. Es werden hintereinander, viele Objekte hinzugefügt und wieder entfernt. Es werden NULL-Objekte hinzugefügt. Es wird mehrfach die Samplerate und die Blockgröße geändert (auch mit ungültigen werten).
-\paragraph{testGraphSeries}
+In diesem Test wird der Graph auf Stabilität geprüft. Es werden hintereinander, viele Objekte hinzugefügt und wieder entfernt. Es werden NULL-Objekte hinzugefügt. Es wird mehrfach die Samplerate und die Blockgröße geändert (auch mit ungültigen werten).
+\paragraph{testGraphComplex}
+In dieser Testreihe werden verschiedene Graph-Szenarien aus Volume-Adapter erstellt. Jeder Adapter erhält den Wert '0.5', was zu einer Halbierung der Eingangswerte führt. Nun wird jeder Graph mit einer Eingangswertemenge prozessiert. Die Ausgabewertemenge muss einer Erwartungswertemenge entsprechen (siehe Abbildung \ref{testGraphComplex01} bis \ref{testGraphComplex03}).
+%
+\begin{figure}[htbp]
+\begin{center}
+	\includegraphics[scale=0.7]{../graphics/complex01}
+\caption{GraphComplex01-Test}
+\label{testGraphComplex01}
+\end{center}
+\end{figure}
+%
+\begin{figure}[htbp]
+\begin{center}
+	\includegraphics[scale=0.7]{../graphics/complex02}
+\caption{GraphComplex02-Test}
+\label{testGraphComplex02}
+\end{center}
+%
+\end{figure}
+\begin{figure}[htbp]
+\begin{center}
+	\includegraphics[scale=0.7]{../graphics/complex03}
+\caption{GraphComplex03-Test}
+\label{testGraphComplex03}
+\end{center}
+\end{figure}
+
 \paragraph{testSerialization}
 Es wird die Persistierungs-Funktionalität des Graphen getestet. Dazu wird ein Graphszenario, mit allen
 verfügbaren Graph-Objekten erstellt. Danach wird eine Referenz-Ausgabe-Ergebnismenge erstellt. Nun wird der Graph Serialisiert und gelöscht. Anschließend wird der Graph Deserialisiert und erneut eine Ausgabe-Ergebnismenge erstellt. Diese wird schließlich, mit der vorher erstellten Referenzmenge auf Gleichheit überprüft.
+\section{Persitenz}
+
+%PluginCollection: foreign key
