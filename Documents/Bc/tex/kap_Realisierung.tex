@@ -1,5 +1,42 @@
 % !TEX encoding = UTF-8 Unicode
 \section{Realisierung}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Shared Pointer}
+Üblicherweise ist eine Schwierigkeit, beim Programmieren mit C/C++, die fehlende Speicherverwaltung. Besonders deutlich wird dies, wenn mehrere Programmteile auf das gleiche Objekt zugreifen (z.B. Controller und View).Das Problem in solch einem Fall ist: zu welchen Zeitpunkt kann ein entsprechendes Objekt aus dem Speicher (sicher) entfernt werden?
+Aus diesem Grund wurde ein bewährtes Lösungskonzept verwendet: die Shared Pointer\footnote{http://www.boost.org/doc/libs/1\_48\_0/libs/smart\_ptr/shared\_ptr.htm}.
+\\\\
+Ein Nachteil beim verwenden von \emph{Shared Pointer} ist allerdings, dass aus einem '\emph{this}' Zeiger eines Objektes, kein \emph{Shared Pointer} erzeugt werden kann. So könnte zum Beispiel, ein Objekt nicht sich selbst einer Methode übergeben, die ausschließlich \emph{Shared Pointer} entgegennimmt.
+Eine Lösung für dieses Problem, findet sich im Abschnitt ''Smart Pointer Programming Techniques'', der \emph{Boost Shared Pointer Library Dokumentation}\footnote{http://www.boost.org/doc/libs/1\_48\_0/libs/smart\_ptr/sp\_techniques.html\#from\_this}. 
+\\\\
+Es wird demnach, ein Objekt einer Klasse, ausschließlich über eine statische Methode erstellt. In dieser wird außerdem, das neu erzeugte \emph{Shared Pointer} Objekt, dem Zielobjekt übergeben. Würde ein Objekt sich selbst als \emph{Shared Pointer} speichern, könnte es niemals freigegeben werden. Daher nimmt es die eigene Instanz als \emph{Weak Pointer} auf (siehe Listing \ref{thisToPtr}).
+
+\begin{lstlisting}[label=thisToPtr, caption=Shared Pointer in VSTForx-Klassen]	
+class X {
+public:
+	typedef boost::shared_ptr<X> Ptr;
+protected:
+	boost::weak_ptr<X> self; // Weak Pointer
+	X() {} // Konstruktor
+public:
+	virtual ~X() {} 
+	void foo();
+	static Ptr create() { // Konstruktor ersatz
+		Ptr neu( new X() );
+		neu->self = neu; 
+		return neu;
+	}
+};
+
+// erzeugen einer Instanz:
+X::Ptr x = X::create();
+
+// erzeugen eines 'this'-Shared Pointer
+void X::foo() {
+	X::Ptr _this = self.lock();
+}
+
+\end{lstlisting} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{SDK Probleme}
 Da VSTForx sowohl ein Plugin, als auch ein Host für Plugins ist, existieren gleich zwei potentielle Fehlerquellen. Zum einen muss sichergestellt werden, dass jede Host-Anwendung VSTForx Laden und Ausführen kann. Zum anderen sollte auch VSTForx in der Lage sein, jedes Plugin zu Laden und Auszuführen. Unglücklicherweise ist eine große schwäche des VST2.x-SKDs, die schlechte Dokumentation. So sind viele Funktionen ungenügend oder gar nicht beschrieben. Auch bleibt ungeklärt, in welcher Reihenfolge Operationen ausgeführt werden(siehe Abschnitt: Initalisierungsreihenfolge). Da es eine große Menge an Plugins und Hostanwendungen, unterschiedlicher Qualität gibt, führt dieser Umstand zu einer Reihe an Problemen, die erst durch viel ausprobieren ermittelt und behoben werden können. 
 \\\\
@@ -111,7 +148,11 @@ In diesem Test wird die Delay-Compensation getestet. Hierfür werden mehrere Del
 \paragraph{testGraphConsistency}
 In diesem Test wird der Graph auf Stabilität geprüft. Es werden hintereinander, viele Objekte hinzugefügt und wieder entfernt. Es werden NULL-Objekte hinzugefügt. Es wird mehrfach die Samplerate und die Blockgröße geändert (auch mit ungültigen werten).
 \paragraph{testGraphComplex}
-In dieser Testreihe werden verschiedene Graph-Szenarien aus Volume-Adapter erstellt. Jeder Adapter erhält den Wert '0.5', was zu einer Halbierung der Eingangswerte führt. Nun wird jeder Graph mit einer Eingangswertemenge prozessiert. Die Ausgabewertemenge muss einer Erwartungswertemenge entsprechen (siehe Abbildung \ref{testGraphComplex01} bis \ref{testGraphComplex03}).
+In dieser Testreihe werden verschiedene Graph-Szenarien aus Volume-Adapter erstellt. Jeder Adapter erhält den Wert '0.5', was zu einer Halbierung der Eingangswerte führt. Nun wird jeder Graph mit einer Eingangswertemenge prozessiert. Die Ausgabewertemenge muss einer Erwartungswertemenge entsprechen (siehe Abbildung \ref{testGraphComplex01} bis \ref{testGraphComplex03}). 
+\\\\
+Außerdem wird geprüft, ob die Anzahl der Frames-Objekt Kopiervorgänge, der in Abschnitt \ref{Optimierung} beschriebenen Optimierung entspricht. Hierfür wird ein Zählmechanismus genutzt, der ausschließlich mittels Präprozessor Schalter: 
+\codeinsert{\_FORX\_TESTSUITE}
+aktiviert wird.
 %
 \begin{figure}[htbp]
 \begin{center}
@@ -131,7 +172,7 @@ In dieser Testreihe werden verschiedene Graph-Szenarien aus Volume-Adapter erste
 \end{figure}
 \begin{figure}[htbp]
 \begin{center}
-	\includegraphics[scale=0.7]{../graphics/complex03}
+	\includegraphics[scale=0.9]{../graphics/complex03}
 \caption{GraphComplex03-Test}
 \label{testGraphComplex03}
 \end{center}

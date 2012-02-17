@@ -59,7 +59,7 @@ Würden alle gewünschten Module nur aus einem Eingang und einem Ausgang bestehe
 \\\\
 Eine bessere Lösung ist, dass Knoten selbst die Ein- und Ausgänge darstellen (siehe Abbildung \ref{graphcomp}). Erzeugt und verwaltet werden diese vom Modul, der ProcessAdapter-Klasse. Ein zusätzlicher Knoten-Typ, der ProcessAdapterNode, sorgt dafür das der Aufruf processNode(), an das jeweilige Eltern-Modul verwiesen wird (siehe Abbildung \ref{lanes}).
 
-\paragraph{Optimierung} 
+\paragraph{\label{Optimierung}Optimierung} 
 Effizient wäre es, nach jeder Knoten-bearbeitung den Zeiger des Frames-Objekt weiterzureichen. Dies funktioniert allerdings nur  solange, wie Knoten in Serie verkettet sind. Bei einer Parallel-Verkettung ist es notwendig das Frames-Objekt, einmal für jede Abzweigung zu kopieren. Ziel ist es, so viele Kopiervorgänge wie möglich zu sparen. Dies wird erreicht, indem nur dann kopiert wird wenn es wirklich notwendig ist: wenn ein Knoten mehr als ein Kindknoten hat. \\\\
 Zur Umsetzung wurde ein Stack-Mechanismus verwendet. Die Ausgabeframes eines Knotens, gelangen über die Methode pushAndCopy(Frames*) in den Stack. Sollte eine Knoten nur ein Kindknoten haben, wird der übergebene Frames-Zeiger der pushAndCopy() Methode, im Stack aufgenommen. Bei mehr als einem Kindknoten, wird zusätzlich Anzahl(Kindknoten) - 1 mal das Frames Objekt kopiert und im Stack aufgenommen. 
 \\\\
