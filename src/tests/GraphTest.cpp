@@ -1109,8 +1109,8 @@ void GraphTest::testGraphComplex3() {
 											 // obwohl die fehler ausgabe(soll,ist) identisch ist. 
 											 // ( wahrsch. rundungsfehler ) 
 	static const float VOL = NUMERATOR / (float)DENOMINATOR;
-	static const float X = 1.0f;
-	static const float SUM = pow(VOL, N) * (float)(1<<N);
+	static const float X = 4.5f;
+	static const float SUM = X * pow(VOL, N) * (1<<N);
 	typedef CreateAdapter< VolumeAdapterX<NUMERATOR, DENOMINATOR> > Adapter;
 	typedef CreateBinaryTree< Adapter, N > Creator;
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>create

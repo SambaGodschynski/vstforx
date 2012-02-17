@@ -42,6 +42,7 @@ refactor:
 <ok>GProcessorNode, GProcessorNodeController -> GProcessModule
 <-->BuildGraph: Creator Base noetig?
 <-->ComplexTest<N>
+<-->Janitor::update nach jedem connect?
 
 fadevalue ins statt operator
 Controll eigenen namespace
