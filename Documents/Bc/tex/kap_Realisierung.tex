@@ -89,11 +89,10 @@ Hierfür bietet das VST-SDK eine Operation: \codeinsert{\funktion{AudioEffectX::
 \subsubsection{Verzeichnisauswahl}
 Ein ähnliches Problem bereitete die Verzeichnisauswahl. Einige Hostanwendungen bieten die Möglichkeit, einen Verzeichnisauswahl-Dialog über das VST-SDK auszuführen. Andere nicht. Somit ist es erforderlich selbst einen Auswahldialog zu implementieren. Ist eine Hostanwendung in der Lage, einen eigenen Verzeichnisauswahl-Dialog anzubieten, so sollte dieser auch genutzt werden. Im Falle des Sequenzers \emph{Synapse Orion}\footnote{http://www.synapse-audio.com/}, wurde ein Verzeichnissauswahl-Dialog zwar angeboten, dieser aber liefert keinen Ergebnis-String. So konnte in besagtem Sequenzer, VSTForx zwar Pluginverzeichnisse zu Auswahl anbieten, aber nicht übernehmen. Als Lösung wird nun immer die eigene Implementierung verwendet (welche die plattformspezifischen Möglichkeiten nutzt).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Testen}
+\subsection{Graph-Test}
 Getestet wurde mittels dem Cppunit-Framework\footnote{http://sourceforge.net/projects/cppunit/}, welches eine C++ - Portierung von JUnit darstellt. Folgend sollen die getätigten Tests kurz beschrieben werden:
 
-\subsubsection{Graph}
-\paragraph{Die GraphBuilder-Klassen}
+\subsubsection{Die GraphBuilder-Klassen}
 Für einige Tests war es notwendig, sehr große Graphen zu erstellen. Hierfür wurde ein Template/Meta-Konstrukt entworfen, welches diese Aufgabe löst. 
 \\\\
 Das GraphBuilder-Modul besteht aus 4 Klassen:
@@ -129,9 +128,9 @@ CreateSeries< CreateParallel< VolumeAdapter, 2 > , 4 >
 
 \end{lstlisting} 
 
-\paragraph{testAddRemoveNodes} 
+\subsubsection{testAddRemoveNodes} 
 In diesem Test werden Knoten dem Graph hinzugefügt und entfernt. Es wird geprüft, ob die Knoten wie erwartet von der Graphstruktur aufgenommen werden. Auch wird das hinzufügen ungültiger Knoten (NULL-Zeiger) getestet. Solche Knoten sollten nicht vom Graph aufgenommen werden.  
-\paragraph{testConnectNodes}
+\subsubsection{testConnectNodes}
 Dieser Test arbeitet ähnlich wie \emph{testConnectNodes}. Getestet wird zusätzlich das Verbinden von Knoten. Folgende Operationen sollten vom Graph verweigert werden:
 \begin{itemize}
 	\item verbinden eines Knoten mit einem ''NULL''-Knoten
@@ -139,15 +138,15 @@ Dieser Test arbeitet ähnlich wie \emph{testConnectNodes}. Getestet wird zusätz
 	\item erzeugen einer bereits vorhandenen Verbindung
 	\item erzeugen einer ''Rückkoppelnden'' Verbindung
 \end{itemize}
-\paragraph{testSignalProcessPath}
+\subsubsection{testSignalProcessPath}
 In diesem Test wird die vom Graph erstellte Prozess-Liste auf Korrektheit überprüft. Es werden verschiedene Szenarien erstellt und die jeweiligen Ausgaben mit entsprechenden Erwartungsergebnissen verglichen.
-\paragraph{testDelayAdapter}
+\subsubsection{testDelayAdapter}
 Zum Testen der Delay-Compensation, wurde eigens ein ProcessAdapter implementiert. Den DelayAdapter. Dieser verzögert die Ausgabe eines Signals um N Millisekunden. Diese Funktionalität wird in diesem Test getestet.
-\paragraph{testDelayCompensation}
+\subsubsection{testDelayCompensation}
 In diesem Test wird die Delay-Compensation getestet. Hierfür werden mehrere DelayAdapter Objekte, in verschiedenen Szenarien eingefügt. Es wird geprüft, ob die Verzögerung des Graph-Ausgabesignals, gleich der Verzögerung, des DelayAdapters mit dem größten Verzögerungswert ist.
-\paragraph{testGraphConsistency}
+\subsubsection{testGraphConsistency}
 In diesem Test wird der Graph auf Stabilität geprüft. Es werden hintereinander, viele Objekte hinzugefügt und wieder entfernt. Es werden NULL-Objekte hinzugefügt. Es wird mehrfach die Samplerate und die Blockgröße geändert (auch mit ungültigen werten).
-\paragraph{testGraphComplex}
+\subsubsection{testGraphComplex}
 In dieser Testreihe werden verschiedene Graph-Szenarien aus Volume-Adapter erstellt. Jeder Adapter erhält den Wert '0.5', was zu einer Halbierung der Eingangswerte führt. Nun wird jeder Graph mit einer Eingangswertemenge prozessiert. Die Ausgabewertemenge muss einer Erwartungswertemenge entsprechen (siehe Abbildung \ref{testGraphComplex01} bis \ref{testGraphComplex03}). 
 \\\\
 Außerdem wird geprüft, ob die Anzahl der Frames-Objekt Kopiervorgänge, der in Abschnitt \ref{Optimierung} beschriebenen Optimierung entspricht. Hierfür wird ein Zählmechanismus genutzt, der ausschließlich mittels Präprozessor Schalter: 
@@ -178,9 +177,56 @@ aktiviert wird.
 \end{center}
 \end{figure}
 
-\paragraph{testSerialization}
+\subsubsection{testSerialization}
 Es wird die Persistierungs-Funktionalität des Graphen getestet. Dazu wird ein Graphszenario, mit allen
 verfügbaren Graph-Objekten erstellt. Danach wird eine Referenz-Ausgabe-Ergebnismenge erstellt. Nun wird der Graph Serialisiert und gelöscht. Anschließend wird der Graph Deserialisiert und erneut eine Ausgabe-Ergebnismenge erstellt. Diese wird schließlich, mit der vorher erstellten Referenzmenge auf Gleichheit überprüft.
-\section{Persitenz}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Portierung Windows/MacOSX}
+Obwohl VSTForx von Anfang an für Windows sowie MacOSX geplant war, konnte aufgrund fehlender Hardware erst Relativ spät mit der MacOSX portierung begonnen werden. Da das VST-SDK für beide Plattformen kompilierbar ist, kann die Portierung mit relativ wenig aufwand erfolgen. Die wenigen Plattformspezifischen Aufrufe, wie zum Beispiel das Laden und Ausführen von Dynamischen Bibliotheken (den Plugins), wurden in das ''Paket'' '\emph{OS\_Specific}' separiert. Es enthält die ''Unterpakete'' '\emph{mac}' und '\emph{win}'. Je nach Plattform, werden nun die entsprechenden Dateien in das Projekt aufgenommen.  
+\\\\
+Zwei Probleme traten beim ersten Kompiliervorgang der MacOSX Version auf:
 
-%PluginCollection: foreign key
+\paragraph{Const-correctness} Folgendes Programm lässt sich mit dem \emph{Microsofts C++} Compiler anstandslos Kompilieren:
+\begin{lstlisting}	
+struct X {
+};
+
+void call (X &x) {
+}
+
+int main() {
+  call ( X() );
+  return 0;
+}
+\end{lstlisting} 
+Der \emph{GCC C++} Compiler liefert hier allerdings die Fehlermeldung: 
+\\\\
+\fbox{
+\emph{''invalid initialization of non-const reference of type ‘X}\&\emph{’ from a temporary of type ‘X’''}. 
+}
+\\\\
+Es ist daher nicht erlaubt, einer Funktion mit (non-const) Refernz Parameter, ein Temporäres Objekt (in diesem Fall: X()), zu übergeben. Derartige Funktionen, gab es einige im Ürsprünglichen Quelltext. Zur Lösung muss einfach dem 'X\& x' Parameter, ein \emph{'const'} Qualifier hinzugefügt werden. Prinzpiell sollte, laut ''const-correctness'' Richtlinie, 'const' wann immer wenn möglich, eingesetzt werden\footnote{Herb Sutter and Andrei Alexandrescu (2005). C++ Coding Standards. p. 30. Boston: Addison Wesley}.
+
+\paragraph{Templates}
+Der Boost-Archive Serialisierungs Mechanismus, verlangt um ein Konkretes Objekt eines Oberklassen Zeigers, zu deserialiseren, die Registrierung jener Klasse mittels einer Template Methode. So wird zum Beispiel mittels 
+\codeinsert{archive.register\_type<Volume>();}
+die Konkrete-Klasse \emph{'Volume'} registriert. Dieser Aufruf findet in einer Methode statt, die ebenfalls Über einen Template-Parameter aufgerufen wird: 
+\codeinsert{template<typename Archive> void register\_types(Archive \&archive)}.
+Der \emph{GCC C++} Compiler lieferte beim emph{''register\_type''} Aufruf folgende Fehlermeldung:
+\\\\
+\fbox{
+\emph{''expected primary-expression before '>' token''} 
+}
+\\\\
+Das Problem rührt daher, dass der \emph{GCC-Compiler} in Template-Methoden, so früh wie möglich versucht, Fehler zu erkennen. Während der \emph{Microsoft-Compiler}, Template-Methoden erst dann Untersucht, wenn sie Konkret Verwendet werden. Das Fällt besonders dann auf, wenn eine Template-Methode Fehler enthält. Diese werden vom \emph{Microsoft-Compiler} erst entdeckt, sobald diese aufgerufen wurden. 
+\\\\
+Das Problem des \emph{GCC-Compilers} ist nun, dass versucht wird, auf ein \emph{Archive} Objekt zuzugreifen welches erst durch den Template-Parameter Spezifiziert wird. Die Lösung (die erst durch viel Ausprobieren gefunden wurde) ist, das Hinzufügen des Schlüsselwortes, ''\emph{template}'' vor entsprechenden Aufruf:
+\codeinsert{archive.template register\_type<Volume>();}
+
+
+
+
+
+
+
+
