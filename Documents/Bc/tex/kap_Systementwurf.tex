@@ -1,5 +1,26 @@
 % !TEX encoding = UTF-8 Unicode
 \section{Systementwurf}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Externe Abhängigkeiten}
+VSTForx nutzt folgende externe Bibliotheken:
+\paragraph{VST-SDK 2.4}
+Das VST-SDK wird zur Implementierung eines VST-Plugins, inklusive Editor (VST-GUI) benötigt.
+\paragraph{libpng/zlib}
+Um \emph{'png'}-Dateien darstellen zu können, benötigt die VST-GUI Bibliothek, die \emph{'libpng'}- sowie die \emph{'zlib'} Bibliothek (gilt nur für Windows). 
+\paragraph{Boost}
+	Die Boost-Bibliothek bietet viele unterschiedliche plattformunabhängige Lösungen, von denen einige in VSTForx genutzt werden:  
+	\begin {itemize}
+		\item \emph{Shared Pointer:} automatische Objektlebensdauer durch Referenzzählung
+		\item \emph{Archive:} Persistierung von Objekten 
+		\item \emph{Mutex:} implementation des Mutex-Konzeptes
+		\item \emph{Unordered Map:} Hash-Map implementation (nicht in STL enthalten)
+		\item \emph{Filesystem:} Dateisystem-Operationen, wie dass Durchsuchen eines Verzeichnisses
+		\item \emph{Bind:} bietet u.a. Funktionszeiger auf (nicht-statische)Klassen-Methoden
+	\end {itemize}
+\paragraph{SQLite}
+SQLite bietet eine Serverlose Datenbank, welche direkt in die Anwendung eingebunden werden kann. Die Plugindatenbank wird mittels Sqlite implementiert.
+\paragraph{Sambag}
+Eine vom Autor erstellte Sammlung von Hilfsklassen und Funktionen. Bietet u.a. einen C++ - Wrapper für SQLite. 
 \subsection{Grundstruktur}
 \begin{figure}[htbp]
 \begin{center}
@@ -10,7 +31,7 @@
 \end{figure}
 Da es sich bei VSTForx um eine typische GUI-Anwendung handelt, wurde sich für das MVC-Architektur Pattern entschieden (siehe Abbildung \ref{mainpat}). 
 \\\\
-Lediglich einige Namen wurden angepasst:
+Lediglich die Bezeichnungen wurden angepasst:
 \begin{itemize}
 	\item Modell -> Processing
 	\item View -> GUI\footnote{Anm.: da der ursprüngliche Arbeitstitel des Programmes ''PPI'' war, findet sich im Quelltext häufig die Bezeichnung ppiGui}
@@ -161,17 +182,11 @@ Der FrontController kümmert sich nun, um die Zuordnung zwischen Bühnen- und Co
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Gemeinsam genutzte Elemente}
-Neben den Hauptebenen (MVC), existiert noch eine Menge an gemeinsam genutzten Hilfsklassen und (frei stehenden) Funktionen.
+Neben den Hauptebenen (MVC), existiert noch einige gemeinsam genutzten Hilfsklassen und (frei stehenden) Funktionen.
 Die wichtigsten sollen hier kurz aufgeführt werden:
 \paragraph{PluginCollection}
-Die PluginCollection-Klasse Implementiert die PluginDatenbank. Sie existiert zur Laufzeit als Singleton-Objekt. Plugin-Objekte werden ausschließlich über die PluginCollection erzeugt. 
+Die PluginCollection-Klasse Implementiert die PluginDatenbank. Anfragen werden auf SQL-Befehle abgebildet und schließlich durch SQLite ausgeführt. Sie existiert zur Laufzeit als Singleton-Objekt. Plugin-Objekte werden ausschließlich über die PluginCollection erzeugt. 
 \paragraph{Settings}
 Die Settings-Klasse ist ebenfalls als Singleton Implementiert. Sie ist für die Programmkonfiguration und dem dauerhaften Speichern derselbigen verantwortlich.
-
-%TODO: externe Abhängigkeiten
-
-
-
-
-
-
+\paragraph{MyString}
+Erweitert die \emph{std::string} Klasse um einige nützliche Funktionen, wie zum Beispiel \emph{trim()}.

@@ -211,13 +211,13 @@ Es ist daher nicht erlaubt, einer Funktion mit (non-const) Refernz Parameter, ei
 Der Boost-Archive Serialisierungs Mechanismus, verlangt um ein Konkretes Objekt eines Oberklassen Zeigers, zu deserialiseren, die Registrierung jener Klasse mittels einer Template Methode. So wird zum Beispiel mittels 
 \codeinsert{archive.register\_type<Volume>();}
 die Konkrete-Klasse \emph{'Volume'} registriert. Dieser Aufruf findet in einer Methode statt, die ebenfalls Über einen Template-Parameter aufgerufen wird: 
-\codeinsert{template<typename Archive> void register\_types(Archive \&archive)}.
+\codeinsert{template<typename Archive> void register\_types(Archive \&archive)}
 Der \emph{GCC C++} Compiler lieferte beim emph{''register\_type''} Aufruf folgende Fehlermeldung:
-\\\\
+\begin{center}
 \fbox{
 \emph{''expected primary-expression before '>' token''} 
 }
-\\\\
+\end{center}
 Das Problem rührt daher, dass der \emph{GCC-Compiler} in Template-Methoden, so früh wie möglich versucht, Fehler zu erkennen. Während der \emph{Microsoft-Compiler}, Template-Methoden erst dann Untersucht, wenn sie Konkret Verwendet werden. Das Fällt besonders dann auf, wenn eine Template-Methode Fehler enthält. Diese werden vom \emph{Microsoft-Compiler} erst entdeckt, sobald diese aufgerufen wurden. 
 \\\\
 Das Problem des \emph{GCC-Compilers} ist nun, dass versucht wird, auf ein \emph{Archive} Objekt zuzugreifen welches erst durch den Template-Parameter Spezifiziert wird. Die Lösung (die erst durch viel Ausprobieren gefunden wurde) ist, das Hinzufügen des Schlüsselwortes, ''\emph{template}'' vor entsprechenden Aufruf:
