@@ -46,9 +46,9 @@ Lediglich die Bezeichnungen wurden angepasst:
 \end{center}
 \end{figure}
 
-\paragraph{Die Graph-Klasse} Das Hauptelement in der Processing-Ebene ist der Graph. Die Graphklasse dient als Container, für alle auf der ''Bühne'' erzeugten Geschäftslogik-Objekte. Die Oberklasse dieser Objektklassen ist, die PObject-Klase\footnote{PObject = Processing Object}(siehe Abbildung \ref{graphoverview}).  
+\subsubsection{Die Graph-Klasse} Das Hauptelement in der Processing-Ebene ist der Graph. Die Graphklasse dient als Container, für alle auf der ''Bühne'' erzeugten Geschäftslogik-Objekte. Die Oberklasse dieser Objektklassen ist, die PObject-Klase\footnote{PObject = Processing Object}(siehe Abbildung \ref{graphoverview}).  
 
-\paragraph{Die G-Klasse}
+\subsubsection{Die G-Klasse}
 Ursprünglich war es geplant, das Graph-Modell mittels Kompositum-Muster zu implementieren. 
 Daher: der Graph kennt n Knoten, Knoten kennen n Eltern bzw. n Kinder.
 Dieser Ansatz verursacht allerdings einige Probleme. Um einzelne Knoten zu erreichen, muss erst durch eine Knoten-Struktur traversiert werden. So werden einfache Aufgaben, wie das kopieren einer Graphstrukur, schnell sehr aufwändig. \\
@@ -63,24 +63,24 @@ Sie bietet mehrere Vorteile:
 \end{itemize}
 Ein Nachteil ist allerdings, da die Boost Library häufig Template-Meta Programmiertechniken verwendet, die lange Kompilationsdauer des Programmes.
 
-\paragraph{Die Frames-Klasse}
+\subsubsection{Die Frames-Klasse}
 Die Frames-Klasse ist ein (Mehrkanal)-Container für Sampleblöcke (siehe Abschnitt \ref{sampleblock}). Sie bietet außerdem Hilfsfunktionen wie: das Mischen mehrerer Kanäle zu Mono, Addition mehrerer Frames oder die Multiplikation um einen Faktor.
 
-\paragraph{Die DCStream-Klasse}
+\subsubsection{Die DCStream-Klasse}
 Die DCStream-Klasse (DC=Delay Compensation) implementiert, die in Abschnitt \ref{Latenzproblem} beschriebene Lösung zum Latenzproblem. Eine Methode addFrames( Frames *frames, int numSamples, int delay ) bietet die Möglichkeit, Sampledaten eines Frames-Objektes, mit unterschiedlichen Versatzwerten in das DCStream-Objekt einzufügen. Über die Methode flush(int numSamples, Frames *target), wird der Sampledaten-Inhalt wieder in ein Frames-Objekt zurückgeschrieben. 
 
-\paragraph{Die ProcessorNode-Klasse}
+\subsubsection{Die ProcessorNode-Klasse}
 Die ProcessorNode-Klasse ist die Oberklasse aller Knoten, die vom Prozessgraphen (G) aufgenommen werden können. Die ProcessorNode-Klasse enthält die virtuellen Methoden: \emph{processNode()} und \emph{processFrames(Frames *fr)}.\\ 
 Die Methode mixInputsToFrame() mischt alle Eingangs-Sampleblöcke, unter Verwendung der DCStream Klasse, in ein einzelnes Frames-Objekt. Die Methode processFrames() bearbeitet es (siehe Abbildung \ref{graphcomp}).
 Die Methode popFrames() liefert schlußendlich die Ausgangs-Samplemenge. 
 \\\\
 
-\paragraph{Die ProcessAdapter-Klasse}
+\subsubsection{Die ProcessAdapter-Klasse}
 Würden alle gewünschten Module nur aus einem Eingang und einem Ausgang bestehen, wäre es völlig ausreichend, die Modulfunktionen in einem Knoten zu implementieren. Da jedoch Module implementiert werden müssen die mehrere Ein-/Ausgänge verwenden, ist die Umsetzung etwas aufwändiger. Um zum Beispiel mehreren Ausgängen, (=mehrere Kindknoten) unterschiedliche Frames zu liefern zu können, bräuchte ein Knoten die Information, von welchem Kinds-Knoten aus die popFrames() Methode aufgerufen wurde. Eine solche Implementierung wäre sehr fehleranfällig und schwer zu nachzuvollziehen. 
 \\\\
 Eine bessere Lösung ist, dass Knoten selbst die Ein- und Ausgänge darstellen (siehe Abbildung \ref{graphcomp}). Erzeugt und verwaltet werden diese vom Modul, der ProcessAdapter-Klasse. Ein zusätzlicher Knoten-Typ, der ProcessAdapterNode, sorgt dafür das der Aufruf processNode(), an das jeweilige Eltern-Modul verwiesen wird (siehe Abbildung \ref{lanes}).
 
-\paragraph{\label{Optimierung}Optimierung} 
+\subsubsection{\label{Optimierung}Optimierung} 
 Effizient wäre es, nach jeder Knoten-bearbeitung den Zeiger des Frames-Objekt weiterzureichen. Dies funktioniert allerdings nur  solange, wie Knoten in Serie verkettet sind. Bei einer Parallel-Verkettung ist es notwendig das Frames-Objekt, einmal für jede Abzweigung zu kopieren. Ziel ist es, so viele Kopiervorgänge wie möglich zu sparen. Dies wird erreicht, indem nur dann kopiert wird wenn es wirklich notwendig ist: wenn ein Knoten mehr als ein Kindknoten hat. \\\\
 Zur Umsetzung wurde ein Stack-Mechanismus verwendet. Die Ausgabeframes eines Knotens, gelangen über die Methode pushAndCopy(Frames*) in den Stack. Sollte eine Knoten nur ein Kindknoten haben, wird der übergebene Frames-Zeiger der pushAndCopy() Methode, im Stack aufgenommen. Bei mehr als einem Kindknoten, wird zusätzlich Anzahl(Kindknoten) - 1 mal das Frames Objekt kopiert und im Stack aufgenommen. 
 \\\\
@@ -121,11 +121,11 @@ Die Schnittstelle HasParameter, ermöglicht den zugriff auf eine unbestimmte Men
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Die GUI Ebene}
-\paragraph{PpiEditor}
+\subsubsection{PpiEditor}
 Die PpiEditor-Klasse implementiert, die von dem Vst-Gui SDK vorgegebene AEffGUIEditor-Klasse. Sie dient der Kommunikation zwischen Hostanwendung und Plugin-Editor.
-\paragraph{CView}
+\subsubsection{CView}
 Die CView-Klasse ist die Oberklasse aller graphischen Elemente im Vst-Gui SDK. Sie besteht aus einem Rechteckigen Bereich und enthält die Methode draw(CDrawContext *cn). Über diese können mittels übergebenen DrawContext, im sichtbaren Bereich Zeichenoperationen ausgeführt werden.
-\paragraph{CircuidView}
+\subsubsection{CircuidView}
 Die CircuidView-Klasse repräsentiert die ''Bühne'' der GUI.
 Zu beginn der Entwicklung stand der Autor vor der Entscheidung, die Bühnedarstellung nach Vst-Gui SDK Methodik zu gestalten oder eine eigene Implementierung zu verwenden. So könnte jedes Bühnenobjekt einen eigenen CView-Bereich darstellen. Was aus Sicht des Vst-Gui SDKs durchaus logisch wäre, da dort alle graphischen Elemente, wie Regler und Knöpfe, als CView-Klasse implementiert sind. 
 \\\\
@@ -135,15 +135,15 @@ Es wurde sich allerdings dagegen entschieden. So ist einzig die CircuidView-Klas
 	\item die schlechte Dokumentation des Vst-Gui SDKs (Erschließung hauptsächlich nach ''trial and error'' Prinzip)
 	\item weniger direkte Abhängikeiten zum Vst-Gui SDKs (was eine eventuelle Immigration zu einem anderen/besseren Framework erleichtern würde)
 \end{itemize}
-\paragraph{GObject}
+\subsubsection{GObject}
 Die GObject-Klasse ist die Oberklasse, aller Objekte die von der CircuidView aufgenommen werden können. Sie bildet das Gegenstück zur PObject Klasse.
-\paragraph{GProcessModule}
+\subsubsection{GProcessModule}
 Die GProcessModule-Klasse ist die graphische Repräsentation der ProcessAdaptor-Objekte.
-\paragraph{GIONode}
+\subsubsection{GIONode}
 Die GIONode-Klassen repräsentieren die Input-/OutputNode Objekte.
-\paragraph{GConnection}
+\subsubsection{GConnection}
 Die GConnection-Klassen repräsentieren die Verbindungen zwischen den GObjecten.
-\paragraph{CViewWrapper}
+\subsubsection{CViewWrapper}
 Wie bereits beschrieben, implementiert die CircuidView-Klasse die Bühnedarstellung, unabhängig von den CView-Klassen. Die CircuidView nimmt ausschließlich GObject-Objekte auf. Dies bedeutet jedoch, dass Vst-Gui SDK Steuerungs-Elemente, nicht mit der CircuidView verwendet werden können. Diesen Nachteil behebt die CViewWrapper-Klasse. Sie hüllt ein CView-Objekt in ein GObject-Objekt. Über ein Template-Parameter wird festgelegt, welche GObject-Klasse Oberklasse ist. Somit ist es möglich, Eine CView-Klasse mit den Eigenschaften von GCircle zu umhüllen.
 \begin{figure}[htbp]
 \begin{center}
@@ -164,9 +164,9 @@ Das MVC-Architekturmuster dient der losen Kopplung zwischen, Geschäfts-Logik un
 \label{parameterModel}
 \end{center}
 \end{figure}
-\paragraph{ViewRelations}
+\subsubsection{ViewRelations}
 Die Problemstellung, beim öffnen des Editors, in einem bereits bestehenden Szenario ist, wiederhergestellte View-Objekte den richtigen Model-Objekten zuzuordnen. Diese Aufgabe übernimmt die Klasse ViewRelations. Sie liefert für jedes Model-Objekt das passende View-Objekt und umgekehrt.
-\paragraph{FrontController}
+\subsubsection{FrontController}
 Da es viele unterschiedliche Objekte auf der ''Bühne'' gibt und jedes dieser Objekte unterschiedliche Funktionen bietet, wäre es umständlich und unübersichtlich, für alle Bühnenobjekte eine einzige Controller-Klasse zu verwenden.
 Deshalb wurde sich dafür entschieden, mehrere Control-Klassen für unterschiedliche Bühnenobjekte zu implementieren: die ObjectControl-Klassen. 
 \\\\
@@ -184,9 +184,9 @@ Der FrontController kümmert sich nun, um die Zuordnung zwischen Bühnen- und Co
 \subsection{Gemeinsam genutzte Elemente}
 Neben den Hauptebenen (MVC), existiert noch einige gemeinsam genutzten Hilfsklassen und (frei stehenden) Funktionen.
 Die wichtigsten sollen hier kurz aufgeführt werden:
-\paragraph{PluginCollection}
+\subsubsection{PluginCollection}
 Die PluginCollection-Klasse Implementiert die PluginDatenbank. Anfragen werden auf SQL-Befehle abgebildet und schließlich durch SQLite ausgeführt. Sie existiert zur Laufzeit als Singleton-Objekt. Plugin-Objekte werden ausschließlich über die PluginCollection erzeugt. 
-\paragraph{Settings}
+\subsubsection{Settings}
 Die Settings-Klasse ist ebenfalls als Singleton Implementiert. Sie ist für die Programmkonfiguration und dem dauerhaften Speichern derselbigen verantwortlich.
 \paragraph{MyString}
 Erweitert die \emph{std::string} Klasse um einige nützliche Funktionen, wie zum Beispiel \emph{trim()}.

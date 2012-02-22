@@ -12,7 +12,7 @@ Wünschenswert wäre hier die Verwendung eines GUI-Toolkits, wie \emph{Qt\footno
 \\\\
 Im Falle einer Eigenentwicklung, käme die \emph{Cairo\footnote{http://cairographics.org/}}-Bibliothek in Frage. Diese bietet sehr leistungsfähige Zeichenfunktionen und ist wie gefordert, in bestehende Fensterumgebungen einbindbar.
 \subsection{'Signal nach Parameterwert'-Problem}
-'Signal nach Parameterwert'-Module welche ein Eingangsignal analysieren um einen Parameterwert zu steuern, haben eine Einschränkung: sie werden, da sie als \emph{ProcessAdapter} in den Graph eingebunden, nur einmal pro Sampleblock ausgeführt. Das bedeutet, dass ein Parameterwert sich immer seltener ändert, je höher die Sampleblockgröße ist. Bei einer Samplerate von 44100.0HZ und einer (üblichen) Blockgröße von 1024, wird demnach ein Parameter alle 23Ms Aktualisiert. Dies ist vermutlich kaum wahrnehmbar, nach Meinung des Autors dennoch ein kleiner Schönheitsfehler.
+'Signal nach Parameterwert'-Module welche ein Eingangsignal analysieren um einen Parameterwert zu steuern, haben eine Einschränkung: sie werden, da sie als \emph{ProcessAdapter} in den Graph eingebunden, nur einmal pro Sampleblock ausgeführt. Das bedeutet, dass ein Parameterwert sich immer seltener ändert, je höher die Sampleblockgröße ist. Bei einer Samplerate von 44100.0Hz und einer (üblichen) Blockgröße von 1024, wird demnach ein Parameter alle 23Ms aktualisiert. Dies ist vermutlich kaum wahrnehmbar, nach Meinung des Autors dennoch ein kleiner Schönheitsfehler.
 \\\\
 Zur Lösung müsste die Parameter-Aktualisierung entsprechender Module, in einem separaten Thread mit fester Aktualisierungsrate durchgeführt werden. 
 \subsection{Weitere Module}
