@@ -40,7 +40,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -60,7 +60,7 @@
      showborder="false"
      inkscape:zoom="2.3754762"
      inkscape:cx="158.3874"
-     inkscape:cy="104.67172"
+     inkscape:cy="121.51045"
      inkscape:window-x="66"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
@@ -147,20 +147,25 @@
            sodipodi:role="line"
            id="tspan5952"
            x="539.75665"
-           y="432.69028">xi' = 0.5<tspan
+           y="432.69028">x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan3102">i</tspan>' = x<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan3104">i</tspan> * 0.5<tspan
    style="font-size:65.00091553%;baseline-shift:super"
-   id="tspan5954">N</tspan> * N<tspan
-   style="font-size:65.00091553%;baseline-shift:super"
-   id="tspan4324">x</tspan><tspan
-   id="tspan4328"
-   style="font-size:65.00091553%;baseline-shift:sub" /></tspan></text>
+   id="tspan5954">N</tspan> * 2<tspan
+   style="font-size:65%;baseline-shift:super"
+   id="tspan3106">N</tspan></tspan></text>
       <text
          xml:space="preserve"
          style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
          x="538.91467"
          y="449.95001"
          id="text4188"
-         sodipodi:linespacing="125%"><tspan
+         sodipodi:linespacing="125%"
+         inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Documents/Bc/graphics/complex03.png"
+         inkscape:export-xdpi="276"
+         inkscape:export-ydpi="276"><tspan
            sodipodi:role="line"
            id="tspan4190"
            x="538.91467"
@@ -172,7 +177,10 @@
          y="185.86118"
          id="text4330"
          sodipodi:linespacing="125%"
-         transform="translate(376,182)"><tspan
+         transform="translate(376,182)"
+         inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Documents/Bc/graphics/complex03.png"
+         inkscape:export-xdpi="276"
+         inkscape:export-ydpi="276"><tspan
            sodipodi:role="line"
            id="tspan4332"
            x="345.6149"
@@ -183,7 +191,10 @@
          x="651.67206"
          y="426.15921"
          id="text4334"
-         sodipodi:linespacing="125%"><tspan
+         sodipodi:linespacing="125%"
+         inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Documents/Bc/graphics/complex03.png"
+         inkscape:export-xdpi="276"
+         inkscape:export-ydpi="276"><tspan
            sodipodi:role="line"
            id="tspan4336"
            x="651.67206"
