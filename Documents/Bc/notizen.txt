@@ -46,7 +46,7 @@ refactor:
 <-->SampleRate, BlockSize, hostInfoChanged
 <-->ProcessorNode::FrameContainer list->vector
 <ok>ProcessAdapter: InputNode/OutputNode declare outside of ProcessAdapter
-<-->Input/OutputStep:: skimStepDuration funk. nach Step verlagern
+<ok>Input/OutputStep:: skimStepDuration funk. nach Step verlagern
 <-->Step::setNumSteps make private 
 <-->Input/OutputStep erben nicht Step?
 <-->FixTimeValue -> remove template

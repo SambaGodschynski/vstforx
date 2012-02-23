@@ -744,9 +744,14 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * verringert Step-Dauer um 1 Sample.
-	 * @return
+	 * Ist dauer == 0, schaltet naechsten Step.
 	 */
-	int skimDuration() { return duration--; }
+	void skimDuration() { 
+		if ( duration-- <= 0 ) {
+			nextStep();
+			resetDuration();
+		}
+	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * setzt aktuelles ValueTranslator-Objekt
@@ -1064,17 +1069,6 @@ private:
 	OutputMatrix outpMatrix;
 	//--------------------------------------------------------------------------------------------------------
 	inline void processFrames ( Frames *iFrame, OutputMatrix &fr, Processor::Int numSamples );
-	//----------------------------------------------------------------------------------------------------
-	/**
-	 * Verkuertzt Step-Dauer um 1 Sample und Schaltet zu naechsten Step wenn Step-Dauer == 0.
-	 * TODO: nach Step verschieben
-	 */
-	void skimStepDuration() {
-		if ( cStep->skimDuration() <= 0 ) {
-			cStep->nextStep();
-			cStep->resetDuration();
-		}
-	}
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	/**

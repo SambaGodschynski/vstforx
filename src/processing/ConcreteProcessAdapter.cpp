@@ -486,7 +486,7 @@ inline void OutputStep::processFrames ( Frames *iFrame, OutputMatrix &fr, Proces
 	VstNumber *l = (*iFrame)[0];
 	VstNumber *r = (*iFrame)[1];
 	for ( int i=0; i<numSamples; ++i ) {
-		skimStepDuration();
+		cStep->skimDuration();
 		for ( int j=0; j<cStep->getNumSteps(); j++ ){
 			float fac = cStep->getFaderValueAndIncT(j); // mit jedem lesezugriff wird fader::t erhoet!
 			if (!fr[j]) continue; // !!Wichtig
@@ -648,10 +648,7 @@ inline void InputStep::processFrames ( InputMatrix &fr, Processor::Int numSample
 	VstNumber *r = tmpFrame[1];
 	for ( int i=0; i<numSamples; ++i ){
 		*l = 0.0f; *r = 0.0f;
-		if ( cStep->skimDuration() <= 0 ) {
-			cStep->nextStep();
-			cStep->resetDuration();
-		}
+		cStep->skimDuration();
 		for ( int j=0; j<cStep->getNumSteps(); j++ ){
 			float fac = cStep->getFaderValueAndIncT(j); // mit jedem lesezugriff wird fader::t erhoet!
 			if (!fr[j]) continue; // !!Wichtig
