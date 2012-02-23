@@ -8,3 +8,5 @@ ProcessorNode::
 ProcessAdapter::
 	_processAdapter -> processAdapter
 	ProcessAdapter( IHostInfo * hostInfo, size_t numInputNodes = 1, size_t numOutputNodes = 1 ); // protected
+Switch::
+	setFaderValue() // proteced

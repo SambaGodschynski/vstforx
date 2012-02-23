@@ -1,3 +1,9 @@
+/*
+ * ===========================================================================================================
+ * ConcreteProcessAdapter.cpp
+ *      Author: Johannes Unger
+ * ===========================================================================================================
+ */
 #include "ConcreteProcessAdapter.h"
 #include <stack>
 
@@ -75,7 +81,7 @@ void Switch::_addState() {
 	Parameter::ParameterListenerFunction cT = boost::bind( 
 		&Switch::curveTypeChanged, this, _1, _2 
 	);
-	size_t i = getNumStates();
+	State i = getNumStates();
 	++numStates;
 	// prepare duration parameter
 	nDurationIN[i] = Parameter::create(i);

@@ -38,7 +38,7 @@ using namespace parameter;
 //============================================================================================================
 /**
  * @class Volume.
- * Multipliziert Eingangs-Samplemenge mit Multiplikator.
+ * Multipliziert Eingangs-Samplemenge mit Faktor.
  */
 class Volume :
 //============================================================================================================
@@ -131,7 +131,7 @@ public:
 	/**
 	 *
 	 * @param index
-	 * @return ausshcliesslich Volumeparameter, da einzger Parameter.
+	 * @return ausschliesslich Volumeparameter, da einzger Parameter.
 	 */
 	virtual Parameter::Ptr getParameter ( size_t index = 0 ) const { return volume; }
 	//--------------------------------------------------------------------------------------------------------
@@ -146,15 +146,23 @@ public:
 	}
 };
 //============================================================================================================
-//	Klasse Pan:
-//============================================================================================================
+/**
+ * @class Pan.
+ *  Pan auf Eingangs-Samplemenge.
+ */
 class Pan : public ProcessAdapter, public Serializable, public HasParameter  {
+//============================================================================================================
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<Pan> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (De)Serialisiert Pan-Objekt
+	 * @param ar boost::Archive Objekt
+	 * @param version
+	 */
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){
 		ar & boost::serialization::base_object< ProcessAdapter > ( *this );
@@ -169,17 +177,31 @@ protected:
 	Pan ( IHostInfo *hostInfo );
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param hostInfo
+	 * @return neues Pan-Objekt
+	 */
 	static Ptr create( IHostInfo *hostInfo ) {
 		Ptr neu( new Pan(hostInfo) );
 		neu->self = neu;
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
-    //ruft die processReplacing Methode des zugeordneten Processor Objekt auf.
-    virtual void processAdapter( Processor::Int numSamples );
+	/**
+	 * Verarbeitet Samplemenge des Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
+	 * @param numSamples Anzahl der zu bearbeitenden Samples
+	 */
+	virtual void processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
-	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const { return pan; }
+	/**
+	 * @param index
+	 * @return  ausschliesslich Panparameter, da einzger Parameter.
+	 */
+	virtual Parameter::Ptr getParameter ( size_t index = 0 ) const { return pan; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return 1
+	 */
 	virtual size_t getNumParameter () const { return 1; }
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Pan() {
@@ -188,18 +210,28 @@ public:
 
 };
 //============================================================================================================
-// Klasse Switch:
-// verwaltet N FadeValue und dazugehoerige Parameter
-//============================================================================================================
+/**
+ * @class Switch.
+ * Oberklasse fuer Input/OutputSwitch, Step. Vewaltet N FadeValues
+ * (fadeIn/fadeOut pro State)
+ */
 class Switch : public HasParameter {
-friend class boost::serialization::access;
+//============================================================================================================
+	friend class boost::serialization::access;
 public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef size_t State;
 	//--------------------------------------------------------------------------------------------------------
 	typedef vector<FadeValue> FadeValues;
 	//--------------------------------------------------------------------------------------------------------
 	typedef vector<Parameter::Ptr> Parameters;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (De)Serialisiert Switch-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){
 		ar & numStates;
@@ -232,79 +264,170 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	size_t numStates;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Anzahl der Parameter pro State
+	 */
 	enum { NUM_P = 4 };
 	//--------------------------------------------------------------------------------------------------------
-	size_t state;
+	/**
+	 * aktueller State
+	 */
+	State state;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Parameter durationIn geandert
+	 * @param src
+	 * @param v neuer Wert
+	 */
 	void durationINChanged ( void *src, const float &v );
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Parameter durationOut geandert
+	 * @param src
+	 * @param v neuer Wert
+	 */
 	void durationOUTChanged ( void *src, const float &v );
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Parameter curveType geandert
+	 * @param src
+	 * @param v neuer Wert
+	 */
 	void curveTypeChanged ( void *src, const float &v );
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Anzahl der Samples einer Ms.
+	 */
 	float one_ms_in_samples;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * FadeValues
+	 */
 	FadeValues nFader;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Parameter Container: Parameter pro State
+	 */
 	Parameters nDurationIN, nDurationOUT, nCurveTypeIN, nCurveTypeOUT, parameterMap; 
 	//--------------------------------------------------------------------------------------------------------
 	void _addState();
+protected:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Setzt neuen Fader-Zielwert
+	 * @param n State
+	 * @param v neuer Wert
+	 */
+	void setFaderValue ( State n, const FadeValue::T &v ) {
+		assert ( one_ms_in_samples != 0.0f );
+		bool out = v<nFader[n];
+		float d = out ? *nDurationOUT[n] : *nDurationIN[n]; // fadein oder fadeout?
+		int t = mapInteger ( ( out ? *nCurveTypeOUT[n] : *nCurveTypeIN[n] ), FadeValue::NUM_FADE_TYPES );
+		nFader[n].setDuration ( one_ms_in_samples * 1000.0f * d);
+		nFader[n].setType ( (FadeValue::FadeType) t );
+		nFader[n].setValue(v);
+	}
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Setzt Samplerate. Beeinflusst Fader.
+	 * @param sampleRate
+	 */
 	void setSampleRate ( float sampleRate ) {
 		one_ms_in_samples = sampleRate / 1000.0f;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	Switch( size_t numStates = 0, float sampleRate = 0.0f );
 	//--------------------------------------------------------------------------------------------------------
-	void setState ( size_t x ) {
+	/**
+	 * Setzt State.
+	 * @param x
+	 */
+	void setState ( State x ) {
 		setFaderValue(state, 0.0f);
 		state = x % numStates; 
 		setFaderValue(state, 1.0f);
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * fuegt State hinzu.
+	 */
 	virtual void addState();
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Schaltet naechsten State
+	 */
 	void nextState() { setState( state + 1 ); }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Schaltet vorherrigen State
+	 */
 	void prevState() { setState( state - 1 ); }
 	//--------------------------------------------------------------------------------------------------------
-	size_t getState() const { return state; }
+	/**
+	 * @return Aktueller State
+	 */
+	State getState() const { return state; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Anzahl States
+	 */
 	size_t getNumStates() const { return numStates; }
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Switch();
 	//--------------------------------------------------------------------------------------------------------
-	virtual Parameter::Ptr getParameter ( size_t nr ) const {  return parameterMap.at(nr); }
+	/**
+	 * @param index
+	 * @return Parameter zu index. Wirft std::out_of_range.
+	 */
+	virtual Parameter::Ptr getParameter ( size_t index ) const {  return parameterMap.at(index); }
 	//--------------------------------------------------------------------------------------------------------
-	Parameter::Ptr getDurationParameterIN ( size_t nr ) const {  return nDurationIN.at(nr); }
+	/**
+	 * @param state
+	 * @return DurationParameterIN zu State. Wirft std::out_of_range.
+	 */
+	Parameter::Ptr getDurationParameterIN ( State state ) const {  return nDurationIN.at(state); }
 	//--------------------------------------------------------------------------------------------------------
-	Parameter::Ptr getDurationParameterOUT ( size_t nr ) const {  return nDurationOUT.at(nr); }
+	/**
+	 * @param state
+	 * @return DurationParameterOUT zu State. Wirft std::out_of_range.
+	 */
+	Parameter::Ptr getDurationParameterOUT ( State state ) const {  return nDurationOUT.at(state); }
 	//--------------------------------------------------------------------------------------------------------
-	Parameter::Ptr getCurveTypeParameterIN ( size_t nr ) const {  return nCurveTypeIN.at(nr); }
+	/**
+	 * @param state
+	 * @return CurveTypeParameterIN zu State. Wirft std::out_of_range.
+	 */
+	Parameter::Ptr getCurveTypeParameterIN ( State state ) const {  return nCurveTypeIN.at(state); }
 	//--------------------------------------------------------------------------------------------------------
-	Parameter::Ptr getCurveTypeParameterOUT ( size_t nr ) const {  return nCurveTypeOUT.at(nr); }
+	/**
+	 * @param state
+	 * @return CurveTypeParameterOUT zu State. Wirft std::out_of_range.
+	 */
+	Parameter::Ptr getCurveTypeParameterOUT ( State state ) const {  return nCurveTypeOUT.at(state); }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return anzahl aller Switch-Parameter.
+	 */
 	virtual size_t getNumParameter () const { return NUM_P*numStates; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param n
+	 * @return Fader-Wert und erhoert Fader-t um 1.
+	 */
 	const FadeValue::T & getFaderValueAndIncT ( size_t n ) { return nFader[n].getValue(); } 
 	//--------------------------------------------------------------------------------------------------------
-	void setFaderValue ( size_t n, const FadeValue::T &v ) { 
-		assert ( one_ms_in_samples != 0.0f );
-		bool out = v<nFader[n];
-		float d = out ? *nDurationOUT[n] : *nDurationIN[n]; // fadein : fadeout
-		int t = mapInteger ( ( out ? *nCurveTypeOUT[n] : *nCurveTypeIN[n] ), FadeValue::NUM_FADE_TYPES );
-		nFader[n].setDuration ( one_ms_in_samples * 1000.0f * d); 
-		nFader[n].setType ( (FadeValue::FadeType) t );
-		nFader[n].setValue(v);
-	} 
-	//--------------------------------------------------------------------------------------------------------
-	FadeValue * getFader( size_t n ) { return &nFader[n]; } 
+	/**
+	 * @param n
+	 * @return Fader-Objekt
+	 */
+	FadeValue * getFader( State n ) { return &nFader[n]; }
 };
 //============================================================================================================
-//	Klasse OutputSwitch :
-//	Schaltet mehrere Ausgaenge
-//============================================================================================================
+/**
+ * @class OutputSwitch :
+ * Schaltet Eingangs-Samplemenge auf N Ausgaenge
+ */
 class OutputSwitch : 
 public ProcessAdapter, 
 public Serializable, 
@@ -313,6 +436,7 @@ public VariableOutputAdapter,
 public ValueChangedListener<float>,
 public IHasState
 {
+//============================================================================================================
 friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
@@ -320,18 +444,37 @@ public:
 	typedef boost::shared_ptr<OutputSwitch> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Serialisiert OutputSwich-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
 	void save ( oArchive &ar, const unsigned int version ) const;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Deserialisiert OutputSwich-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
 	void load ( iArchive &ar, const unsigned int version );
 	//--------------------------------------------------------------------------------------------------------
 	OutputSwitch() {};
 	//--------------------------------------------------------------------------------------------------------
 	typedef vector<Frames*> OutputMatrix;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * blockt hinzufuegen von OutputNode gegen ProcessAdapter
+	 */
 	Mutex mutex;
 	//--------------------------------------------------------------------------------------------------------
 	OutputMatrix outpMatrix;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 *
+	 * @param iFrame Eingangs-Frames-Objekt
+	 * @param fr Frames-OutputMatrix
+	 * @param numSamples Anzahl der zu bearbeitenden Samples
+	 */
 	inline void _processFrames ( Frames *iFrame, OutputMatrix &fr, Processor::Int numSamples );
 private:
 protected:
@@ -340,40 +483,77 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	vector<Parameter::Ptr> parameterMap;
 	//--------------------------------------------------------------------------------------------------------
-	virtual void setState ( size_t state ) { Switch::setState(state); }
+	/**
+	 * setzt State
+	 * @param state
+	 */
+	virtual void setState ( Switch::State state ) { Switch::setState(state); }
 	//--------------------------------------------------------------------------------------------------------
 	OutputSwitch( IHostInfo *hostInfo, int initStates = 2 );
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param hostInfo
+	 * @param initStates
+	 * @return neues OutputSwitch-Objekt
+	 */
 	static Ptr create( IHostInfo *hostInfo, int initStates = 2 ) {
 		Ptr neu( new OutputSwitch(hostInfo, initStates) );
 		neu->self = neu;
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Selector-Parameter geandert
+	 * @param src
+	 * @param val neuer Wert
+	 */
 	virtual void valueChanged ( void *src, const float &val );
 	//--------------------------------------------------------------------------------------------------------
-    virtual void processAdapter( Processor::Int numSamples );
+	/**
+	 * Verarbeitet Samplemenge des Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
+	 * @param numSamples Anzahl der zu bearbeitenden Samples
+	 */
+	virtual void processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~OutputSwitch();
 	//--------------------------------------------------------------------------------------------------------
-	size_t getState() const { return aNode->isActive() ? Switch::getState() : UINT_MAX; }
+	/**
+	 * @return aktuellen State
+	 */
+	Switch::State getState() const { return aNode->isActive() ? Switch::getState() : UINT_MAX; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * HostInfo geandert. Beeinflusst Switch::Fader
+	 */
 	virtual void hostInfoChanged() {
 		Switch::setSampleRate( hostInfo->getSampleRate() );
 	}
 	//--------------------------------------------------------------------------------------------------------
-	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const {return parameterMap.at(nr);}
+	/**
+	 * @param index
+	 * @return liefert Parameter zu index. Wirft: out_of_range
+	 */
+	virtual Parameter::Ptr getParameter ( size_t index = 0 ) const {return parameterMap.at(index);}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Anzahl aller OutputSwitch Parameter
+	 */
 	virtual size_t getNumParameter () const { return parameterMap.size(); }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Fuegt OutputNode hinzu
+	 * @return neues OutputNode-Objekt
+	 */
 	virtual ProcessorNode::Ptr addOutputNode();
 };
 //============================================================================================================
-//	Klasse InputSwitch :
-//	Schaltet mehrere Eingaenge
+/**
+ * @class InputSwitch.
+ * Schaltet N Eingangs-Samplemengen auf 1 Ausgang
+ */
+class InputSwitch :
 //============================================================================================================
-class InputSwitch : 
 public ProcessAdapter, 
 public Serializable, 
 public Switch,
@@ -388,8 +568,18 @@ public:
 	typedef boost::shared_ptr<InputSwitch> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Serialisiert IntputSwich-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
 	void save ( oArchive &ar, const unsigned int version ) const;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Deserialisiert IntputSwich-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
 	void load ( iArchive &ar, const unsigned int version );
 	//--------------------------------------------------------------------------------------------------------
 	InputSwitch() {};
@@ -402,6 +592,11 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	Frames tmpFrame;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param iFrame Eingangs-Frames-Objekt
+	 * @param fr Frames-OutputMatrix
+	 * @param numSamples Anzahl der zu bearbeitenden Samples
+	 */
 	inline void _processFrames ( InputMatrix &fr, Processor::Int numSamples );
 private:
 protected:
@@ -410,34 +605,69 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	vector<Parameter::Ptr> parameterMap;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * setzt State
+	 * @param state
+	 */
 	virtual void setState ( size_t state ) { Switch::setState(state); }
 	//--------------------------------------------------------------------------------------------------------
 	InputSwitch( IHostInfo *hostInfo, int initStates = 2 );
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param hostInfo
+	 * @param initStates
+	 * @return neues InputSwitch-Objekt
+	 */
 	static Ptr create( IHostInfo *hostInfo, int initStates = 2 ) {
 		Ptr neu( new InputSwitch(hostInfo, initStates) );
 		neu->self = neu;
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * HostInfo geandert. Beeinflusst Switch::Fader
+	 */
 	virtual void hostInfoChanged() {
 		tmpFrame.setSize( hostInfo->getBlockSize() );
 		Switch::setSampleRate( hostInfo->getSampleRate() );
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Selector-Parameter geandert
+	 * @param src
+	 * @param val neuer Wert
+	 */
 	virtual void valueChanged ( void *src, const float &val );
 	//--------------------------------------------------------------------------------------------------------
-    virtual void processAdapter( Processor::Int numSamples );
+	/**
+	 * Verarbeitet Samplemenge der Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
+	 * @param numSamples Anzahl der zu bearbeitenden Samples
+	 */
+	virtual void processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~InputSwitch();
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return aktuellen State
+	 */
 	size_t getState() const { return aNode->isActive() ? Switch::getState() : UINT_MAX; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param index
+	 * @return liefert Parameter zu index. Wirft: std::out_of_range
+	 */
 	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const {return parameterMap.at(nr);}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Anzahl aller InputSwitch Parameter
+	 */
 	virtual size_t getNumParameter () const { return parameterMap.size(); }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Fuegt InputNode hinzu
+	 * @return neues InputNode-Objekt
+	 */
 	virtual ProcessorNode::Ptr addInputNode();
 };
 //============================================================================================================
