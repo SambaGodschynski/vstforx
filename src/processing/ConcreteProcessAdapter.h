@@ -1,6 +1,11 @@
-#ifndef PRAXIS_PRAXIS_H
-#define PRAXIS_PRAXIS_H
-
+/*
+ * ===========================================================================================================
+ * ConcreteProcessAdapter.h
+ *      Author: Johannes Unger
+ * ===========================================================================================================
+ */
+#ifndef CONCRETE_PROCESS_ADAPTER
+#define CONCRETE_PROCESS_ADAPTER
 
 #include "processing/processing.h"
 #include "processing/parameter/parameter.h"
@@ -10,50 +15,33 @@
 #include "MidiEventProcessor.h"
 
 //============================================================================================================
-//	Deklarationen
+//	Vorwaertz Deklarationen
 //============================================================================================================
 namespace processing {
 using namespace std;
 using namespace com;
 using namespace parameter;
-//============================================================================================================
-//Volume
-//Die processFrames Methode mulipliziert den Inhalt des Frames umden faktor Volume.
-//============================================================================================================
 class Volume;
 //============================================================================================================
 //Volume2Parameter
 //Tranformiert Signal Lautstaerke in Parameter wert.
 //============================================================================================================
 class PeakTracker;
-//============================================================================================================
-//	Klasse Pan:
-//	Splittet signal in R und L
-//============================================================================================================
 class Pan;
-//============================================================================================================
-//	Klasse OutputStep:
-//	Hatt mehrere Ausgaenge. Zordung des Input-Signals ist zustands abhaengig.
-//============================================================================================================
 class OutputStep;
-//============================================================================================================
-//	Schnittstelle ValueTranslator:
-//	Transformiert einen eingabewert im bereich 0..1 in eine Zeitangabe in Samples.
-//============================================================================================================
 class ValueTranslator;
-//============================================================================================================
-// MidiProcessor
-//============================================================================================================
 class MidiProcessor;
 }// namespace processing
 
 namespace processing {
 using namespace parameter;
 //============================================================================================================
-//Volume
-//Die processFrames Methode mulipliziert den Inhalt des Frames umden faktor Volume.
+/**
+ * @class Volume.
+ * Multipliziert Eingangs-Samplemenge mit Multiplikator.
+ */
+class Volume :
 //============================================================================================================
-class Volume : 
 public ProcessAdapter, 
 public HasParameter, 
 public Serializable,
@@ -65,6 +53,11 @@ public:
 	typedef boost::shared_ptr<Volume> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (De)Serialisiert Volume-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){
 		ar & boost::serialization::base_object< ProcessAdapter > ( *this );
@@ -104,22 +97,48 @@ protected:
 	Parameter::Ptr volume;
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param hostInfo
+	 * @param initValue
+	 * @return neues Volume-Objekt
+	 */
 	static Ptr create( IHostInfo *hostInfo, float initValue = 1.0f ) {
 		Ptr neu( new Volume(hostInfo, initValue ) );
 		neu->self = neu;
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Volume-Parameter geaendert.
+	 * @param src
+	 * @param value
+	 */
 	virtual void valueChanged ( void *src, const float &value ) { fader = value; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * HostInfo(Samplerate/Blocksize) geaendert.
+	 */
 	virtual void hostInfoChanged() {
 		fader.setDuration( getFaderDuration( hostInfo->getSampleRate() ) );  
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Verarbeitet Samplemenge des Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
+	 * @param numSamples Anzahl der zu verarbeitenden Samples
+	 */
 	virtual void processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
-	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const { return volume; }
+	/**
+	 *
+	 * @param index
+	 * @return ausshcliesslich Volumeparameter, da einzger Parameter.
+	 */
+	virtual Parameter::Ptr getParameter ( size_t index = 0 ) const { return volume; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 *
+	 * @return 1
+	 */
 	virtual size_t getNumParameter () const { return 1; }
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Volume (){

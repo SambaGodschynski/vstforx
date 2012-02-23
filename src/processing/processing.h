@@ -673,8 +673,14 @@ public:
 	 */
 	void setHostInfo( IHostInfo * hI ){ hostInfo = hI; } 
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Anzahl der enthaltenden OutputNode-Objekte
+	 */
 	size_t getNumOutputNodes () const { return outputNodes.size(); }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Anzahl der enthaltenden InputNode-Objekte
+	 */
 	size_t getNumInputNodes () const { return inputNodes.size(); }
 	//--------------------------------------------------------------------------------------------------------
 	/**
