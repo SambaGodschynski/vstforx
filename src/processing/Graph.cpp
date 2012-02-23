@@ -298,7 +298,7 @@ Graph::Janitor::State Graph::Janitor::connectNodes( ProcessorNode::Ptr parent, P
 	}
 	
 	// prepare parent ProcessorNode
-	size_t numCh = parent->getNumPreparedChildren();
+	size_t numCh = parent->getFramesContainer().size();
 	graph->updateProcessorNode( parent, _numChildren = ++numCh );
 
 	return SUCCEED;
@@ -311,7 +311,7 @@ Graph::Janitor::State Graph::Janitor::removeConnection( ProcessorNode::Ptr paren
 	boost::remove_edge( e, graph->g );
 	
 	// prepare parent ProcessorNode
-	size_t numCh = parent->getNumPreparedChildren();
+	size_t numCh = parent->getFramesContainer().size();
 	graph->updateProcessorNode( parent, _numChildren = --numCh );
 	
 	return SUCCEED;

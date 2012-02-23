@@ -2,6 +2,7 @@ ProcessorNode::
 	prepareFrameContainer -> prepareFramesContainer
 	bool onCall removed
 	size_t getNumPreparedChildren() { return frameContainer.size(); } // removed
+	getFramesContainer() //added
 	virtual void processFrames(Frames * frames, Processor::Int numSamples) = 0; // removed
 	void setActive( bool stat ){ active = stat; } // private
 ProcessAdapter::
