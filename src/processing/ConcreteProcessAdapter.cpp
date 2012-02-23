@@ -422,9 +422,9 @@ void OutputStep::init(){
 	);
 	type->addValueChangedListenerF (f);
 	// Adapter Nodes:
-	for ( int i=0; i<steps; ++i ) {
+	for ( int i=0; i<cStep->getNumSteps(); ++i ) {
 		outputNodes[i]->setName("StepOutputode["+MyString(i+1)+"]");
-		if ( i<steps ) {
+		if ( i<cStep->getNumSteps() ) {
 			parameterMap.push_back ( cStep->getParameter(i) );
 			parameterMap.push_back ( cStep->Switch::getDurationParameterIN(i) );
 			parameterMap.push_back ( cStep->Switch::getCurveTypeParameterIN(i) );
@@ -440,12 +440,13 @@ ProcessorNode::Ptr OutputStep::addOutputNode(){
 		"StepOutput outputNode("+MyString(getNumOutputNodes()+2) + ")"
 	);
 	cStep->addState();
-	cStep->setNumSteps (++steps);
-	parameterMap.push_back ( cStep->getParameter(steps-1) );
-	parameterMap.push_back ( cStep->Switch::getDurationParameterIN(steps-1) );
-	parameterMap.push_back ( cStep->Switch::getCurveTypeParameterIN(steps-1) );
-	parameterMap.push_back ( cStep->Switch::getDurationParameterOUT(steps-1) );
-	parameterMap.push_back ( cStep->Switch::getCurveTypeParameterOUT(steps-1) );
+	cStep->setNumSteps (cStep->getNumSteps()+1); //TODO: addStep?
+	size_t step = cStep->getNumSteps()-1;
+	parameterMap.push_back ( cStep->getParameter(step) );
+	parameterMap.push_back ( cStep->Switch::getDurationParameterIN(step) );
+	parameterMap.push_back ( cStep->Switch::getCurveTypeParameterIN(step) );
+	parameterMap.push_back ( cStep->Switch::getDurationParameterOUT(step) );
+	parameterMap.push_back ( cStep->Switch::getCurveTypeParameterOUT(step) );
 	outpMatrix.push_back ( NULL );
 	cStep->reset();
 	return neu;
@@ -453,7 +454,6 @@ ProcessorNode::Ptr OutputStep::addOutputNode(){
 //------------------------------------------------------------------------------------------------------------
 OutputStep::OutputStep(IHostInfo *hostInfo, int initSteps) : 
 ProcessAdapter( hostInfo, 1, initSteps ), 
-steps(initSteps),
 type ( Parameter::create() ),
 outpMatrix ( OutputMatrix ( initSteps, (Frames*)NULL ) ),
 fixTimeValue( hostInfo->getSampleRate() )
@@ -508,7 +508,7 @@ void OutputStep::processAdapter( Processor::Int numSamples ) {
 	Frames iFrame;
 	iFrame.copyIntoFrom ( *frame, numSamples );
 	aNode->pushAndCopy ( frame, numSamples );
-	for ( int i=0; i<steps; ++i ) { // bilde InputFrames auf Matrix ab.
+	for ( int i=0; i<cStep->getNumSteps(); ++i ) { // bilde InputFrames auf Matrix ab.
 		if ( !outputNodes[i]->isActive() ) {
 			outpMatrix[i] = NULL;
 			continue;
@@ -517,7 +517,8 @@ void OutputStep::processAdapter( Processor::Int numSamples ) {
 	}
 	// berechne OutputFrames
 	processFrames( &iFrame, outpMatrix, numSamples );
-	for ( int i=0; i<steps; ++i ) outputNodes[i]->pushAndCopy ( outpMatrix[i], numSamples ); // knoten Frames zuweisen
+	for ( int i=0; i<cStep->getNumSteps(); ++i ) 
+		outputNodes[i]->pushAndCopy ( outpMatrix[i], numSamples ); // knoten Frames zuweisen
 }
 //------------------------------------------------------------------------------------------------------------
 OutputStep::~OutputStep(){
@@ -530,7 +531,6 @@ void OutputStep::save(com::oArchive &ar, const unsigned int version) const {
 	ar << boost::serialization::base_object< ProcessAdapter > ( *this );
 	ar << parameterMap;
 	ar << type;
-	ar << steps;
 	ar << fixTimeValue;
 	ar << sync;
 	ar.register_type< FixTimeValue<10> >();
@@ -541,7 +541,6 @@ void OutputStep::load(com::iArchive &ar, const unsigned int version) {
 	ar >> boost::serialization::base_object< ProcessAdapter > ( *this );
 	ar >> parameterMap;
 	ar >> type;
-	ar >> steps;
 	ar >> fixTimeValue;
 	ar >> sync;
 	ar >> cStep;
@@ -549,7 +548,7 @@ void OutputStep::load(com::iArchive &ar, const unsigned int version) {
 			&OutputStep::typeChanged, this, _1, _2 
 	);
 	type->addValueChangedListenerF ( f );
-	outpMatrix = OutputMatrix( steps, (Frames*)NULL );
+	outpMatrix = OutputMatrix( cStep->getNumSteps(), (Frames*)NULL );
 }
 //============================================================================================================
 //	Klasse InputStep:
@@ -582,9 +581,9 @@ void InputStep::init(){
 	);
 	type->addValueChangedListenerF (f);
 	// Adapter Nodes:
-	for ( int i=0; i<steps; ++i ) {
+	for ( int i=0; i<cStep->getNumSteps(); ++i ) {
 		inputNodes[i]->setName("StepInputNode["+MyString(i+1)+"]");
-		if ( i<steps ) {
+		if ( i<cStep->getNumSteps() ) {
 			parameterMap.push_back ( cStep->getParameter(i));
 			parameterMap.push_back ( cStep->Switch::getDurationParameterIN(i) );
 			parameterMap.push_back ( cStep->Switch::getCurveTypeParameterIN(i) );
@@ -600,12 +599,13 @@ ProcessorNode::Ptr InputStep::addInputNode(){
 		"stepinput inputNode("+MyString(getNumInputNodes()+2) + ")"
 	);
 	cStep->addState();
-	cStep->setNumSteps (++steps);
-	parameterMap.push_back ( cStep->getParameter(steps-1) );
-	parameterMap.push_back ( cStep->Switch::getDurationParameterIN(steps-1) );
-	parameterMap.push_back ( cStep->Switch::getCurveTypeParameterIN(steps-1) );
-	parameterMap.push_back ( cStep->Switch::getDurationParameterOUT(steps-1) );
-	parameterMap.push_back ( cStep->Switch::getCurveTypeParameterOUT(steps-1) );
+	cStep->setNumSteps (cStep->getNumSteps()+1);
+	size_t step = cStep->getNumSteps()-1;
+	parameterMap.push_back ( cStep->getParameter(step) );
+	parameterMap.push_back ( cStep->Switch::getDurationParameterIN(step) );
+	parameterMap.push_back ( cStep->Switch::getCurveTypeParameterIN(step) );
+	parameterMap.push_back ( cStep->Switch::getDurationParameterOUT(step) );
+	parameterMap.push_back ( cStep->Switch::getCurveTypeParameterOUT(step) );
 	inputMatrix.push_back ( NULL );
 	cStep->reset();
 	return neu;
@@ -613,7 +613,6 @@ ProcessorNode::Ptr InputStep::addInputNode(){
 //------------------------------------------------------------------------------------------------------------
 InputStep::InputStep(IHostInfo *hostInfo, int initSteps) : 
 ProcessAdapter( hostInfo, initSteps, 1 ), 
-steps(initSteps),
 type ( Parameter::create() ),
 inputMatrix ( InputMatrix ( initSteps, (Frames*)NULL ) ),
 fixTimeValue( hostInfo->getSampleRate() )
@@ -666,7 +665,7 @@ void InputStep::processAdapter( Processor::Int numSamples ) {
 	if (t == ClockEdge::HIGH ){ // Transport: play flanke
 		reset();
 	}
-	for ( int i=0; i<steps; ++i ) { // bilde InputFrames auf Matrix ab.
+	for ( int i=0; i<cStep->getNumSteps(); ++i ) { // bilde InputFrames auf Matrix ab.
 		if ( !inputNodes[i]->isActive() ) {
 			inputMatrix[i] = NULL;
 			continue;
@@ -688,7 +687,6 @@ void InputStep::save(com::oArchive &ar, const unsigned int version) const {
 	ar << boost::serialization::base_object< ProcessAdapter > ( *this );
 	ar << parameterMap;
 	ar << type;
-	ar << steps;
 	ar << fixTimeValue;
 	ar << sync;
 	ar.register_type< FixTimeValue<10> >();
@@ -699,7 +697,6 @@ void InputStep::load(com::iArchive &ar, const unsigned int version) {
 	ar >> boost::serialization::base_object< ProcessAdapter > ( *this );
 	ar >> parameterMap;
 	ar >> type;
-	ar >> steps;
 	ar >> fixTimeValue;
 	ar >> sync;
 	ar >> cStep;
@@ -708,7 +705,7 @@ void InputStep::load(com::iArchive &ar, const unsigned int version) {
 			&InputStep::typeChanged, this, _1, _2 
 	);
 	type->addValueChangedListenerF ( f );
-	inputMatrix = InputMatrix( steps, (Frames*)NULL );
+	inputMatrix = InputMatrix( cStep->getNumSteps(), (Frames*)NULL );
 }
 //============================================================================================================
 //PeakTracker

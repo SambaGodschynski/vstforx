@@ -817,7 +817,7 @@ public:
 	void nextStep(){ setState ( ( getState() + 1 ) % getNumSteps() ); }
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * Setzt Step-State anzahlTODO: make private
+	 * Setzt Step-State anzahl TODO: make private
 	 * @param n
 	 */
 	void setNumSteps( int n ) { steps = n; }
@@ -1071,11 +1071,6 @@ private:
 	inline void processFrames ( Frames *iFrame, OutputMatrix &fr, Processor::Int numSamples );
 protected:
 	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * TODO: wozu extra speichern?
-	 */
-	int steps;
-	//--------------------------------------------------------------------------------------------------------
 	vector<Parameter::Ptr> parameterMap;
 	//--------------------------------------------------------------------------------------------------------
 	Step *cStep;
@@ -1213,9 +1208,6 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	inline void processFrames ( InputMatrix &fr, Processor::Int numSamples );
 protected:
-	//--------------------------------------------------------------------------------------------------------
-	// anzahl der Steps == Ausgaenge == anz. der ProcessAdapterNode
-	int steps;
 	//--------------------------------------------------------------------------------------------------------
 	vector<Parameter::Ptr> parameterMap;
 	//--------------------------------------------------------------------------------------------------------
