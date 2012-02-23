@@ -354,7 +354,7 @@ currTranslator(tr), Switch (initSteps, sampleRate ),  steps(initSteps), nDuratio
 		p->addValueChangedListenerF (f);
 		p->setValue(0.35f);
 	}
-	setDuration();
+	resetDuration();
 }
 //------------------------------------------------------------------------------------------------------------
 Step::~Step() {
@@ -376,14 +376,14 @@ void Step::addState() {
 
 }
 //------------------------------------------------------------------------------------------------------------
-void Step::resetLabel(){
+void Step::resetParameterLabel(){
 	for (int i=0; i<steps; ++i) {
 		Parameter::Ptr p = getParameter(i);
 		p->setValue(p->getValue());
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-void Step::setDuration() {
+void Step::resetDuration() {
 	duration = currTranslator->translate ( *nDuration[getState()] );
 }
 //------------------------------------------------------------------------------------------------------------
@@ -409,7 +409,7 @@ void OutputStep::typeChanged ( void *src, const float &v ){
 			cStep->setValueTranslator ( sync );
 			break;
 	}
-	cStep->resetLabel();
+	cStep->resetParameterLabel();
 }
 //------------------------------------------------------------------------------------------------------------
 void OutputStep::init(){
@@ -569,7 +569,7 @@ void InputStep::typeChanged ( void *src, const float &v ){
 			cStep->setValueTranslator ( sync );
 			break;
 	}
-	cStep->resetLabel();
+	cStep->resetParameterLabel();
 }
 //------------------------------------------------------------------------------------------------------------
 void InputStep::init(){
@@ -650,7 +650,7 @@ inline void InputStep::processFrames ( InputMatrix &fr, Processor::Int numSample
 		*l = 0.0f; *r = 0.0f;
 		if ( cStep->skimDuration() <= 0 ) {
 			cStep->nextStep();
-			cStep->setDuration();
+			cStep->resetDuration();
 		}
 		for ( int j=0; j<cStep->getNumSteps(); j++ ){
 			float fac = cStep->getFaderValueAndIncT(j); // mit jedem lesezugriff wird fader::t erhoet!
@@ -785,7 +785,9 @@ void ADSRTrigger::processAdapter( Processor::Int numSamples ) {
 // One MidiProcessor per channel.
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-MidiProcessor::MidiProcessor ( IHostInfo *iHost ) : ProcessAdapter( iHost, 0, 0 ), midiParameters( NUM_OUT_PARAM, Parameter::Ptr() )
+MidiProcessor::MidiProcessor ( IHostInfo *iHost ) :
+		ProcessAdapter( iHost, 0, 0 ),
+		midiParameters( NUM_OUT_PARAM, Parameter::Ptr() )
 {
 	setName ("midi_receiver");
 	initParameter ( PITCH_BEND , "pitchbend" );

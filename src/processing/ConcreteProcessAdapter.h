@@ -463,7 +463,7 @@ private:
 	typedef vector<Frames*> OutputMatrix;
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * blockt hinzufuegen von OutputNode gegen ProcessAdapter
+	 * blockt hinzufuegen von OutputNode gegen processAdapter()
 	 */
 	Mutex mutex;
 	//--------------------------------------------------------------------------------------------------------
@@ -586,6 +586,9 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	typedef vector<Frames*> InputMatrix;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * blockt hinzufuegen von InputNode gegen processAdapter()
+	 */
 	Mutex mutex;
 	//--------------------------------------------------------------------------------------------------------
 	InputMatrix inputMatrix;
@@ -671,15 +674,25 @@ public:
 	virtual ProcessorNode::Ptr addInputNode();
 };
 //============================================================================================================
-// Klasse Step:
-// Verwaltet Step zustaende und zugehoerige Multiplikations Faktoren.
-//============================================================================================================
+/**
+ * Klasse Step:
+ * Erweitert Switch um Step-funktionen, d.h. rythmisches Schalten von States.
+ * Jedes Step-State hatt eine dauer von N-Samples, diese wird ueber ein ValueTranslator-Objekt ermittelt.
+ *
+ * Oberklasse fuer Input/OutputStep
+ */
 class Step : public Switch {
+//============================================================================================================
 friend class boost::serialization::access;
 public:
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
 	typedef FadeValue FactorType;
 private:
+	/**
+	 * (De)Serialisiert Step-Objekt
+	 * @param ar
+	 * @param version
+	 */
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ) {
 		ar & boost::serialization::base_object<Switch> ( *this );
@@ -696,95 +709,184 @@ private:
 			nDuration[i]->addValueChangedListenerF ( f );
 		}
 	}
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
 	Step() {}
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * aktuelles ValueTranslator-Objekt @see ValueTranslator
+	 */
 	ValueTranslator *currTranslator;
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
 	int steps;
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Step-Dauer in Samples
+	 */
 	int duration;
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * StepDauer-Parameter pro StepState
+	 */
 	vector<Parameter::Ptr> nDuration;
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * StepDauer-Parameter geandert
+	 * @param src
+	 * @param v neuer Parameter-Wert
+	 */
 	void durationParameterChanged ( void *src, const float &v );
 public:
-	//----------------------------------------------------------------------------------------------------
-	void setDuration();
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * holt Step-Dauer aus ValueTranslator und setzt uebernimmt diese
+	 */
+	void resetDuration();
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * verringert Step-Dauer um 1 Sample.
+	 * @return
+	 */
 	int skimDuration() { return duration--; }
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * setzt aktuelles ValueTranslator-Objekt
+	 * @param tr
+	 */
 	void setValueTranslator ( ValueTranslator *tr ){ currTranslator = tr; }
-	//----------------------------------------------------------------------------------------------------
-	void resetLabel();
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * setzt alle Parameterwerte neu (TODO: wozu?).
+	 */
+	void resetParameterLabel();
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * fuegt neuen Step-State hinzu
+	 */
 	virtual void addState();
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return aktuelles ValueTranslator-Objekt
+	 */
 	ValueTranslator * getValueTranslator (){ return currTranslator; }
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param index
+	 * @return Step-Parameter zu index. Wirft std::out_of_range
+	 */
 	Parameter::Ptr getParameter ( size_t index ){ return nDuration[index]; }
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * verschiebung der Step-Dauer um N Samples
+	 * @param off N
+	 */
 	void setOffset ( int off )  { duration+=off; }
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Beeinflusst Switch::Fader
+	 * @param sampleRate
+	 */
 	void setSampleRate( float sampleRate ) {
 		Switch::setSampleRate( sampleRate );
 	}
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
 	Step( ValueTranslator*, size_t initSteps = 2, float sampleRate = 0.0f );
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return aktuellen Step-State
+	 */
 	size_t getState() const { return Switch::getState(); }
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Step-Reset
+	 */
 	void reset(){
 		setFaderValue(getState(), 0.0f);
 		setState (0);
-		setDuration();
+		resetDuration();
 		setFaderValue(getState(), 1.0f);
 	}
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Schalet naechsten Step-State
+	 */
 	void nextStep(){ setState ( ( getState() + 1 ) % getNumSteps() ); }
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Setzt Step-State anzahlTODO: make private
+	 * @param n
+	 */
 	void setNumSteps( int n ) { steps = n; }
-	//----------------------------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return anzahl aller Step-States
+	 */
 	int getNumSteps() { return steps; }
-	//----------------------------------------------------------------------------------------------------
-	~Step();
+	//--------------------------------------------------------------------------------------------------------
+	virtual ~Step();
 };
 
 //============================================================================================================
-//	Schnittstelle ValueTranslator:
-//	Transformiert einen eingabewert im bereich 0..1 in eine Zeitangabe in Samples.
-//============================================================================================================
+/**
+ * @interface ValueTranslator.
+ * Transformiert einen Eingabewert im bereich 0..1, in einen Zeitwert in Samples.
+ */
 class ValueTranslator {
+//============================================================================================================
 friend class boost::serialization::access;
 private:
 	//--------------------------------------------------------------------------------------------------------
-	template < typename Archive >
+	/**
+	 * (De)Serialisiert ValueTranslator
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
+template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){}
 protected:
 public:
 	//--------------------------------------------------------------------------------------------------------
-	// liefert Parameter wer als String zb. 500 oder 1/4 , ...
+	/**
+	 * // liefert Wert als String zb. 500 oder 1/4 , ...
+	 * @param v
+	 * @return MyString-Objekt
+	 */
 	virtual MyString  translateAsString ( float v ) = 0; 
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param v
+	 * @return zu einem Eingabewert im bereich 0..1, in eine Zeitangabe in Samples.
+	 */
 	virtual int translate( float v ) = 0; 
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~ValueTranslator(){}
 };
 //============================================================================================================
-//	TimeProcessor
-//  Schaltintervalle sind zeitgesteuert von 1 ms bis x ms.  
-//============================================================================================================
+/**
+ * @class FixTimeValue
+ * Transformiert einen Eingabewert im bereich 0..1, in einen Millisekunden-Zeitwert in Samples.
+ * MIN_IN_MSEC = niedrigster Zeitwert in Ms.
+ * TODO: kein grund fuer template!
+ */
 template < int MIN_IN_MSEC >
 class FixTimeValue : public ValueTranslator {
+//============================================================================================================
 friend class boost::serialization::access;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (De)Serialisiert FixTimeValue-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){
 		ar & boost::serialization::base_object < ValueTranslator > ( *this );
 	}
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Anzahl der Samples die eine Millisekunde ergeben
+	 */
 	float oneMsInSamples;
 	//--------------------------------------------------------------------------------------------------------
 	float minInSampl;
@@ -797,29 +899,48 @@ public:
 	  minInSampl ( oneMsInSamples * MIN_IN_MSEC ),
 	  fak(99.0f) {}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param sampleRate neue SampleRate
+	 */
 	void hostInfoChanged( float sampleRate ) {
 		oneMsInSamples = sampleRate/1000.0f; 
 		minInSampl = oneMsInSamples * MIN_IN_MSEC;
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param v
+	 * @return v als Millisekunden String: z.B. 10ms
+	 */
 	virtual MyString  translateAsString ( float v ) {
 		assert ( oneMsInSamples != 0.0f );
 		float y = fak * v + 1.0f; // abbildung 0.0..1.0 => 1.0 100.0
 		return MyString(y*minInSampl/oneMsInSamples) + " ms";
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param v
+	 * @return Eingabewert im bereich 0..1, in einen Millisekunden-Zeitwert in Samples.
+	 */
 	virtual int translate ( float v ){
 		return (int)( (fak * v + 1.0f) * minInSampl);
 	}
 };
 
 //============================================================================================================
-//	TimeProcessor
-//  Schaltintervalle sind zeitgesteuert von 1 ms bis x ms.  
-//============================================================================================================
+/**
+ * @class SyncTranslator
+ * Transformiert einen Eingabewert im bereich 0..1, in einen Musiknoten-Zeitwert in Samples,
+ * abhaengig von Host-BPM und Samplerate.
+ */
 class SyncTranslator : public ValueTranslator {
+//============================================================================================================
 friend class boost::serialization::access;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (De)Serialisiert SyncTranslator.
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){
 		ar & boost::serialization::base_object < ValueTranslator > ( *this );
@@ -829,11 +950,20 @@ friend class boost::serialization::access;
 	SyncTranslator() {}
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Anzahl der Samples die eine Millisekunde ergeben
+	 */
 	float oneMsInSamples;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * HostInfo-Objekt
+	 */
 	IHostInfo * hostInfo;
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * resetet SampleRate
+	 */
 	void hostInfoChanged() {
 		oneMsInSamples = hostInfo->getSampleRate()/1000.0f; 
 	}
@@ -842,11 +972,20 @@ public:
 	hostInfo(hostInfo), 
 	oneMsInSamples ( hostInfo->getSampleRate()/1000.0f ) {}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param v
+	 * @return Eingabewert als einen Musiknoten-String zb.: 1/4, etc.
+	 *
+	 */
 	virtual MyString  translateAsString ( float v ) {
 		int n = mapInteger ( v, musicalValues::NUM_STDNOTES );
 		return musicalValues::noteLengthTable[n].str;
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param v
+	 * @return Eingabewert als einen Musiknoten-Zeitwert in Samples
+	 */
 	virtual int translate ( float v ){
 		int n = mapInteger ( v, musicalValues::NUM_STDNOTES );
 		VstTimeInfo *inf = hostInfo->getVstTimeInfo( kVstTempoValid );
@@ -854,9 +993,10 @@ public:
 	}
 };
 //============================================================================================================
-//	Klasse OutputStep:
-//	Hatt mehrere Ausgaenge. Zuordung des Input-Signals ist zustands abhaengig.
-//============================================================================================================
+/**
+ * @class OutputStep.
+ * Schaltet Eingangs-Samplemengen auf N Ausgaenge.
+ */
 class OutputStep: 
 public ProcessAdapter, 
 public HasParameter, 
@@ -864,6 +1004,7 @@ public Serializable,
 public VariableOutputAdapter,
 public IHasState
 {
+//============================================================================================================
 friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
@@ -871,42 +1012,74 @@ public:
 	typedef boost::shared_ptr<OutputStep> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Serialisiert OutputStep-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
 	void save ( oArchive &ar, const unsigned int version ) const;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Deserialisiert OutputStep-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
 	void load ( iArchive &ar, const unsigned int version );
 	//--------------------------------------------------------------------------------------------------------
 	OutputStep() : fixTimeValue(0.0f) {};
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * blockt hinzufuegen von OutputNode gegen processAdapter()
+	 */
 	Mutex mutex;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Flankenschalter auf Host-Transport (@see VST-SDK VstTimeInfo)
+	 */
 	ClockEdge transport;
 	//--------------------------------------------------------------------------------------------------------
 	Parameter::Ptr type;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * initalisiert OutputStep
+	 */
 	void init();
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * wird aufgerufen wenn Host-Transport sich aendert (play gedureckt)
+	 * Setzt Step-Dauer verschiebung, um die naechste 1/4 Note zu treffen.
+	 */
 	inline void reset();
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Step-Typ geandert (Sync/Fixed)
+	 * @param src
+	 * @param v
+	 */
 	void typeChanged ( void *src, const float& v );
 	//--------------------------------------------------------------------------------------------------------
 	typedef vector<Frames*> OutputMatrix;
 	//--------------------------------------------------------------------------------------------------------
 	OutputMatrix outpMatrix;
 	//--------------------------------------------------------------------------------------------------------
-	// Dupliziert iFrame nach *fr[numSteps] * step_Faktor
 	inline void processFrames ( Frames *iFrame, OutputMatrix &fr, Processor::Int numSamples );
 	//----------------------------------------------------------------------------------------------------
-	// skims one sample of step duration samples and switches to next state if duration samples == 0
+	/**
+	 * Verkuertzt Step-Dauer um 1 Sample und Schaltet zu naechsten Step wenn Step-Dauer == 0.
+	 * TODO: nach Step verschieben
+	 */
 	void skimStepDuration() {
 		if ( cStep->skimDuration() <= 0 ) {
 			cStep->nextStep();
-			cStep->setDuration();
+			cStep->resetDuration();
 		}
 	}
 protected:
 	//--------------------------------------------------------------------------------------------------------
-	// anzahl der Steps == Ausgaenge == anz. der ProcessAdapterNode
+	/**
+	 * TODO: wozu extra speichern?
+	 */
 	int steps;
 	//--------------------------------------------------------------------------------------------------------
 	vector<Parameter::Ptr> parameterMap;
@@ -922,35 +1095,60 @@ protected:
 	OutputStep( IHostInfo *hostInfo, int initSteps = 2 );
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param hostInfo
+	 * @param initSteps
+	 * @return neues OutputStep-Objekt
+	 */
 	static Ptr create( IHostInfo *hostInfo, int initSteps = 2 ) {
 		Ptr neu( new OutputStep(hostInfo, initSteps) );
 		neu->self = neu;
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * resetet SampleRate
+	 */
 	virtual void hostInfoChanged() {
 		fixTimeValue.hostInfoChanged( hostInfo->getSampleRate() );
 		if (sync) sync->hostInfoChanged();
 		cStep->setSampleRate ( hostInfo->getSampleRate() );
 	}
 	//--------------------------------------------------------------------------------------------------------
-    //ruft die processReplacing Methode des zugeordneten Processor Objekt auf.
-    virtual void processAdapter( Processor::Int numSamples );
+	/**
+	 * Verarbeitet Samplemenge der Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
+	 * @param numSamples Anzahl der zu bearbeitenden Samples
+	 */
+	virtual void processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~OutputStep();
+	/**
+	 * @param index
+	 * @return liefert Parameter zu index. Wirft: std::out_of_range
+	 */
+	virtual Parameter::Ptr getParameter ( size_t index = 0 ) const {return parameterMap.at(index);}
 	//--------------------------------------------------------------------------------------------------------
-	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const {return parameterMap.at(nr);}
-	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return aktuellen State. Wenn inaktiv (@see ProcessorNode::isActive()) UINT_MAX
+	 */
 	virtual size_t getState() const { return aNode->isActive() ? cStep->getState() : UINT_MAX; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Anzahl aller OutputStep-Parameter
+	 */
 	virtual size_t getNumParameter () const { return parameterMap.size(); }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Fuegt neuen OutputNode hinzu.
+	 * @return neues OutputNode-Objekt
+	 */
 	ProcessorNode::Ptr addOutputNode();
 };
 //============================================================================================================
-//	Klasse InputStep:
-//	Hatt mehrere Ausgaenge. Zordung des Input-Signals ist zustands abhaengig.
-//============================================================================================================
+/**
+ * @class InputStep.
+ * Schaltet Eingangs-Samplemengen auf N Ausgaenge.
+ */
 class InputStep: 
 public ProcessAdapter, 
 public HasParameter, 
@@ -958,6 +1156,7 @@ public Serializable,
 public VariableInputAdapter,
 public IHasState
 {
+//============================================================================================================
 friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
@@ -965,32 +1164,59 @@ public:
 	typedef boost::shared_ptr<InputStep> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Serialisiert InputStep-Objekt
+	 * @param ar
+	 * @param version
+	 */
 	void save ( oArchive &ar, const unsigned int version ) const;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Deserialisiert InputStep-Objekt
+	 * @param ar
+	 * @param version
+	 */
 	void load ( iArchive &ar, const unsigned int version );
 	//--------------------------------------------------------------------------------------------------------
 	InputStep() : fixTimeValue(0.0f) {}
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * blockt hinzufuegen von InputNode gegen processAdapter()
+	 */
 	Mutex mutex;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Flankenschalter auf Host-Transport (@see VST-SDK VstTimeInfo)
+	 */
 	ClockEdge transport;
 	//--------------------------------------------------------------------------------------------------------
 	Parameter::Ptr type;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * initalisiert OutputStep
+	 */
 	void init();
 	//--------------------------------------------------------------------------------------------------------
 	Frames tmpFrame;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * wird aufgerufen wenn Host-Transport sich aendert (play gedureckt)
+	 * Setzt Step-Dauer verschiebung, um die naechste 1/4 Note zu treffen.
+	 */
 	inline void reset();
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Step-Typ geandert (Sync/Fixed)
+	 * @param src
+	 * @param v
+	 */
 	void typeChanged ( void *src, const float& v );
 	//--------------------------------------------------------------------------------------------------------
 	typedef vector<Frames*> InputMatrix;
 	//--------------------------------------------------------------------------------------------------------
 	InputMatrix inputMatrix;
 	//--------------------------------------------------------------------------------------------------------
-	// Dupliziert iFrame nach *fr[numSteps] * step_Faktor
 	inline void processFrames ( InputMatrix &fr, Processor::Int numSamples );
 protected:
 	//--------------------------------------------------------------------------------------------------------
@@ -999,6 +1225,9 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	vector<Parameter::Ptr> parameterMap;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * TODO: wozu extra speichern?
+	 */
 	Step *cStep;
 	//--------------------------------------------------------------------------------------------------------
 	FixTimeValue<10> fixTimeValue;
@@ -1010,12 +1239,20 @@ protected:
 	InputStep( IHostInfo *hostInfo, int initSteps = 2 );
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param hostInfo
+	 * @param initSteps
+	 * @return neues InputStep-Objekt
+	 */
 	static Ptr create( IHostInfo *hostInfo, int initSteps = 2 ) {
 		Ptr neu( new InputStep(hostInfo, initSteps) );
 		neu->self = neu;
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * resetet SampleRate
+	 */
 	virtual void hostInfoChanged() {
 		fixTimeValue.hostInfoChanged( hostInfo->getSampleRate() );
 		tmpFrame.setSize( hostInfo->getBlockSize() );
@@ -1023,31 +1260,54 @@ public:
 		if (sync) sync->hostInfoChanged();
 	}
 	//--------------------------------------------------------------------------------------------------------
-    //ruft die processReplacing Methode des zugeordneten Processor Objekt auf.
-    virtual void processAdapter( Processor::Int numSamples );
+	/**
+	 * Verarbeitet Samplemenge der Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
+	 * @param numSamples Anzahl der zu bearbeitenden Samples
+	 */
+	virtual void processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~InputStep();
 	//--------------------------------------------------------------------------------------------------------
-	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const {return parameterMap.at(nr);}
+	/**
+	 * @param index
+	 * @return liefert Parameter zu index. Wirft: std::out_of_range
+	 */
+	virtual Parameter::Ptr getParameter ( size_t index = 0 ) const {return parameterMap.at(index);}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return aktuellen State. Wenn inaktiv (@see ProcessorNode::isActive()) UINT_MAX
+	 */
 	virtual size_t getState() const { return aNode->isActive() ? cStep->getState() : UINT_MAX; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Anzahl aller InputStep-Parameter
+	 */
 	virtual size_t getNumParameter () const { return parameterMap.size(); }
 	//--------------------------------------------------------------------------------------------------------
-	ProcessorNode::Ptr addInputNode();
+	/**
+	 * Fuegt neuen InputNode hinzu.
+	 * @return neues InputNode-Objekt
+	 */
+	ProcessorNode::Ptr InputNode();
 };
 //============================================================================================================
-//PeakTracker
-//Tranformiert Signal Lautstaerke in Parameter wert.
-//Sammelt N viele werte und bildet daraus Mittelwert. Ist dieser ermittelt wird er an out uebergeben.
-//============================================================================================================
+/**
+ * @class PeakTracker
+ * Tranformiert Signal in Parameter wert.
+ */
 class PeakTracker : public ProcessAdapter, public HasParameter, public Serializable {
+//============================================================================================================
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<PeakTracker> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (De)Serialisiert PeakTracker-Objekt
+	 * @param ar boost::Archive-
+	 * @param version
+	 */
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){
 		ar & boost::serialization::base_object < ProcessAdapter > ( *this );
@@ -1063,23 +1323,41 @@ protected:
 	PeakTracker ( IHostInfo *hostInfo );
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param hostInfo
+	 * @return neues PeakTracker-Objekt
+	 */
 	static Ptr create( IHostInfo *hostInfo ) {
 		Ptr neu( new PeakTracker(hostInfo ) );
 		neu->self = neu;
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	//Lautstaerke-wert
+	/**
+	 * Ausgabe-Parameter
+	 */
 	Parameter::Ptr out;
 	//--------------------------------------------------------------------------------------------------------
-	//ruft die processReplacing Methode des zugeordneten 
-	//Processor Objekt auf.
+	/**
+	 * Verarbeitet Samplemenge der Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
+	 * @param numSamples Anzahl der zu bearbeitenden Samples
+	 */
 	virtual void processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
-	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const { return offset; }
+	/**
+	 * @param index
+	 * @return liefert Parameter zu index. Wirft: std::out_of_range
+	 */
+	virtual Parameter::Ptr getParameter ( size_t index = 0 ) const { return index; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return  Ausgabe-Parameter
+	 */
 	Parameter::Ptr getOutParameter() { return out; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Anzahl aller PeakTracker-Parameter
+	 */
 	virtual size_t getNumParameter () const { return 1; }
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~PeakTracker (){ 
@@ -1088,16 +1366,23 @@ public:
 };
 
 //============================================================================================================
-// ADSRTrigger
-// Triggert Eingangs Signal als gate fuer adsr. 
-//============================================================================================================
+/**
+ * @class ADSRTRigger
+ * Triggert Eingangs-Signal als Gate fuer ADSR-Verlauf
+ */
 class ADSRTrigger : public ProcessAdapter, public HasParameter, public Serializable {
+//============================================================================================================
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<ADSRTrigger> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (De)Serialisiert PeakTracker-Objekt
+	 * @param ar boost::Archive-
+	 * @param version
+	 */
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){
 		ar & boost::serialization::base_object < ProcessAdapter > ( *this );
@@ -1113,6 +1398,10 @@ protected:
 	ADSRTrigger ( IHostInfo *hostInfo );
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param hostInfo
+	 * @return neues PeakTracker-Objekt
+	 */
 	static Ptr create( IHostInfo *hostInfo ) {
 		Ptr neu( new ADSRTrigger(hostInfo ) );
 		neu->self = neu;
@@ -1126,17 +1415,29 @@ public:
 		adsr->hostInfoChanged();
 	}
 	//--------------------------------------------------------------------------------------------------------
-	//ruft die processReplacing Methode des zugeordneten 
-	//Processor Objekt auf.
+	/**
+	 * Verarbeitet Samplemenge der Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
+	 * @param numSamples Anzahl der zu bearbeitenden Samples
+	 */
 	virtual void processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
-	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const { 
-		if ( nr > adsr->getNumParameter() ) return Parameter::Ptr();
-		return adsr->getParameter(nr); 
+	/**
+	 * @param index
+	 * @return liefert Parameter zu index. Wirft: std::out_of_range
+	 */
+	virtual Parameter::Ptr getParameter ( size_t index = 0 ) const {
+		if ( index > adsr->getNumParameter() ) return Parameter::Ptr();
+		return adsr->getParameter(index);
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Anzahl aller ADSRTrigger-Parameter
+	 */
 	virtual size_t getNumParameter () const { return adsr->getNumParameter(); }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Ausgabe-Parameter
+	 */
 	Parameter::Ptr getOutParameter() { return out; }
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~ADSRTrigger (){ 
@@ -1145,9 +1446,10 @@ public:
 	}
 };
 //============================================================================================================
-// MidiProcessor:
-// One MidiProcessor per channel.
-//============================================================================================================
+/**
+ * @class MidiProcessor.
+ * Bildet MIDI-Events auf N Augabe-Parmeter ab.
+ */
 class MidiProcessor : 
 public ProcessAdapter, 
 public HasParameter, 
@@ -1155,6 +1457,7 @@ public Serializable,
 public MidiEventProcessor,
 public events::ValueChangedListener<float>
 {
+//============================================================================================================
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
@@ -1163,16 +1466,27 @@ public:
 	typedef unsigned char Byte;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * MIDI-Kanal-Auswahl  Parameter
+	 */
 	Parameter::Ptr channelSelector;
 	//--------------------------------------------------------------------------------------------------------
 	typedef vector<Parameter::Ptr> Parameters;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Parameter index, der Parameter die keinem MIDI-Conrol Event zugehoerig sind
+	 */
 	enum NoCCParameterIndex { PITCH_BEND, NUM_NO_CC_PARAMETER };
 	//--------------------------------------------------------------------------------------------------------
 	enum { NUM_CC = 128, NUM_OUT_PARAM = NUM_CC + NUM_NO_CC_PARAMETER };
 	//--------------------------------------------------------------------------------------------------------
 	Parameters midiParameters;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (De)Serialisiert PeakTracker-Objekt
+	 * @param ar boost::Archive-
+	 * @param version
+	 */
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ) {
 		ar & boost::serialization::base_object < ProcessAdapter > ( *this );
@@ -1190,22 +1504,49 @@ protected:
 	MidiProcessor ( IHostInfo *hostInfo );
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Verarbeitet MidiEvent
+	 * @param events
+	 */
 	virtual void processMidiEvents( VstEvents * events );
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param hostInfo
+	 * @return neues MidiProcessor-Objekt
+	 */
 	static Ptr create( IHostInfo *hostInfo ) {
 		Ptr neu( new MidiProcessor(hostInfo ) );
 		neu->self = neu;
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * TODO: wird wohl nicht benoetigt
+	 * @param src
+	 * @param value
+	 */
 	virtual void valueChanged ( void *src, const float &value ) {}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return MIDI-Kanal-Auswahl-Parameter
+	 */
 	virtual Parameter::Ptr getMidiChannelParameter() { return channelSelector; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Verarbeitet Samplemenge der Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
+	 * @param numSamples Anzahl der zu bearbeitenden Samples
+	 */
 	virtual void processAdapter( Processor::Int numSamples ) {}
 	//--------------------------------------------------------------------------------------------------------
-	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const { return midiParameters[nr]; }
+	/**
+	 * @param index
+	 * @return liefert Parameter zu index. Wirft: std::out_of_range
+	 */
+	virtual Parameter::Ptr getParameter ( size_t index = 0 ) const { return midiParameters[index]; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Anzahl aller MidiProcessor-Parameter
+	 */
 	virtual size_t getNumParameter () const { return midiParameters.size(); }
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~MidiProcessor (){

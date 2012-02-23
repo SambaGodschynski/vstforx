@@ -372,7 +372,7 @@ private:
 	//----------------------------------------------------------------------------------------------------
 	void setState ( int state ){
 		ADSR::state = state;
-		fader.setDuration ( sampleRate * *duration[state] * maxDurationInSec ); 
+		fader.resetDuration ( sampleRate * *duration[state] * maxDurationInSec ); 
 		fader = *level[state] * ( isModeAbsolute() ? 1.0f : attackVal );
 	}
 	//----------------------------------------------------------------------------------------------------
