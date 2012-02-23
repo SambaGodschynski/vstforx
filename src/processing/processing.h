@@ -238,6 +238,11 @@ public:
 	DCStream & getDCStream() { return stream; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
+	 * @return FramesContainer-Objekt
+	 */
+	const FrameContainer & getFramesContainer() const { return frameContainer; }
+	//--------------------------------------------------------------------------------------------------------
+	/**
 	 * @return groesse des Frames-Stack
 	 */
 	int getFrameStackSize() const { return frameStack.size(); }
