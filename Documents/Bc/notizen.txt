@@ -45,7 +45,7 @@ refactor:
 <ok>Janitor::update nach jedem connect? -> JA, da fehlerhafte verbindung gleich wieder entfernt werden soll.
 <-->SampleRate, BlockSize, hostInfoChanged
 <-->ProcessorNode::FrameContainer list->vector
-<-->ProcessAdapter: InputNode/OutputNode declare outside of ProcessAdapter
+<ok>ProcessAdapter: InputNode/OutputNode declare outside of ProcessAdapter
 <-->Input/OutputStep:: skimStepDuration funk. nach Step verlagern
 <-->Step::setNumSteps make private 
 <-->Input/OutputStep erben nicht Step?

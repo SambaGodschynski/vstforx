@@ -488,103 +488,20 @@ public:
 	typedef boost::shared_ptr<ProcessAdapter> Ptr;
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * @class OutputNode.
-	 * ProcessAdapter OutputNode.
+	 * Vorwaertz-Deklaration von eingebetteter OutputNode-Klasse
 	 */
-	class OutputNode : public NOPNode {
-	friend class boost::serialization::access;
-	public:
-		typedef boost::shared_ptr<OutputNode> Ptr;
-	private:
-		/**
-		 * (De)Serialisiert OutputNode.
-		 * @param ar Boost::Archive-Objekt
-		 * @param version
-		 */
-		template < typename Archive >
-		void serialize ( Archive &ar, const unsigned int version ){
-			ar & boost::serialization::base_object< NOPNode > ( *this );
-			ar & parent;
-		}
-		OutputNode() : NOPNode(""){}
-		ProcessAdapter *parent;
-		OutputNode( const string &name, ProcessAdapter* parent );
-	public:
-		/**
-		 * Erzeugt neues OutputNode-Objekt
-		 * @param name Objektname
-		 * @param parent uebergeordnetes ProcessAdapter-Objekt
-		 * @return
-		 */
-		static Ptr create( const string &name, ProcessAdapter *parent ) {
-			Ptr neu( new OutputNode(name, parent) );
-			neu->self = neu;
-			return neu;
-		}
-		/**
-		 * Tut nix, da funktionalitaet von ProcessAdapter ausgefuehrt wird
-		 * @param numSamples
-		 */
-		virtual void processNode( Processor::Int numSamples ) {};
-		virtual ~OutputNode(){}
-		/**
-		 * @return uebergeordnetes ProcessAdapter-Objekt
-		 */
-		ProcessAdapter::Ptr getProcessAdapter() { 
-			ProcessAdapter::Ptr p = 
-				boost::shared_dynamic_cast< ProcessAdapter, PObject >( parent->getPtr() );
-			return p;
-		}
-	};
+	class OutputNode;
+	typedef boost::shared_ptr<OutputNode> OutputNodePtr;
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * @class InputNode.
-	 * ProcessAdapter InputNode.
+	 * Vorwaertz-Deklaration von eingebetteter InputNode-Klasse
 	 */
-	class InputNode : public NOPNode {
-	friend class boost::serialization::access;
-	public:
-		typedef boost::shared_ptr<InputNode> Ptr;
-	private:
-		/**
-		 * (De)Serialisiert InputNode.
-		 * @param ar Boost::Archive-Objekt
-		 * @param version
-		 */
-		template < typename Archive >
-		void serialize ( Archive &ar, const unsigned int version ){
-			ar & boost::serialization::base_object< NOPNode > ( *this );
-			ar & parent;
-		}
-		InputNode() : NOPNode("") {}
-		ProcessAdapter *parent;
-		InputNode( const string &name, ProcessAdapter *parent );
-	public:
-		/**
-		 * Erzeugt neues InputNode-Objekt
-		 * @param name Objektname
-		 * @param parent uebergeordnetes ProcessAdapter-Objekt
-		 * @return
-		 */
-		static Ptr create( const string &name, ProcessAdapter *parent ) {
-			Ptr neu( new InputNode(name, parent) );
-			neu->self = neu;
-			return neu;
-		}
-		virtual ~InputNode(){}
-		/**
-		 * @return uebergeordnetes ProcessAdapter-Objekt
-		 */
-		ProcessAdapter::Ptr getProcessAdapter() { 
-			ProcessAdapter::Ptr p = 
-				boost::shared_dynamic_cast< ProcessAdapter, PObject >( parent->getPtr() );
-			return p;
-		}
-	};
+	class InputNode;
+	typedef boost::shared_ptr<InputNode> InputNodePtr;
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<OutputNode::Ptr> OutputNodes;
+	typedef vector<OutputNodePtr> OutputNodes;
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<InputNode::Ptr> InputNodes;
+	typedef vector<InputNodePtr> InputNodes;
 	//--------------------------------------------------------------------------------------------------------
 	typedef vector<Frames*> InputFrames;
 private:
@@ -649,14 +566,14 @@ protected:
 	 * @param name Objektname
 	 * @return neues OutputNode-Objekt
 	 */
-	OutputNode::Ptr createOutputNode( const string &name = "unnamed" );
+	OutputNodePtr createOutputNode( const string &name = "unnamed" );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * fuegt neuen InputNode hinzu.
 	 * @param name Objektname
 	 * @return neues InputNode-Objekt
 	 */
-	InputNode::Ptr createInputNode( const string &name = "unnamed" );
+	InputNodePtr createInputNode( const string &name = "unnamed" );
 	//--------------------------------------------------------------------------------------------------------
 	ProcessAdapter( IHostInfo * hostInfo, size_t numInputNodes = 1, size_t numOutputNodes = 1 );
 public:
@@ -692,7 +609,7 @@ public:
 	 * @param index
 	 * @return OutputNode-Objekt zu index. Wirft ppiError::IndexOutOfBoundException
 	 */
-	OutputNode::Ptr getOutputNode( size_t index ){ 
+	OutputNodePtr getOutputNode( size_t index ){ 
 		if ( index >= getNumOutputNodes() ) 
 			throw ppiError::IndexOutOfBoundException ( "OutOfBound-OutputNodes", __FILE__, __LINE__ );
 		return outputNodes[index]; 
@@ -707,7 +624,7 @@ public:
 	 * @param index
 	 * @return InputNode-Objekt zu index. Wirft ppiError::IndexOutOfBoundException
 	 */
-	virtual InputNode::Ptr getInputNode( size_t index ) { 
+	virtual InputNodePtr getInputNode( size_t index ) { 
 		if ( index >= getNumInputNodes() ) 
 			throw ppiError::IndexOutOfBoundException ( "OutOfBound-InputNodes", __FILE__, __LINE__ );
 		return inputNodes[index]; 
@@ -715,6 +632,120 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~ProcessAdapter();
 }; //class ProcessAdapter
+//============================================================================================================
+/**
+ * @class ProcessAdapter::OutputNode.
+ * ProcessAdapter OutputNode.
+ */
+//============================================================================================================
+class ProcessAdapter::OutputNode : public NOPNode {
+friend class boost::serialization::access;
+public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::shared_ptr<OutputNode> Ptr;
+private:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (De)Serialisiert OutputNode.
+	 * @param ar Boost::Archive-Objekt
+	 * @param version
+	 */
+	template < typename Archive >
+	void serialize ( Archive &ar, const unsigned int version ){
+		ar & boost::serialization::base_object< NOPNode > ( *this );
+		ar & parent;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	OutputNode() : NOPNode(""){}
+	//--------------------------------------------------------------------------------------------------------
+	ProcessAdapter *parent;
+	//--------------------------------------------------------------------------------------------------------
+	OutputNode( const string &name, ProcessAdapter* parent );
+public:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Erzeugt neues OutputNode-Objekt
+	 * @param name Objektname
+	 * @param parent uebergeordnetes ProcessAdapter-Objekt
+	 * @return
+	 */
+	static Ptr create( const string &name, ProcessAdapter *parent ) {
+		Ptr neu( new OutputNode(name, parent) );
+		neu->self = neu;
+		return neu;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Tut nix, da funktionalitaet von ProcessAdapter ausgefuehrt wird
+	 * @param numSamples
+	 */
+	virtual void processNode( Processor::Int numSamples ) {};
+	//--------------------------------------------------------------------------------------------------------
+	virtual ~OutputNode(){}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return uebergeordnetes ProcessAdapter-Objekt
+	 */
+	ProcessAdapter::Ptr getProcessAdapter() { 
+		ProcessAdapter::Ptr p = 
+			boost::shared_dynamic_cast< ProcessAdapter, PObject >( parent->getPtr() );
+		return p;
+	}
+};
+//============================================================================================================
+/**
+ * @class ProcessAdapter::InputNode.
+ * ProcessAdapter InputNode.
+ */
+//============================================================================================================
+class ProcessAdapter::InputNode : public NOPNode {
+friend class boost::serialization::access;
+public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::shared_ptr<InputNode> Ptr;
+private:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (De)Serialisiert InputNode.
+	 * @param ar Boost::Archive-Objekt
+	 * @param version
+	 */
+	template < typename Archive >
+	void serialize ( Archive &ar, const unsigned int version ){
+		ar & boost::serialization::base_object< NOPNode > ( *this );
+		ar & parent;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	InputNode() : NOPNode("") {}
+	//--------------------------------------------------------------------------------------------------------
+	ProcessAdapter *parent;
+	//--------------------------------------------------------------------------------------------------------
+	InputNode( const string &name, ProcessAdapter *parent );
+public:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Erzeugt neues InputNode-Objekt
+	 * @param name Objektname
+	 * @param parent uebergeordnetes ProcessAdapter-Objekt
+	 * @return
+	 */
+		static Ptr create( const string &name, ProcessAdapter *parent ) {
+		Ptr neu( new InputNode(name, parent) );
+		neu->self = neu;
+		return neu;
+		}
+	//--------------------------------------------------------------------------------------------------------
+	virtual ~InputNode(){}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return uebergeordnetes ProcessAdapter-Objekt
+	 */
+	ProcessAdapter::Ptr getProcessAdapter() { 
+		ProcessAdapter::Ptr p = 
+			boost::shared_dynamic_cast< ProcessAdapter, PObject >( parent->getPtr() );
+		return p;
+	}
+};
 //============================================================================================================
 /**
  * @class ProcessAdapterNode.

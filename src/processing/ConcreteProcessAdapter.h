@@ -1288,7 +1288,7 @@ public:
 	 * Fuegt neuen InputNode hinzu.
 	 * @return neues InputNode-Objekt
 	 */
-	ProcessorNode::Ptr InputNode();
+	ProcessorNode::Ptr addInputNode();
 };
 //============================================================================================================
 /**
@@ -1346,9 +1346,9 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param index
-	 * @return liefert Parameter zu index. Wirft: std::out_of_range
+	 * @return liefert OffsetParameter
 	 */
-	virtual Parameter::Ptr getParameter ( size_t index = 0 ) const { return index; }
+	virtual Parameter::Ptr getParameter ( size_t index = 0 ) const { return offset; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return  Ausgabe-Parameter
