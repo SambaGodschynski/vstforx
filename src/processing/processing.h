@@ -1,10 +1,8 @@
 /*
- ppi.processing
- Signal Processing:
- P ist ein gerichteter Graph. Jeder Plugin-Knoten hatt Vorgaenger und Nachfolger.
- Die bearbeitung des graphen erfolgt uber einen SignalProcessPath. Dies ist eine
- Liste in der die ProcessorNodes nach abhaengigkeit geordnet sind.
- Der SignalProcessPath wird nur nach jeder Graph aenderung berechnet.
+ * ===========================================================================================================
+ * processing.h
+ *      Author: Johannes Unger
+ * ===========================================================================================================
  */
 #ifndef PROCESSING_H_
 #define PROCESSING_H_
@@ -27,33 +25,44 @@
 //============================================================================================================
 namespace processing {
 	//--------------------------------------------------------------------------------------------------------
-	// Die Klasse Graph
+	/**
+	 * Die Klasse Graph
+	 */
 	class Graph;
 	//--------------------------------------------------------------------------------------------------------
-	//Implementiert die processFrames Methode indem es die processFrames Methode
-	//des im Konstruktor uebergebenen Processor Objektes aufruft.
+	/**
+	 * Implementiert die processFrames Methode indem es die processFrames Methode
+	 * des im Konstruktor uebergebenen Processor Objektes aufruft.
+	 */
 	class ProcessAdapterNode;
 } // namespace processing
 
 namespace processing {
 //============================================================================================================
-// Schnittstelle: Processor.
-// Alle Unterklassen muessen processFrames implementieren.
-// Diese Methode bearbeitet Die Audio Daten die im Frames gelagert sind.
-//============================================================================================================
+/**
+ * @interface Processor.
+ * Alle Unterklassen muessen processFrames() implementieren.
+ */
 class Processor {
+//============================================================================================================
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef unsigned int Int; 
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * bearbeitet Frames-Objekt (Eingangs-Sampleblock)
+	 * @param frames
+	 * @param numSamples Anzahl der zu bearbeitenden Samples
+	 */
 	virtual void processFrames(Frames * frames, Int numSamples ) = 0;
 
 }; //class Processor
 
 //============================================================================================================
-//Klasse: ProcessorNode.
-//Oberklasse fuer alle Knoten die processFrames() implementieren.
-//Kann n Node Vorgaenger und m Node Nachfolger aufnehmen.
+/**
+ * @class ProcessorNode.
+ * Oberklasse fuer alle Knoten die processFrames() implementieren.
+ */
 //============================================================================================================
 class ProcessorNode : public Processor, public PObject {
 friend class Graph;
@@ -61,34 +70,58 @@ friend class DFSVisitor;
 friend class boost::serialization::access;
 friend class StartNode;
 friend class EndNode;
-BOOST_SERIALIZATION_SPLIT_MEMBER()
+BOOST_SERIALIZATION_SPLIT_MEMBER() // teilt boost::serialize in save() und load()
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<ProcessorNode> Ptr;
 	//--------------------------------------------------------------------------------------------------------
 	typedef vector<ProcessorNode*> Container;
 	//--------------------------------------------------------------------------------------------------------
-	typedef list<ProcessorNode*> Parents;   // wird in DFSVisitor bzw. �ber updateGraph ermittelt
+	typedef list<ProcessorNode*> Parents;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Eltern ProcessorNode-Objekte. Werden in DFSVisitor ueber updateGraph() ermittelt
+	 */
 	Parents parents;
 	//--------------------------------------------------------------------------------------------------------
-	// erzeugt oder entfernt tmpFrames
-	void prepareFrameContainer( size_t num ); 
+	/**
+	 * Fuegt hinzu/entfernt Frames-Objekt zum FramesContainer.
+	 * Wird von Graph::updateProcessorNode() aufgerufen, nachdem eine neue Verbindung zum Knoten hinzugefuegt
+	 * wurde.
+	 * @param num Anzahl der Kind-ProcessorNode-Objekte
+	 */
+	void prepareFramesContainer( size_t numChildren );
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * BGL::Vertex Zuordnung. Wird zur schnelleren ermittlung intrinistisch gespeichert
+	 */
 	bgl::Vertex bglVertex; // !! kann sich aendern
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Delay-Kompensations-Stream
+	 */
 	DCStream stream;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Serialisiert ProcessorNode-Objekt
+	 * @param ar
+	 * @param version
+	 */
 	template < typename Archive >
 	void save ( Archive &ar, const unsigned int version ) const {
 		ar << boost::serialization::base_object<PObject>(*this);
-		// ar << parents;  wird in DFSVisitor bzw. �ber updateGraph ermittelt
-		// ar << activeChildren; wird in DFSVisitor bzw. �ber updateGraph ermittelt
+		// ar << parents;  wird in DFSVisitor bzw. ueber updateGraph ermittelt
+		// ar << activeChildren; wird in DFSVisitor bzw. ueber updateGraph ermittelt
 		size_t numChildFrames = frameContainer.size();
 		ar << numChildFrames;
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	* Deserialisiert ProcessorNode-Objekt
+	 * @param ar
+	 * @param version
+	 */
 	template < typename Archive >
 	void load ( Archive &ar, const unsigned int version ) {
 		ar >> boost::serialization::base_object<PObject>(*this);
@@ -96,36 +129,62 @@ private:
 		// ar >> activeChildren; wird in DFSVisitor bzw. �ber updateGraph ermittelt
 		size_t numChildFrames;
 		ar >> numChildFrames;
-		prepareFrameContainer( numChildFrames );
+		prepareFramesContainer( numChildFrames );
 	}
 	//--------------------------------------------------------------------------------------------------------
-	bool active; // ist true wenn Node die Graph-ProzessKette beiinflusst.
+	/**
+	 * ist true wenn Node die Graph-ProzessKette beeinflusst.
+	 */
+	bool active;
 	//--------------------------------------------------------------------------------------------------------
-	bool onCall; // wird benoet. um feedback schleifen zu ermitteln. siehe findCycles
+	/**
+	 * Anzahl der aktiven Knoten Nachfolger wird in DFSVisitor ermittelt
+	 */
+	size_t activeChildren;
 	//--------------------------------------------------------------------------------------------------------
-	size_t activeChildren; //anzahl der activen Knoten Nachfolger wird in DFSVisitor bzw. ermittelt
+	/**
+	 * ist ergebnis Frames-Objekt von mixInputToFrames()
+	 */
+	Frames *tmpFrames;
 	//--------------------------------------------------------------------------------------------------------
-	Frames *tmpFrames; // benutzt in processNode
-	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Signal-Verabeitungs-Verzoegerung im graph
+	 */
 	size_t delay;
 	//--------------------------------------------------------------------------------------------------------
-	// liefert signal verabeitungs verzoegerung im graph ( unter beachtung der vorgaenger )
+	/**
+	 * @return Signal-Verabeitungs-Verzoegerung im Graph ( unter beachtung der Vorgaenger )
+	 */
 	size_t getNodeDelay() const { return delay; }
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * bestimmt ob ProcessorNode-Objekt aktiv/nicht aktiv. Wird von DFSVisitor aufgerufen.
+	 * @param stat
+	 */
+	void setActive( bool stat ){ active = stat; }
 protected:
 	//--------------------------------------------------------------------------------------------------------
-	//Jeder Knoten hatt ein ergebniss Stack. Die Adresse eines errechneten Frames wird hier gelagert.
-	//Hatt ein Knoten mehr als ein Nachfolger so muss das errechnete Frames kopiert und auf den Stack gelegt werden.
-	//Wird ein Knoten aufgefordert die Adresse eines Frames zu liefern so wird diese vom Stack geholt.
+	/**
+	 * Ausgabe-Sampleblockmenge-Ergebniss-Stack.
+	 */
 	typedef stack<Frames*> FrameStack;
-	FrameStack frameStack; //< hier lagern frames zum austausch
+	FrameStack frameStack;
 	//--------------------------------------------------------------------------------------------------------
-	// Hier lagern alle Frames die vom ProcesserNode 
-	// erzeugt werden. Dies geschieht wenn eine neue
-	// abgehende Verbindung (child) hinzugefuegt wird
-	// und mehr als eine verbindung existiert.
+	/**
+	 * Kontainer fuer Ausgabe-Sampleblockmenge. Enthaelt die Frames-Objekte die waehrend der
+	 * pushAndCopy()-Operation, in den FrameStack kopiert werden.
+	 * (da FramesStack nur 'pure'-Zeiger enthaelt wird extra Kontainer benoetigt)
+	 * Anzahl abhaengig von activeChildren. Wird ueber prepareFramesContainer initalisiert.
+	 * TODO: list->vector
+	 */
 	typedef list<Frames::Ptr> FrameContainer;
-	FrameContainer frameContainer;	//< ProcessorNode besitzt diese frames
+	FrameContainer frameContainer;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Mischt alle Eingangs-Frames-Objekte zu einem Frames-Objekt.
+	 * @param numSamples Anzahl der zu berarbeitenden Samples
+	 * @return Frames-Objekt
+	 */
 	Frames * mixInputsToFrames( Processor::Int numSamples ) {
 		if ( parents.empty() ) {
 			tmpFrames->setZero( numSamples );
@@ -147,36 +206,62 @@ protected:
 		return tmpFrames;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	virtual void processNode( Processor::Int numSamples );
+	/**
+	 * Bereitet Knoten vor um schliesslich processFrames() aufzurufen.
+	 * @param numSamples Anzahl der zu berarbeitenden Samples
+	 */
+	virtual void processNode( Processor::Int numSamples ) {
+		processFrames ( mixInputsToFrames(numSamples), numSamples );
+	}
 	//--------------------------------------------------------------------------------------------------------
 	ProcessorNode ( const string &name="unnamed" );
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return zum ProcessorNode-Objekt zugeordneter BGL-Vertex.
+	 */
 	const bgl::Vertex & getBglVertex() const { return bglVertex; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return true, wenn Eintritts-Knoten
+	 */
 	virtual bool isStartNode() const { return false; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return true, wenn Austritts-Knoten
+	 */
 	virtual bool isEndNode() const { return false; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Delay-Kompensations-Stream Objekt
+	 */
 	DCStream & getDCStream() { return stream; }
 	//--------------------------------------------------------------------------------------------------------
-	size_t getNumPreparedChildren() { return frameContainer.size(); }
-	//--------------------------------------------------------------------------------------------------------
-	virtual void processFrames(Frames * frames, Processor::Int numSamples) = 0;
-	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return groesse des Frames-Stack
+	 */
 	int getFrameStackSize() const { return frameStack.size(); }
 	//--------------------------------------------------------------------------------------------------------
-	// liefert signal verabeitungs verzoegerung des process ( VSTPlugin::processReplacing() )
+	/**
+	 * @return Signal-Verabeitungs-Verzoegerung des Knoten (ohne Beruecksichtigung der Vorgaenger)
+	 */
 	virtual size_t getProcessDelay() const { return 0; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Anzahl der Kinds-Knoten die aktiv sind (@see isActive())
+	 */
 	size_t getNumActiveChildren(){ return activeChildren; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return true, wenn aktiv. (wenn Node die Graph-ProzessKette beeinflusst)
+	 */
 	bool isActive(){ return active; }
-	//--------------------------------------------------------------------------------------------------------
-	void setActive( bool stat ){ active = stat; }
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~ProcessorNode();
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Frames-Objekt.
+	 */
 	Frames * popFrame() {
 		if ( getFrameStackSize() <= 0 ) 
 			throw com::ppiError::StackUnderflow(
@@ -187,9 +272,13 @@ public:
 	}
 	
 	//--------------------------------------------------------------------------------------------------------
-	// lagert frames in den Ergebniss Stack.
-	// hatt ein Knoten mehr als 1 Kind-Knoten werden Frames kopiert
-	// und in den Stack gelagert.
+	/**
+	 * fuegt Frames-Objekt den Ergebniss-Stack hinzu.
+	 * hatt ein ProcessorNode-Objekt mehr als 1 Kind-Objekt wird Frames-Objekt kopiert
+	 * und zusaetzlich den Stack hinzugefuegt.
+	 * @param frames Frames-Objekt
+	 * @param numSamples Anzahl der zu bearbeitenden Samples
+	 */
 	inline void pushAndCopy( Frames * frames, Processor::Int numSamples ) {
 		if ( isEndNode() ){
 			frameStack.push (frames);
@@ -206,34 +295,55 @@ public:
 };//class ProcessorNode
 
 //============================================================================================================
-//	Klasse: VariableOutputAdapter
-//============================================================================================================
+/**
+ * @interface: VariableOutputAdapter
+ * Schnitstelle fuer alle ProcessAdapter-Klassen, die Ausgangs-Knoten dynamisch hinzufuegen koennen.
+ */
 class VariableOutputAdapter {
+//============================================================================================================
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Fuegt ProcessAdapter Ausgangs-Knoten hinzu
+	 * @return ProcessorNode-Objekt
+	 */
 	virtual ProcessorNode::Ptr addOutputNode() = 0;
 };
 
 //============================================================================================================
-//	Klasse: VariableInputAdapter
-//============================================================================================================
+/**
+ * @interface: VariableInputAdapter
+ * Schnitstelle fuer alle ProcessAdapter-Klassen, die Eingangs-Knoten dynamisch hinzufuegen koennen.
+ */
 class VariableInputAdapter {
+//============================================================================================================
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Fuegt ProcessAdapter Eingangs-Knoten hinzu
+	 * @return ProcessorNode-Objekt
+	 */
 	virtual ProcessorNode::Ptr addInputNode() = 0;
 };
 
 //============================================================================================================
-//	Klasse: NOPNode. - No Operation Node -
-//  Ein ProcessorNode der nichts tut ausser zu existieren. ( fuer Start-, EndKnoten )
-//============================================================================================================
+/**
+ * @class: NOPNode. - No Operation Node -
+ * (Ausgabe = Eingabe)
+ */
 class NOPNode : public ProcessorNode, public Serializable {
+//============================================================================================================
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<NOPNode> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (De)Serialisiert NOPNode-Objekt
+	 * @param ar Boost::Archiv-Objekt
+	 * @param version
+	 */
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){
 		ar & boost::serialization::base_object< ProcessorNode > ( *this );
@@ -245,27 +355,45 @@ protected:
 	NOPNode( const string& );
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * erzeugt NOPNode-Objekt
+	 * @param str Objektname
+	 * @return neues NOPNode-Objekt
+	 */
 	static Ptr create ( const string &str ) {
 		Ptr neu( new NOPNode(str) );
 		neu->self = neu;
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Ausgabe-Sampleblockmenge = Eingabe-Sampleblockmenge
+	 * @param fr
+	 * @param numSamples
+	 */
 	void processFrames ( Frames *fr, Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
-	~NOPNode(){}
+	virtual ~NOPNode(){}
 };
 
 //============================================================================================================
-//	Klasse: StartNode
-//============================================================================================================
+/**
+ * @class StartNode
+ * Repraesentiert Eingangs-Knoten des Graphen.
+ */
 class StartNode : public NOPNode {
+//============================================================================================================
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<StartNode> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (De)Serialisiert StartNode-Objekt
+	 * @param ar Boost::Archiv-Objekt
+	 * @param version
+	 */
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){
 		ar & boost::serialization::base_object< NOPNode > ( *this );
@@ -274,12 +402,19 @@ private:
 	StartNode() : NOPNode ("startNode") {}
 public: 
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Erzeugt StartNode-Objekt
+	 * @return neues StartNode-Objekt
+	 */
 	static Ptr create () {
 		Ptr neu( new StartNode() );
 		neu->self = neu;
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return true
+	 */
 	virtual bool isStartNode() const { return true; }
 };
 //============================================================================================================
@@ -293,6 +428,11 @@ public:
 	typedef boost::shared_ptr<EndNode> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (De)Serialisiert EndNode-Objekt
+	 * @param ar Boost::Archiv-Objekt
+	 * @param version
+	 */
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){
 		ar & boost::serialization::base_object< NOPNode > ( *this );
@@ -303,16 +443,31 @@ private:
 	EndNode() : NOPNode ("endNode") {}
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Erzeugt EndNode-Objekt
+	 * @return neues EndNode-Objekt
+	 */
 	static Ptr create () {
 		Ptr neu( new EndNode() );
 		neu->self = neu;
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return true
+	 */
 	virtual bool isEndNode() const { return true; }
 };
 
 //============================================================================================================
+/**
+ * @class ProcessAdapter
+ * Repraesentiert ein Komplexes Modul mit N Ein/Ausgaengen.
+ * Enthaelt N Input/Output Objekte und einen AdapterNode Objekte.
+ * Sind diese einem Graph hinzugefuegt, wird - wenn ProcessFrames() des AdapterNode
+ * ausgefuehrt - an processAdapter() weitergeleitet.
+ */
+class ProcessAdapter: public PObject {
 //Klasse: ProcessAdapter.
 //    Input_Node0-O   O -  Input_Node1 ... Input_NodeN
 //                 \ /
@@ -320,7 +475,6 @@ public:
 //                 / \
 //   Output_Node0-O   O - Output_Node1 ... Output_NodeN
 //============================================================================================================
-class ProcessAdapter: public PObject {
 friend class ProcessAdapterNode;
 friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
@@ -328,11 +482,20 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<ProcessAdapter> Ptr;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @class OutputNode.
+	 * ProcessAdapter OutputNode.
+	 */
 	class OutputNode : public NOPNode {
 	friend class boost::serialization::access;
 	public:
 		typedef boost::shared_ptr<OutputNode> Ptr;
 	private:
+		/**
+		 * (De)Serialisiert OutputNode.
+		 * @param ar Boost::Archive-Objekt
+		 * @param version
+		 */
 		template < typename Archive >
 		void serialize ( Archive &ar, const unsigned int version ){
 			ar & boost::serialization::base_object< NOPNode > ( *this );
@@ -342,15 +505,26 @@ public:
 		ProcessAdapter *parent;
 		OutputNode( const string &name, ProcessAdapter* parent );
 	public:
+		/**
+		 * Erzeugt neues OutputNode-Objekt
+		 * @param name Objektname
+		 * @param parent uebergeordnetes ProcessAdapter-Objekt
+		 * @return
+		 */
 		static Ptr create( const string &name, ProcessAdapter *parent ) {
 			Ptr neu( new OutputNode(name, parent) );
 			neu->self = neu;
 			return neu;
 		}
-		// Outputnodes haben keiene processNode() meth. da sie die 
-		// frames ueber den adapter erhalten.
+		/**
+		 * Tut nix, da funktionalitaet von ProcessAdapter ausgefuehrt wird
+		 * @param numSamples
+		 */
 		virtual void processNode( Processor::Int numSamples ) {};
 		virtual ~OutputNode(){}
+		/**
+		 * @return uebergeordnetes ProcessAdapter-Objekt
+		 */
 		ProcessAdapter::Ptr getProcessAdapter() { 
 			ProcessAdapter::Ptr p = 
 				boost::shared_dynamic_cast< ProcessAdapter, PObject >( parent->getPtr() );
@@ -358,11 +532,20 @@ public:
 		}
 	};
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @class InputNode.
+	 * ProcessAdapter InputNode.
+	 */
 	class InputNode : public NOPNode {
 	friend class boost::serialization::access;
 	public:
 		typedef boost::shared_ptr<InputNode> Ptr;
 	private:
+		/**
+		 * (De)Serialisiert InputNode.
+		 * @param ar Boost::Archive-Objekt
+		 * @param version
+		 */
 		template < typename Archive >
 		void serialize ( Archive &ar, const unsigned int version ){
 			ar & boost::serialization::base_object< NOPNode > ( *this );
@@ -372,12 +555,21 @@ public:
 		ProcessAdapter *parent;
 		InputNode( const string &name, ProcessAdapter *parent );
 	public:
+		/**
+		 * Erzeugt neues InputNode-Objekt
+		 * @param name Objektname
+		 * @param parent uebergeordnetes ProcessAdapter-Objekt
+		 * @return
+		 */
 		static Ptr create( const string &name, ProcessAdapter *parent ) {
 			Ptr neu( new InputNode(name, parent) );
 			neu->self = neu;
 			return neu;
 		}
 		virtual ~InputNode(){}
+		/**
+		 * @return uebergeordnetes ProcessAdapter-Objekt
+		 */
 		ProcessAdapter::Ptr getProcessAdapter() { 
 			ProcessAdapter::Ptr p = 
 				boost::shared_dynamic_cast< ProcessAdapter, PObject >( parent->getPtr() );
@@ -392,6 +584,11 @@ public:
 	typedef vector<Frames*> InputFrames;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Serialisiert ProcessAdapter-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
 	template < typename Archive >
 	void save ( Archive &ar, const unsigned int version ) const {
 		com::MethodMessage<ProcessAdapter> methodMessage ( "save()", *this );
@@ -402,6 +599,11 @@ private:
 		ar << aNode;
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Deserialisiert ProcessAdapter-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
 	template < typename Archive >
 	void load ( Archive &ar, const unsigned int version ) {
 		com::MethodMessage<ProcessAdapter> methodMessage ( "load()", *this );
@@ -419,48 +621,81 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	InputNodes inputNodes;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * ProcessAdapterNode-Objekt
+	 */
 	boost::shared_ptr<ProcessAdapterNode> aNode;
 	//--------------------------------------------------------------------------------------------------------
 	IHostInfo * hostInfo;
 	//--------------------------------------------------------------------------------------------------------
-	// liefert signal verabeitungs verzoegerung des process ( VSTPlugin::processReplacing() )
+	/**
+	 * @return Signal-Verabeitungs-Verzoegerung des ProcessAdapter.
+	 */
 	virtual size_t getProcessDelay() const { return 0; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Anzahl der Ausgangs-Knoten die aktiv sind (@see ProcessorNode::isActive())
+	 * @return
+	 */
 	size_t getNumActiveOutputNodes() const;
 	//--------------------------------------------------------------------------------------------------------
-	// fuegt neuen ProcessAdapterNode hinzu und liefert Zeiger.
+	/**
+	 * fuegt neuen OutputNode hinzu.
+	 * @param name Objektname
+	 * @return neues OutputNode-Objekt
+	 */
 	OutputNode::Ptr createOutputNode( const string &name = "unnamed" );
 	//--------------------------------------------------------------------------------------------------------
-	// fuegt neuen ProcessAdapterNode hinzu und liefert Zeiger.
+	/**
+	 * fuegt neuen InputNode hinzu.
+	 * @param name Objektname
+	 * @return neues InputNode-Objekt
+	 */
 	InputNode::Ptr createInputNode( const string &name = "unnamed" );
 	//--------------------------------------------------------------------------------------------------------
-	void processAdapter( Processor::Int numSamples ) {
-		_processAdapter ( numSamples );
-	}	
+	ProcessAdapter( IHostInfo * hostInfo, size_t numInputNodes = 1, size_t numOutputNodes = 1 );
 public:
 	//--------------------------------------------------------------------------------------------------------
-	virtual void _processAdapter ( Processor::Int numSamples ) = 0;
+	/**
+	 * Prozessiert Adapter. (wird von AdapterNode aufgerufen)
+	 * @param numSamples Anzahl der zu bearbeitenden Samples
+	 */
+	virtual void processAdapter ( Processor::Int numSamples ) = 0;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return IHostInfo-Objekt
+	 */
 	IHostInfo * getHostInfo() const { return hostInfo; } 
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * setzt IHostInfo-Objekt
+	 * @param hI
+	 */
 	void setHostInfo( IHostInfo * hI ){ hostInfo = hI; } 
-	//--------------------------------------------------------------------------------------------------------
-	ProcessAdapter( IHostInfo * hostInfo, size_t numInputNodes = 1, size_t numOutputNodes = 1 );
 	//--------------------------------------------------------------------------------------------------------
 	size_t getNumOutputNodes () const { return outputNodes.size(); }
 	//--------------------------------------------------------------------------------------------------------
 	size_t getNumInputNodes () const { return inputNodes.size(); }
 	//--------------------------------------------------------------------------------------------------------
-	// Liefert ProcessAdapterNode zu index.
+	/**
+	 * @param index
+	 * @return OutputNode-Objekt zu index. Wirft ppiError::IndexOutOfBoundException
+	 */
 	OutputNode::Ptr getOutputNode( size_t index ){ 
 		if ( index >= getNumOutputNodes() ) 
 			throw ppiError::IndexOutOfBoundException ( "OutOfBound-OutputNodes", __FILE__, __LINE__ );
 		return outputNodes[index]; 
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return ProcessAdapterNode-Objekt
+	 */
 	boost::shared_ptr<ProcessAdapterNode> getAdapterNode() { return aNode; }
 	//--------------------------------------------------------------------------------------------------------
-	// liefert Input-Node
+	/**
+	 * @param index
+	 * @return InputNode-Objekt zu index. Wirft ppiError::IndexOutOfBoundException
+	 */
 	virtual InputNode::Ptr getInputNode( size_t index ) { 
 		if ( index >= getNumInputNodes() ) 
 			throw ppiError::IndexOutOfBoundException ( "OutOfBound-InputNodes", __FILE__, __LINE__ );
@@ -470,11 +705,13 @@ public:
 	virtual ~ProcessAdapter();
 }; //class ProcessAdapter
 //============================================================================================================
-//Klasse: ProcessAdapterNode.
-//Implementiert die processFrames Methode indem es die processFrames Methode
-//des im Konstruktor uebergebenen ProcessAdapter Objektes aufruft.
-//============================================================================================================
+/**
+ * @class ProcessAdapterNode.
+ * Implementiert die processFrames Methode, indem es die processFrames() Methode,
+ * des im Konstruktor uebergebenen ProcessAdapter-Objektes aufruft.
+ */
 class ProcessAdapterNode : public ProcessorNode, public Serializable {
+//============================================================================================================
 friend class boost::serialization::access;
 friend class ProcessAdapter;
 friend class ProcessAdapter::InputNode;
@@ -484,6 +721,11 @@ public:
 	typedef boost::shared_ptr<ProcessAdapterNode> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (De)Serialisiert ProcessAdapterNode-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){
 		ar & boost::serialization::base_object< ProcessorNode > ( *this );
@@ -492,11 +734,19 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	ProcessAdapterNode() {}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Uebergerordneter ProcessAdapter
+	 */
 	ProcessAdapter *parent;
 	//--------------------------------------------------------------------------------------------------------
 	ProcessAdapterNode( ProcessAdapter *processAdapter );
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Erzeugt neues ProcessAdapterNode-Objekt
+	 * @param processAdapter
+	 * @return
+	 */
 	static Ptr create ( ProcessAdapter *processAdapter ) {
 		Ptr neu( new ProcessAdapterNode( processAdapter ) );
 		neu->self = neu;
@@ -505,12 +755,27 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~ProcessAdapterNode();
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Signal-Verabeitungs-Verzoegerung des uebergeordneten ProcessAdapter
+	 */
 	virtual size_t getProcessDelay() const { return parent->getProcessDelay(); }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return uebergeordneter ProcessAdapter
+	 */
 	ProcessAdapter * getAdatper(){ return parent; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * keine Auswirkung, da ProcessAdapter Eingabe-Frames-Objekte verarbeitet
+	 * @param
+	 * @param numSamples
+	 */
 	virtual void processFrames ( Frames*, Processor::Int numSamples ) {}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * ruft ProcessAdapter::processAdapter() auf.
+	 * @param numSamples Anzahl der zu bearbeitenden Samples.
+	 */
 	virtual void processNode( Processor::Int numSamples ) { parent->processAdapter( numSamples ); }
 }; //class ProcessAdapterNode
 } // namespace Processing

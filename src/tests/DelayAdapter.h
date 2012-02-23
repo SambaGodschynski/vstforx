@@ -51,7 +51,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual size_t getProcessDelay() const { return stream->getMaxDelay(); }
 	//--------------------------------------------------------------------------------------------------------
-	virtual void _processAdapter( Processor::Int sampleFrames ) {
+	virtual void processAdapter( Processor::Int sampleFrames ) {
 		Frames *fr = getInputNode(0)->popFrame();
 		stream->addFrame ( fr, sampleFrames, stream->getMaxDelay() );
 		stream->flush ( sampleFrames, fr->getData() );

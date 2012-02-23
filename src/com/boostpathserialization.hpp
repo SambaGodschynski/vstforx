@@ -1,3 +1,7 @@
+/*
+ * Author: Johan Råde
+ * http://boost.2283326.n4.nabble.com/serialization-boost-serialization-path-hpp-td2649784.html
+ */
 #ifndef BOOST_SERIALIZATION_PATH_HPP
 #define BOOST_SERIALIZATION_PATH_HPP
 
@@ -6,7 +10,6 @@
 #pragma once
 #endif
 
-//#define BOOST_FILESYSTEM_VERSION 2
 
 #include <boost/config.hpp>
 #include <boost/filesystem/path.hpp>

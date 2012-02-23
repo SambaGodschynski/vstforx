@@ -1,4 +1,9 @@
-
+/*
+ * ===========================================================================================================
+ * processing.cpp
+ *      Author: Johannes Unger
+ * ===========================================================================================================
+ */
 #include "processing.h"
 #include "com/one4All.h"
 #include "parameter/Parameter.h"
@@ -26,7 +31,7 @@ ProcessorNode::~ProcessorNode() {
 	if (tmpFrames) delete tmpFrames;
 }
 //------------------------------------------------------------------------------------------------------------
-void ProcessorNode::prepareFrameContainer( size_t num ) {
+void ProcessorNode::prepareFramesContainer( size_t num ) {
 	size_t c = abs( (int)num - (int)frameContainer.size() );
 	bool add = num > frameContainer.size();
 	while ( c-- > 0 ) {
@@ -36,7 +41,7 @@ void ProcessorNode::prepareFrameContainer( size_t num ) {
 }
 //------------------------------------------------------------------------------------------------------------
 void ProcessorNode::processNode( Processor::Int numSamples ) {
-	processFrames ( mixInputsToFrames(numSamples), numSamples );
+
 }
 //============================================================================================================
 // class ProcessAdapterNode

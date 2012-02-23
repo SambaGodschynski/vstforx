@@ -116,7 +116,7 @@ public:
 		fader.setDuration( getFaderDuration( hostInfo->getSampleRate() ) );  
 	}
 	//--------------------------------------------------------------------------------------------------------
-	virtual void _processAdapter( Processor::Int numSamples );
+	virtual void processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const { return volume; }
 	//--------------------------------------------------------------------------------------------------------
@@ -157,7 +157,7 @@ public:
 	}
 	//--------------------------------------------------------------------------------------------------------
     //ruft die processReplacing Methode des zugeordneten Processor Objekt auf.
-    virtual void _processAdapter( Processor::Int numSamples );
+    virtual void processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const { return pan; }
 	//--------------------------------------------------------------------------------------------------------
@@ -334,7 +334,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void valueChanged ( void *src, const float &val );
 	//--------------------------------------------------------------------------------------------------------
-    virtual void _processAdapter( Processor::Int numSamples );
+    virtual void processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~OutputSwitch();
 	//--------------------------------------------------------------------------------------------------------
@@ -409,7 +409,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void valueChanged ( void *src, const float &val );
 	//--------------------------------------------------------------------------------------------------------
-    virtual void _processAdapter( Processor::Int numSamples );
+    virtual void processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~InputSwitch();
 	//--------------------------------------------------------------------------------------------------------
@@ -686,7 +686,7 @@ public:
 	}
 	//--------------------------------------------------------------------------------------------------------
     //ruft die processReplacing Methode des zugeordneten Processor Objekt auf.
-    virtual void _processAdapter( Processor::Int numSamples );
+    virtual void processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~OutputStep();
 	//--------------------------------------------------------------------------------------------------------
@@ -775,7 +775,7 @@ public:
 	}
 	//--------------------------------------------------------------------------------------------------------
     //ruft die processReplacing Methode des zugeordneten Processor Objekt auf.
-    virtual void _processAdapter( Processor::Int numSamples );
+    virtual void processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~InputStep();
 	//--------------------------------------------------------------------------------------------------------
@@ -825,7 +825,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	//ruft die processReplacing Methode des zugeordneten 
 	//Processor Objekt auf.
-	virtual void _processAdapter( Processor::Int numSamples );
+	virtual void processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const { return offset; }
 	//--------------------------------------------------------------------------------------------------------
@@ -879,7 +879,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	//ruft die processReplacing Methode des zugeordneten 
 	//Processor Objekt auf.
-	virtual void _processAdapter( Processor::Int numSamples );
+	virtual void processAdapter( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const { 
 		if ( nr > adsr->getNumParameter() ) return Parameter::Ptr();
@@ -953,7 +953,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual Parameter::Ptr getMidiChannelParameter() { return channelSelector; }
 	//--------------------------------------------------------------------------------------------------------
-	virtual void _processAdapter( Processor::Int numSamples ) {}
+	virtual void processAdapter( Processor::Int numSamples ) {}
 	//--------------------------------------------------------------------------------------------------------
 	virtual Parameter::Ptr getParameter ( size_t nr = 0 ) const { return midiParameters[nr]; }
 	//--------------------------------------------------------------------------------------------------------

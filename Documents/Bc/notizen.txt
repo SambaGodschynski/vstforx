@@ -42,9 +42,12 @@ refactor:
 <ok>GProcessorNode, GProcessorNodeController -> GProcessModule
 <-->BuildGraph: Creator Base noetig?
 <-->ComplexTest<N>
-<-->Janitor::update nach jedem connect?
+<ok>Janitor::update nach jedem connect? -> JA, da fehlerhafte verbindung gleich wieder entfernt werden soll.
+<-->SampleRate, BlockSize, hostInfoChanged
+<-->ProcessorNode::FrameContainer list->vector
+<-->ProcessAdapter: InputNode/OutputNode declare outside of ProcessAdapter 
 
-fadevalue ins statt operator
+fadevalue::inc statt operator
 Controll eigenen namespace
 DCStream::flush() variante fuer Frames objekt hinzfuegen
 Parameter::ParameterConnection als multimap oder so wie im modell

@@ -6,7 +6,7 @@ namespace processing{
 // class Volume
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-void Volume::_processAdapter( Processor::Int numSamples ) { 
+void Volume::processAdapter( Processor::Int numSamples ) { 
 	Frames *fr = getInputNode(0)->popFrame();
 	VstInt32 i = numSamples;
 	VstNumber *r = (*fr)[0];
@@ -33,7 +33,7 @@ Pan::Pan ( IHostInfo *hostInfo ) : ProcessAdapter( hostInfo, 1, 1 ) {
 	pan->setValue (0.5);
 }
 //------------------------------------------------------------------------------------------------------------
-void Pan::_processAdapter( Processor::Int numSamples ) {
+void Pan::processAdapter( Processor::Int numSamples ) {
 	Frames *fr = getInputNode(0)->popFrame();
 	float *l = (*fr)[0];
 	float *r = (*fr)[1];
@@ -188,7 +188,7 @@ inline void OutputSwitch::_processFrames ( Frames *iFrame, OutputMatrix &fr, Pro
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-void OutputSwitch::_processAdapter( Processor::Int numSamples ) {
+void OutputSwitch::processAdapter( Processor::Int numSamples ) {
 	TRY_TO_LOCK_TIMED (mutex); // gleichzeitigen zugriff von addOutputNode blocken
 	Frames *frame = getInputNode(0)->popFrame();
 	Frames iFrame;
@@ -293,7 +293,7 @@ inline void InputSwitch::_processFrames ( InputMatrix &fr, Processor::Int numSam
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-void InputSwitch::_processAdapter( Processor::Int numSamples ) {
+void InputSwitch::processAdapter( Processor::Int numSamples ) {
 	TRY_TO_LOCK_TIMED (mutex); // gleichzeitigen zugriff von addOutputNode blocken
 
 	for ( int i=0; i<getNumStates(); ++i ) { // bilde InputFrames auf Matrix ab.
@@ -491,7 +491,7 @@ inline void OutputStep::processFrames ( Frames *iFrame, OutputMatrix &fr, Proces
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-void OutputStep::_processAdapter( Processor::Int numSamples ) {
+void OutputStep::processAdapter( Processor::Int numSamples ) {
 	TRY_TO_LOCK_TIMED (mutex); // gleichzeitigen zugriff von addOutputNode blocken
 	VstTimeInfo *inf = hostInfo->getVstTimeInfo(0);
 	ClockEdge::EdgeValue t = transport.in ( isFlag(inf->flags,kVstTransportPlaying) );
@@ -656,7 +656,7 @@ inline void InputStep::processFrames ( InputMatrix &fr, Processor::Int numSample
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-void InputStep::_processAdapter( Processor::Int numSamples ) {
+void InputStep::processAdapter( Processor::Int numSamples ) {
 	TRY_TO_LOCK_TIMED (mutex); // gleichzeitigen zugriff von addOutputNode blocken
 	VstTimeInfo *inf = hostInfo->getVstTimeInfo(0);
 	ClockEdge::EdgeValue t = transport.in ( isFlag(inf->flags,kVstTransportPlaying) );
@@ -723,7 +723,7 @@ PeakTracker::PeakTracker( IHostInfo *hostInfo ) : ProcessAdapter(hostInfo,1,1) {
 	TOLOG ( "+" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
-void PeakTracker::_processAdapter( Processor::Int numSamples ) {
+void PeakTracker::processAdapter( Processor::Int numSamples ) {
 	Frames *frame = getInputNode(0)->popFrame();
 	VstInt32 i = numSamples;
 	VstNumber *r = (*frame)[0];
@@ -754,7 +754,7 @@ ADSRTrigger::ADSRTrigger( IHostInfo *hostInfo ) : ProcessAdapter(hostInfo) {
 	TOLOG ( "+" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
-void ADSRTrigger::_processAdapter( Processor::Int numSamples ) {
+void ADSRTrigger::processAdapter( Processor::Int numSamples ) {
 	Frames *frame = getInputNode(0)->popFrame();
 	VstInt32 i = numSamples;
 	VstNumber *r = (*frame)[0];

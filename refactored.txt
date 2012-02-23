@@ -1,0 +1,9 @@
+ProcessorNode::
+	prepareFrameContainer -> prepareFramesContainer
+	bool onCall removed
+	size_t getNumPreparedChildren() { return frameContainer.size(); } // removed
+	virtual void processFrames(Frames * frames, Processor::Int numSamples) = 0; // removed
+	void setActive( bool stat ){ active = stat; } // private
+ProcessAdapter::
+	_processAdapter -> processAdapter
+	ProcessAdapter( IHostInfo * hostInfo, size_t numInputNodes = 1, size_t numOutputNodes = 1 ); // protected

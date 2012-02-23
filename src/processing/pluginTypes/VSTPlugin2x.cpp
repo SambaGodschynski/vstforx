@@ -251,7 +251,7 @@ size_t VSTPlugin::getProcessDelay() const {
 }
 //------------------------------------------------------------------------------------------------------------
 //ruft die processReplacing Methode des zugeordneten VST-Plugin auf.
-void VSTPlugin::_processAdapter( Processor::Int numSamples ) { 
+void VSTPlugin::processAdapter( Processor::Int numSamples ) { 
 	// breite daten vor ( mappe frames => matrix )
 	for ( int i=0; i<getNumInputNodes(); i+=2 ) {
 		ProcessorNode::Ptr pr = getInputNode(i/2);

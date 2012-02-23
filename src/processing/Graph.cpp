@@ -1,4 +1,9 @@
-
+/*
+ * ===========================================================================================================
+ * Graph.cpp
+ *      Author: Johannes Unger
+ * ===========================================================================================================
+ */
 #include "Graph.h"
 #include "OS_Specific/OS_com.h"
 #include "OS_Specific/OS_processing.h"
@@ -133,8 +138,6 @@ void Graph::pushAndCopy ( Frames *fr, Processor::Int numSamples ){
 	startNode->pushAndCopy ( fr, numSamples );
 }
 //------------------------------------------------------------------------------------------------------------
-// Re-Initalisiert Graph:
-// Setzt acitivity flag und anzahl der aktiven childs pro Node. 
 void Graph::updateGraph() {
 	DFSVisitor vis(this);
 	boost::reverse_graph<bgl::G> rg(g);
@@ -285,7 +288,7 @@ Graph::Janitor::State Graph::Janitor::connectNodes( ProcessorNode::Ptr parent, P
 		                                       child->getBglVertex(), 
 											   graph->g );
 	if ( !inserted ) return FAILED;
-	
+
 	// updateGraph
 	graph->updateGraph();
 	
@@ -365,7 +368,7 @@ Graph::Janitor::State Graph::Janitor::removeProcessorNode( ProcessorNode::Ptr ob
 Graph::Janitor::State Graph::Janitor::add( ProcessAdapter::Ptr p ) {
 	if ( !graph->add(p) ) return FAILED;
 
-	// unbed. zuerst:
+	// AdapterNode unbed. zuerst:
 	graph->add( p->getAdapterNode() );
 	addProcessorNode( p->getAdapterNode() ); // add ProcessAdapter::AdapterNode
 
