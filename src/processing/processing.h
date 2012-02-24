@@ -579,8 +579,9 @@ protected:
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * Prozessiert Adapter. (wird von AdapterNode aufgerufen)
-	 * @param numSamples Anzahl der zu bearbeitenden Samples
+	 * Wird von AdapterNode, durch AdapterNode::processNode(), aufgerufen.
+	 * Verarbeitet Samplemenge des Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
+	 * @param numSamples Anzahl der zu verarbeitenden Samples
 	 */
 	virtual void processAdapter ( Processor::Int numSamples ) = 0;
 	//--------------------------------------------------------------------------------------------------------

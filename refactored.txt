@@ -12,3 +12,9 @@ Switch::
 	setFaderValue() // proteced
 Step::
 	setDuration -> resetDuration
+VSTPlugin2x::
+	setupFramebuffer->setupFramesbuffer
+
+
+ConnectionOperator::
+	#define STD_SLOPE 0.1f -> static const float STD_SLOPE = 0.01f;

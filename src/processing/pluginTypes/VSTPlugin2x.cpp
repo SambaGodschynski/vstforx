@@ -1,11 +1,9 @@
-//============================================================================================================
-// Klasse: VSTPlugin.
-// Ein VSTPlugin Repraesentiert ein ladbares VST-Plugin.
-// Bei Initalisierung wird das Plugin ueber ein DLL call geladen.
-// Die meisten Methoden dieser Klasse dienen somit als Vermittler zwischen
-// PPI und VST-Plugin.
-//============================================================================================================
-
+/*
+ * ===========================================================================================================
+ * VSTPlugin2x.cpp
+ *      Author: Johannes Unger
+ * ===========================================================================================================
+ */
 #include "processing/processing.h"
 #include "VSTPlugin2x.h"
 #include "com/Settings.h"
@@ -112,10 +110,10 @@ void VSTPlugin::initPlug( VSTPlugin &plug ) {
 	plug.outMatrix = new float*[ plug.getNumOutputNodes()*2 ];
 	plug.framebuffer = Framebuffer( plug.getNumOutputNodes() );
 	
-	plug.setupFramebuffer();
+	plug.setupFramesbuffer();
 }
 //------------------------------------------------------------------------------------------------------------
-void VSTPlugin::setupFramebuffer() {
+void VSTPlugin::setupFramesbuffer() {
 	blockSize = hostInfo->getBlockSize();
 	// mappe von frames nach float[][]
 	for ( int i=0; i<getNumOutputNodes()*2; i+=2 ) {
@@ -173,7 +171,7 @@ void VSTPlugin::setProgram(size_t index) {
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::hostInfoChanged() {
 	turnOff();
-	setupFramebuffer();
+	setupFramesbuffer();
 	// setze samplerate
 	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
 	aEff->dispatcher ( aEff, effSetSampleRate, 0, 0, 0, hostInfo->getSampleRate() );

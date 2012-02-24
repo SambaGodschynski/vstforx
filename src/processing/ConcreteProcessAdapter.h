@@ -407,7 +407,7 @@ public:
 	Parameter::Ptr getCurveTypeParameterOUT ( State state ) const {  return nCurveTypeOUT.at(state); }
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * @return anzahl aller Switch-Parameter.
+	 * @return Anzahl aller Switch-Parameter.
 	 */
 	virtual size_t getNumParameter () const { return NUM_P*numStates; }
 	//--------------------------------------------------------------------------------------------------------

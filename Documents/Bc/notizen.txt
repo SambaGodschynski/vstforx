@@ -51,6 +51,7 @@ refactor:
 <-->Input/OutputStep erben nicht Step?
 <ok>FixTimeValue -> remove template
 <--> warning C4308: Negative Ganzzahlkonstante in vorzeichenlosen Typ konvertiert / gobjectcontroller.cpp(74)
+<--> Parameter::ParameterConnection als Klasse
 
 fadevalue::inc statt operator
 Controll eigenen namespace
