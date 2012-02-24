@@ -1,8 +1,9 @@
 /*
-	ppi.com.One4All :
-	hier finden sich Allgemeingueltige Klassen und Definitionen.
-*/
-
+ * ===========================================================================================================
+ * one4All.h
+ *      Author: Johannes Unger
+ * ===========================================================================================================
+ */
 #ifndef COM_ONE4ALL_H
 #define COM_ONE4ALL_H
 #include "Log.h"

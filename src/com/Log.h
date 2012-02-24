@@ -1,8 +1,9 @@
 /*
-	ppi.com.One4All :
-	hier finden sich Allgemeingueltige Klassen und Definitionen.
-*/
-
+ * ===========================================================================================================
+ * Log.h
+ *      Author: Johannes Unger
+ * ===========================================================================================================
+ */
 #ifndef LOGGING_H
 #define LOGGING_H
 

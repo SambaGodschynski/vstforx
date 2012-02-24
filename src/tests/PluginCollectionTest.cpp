@@ -1,3 +1,10 @@
+/*
+ * ===========================================================================================================
+ * PluginCollectionTest.cpp
+ *      Author: Johannes Unger
+ * ===========================================================================================================
+ */
+
 #include <cppunit/config/SourcePrefix.h>
 #include "PluginCollectionTest.hpp"
 #include "com/MyString.h"

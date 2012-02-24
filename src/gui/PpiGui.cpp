@@ -1,3 +1,10 @@
+/*
+ * ===========================================================================================================
+ * PpiGui.cpp
+ *      Author: Johannes Unger
+ * ===========================================================================================================
+ */
+
 #include "PpiGui.h"
 #include "CircuidView.h"
 #include "ViewCommand.h"
@@ -284,17 +291,6 @@ void GProcessorNode::addIONodesOnView ( GObjectList &createdConnections )
 		createdConnections.push_back ( con );
 		parentView->addGObject ( *oit );
 		parentView->addGObject ( con, CircuidView::CONNECTIONS );
-	}
-}
-//--------------------------------------------------------------------------------------------------------
-void GProcessorNode::getIOs ( GObjectList &l ) const {
-	InputNodeContainer::const_iterator iit = ins.begin();
-	for ( ; iit!=ins.end(); ++iit ) { 
-		l.push_back ( *iit );
-	}
-	OutputNodeContainer::const_iterator oit = outs.begin();
-	for ( ; oit!=outs.end(); ++oit ) {  
-		l.push_back ( *oit );
 	}
 }
 } //namespace ppiGui

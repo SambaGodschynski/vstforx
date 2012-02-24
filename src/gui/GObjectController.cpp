@@ -1,3 +1,10 @@
+/*
+ * ===========================================================================================================
+ * GObjectController.cpp
+ *      Author: Johannes Unger
+ * ===========================================================================================================
+ */
+
 #include "GObjectController.h"
 #include "ViewCommand.h"
 #include "processing/ConcreteProcessAdapter.h"

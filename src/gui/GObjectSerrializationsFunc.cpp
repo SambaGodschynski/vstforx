@@ -1,3 +1,10 @@
+/*
+ * ===========================================================================================================
+ * GObjectSerrializationsFunc.cpp
+ *      Author: Johannes Unger
+ * ===========================================================================================================
+ */
+
 #ifndef GOBJECT_SERIALIZATIONS_FUNC
 #define GOBJECT_SERIALIZATIONS_FUNC
 
