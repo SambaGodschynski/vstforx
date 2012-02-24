@@ -456,7 +456,7 @@ OutputStep::OutputStep(IHostInfo *hostInfo, int initSteps) :
 ProcessAdapter( hostInfo, 1, initSteps ), 
 type ( Parameter::create() ),
 outpMatrix ( OutputMatrix ( initSteps, (Frames*)NULL ) ),
-fixTimeValue( hostInfo->getSampleRate() )
+fixTimeValue( 10.f, hostInfo->getSampleRate() )
 {
 	setName ( "StepOutputAdapter" );
 	getInputNode(0)->setName ( getName() + " InputNode");
@@ -528,16 +528,19 @@ OutputStep::~OutputStep(){
 }
 //------------------------------------------------------------------------------------------------------------
 void OutputStep::save(com::oArchive &ar, const unsigned int version) const {
+	ar.register_type< FixTimeValue >();
+	ar.register_type< SyncTranslator >();
 	ar << boost::serialization::base_object< ProcessAdapter > ( *this );
 	ar << parameterMap;
 	ar << type;
 	ar << fixTimeValue;
 	ar << sync;
-	ar.register_type< FixTimeValue<10> >();
 	ar << cStep;
 }
 //------------------------------------------------------------------------------------------------------------
 void OutputStep::load(com::iArchive &ar, const unsigned int version) {
+	ar.register_type< FixTimeValue >();
+	ar.register_type< SyncTranslator >();
 	ar >> boost::serialization::base_object< ProcessAdapter > ( *this );
 	ar >> parameterMap;
 	ar >> type;
@@ -615,7 +618,7 @@ InputStep::InputStep(IHostInfo *hostInfo, int initSteps) :
 ProcessAdapter( hostInfo, initSteps, 1 ), 
 type ( Parameter::create() ),
 inputMatrix ( InputMatrix ( initSteps, (Frames*)NULL ) ),
-fixTimeValue( hostInfo->getSampleRate() )
+fixTimeValue( 10.f, hostInfo->getSampleRate() )
 {
 	setName ( "StepInputAdapter" );
 	getOutputNode(0)->setName ( getName() + " OutputNode");
@@ -684,16 +687,19 @@ InputStep::~InputStep(){
 }
 //------------------------------------------------------------------------------------------------------------
 void InputStep::save(com::oArchive &ar, const unsigned int version) const {
+	ar.register_type< FixTimeValue >();
+	ar.register_type< SyncTranslator >();
 	ar << boost::serialization::base_object< ProcessAdapter > ( *this );
 	ar << parameterMap;
 	ar << type;
 	ar << fixTimeValue;
 	ar << sync;
-	ar.register_type< FixTimeValue<10> >();
 	ar << cStep;
 }
 //------------------------------------------------------------------------------------------------------------
 void InputStep::load(com::iArchive &ar, const unsigned int version) {
+	ar.register_type< FixTimeValue >();
+	ar.register_type< SyncTranslator >();
 	ar >> boost::serialization::base_object< ProcessAdapter > ( *this );
 	ar >> parameterMap;
 	ar >> type;

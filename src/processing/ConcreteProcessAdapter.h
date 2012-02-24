@@ -869,10 +869,7 @@ public:
 /**
  * @class FixTimeValue
  * Transformiert einen Eingabewert im bereich 0..1, in einen Millisekunden-Zeitwert in Samples.
- * MIN_IN_MSEC = niedrigster Zeitwert in Ms.
- * TODO: kein grund fuer template!
  */
-template < int MIN_IN_MSEC >
 class FixTimeValue : public ValueTranslator {
 //============================================================================================================
 friend class boost::serialization::access;
@@ -886,6 +883,10 @@ private:
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){
 		ar & boost::serialization::base_object < ValueTranslator > ( *this );
+		ar & oneMsInSamples;
+		ar & minInSampl;
+		ar & fak;
+		ar & minInMs;
 	}
 private:
 	//--------------------------------------------------------------------------------------------------------
@@ -897,11 +898,20 @@ private:
 	float minInSampl;
 	//--------------------------------------------------------------------------------------------------------
 	float fak;
+	//--------------------------------------------------------------------------------------------------------
+	float minInMs;
+	//--------------------------------------------------------------------------------------------------------
+	FixTimeValue() {}
 public:
 	//--------------------------------------------------------------------------------------------------------
-	FixTimeValue( float sampleRate ) : 
+	/**
+	 * @param minInMs Zeitwertminimum in Millisekunden
+	 * @param minInMs Samplerate in Hz
+	 */
+	FixTimeValue( float minInMs, float sampleRate ) :
+	  minInMs(minInMs),
 	  oneMsInSamples ( sampleRate/1000.0f ),
-	  minInSampl ( oneMsInSamples * MIN_IN_MSEC ),
+	  minInSampl ( oneMsInSamples * minInMs ),
 	  fak(99.0f) {}
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -909,7 +919,7 @@ public:
 	 */
 	void hostInfoChanged( float sampleRate ) {
 		oneMsInSamples = sampleRate/1000.0f; 
-		minInSampl = oneMsInSamples * MIN_IN_MSEC;
+		minInSampl = oneMsInSamples * minInMs;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -940,6 +950,7 @@ public:
 class SyncTranslator : public ValueTranslator {
 //============================================================================================================
 friend class boost::serialization::access;
+private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * (De)Serialisiert SyncTranslator.
@@ -1031,7 +1042,7 @@ private:
 	 */
 	void load ( iArchive &ar, const unsigned int version );
 	//--------------------------------------------------------------------------------------------------------
-	OutputStep() : fixTimeValue(0.0f) {};
+	OutputStep() : fixTimeValue(0.0f, 0.0f) {};
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -1075,7 +1086,7 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	Step *cStep;
 	//--------------------------------------------------------------------------------------------------------
-	FixTimeValue<10> fixTimeValue;
+	FixTimeValue fixTimeValue;
 	//--------------------------------------------------------------------------------------------------------
 	SyncTranslator *sync;
 	//--------------------------------------------------------------------------------------------------------
@@ -1167,7 +1178,7 @@ private:
 	 */
 	void load ( iArchive &ar, const unsigned int version );
 	//--------------------------------------------------------------------------------------------------------
-	InputStep() : fixTimeValue(0.0f) {}
+	InputStep() : fixTimeValue(0.0f, 0.0f) {}
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -1211,12 +1222,9 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	vector<Parameter::Ptr> parameterMap;
 	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * TODO: wozu extra speichern?
-	 */
 	Step *cStep;
 	//--------------------------------------------------------------------------------------------------------
-	FixTimeValue<10> fixTimeValue;
+	FixTimeValue fixTimeValue;
 	//--------------------------------------------------------------------------------------------------------
 	SyncTranslator *sync;
 	//--------------------------------------------------------------------------------------------------------
