@@ -226,7 +226,7 @@ public:
 	 * @return liefert Parameter zu index. Wirft: std::out_of_range
 	 */
 	virtual Parameter::Ptr getParameter ( size_t index ) const {
-		return param.at[index];
+		return param.at( index);
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**

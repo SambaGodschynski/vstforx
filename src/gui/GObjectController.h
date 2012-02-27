@@ -22,10 +22,12 @@
 namespace ppiGui{
 using namespace std;
 //============================================================================================================
-// class ViewRelations:
-// abbildung von GObject auf GraphObjekt und umgekehrt. ( view 1<=>1 model )
-//============================================================================================================
+/**
+ * @class ViewRelations.
+ * Abbildung von GObject-Objekte auf PObject-Objekte und umgekehrt.
+ */
 class ViewRelations {
+//============================================================================================================
 friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
@@ -41,21 +43,48 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	list <V> tmpPObjects; // gefuellt wenn view geschlossen
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Deserialisiert ViewRelations-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
 	void load ( iArchive &ar, const unsigned int version  );
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Serialisiert ViewRelations-Objekt
+	 * @param ar
+	 * @param version
+	 */
 	void save ( oArchive &ar, const unsigned int version  ) const;
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return  View2Model Abbildungsmap
+	 */
 	const V2M & getV2M(){ return v2m; }
 	//--------------------------------------------------------------------------------------------------------
 	ViewRelations() {}
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~ViewRelations(){}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * nimmt GObject<->PObject beziehung in View2Model Abbildungsmap auf.
+	 * @param vObj
+	 * @param mObj
+	 */
 	void registerRelation ( GObject::Ptr vObj, PObject::Ptr mObj );
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * entfernt GObject<->PObject beziehung aus View2Model Abbildungsmap.
+	 * @param vObj
+	 * @param mObj
+	 */
 	void unregisterRelation ( GObject::Ptr vObj, PObject::Ptr mObj );
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param obj
+	 * @return PObject-Objekt zu passenden GObject-Objekt. Castet zu konkreten PObject-Typ T.
+	 */
 	template < typename T >
 	typename T::Ptr get ( GObject::Ptr obj ){
 		V2M::iterator it = v2m.find(obj);
@@ -65,21 +94,33 @@ public:
 		return ret;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	// speichert alle GObjects und transferiert PObjects nach tmpPObjects
+	/**
+	 * Serialisiert GObject-Seite der PObject<->GObject Abbildung in Archive.
+	 * Wird benoetigt nach Editor:close, Editor:open Vorgang.
+	 * GObject-Objekte werden gesichert bei Wiederherstellung, urspruenglichen PObject-Objekten zugeordnet.
+	 * @param ar boost::Archive-Objekt
+	 */
 	void saveViewRelation ( oArchive &ar );
 	//--------------------------------------------------------------------------------------------------------
-	// deserialisiert alle Viewbezogenen Objekte.
-	// setzt vorraus das die ViewRelation Datenstruktur (map) seit der 
-	// View Objekt deserilisation nicht geandert wurde. 
+	/**
+	 * Deserialisiert GObjects aus Archive und fuegt sie wieder (an urspruenglicher Position) in Abbildung ein.
+	 * Setzt vorraus, dass die ViewRelation Datenstruktur, seit saveViewRelation() nicht geaendert wurde.
+	 * @param ar
+	 */
 	void loadViewRelation ( iArchive &ar );
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * leert Abblidung.
+	 */
 	void clear() { v2m.clear(); }
 };
 //============================================================================================================
-// class IObjectController:
-// Interface fuer Kontroller.
-//============================================================================================================
+/**
+ * @class ObjectController:
+ * Oberklasse fuer Kontroller.
+ */
 class ObjectController {
+//============================================================================================================
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	FrontController &frntCtrl;
@@ -91,19 +132,39 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~ObjectController() {}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Event: Objekt wird im Controller registriert.
+	 * @param vObj neues GObject
+	 * @param mObject zugehoeriges PObject
+	 */
 	virtual void registerObject ( GObject::Ptr vObj, PObject::Ptr mObject ) = 0;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 *  Event: Objekt wird aus Controller entfernt.
+	 * @param vObj neues GObject
+	 * @param mObject zugehoeriges PObject
+	 */
 	virtual void unregisterObject ( GObject::Ptr vObj, PObject::Ptr mObject ) = 0;
 	//--------------------------------------------------------------------------------------------------------
-	virtual void getMenuEntryList ( GObject::Ptr obj, menu::MenuEntryList &mL ) = 0;
+	/**
+	 * liefert Menüeintraege zu GObject.
+	 * @param obj entsprechendes GObject
+	 * @param mL Ziel-MenuEntryList
+	 */
+	virtual void getMenuEntryList ( GObject::Ptr obj, menu::MenuEntryList &outMl ) = 0;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Event: alle Objeke werden aus Controller entfernt
+	 */
 	virtual void clear(){};
 };
 //============================================================================================================
-// class GObjectController:
-// Kontroller fuer GObject objekte.
-//============================================================================================================
+/**
+ * @class GObjectController.
+ * Kontroller fuer alle GObject-Objekte.
+ */
 class GObjectController : 
+//============================================================================================================
 	public ObjectController,
 	public EventListener<OnMouseClick>,
 	public EventListener<OnMouseDrag>,
@@ -120,37 +181,87 @@ public:
 	typedef list<GObjectController*> Container;
 	//--------------------------------------------------------------------------------------------------------
 	GObjectController ( FrontController &frntCtrl ) : 
-	ObjectController( frntCtrl ), mAction(NULL) {}
+		ObjectController( frntCtrl ), mAction(NULL) {}
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~GObjectController() {}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Event: Objekt wird im Controller registriert.
+	 * @param vObj neues GObject
+	 * @param mObject zugehoeriges PObject
+	 */
+
 	virtual void registerObject ( GObject::Ptr vObj, PObject::Ptr mObject );
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 *  Event: Objekt wird aus Controller entfernt.
+	 * @param vObj neues GObject
+	 * @param mObject zugehoeriges PObject
+	 */
 	virtual void unregisterObject ( GObject::Ptr vObj, PObject::Ptr mObject ){}
 	//--------------------------------------------------------------------------------------------------------
-	virtual void getMenuEntryList ( GObject::Ptr obj, menu::MenuEntryList &mL ) {}
+	/**
+	 * liefert Menüeintraege zu GObject.
+	 * @param obj entsprechendes GObject
+	 * @param outMl Ziel-MenuEntryList
+	 */
+	virtual void getMenuEntryList ( GObject::Ptr obj, menu::MenuEntryList &outMl ) {}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * OnMouseClick-Event
+	 * @param src Eventquelle
+	 * @param ev Eventobjekt
+	 */
 	void eventHandler ( void *src, const OnMouseClick &ev );
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * OnMouseDrag-Event
+	 * @param src Eventquelle
+	 * @param ev Eventobjekt
+	 */
 	void eventHandler ( void *src, const OnMouseDrag &ev );
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Event: Wird von Buehne entfernt
+	 * @param src src Eventquelle
+	 * @param ev Eventobjekt
+	 */
 	void eventHandler ( void *src, const OnRemove &ev );
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * setzt aktuelles MouseAction-Objekt.
+	 * @param mA MouseAction-Objekt (use/connect/drag).
+	 */
 	void setMouseAction ( MouseAction *mA ){ mAction = mA; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return aktuelles MausAction-Objekt.
+	 */
 	MouseAction * getMouseAction() { return mAction; }
 	//------------------------------------------------------------------------------------------------------------
+	/**
+	 * liefert alle GConnection-Objekt zu GObject-Objekt.
+	 * @param obj
+	 * @param l
+	 */
 	void findConnectionsOnObject ( GObject::Ptr obj, list<GConnection::Ptr> &l );
 	//--------------------------------------------------------------------------------------------------------
-	// liefert GObjecte die bestandteil von GObject sind.
+	/**
+	 * liefert GObject-Objekte die fest an GObject gebunden sind.
+	 * (zB.: ProcessorNode Ein/Ausgaenge)
+	 * @param gObj
+	 * @param retL
+	 */
 	void getConnectedComponents ( GObject::Ptr gObj, list<GObject::Ptr> &retL );
 };
 
 //============================================================================================================
-// class FrontController:
-// Vermittelt zwischen Konkreten GObject-Kontroll Objekten.
-//============================================================================================================
+/**
+ * @class FrontController.
+ * Deligiert Kontrolleranfragen an Konkreten Kontroller.
+ */
 class FrontController {
+//============================================================================================================
 public:
 	//--------------------------------------------------------------------------------------------------------
 	// Controller :
@@ -167,20 +278,32 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	typedef PObject::Ptr M; typedef GObject::Ptr N;
 	//--------------------------------------------------------------------------------------------------------	
-	typedef multimap<M, N> M2V; // abbildung: PObject 1<=>* GObject
+	/**
+	 * TODO: zu Viewrelations verschieben.
+	 * Abbildung: PObject 1<=>* GObject
+	 */
+	typedef multimap<M, N> M2V;
 	//--------------------------------------------------------------------------------------------------------	
 	M2V model2view;
 	//--------------------------------------------------------------------------------------------------------
-	ViewRelations &view2model; // extern: ist in editor defininert
+	/**
+	 * extern: ist in Editor enthalten.
+	 */
+	ViewRelations &view2model;
 	//--------------------------------------------------------------------------------------------------------
-	// liefert Hashwert aus Type mittels typeid.name
+	/**
+	 * liefert Hashwert zu Type.
+	 */
 	template < typename T >
 	long hash(){
 		const char *type_name = typeid(T).name();
 		return MyString(type_name).hash();
 	}
 	//--------------------------------------------------------------------------------------------------------
-	// liefert Hashwert aus Type mittels typeid.name
+	/**
+	 * liefert Hashwert zu GObject-Objekt.
+	 * @param obj
+	 */
 	long hash( GObject::Ptr obj ){
 		const char *type_name = typeid( *( obj.get() ) ).name();
 		return MyString(type_name).hash();
@@ -190,24 +313,42 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	typedef long U; typedef ObjectController* V;
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Abbildung: Objekttype -> Kontroller
+	 */
 	typedef map<U, V> ControllerMap;
 	//--------------------------------------------------------------------------------------------------------
-	// bildet Hashwert - der aus typeid.name ermittelt wird - auf kontroller ab.
 	ControllerMap controllerMap;
 public:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param id
+	 * @return Kontroller zu ControllerId
+	 */
 	ObjectController * getController ( ControllerId id ){ return controller[id]; }
 	//--------------------------------------------------------------------------------------------------------
-	void getMenuEntryList ( menu::MenuEntryList &mE, GObject::Ptr obj ){ 
+	/**
+	 * liefert Menüeintraege zu GObject.
+	 * @param outMl Ziel-MenuEntryList
+	 * @param obj entsprechendes GObject
+	 */
+	void getMenuEntryList ( menu::MenuEntryList &outMl, GObject::Ptr obj ){
 		ObjectController *ctrl = getController(obj);
 		if (!ctrl) return;
 		ctrl->getMenuEntryList(obj, mE); 
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * setzt akuelles MouseAction-Objekt
+	 * @param mA
+	 */
 	void setMouseAction ( MouseAction *mA ){ 
 		( (GObjectController*) controller[CTRL_GOBJECT]) -> setMouseAction (mA);  
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return akuelles MouseAction-Objekt
+	 */
 	MouseAction * getMouseAction(){ 
 		return
 			( (GObjectController*) controller[CTRL_GOBJECT]) -> getMouseAction ();  
@@ -217,6 +358,9 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~FrontController();
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return ViewRelations (GObject<->POBject Abbildung)
+	 */
 	ViewRelations & getViewRelations(){ return view2model; }
 	//--------------------------------------------------------------------------------------------------------
 	void registerObject ( GObject::Ptr vObj, PObject::Ptr mObj = PObject::Ptr() );
@@ -225,17 +369,36 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	ObjectController * getController ( GObject::Ptr obj );
 	//--------------------------------------------------------------------------------------------------------
-	// registriert alle ViewRelations Objekte neu.	
+	/**
+	 * GObject-Objekte werden nach
+	 * Editor:close, Editor:open neu registriert.
+	 */
 	void reRegisterObjects();
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * hinzufuegen einer PObject(Model)->GObject(View) beziehung.
+	 * TODO: verschieben nach Viewrelationsklasse.
+	 * @param gObj
+	 * @param pObj
+	 */
 	void registerModelRelation ( GObject::Ptr gObj, PObject::Ptr pObj ){
 		model2view.insert ( pair< M, N >( pObj, gObj ) );
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return PObject(Model)->GObject(View) Abbildungs-Container
+	 */
 	const M2V & getModelRelation () const { return model2view; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * liefert alle zu PObject registrierten GObject-Objekte.
+	 * Castet nach konkreten Typ<T>.
+	 * @param obj
+	 * @param outList Ziel-Objektliste<T>
+	 * TODO: Generischer Containertyp: template<Container, T> oder besser (STL: Container::value_type)
+	 */
 	template < typename T >
-	void getGObjectList ( PObject::Ptr obj, list <typename T::Ptr> &l ) {
+	void getGObjectList ( PObject::Ptr obj, list <typename T::Ptr> &outList ) {
 		pair< M2V::iterator, M2V::iterator > ret;
 		ret = model2view.equal_range ( obj );
 		if ( ret.first == model2view.end() ) return;
@@ -246,6 +409,9 @@ public:
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * entfernt alle registrierten Objekte
+	 */
 	virtual void clear();
 };
 //============================================================================================================

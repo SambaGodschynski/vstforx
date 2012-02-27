@@ -5,7 +5,9 @@
  * ===========================================================================================================
  */
 
-// INSERTED BY PluginCollection.cpp ONLY!
+#ifndef PLUGIN_COLLECTION_SQL_H
+#define PLUGIN_COLLECTION_SQL_H
+
 #include <string>
 #include <sstream>
 #include <sambag/cpsqlite/DataBase.hpp>
@@ -431,3 +433,6 @@ struct TblPlugins {
 
 } // namespace
 } // namespace
+
+
+#endif

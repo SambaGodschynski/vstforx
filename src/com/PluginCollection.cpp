@@ -36,11 +36,11 @@ void ScanVisitor::insert ( const ScanVisitor::Path &path )
 		sambag::cpsqlite::ParameterList pL;
 		string q = TblFolder::getFolder( path, pL );
 		dbExe->execute ( q, pL, res );
-		if ( !res.empty() ) { // ja:
+		if ( !res.empty() ) { // ja: Update
 			sambag::cpsqlite::ParameterList pL;
 			dbExe->execute( TblFolder::updateFolder(path, client->scanStamp, pL), pL );
 		}
-		else {
+		else { // nein: neu einfuegen
 			sambag::cpsqlite::ParameterList pL;
 			string q = TblFolder::insertFolder( path, client->scanStamp, pL );
 			dbExe->execute(q, pL);
@@ -94,9 +94,9 @@ bool ScanVisitor::changeDirectory ( const ScanVisitor::Path & path ) {
 void ScanVisitor::file ( const ScanVisitor::Path &loc ) {
 	Path p = loc.parent_path();
 	FolderID id = GET_FOLDER_ID( client->getFolder ( p ) );
-	if ( id==PluginCollection::NULL_FOLDER_ID ) throw TreeError();
+	if ( id==PluginCollection::NULL_FOLDER_ID ) throw InvalidPathEx();
 	PluginCollection::Folder folder = client->getFolder( id );
-	if ( folder == PluginCollection::NULL_FOLDER ) throw TreeError();
+	if ( folder == PluginCollection::NULL_FOLDER ) throw InvalidPathEx();
 	client->checkFile ( loc, folder );
 }
 //============================================================================================================
@@ -233,7 +233,7 @@ void PluginCollection::update(  processing::IHostInfo *hostInfo ) {
 	} catch (...) {
 		return;
 	}
-	EventSender<ScanFinished>::notifyEventListeners ( this, ScanFinished() );
+	EventSender<ScanComplete>::notifyEventListeners ( this, ScanComplete() );
 }
 //------------------------------------------------------------------------------------------------------------
 void PluginCollection::appendLog ( const string &log_msg ) {

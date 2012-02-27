@@ -134,7 +134,7 @@ class SetupCtrl :
 	public EventSender<OnClose>,
 	public EventListener<OnClose>,
 	public EventListener<OnOk>,
-	public com::events::EventListener<com::ScanFinished>,
+	public com::events::EventListener<com::ScanComplete>,
 	public com::events::EventListener<com::CleaningUpDataBase>,
 	public com::events::EventSender<ScanInterrupted>
 {
@@ -157,7 +157,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	~SetupCtrl();
 	//--------------------------------------------------------------------------------------------------------
-	void eventHandler ( void *src, const com::ScanFinished &ev );
+	void eventHandler ( void *src, const com::ScanComplete &ev );
 	//--------------------------------------------------------------------------------------------------------
 	void eventHandler ( void *src, const com::CleaningUpDataBase &ev );
 	//--------------------------------------------------------------------------------------------------------

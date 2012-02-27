@@ -86,6 +86,7 @@ void ViewRelations::loadViewRelation ( iArchive &ar ) {
 	list<U> l;
 	ar >> l;
 	// tmpPObjects darf sich waehrend view closed nicht geandert haben.
+	// TODO: Ausnahme werfen
 	assert ( l.size() == tmpPObjects.size() ); 
 	list<U>::iterator uit = l.begin();
 	list<V>::iterator vit = tmpPObjects.begin();

@@ -419,19 +419,19 @@ void SetupCtrl::scan() {
 	pC->EventSender<OnLoadFile>::addEventListener ( dlgScanning );
 	pC->EventSender<OnFileLoaded>::addEventListener ( dlgScanning );
 	pC->EventSender<OnFileLoaded>::addEventListenerF ( &ScanLogger::pluginScanned );
-	pC->EventSender<ScanFinished>::addEventListener ( this );
+	pC->EventSender<ScanComplete>::addEventListener ( this );
 	pC->EventSender<CleaningUpDataBase>::addEventListener ( this );
 	// create new scanlog 
 	ScanLogger::createNewFile();
 	ed->addExtraTimerCmd ( SystemCommand::Ptr( new CmdUpdatePluginCollection( pC, ed->getGraph() ) ) );
 }
 //------------------------------------------------------------------------------------------------------------
-void SetupCtrl::eventHandler(void *src, const com::ScanFinished &ev) {
+void SetupCtrl::eventHandler(void *src, const com::ScanComplete &ev) {
 
 	PluginCollection::Ptr pC = PluginCollection::getPluginCollection();
 	pC->EventSender<OnLoadFile>::removeEventListener ( dlgScanning ); // wichtig!
 	pC->EventSender<OnFileLoaded>::removeEventListener ( dlgScanning );
-	pC->EventSender<ScanFinished>::removeEventListener ( this );
+	pC->EventSender<ScanComplete>::removeEventListener ( this );
 	pC->EventSender<OnFileLoaded>::removeEventListenerF ( &ScanLogger::pluginScanned );
 	pC->EventSender<CleaningUpDataBase>::removeEventListener ( this );
 	ListBox &lB = dlgScanning->getListBox();
@@ -461,7 +461,7 @@ SetupCtrl::~SetupCtrl() {
 	PluginCollection::Ptr pC = PluginCollection::getPluginCollection();
 	pC->EventSender<OnLoadFile>::removeEventListener ( dlgScanning ); // wichtig!
 	pC->EventSender<OnFileLoaded>::removeEventListener ( dlgScanning );
-	pC->EventSender<ScanFinished>::removeEventListener ( this );
+	pC->EventSender<ScanComplete>::removeEventListener ( this );
 	pC->EventSender<OnFileLoaded>::removeEventListenerF ( &ScanLogger::pluginScanned );
 	pC->EventSender<CleaningUpDataBase>::removeEventListener ( this );
 	

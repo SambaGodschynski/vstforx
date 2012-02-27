@@ -14,7 +14,7 @@
 namespace tests {
 //=============================================================================
 class PluginCollectionTest : public CPPUNIT_NS::TestFixture,
-	public com::events::EventListener<com::ScanFinished>,
+	public com::events::EventListener<com::ScanComplete>,
 	public com::events::EventListener<com::OnLoadFile> {
 //=============================================================================
 	CPPUNIT_TEST_SUITE( PluginCollectionTest );
@@ -31,7 +31,7 @@ private:
 	processing::Graph::Ptr createGraph( int blockSize, float samplerate );
 	com::Settings::Ptr settings;
 	void eventHandler ( void *src, const com::OnLoadFile &ev );
-	void eventHandler ( void *src, const com::ScanFinished &ev );
+	void eventHandler ( void *src, const com::ScanComplete &ev );
 	int numHandlerCalled;
 public:
 	PluginCollectionTest();
