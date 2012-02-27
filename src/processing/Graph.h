@@ -368,7 +368,7 @@ public:
 	 * Persitiert Graph
 	 * @param ar
 	 */
-	void save ( oArchive &ar );
+	void save ( oArchive &ar ) const;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Rekonstruiert Graph-Objekt aus Boost::Archive Strom

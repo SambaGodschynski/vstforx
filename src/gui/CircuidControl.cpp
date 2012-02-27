@@ -311,10 +311,10 @@ void CircuidControl::eventHandler( void *scr, const ToolBoxBtnPressed &ev ) {
 }
 
 //------------------------------------------------------------------------------------------------------------
-void CircuidControl::save ( oArchive &ar ) {
+void CircuidControl::save ( oArchive &ar ) const {
 	// serialisierbare objekte sammeln:
 	GObjectList objs;
-	CircuidView::GObjectStageBuffer::iterator it = view->gObjectBuffer.begin();
+	CircuidView::GObjectStageBuffer::const_iterator it = view->gObjectBuffer.begin();
 	LOG_ASSERT ( it != view->gObjectBuffer.end() );
 	for ( ; it != view->gObjectBuffer.end(); ++it ){ // druchlaufe alle GObjects auf der View
 		Serializable *obj = dynamic_cast< Serializable* > ( (*it).second.get() );

@@ -173,7 +173,7 @@ Graph::Ptr Graph::create( IHostInfo *hostInfo ) {
 	return neu;
 }
 //------------------------------------------------------------------------------------------------------------
-void Graph::save(oArchive &ar) {
+void Graph::save(oArchive &ar) const {
 	com::MethodMessage<Graph> methodMessage ( "save()");
 	Graph::Ptr _this = self.lock();
 	ar << _this;
@@ -181,7 +181,6 @@ void Graph::save(oArchive &ar) {
 	ar << endNode;
 	ar << g;
 	ar << graphObjects;
-	
 	// hostParameter
 	ar<<hostParameter;
 }

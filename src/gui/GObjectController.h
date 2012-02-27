@@ -335,7 +335,7 @@ public:
 	void getMenuEntryList ( menu::MenuEntryList &outMl, GObject::Ptr obj ){
 		ObjectController *ctrl = getController(obj);
 		if (!ctrl) return;
-		ctrl->getMenuEntryList(obj, mE); 
+		ctrl->getMenuEntryList(obj, outMl); 
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -405,7 +405,7 @@ public:
 		for ( M2V::iterator it = ret.first; it!= ret.second; ++it ) {
 			typename T::Ptr t = boost::shared_dynamic_cast<T, GObject> ( it->second );
 			if (!t) continue;
-			l.push_back ( t );
+			outList.push_back ( t );
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------

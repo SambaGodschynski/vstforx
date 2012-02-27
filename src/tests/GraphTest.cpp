@@ -994,6 +994,39 @@ void GraphTest::testGraphParallel() {
 	CPPUNIT_ASSERT_EQUAL ( (float)-0.5f * GRAPH_DEPTH, isFilledWith<float>( outFrame[1], outFrame.getSize(), -0.5 * GRAPH_DEPTH ) );
 }	
 //=============================================================================
+template <typename Creator>
+void testCreatorGraph(
+			   processing::Graph::Ptr g,
+			   float testValue, 
+			   size_t expectedNbNodes,
+			   size_t expectedNbCopyIntos,
+			   float expectedOutValue )
+{
+	static const int BSIZE = 512;
+	Graph::Janitor::Ptr janitor = graph->getJanitor(); // !! avoid graph update after every create iteration
+	Creator cr( graph, graph->getStartNode(), graph->getEndNode() );
+	janitor.reset();
+	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> check creation
+	CPPUNIT_ASSERT_EQUAL ( expectedNbNodes, graph->getNumNodes() );
+	CPPUNIT_ASSERT_EQUAL ( (size_t)Creator::NUM_CREATED_ADAPTER, graph->getNumAdapter() );
+	CPPUNIT_ASSERT ( graph->isActive() );
+	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> process
+	Frames inFrame( BSIZE );
+	Frames outFrame( BSIZE );
+	fillFrame (&inFrame, expectedOutValue,  -expectedOutValue);
+	//>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph. expect frame num copied
+	Frames::num_copyintos = 0; // reset copy_counter
+	graph->pushAndCopy ( &inFrame, BSIZE );
+	graph->processGraph( outFrame.getData(), BSIZE  );
+	CPPUNIT_ASSERT_EQUAL ( expectedNbCopyIntos, Frames::num_copyintos );
+	CPPUNIT_ASSERT_EQUAL ( expectedOutValue, 
+		isFilledWith<float>( outFrame[0], outFrame.getSize(), expectedOutValue ) 
+	);
+	CPPUNIT_ASSERT_EQUAL ( -expectedOutValue, 
+		isFilledWith<float>( outFrame[1], outFrame.getSize(), -expectedOutValue ) 
+	);
+}
+//=============================================================================
 // check with extra static "num_copyintos" variable in Frames. Which only exists
 // when _FORX_TESTSUITE #defined.
 void GraphTest::testGraphComplex1() { 

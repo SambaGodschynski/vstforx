@@ -50,7 +50,10 @@ refactor:
 <-->Step::setNumSteps make private 
 <-->Input/OutputStep erben nicht Step?
 <ok>FixTimeValue -> remove template
-<--> warning C4308: Negative Ganzzahlkonstante in vorzeichenlosen Typ konvertiert / gobjectcontroller.cpp(74)
+<--> warning C4308: Negative Ganzzahlkonstante in vorzeichenlosen Typ konvertiert  
+     gobjectcontroller.cpp(74)
+     ""ppieditor.cpp(141)
+     ""circuidcontrol.cpp(325)
 <--> Parameter::ParameterConnection als Klasse
 
 fadevalue::inc statt operator
