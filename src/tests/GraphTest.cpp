@@ -20,6 +20,7 @@
 #include <boost/static_assert.hpp>
 #include <sstream>
 #include "com/Serialization.h"
+#include <math.h>
 
 
 // Registers the fixture into the 'registry'
@@ -40,6 +41,22 @@ void fillFrame ( processing::Frames *f, float left, float right ) {
 	}
 }
 //=============================================================================
+template <typename T>
+inline bool compareFloat ( T a, T b ) {
+//=============================================================================
+	return fabs(a - b) < 0.00000001;
+}
+//=============================================================================
+template <typename T>
+inline void assertFloatEqual ( T a, T b ) {
+//=============================================================================
+	stringstream ss;
+	ss<<a<<"!="<<b;
+	CPPUNIT_ASSERT_MESSAGE(ss.str(),
+		compareFloat(a, b)
+	);
+}
+//=============================================================================
 // liefert wert und position des ersten peaks in float array.
 // liefert ansonsten [ startValue, UINT_MAX ]
 typedef pair<float, size_t> PeakType;
@@ -57,7 +74,8 @@ template <typename T>
 T isFilledWith (  T *data, size_t num,  T v ) {
 //=============================================================================
 	for ( size_t i=0; i<num; ++i ) {
-		if ( data[i] != v ) return data[i];
+		if ( compareFloat(data[i],v) ) 
+			return data[i];
 	}
 	return v;
 }
@@ -996,12 +1014,16 @@ void GraphTest::testGraphParallel() {
 //=============================================================================
 template <typename Creator>
 void testCreatorGraph(
-			   processing::Graph::Ptr g,
-			   float testValue, 
+			   processing::Graph::Ptr graph,
+			   float inValue, 
 			   size_t expectedNbNodes,
 			   size_t expectedNbCopyIntos,
 			   float expectedOutValue )
 {
+	using namespace std;
+	using namespace com;
+	using namespace processing;
+
 	static const int BSIZE = 512;
 	Graph::Janitor::Ptr janitor = graph->getJanitor(); // !! avoid graph update after every create iteration
 	Creator cr( graph, graph->getStartNode(), graph->getEndNode() );
@@ -1013,30 +1035,33 @@ void testCreatorGraph(
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> process
 	Frames inFrame( BSIZE );
 	Frames outFrame( BSIZE );
-	fillFrame (&inFrame, expectedOutValue,  -expectedOutValue);
+	fillFrame (&inFrame, inValue,  -inValue);
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph. expect frame num copied
 	Frames::num_copyintos = 0; // reset copy_counter
 	graph->pushAndCopy ( &inFrame, BSIZE );
 	graph->processGraph( outFrame.getData(), BSIZE  );
 	CPPUNIT_ASSERT_EQUAL ( expectedNbCopyIntos, Frames::num_copyintos );
-	CPPUNIT_ASSERT_EQUAL ( expectedOutValue, 
+	assertFloatEqual( expectedOutValue, 
 		isFilledWith<float>( outFrame[0], outFrame.getSize(), expectedOutValue ) 
 	);
-	CPPUNIT_ASSERT_EQUAL ( -expectedOutValue, 
+	assertFloatEqual ( -expectedOutValue, 
 		isFilledWith<float>( outFrame[1], outFrame.getSize(), -expectedOutValue ) 
 	);
 }
 //=============================================================================
-// check with extra static "num_copyintos" variable in Frames. Which only exists
-// when _FORX_TESTSUITE #defined.
-void GraphTest::testGraphComplex1() { 
+template <int M, 
+	int N, 
+	int VOL_NUMERATOR,  // Volume Zaehler
+	int VOL_DENOMINATOR // Volume Nenner
+>
+void performComplex1(processing::Graph::Ptr graph, float inValue) { 
 //=============================================================================
 	/*
-			X                     X = 1
-		   /|\ ...N... \          O = Volume(0.5)
-		  O O O        O
+			X                     X = inValue
+		   /|\ ...N... \          O = VolumeAdapter(VOL_NUMERATOR/VOL_DENOMINATOR)
+		  O O O        O		  out[i] = N * X * pow(VOL,M);
 		  | | |        |
-		 ...N...      ...
+		 ...M...      ...
 		  O O O        O
 	      \ | /       /
 		    =
@@ -1044,93 +1069,85 @@ void GraphTest::testGraphComplex1() {
 	using namespace std;
 	using namespace com;
 	using namespace processing;
-	int blockSize = 512;
-	enum { N=5 };
-	Graph::Ptr graph = createGraph( blockSize, 44100.0f );
-	enum { NUMERATOR = 1, DENOMINATOR = 2 };
-	static const float VOL = NUMERATOR / (float)DENOMINATOR;
-	static const float X = 1.0f;
-	static const float SUM = N * X * pow(VOL,N);
-	typedef CreateAdapter< VolumeAdapterX<NUMERATOR, DENOMINATOR> > Adapter;
-	typedef CreateParallel< CreateSeries< Adapter, N >, N> Creator;
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>create
-	// 
-	Graph::Janitor::Ptr janitor = graph->getJanitor(); // !! avoid graph update after every create iteration
-	Creator complex( graph, graph->getStartNode(), graph->getEndNode() );
-	janitor.reset();
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> check creation
-	CPPUNIT_ASSERT_EQUAL ( (size_t)( N * N * 4 + 2 ), graph->getNumNodes() );
-	CPPUNIT_ASSERT_EQUAL ( (size_t)Creator::NUM_CREATED_ADAPTER, graph->getNumAdapter() );
-	CPPUNIT_ASSERT ( graph->isActive() );
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> process
-	Frames inFrame( blockSize );
-	Frames outFrame( blockSize );
-	fillFrame ( &inFrame, X,  -X );
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph. expect frame num copied = N - 1
-	Frames::num_copyintos = 0; // reset copy_counter
-	graph->pushAndCopy ( &inFrame, blockSize );
-	graph->processGraph( outFrame.getData(), blockSize  );
-	CPPUNIT_ASSERT_EQUAL ( (size_t)N - 1, Frames::num_copyintos );
-	CPPUNIT_ASSERT_EQUAL ( SUM, isFilledWith<float>( outFrame[0], outFrame.getSize(), SUM ) );
-	CPPUNIT_ASSERT_EQUAL ( -SUM, isFilledWith<float>( outFrame[1], outFrame.getSize(), -SUM ) );
-}	
+	int blockSize = graph->getBlockSize();
+	static const float VOL = VOL_NUMERATOR / (float)VOL_DENOMINATOR;
+	static const float X = inValue;
+	static const float SUM = N * X * pow(VOL,M);
+	typedef CreateAdapter< VolumeAdapterX<VOL_NUMERATOR, VOL_DENOMINATOR> > Adapter;
+	typedef CreateParallel< CreateSeries< Adapter, M >, N> Creator;
+	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	static const size_t NB_NODES = M * N * 4 + 2;
+	static const size_t COPYINTO = N - 1;
+	testCreatorGraph<Creator>( graph, X, NB_NODES, COPYINTO, SUM );	
+}
 //=============================================================================
 // check with extra static "num_copyintos" variable in Frames. Which only exists
 // when _FORX_TESTSUITE #defined.
-void GraphTest::testGraphComplex2() { 
+void GraphTest::testGraphComplex1() { 
+//=============================================================================
+	performComplex1<1,1,1,2>(createGraph( 512, 44100.0f ), 100.0); 
+	performComplex1<1,2,3,4>(createGraph( 512, 44100.0f ), 100.0); 
+	performComplex1<5,5,1,2>(createGraph( 512, 44100.0f ), 100.0); 
+	performComplex1<1,5,1,2>(createGraph( 512, 44100.0f ), 100.0);
+	performComplex1<10,5,1,2>(createGraph( 512, 44100.0f ), 100.0);
+	performComplex1<5,10,1,3>(createGraph( 512, 44100.0f ), 100.0);
+}
+//=============================================================================
+template <int M, 
+	int N, 
+	int VOL_NUMERATOR,  // Volume Zaehler
+	int VOL_DENOMINATOR // Volume Nenner
+>
+void performComplex2(processing::Graph::Ptr graph, float inValue) { 
 //=============================================================================
 	/*
-			X                     X = 1
-		   /|\ ...N... \          O = 0.5
+			X                    
+		   /|\ ...N... \          
 		  O O O        O
 	      \ | /       /
 		    |
-		 ...N...
+		 ...M...
 		   /|\ ...N... \          
-		  O O O        O          X * (0.5*N) * (0.5*N) * ... N 
-	      \ | /       /         = X * (0.5*N) ^ N
+		  O O O        O         
+	      \ | /       /         
 		    |
 			=
 	*/
 	using namespace std;
 	using namespace com;
 	using namespace processing;
-	int blockSize = 512;
-	enum { N=5 };
-	Graph::Ptr graph = createGraph( blockSize, 44100.0f );
-	enum { NUMERATOR = 1, DENOMINATOR = 2 };
-	static const float VOL = NUMERATOR / (float)DENOMINATOR;
-	static const float X = 1.0f;
-	static const float SUM = X * pow(VOL*N, N);
-	typedef CreateAdapter< VolumeAdapterX<NUMERATOR, DENOMINATOR> > Adapter;
-	typedef CreateSeries< CreateParallel< Adapter, N >, N> Creator;
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>create
-	// 
-	Graph::Janitor::Ptr janitor = graph->getJanitor(); // !! avoid graph update after every create iteration
-	Creator ( graph, graph->getStartNode(), graph->getEndNode() );
-	janitor.reset();
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> check creation
-	CPPUNIT_ASSERT_EQUAL ( (size_t)( N * N * 3 + N + 2 ), graph->getNumNodes() );
-	CPPUNIT_ASSERT_EQUAL ( (size_t)Creator::NUM_CREATED_ADAPTER, graph->getNumAdapter() );
-	CPPUNIT_ASSERT ( graph->isActive() );
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> process
-	Frames inFrame( blockSize );
-	Frames outFrame( blockSize );
-	fillFrame ( &inFrame, X,  -X );
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph. expect frame num copied = (N-1) * N
-	Frames::num_copyintos = 0; // reset copy_counter
-	graph->pushAndCopy ( &inFrame, blockSize );
-	graph->processGraph( outFrame.getData(), blockSize  );
-	CPPUNIT_ASSERT_EQUAL ( (size_t)(N-1)*N, Frames::num_copyintos );
-	CPPUNIT_ASSERT_EQUAL ( SUM, isFilledWith<float>( outFrame[0], outFrame.getSize(), SUM ) );
-	CPPUNIT_ASSERT_EQUAL ( -SUM, isFilledWith<float>( outFrame[1], outFrame.getSize(), -SUM ) );
-}	
+	int blockSize = graph->getBlockSize();
+	static const float VOL = VOL_NUMERATOR / (float)VOL_DENOMINATOR;
+	static const float X = inValue;
+	static const float SUM = X * pow(VOL*N, M);
+	typedef CreateAdapter< VolumeAdapterX<VOL_NUMERATOR, VOL_DENOMINATOR> > Adapter;
+	typedef CreateSeries< CreateParallel< Adapter, N >, M> Creator;
+	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	static const size_t NB_NODES = N * M * 3 + M + 2;
+	static const size_t COPYINTO = (N-1)*M;
+	testCreatorGraph<Creator>( graph, X, NB_NODES, COPYINTO, SUM );
+}
 //=============================================================================
 // check with extra static "num_copyintos" variable in Frames. Which only exists
 // when _FORX_TESTSUITE #defined.
-void GraphTest::testGraphComplex3() { 
+void GraphTest::testGraphComplex2() { 
 //=============================================================================
-	/*
+	performComplex2<1,1,1,2>(createGraph( 512, 44100.0f ), 100.0); 
+	performComplex2<1,2,3,4>(createGraph( 512, 44100.0f ), 100.0); 
+	performComplex2<5,5,1,2>(createGraph( 512, 44100.0f ), 100.0); 
+	performComplex2<5,7,1,2>(createGraph( 512, 44100.0f ), 100.0); 
+	performComplex2<3,9,1,2>(createGraph( 512, 44100.0f ), 100.0); 
+	performComplex2<13,19,1,6>(createGraph( 512, 44100.0f ), 100.0); 
+	performComplex2<2,10,1,3>(createGraph( 512, 44100.0f ), 100.0); 
+}
+//=============================================================================
+template <int N,
+	int VOL_NUMERATOR,  // Volume Zaehler
+	int VOL_DENOMINATOR // Volume Nenner
+>
+void performComplex3(processing::Graph::Ptr graph, float inValue) { 
+//=============================================================================
+/*
 			X                     X = 1
 		   / \                    O = 0.5
 		  O   O        
@@ -1142,39 +1159,28 @@ void GraphTest::testGraphComplex3() {
 	using namespace std;
 	using namespace com;
 	using namespace processing;
-	int blockSize = 512;
-	enum { N=5 };
-	Graph::Ptr graph = createGraph( blockSize, 44100.0f );
-	enum { NUMERATOR = 1, DENOMINATOR = 2 }; // bei gewissen bruechen kann es zu assertion kommen
-											 // obwohl die fehler ausgabe(soll,ist) identisch ist. 
-											 // ( wahrsch. rundungsfehler ) 
-	static const float VOL = NUMERATOR / (float)DENOMINATOR;
-	static const float X = 4.5f;
+	int blockSize = graph->getBlockSize();
+	static const float VOL = VOL_NUMERATOR / (float)VOL_DENOMINATOR;
+	static const float X = inValue;
 	static const float SUM = X * pow(VOL, N) * (1<<N);
-	typedef CreateAdapter< VolumeAdapterX<NUMERATOR, DENOMINATOR> > Adapter;
+	typedef CreateAdapter< VolumeAdapterX<VOL_NUMERATOR, VOL_DENOMINATOR> > Adapter;
 	typedef CreateBinaryTree< Adapter, N > Creator;
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>create
-	// 
-	Graph::Janitor::Ptr janitor = graph->getJanitor(); // !! avoid graph update after every create iteration
-	Creator ( graph, graph->getStartNode(), graph->getEndNode() );
-	janitor.reset();
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> check creation
-	CPPUNIT_ASSERT_EQUAL ( (size_t)Creator::NUM_CREATED_ADAPTER, graph->getNumAdapter() );
+	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	static const size_t NUM_BINARY = (1 << N) - 1;
-	static const size_t NUM_NODES = Creator::NUM_CREATED_ADAPTER * 3 + NUM_BINARY + 1/*(NUM_BINARY includes startNode)*/;
-	CPPUNIT_ASSERT_EQUAL ( NUM_NODES, graph->getNumNodes() );
-	CPPUNIT_ASSERT ( graph->isActive() );
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> process
-	Frames inFrame( blockSize );
-	Frames outFrame( blockSize );
-	fillFrame ( &inFrame, X,  -X );
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph. expect frame num copied = NUM_BINARY - 1
-	Frames::num_copyintos = 0; // reset copy_counter
-	graph->pushAndCopy ( &inFrame, blockSize );
-	graph->processGraph( outFrame.getData(), blockSize  );
-	CPPUNIT_ASSERT_EQUAL ( (size_t)Creator::NUM_CREATED_ADAPTER/2, Frames::num_copyintos );
-	CPPUNIT_ASSERT_EQUAL ( SUM, isFilledWith<float>( outFrame[0], outFrame.getSize(), SUM ) );
-	CPPUNIT_ASSERT_EQUAL ( -SUM, isFilledWith<float>( outFrame[1], outFrame.getSize(), -SUM ) );
+	static const size_t NB_NODES = Creator::NUM_CREATED_ADAPTER * 3 + NUM_BINARY + 1;
+	static const size_t COPYINTO = Creator::NUM_CREATED_ADAPTER/2;
+	testCreatorGraph<Creator>( graph, X, NB_NODES, COPYINTO, SUM );
+}
+//=============================================================================
+// check with extra static "num_copyintos" variable in Frames. Which only exists
+// when _FORX_TESTSUITE #defined.
+void GraphTest::testGraphComplex3() { 
+//=============================================================================
+	performComplex3<1,2,3>(createGraph( 512, 44100.0f ), 100.0); 
+	performComplex3<2,3,4>(createGraph( 512, 44100.0f ), 100.0);
+	performComplex3<3,4,5>(createGraph( 512, 44100.0f ), 100.0);
+	performComplex3<4,5,6>(createGraph( 512, 44100.0f ), 100.0);
+	performComplex3<7,8,9>(createGraph( 512, 44100.0f ), 100.0);
 }	
 
 
