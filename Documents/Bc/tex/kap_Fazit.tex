@@ -1,14 +1,14 @@
 % !TEX encoding = UTF-8 Unicode
 \section{Fazit}
-Mit \emph{C++} als Entwicklungssprache, wurde eine mächtige und performante aber auch fehleranfällige und unsicherere Programmiersprache gewählt. Einerseits wurden, die in ''modernen'' Programmiersprachen eher unspektakulären Aufgaben, wie das einbinden einer externen Bibliothek, als besonders Zeitaufwändig empfunden (fehlendes Paketmanagment). Andererseits wird, der Entwickler gerade durch solche Fallstricke, zu mehr Sorgfalt gezwungen und das allgemeine Verständnis für Programmiersprachen wird erhöht. 
-Insbesondere wurde die Boost-Bibliothek schätzen gelernt, welche \emph{C++} um ''moderne'' Programmiertechniken, wie den 'Shared Pointer' erweitert. 
+Mit \emph{C++} als Entwicklungssprache, wurde eine mächtige und performante aber auch fehleranfällige und unsicherere Programmiersprache gewählt. Einerseits wurden, die in ''modernen'' Programmiersprachen eher unspektakulären Aufgaben, wie das einbinden einer externen Bibliothek, als besonders Zeitaufwändig empfunden (fehlendes Paketmanagment). Andererseits wird der Entwickler, gerade durch solche Fallstricke zu mehr Sorgfalt gezwungen und das allgemeine Verständnis für Programmiersprachen erhöht. 
+Insbesondere wurde die Boost-Bibliothek schätzen gelernt, welche \emph{C++} um ''moderne'' Programmiertechniken, wie den 'Smart Pointer' erweitert. 
 \\\\
 Mit VSTForx ist es - nach Meinung des Autors - gelungen, ein interessantes und spanendes Werkzeug zu Entwickeln. Dennoch ist Entwicklung an VSTForx ist noch nicht abgeschlossen. Folgend werden zukünftige, (mögliche) Verbesserungen oder Erweiterungen besprochen. 
 \subsection{Verbesserungen}
 \subsection{GUI}
 Die VST-GUI Bibliothek, bietet leider zu wenig oder unzureichend implementierte Funktionen, um eine vollwertige GUI-Anwendung zu Entwickeln. So sind die meisten Elemente in VST-GUI, Bitmapbasierend und mit festen Positionen versehen. Eine Schaltfläche muss daher erst gezeichnet und dann platziert werden. Eine dynamische Anwendung (Objekte veränderbarer in Größe und Position) mit einheitlichen Look-And-Feel, kann somit nur sehr schwer umgesetzt werden. 
 \\\\
-Wünschenswert wäre hier die Verwendung eines GUI-Toolkits, wie \emph{Qt\footnote{http://qt.nokia.com}} oder \emph{WxWidgets\footnote{http://www.wxwidgets.org}}. Leider konnte  noch kein passendes Toolkit gefunden werden. Jedes (bisher geprüfte) Toolkit, erzeugt und verwaltet ein eigenes Fenster, um darin Objekte zu platzieren. VST-Plugins verwenden allerdings, ein von der Hostanwendug (teilweise mit eigener Dekoration) erzeugtes Fenster. Es muss daher ein Toolkit gefunden (oder entwickelt) werden, welches einen Plattformspezifischen ''Window-Handler'' um die entsprechenden GUI-Funktionen erweitert.
+Wünschenswert wäre hier die Verwendung eines GUI-Toolkits, wie \emph{Qt\footnote{http://qt.nokia.com}} oder \emph{WxWidgets\footnote{http://www.wxwidgets.org}}. Leider konnte  noch kein passendes Toolkit gefunden werden. Jedes (bisher geprüfte) Toolkit, erzeugt und verwaltet ein eigenes Fenster, um darin Objekte zu platzieren. VST-Plugins verwenden allerdings, ein von der Hostanwendug (teilweise mit eigener Dekoration) erzeugtes Fenster. Es muss daher ein Toolkit gefunden (oder entwickelt) werden, welches basierend auf einen bereits existierenden ''Window-Handler'', GUI-Funktionen bietet.
 \\\\
 Im Falle einer Eigenentwicklung, käme die \emph{Cairo\footnote{http://cairographics.org/}}-Bibliothek in Frage. Diese bietet sehr leistungsfähige Zeichenfunktionen und ist wie gefordert, in bestehende Fensterumgebungen einbindbar.
 \subsection{'Signal nach Parameterwert'-Problem}
@@ -19,9 +19,9 @@ Zur Lösung müsste die Parameter-Aktualisierung entsprechender Module, in einem
 \paragraph{'Frequenz nach Wert'-Modul}
 Denkbar wäre ein 'Signal nach Parameterwert'-Modul, welches die Grundtonfrequenz eines Signals ermittelt und als Parameterwert ausgibt. In einem früheren Projekt, wurde ähnliches, mittels FFT-Analyse bereits realisiert. Der Algorithmus - welcher in der Sprache C vorliegt - wurde, müsste angepasst und als \emph{ProcessAdapter} eingebunden werden.  
 \paragraph{Skript-Unterstützung}
-Da sie Entwicklung zusätzlicher Module, viel Arbeit und Zeit in Anspruch nimmt (Implementierung verschiedener Klassen, lange Kompilierungszeiten), wäre es Hilfreich, mittels einer dynamischen Skriptsprache, Module zu entwerfen ohne das eigentliche Programm neu kompilieren zu müssen. 
+Da die Entwicklung zusätzlicher Module, viel Arbeit und Zeit in Anspruch nimmt (Implementierung verschiedener Klassen, lange Kompilierungszeiten), wäre es Hilfreich, mittels einer dynamischen Skriptsprache, Module zu entwerfen ohne das eigentliche Programm neu kompilieren zu müssen. 
 \\\\
-So wäre eine Modultyp denkbar, der seine Berechnungszeit an ein externes Skript weitereichen würde. Zusätzliche Schnittstellen würden eine Kommunikation zwischen Skript und VSTForx ermöglichen. Besonders geeignet wäre hierfür die Skriptsprache \emph{Lua\footnote{http://www.lua.org/}}. Lua ist Kompiliert nur wenige Kilobyte groß und sehr leicht in ein bestehendes C/C++ - Programm einbindbar. 
+So wäre eine Modultyp denkbar, der seine Berechnungszeit an ein externes Skript weitereichen würde. Besonders geeignet wäre hierfür die Skriptsprache \emph{Lua\footnote{http://www.lua.org/}}. Lua ist Kompiliert nur wenige Kilobyte groß und sehr leicht in ein bestehendes C/C++ - Programm einbindbar. 
 Auf ähnlichem Wege wären auch Benutzerdefinierte Parameter-Operatoren denkbar.
 
  
