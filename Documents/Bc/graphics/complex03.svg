@@ -40,7 +40,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -59,8 +59,8 @@
      showgrid="false"
      showborder="false"
      inkscape:zoom="2.3754762"
-     inkscape:cx="158.3874"
-     inkscape:cy="121.51045"
+     inkscape:cx="176.06807"
+     inkscape:cy="140.45402"
      inkscape:window-x="66"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
@@ -119,7 +119,7 @@
            sodipodi:role="line"
            id="tspan5816"
            x="348.63705"
-           y="285.77237">V(x)=x*0.5</tspan></text>
+           y="285.77237">V(x)=x*vol</tspan></text>
       <text
          xml:space="preserve"
          style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
@@ -151,10 +151,10 @@
    style="font-size:65.00091553%;baseline-shift:sub"
    id="tspan3102">i</tspan>' = x<tspan
    style="font-size:65.00091553%;baseline-shift:sub"
-   id="tspan3104">i</tspan> * 0.5<tspan
+   id="tspan3104">i</tspan> * vol<tspan
    style="font-size:65.00091553%;baseline-shift:super"
    id="tspan5954">N</tspan> * 2<tspan
-   style="font-size:65%;baseline-shift:super"
+   style="font-size:65.00091553%;baseline-shift:super"
    id="tspan3106">N</tspan></tspan></text>
       <text
          xml:space="preserve"

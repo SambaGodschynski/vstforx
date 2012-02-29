@@ -31,7 +31,7 @@ Window::Window ( const VSTGUI::CRect &size, const WindowFlags &flags, void *pare
 									kFloatingWindowClass,
 									kWindowCloseBoxAttribute | 
 									kWindowAsyncDragAttribute | 
-									//kWindowCompositingAttribute | //causes crash with battery3
+									kWindowCompositingAttribute | //causes crash with battery3
 									kWindowStandardHandlerAttribute, 
 									&mRect, &hwnd
 	);

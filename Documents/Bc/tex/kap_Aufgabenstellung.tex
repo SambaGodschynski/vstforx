@@ -1,6 +1,6 @@
 % !TEX encoding = UTF-8 Unicode
 \section{\label{kapAnforderungen}Anforderungen}
-\subsection{Was implementiert werden muss}
+\subsection{Sollkriterien}
 \subsubsection{Die Pluginschnittstelle}
 Da VSTForx ein VST-Plugin werden soll muss es dem VST Standard entsprechen. Es stehen hierbei zwei Versionen zur Auswahl: VST2.x und VST3.x.
 \paragraph{VST2.x}
@@ -15,7 +15,7 @@ Ein VST-Plugin tritt in der Form einer Dynamisch ladbaren Bibliothek auf. Je nac
 \subsubsection{Der Editor}
 Der Editor ist die Graphische Schnittstelle zu VSTForx. Er sollte folgende Dinge beinhalten:
 \paragraph{Die Bühne}
-Die Bühne ist die Hauptaktionsebene und sollte somit den größten Teil des Editorfensters ausmachen. Die Effektverkettung wird hier erstellt, dargestellt und kann von hier aus auch verändert werden. Plugin Parameter lassen sich als Regler platzieren und bedienen. Ausserdem sollte es von der Bühne aus möglich sein die Editoren der geladenen Plugins zu öffnen und zu benutzen. 
+Die Bühne ist die Hauptaktionsebene und sollte somit den größten Teil des Editorfensters ausmachen. Die Effektverkettung wird hier erstellt, dargestellt und kann von hier aus auch verändert werden. Plugin Parameter lassen sich als Drehregler platzieren und bedienen. Ausserdem sollte es von der Bühne aus möglich sein die Editoren der geladenen Plugins zu öffnen und zu benutzen. 
 \paragraph{Die Toolbox}
 Um die Bühnenfunktionalität umzusetzen bedarf es einer Unterscheidung von verschiedenen Mausaktionen. So ist es ein Unterschied ob man zum Beispiel einen Regler dreht oder ihn verschiebt. Die Mausaktion ist aber in beiden fällen das ''ziehen\footnote{engl.: ''Drag''}''. Es werden also verschiedene Mauskontexte benötigt. Diese lassen sich in der Toolbox in Form von Knöpfen auswählen.
 \paragraph{Das Menu}
@@ -32,15 +32,15 @@ Um ein Plugin öffnen zu können würde es im einfachsten Fall ausreichen das Pl
 Dies würde aber schnell umständlich da mit jedem zu öffnenden Plugin durch eine Ordnerstruktur navigiert werden müsste, die zum Großteil aus (Plugin-) uninteressanten Informationen besteht. Ausserdem kann - zumindest unter Windows - nicht zwischen einer System ".dll" Datei und einer VST-Plugin Datei unterschieden werden. Hier bestünde die ''Gefahr'' eine Datei öffnen zu wollen die gar kein VST-Plugin ist.\\
 Ein weiteres Problem ist es dass VSTForx in der Lage sein soll den kompletten Bühneninhalt zu speichern und zu einem späteren Zeitpunkt wieder zu laden. Würde nun in solch einer Speicherdatei auf absolute Pfade verwiesen, bestünde die Gefahr dass zu einem späteren Zeitpunkt sich die Ordnerstruktur\footnote{oder die Speicherdatei wird auf einem anderen Gerät geöffnet} geändert hat und der gesicherte Pfad somit ungültig wäre.
 \\\\
-Sicherer wäre es eine Datenbank zu haben die alle ladbaren Plugins enthält und zur Verfügung stellt. Durch einen einmaligen ''Scanvorgang'' würde die bestehende Ordnerstruktur durchlaufen und alle gefundenen Plugindateien würden der Datenbank hinzugefügt werden. Sollte sich einmal die Ordnerstruktur ändern müsste nur der ''Scanvorgang'' wiederholt werden. Für Speicherdateien wäre das Plugin weiterhin verfügbar.
+Sicherer wäre es eine Datenbank zu haben die alle ladbaren Plugins enthält und zur Verfügung stellt. Ein einmaliger ''Scanvorgang'' würde die bestehende Ordnerstruktur nach Plugins durchsuchen. Sollte sich einmal die Ordnerstruktur ändern müsste nur der ''Scanvorgang'' wiederholt werden. Für Speicherdateien wäre das Plugin weiterhin verfügbar.
 \subsubsection{Programmparameter}
-Alle Objekte die in VSTForx durch Parameter steuerbar sind sollten ihre Parameter als Regler für die ''Bühne'' verfügbar machen.
-Diese Regler sind verbindbar. \\
-Ausserdem sollte das Programm eine Menge an (VST-)Parametern bieten. Diese lassen sich ebenfalls auf der ''Bühne'' als Regler ablegen. Somit ist es möglich alles ''regelbare'' in VSTForx von der DAW aus zu steuern.\\
-\subsubsection{Parameter Verbindungen}
-Um noch mehr Möglichkeiten zu haben wäre es sinnvoll in eine Parameterverbindungen Operatoren, die das Verhalten einer Verbindung beeinflussen, einfügen zu können. Wäre zum Beispiel Regler A mit Regler B verbunden, würde bei einem ''Inverse'' Operator, Regler B zudrehen wenn Regler A aufgedreht würde.
+Alle Objekte die in VSTForx durch Parameter steuerbar sind, sollten auf der ''Bühne'', einheitlich durch Drehregler repräsentiert werden. Diese Regler sollten verbindbar sein. 
+
+\subsubsection{Parameterverbindungs-Operatoren}
+Das Parameter-Verbindungskonzept liesse sich sinnvoll erweitern indem, das Verhalten einer Parameter-Verbindung manipulierbar wäre. So könnten Operatoren die Werteübertragung einer bestehenden Parameter-Verbindung beeinflussen.
+Wäre zum Beispiel Regler A mit Regler B verbunden, würde bei einem ''Inverse'' Operator, Regler B zudrehen wenn Regler A aufgedreht würde.
 \\\\
-Mögliche Operatoren wären:
+Weitere Operatoren wären:
 \begin{itemize}
 	\item Inverse
 	\item Exponential/Logarithmisch \footnote{eine Operation hat zwei Richtungen (''A zu B'' und ''B zu A'') wobei ''B zu A'' die Inverse Operation von ''A zu B'' sein muss. }

@@ -11,11 +11,12 @@ Um \emph{'png'}-Dateien darstellen zu können, benötigt die VST-GUI Bibliothek,
 	Die Boost-Bibliothek bietet viele unterschiedliche plattformunabhängige Lösungen, von denen einige in VSTForx genutzt werden:  
 	\begin {itemize}
 		\item \emph{Shared Pointer:} automatische Objektlebensdauer durch Referenzzählung
-		\item \emph{Archive:} Persistierung von Objekten 
+		\item \emph{Archive:} persistierung von Objekten 
 		\item \emph{Mutex:} implementation des Mutex-Konzeptes
 		\item \emph{Unordered Map:} Hash-Map implementation (nicht in STL enthalten)
 		\item \emph{Filesystem:} Dateisystem-Operationen, wie dass Durchsuchen eines Verzeichnisses
 		\item \emph{Bind:} bietet u.a. Funktionszeiger auf (nicht-statische)Klassen-Methoden
+		\item \emph{Graph: } bietet verschiedene Graph-Strukturen, und Algorithmen (Siehe \ref{g})  
 	\end {itemize}
 \paragraph{SQLite}
 SQLite bietet eine Serverlose Datenbank, welche direkt in die Anwendung eingebunden werden kann. Die Plugindatenbank wird mittels Sqlite implementiert.
@@ -24,8 +25,8 @@ Eine vom Autor erstellte Sammlung von Hilfsklassen und Funktionen. Bietet u.a. e
 \subsection{Grundstruktur}
 \begin{figure}[htbp]
 \begin{center}
-	\includegraphics[scale=0.3]{../graphics/DomainModel}
-\caption{Die Grundstruktur von VSTForx}
+	\includegraphics[scale=0.3]{../../EA_UML/graphics/DomainModel}
+\caption{Das Architekturmodell von VSTForx}
 \label{mainpat}
 \end{center}
 \end{figure}
@@ -40,17 +41,17 @@ Lediglich die Bezeichnungen wurden angepasst:
 \subsection{\label{sysProcessing}Die Processing-Ebene}
 \begin{figure}[htbp]
 \begin{center}
-	\includegraphics[scale=0.37]{../graphics/graph_overview}
+	\includegraphics[scale=0.37]{../../EA_UML/graphics/graph_overview}
 \caption{Übersicht der Processing-Klassen und dessen Beziehungen zueinander}
 \label{graphoverview}
 \end{center}
 \end{figure}
 
-\subsubsection{Die Graph-Klasse} Das Hauptelement in der Processing-Ebene ist der Graph. Die Graphklasse dient als Container, für alle auf der ''Bühne'' erzeugten Geschäftslogik-Objekte. Die Oberklasse dieser Objektklassen ist, die PObject-Klase\footnote{PObject = Processing Object}(siehe Abbildung \ref{graphoverview}).  
+\subsubsection{Die Graph-Klasse} Das Hauptelement in der Processing-Ebene ist der Graph. Die Graphklasse dient als Container, für alle auf der ''Bühne'' erzeugten Geschäftslogik-Objekte. Die Oberklasse dieser Objekte ist, die PObject-Klasse\footnote{PObject = Processing Object}(siehe Abbildung \ref{graphoverview}).  
 
-\subsubsection{Die G-Klasse}
+\subsubsection{\label{g}Die G-Klasse}
 Ursprünglich war es geplant, das Graph-Modell mittels Kompositum-Muster zu implementieren. 
-Daher: der Graph kennt n Knoten, Knoten kennen n Eltern bzw. n Kinder.
+Daher: der Graph besitzt $l$ Knoten, Knoten kennen $m$ Eltern- und $n$ Kindsknoten.
 Dieser Ansatz verursacht allerdings einige Probleme. Um einzelne Knoten zu erreichen, muss erst durch eine Knoten-Struktur traversiert werden. So werden einfache Aufgaben, wie das kopieren einer Graphstrukur, schnell sehr aufwändig. \\
 Umgesetzt wurde schließlich die für Graphstrukturen übliche extrinistische Variante: die Knoten bzw. Kanten werden in einer Adjazent-Datenstruktur aufgenommen. Diese Datenstruktur wird durch die G-Klasse repräsentiert. 
 \\\\
@@ -61,38 +62,49 @@ Sie bietet mehrere Vorteile:
 	\item performant erweiterbar durch Template-Meta Programmiertechniken 
 	\item große Anzahl an bereits Implementierten Algorithmen 
 \end{itemize}
-Ein Nachteil ist allerdings, da die Boost Library häufig Template-Meta Programmiertechniken verwendet, die lange Kompilationsdauer des Programmes.
+Ein Nachteil ist allerdings, da die Boost Library großteils Template-Meta Programmiertechniken verwendet, die lange Kompilationsdauer des resultierenden Programmes (aktuelle Kompilationszeit: ca. 15 Minuten\footnote{Win7, AMD64+3200 Mhz, 6GB Ram}).
+\\\\
+Die Boost Graph Library bietet, einen bereits vollständig implementierten Tiefensuche-Algorithmus. 
+Diese kann über ein Visitor-Mechanismus leicht um eigene Funktionalität erweitert werden. So werden folgende Informationen durch den BGL-Tiefensuchealgorithmus ermittelt. 
+\begin{itemize}
+		\item die Prozessliste (siehe Abschnitt \ref{process})
+		\item Latenzwerte der Knoten (siehe Abschnitt \ref{Latenzproblem})
+		\item Knotenaktivität (siehe \ref{prnode})	
+\end{itemize}
 
 \subsubsection{Die Frames-Klasse}
-Die Frames-Klasse ist ein (Mehrkanal)-Container für Sampleblöcke (siehe Abschnitt \ref{sampleblock}). Sie bietet außerdem Hilfsfunktionen wie: das Mischen mehrerer Kanäle zu Mono, Addition mehrerer Frames oder die Multiplikation um einen Faktor.
+Die Frames-Klasse ist ein (Mehrkanal)-Container für Sampleblöcke (siehe Abschnitt \ref{sampleblock}). Sie bietet außerdem Hilfsfunktionen wie zum Beispiel die Addition mehrerer Frames-Objekte(mischen des Audiosignales) oder die Multiplikation um einen Faktor(Lautstärkeregelung).
 
 \subsubsection{Die DCStream-Klasse}
-Die DCStream-Klasse (DC=Delay Compensation) implementiert, die in Abschnitt \ref{Latenzproblem} beschriebene Lösung zum Latenzproblem. Eine Methode addFrames( Frames *frames, int numSamples, int delay ) bietet die Möglichkeit, Sampledaten eines Frames-Objektes, mit unterschiedlichen Versatzwerten in das DCStream-Objekt einzufügen. Über die Methode flush(int numSamples, Frames *target), wird der Sampledaten-Inhalt wieder in ein Frames-Objekt zurückgeschrieben. 
+Die DCStream-Klasse (DC=Delay Compensation) ist Teil, der in Abschnitt \ref{Latenzproblem} beschriebenen Lösung zum Latenzproblem. Eine Methode addFrames( Frames *frames, int numSamples, int delay ) bietet die Möglichkeit, Sampledaten eines Frames-Objektes, mit unterschiedlichen Versatzwerten in das DCStream-Objekt einzufügen. Über die Methode flush(int numSamples, Frames *target), wird der Sampledaten-Inhalt wieder in ein Frames-Objekt zurückgeschrieben. 
 
-\subsubsection{Die ProcessorNode-Klasse}
-Die ProcessorNode-Klasse ist die Oberklasse aller Knoten, die vom Prozessgraphen (G) aufgenommen werden können. Die ProcessorNode-Klasse enthält die virtuellen Methoden: \emph{processNode()} und \emph{processFrames(Frames *fr)}.\\ 
-Die Methode mixInputsToFrame() mischt alle Eingangs-Sampleblöcke, unter Verwendung der DCStream Klasse, in ein einzelnes Frames-Objekt. Die Methode processFrames() bearbeitet es (siehe Abbildung \ref{graphcomp}).
-Die Methode popFrames() liefert schlußendlich die Ausgangs-Samplemenge. 
-\\\\
+\subsubsection{\label{prnode}Die ProcessorNode-Klasse}
+Die ProcessorNode-Klasse ist die Oberklasse aller Knoten, die vom Prozessgraphen (G) aufgenommen werden können.
+Eine mixInputsToFrame()-Methode mischt alle Eingangs-Sampleblöcke, unter Verwendung der DCStream Klasse, in ein einzelnes Frames-Objekt, die Methode processFrames() bearbeitet es (siehe Abbildung \ref{graphcomp}) und 
+die Methode popFrames() liefert schlußendlich die Ausgangs-Samplemenge, an die aufrufenden Kind-Knoten.
+Ein ProcessorNode-Objekt enthält neben der Latenz, noch die Information über seinen Aktivitäts-Status.
+Ist ein Knoten aktiv bedeutet dies, dass er derart in den Graph eingebunden ist, dass er die Audioausgabe beeinflußt. Andernfalls wird er während der Prozessoperation ignoriert.
 
-\subsubsection{Die ProcessAdapter-Klasse}
-Würden alle gewünschten Module nur aus einem Eingang und einem Ausgang bestehen, wäre es völlig ausreichend, die Modulfunktionen in einem Knoten zu implementieren. Da jedoch Module implementiert werden müssen die mehrere Ein-/Ausgänge verwenden, ist die Umsetzung etwas aufwändiger. Um zum Beispiel mehreren Ausgängen, (=mehrere Kindknoten) unterschiedliche Frames zu liefern zu können, bräuchte ein Knoten die Information, von welchem Kinds-Knoten aus die popFrames() Methode aufgerufen wurde. Eine solche Implementierung wäre sehr fehleranfällig und schwer zu nachzuvollziehen. 
-\\\\
-Eine bessere Lösung ist, dass Knoten selbst die Ein- und Ausgänge darstellen (siehe Abbildung \ref{graphcomp}). Erzeugt und verwaltet werden diese vom Modul, der ProcessAdapter-Klasse. Ein zusätzlicher Knoten-Typ, der ProcessAdapterNode, sorgt dafür das der Aufruf processNode(), an das jeweilige Eltern-Modul verwiesen wird (siehe Abbildung \ref{lanes}).
 
-\subsubsection{\label{Optimierung}Optimierung} 
-Effizient wäre es, nach jeder Knoten-bearbeitung den Zeiger des Frames-Objekt weiterzureichen. Dies funktioniert allerdings nur  solange, wie Knoten in Serie verkettet sind. Bei einer Parallel-Verkettung ist es notwendig das Frames-Objekt, einmal für jede Abzweigung zu kopieren. Ziel ist es, so viele Kopiervorgänge wie möglich zu sparen. Dies wird erreicht, indem nur dann kopiert wird wenn es wirklich notwendig ist: wenn ein Knoten mehr als ein Kindknoten hat. \\\\
-Zur Umsetzung wurde ein Stack-Mechanismus verwendet. Die Ausgabeframes eines Knotens, gelangen über die Methode pushAndCopy(Frames*) in den Stack. Sollte eine Knoten nur ein Kindknoten haben, wird der übergebene Frames-Zeiger der pushAndCopy() Methode, im Stack aufgenommen. Bei mehr als einem Kindknoten, wird zusätzlich Anzahl(Kindknoten) - 1 mal das Frames Objekt kopiert und im Stack aufgenommen. 
+\subsubsection{\label{Optimierung}Signalfluss und Optimierung} 
+Effizient wäre es, nach jeder Knoten-bearbeitung den Zeiger des Frames-Objekt weiterzureichen. Dies funktioniert allerdings nur  solange, wie Knoten in Serie verkettet sind. Bei einer Parallel-Verkettung ist es notwendig das Frames-Objekt, einmal für jede Abzweigung zu kopieren. Ziel ist es, so viele Kopiervorgänge wie möglich zu sparen. Es wird daher nur dann kopiert wird wenn es wirklich notwendig ist: wenn ein Knoten mehr als ein (aktiven) Kindknoten hat. \\\\
+Zur Umsetzung wurde ein Stack-Mechanismus verwendet. Die Ausgabeframes eines Knotens, gelangen über die Methode pushAndCopy(Frames*) in den Stack. Sollte ein Knoten nur ein Kindknoten haben, wird der übergebene Frames-Zeiger der pushAndCopy() Methode, im Stack aufgenommen. Bei mehr als einem (aktiven) Kindknoten, wird zusätzlich Anzahl(Kindknoten) - 1 mal das Frames Objekt kopiert und im Stack aufgenommen. 
 \\\\
 Die Kindknoten können nun über die Methode popFrames(), ein Frames Objekt als Eingabe-Sampleblockmenge abholen.
 
 \begin{figure}[htbp]
 \begin{center}
-	\includegraphics[scale=0.35]{../graphics/processingSeq}
+	\includegraphics[scale=0.35]{../../EA_UML/graphics/processingSeq}
 \caption{Beispiel-durchlauf eines Prozessaufrufes von VSTForx}
 \label{lanes}
 \end{center}
 \end{figure}
+
+
+\subsubsection{Die ProcessAdapter-Klasse}
+Würden alle gewünschten Module nur aus einem Eingang und einem Ausgang bestehen, wäre es völlig ausreichend, die Modulfunktionen in einem Knoten zu implementieren. Da jedoch Module implementiert werden, die mehrere Ein-/Ausgänge verwenden, ist die Umsetzung etwas aufwändiger. Um mehreren Ausgängen, (=mehrere Kindknoten) unterschiedliche Frames-Objekte zu liefern zu können, bräuchte eine entsprechende Methode - zur Zuordnung - die Information welcher Kind-Knoten den Aufruf getätigt hat. Eine solche Implementierung wäre sehr fehleranfällig und schwer zu nachzuvollziehen. 
+\\\\
+Eine bessere Lösung ist, dass die Ein- und Ausgänge ebenfalls durch Knoten dargestellt werden (siehe Abbildung \ref{graphcomp}). Erzeugt und verwaltet werden diese, von einem übergeordneten Modul, der ProcessAdapter-Klasse. Ein zusätzlicher Knoten-Typ, der ProcessAdapterNode, sorgt dafür das der Aufruf processNode(), an das jeweilige Modul verwiesen wird (siehe Abbildung \ref{lanes}).
 
 \begin{figure}[htbp]
 \begin{center}
@@ -104,17 +116,18 @@ Die Kindknoten können nun über die Methode popFrames(), ein Frames Objekt als 
 
 \subsubsection{Parameter}
 Es wäre naheliegend, die Implementation der Parameter und dessen Verbindungsmöglichkeiten, ebenfalls mittels eines Graph-Modells umzusetzen. Es gibt aber, im Gegensatz zum Prozess-Graph, eine entscheidende Vereinfachung: es bestehen keine Abhängigkeiten. Wird ein Parameter verändert, ist es egal in welcher Reihenfolge die verbundenen Nachbarparameter, über die Änderung informiert werden.
-So wurde sich für ein einfachen Observer-Entwurf\footnote{im Unterschied zum GoF-Observer, existiert hier jedoch keine Observer Schnittstelle} entschieden (siehe Abbildung \ref{parameterModel}).
+So wurde sich für ein einfachen Observer-Entwurf entschieden (siehe Abbildung \ref{parameterModel}).
 \paragraph{ParameterConnection}
-Die ParameterConnection-Klasse entspricht dem Observer-Objekt. Jedes Parameter-Objekt enthält eine unbestimmte Menge an ParameterConnection-Objekten. Wird ein Parameterwert verändert, werden diese Objekte benachrichtigt. Zu beachten ist, dass Parameterverbindungen Bidirektional sind. So muss für eine Parameter-Verbindung (A<->B), A sowie B ein ParameterConnection-Objekt (A->B, B->A) enthalten. 
+Die ParameterConnection-Klasse repräsentiert eine Verbindung. Jedes ParameterConnection-Objekt, enthält eine unbestimmte Menge an Zielparameter und beliebig viele ConnectionOperator-Objekte. Wird ein Parameterwert verändert, werden die Operatoren abgearbeitet und dessen Ergebnisse schlussendlich an den Zielparameter weitergereicht. Zu beachten ist, dass Parameterverbindungen Bidirektional sind. So muss für eine Parameter-Verbindung (A<->B), A sowie B ein ParameterConnection-Objekt (A->B, B->A) enthalten. 
 
 \paragraph{ConnectionOperator}
-Neben dem Nachbarparameter enthält ein ParameterConnection-Objekt eine unbestimmte Menge an ConnectionOperatoren. Diese bearbeiten den zu übermittelnden Parameterwert. Auch hier ist die Bidiretionalität zu beachten. Für eine Parameter-Verbindung (A<->B), muss die Verbindung(B->A) die Inverse-Operation zur Verbindung (A->B) enthalten. Den Inverse-ConnectionOperator liefert die Methode: getInverseOperator().
+Neben dem Nachbarparameter enthält ein ParameterConnection-Objekt eine unbestimmte Menge an ConnectionOperatoren. Diese bearbeiten den zu übermittelnden Parameterwert. Auch hier ist die Bidiretionalität zu beachten. Der Rückrichtungsoperator einer Verbindung, muss der Inversen-Operation des Hinrichtungsopertors entsprechen.
+
 \paragraph{HasParameter}
 Die Schnittstelle HasParameter, ermöglicht den zugriff auf eine unbestimmte Menge an Parameterobjekten. So wird diese Schnittstelle, unter anderem, von allen Modulen und den Plugins implementiert. 
 \begin{figure}[htbp]
 \begin{center}
-	\includegraphics[scale=0.45]{../graphics/ParameterOverview}
+	\includegraphics[scale=0.45]{../../EA_UML/graphics/ParameterOverview}
 \caption{Parameter-Klassen Modell}
 \label{parameterModel}
 \end{center}
@@ -122,21 +135,21 @@ Die Schnittstelle HasParameter, ermöglicht den zugriff auf eine unbestimmte Men
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Die GUI Ebene}
 \subsubsection{PpiEditor}
-Die PpiEditor-Klasse implementiert, die von dem Vst-Gui SDK vorgegebene AEffGUIEditor-Klasse. Sie dient der Kommunikation zwischen Hostanwendung und Plugin-Editor.
+Die PpiEditor-Klasse erweitert, die von dem Vst-Gui SDK vorgegebene AEffGUIEditor-Klasse. Sie dient der Kommunikation zwischen Hostanwendung und Plugin-Editor.
 \subsubsection{CView}
 Die CView-Klasse ist die Oberklasse aller graphischen Elemente im Vst-Gui SDK. Sie besteht aus einem Rechteckigen Bereich und enthält die Methode draw(CDrawContext *cn). Über diese können mittels übergebenen DrawContext, im sichtbaren Bereich Zeichenoperationen ausgeführt werden.
 \subsubsection{CircuidView}
 Die CircuidView-Klasse repräsentiert die ''Bühne'' der GUI.
-Zu beginn der Entwicklung stand der Autor vor der Entscheidung, die Bühnedarstellung nach Vst-Gui SDK Methodik zu gestalten oder eine eigene Implementierung zu verwenden. So könnte jedes Bühnenobjekt einen eigenen CView-Bereich darstellen. Was aus Sicht des Vst-Gui SDKs durchaus logisch wäre, da dort alle graphischen Elemente, wie Regler und Knöpfe, als CView-Klasse implementiert sind. 
+Zu beginn der Entwicklung stand der Autor vor der Entscheidung, die Bühnedarstellung nach Vst-Gui SDK Methodik zu gestalten oder eine eigene Implementierung zu verwenden. So könnte genau wie in der Vst-Gui-Bibliothek, jedes Bühnenobjekt einen eigenen CView-Bereich darstellen.
 \\\\
 Es wurde sich allerdings dagegen entschieden. So ist einzig die CircuidView-Klasse eine CView-Klasse. Sie ist für das Zeichnen der Bühne und allen enthaltenen Objekten verantwortlich. Die Gründe für diese Entscheidung waren:
 \begin{itemize}
-	\item das Vst-Gui SDK wurde nicht für dynamische Oberflächen mit frei beweglichen Objekten entworfen (dargestellt werden üblicherweise Konsolen mit fest positionierten Bedienelementen)
+	\item das Vst-Gui SDK wurde nicht für dynamische Oberflächen mit frei beweglichen Objekten entworfen (dargestellt werden üblicherweise Effekt-Konsolen mit fest positionierten Bedienelementen)
 	\item die schlechte Dokumentation des Vst-Gui SDKs (Erschließung hauptsächlich nach ''trial and error'' Prinzip)
 	\item weniger direkte Abhängikeiten zum Vst-Gui SDKs (was eine eventuelle Immigration zu einem anderen/besseren Framework erleichtern würde)
 \end{itemize}
 \subsubsection{GObject}
-Die GObject-Klasse ist die Oberklasse, aller Objekte die von der CircuidView aufgenommen werden können. Sie bildet das Gegenstück zur PObject Klasse.
+Die GObject-Klasse ist die Oberklasse, aller Objekte die von der CircuidView aufgenommen werden können. Sie bildet das View-Gegenstück zum PObject.
 \subsubsection{GProcessModule}
 Die GProcessModule-Klasse ist die graphische Repräsentation der ProcessAdaptor-Objekte.
 \subsubsection{GIONode}
@@ -144,10 +157,10 @@ Die GIONode-Klassen repräsentieren die Input-/OutputNode Objekte.
 \subsubsection{GConnection}
 Die GConnection-Klassen repräsentieren die Verbindungen zwischen den GObjecten.
 \subsubsection{CViewWrapper}
-Wie bereits beschrieben, implementiert die CircuidView-Klasse die Bühnedarstellung, unabhängig von den CView-Klassen. Die CircuidView nimmt ausschließlich GObject-Objekte auf. Dies bedeutet jedoch, dass Vst-Gui SDK Steuerungs-Elemente, nicht mit der CircuidView verwendet werden können. Diesen Nachteil behebt die CViewWrapper-Klasse. Sie hüllt ein CView-Objekt in ein GObject-Objekt. Über ein Template-Parameter wird festgelegt, welche GObject-Klasse Oberklasse ist. Somit ist es möglich, Eine CView-Klasse mit den Eigenschaften von GCircle zu umhüllen.
+Wie bereits beschrieben, implementiert die CircuidView-Klasse die Bühnedarstellung, unabhängig von den CView-Klassen. Die CircuidView nimmt ausschließlich GObject-Objekte auf. Dies bedeutet jedoch, dass Vst-Gui SDK Steuerungs-Elemente (zB. Drehknöpfe), nicht mit der CircuidView verwendet werden können. Diesen Nachteil behebt die CViewWrapper-Klasse. Sie hüllt ein CView-Objekt in ein GObject-Objekt. Ein Template-Parameter wird festgelegt, welche GObject-Klasse Oberklasse ist.
 \begin{figure}[htbp]
 \begin{center}
-	\includegraphics[scale=0.45]{../graphics/gui_overview}
+	\includegraphics[scale=0.45]{../../EA_UML/graphics/gui_overview}
 \caption{die GUI-Klassen Modell}
 \label{parameterModel}
 \end{center}
@@ -159,13 +172,13 @@ Das MVC-Architekturmuster dient der losen Kopplung zwischen, Geschäfts-Logik un
 
 \begin{figure}[htbp]
 \begin{center}
-	\includegraphics[scale=0.45]{../graphics/ControlModell}
+	\includegraphics[scale=0.45]{../../EA_UML/graphics/ControlModell}
 \caption{die Control-Klassen Modell}
 \label{parameterModel}
 \end{center}
 \end{figure}
 \subsubsection{ViewRelations}
-Die Problemstellung, beim öffnen des Editors, in einem bereits bestehenden Szenario ist, wiederhergestellte View-Objekte den richtigen Model-Objekten zuzuordnen. Diese Aufgabe übernimmt die Klasse ViewRelations. Sie liefert für jedes Model-Objekt das passende View-Objekt und umgekehrt.
+Die Problemstellung: beim öffnen des Editors, in einem bereits bestehenden Szenario ist, wiederhergestellte View-Objekte den richtigen Model-Objekten zuzuordnen. Diese Aufgabe übernimmt die Klasse ViewRelations. Sie liefert für jedes Model-Objekt das passende View-Objekt und umgekehrt.
 \subsubsection{FrontController}
 Da es viele unterschiedliche Objekte auf der ''Bühne'' gibt und jedes dieser Objekte unterschiedliche Funktionen bietet, wäre es umständlich und unübersichtlich, für alle Bühnenobjekte eine einzige Controller-Klasse zu verwenden.
 Deshalb wurde sich dafür entschieden, mehrere Control-Klassen für unterschiedliche Bühnenobjekte zu implementieren: die ObjectControl-Klassen. 
@@ -174,7 +187,7 @@ Für jeden Bühnenobjekttyp existiert, zur Laufzeit, ein passendes ObjectControl
 Der FrontController kümmert sich nun, um die Zuordnung zwischen Bühnen- und Controlobjekt. Die Methode getController(GObject *obj) liefert den passenden Controller (siehe Abbildung \ref{seqCtrl}). 
 \begin{figure}[htbp]
 \begin{center}
-	\includegraphics[scale=0.45]{../graphics/ctrlSeq}
+	\includegraphics[scale=0.45]{../../EA_UML/graphics/ctrlSeq}
 \caption{Beispiel zur Nutzung der FrontControl-Klasse, anhand eines Kontextmenüaufrufes}
 \label{seqCtrl}
 \end{center}
