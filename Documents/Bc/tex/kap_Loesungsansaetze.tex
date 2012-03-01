@@ -47,7 +47,7 @@ Das Resultat der topologischen Sortierung ist daher, eine sortierte Menge an Kno
 In obigen Beispiel würde die Topologische Sortierung die gewünschte (Plugin-)Knotenmenge \{A, B, C\}
 \\\\
 \footnote{vorausgesetzt Knoten A ist der Startknoten der Topologischen Sortierung} ergeben. \\
-Die topologische Sortierung hat ein Laufzeitverhalten von $\mathcal O(|V| + |E|)\footnote{wobei |V| die Menge aller Knoten und |E| die Menge aller Kanten ist} und ist somit eher ungeeignet, um in Echtzeit sehr häufig ausgeführt zu werden. Allerdings ändert sich die Ergebnismenge, der Topologischen-Sortierung auch nur dann, wenn sich der entsprechende Graph verändert hat.
+Die topologische Sortierung hat ein Laufzeitverhalten von $\mathcal O(|V| + |E|)$\footnote{wobei |V| die Menge aller Knoten und |E| die Menge aller Kanten ist} und ist somit eher ungeeignet, um in Echtzeit sehr häufig ausgeführt zu werden. Allerdings ändert sich die Ergebnismenge, der Topologischen-Sortierung auch nur dann, wenn sich der entsprechende Graph verändert hat.
 Die Ergebnismenge wird daher ausschließlich nach einer Graphänderung erstellt und in einer Liste gespeichert werden. Diese ''Prozess-Liste'' wird während der Prozess-Operation iteriert und die Knoten-zugehörigen Plugins bearbeitet. Somit ergibt sich eine Laufzeit von $\mathcal O(|V|)$.
 \paragraph{Rückkopplungen}
 Eine Einschränkung der Topologischen Sortierung ist es, dass die zu sortierenden Graphen keine Zykel enthalten dürfen. Dies hat für das System zur Auswirkung, dass keine Rückkopplungen ''geschaltet'' werden können. Eine Rückkopplung wäre es zum Beispiel, wenn der Ausgang eines Plugins, direkt oder über Umwege, wieder an seinem Eingang liegen würde. Um Rückkopplungsschaltungen zu realisieren, könnte man die betreffenden Knoten lokalisieren und durch einen Subgraphen substituieren. Dieser Subgraph müsste in der Lage sein, entsprechende Knoten durch einen alternativen Algorithmus - einen der Rückkopplungen unterstützt - zu bearbeiten. Dies ist jedoch aufgrund der Komplexität des Problemes nicht vorgesehen. 
@@ -184,7 +184,7 @@ public:
 	}	 
 };	
 \end{lstlisting} 
-Da es möglich ist ein VST-Plugin über die DAW in einen Standbymodus zu schalten, kann es mit dieser Lösung passieren, dass die entgegengenommenen Befehlsobjekte nicht mehr ausgeführt werden. Da die entsprechende Prozessoperation nicht mehr ausgeführt wird. Daher ist diese Vorgehensweise nicht geeignet.
+Da es möglich ist ein VST-Plugin über die DAW in einen Standbymodus zu schalten, kann es mit dieser Lösung passieren, dass die entgegengenommenen Befehlsobjekte nicht mehr ausgeführt werden. Da die entsprechende Prozessoperation nicht mehr ausgeführt wird. Daher ist diese Vorgehensweise nicht geeignet.
 
 \paragraph{Automatisches Blockieren und Freigeben}
 Mittels sogenannter RAII\footnote{Resource Acquisition Is Initialization}-Mechanismen ist es möglich eine Lösung zu entwerfen, die dafür sorgt, dass der Prozess automatisch blockiert und wieder freigegeben wird, solange der Graph verändert wird. Realisiert wird dies durch eine Klasse namens ''Janitor\footnote{engl.: Hausmeister}''.
