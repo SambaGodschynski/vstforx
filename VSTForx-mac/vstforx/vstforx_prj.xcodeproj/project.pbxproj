@@ -1414,6 +1414,7 @@
 		4FADC23508B4156C00ABE55E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = (
 					ppc,
 					i386,
@@ -1430,12 +1431,10 @@
 				GCC_VERSION = 4.0;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../src",
-					"$(SRCROOT)/../../../../zlib",
-					"$(SRCROOT)/../../../../vstsdk2.4/**",
-					"$(SRCROOT)/../../../../lpng1239",
-					"$(SRCROOT)/../../../../../boost_1_42_0",
-					"$(SRCROOT)/../../../../../sambag/src",
-					"$(SRCROOT)/../../../../../sqlite",
+					"$(SRCROOT)/../../../../clibs/vstsdk2.4/**",
+					"$(SRCROOT)/../../../../clibs/boost_1_42_0",
+					"$(SRCROOT)/../../../sambag/src",
+					"$(SRCROOT)/../../../../clibs/sqlite",
 				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
