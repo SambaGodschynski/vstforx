@@ -118,10 +118,10 @@ Eine bessere Lösung ist, dass die Ein- und Ausgänge ebenfalls durch Knoten dar
 Es wäre naheliegend, die Implementation der Parameter und deren Verbindungsmöglichkeiten ebenfalls mittels eines Graph-Modells umzusetzen. Es gibt aber, im Gegensatz zum Prozess-Graph, eine entscheidende Vereinfachung: es bestehen keine Abhängigkeiten. Wird ein Parameter verändert, ist es egal in welcher Reihenfolge die verbundenen Nachbarparameter über die Änderung informiert werden.
 So wurde sich für einen einfachen Observer-Entwurf entschieden (siehe Abbildung \ref{parameterModel}).
 \paragraph{ParameterConnection}
-Die ParameterConnection-Klasse repräsentiert eine Verbindung. Jedes ParameterConnection-Objekt, enthält eine unbestimmte Menge an Zielparameter und beliebig viele ConnectionOperator-Objekte. Wird ein Parameterwert verändert, werden die Operatoren abgearbeitet und dessen Ergebnisse schlussendlich an den Zielparameter weitergereicht. Zu beachten ist, dass Parameterverbindungen bidirektional sind. So muss für eine Parameter-Verbindung (A<->B), A sowie B ein ParameterConnection-Objekt (A->B, B->A) enthalten. 
+Die ParameterConnection-Klasse repräsentiert eine Verbindung. Jedes ParameterConnection-Objekt, kennt zwei Parameter. Parameter A und Parameter B. Zu jedem Parameter (A, B) existiert eine Event-Handler-Methode, die benachrichtigt wird sobald sich der entsprechende Parameter geändert hat. Ist dies geschehen, wird der neue Wert dem Nachbarparameter übermittelt.
 
 \paragraph{ConnectionOperator}
-Neben dem Nachbarparameter enthält ein ParameterConnection-Objekt eine unbestimmte Menge an ConnectionOperatoren. Diese bearbeiten den zu übermittelnden Parameterwert. Auch hier ist die Bidiretionalität zu beachten. Der Rückrichtungsoperator einer Verbindung, muss der Inversen-Operation des Hinrichtungsopertors entsprechen.
+Neben dem Nachbarparameter enthält ein ParameterConnection-Objekt eine unbestimmte Menge an ConnectionOperatoren. Diese bearbeiten den zu übermittelnden Parameterwert. Hier ist die Bidiretionalität zu beachten. Der Rückrichtungsoperation einer Verbindung, muss der Inversen-Operation der Hinrichtungsoperation entsprechen.
 
 \paragraph{HasParameter}
 Die Schnittstelle HasParameter ermöglicht den Zugriff auf eine unbestimmte Menge an Parameterobjekten. So wird diese Schnittstelle, unter anderem von allen Modul- und den Pluginklassen, implementiert. 

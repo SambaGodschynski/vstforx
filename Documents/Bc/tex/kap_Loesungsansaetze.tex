@@ -4,9 +4,9 @@
 \subsection{Analyse vorhandener Systeme}
 Es existieren bereits einige Systeme, welche die gewünschten Funktionalität teilweise oder ganz umsetzen. Folgend sollen diese betrachtet werden. Es soll geklärt werden, welche Funktionen übernommen beziehungsweise sinnvoll erweitert werden können.
 \subsubsection{Native Instruments Reaktor}
-\emph{Reaktor\footnote{http://www.native-instruments.com/\#/en/products/producer/reaktor-55/}} ist ein leistungsstarkes System zum Erschaffen von Effekten und Synthesizern. Es gibt eine Vielzahl an Modulen, die frei ''verdrahtet'' werden können. Ab Version 5 ist es sogar möglich, eigene Module mittels DSP-Schaltungen zu entwerfen. Die Module werden durch Parameter gesteuert, welche in Form von Drehreglern, auf einem frei gestaltbaren Bedien-Panel platziert werden können. Die Bedienung ist zwar direkt und intuitiv, der Programm-Anfänger jedoch ist schnell überfordert durch die Vielzahl an Funktionen und Modulen. Hier ist eine lange Einarbeitungszeit notwendig. Reaktor ist u.a. als VST-Plugin verfügbar, bietet aber keine Möglichkeit VST-Plugins zu laden und zu verwenden.
+\emph{Reaktor\footnote{http://www.native-instruments.com/\#/en/products/producer/reaktor-55/}} ist ein leistungsstarkes System zum Erschaffen von Effekten und Synthesizern. Es gibt eine Vielzahl an Modulen, die frei ''verdrahtet'' werden können. Ab Version 5 ist es sogar möglich, eigene Module mittels DSP-Schaltungen zu entwerfen\verw{Reaktor}. Die Module werden durch Parameter gesteuert, welche in Form von Drehreglern, auf einem frei gestaltbaren Bedien-Panel platziert werden können. Die Bedienung ist zwar direkt und intuitiv, der Programm-Anfänger jedoch ist schnell überfordert durch die Vielzahl an Funktionen und Modulen. Hier ist eine lange Einarbeitungszeit notwendig. Reaktor ist u.a. als VST-Plugin verfügbar, bietet aber keine Möglichkeit VST-Plugins zu laden und zu verwenden.
 \subsubsection{Ableton Live}
-\emph{Ableton Live\footnote{http://www.ableton.com/}} ist in erster Linie ein Sequenzer. Der Fokus liegt daher auf dem Erstellen von Musikstücken. Ähnlich zu Cubase existiert hier ebenfalls das Spur/Mischpult-Prinzip. Effekte lassen sich somit ausschließlich nach vorgegebenen ''Bahnen'' verknüpfen. Einen interessanten Ansatz bieten die sogenannten ''Makro-Regler\footnote{Ableton Benutzerhandbuch Version 8, Seite 270 f.}''. Diese erlauben es beliebig viele Bedienelemente, d.h auch VST-Pluginparameter, über einen ''Marco''-Regler zu steuern. Das Regelverhalten ist umkehrbar. 
+\emph{Ableton Live\footnote{http://www.ableton.com/}} ist in erster Linie ein Sequenzer. Der Fokus liegt daher auf dem Erstellen von Musikstücken. Ähnlich zu Cubase existiert hier ebenfalls das Spur/Mischpult-Prinzip. Effekte lassen sich somit ausschließlich nach vorgegebenen ''Bahnen'' verknüpfen. Einen interessanten Ansatz bieten die sogenannten ''Makro-Regler''. Diese erlauben es beliebig viele Bedienelemente, d.h auch VST-Pluginparameter, über einen ''Marco''-Regler zu steuern. Das Regelverhalten ist umkehrbar\verw{Ableton}{S.252 f}. 
 \\\\
 Die Benutzung solcher ''Makro-Regler'' ist wenig intuitiv. Um eine ''Makro''-Verbindung zu erstellen, sind mehrere Kontextmenü-Aufrufe an unterschiedlichen und teilweise unerwarteten Stellen notwendig. 
 Dargestellt werden schließlich diese Verbindungen in einer Tabellen-Ansicht. Somit ist auf einen Blick nicht sofort erkennbar, welche Verbindungen bestehen. Dennoch ist der Zweck dieser Funktionalität interessant:  verschiedene Parameter verschiedener Effekte sinnvoll zu gruppieren.  
@@ -42,15 +42,15 @@ Wie in Schritt \ref{PlugC} zu sehen, ist zur korrekten Ausführung von Plugin-C 
 In der Graphentheorie gibt es einen Algorithmus, der in der Lage ist Abhängigkeiten aufzulösen: die Topologische Sortierung.
 \\\\
 Die topologische Sortierung basiert auf der Durchlaufstrategie Tiefensuche\footnote{oder auch DFS - engl.: Depth First Search}. \\
-''Sie erzeugt eine lineare Anordnung von Knoten eines Graphen. Existiert eine Kante zwischen den Knoten (u, v),  so wird u vor v geordnet."\footnote{\label{bglTopo}vergl. \cite{bgl01}, S. 176 f.}\\
+''Sie erzeugt eine lineare Anordnung von Knoten eines Graphen. Existiert eine Kante zwischen den Knoten (u, v),  so wird u vor v geordnet."\verw{Bgl}{S.176 f}\\
 Das Resultat der topologischen Sortierung ist daher, eine sortierte Menge an Knoten, deren Reihenfolge genau ihren Abhängigkeiten entspricht.
 In obigen Beispiel würde die Topologische Sortierung die gewünschte (Plugin-)Knotenmenge \{A, B, C\}
 \\\\
 \footnote{vorausgesetzt Knoten A ist der Startknoten der Topologischen Sortierung} ergeben. \\
-Die topologische Sortierung hat ein Laufzeitverhalten von $\mathcal O(|V| + |E|)$\footnote{wobei |V| die Menge aller Knoten und |E| die Menge aller Kanten ist} und ist somit eher ungeeignet, um in Echtzeit sehr häufig ausgeführt zu werden. Allerdings ändert sich die Ergebnismenge, der Topologischen-Sortierung auch nur dann, wenn sich der entsprechende Graph verändert hat.
+Die topologische Sortierung hat ein Laufzeitverhalten von $\mathcal O(|V| + |E|)$\footnote{wobei |V| die Menge aller Knoten und |E| die Menge aller Kanten ist}\verw{Bgl}{S.176 f} und ist somit eher ungeeignet, um in Echtzeit sehr häufig ausgeführt zu werden. Allerdings ändert sich die Ergebnismenge, der Topologischen-Sortierung auch nur dann, wenn sich der entsprechende Graph verändert hat.
 Die Ergebnismenge wird daher ausschließlich nach einer Graphänderung erstellt und in einer Liste gespeichert werden. Diese ''Prozess-Liste'' wird während der Prozess-Operation iteriert und die Knoten-zugehörigen Plugins bearbeitet. Somit ergibt sich eine Laufzeit von $\mathcal O(|V|)$.
 \paragraph{Rückkopplungen}
-Eine Einschränkung der Topologischen Sortierung ist es, dass die zu sortierenden Graphen keine Zykel enthalten dürfen. Dies hat für das System zur Auswirkung, dass keine Rückkopplungen ''geschaltet'' werden können. Eine Rückkopplung wäre es zum Beispiel, wenn der Ausgang eines Plugins, direkt oder über Umwege, wieder an seinem Eingang liegen würde. Um Rückkopplungsschaltungen zu realisieren, könnte man die betreffenden Knoten lokalisieren und durch einen Subgraphen substituieren. Dieser Subgraph müsste in der Lage sein, entsprechende Knoten durch einen alternativen Algorithmus - einen der Rückkopplungen unterstützt - zu bearbeiten. Dies ist jedoch aufgrund der Komplexität des Problemes nicht vorgesehen. 
+Eine Vorraussetzung der Topologischen Sortierung ist, dass die zu sortierenden Graphen keine Zykel enthalten dürfen\verw{Bgl}{S.48 f}. Dies hat für das System zur Auswirkung, dass keine Rückkopplungen ''geschaltet'' werden können. Eine Rückkopplung wäre es zum Beispiel, wenn der Ausgang eines Plugins, direkt oder über Umwege, wieder an seinem Eingang liegen würde. Um Rückkopplungsschaltungen zu realisieren, könnte man die betreffenden Knoten lokalisieren\verw{Bgl}{S.198 f.} und durch einen Subgraphen substituieren. Dieser Subgraph müsste in der Lage sein, entsprechende Knoten durch einen alternativen Algorithmus - einen der Rückkopplungen unterstützt - zu bearbeiten. Dies ist jedoch aufgrund der Komplexität des Problemes nicht vorgesehen. 
 \\\\
 Die Topologischen Sortierung ist allerdings in der Lage zu erkennen, ob ein Graph zyklisch ist \footnotemark[13]. Zur Vermeidung von Fehlverhalten werden daher zyklische Graphen nicht zugelassen.  \\
 %%%%%%
@@ -83,12 +83,12 @@ Um unterschiedliche Latenzen in einem komplexen Graph auszugleichen, sind folgen
 \end{figure}
 %%%%%%
 \subsection{Nebenläufigkeit}
-Ein VST-Plugin kann optional einen Editor implementieren. Ein Editor ist ein Fenster, welches die Benutzeroberfläche des Plugins enthält. Es wird von der DAW bei Bedarf geöffnet. Da Eingaben auf der Benutzeroberfläche zu einem unbestimmten Zeitpunkt geschehen und der Pluginprozess kontinuierlich (nebenläufig\footnote{ob als eigenständiger Prozess oder Thread ist DAW abhängig}) ausgeführt wird, ist die Grundvorraussetzung für Nebenläufigkeitsprobleme gegeben. 
+Ein VST-Plugin kann optional einen Editor implementieren. Ein Editor ist ein Fenster, welches die Benutzeroberfläche des Plugins enthält. Es wird von der DAW bei Bedarf geöffnet. Da Eingaben auf der Benutzeroberfläche zu einem unbestimmten Zeitpunkt geschehen und der Pluginprozess kontinuierlich ausgeführt wird, ist die Grundvorraussetzung für Nebenläufigkeitsprobleme gegeben. 
 \\\\
 Wird der Effekt-Graph geändert, während er vom Prozess bearbeitet wird, kann dies ein undefiniertes Verhalten verursachen. \\
 Folgend sollen drei verschiedene Lösungsansätze, zur Vermeidung solcher Probleme, beschrieben werden:
 \paragraph{Blockieren des Prozesses}
-Es wäre möglich jede Graph verändernde Methode solange zu blockieren, wie die Graph-Prozessoperation ausgeführt wird. Umgekehrt wird die Ausführung der Prozessoperation blockiert, solange eine Graphverändernde Methode bearbeitet wird. Ein Verfahren, welches solch eine Blockierung bietet, ist das Mutex-Verfahren (siehe \cite{tan09}).
+Es wäre möglich jede Graph verändernde Methode solange zu blockieren, wie die Graph-Prozessoperation ausgeführt wird. Umgekehrt wird die Ausführung der Prozessoperation blockiert, solange eine Graphverändernde Methode bearbeitet wird. Ein Verfahren, welches solch eine Blockierung bietet, ist das Mutex-Verfahren\verw{Tan}{S.176ff}.
 \\\\
 \begin{lstlisting}[caption={Beispiel einer gegenseitigen Blockierung}]
 	
@@ -135,7 +135,7 @@ public:
 		
 \end{lstlisting} 
 \paragraph{Das Befehl Entwurfsmuster}
-Das Befehl-Entwurfsmuster gehört zu den Verhaltensmustern der ''GoF'' Entwurfsmuster.  Es dient dazu Programmbefehle in einem Objekt zu kapseln (vgl. \cite{gof04}). \\
+Das Befehl-Entwurfsmuster gehört zu den Verhaltensmustern der ''GoF'' Entwurfsmuster.  Es dient dazu Programmbefehle in einem Objekt zu kapseln \verw{Gof}{S.273 ff}. \\
 Der Graph würde seine verändernden Befehle nicht mehr als öffentliche Methoden anbieten, sondern nur noch Befehlsobjekte entgegennehmen.
 Solch ein Objekt würde dann vom Graph zu einem sicheren Zeitpunkt (zum Beispiel nach Abschluss der Prozessmethode) ausgeführt (siehe Listing \ref{command}).
 
@@ -187,10 +187,10 @@ public:
 Da es möglich ist ein VST-Plugin über die DAW in einen Standbymodus zu schalten, kann es mit dieser Lösung passieren, dass die entgegengenommenen Befehlsobjekte nicht mehr ausgeführt werden. Da die entsprechende Prozessoperation nicht mehr ausgeführt wird. Daher ist diese Vorgehensweise nicht geeignet.
 
 \paragraph{Automatisches Blockieren und Freigeben}
-Mittels sogenannter RAII\footnote{Resource Acquisition Is Initialization}-Mechanismen ist es möglich eine Lösung zu entwerfen, die dafür sorgt, dass der Prozess automatisch blockiert und wieder freigegeben wird, solange der Graph verändert wird. Realisiert wird dies durch eine Klasse namens ''Janitor\footnote{engl.: Hausmeister}''.
+Mittels sogenannter RAII\footnote{Resource Acquisition Is Initialization}-Mechanismen\verw{Stephens}{S.291 ff} ist es möglich eine Lösung zu entwerfen, die dafür sorgt, dass der Prozess automatisch blockiert und wieder freigegeben wird, solange der Graph verändert wird. Realisiert wird dies durch eine Klasse namens ''Janitor\footnote{engl.: Hausmeister}''.
 Die Janitor-Klasse enthält exklusiv alle Graph verändernden Methoden. Der Konstruktor des Janitors blockiert die Prozessmethode, der Destruktor gibt sie wieder frei. Somit kann sichergestellt werden, dass, solange ein Janitior-Objekt existiert, der Graph nicht weiter abgearbeitet werden kann (siehe Listing \ref{janitor}).
 \\\\
-Zusammen mit dem ''Smart Pointer'' Konzept und dem Singleton Entwurfsmuster (siehe \cite{gof04}) kann erreicht werden, dass ein Janitor-Objekt von mehreren Stellen ohne gegenseitige Blockierung genutzt werden kann.\\
+Zusammen mit dem ''Smart Pointer'' Konzept kann erreicht werden, dass ein Janitor-Objekt von mehreren Stellen ohne gegenseitige Blockierung genutzt werden kann.\\
 Da nach jeder Graphänderung eine Prozess-Liste (siehe \ref{process}) erstellt werden muss, existiert mit dieser Lösung ein weiterer Vorteil:
 Die Prozesslisten Erstellung könnte durch Destruktor des Janitors aufgerufen werden. Somit würde automatisch die Prozessliste nach jeder Graphänderung erstellt.
 \\\\

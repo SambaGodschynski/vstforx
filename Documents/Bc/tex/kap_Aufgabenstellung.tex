@@ -4,13 +4,13 @@
 \subsubsection{Die Pluginschnittstelle}
 Da VSTForx ein VST-Plugin werden soll, muss es dem VST Standard entsprechen. Es stehen hierbei zwei Versionen zur Auswahl: VST2.x und VST3.x.
 \paragraph{VST2.x}
-Das VST2.x SDK hatte im Jahre 2006 sein letztes Update erfahren\cite{stein06}. Seine Ursprünge reichen bis in das Jahr 1990 zurück, als die VST Schnittstelle erstmals entwickelt wurde.
+Das VST2.x SDK hatte im Jahre 2006 sein letztes Update erfahren\verwS{Stein01}. Seine Ursprünge reichen bis in das Jahr 1990 zurück, als die VST Schnittstelle erstmals entwickelt wurde.
 Da in den 90er Jahren die Rechenleistung begrenzt war, war ein wesentliches Entwurfsziel die Performance. So ist ein Großteil des SDKs in C geschrieben \footnote{es existieren aber - um die Implementierung zu vereinfachen - C++ Wrapperklassen.}.
-Aus heutiger Sicht können viele in der VST2.x SDK verwendete Techniken als veraltet betrachtet werden. So wird zum Beispiel zur 'Host nach Plugin Kommunikation' lediglich eine einzige Methode verwendet, die über sogenannte Opcodes\footnote{Abkürzung für Operation Code. Jede aufrufbare Operation wird durch einen Code Symbolisiert und als Parameter übergeben.} parametrisiert werden. Es werden sehr häufig '*void' Zeiger benutzt, was zusammen mit einer schlechten Dokumentation schnell zu schwer auffindbaren Fehlern führen kann. 
+Aus heutiger Sicht können viele in der VST2.x SDK verwendete Techniken als veraltet betrachtet werden. So wird zum Beispiel zur 'Host nach Plugin Kommunikation' lediglich eine einzige Methode verwendet, die über sogenannte Opcodes\footnote{Abkürzung für Operation Code. Jede aufrufbare Operation wird durch einen Code Symbolisiert und als Parameter übergeben.} parametrisiert werden. Es werden sehr häufig '*void' Zeiger benutzt, was zusammen mit einer schlechten Dokumentation schnell zu schwer auffindbaren Fehlern führen kann\verwS{grabit}). 
 \paragraph{VST3.x}
-Das VST3.x SDK wurde im Jahre 2008 eingeführt und ist eine vollständige Neuentwicklung\cite{stein08}.Es ist komplett objektorientiert und bietet eine Menge neuer Funktionen, die dabei helfen VST-Plugins schneller und komfortabler zu entwickeln. 
+Das VST3.x SDK wurde im Jahre 2008 eingeführt und ist eine vollständige Neuentwicklung\verwS{Stein02}. Es ist komplett objektorientiert und bietet eine Menge neuer Funktionen, die dabei helfen VST-Plugins schneller und komfortabler zu entwickeln. 
 \\\\
-Obwohl aus rein technischer Sicht die Entwicklung eines VST3.x-Plugins lukrativer wäre, fiel die Wahl dennoch auf die VST2.x Version. VST2.x-Plugins sind weiter verbreitet und werden von fast allen DAWs unterstützt.\\
+Obwohl aus rein technischer Sicht die Entwicklung eines VST3.x-Plugins lukrativer wäre, fiel die Wahl dennoch auf die VST2.x Version. VST2.x-Plugins sind weit verbreitet und werden von fast allen DAWs unterstützt\verw{Karkos}{S.196}\\
 Ein VST-Plugin tritt in der Form einer Dynamisch ladbaren Bibliothek auf. Je nach System ist es unter Windows eine ''.dll'' Datei oder unter Mac OSX ein sogenanntes ''Ressource Bundle''. 
 \subsubsection{Der Editor}
 Der Editor ist die graphische Schnittstelle zu VSTForx. Er sollte folgende Dinge beinhalten:
@@ -43,7 +43,7 @@ Wäre zum Beispiel Regler A mit Regler B verbunden, würde bei einem ''Inverse''
 Weitere Operatoren wären:
 \begin{itemize}
 	\item Inverse
-	\item Exponential/Logarithmisch \footnote{eine Operation hat zwei Richtungen (''A zu B'' und ''B zu A'') wobei ''B zu A'' die Inverse Operation von ''A zu B'' sein muss. }
+	\item Exponential/Logarithmisch \footnote{eine Verbindung hat zwei Richtungen. Dabei gilt: Rückrichtungs-Operation = inverse zu Hinrichtungs-Operation.}
 	\item Logarithmisch/Exponential
 	\item Offset (ein fester Verschiebungswert)
 \end{itemize}
@@ -59,12 +59,12 @@ Mögliche Module:
 
 \subsubsection{Persistenz}
 Das Programm sollte in der Lage sein, alle Einstellungen und Konstruktionen dauerhaft zu speichern. Dabei ist zu beachten, wird VSTForx in einem DAW Projekt benutzt, VSTForx Bestandteil dieses Projektes ist. Wird daher ein solches Projekt gespeichert, sollten mit dem erneuten Öffnen des Projektes alle vorherigen VSTForx Konstruktionen vollständig wiederhergestellt werden. 
-\subsection{Was implementiert werden kann}
+\subsection{Kannkriterien}
 \subsubsection{Weitere zusätzliche Module}
 \begin{itemize}
 	\item Peak2Value - transformiert den Ausschlag (engl. Peak) eines Signals in ein Parameterwert. Solch ein Parameterwert wird als (nicht veränderbarer) Regler dargestellt und kann mit anderen Reglern verbunden werden.
-	\item ADSR2Value - wird an einem Signalpfad ein Schwellwert überschritten, startet dieses Modul eine ADSR\footnote{ADSR - Attack, Decay, Sustain, Release: idealisierten Phasen der Hüllkurve eines Klanges} Sequenz. Wie schon beim ''Peak2Value'' Modul wird der Wert dieser Sequenz in einen Parameterwert transformiert.
-	\item Midi2Value - transformiert MIDI-Ereignisse wie Modulation oder Pitch in einen Parameterwert.
+	\item ADSR2Value - wird an einem Signalpfad ein Schwellwert überschritten, startet dieses Modul eine ADSR\footnote{ADSR - Attack, Decay, Sustain, Release: idealisierten Phasen der Hüllkurve eines Klanges} Sequenz \verw{Goerne}{S. 234}. Wie schon beim ''Peak2Value'' Modul wird der Wert dieser Sequenz in einen Parameterwert transformiert.
+	\item Midi2Value - transformiert MIDI-Ereignisse wie Modulation oder Pitch in einen Parameterwert Sequenz\verw{Goerne}{S. 264}.
 \end{itemize}
 
 \subsubsection{Unterstützung alternativer Pluginformate}
@@ -73,7 +73,7 @@ Denkbar wäre es weitere bekannte (Audio-) Pluginformate zu unterstützen. Sowoh
 Alternative Pluginformate wären:
 \begin{itemize}
 \item VST3.x
-\item AudioUnit (Mac OSX exclusives Pluginformat)
-\item DirectX Plugin 
+\item AudioUnits (Mac OSX exclusives Pluginformat)
+\item DX (DirectX Pluginformat) 
 \item LV2 (ist eine OpenSource Audio-Plugin Variante und Weiterentwicklung von LADSPA\footnote{Abkürzung für: Linux Audio Developers Simple Plugin API})
 \end{itemize}

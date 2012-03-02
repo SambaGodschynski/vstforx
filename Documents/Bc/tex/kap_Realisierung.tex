@@ -205,7 +205,8 @@ Der \emph{GCC C++} Compiler liefert hier allerdings die Fehlermeldung:
 \emph{''invalid initialization of non-const reference of type ‘X}\&\emph{’ from a temporary of type ‘X’''}. 
 }
 \\\\
-Es ist daher nicht erlaubt, einer Funktion mit (non-const) Referenz-Parameter ein temporäres Objekt (in diesem Fall: X()) zu übergeben. Derartige Funktionen gab es einige im ursprünglichen Quelltext. Zur Lösung muss einfach dem 'X\& x' Parameter ein \emph{'const'} Qualifier hinzugefügt werden. Prinzpiell sollte laut ''const-correctness'' Richtlinie, 'const' wann immer wenn möglich eingesetzt werden\footnote{Herb Sutter and Andrei Alexandrescu (2005). C++ Coding Standards. p. 30. Boston: Addison Wesley}.
+Es ist daher nicht erlaubt, einer Funktion mit (non-const) Referenz-Parameter ein temporäres Objekt (in diesem Fall: X()) zu übergeben. Derartige Funktionen gab es einige im ursprünglichen Quelltext. Zur Lösung muss einfach dem 'X\& x' Parameter ein \emph{'const'} Qualifier hinzugefügt werden. Prinzpiell sollte laut ''const-correctness'' Richtlinie, 'const' wann immer wenn möglich eingesetzt werden\verw{Reddy}{S.180 
+ff}.
 
 \paragraph{Templates}
 Der Boost-Archive Serialisierungs Mechanismus verlangt, um ein konkretes Objekt anhand eines Oberklassen Zeigers zu deserialiseren, die Registrierung jener Klasse mittels einer Template Methode. So wird zum Beispiel mittels 
@@ -222,11 +223,4 @@ Das Problem rührt daher, dass der \emph{GCC-Compiler} in Template-Methoden so f
 \\\\
 Das Problem des \emph{GCC-Compilers} ist nun, dass versucht wird, auf ein \emph{Archive} Objekt zuzugreifen, welches erst durch den Template-Parameter spezifiziert wird. Die Lösung (die erst durch viel Ausprobieren gefunden wurde) ist das Hinzufügen des Schlüsselwortes, ''\emph{template}'' vor entsprechenden Aufruf:
 \codeinsert{archive.template register\_type<Volume>();}
-
-
-
-
-
-
-
 

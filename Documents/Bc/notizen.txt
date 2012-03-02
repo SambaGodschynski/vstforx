@@ -66,4 +66,5 @@ FrontController::M2V -> add V2M
 
 sequences : return values
 
+janitor in graph-modell
 #frontcontroller->objectcontroller kardinalität nicht * sondern bezug 1 auf einzel. konkreten cntrl 
