@@ -3,12 +3,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Shared Pointer}
 Üblicherweise ist eine Schwierigkeit beim Programmieren mit C/C++ die fehlende Speicherverwaltung. Besonders deutlich wird dies, wenn mehrere Programmteile auf das gleiche Objekt zugreifen (z.B. Controller und View). Das Problem in solch einem Fall ist: Zu welchem Zeitpunkt kann ein entsprechendes Objekt aus dem Speicher (sicher) entfernt werden?
-Um solchartige Probleme von vornherein zu umgehen, wurde ein bewährtes Lösungskonzept angewandt: die Shared Pointer\footnote{http://www.boost.org/doc/libs/1\_48\_0/libs/smart\_ptr/shared\_ptr.htm}.
+Um solchartige Probleme von vornherein zu umgehen, wurde ein bewährtes Lösungskonzept angewandt: die Shared Pointer.
 \\\\
 Ein Nachteil beim Verwenden von \emph{Shared Pointer} ist allerdings, dass aus einem '\emph{this}' Zeiger eines Objektes kein \emph{Shared Pointer} erzeugt werden kann. So könnte zum Beispiel ein Objekt nicht sich selbst einer Methode übergeben, die ausschließlich \emph{Shared Pointer} entgegennimmt.
-Eine Lösung für dieses Problem findet sich im Abschnitt ''Smart Pointer Programming Techniques'', der \emph{Boost Shared Pointer Library Dokumentation}\footnote{http://www.boost.org/doc/libs/1\_48\_0/libs/smart\_ptr/sp\_techniques.html\#from\_this}. 
+Eine Lösung für dieses Problem findet sich im Abschnitt ''Smart Pointer Programming Techniques'', der \emph{Boost Shared Pointer Library Dokumentation}\verw{Boost}{Abschn.: 'Obtaining a shared\_ptr to this'}
 \\\\
-Es wird demnach ein Objekt einer Klasse ausschließlich über eine statische Methode erstellt. In dieser wird außerdem das neu erzeugte \emph{Shared Pointer} Objekt dem Zielobjekt als Weak-Pointer übergeben (siehe Listing \ref{thisToPtr}).
+Es wird demnach ein Objekt einer Klasse ausschließlich über eine statische Methode erstellt. In dieser wird außerdem das neu erzeugte \emph{Shared Pointer} Objekt dem Zielobjekt als Weak-Pointer\verw{Ellis}{5.4. Weak pointers} übergeben (siehe Listing \ref{thisToPtr}).
 
 \begin{code}{Shared Pointer in VSTForx-Klassen}{thisToPtr}
 class X {
@@ -128,9 +128,9 @@ CreateSeries< CreateParallel< VolumeAdapter, 2 > , 4 >
 
 \end{code} 
 
-\subsubsection{testAddRemoveNodes} 
+\paragraph{testAddRemoveNodes} 
 In diesem Test werden Knoten dem Graph hinzugefügt und entfernt. Es wird geprüft, ob die Knoten wie erwartet von der Graphstruktur aufgenommen werden. Auch wird das Hinzufügen ungültiger Knoten (NULL-Zeiger) getestet. Solche Knoten sollten nicht vom Graph aufgenommen werden.  
-\subsubsection{testConnectNodes}
+\paragraph{testConnectNodes}
 Dieser Test arbeitet ähnlich wie \emph{testConnectNodes}. Getestet wird zusätzlich das Verbinden von Knoten. Folgende Operationen sollten vom Graph verweigert werden:
 \begin{itemize}
 	\item Verbinden eines Knoten mit einem ''NULL''-Knoten
@@ -138,15 +138,15 @@ Dieser Test arbeitet ähnlich wie \emph{testConnectNodes}. Getestet wird zusätz
 	\item Erzeugen einer bereits vorhandenen Verbindung
 	\item Erzeugen einer ''Rückkoppelnden'' Verbindung
 \end{itemize}
-\subsubsection{testSignalProcessPath}
+\paragraph{testSignalProcessPath}
 In diesem Test wird die vom Graph erstellte Prozess-Liste auf Korrektheit überprüft. Es werden verschiedene Szenarien erstellt und die jeweiligen Ausgaben mit entsprechenden Erwartungsergebnissen verglichen.
-\subsubsection{testDelayAdapter}
+\paragraph{testDelayAdapter}
 Zum Testen der Delay-Compensation wurde eigens ein ProcessAdapter implementiert. Der DelayAdapter. Dieser verzögert die Ausgabe eines Signals um N Millisekunden. Diese Funktionalität wird in diesem Test getestet.
-\subsubsection{testDelayCompensation}
+\paragraph{testDelayCompensation}
 In diesem Test wird die Delay-Compensation getestet. Hierfür werden mehrere DelayAdapter Objekte in verschiedenen Szenarien eingefügt. Es wird geprüft, ob die Verzögerung des Graph-Ausgabesignals einem Erwartungswert entspricht.
-\subsubsection{testGraphConsistency}
+\paragraph{testGraphConsistency}
 In diesem Test wird der Graph auf Stabilität geprüft. Es werden hintereinander viele Objekte hinzugefügt und wieder entfernt. Es werden NULL-Objekte hinzugefügt. Es wird mehrfach die Samplerate und die Blockgröße geändert (auch mit ungültigen Werten).
-\subsubsection{testGraphComplex}
+\paragraph{testGraphComplex}
 In dieser Testreihe werden verschiedene Graph-Szenarien aus Volume-Adapter erstellt. Jeder Volume-Adapter erhält einen Volume-Multiplikator $vol$. Die verschiedenen Graph-Szenarien werden mit einer Eingangswertemenge($En$) prozessiert. Die Ausgabewertemenge($Ex$) muss einer Erwartungswertemenge entsprechen (siehe Abbildung \ref{testGraphComplex01} bis \ref{testGraphComplex03}). 
 \\\\
 Außerdem wird geprüft, ob die Anzahl der Frames-Objekt Kopiervorgänge der in Abschnitt \ref{Optimierung} beschriebenen Optimierung entspricht. Hierfür wird ein Zählmechanismus genutzt, der ausschließlich mittels Präprozessor Schalter: 
@@ -177,17 +177,17 @@ aktiviert wird.
 \end{center}
 \end{figure}
 
-\subsubsection{testSerialization}
+\paragraph{testSerialization}
 Es wird die Persistierungs-Funktionalität des Graphen getestet. Dazu wird ein Graphszenario mit allen
 verfügbaren Graph-Objekten erstellt. Danach wird eine Referenz-Ausgabe-Ergebnismenge erstellt. Nun wird der Graph serialisiert und gelöscht. Anschließend wird der Graph deserialisiert und erneut eine Ausgabe-Ergebnismenge erstellt. Diese wird schließlich mit der vorher erstellten Referenzmenge auf Gleichheit überprüft.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Portierung Windows/MacOSX}
-Obwohl VSTForx von Anfang an für Windows sowie MacOSX geplant war, konnte aufgrund fehlender Hardware erst relativ spät mit der MacOSX Portierung begonnen werden. Da das VST-SDK für beide Plattformen kompilierbar ist, kann die Portierung mit relativ wenig Aufwand erfolgen. Die wenigen plattformspezifischen Aufrufe, wie zum Beispiel das Laden und Ausführen von Dynamischen Bibliotheken (den Plugins), wurden in das ''Paket'' '\emph{OS\_Specific}' separiert. Es enthält die ''Unterpakete'' '\emph{mac}' und '\emph{win}'. Je nach Plattform werden nur die entsprechenden Dateien in das Projekt aufgenommen.  
+Obwohl VSTForx von Anfang an für Windows sowie für MacOSX geplant war, konnte aufgrund fehlender Hardware erst relativ spät mit der MacOSX Portierung begonnen werden. Da das VST-SDK für beide Plattformen kompilierbar ist, kann die Portierung mit relativ wenig Aufwand erfolgen. Die wenigen plattformspezifischen Aufrufe, wie zum Beispiel das Laden und Ausführen von Dynamischen Bibliotheken (den Plugins), wurden in das ''Paket'' '\emph{OS\_Specific}' separiert. Es enthält die ''Unterpakete'' '\emph{mac}' und '\emph{win}'. Je nach Plattform werden nur die entsprechenden Dateien in das Projekt aufgenommen.  
 \\\\
 Zwei Problemtypen traten beim ersten Kompiliervorgang der MacOSX Version auf:
 
-\paragraph{Const-correctness} Folgendes Programm lässt sich mit dem \emph{Microsofts C++} Compiler anstandslos kompilieren:
-\begin{lstlisting}	
+\paragraph{Const-correctness} Folgendes Programm lässt sich mit \emph{Microsofts C++\footnote{Compiler Version 6.1}} Compiler anstandslos kompilieren:
+\begin{code}{Beispiel eines 'const-correctness'-Fehlers}{constcorr}
 struct X {
 };
 
@@ -198,14 +198,14 @@ int main() {
   call ( X() );
   return 0;
 }
-\end{lstlisting} 
-Der \emph{GCC C++} Compiler liefert hier allerdings die Fehlermeldung: 
+\end{code}
+Der \emph{GCC C++\footnote{gcc version 4.2.1}} Compiler liefert hier allerdings die Fehlermeldung: 
 \\\\
 \fbox{
 \emph{''invalid initialization of non-const reference of type ‘X}\&\emph{’ from a temporary of type ‘X’''}. 
 }
 \\\\
-Es ist daher nicht erlaubt, einer Funktion mit (non-const) Referenz-Parameter ein temporäres Objekt (in diesem Fall: X()) zu übergeben. Derartige Funktionen gab es einige im ursprünglichen Quelltext. Zur Lösung muss einfach dem 'X\& x' Parameter ein \emph{'const'} Qualifier hinzugefügt werden. Prinzpiell sollte laut ''const-correctness'' Richtlinie, 'const' wann immer wenn möglich eingesetzt werden\verw{Reddy}{S.180 
+Es ist daher nicht erlaubt, einer Funktion mit (non-const) Referenz-Parameter ein temporäres Objekt (in diesem Fall: X()) zu übergeben. Derartige Funktionen gab es einige im ursprünglichen Quelltext. Zur Lösung muss dem 'X\& x' Parameter ein \emph{'const'} Qualifier hinzugefügt werden. Prinzpiell sollte laut dem ''const-correctness'' Paradigma, 'const' wann immer wenn möglich verwendet werden\verw{Reddy}{S.180 
 ff}.
 
 \paragraph{Templates}
@@ -219,8 +219,35 @@ Der \emph{GCC C++} Compiler lieferte beim \emph{''register\_type''} Aufruf folge
 \emph{''expected primary-expression before '>' token''} 
 }
 \end{center}
-Das Problem rührt daher, dass der \emph{GCC-Compiler} in Template-Methoden so früh wie möglich versucht, Fehler zu erkennen. Während der \emph{Microsoft-Compiler} Template-Methoden erst dann untersucht, wenn sie konkret verwendet werden. Das fällt besonders dann auf, wenn eine Template-Methode Fehler enthält. Diese werden vom \emph{Microsoft-Compiler} erst entdeckt, wenn der Methodenaufruf kompiliert wird. 
-\\\\
-Das Problem des \emph{GCC-Compilers} ist nun, dass versucht wird, auf ein \emph{Archive} Objekt zuzugreifen, welches erst durch den Template-Parameter spezifiziert wird. Die Lösung (die erst durch viel Ausprobieren gefunden wurde) ist das Hinzufügen des Schlüsselwortes, ''\emph{template}'' vor entsprechenden Aufruf:
+Das Problem rührt daher, dass der \emph{GCC-Compiler} in Template-Methoden so früh wie möglich versucht, Fehler zu erkennen. Während der \emph{Microsoft-Compiler} Template-Methoden erst dann untersucht, wenn sie konkret verwendet werden (siehe Listing \ref{template}).  
+\begin{code}{Darstellung der Fehlererkennung in Template-Methoden}{template}
+template <typename T>
+void foo() {
+	x = 0; // keine Variable x Deklariert
+}
+
+int main() {
+	// GCC 4.2.1 C++ Kompiler: 'x' was not declared in this scope.
+	// MSVC 6.1 Kompiliert ohne Fehler.
+	// Kommentar entfernen, um Fehler zu erhalten:
+	// foo<int>();
+	return 0;
+}
+\end{code}
+
+Das Problem des \emph{GCC-Compilers} ist nun, dass versucht wird, auf ein \emph{Archive} Objekt zuzugreifen, welches erst durch den Template-Parameter spezifiziert wird. Die Lösung ist das Hinzufügen des Schlüsselwortes, ''\emph{template}'' vor entsprechenden Aufruf:
 \codeinsert{archive.template register\_type<Volume>();}
+
+
+
+
+
+
+
+
+
+
+
+
+
 

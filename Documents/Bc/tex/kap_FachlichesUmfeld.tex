@@ -5,7 +5,7 @@ Ein digitales Audiosignal besteht aus einer Menge einzelner Werte, den Samples. 
 \subsection{\label{Prozess}Der Prozess}
 In der Terminologie des VST-SDK ist mit Prozess der Teil eines Plugins gemeint, der für die Bearbeitung aller Pluginein- und ausgänge verantwortlich ist.
 \\\\
-Im VST2.x SDK ist dies eine Methode namens ''processReplacing''. Ihr werden als Parameter die Eingangs- und Ausgangssampleblöcke übergeben. Die Anzahl der Sampleblöcke ist abhängig von der Anzahl der Pluginein- sowie ausgangskanäle. So werden zum Beispiel einem Stereoplugin zwei Eingangssampleblöcke übergeben, jeweils ein Block für ''Rechts'' und ein Block für ''Links''. Das Plugin muss nun dafür sorgen dass, die Plugin-Audioausgabe in die entsprechenden Ausgangssampleblöcke geschrieben wird\verw{Vst}{Kap. AEffectX}.
+Im VST2.x SDK ist dies eine Methode namens ''processReplacing''. Ihr werden als Parameter die Eingangs- und Ausgangssampleblöcke übergeben. Die Anzahl der Sampleblöcke ist abhängig von der Anzahl der Pluginein- sowie ausgangskanäle. So werden zum Beispiel einem Stereoplugin zwei Eingangssampleblöcke übergeben, jeweils ein Block für ''Rechts'' und ein Block für ''Links''. Das Plugin muss nun dafür sorgen dass, die Plugin-Audioausgabe in die entsprechenden Ausgangssampleblöcke geschrieben wird\verw{Vst}{Abschn.: 'AEffectX'}.
 \\\\
 Der Ablauf eines Prozesses kann wie folgt skizziert werden:
 \begin{itemize}
