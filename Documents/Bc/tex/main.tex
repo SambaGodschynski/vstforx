@@ -25,6 +25,16 @@
 \newcommand{\verwS}[1]{ (vgl. \cite{#1})}
 \newcommand{\verw}[2]{ (vgl. \cite{#1} #2)}
 
+\lstnewenvironment{code}[2]{\lstset{caption=#1,
+captionpos=b, 
+label=#2, 
+language=C++,
+extendedchars=true,
+tabsize=2,
+numbers=left,
+numberstyle=\tiny}
+}{}
+
 \lstset{literate=%
 {Ö}{{\"O}}1 
 {Ä}{{\"A}}1 
@@ -42,6 +52,8 @@
 \maketitle
 \newpage
 \tableofcontents
+
+
 \include{kap_einleitung}
 \include{kap_Aufgabenstellung}
 \include{kap_FachlichesUmfeld}

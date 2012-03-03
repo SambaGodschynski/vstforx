@@ -10,7 +10,7 @@ Eine Lösung für dieses Problem findet sich im Abschnitt ''Smart Pointer Progra
 \\\\
 Es wird demnach ein Objekt einer Klasse ausschließlich über eine statische Methode erstellt. In dieser wird außerdem das neu erzeugte \emph{Shared Pointer} Objekt dem Zielobjekt als Weak-Pointer übergeben (siehe Listing \ref{thisToPtr}).
 
-\begin{lstlisting}[label=thisToPtr, caption=Shared Pointer in VSTForx-Klassen]	
+\begin{code}{Shared Pointer in VSTForx-Klassen}{thisToPtr}
 class X {
 public:
 	typedef boost::shared_ptr<X> Ptr;
@@ -35,7 +35,7 @@ void X::foo() {
 	X::Ptr _this = self.lock();
 }
 
-\end{lstlisting} 
+\end{code} 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{SDK Probleme}
 Da VSTForx sowohl ein Plugin, als auch ein Host für Plugins ist, existieren gleich zwei potentielle Fehlerquellen. Zum einen muss sichergestellt werden, dass jede Host-Anwendung VSTForx laden und ausführen kann. Zum anderen sollte auch VSTForx in der Lage sein, jedes Plugin zu laden und auszuführen. Unglücklicherweise ist eine große Schwäche des VST2.x-SKDs die schlechte Dokumentation. So sind viele Funktionen ungenügend oder gar nicht beschrieben. Auch bleibt ungeklärt, in welcher Reihenfolge Operationen ausgeführt werden(siehe Abschnitt: Initalisierungsreihenfolge). Da es eine große Menge an Plugins und Hostanwendungen unterschiedlicher Qualität gibt, führt dieser Umstand zu einer Reihe an Problemen, die erst durch viel Ausprobieren ermittelt und behoben werden können. 
@@ -113,20 +113,20 @@ ein (Volume) ProcessAdapter-Objekt, der im übergebenen Graph zwischen \emph{ent
 Die Klassen: \emph{CreateSeries, CreateParallel, CreateBinaryTree} sind durch den Template-Parameter Creator  
 mit beliebig vielen GraphBuilder-Klassen verschachtelbar (siehe Beispiele in Listing \ref{Graphbuilder}). 
 \\\\
-\begin{lstlisting}[label=Graphbuilder, caption=Beispiel: Anwendung der GraphBuilder-Konstrukte]	
+\begin{code}{Anwendung der GraphBuilder-Konstrukte}{Graphbuilder}
 typedef CreateAdapter<Volume> VolumeAdapter;
 
 // erzeugt 4 ProcessAdapter-Objekte 
 // und verknüpft diese seriell
 CreateSeries< VolumeAdapter, 4 > 
-(graph, entry, exit);
+	(graph, entry, exit);
 
 // erzeugt 4 seriell verknüpfte Subgraphen, bestehend aus
 // 2 parallel verknüpften ProcessAdapter-Objekten 
 CreateSeries< CreateParallel< VolumeAdapter, 2 > , 4 > 
-(graph, entry, exit);
+	(graph, entry, exit);
 
-\end{lstlisting} 
+\end{code} 
 
 \subsubsection{testAddRemoveNodes} 
 In diesem Test werden Knoten dem Graph hinzugefügt und entfernt. Es wird geprüft, ob die Knoten wie erwartet von der Graphstruktur aufgenommen werden. Auch wird das Hinzufügen ungültiger Knoten (NULL-Zeiger) getestet. Solche Knoten sollten nicht vom Graph aufgenommen werden.  
