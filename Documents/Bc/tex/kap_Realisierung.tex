@@ -147,7 +147,8 @@ In diesem Test wird die Delay-Compensation getestet. Hierfür werden mehrere Del
 \paragraph{testGraphConsistency}
 In diesem Test wird der Graph auf Stabilität geprüft. Es werden hintereinander viele Objekte hinzugefügt und wieder entfernt. Es werden NULL-Objekte hinzugefügt. Es wird mehrfach die Samplerate und die Blockgröße geändert (auch mit ungültigen Werten).
 \paragraph{testGraphComplex}
-In dieser Testreihe werden verschiedene Graph-Szenarien aus Volume-Adapter erstellt. Jeder Volume-Adapter erhält einen Volume-Multiplikator $vol$. Die verschiedenen Graph-Szenarien werden mit einer Eingangswertemenge($En$) prozessiert. Die Ausgabewertemenge($Ex$) muss einer Erwartungswertemenge entsprechen (siehe Abbildung \ref{testGraphComplex01} bis \ref{testGraphComplex03}). 
+In dieser Testreihe werden verschiedene Graph-Szenarien aus \\
+Volume-Adapter erstellt. Jeder Volume-Adapter erhält einen Volume-Multiplikator $vol$. Die verschiedenen Graph-Szenarien werden mit einer Eingangswertemenge($En$) prozessiert. Die Ausgabewertemenge($Ex$) muss einer Erwartungswertemenge entsprechen (siehe Abbildung \ref{testGraphComplex01} bis \ref{testGraphComplex03}). 
 \\\\
 Außerdem wird geprüft, ob die Anzahl der Frames-Objekt Kopiervorgänge der in Abschnitt \ref{Optimierung} beschriebenen Optimierung entspricht. Hierfür wird ein Zählmechanismus genutzt, der ausschließlich mittels Präprozessor Schalter: 
 \codeinsert{\_FORX\_TESTSUITE}

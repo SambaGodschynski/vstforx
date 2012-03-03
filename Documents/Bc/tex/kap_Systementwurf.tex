@@ -65,7 +65,7 @@ Sie bietet mehrere Vorteile:
 Ein Nachteil ist allerdings, da die Boost Library großteils Template-Meta Programmiertechniken verwendet, die lange Kompilationsdauer des resultierenden Programmes (aktuelle Kompilationszeit: ca. 15 Minuten\footnote{Win7, AMD64+3200 Mhz, 6GB Ram}).
 \\\\
 Die Boost Graph Library bietet, einen bereits vollständig implementierten Tiefensuche-Algorithmus. 
-Diese kann über ein Visitor-Mechanismus leicht um eigene Funktionalität erweitert werden. So werden folgende Informationen durch den BGL-Tiefensuchealgorithmus ermittelt. 
+Diese kann über ein Visitor-Mechanismus leicht um eigene Funktionalität erweitert werden. So werden folgende Informationen durch den BGL-Tiefensuche-Algorithmus ermittelt. 
 \begin{itemize}
 		\item die Prozessliste (siehe Abschnitt \ref{process})
 		\item Latenzwerte der Knoten (siehe Abschnitt \ref{Latenzproblem})
@@ -133,9 +133,10 @@ Die Schnittstelle HasParameter ermöglicht den Zugriff auf eine unbestimmte Meng
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Die GUI Ebene}
 \paragraph{PpiEditor}
-Die PpiEditor-Klasse erweitert die von dem Vst-Gui SDK vorgegebene AEffGUIEditor-Klasse. Sie dient der Kommunikation zwischen Hostanwendung und Plugin-Editor.
+Die PpiEditor-Klasse erweitert die von dem Vst-Gui SDK vorgegebene \\
+AEffGUIEditor-Klasse. Sie dient der Kommunikation zwischen Hostanwendung und Plugin-Editor.
 \paragraph{CView}
-Die CView-Klasse ist die Oberklasse aller graphischen Elemente im Vst-Gui SDK. Sie besteht aus einem rechteckigen Bereich und enthält die Methode draw(CDrawContext *cn). Über diese können mittels übergebenen DrawContext, im sichtbaren Bereich Zeichenoperationen ausgeführt werden.
+Die CView-Klasse ist die Oberklasse aller graphischen Elemente im Vst-Gui SDK. Sie besteht aus einem rechteckigen Bereich und enthält die Methode: \codeinsert{draw(CDrawContext *cn).} Über diese können mittels übergebenen DrawContext, im sichtbaren Bereich Zeichenoperationen ausgeführt werden.
 \paragraph{CircuidView}
 Die CircuidView-Klasse repräsentiert die ''Bühne'' der GUI.
 Zu Beginn der Entwicklung stand der Autor vor der Entscheidung, die Bühnedarstellung nach Vst-Gui SDK Methodik zu gestalten oder eine eigene Implementierung zu verwenden. So könnte genau wie in der Vst-Gui-Bibliothek, jedes Bühnenobjekt einen eigenen CView-Bereich darstellen.
