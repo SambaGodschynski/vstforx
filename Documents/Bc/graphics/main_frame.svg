@@ -25,16 +25,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="0"
      inkscape:zoom="0.175"
-     inkscape:cx="-8339.5576"
-     inkscape:cy="-2246.3117"
+     inkscape:cx="4808.8736"
+     inkscape:cy="-767.84252"
      inkscape:document-units="px"
-     inkscape:current-layer="g5102"
+     inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1676"
      inkscape:window-height="1006"
      inkscape:window-x="4"
      inkscape:window-y="0"
-     inkscape:window-maximized="1"
+     inkscape:window-maximized="0"
      showguides="true"
      inkscape:guide-bbox="true" />
   <metadata
@@ -45,7 +45,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -571,7 +571,7 @@
            y="-117.18751"
            x="2319.2356"
            sodipodi:role="line"
-           id="tspan4672">Effekt Kanal </tspan><tspan
+           id="tspan4672">Effektkanal </tspan><tspan
            y="-40.111523"
            x="2309.4204"
            sodipodi:role="line"
@@ -720,7 +720,7 @@
            y="-117.18751"
            x="2319.2356"
            sodipodi:role="line"
-           id="tspan4672-0">Effekt Kanal </tspan><tspan
+           id="tspan4672-0">Effektkanal </tspan><tspan
            y="-40.111523"
            x="2309.4204"
            sodipodi:role="line"
@@ -956,7 +956,7 @@
            y="-117.18751"
            x="2319.2356"
            sodipodi:role="line"
-           id="tspan4672-7">Effekt Kanal </tspan><tspan
+           id="tspan4672-7">Effektkanal </tspan><tspan
            y="-40.111523"
            x="2309.4204"
            sodipodi:role="line"
@@ -1038,7 +1038,7 @@
            y="-117.18751"
            x="2319.2356"
            sodipodi:role="line"
-           id="tspan4672-0-8">Effekt Kanal </tspan><tspan
+           id="tspan4672-0-8">Effektkanal </tspan><tspan
            y="-40.111523"
            x="2309.4204"
            sodipodi:role="line"
@@ -1349,7 +1349,7 @@
            y="-117.18751"
            x="2319.2356"
            sodipodi:role="line"
-           id="tspan4672-7-1">Effekt Kanal </tspan><tspan
+           id="tspan4672-7-1">Effektkanal </tspan><tspan
            y="-40.111523"
            x="2309.4204"
            sodipodi:role="line"
@@ -1431,7 +1431,7 @@
            y="-117.18751"
            x="2319.2356"
            sodipodi:role="line"
-           id="tspan4672-0-8-4">Effekt Kanal </tspan><tspan
+           id="tspan4672-0-8-4">Effektkanal </tspan><tspan
            y="-40.111523"
            x="2309.4204"
            sodipodi:role="line"
