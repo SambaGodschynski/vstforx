@@ -55,6 +55,7 @@ refactor:
      ""ppieditor.cpp(141)
      ""circuidcontrol.cpp(325)
 <--> Parameter::ParameterConnection als Klasse
+<--> Controller -> zugriff auf CircuidView und graph ueber FrontController
 
 fadevalue::inc statt operator
 Controll eigenen namespace

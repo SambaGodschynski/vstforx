@@ -159,7 +159,8 @@ inline void CircuidControl::showContextMenu( GObject::Ptr obj, CPoint& point ){
 }
 //------------------------------------------------------------------------------------------------------------
 // wird von eventHandler( void *src, const OnGetVSTFolder &ev ) aufgerufen
-inline void CircuidControl::createDynMenuPlugTree ( menu::MenuEntryList &mE, const PluginCollection::Folder &folder ) 
+inline void CircuidControl::createDynMenuPlugTree ( menu::MenuEntryList &mE, 
+	const PluginCollection::Folder &folder ) 
 {
 	using namespace processing;
 	typedef PluginCollection::PluginInfoList PluginInfoList;
@@ -177,8 +178,8 @@ inline void CircuidControl::createDynMenuPlugTree ( menu::MenuEntryList &mE, con
 		ADD_DYNSUB_MENU ( 
 			mE,     					                                   // menuEntryList
 			GET_FOLDER_NAME(*it),						                   // menuEntry Label
-			SubMenuVSTFolderCallback,                
-			SubMenuVSTFolderCallback( *it ),					           //Path, Menu title
+			SubMenuVSTFolderCallback,									   // Event Typ                
+			SubMenuVSTFolderCallback( *it ),					           //Event-Objekt 
 			boost::bind
 				( &CircuidControl::vstFolderMenuCallBack, this, _1, _2  ), // function
 			view->getFrame()											   // CFrame 
