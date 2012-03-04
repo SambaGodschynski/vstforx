@@ -38,7 +38,7 @@ Der erforderliche Prozessablauf für Abbildung \ref{g01} wäre:
 	\item führe ''processReplace'' mit Plugin-C aus
 	\item übertrage die Ausgabe von Plugin-C in die Programm(VSTForx) Ausgabesampleblöcke
 \end{enumerate}
-Wie in Schritt \ref{PlugC} zu sehen, ist zur korrekten Ausführung von Plugin-C notwendig, dass die Plugins A und C bereits bearbeitet wurden. Das bedeutet: Plugin-C ist von Plugin-A und Plugin-B abhängig. \\\\
+Wie in Schritt \ref{PlugC} zu sehen, ist zur korrekten Ausführung von Plugin-C notwendig, dass die Plugins A und B bereits bearbeitet wurden. Das bedeutet: Plugin-C ist von Plugin-A und Plugin-B abhängig. \\\\
 In der Graphentheorie gibt es einen Algorithmus, der in der Lage ist Abhängigkeiten aufzulösen: die Topologische Sortierung.
 \\\\
 Die topologische Sortierung basiert auf der Durchlaufstrategie Tiefensuche\footnote{oder auch DFS - engl.: Depth First Search}. \\
@@ -67,13 +67,14 @@ Bei einer Parallelschaltung, zweier Plugins mit unterschiedlichen Latenzwerten, 
 \\\\
 Um unterschiedliche Latenzen in einem komplexen Graph auszugleichen, sind folgende Schritte notwendig:
 \begin{itemize}
-	\item Hinzufügen eines berechneten Latenzwert je Knoten
+	\item Hinzufügen eines berechneten Latenzwert je Knoten : $GL$ = Graphlatenz = die Latenz im Graph an Position des Knoten.
 	\begin{description}
-		\item[=] Maximaler berechneter Latenzwert der Vorgängerknoten, addiert zum eigenen (Plugin) Latenzewert
+		\item[$GL$ = ] Maximum($GL$-Wert der Elternknoten) + Knoten(Plugin)-Latenzewert
 	\end{description}
-	\item Hinzufügen eines Buffers je Knoten, dessen Größe = Sampleblockgröße + berechneter Latenzwert ist.
-	\item die Ausgaben aller Vorgängerknoten, je nach Vorgängerlatenz an unterschiedlichen Position dem Buffer hinzufügen (siehe Abbildung \ref{dc})
-	\item Sampledatenmenge des Buffer als Eingabe weiterverarbeiten
+	\item der $GL$-Wert des Graph-Ausgangsknoten = Gesamtlatenz des Graphen = $SUML$
+	\item Hinzufügen eines Buffers je Knoten
+	\item die Ausgaben aller Elternknoten $x$, an Position = $SUML - GL(x)$ dem Buffer hinzumischen (siehe Abbildung \ref{dc}).\\
+	\item Sampledatenmenge des Buffer als Eingabe weiterverwenden
 \end{itemize}
 \begin{figure}[h]
 	\centering

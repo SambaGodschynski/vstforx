@@ -62,7 +62,7 @@ Sie bietet mehrere Vorteile:
 	\item performant erweiterbar durch Template-Meta Programmiertechniken 
 	\item große Anzahl an bereits implementierten Algorithmen 
 \end{itemize}
-Ein Nachteil ist allerdings, da die Boost Library großteils Template-Meta Programmiertechniken verwendet, die lange Kompilationsdauer des resultierenden Programmes (aktuelle Kompilationszeit: ca. 15 Minuten\footnote{Win7, AMD64+3200 Mhz, 6GB Ram}).
+Ein Nachteil ist allerdings, da die Boost Library großteils Template-Meta Programmiertechniken verwendet\verw{Bgl}{S. 19ff}, die lange Kompilationsdauer des resultierenden Programmes (aktuelle Kompilationszeit: ca. 15 Minuten\footnote{Win7, AMD64+3200 Mhz, 6GB Ram}).
 \\\\
 Die Boost Graph Library bietet, einen bereits vollständig implementierten Tiefensuche-Algorithmus. 
 Diese kann über ein Visitor-Mechanismus leicht um eigene Funktionalität erweitert werden. So werden folgende Informationen durch den BGL-Tiefensuche-Algorithmus ermittelt. 
@@ -73,7 +73,7 @@ Diese kann über ein Visitor-Mechanismus leicht um eigene Funktionalität erweit
 \end{itemize}
 
 \paragraph{Die Frames-Klasse}
-Die Frames-Klasse ist ein (Mehrkanal)-Container für Sampleblöcke (siehe Abschnitt \ref{sampleblock}). Sie bietet außerdem Hilfsfunktionen wie zum Beispiel die Addition mehrerer Frames-Objekte(mischen des Audiosignales) oder die Multiplikation um einen Faktor(Lautstärkeregelung).
+Die Frames-Klasse ist ein (Mehrkanal)-Kontainer für Sampleblöcke (siehe Abschnitt \ref{sampleblock}). Sie bietet außerdem Hilfsfunktionen wie zum Beispiel die Addition mehrerer Frames-Objekte(mischen des Audiosignales) oder die Multiplikation um einen Faktor(Lautstärkeregelung).
 
 \paragraph{Die DCStream-Klasse}
 Die DCStream-Klasse (DC=Delay Compensation) ist Teil, der in Abschnitt \ref{Latenzproblem} beschriebenen Lösung zum Latenzproblem. Eine Methode addFrames( Frames *frames, int numSamples, int delay ) bietet die Möglichkeit, Sampledaten eines Frames-Objektes, mit unterschiedlichen Versatzwerten in das DCStream-Objekt einzufügen. Über die Methode flush(int numSamples, Frames *target) wird der Sampledaten-Inhalt wieder in ein Frames-Objekt zurückgeschrieben. 

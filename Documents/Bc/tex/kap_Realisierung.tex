@@ -113,7 +113,7 @@ ein (Volume) ProcessAdapter-Objekt, der im übergebenen Graph zwischen \emph{ent
 Die Klassen: \emph{CreateSeries, CreateParallel, CreateBinaryTree} sind durch den Template-Parameter Creator  
 mit beliebig vielen GraphBuilder-Klassen verschachtelbar (siehe Beispiele in Listing \ref{Graphbuilder}). 
 \\\\
-\begin{code}{Anwendung der GraphBuilder-Konstrukte}{Graphbuilder}
+\begin{code}{Anwendung der GraphBuilder-Klassen}{Graphbuilder}
 typedef CreateAdapter<Volume> VolumeAdapter;
 
 // erzeugt 4 ProcessAdapter-Objekte 
@@ -224,7 +224,7 @@ Das Problem rührt daher, dass der \emph{GCC-Compiler} in Template-Methoden so f
 \begin{code}{Darstellung der Fehlererkennung in Template-Methoden}{template}
 template <typename T>
 void foo() {
-	x = 0; // keine Variable x Deklariert
+	x = 0; // keine Variable x deklariert
 }
 
 int main() {
