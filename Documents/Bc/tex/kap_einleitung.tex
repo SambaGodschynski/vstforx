@@ -25,7 +25,7 @@ Dies soll anhand des Sequenzers ''Cubase\footnote{verwendete Version: Cubase SL 
 \end{figure}
 Jede Klangquelle in Cubase, sei es eine Audiospur oder ein virtuelles Instrument, wird einem eigenen Kanal in dem virtuellen Mischpult zugeordnet. 
 Solch ein Kanal hat neben einem Equalizer und einer Pan-/Lautstärkeregelung eine feste Anzahl von  ''Insert-Slots''. In einen solchen ''Slot'' kann genau ein Effektmodul geladen werden (in Abbildung 2 und 3 als ''Effekt A..X'' bezeichnet). Jeder dieser Effekte wird nacheinander durchlaufen, was einer Reihenschaltung entspricht. Für eine Parallelschaltung steht eine begrenzte Anzahl von sogenannten ''Send'' Signalwegen zur Verfügung, von denen es zwei Varianten gibt: ''pre-send'' und ''post-send'' (siehe Abbildung \ref{send}).
-Je nach Typ wird das Audiosignal vor der Insert-Effektkette abgegriffen oder danach und in einen Effektkanal geleitet. Dieser Effektkanal besteht aus einer begrenzten Anzahl aus ''Insert-Slots''.
+Je nach Typ wird das Audiosignal vor der Insert-Effektkette abgegriffen oder danach und in einen Effektkanal geleitet. Dieser Effektkanal besitzt ebenfalls eine begrenzte Anzahl von ''Insert-Slots''.
 \\\\
 Diese Möglichkeiten sind für die meisten Produktionen vollkommen ausreichend, da der Unterschied - ob ein Effekt in Reihe oder parallel geschaltet wurde - abhängig vom Effekttyp - meistens sehr gering ist. Dennoch ist es manchmal wünschenswert etwas mehr Kontrolle und Übersicht über die Zusammensetzung der einzelnen Signalwege zu haben. 
 \\\\
@@ -37,11 +37,14 @@ Diese Möglichkeiten sind für die meisten Produktionen vollkommen ausreichend, 
 \end{figure}
 Ziel ist es ein Programm zu entwickeln, welches genau dies bietet. Es sollte es möglich machen beliebig viele Effekte auf eine virtuelle ''Bühne'' zu laden, um diese wiederum beliebig ''verdrahten'' zu können. Das Programm sollte selbst ein Effekt sein. Somit wäre die Integration in eine DAW Umgebung denkbar einfach (siehe Abbildung \ref{solutionVSTForx}).\\
 Die meisten Effekte werden durch Parameter gesteuert\verw{Vst}{Abschn.: 'AudioEffect/Parameter'}. Diese Parameter sollten sich ebenfalls in Form von Reglern auf die ''Bühne'' holen und von dort aus bedienen lassen. 
-Diese Regler könnte man verbinden und somit mehrere Regler gleichzeitig steuern. So wäre es zum Beispiel möglich die Intensität eines Halleffektes und die Intensität eines Verzerrers mit einem einzigen Regler zu steuern.
+Diese Regler könnte man verbinden und somit mehrere Regler gleichzeitig steuern. 
+\\\\
+So wäre es zum Beispiel möglich die Intensität eines Halleffektes und die Intensität eines Verzerrers mit einem einzigen Regler zu steuern.
 Darüber hinaus bietet es sich an, den Signalfluss und das Verhalten der Effekte durch zusätzliche Module manipulierbar beziehungsweise erweiterbar zu machen. Es wäre zum Beispiel eine Art ''Step-Sequencer'' denkbar. Ein Modul, welches rhythmisch zwischen verschiedenen Signalwegen umschaltet. 
 \\\\
 Das Programm wäre ein ideales Werkzeug zum Erschaffen von kreativen Klangexperimenten.
+\NP
 \subsection{Der Name}
-Als Programmname wurde sich für ''VSTForx'' entschieden. 
+Als Programmname wurde ''VSTForx'' gewählt. 
 \paragraph{VST} VST\footnote{Abkürzung für ''Virtual Studio Technology''} ist eine Plugin-Schnittstelle im Bereich Audioverarbeitung. Aufgrund der hohen Verbreitung von VST-Plugins wird die zu entwickelnde Software diese Schnittstelle hauptsächlich unterstützen.
 \paragraph{Forx} ein Kunstwort, das vom englischen Wort ''fork'' abgeleitet ist. Fork bedeutet Gabelung oder Abzweigung und beschreibt somit ziemlich treffend den Hauptzweck der Software.

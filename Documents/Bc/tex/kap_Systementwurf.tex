@@ -30,7 +30,7 @@ Eine vom Autor erstellte Sammlung von Hilfsklassen und Funktionen. Bietet u.a. e
 \label{mainpat}
 \end{center}
 \end{figure}
-Da es sich bei VSTForx um eine typische GUI-Anwendung handelt, wurde sich für das MVC-Architektur Pattern entschieden (siehe Abbildung \ref{mainpat}). 
+Da es sich bei VSTForx um eine typische GUI-Anwendung handelt, wurde das MVC-Architektur-Pattern gewählt (siehe Abbildung \ref{mainpat}). 
 \\\\
 Lediglich die Bezeichnungen wurden angepasst:
 \begin{itemize}
@@ -114,7 +114,7 @@ Eine bessere Lösung ist, dass die Ein- und Ausgänge ebenfalls durch Knoten dar
 
 \subsubsection{Parameter}
 Es wäre naheliegend, die Implementation der Parameter und deren Verbindungsmöglichkeiten ebenfalls mittels eines Graph-Modells umzusetzen. Es gibt aber, im Gegensatz zum Prozess-Graph, eine entscheidende Vereinfachung: es bestehen keine Abhängigkeiten. Wird ein Parameter verändert, ist es egal in welcher Reihenfolge die verbundenen Nachbarparameter über die Änderung informiert werden.
-So wurde sich für einen einfachen Observer-Entwurf entschieden (siehe Abbildung \ref{parameterModel}).
+Daher wurde ein einfacher Observer-Entwurf gewählt (siehe Abbildung \ref{parameterModel}).
 \paragraph{ParameterConnection}
 Die ParameterConnection-Klasse repräsentiert eine Verbindung. Jedes ParameterConnection-Objekt, kennt zwei Parameter. Parameter A und Parameter B. Zu jedem Parameter (A, B) existiert eine Event-Handler-Methode, die benachrichtigt wird sobald sich der entsprechende Parameter geändert hat. Ist dies geschehen, wird der neue Wert dem Nachbarparameter übermittelt.
 
@@ -131,7 +131,7 @@ Die Schnittstelle HasParameter ermöglicht den Zugriff auf eine unbestimmte Meng
 \end{center}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Die GUI Ebene}
+\subsection{Die GUI-Ebene}
 \paragraph{PpiEditor}
 Die PpiEditor-Klasse erweitert die von dem Vst-Gui SDK vorgegebene \\
 AEffGUIEditor-Klasse. Sie dient der Kommunikation zwischen Hostanwendung und Plugin-Editor.

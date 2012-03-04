@@ -9,8 +9,7 @@ Ein Nachteil beim Verwenden von \emph{Shared Pointer} ist allerdings, dass aus e
 Eine Lösung für dieses Problem findet sich im Abschnitt ''Smart Pointer Programming Techniques'', der \emph{Boost Shared Pointer Library Dokumentation}\verw{Boost}{Abschn.: 'Obtaining a shared\_ptr to this'}
 \\\\
 Es wird demnach ein Objekt einer Klasse ausschließlich über eine statische Methode erstellt. In dieser wird außerdem das neu erzeugte \emph{Shared Pointer}-Objekt dem Zielobjekt als Weak-Pointer\verw{Ellis}{5.4. Weak pointers} übergeben (siehe Listing \ref{thisToPtr}).
-
-\begin{code}{Shared Pointer in VSTForx-Klassen}{thisToPtr}
+\begin{code}{Shared-Pointer Erzeugungsparadigma in VSTForx }{thisToPtr}
 class X {
 public:
 	typedef boost::shared_ptr<X> Ptr;
@@ -26,15 +25,12 @@ public:
 		return neu;
 	}
 };
-
 // erzeugen einer Instanz:
 X::Ptr x = X::create();
-
 // erzeugen eines 'this'-Shared Pointer
 void X::foo() {
 	X::Ptr _this = self.lock();
 }
-
 \end{code} 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{SDK Probleme}
@@ -60,7 +56,7 @@ Wie schon erwähnt, gibt es keinerlei Angaben, in welcher Reihenfolge diese Aufr
 	\item \funktion{dispatcher(effSetSampleRate, sampleRate)}
 	\item \funktion{dispatcher(effSetBlockSize, blockSize)}
 \end{itemize}
-
+\NP
 Für einen Großteil der getesteten Plugins funktionierte dieser Vorgang. Bei einigen Plugins kam es beim Öffnen zu Abstürzen oder sie funktionierten nicht ordnungsgemäß. Auffällig war, dass die Abstürze meist beim Aufruf von \emph{effOpen} erfolgten. Mittels Debugger konnte schließlich ermittelt werden, in welcher Reihenfolge Cubase VSTForx initialisiert:
  
 \begin{itemize}
@@ -87,7 +83,7 @@ Hierfür bietet das VST-SDK eine Operation: \codeinsert{\funktion{AudioEffectX::
 \emph{Cubase} und andere Hostanwendungen liefern hierfür die gewünschte Information. Der weit verbreitete Sequenzer \emph{Ableton Live} liefert jedoch einen leeren String. Somit ist es notwendig, über plattformspezifische Aufrufe an die erforderliche Information zu gelangen.
 
 \subsubsection{Verzeichnisauswahl}
-Ein ähnliches Problem bereitete die Verzeichnisauswahl. Einige Hostanwendungen bieten die Möglichkeit, einen Verzeichnisauswahl-Dialog über das VST-SDK auszuführen. Andere nicht. Somit ist es erforderlich selbst einen Auswahldialog zu implementieren. Ist eine Hostanwendung in der Lage, einen eigenen Verzeichnisauswahl-Dialog anzubieten, so sollte dieser auch genutzt werden. Im Falle des Sequenzers \emph{Synapse Orion}\footnote{http://www.synapse-audio.com/} wurde ein Verzeichnissauswahl-Dialog zwar angeboten, dieser aber liefert keinen Ergebnis-String. So konnte im genannten Sequenzer VSTForx zwar Pluginverzeichnisse zur Auswahl anbieten, aber nicht übernehmen. Als Lösung wird nun immer die eigene Implementierung verwendet.
+Ein ähnliches Problem bereitete die Verzeichnisauswahl. Einige Hostanwendungen bieten die Möglichkeit, einen Verzeichnisauswahl-Dialog über das VST-SDK auszuführen, andere nicht. Somit ist es erforderlich selbst einen Auswahldialog zu implementieren. Ist eine Hostanwendung in der Lage, einen eigenen Verzeichnisauswahl-Dialog anzubieten, so sollte dieser auch genutzt werden. Im Falle des Sequenzers \emph{Synapse Orion}\footnote{http://www.synapse-audio.com/} wurde ein Verzeichnissauswahl-Dialog zwar angeboten, dieser aber liefert keinen Ergebnis-String. So konnte im genannten Sequenzer VSTForx zwar Pluginverzeichnisse zur Auswahl anbieten, aber nicht übernehmen. Als Lösung wird nun immer die eigene Implementierung verwendet.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Graph-Test}
 Getestet wurde mittels dem Cppunit-Framework\footnote{http://sourceforge.net/projects/cppunit/}, welches eine C++ - Portierung von JUnit darstellt. Folgend sollen die getätigten Tests kurz beschrieben werden:
@@ -184,7 +180,7 @@ verfügbaren Graph-Objekten erstellt. Danach wird eine Referenz-Ausgabe-Ergebnis
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Portierung Windows/MacOSX}
 Obwohl VSTForx von Anfang an für Windows sowie für MacOSX geplant war, konnte aufgrund fehlender Hardware erst relativ spät mit der MacOSX Portierung begonnen werden. Da das VST-SDK für beide Plattformen kompilierbar ist, kann die Portierung mit relativ wenig Aufwand erfolgen. Die wenigen plattformspezifischen Aufrufe, wie zum Beispiel das Laden und Ausführen von Dynamischen Bibliotheken (den Plugins), wurden in das ''Paket'' '\emph{OS\_Specific}' separiert. Es enthält die ''Unterpakete'' '\emph{mac}' und '\emph{win}'. Je nach Plattform werden nur die entsprechenden Dateien in das Projekt aufgenommen.  
-\\\\
+\NP
 Zwei Problemtypen traten beim ersten Kompiliervorgang der MacOSX Version auf:
 
 \paragraph{Const-correctness} Folgendes Programm lässt sich mit \emph{Microsofts C++\footnote{Compiler Version 6.1}} Compiler anstandslos kompilieren:
@@ -210,16 +206,17 @@ Es ist daher nicht erlaubt, einer Funktion mit (non-const) Referenz-Parameter ei
 ff}.
 
 \paragraph{Templates}
-Der Boost-Archive Serialisierungs Mechanismus verlangt, um ein konkretes Objekt anhand eines Oberklassen Zeigers zu deserialiseren, die Registrierung jener Klasse mittels einer Template Methode. So wird zum Beispiel mittels 
+Der Boost-Archive Serialisierungs Mechanismus verlangt, um ein konkretes Objekt anhand eines Oberklassen Zeigers zu deserialiseren, die Registrierung jener Klasse mittels einer Template Methode. So wird zum Beispiel mit dem Aufruf von 
 \codeinsert{archive.register\_type<Volume>();}
 die Konkrete-Klasse \emph{'Volume'} registriert. Dieser Aufruf findet in einer Methode statt, die ebenfalls über einen Template-Parameter aufgerufen wird: 
-\codeinsert{template<typename Archive> void register\_types(Archive \&archive)}
-Der \emph{GCC C++} Compiler lieferte beim \emph{''register\_type''} Aufruf folgende Fehlermeldung:
+\codeinsert{template<typename Archive> void register\_types(Archive \&archive)\{...\}}
+Der \emph{GCC C++} Compiler lieferte am \emph{''register\_type''} Aufruf folgende Fehlermeldung:
 \begin{center}
 \fbox{
 \emph{''expected primary-expression before '>' token''} 
 }
 \end{center}
+\NP
 Das Problem rührt daher, dass der \emph{GCC-Compiler} in Template-Methoden so früh wie möglich versucht, Fehler zu erkennen. Während der \emph{Microsoft-Compiler} Template-Methoden erst dann untersucht, wenn sie konkret verwendet werden (siehe Listing \ref{template}).  
 \begin{code}{Darstellung der Fehlererkennung in Template-Methoden}{template}
 template <typename T>

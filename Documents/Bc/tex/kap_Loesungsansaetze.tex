@@ -64,17 +64,15 @@ Die Topologischen Sortierung ist allerdings in der Lage zu erkennen, ob ein Grap
 Werden Plugins parallel verbunden, kann es unter Umständen zu einem Problem kommen:
 es gibt Plugins, die eine Latenzzeit größer 0 aufweisen. Das bedeutet die Pluginausgabe ist zeitlich verzögert.
 Bei einer Parallelschaltung, zweier Plugins mit unterschiedlichen Latenzwerten, wird das Eingangsignal schließlich unterschiedlich verzögert ausgegeben. Die Signale erklingen daher versetzt. 
-\\\\
+\NP
 Um unterschiedliche Latenzen in einem komplexen Graph auszugleichen, sind folgende Schritte notwendig:
 \begin{itemize}
-	\item Hinzufügen eines berechneten Latenzwert je Knoten: $GL$ = Graphlatenz = die Latenz im Graph an Position des Knoten
-	\begin{description}
-		\item[$GL$ = ] Maximum($GL$-Wert der Elternknoten) + Knoten(Plugin)-Latenzewert
-	\end{description}
+	\item Hinzufügen eines berechneten Latenzwert je Knoten: $GL$ = die Latenz im Graph an Position des Knoten = Maximum($GL$-Wert der Elternknoten) + Knoten-Latenzewert (Pluginlatenz)
+	
 	\item der $GL$-Wert des Graph-Ausgangsknoten = Gesamtlatenz des Graphen = $SUML$
-	\item Hinzufügen eines Buffers je Knoten
-	\item die Ausgaben aller Elternknoten $x$, an Position = $SUML - GL(x)$ dem Buffer hinzumischen (siehe Abbildung \ref{dc})\\
-	\item Sampledatenmenge des Buffer als Eingabe weiterverwenden
+	\item Hinzufügen eines Buffers je Knoten der in der Lage ist, Sampledatenmengen mit unterschiedlichen Verzögerungswerten aufzunehmen
+	\item die Ausgaben aller Elternknoten $x$, dem Buffer hinzufügen. Verzögerungswert = $SUML - GL(x)$  (siehe Abbildung \ref{dc})\\
+	\item Sampledatenmenge des Buffers als Eingabe weiterverwenden
 \end{itemize}
 \begin{figure}[h]
 	\centering
@@ -111,6 +109,7 @@ public:
 };	
 		
 \end{code}
+\NP
 Der Nachteil dieser Methode ist, je komplexer die Graphklasse und ihre enthaltenden Methoden, um so höher ist die Gefahr, dass es ''vergessen'' wird ein gesperrtes Mutex wieder zu entsperren (siehe Listing \ref{block02}). Ein Deadlock wäre die Folge.
 \\\\
 \begin{code}{Beispiel eines potentiellen Deadlocks}{block02}
@@ -139,11 +138,9 @@ public:
 Das Befehl-Entwurfsmuster gehört zu den Verhaltensmustern der ''GoF'' Entwurfsmuster.  Es dient dazu Programmbefehle in einem Objekt zu kapseln \verw{Gof}{S.273 ff}. \\
 Der Graph würde seine verändernden Befehle nicht mehr als öffentliche Methoden anbieten, sondern nur noch Befehlsobjekte entgegennehmen.
 Solch ein Objekt würde dann vom Graph zu einem sicheren Zeitpunkt (zum Beispiel nach Abschluss der Prozessmethode) ausgeführt (siehe Listing \ref{command}).
-
+\NP
 \begin{code}{Lösung des Nebenläufigkeitsproblemes durch das Befehl-Entwurfsmuster}{command}
-
 // Datei AenderGraph.h
-
 #include "ICommand.h"
 #include "Graph.h"
 
@@ -159,7 +156,6 @@ public:
 		graph->veraenderGraph();
 	}
 };
-
 // Datei Graph.h
 #include "ICommand.h"
 
