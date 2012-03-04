@@ -20,6 +20,7 @@
 #include <boost/foreach.hpp>
 #include <boost/unordered_set.hpp>
 
+
 namespace processing {
 namespace parameter {
 using namespace events;
@@ -130,6 +131,8 @@ public:
 	typedef boost::shared_ptr<ParameterConnection> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	bool updateLock;
+	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * (DE)Serialisierung eines ConnectionOperator-Objektes.
 	 * @param ar boost::Archive-Objekt.
@@ -144,12 +147,20 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	ParameterPtr a, b;
 	//--------------------------------------------------------------------------------------------------------
+	ParameterConnection() : updateLock(false) {}
+	//--------------------------------------------------------------------------------------------------------
 	ParameterConnection(ParameterPtr a, ParameterPtr b);
 	//--------------------------------------------------------------------------------------------------------
-	typedef std::list<ConnectionOperator::Ptr> Operators;
+	typedef ConnectionOperator::Container Operators;
 	//--------------------------------------------------------------------------------------------------------
 	Operators ops;
 public:
+	//--------------------------------------------------------------------------------------------------------
+	virtual ~ParameterConnection();
+	//--------------------------------------------------------------------------------------------------------
+	Operators & getOperators() {
+		return ops;
+	}
 	//--------------------------------------------------------------------------------------------------------
 	const Operators & getOperators() const {
 		return ops;
@@ -248,6 +259,8 @@ class ParameterConnectionSet :
 			ParameterConnectionComparator>
 {
 //============================================================================================================
+friend class boost::serialization::access;
+BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::unordered_set<ParameterConnection::Ptr, 
@@ -256,15 +269,15 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Verbindet Parameter a mit Parameter b.
-	 * @return true, wenn erfolgt
+	 * @return ParameterConnection, wenn erfolgt. Andernfalls NULL
 	 */
-	virtual bool connectParameter(ParameterPtr a, ParameterPtr b) {
-		if (!a || !b)
-			return false;
+	ParameterConnection::Ptr connectParameter(ParameterPtr a, ParameterPtr b) {
+		if (!a || !b || a == b)
+			return ParameterConnection::Ptr();
 		pair<Base::iterator,bool> ret;
 		ParameterConnection::Ptr cn = ParameterConnection::create(a,b);
 		ret = insert(cn);
-		return ret.second;
+		return ret.second ? cn : ParameterConnection::Ptr();
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -272,7 +285,7 @@ public:
 	 * Parameter-Reihenfolge a,b) oder (b,a) spielt keine Rolle. 
 	 * @return true, wenn erfolgt
 	 */
-	virtual bool removeConnection(ParameterPtr a, ParameterPtr b) {
+	bool removeConnection(ParameterPtr a, ParameterPtr b) {
 		if (!a || !b)
 			return false;
 		ParameterConnection::Ptr cn = ParameterConnection::create(a,b);
@@ -288,7 +301,7 @@ public:
 	 * Parameter-Reihenfolge a,b) oder (b,a) spielt keine Rolle. 
 	 * @return NULL, falls keine Verbindung existiert.
 	 */
-	virtual ParameterConnection::Ptr getConnection(ParameterPtr a, ParameterPtr b) {
+	ParameterConnection::Ptr getConnection(ParameterPtr a, ParameterPtr b) {
 		if (!a || !b)
 			return ParameterConnection::Ptr();
 		ParameterConnection::Ptr cn = ParameterConnection::create(a,b);
@@ -296,6 +309,43 @@ public:
 		if (it==end()) 
 			return ParameterConnection::Ptr();
 		return *it;
+	}
+private:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (DE)Serialisierung eines ParameterConnectionSet-Objektes.
+	 * @param ar boost::Archive-Objekt.
+	 * @param version
+	 */
+	template < typename Archive >
+	void save( Archive &ar, const unsigned int version ) const {
+		//unordered_set mit spezalisiertem hash-creator(H)
+		//und comparator(P) konnte nicht serialisert werden:
+		//'serialize': Ist kein Element von 'boost::unordered_set<T,H,P>'
+		//ar & boost::serialization::base_object<Base> (*this);
+		list<ParameterConnection::Ptr>  l;
+		BOOST_FOREACH(ParameterConnection::Ptr obj, *this) {
+			l.push_back(obj);
+		}
+		ar << l;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (DE)Serialisierung eines ParameterConnectionSet-Objektes.
+	 * @param ar boost::Archive-Objekt.
+	 * @param version
+	 */
+	template < typename Archive >
+	void load( Archive &ar, const unsigned int version ) {
+		//unordered_set mit spezalisiertem hash-creator(H)
+		//und comparator(P) konnte nicht serialisert werden:
+		//'serialize': Ist kein Element von 'boost::unordered_set<T,H,P>'
+		//ar & boost::serialization::base_object<Base> (*this);
+		list<ParameterConnection::Ptr>  l;
+		ar >> l;
+		BOOST_FOREACH(ParameterConnection::Ptr obj, l) {
+			insert(obj);
+		}
 	}
 };
 

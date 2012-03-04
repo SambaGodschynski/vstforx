@@ -553,6 +553,7 @@ void GKnobConnectionController::getMenuEntryList ( GObject::Ptr obj, menu::MenuE
 	Parameter::Ptr b = frntCtrl.getViewRelations().get<Parameter>( gc->getObjectB() );
 	if ( !a || !b ) throw com::ppiError::MapError ( "object not found.", __FILE__, __LINE__ );
 	CircuidView *view = obj->getParentView();
+	Graph::Ptr g = getRelatedGraph( view );
 	// connection ops.
 	ADD_MENU_TITLE ( mL, a->getName() + " to " + b->getName() );
 	ADD_MENU_LABEL ( mL, "add +/- operator", 
@@ -565,7 +566,11 @@ void GKnobConnectionController::getMenuEntryList ( GObject::Ptr obj, menu::MenuE
 		new CmdAddConnectionOperator<parameter::LogConnection> (a,b, view ) ); 
 	ADD_MENU_LABEL ( mL, "remove connection", new CmdRemoveGObject( view, gc ) );
 	// connection op. parameter:
-	ConnectionOperator::Container l = a->getConnectionOperators( b.get() );
+	// get connection:
+	ParameterConnection::Ptr cn = g->getParameterConnection(a, b);
+	if (!cn)
+		return;
+	ConnectionOperator::Container l = cn->getOperators();
 	ConnectionOperator::Container::iterator it = l.begin();
 	MenuEntryList aMl;
 	ADD_MENU_TITLE ( aMl, "operator parameter:" );
@@ -584,13 +589,17 @@ void GKnobConnectionController::registerObject ( GObject::Ptr gObj, PObject::Ptr
 void GKnobConnectionController::unregisterObject ( GObject::Ptr gObj, PObject::Ptr pObj ) {
 	if ( !dynamic_cast<GConnectionPaPa*>( gObj.get() ) ) return;
 	GConnection::Ptr gc = boost::shared_dynamic_cast<GConnection, GObject> (gObj);
+	Graph::Ptr g = getRelatedGraph(gObj->getParentView());
+	if (!g)
+		throw com::ppiError::NullPointer("NULL Pointer", __FILE__, __LINE__);
 	// Hole GObjects ...
 	GObject::Ptr knA = gc->getObjectA();
 	GObject::Ptr knB = gc->getObjectB();
 	// ... und PObjects 
 	Parameter::Ptr pA = frntCtrl.getViewRelations().get<Parameter> ( knA );
 	Parameter::Ptr pB = frntCtrl.getViewRelations().get<Parameter> ( knB );
-	if ( pA && pB ) pA->removeBiConnection ( pB.get() );
+	if ( pA && pB ) 
+		g->removeParameterConnection(pA, pB);
 	TOLOG ( pA->getName() + ", " + pB->getName() + " connection removed" );
 }
 //============================================================================================================

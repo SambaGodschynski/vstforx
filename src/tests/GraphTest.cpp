@@ -24,7 +24,7 @@
 
 
 // Registers the fixture into the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( tests::GraphTest );
+//CPPUNIT_TEST_SUITE_REGISTRATION( tests::GraphTest );
 
 
 namespace { 
@@ -58,7 +58,7 @@ inline void assertFloatEqual ( T a, T b ) {
 }
 //=============================================================================
 // liefert wert und position des ersten peaks in float array.
-// liefert ansonsten [ startValue, UINT_MAX ]
+// liefert ansonsten {startValue, UINT_MAX}
 typedef pair<float, size_t> PeakType;
 #define NO_PEAK_POS UINT_MAX
 PeakType firstPeak ( float *f, size_t blockSize, float startValue = 0.0f ) {

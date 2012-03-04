@@ -161,12 +161,14 @@ private:
 	/**
 	 * De/Serialisiert Graph-Objekt.
 	 * PObject-Objekte werden ueber die Methoden: save() bzw. load()[statisch] De/Serialisiert.
+	 * TODO: save() bzw. load() noch notwendig? Warum nicht hier? 
 	 * @param ar Archive-Objekt
 	 * @param version
 	 */
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){
 		ar & boost::serialization::base_object<IHostInfo> ( *this );
+		ar & parameterConnections;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	Graph () : _hasCycle(false), hostInfo(NULL) { initBglGraph(); }
@@ -178,6 +180,8 @@ private:
 	typedef vector<processing::parameter::Parameter::Ptr> ParameterContainer;
 	//--------------------------------------------------------------------------------------------------------
 	ParameterContainer hostParameter;
+	//--------------------------------------------------------------------------------------------------------
+	parameter::ParameterConnectionSet parameterConnections;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * initalisiert Hostparameter
@@ -387,6 +391,37 @@ public:
 	 * @return Janitor-Objekt
 	 */
 	boost::shared_ptr<Janitor> getJanitor();
+	//--------------------------------------------------------------------------------------------------------
+	//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+	// Parameterconnection-operationen
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Verbindet Parameter a mit Parameter b.
+	 * @return ParameterConnection, wenn erfolgt. Andernfalls NULL
+	 */
+	parameter::ParameterConnection::Ptr 
+	connectParameter(parameter::Parameter::Ptr a, parameter::Parameter::Ptr b) {
+		return parameterConnections.connectParameter(a, b);
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Entfernt ParameterVerbindung a<->b falls vorhanden.
+	 * Parameter-Reihenfolge a,b) oder (b,a) spielt keine Rolle. 
+	 * @return true, wenn erfolgt
+	 */
+	bool removeParameterConnection(parameter::Parameter::Ptr a, parameter::Parameter::Ptr b) {
+		return parameterConnections.removeConnection(a, b);
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * liefert ParameterVerbindung a<->b falls vorhanden.
+	 * Parameter-Reihenfolge a,b) oder (b,a) spielt keine Rolle. 
+	 * @return NULL, falls keine Verbindung existiert.
+	 */
+	parameter::ParameterConnection::Ptr 
+	getParameterConnection(parameter::Parameter::Ptr a, parameter::Parameter::Ptr b) {
+		return parameterConnections.getConnection(a, b);
+	}
 }; // class Graph
 //============================================================================================================
 // Graph Template Methoden

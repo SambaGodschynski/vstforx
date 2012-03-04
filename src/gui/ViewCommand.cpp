@@ -27,7 +27,11 @@ void CmdConnectGKnob::_execute(){
 	// Modell
 	Parameter::Ptr pA = ctrl->getViewRelations().get<Parameter> ( src );
 	Parameter::Ptr pB = ctrl->getViewRelations().get<Parameter> ( dst );
-	if ( !pA->addBiConnection ( pB.get() ) ) return;
+	Graph::Ptr g = getRelatedGraph(cView);
+	if (!g)
+		throw com::ppiError::NullPointer("NULL Pointer", __FILE__, __LINE__);
+	if (!g->connectParameter(pA, pB))
+		return;
 	pB->setValue ( *pA );
 	// View
 	gc = GConnectionPaPa::create ( cView, src, dst );

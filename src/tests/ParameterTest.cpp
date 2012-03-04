@@ -92,11 +92,11 @@ void ParameterTest::testConnectionSet() {
 //=============================================================================
 void ParameterTest::testConnection() {
 //=============================================================================
-	/*
 	using namespace std;
 	using namespace com;
 	using namespace processing;
 	using namespace processing::parameter;
+	ParameterConnectionSet cs;
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>init.
 	Parameter::Ptr p1 = Parameter::create();
 	Parameter::Ptr p2 = Parameter::create();
@@ -105,15 +105,13 @@ void ParameterTest::testConnection() {
 	CPPUNIT_ASSERT_EQUAL( value, p1->getValue() );
 	CPPUNIT_ASSERT_EQUAL( value, p2->getValue() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>conect
-	//p1->addBiConnection( p2.get() );
+	ParameterConnection::Ptr cn = cs.connectParameter(p1, p2);
 	value = 0.7776f;
 	*p1 = value;
 	CPPUNIT_ASSERT_EQUAL( value, p1->getValue() );
 	CPPUNIT_ASSERT_EQUAL( value, p2->getValue() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>inv. conn.
-	p1->addConnectionOperator( p2.get(), ConnectionOperator::Ptr ( 
-							  new InverseConnection( p1.get(), p2.get() ) ) 
-	);	
+	cn->addOperator( InverseConnection::create() );
 	value = 0.5f;
 	*p1 = value;
 	CPPUNIT_ASSERT_EQUAL( value, p1->getValue() );
@@ -129,9 +127,7 @@ void ParameterTest::testConnection() {
 	CPPUNIT_ASSERT_EQUAL( value , p1->getValue() );
 	CPPUNIT_ASSERT_EQUAL( value2, p2->getValue() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>inv. conn.2
-	p1->addConnectionOperator( p2.get(), ConnectionOperator::Ptr ( 
-							  new InverseConnection( p1.get(), p2.get() ) ) 
-	);	
+	cn->addOperator( InverseConnection::create() ); 
 	value = 0.5f;
 	*p1 = value;
 	CPPUNIT_ASSERT_EQUAL( value, p1->getValue() );
@@ -146,6 +142,5 @@ void ParameterTest::testConnection() {
 	*p1 = value;
 	CPPUNIT_ASSERT_EQUAL( value , p1->getValue() );
 	CPPUNIT_ASSERT_EQUAL( value2, p2->getValue() );
-	*/
 }
 } // namespace tests

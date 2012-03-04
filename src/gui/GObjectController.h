@@ -331,6 +331,7 @@ public:
 	 * liefert Menüeintraege zu GObject.
 	 * @param outMl Ziel-MenuEntryList
 	 * @param obj entsprechendes GObject
+	 * @throw com::ppiError::NullPointer
 	 */
 	void getMenuEntryList ( menu::MenuEntryList &outMl, GObject::Ptr obj ){
 		ObjectController *ctrl = getController(obj);

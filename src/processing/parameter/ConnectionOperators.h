@@ -104,11 +104,6 @@ private:
 	void serialize ( Archive &ar, const unsigned int version ) {
 		ar & boost::serialization::base_object<ConnectionOperator> ( *this );
 		ar & offset;
-		if ( Archive::is_loading::value ) {
-			Parameter::ParameterListenerFunction f = 
-			boost::bind( &OffsetConnection::parameterChanged, this, _1, _2 );
-			offset->addValueChangedListenerF (f);
-		}
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -116,21 +111,11 @@ private:
 	 */
 	Parameter::Ptr offset;
 	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * Offset-Parameterwert Handler
-	 * @param src
-	 * @param p
-	 */
-	void parameterChanged ( void *src, const float &p );
-	//--------------------------------------------------------------------------------------------------------
 	OffsetConnection () : ConnectionOperator ()
 	 {
 		setName ("Offset Operator");
 		offset = Parameter::create();
 		offset->setName ("offset");
-		Parameter::ParameterListenerFunction f = 
-			boost::bind( &OffsetConnection::parameterChanged, this, _1, _2 );
-		offset->addValueChangedListenerF (f);
 		*offset = 0.5f;
 	}
 public:
