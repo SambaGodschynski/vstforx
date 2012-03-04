@@ -31,7 +31,10 @@
    id="svg5007"
    version="1.1"
    inkscape:version="0.48.2 r9819"
-   sodipodi:docname="complex02.svg">
+   sodipodi:docname="complex02.svg"
+   inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Documents/Bc/graphics/complex02.png"
+   inkscape:export-xdpi="234"
+   inkscape:export-ydpi="234">
   <metadata
      id="metadata5209">
     <rdf:RDF>
@@ -61,8 +64,8 @@
      inkscape:zoom="1.5205212"
      inkscape:cx="148.47701"
      inkscape:cy="211.92551"
-     inkscape:window-x="33"
-     inkscape:window-y="0"
+     inkscape:window-x="25"
+     inkscape:window-y="54"
      inkscape:window-maximized="0"
      inkscape:current-layer="g5010"
      showguides="true"
@@ -799,7 +802,7 @@
          sodipodi:role="line"
          id="tspan5225"
          x="-98.650375"
-         y="114.76907">V(x) = x * 0.5</tspan></text>
+         y="114.76907">V(x) = x * vol</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
@@ -813,7 +816,7 @@
          sodipodi:role="line"
          id="tspan5229"
          x="-126.93016"
-         y="8.2266541"> CreateSeries&lt; CreateParallel&lt; VolumeAdapter, N &gt;, N&gt;</tspan></text>
+         y="8.2266541"> CreateSeries&lt; CreateParallel&lt; VolumeAdapter, N &gt;, M&gt;</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
@@ -830,10 +833,10 @@
          y="409.40491">x<tspan
    style="font-size:65.00091553%;baseline-shift:sub"
    id="tspan3294">i</tspan>'= x<tspan
-   style="font-size:65%;baseline-shift:sub"
-   id="tspan3296">i</tspan> * (0.5*N)<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan3296">i</tspan> * (vol*N)<tspan
    style="font-size:65.00091553%;baseline-shift:super"
-   id="tspan5235">N</tspan></tspan></text>
+   id="tspan3287">M</tspan></tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
@@ -900,5 +903,38 @@
          x="186.76288"
          y="240.70886"
          id="tspan3304">(wird von CreateSeries erstellt)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
+       x="40.775494"
+       y="265.37531"
+       id="text3274"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3276"
+         x="40.775494"
+         y="265.37531">M</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
+       x="186.77805"
+       y="142.39119"
+       id="text3278"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3281"
+         x="186.77805"
+         y="142.39119">N</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:36px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
+       x="186.77808"
+       y="366.6564"
+       id="text3283"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3285"
+         x="186.77808"
+         y="366.6564">N</tspan></text>
   </g>
 </svg>

@@ -8,6 +8,9 @@
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{boxedminipage}
+\usepackage{lscape}
+\usepackage{rotating}
+\RequirePackage[ngerman=ngerman-x-latest]{hyphsubst}
 
 \newcommand{\funktion}[1]{\emph{#1}}
 \newcommand{\codeinsert}[1]{
@@ -19,6 +22,19 @@
 	#1
 	\end{center}
 }
+
+\newcommand{\verwS}[1]{ (vgl. \cite{#1})}
+\newcommand{\verw}[2]{ (vgl. \cite{#1} #2)}
+
+\lstnewenvironment{code}[2]{\lstset{caption=#1,
+captionpos=b, 
+label=#2, 
+language=C++,
+extendedchars=true,
+tabsize=2,
+numbers=left,
+numberstyle=\tiny}
+}{}
 
 \lstset{literate=%
 {Ö}{{\"O}}1 
@@ -48,7 +64,8 @@
 \include{kap_Fazit}
 \include{kap_LiteraturVerzeichnis}
 \include{kap_AbbildungsVerzeichnis}
+\include{kap_Programmlistings}
 %\include{kap_Index}
-%\include{kap_Programmlistings}
+
 
 \end{document}

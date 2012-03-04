@@ -2,15 +2,15 @@
 \section{Realisierung}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Shared Pointer}
-Üblicherweise ist eine Schwierigkeit, beim Programmieren mit C/C++, die fehlende Speicherverwaltung. Besonders deutlich wird dies, wenn mehrere Programmteile auf das gleiche Objekt zugreifen (z.B. Controller und View).Das Problem in solch einem Fall ist: zu welchen Zeitpunkt kann ein entsprechendes Objekt aus dem Speicher (sicher) entfernt werden?
-Aus diesem Grund wurde ein bewährtes Lösungskonzept verwendet: die Shared Pointer\footnote{http://www.boost.org/doc/libs/1\_48\_0/libs/smart\_ptr/shared\_ptr.htm}.
+Üblicherweise ist eine Schwierigkeit beim Programmieren mit C/C++ die fehlende Speicherverwaltung. Besonders deutlich wird dies, wenn mehrere Programmteile auf das gleiche Objekt zugreifen (z.B. Controller und View). Das Problem in solch einem Fall ist: Zu welchem Zeitpunkt kann ein entsprechendes Objekt aus dem Speicher (sicher) entfernt werden?
+Um solchartige Probleme von vornherein zu umgehen, wurde ein bewährtes Lösungskonzept angewandt: die Shared Pointer.
 \\\\
-Ein Nachteil beim verwenden von \emph{Shared Pointer} ist allerdings, dass aus einem '\emph{this}' Zeiger eines Objektes, kein \emph{Shared Pointer} erzeugt werden kann. So könnte zum Beispiel, ein Objekt nicht sich selbst einer Methode übergeben, die ausschließlich \emph{Shared Pointer} entgegennimmt.
-Eine Lösung für dieses Problem, findet sich im Abschnitt ''Smart Pointer Programming Techniques'', der \emph{Boost Shared Pointer Library Dokumentation}\footnote{http://www.boost.org/doc/libs/1\_48\_0/libs/smart\_ptr/sp\_techniques.html\#from\_this}. 
+Ein Nachteil beim Verwenden von \emph{Shared Pointer} ist allerdings, dass aus einem '\emph{this}' Zeiger eines Objektes kein \emph{Shared Pointer} erzeugt werden kann. So könnte zum Beispiel ein Objekt nicht sich selbst einer Methode übergeben, die ausschließlich \emph{Shared Pointer} entgegennimmt.
+Eine Lösung für dieses Problem findet sich im Abschnitt ''Smart Pointer Programming Techniques'', der \emph{Boost Shared Pointer Library Dokumentation}\verw{Boost}{Abschn.: 'Obtaining a shared\_ptr to this'}
 \\\\
-Es wird demnach, ein Objekt einer Klasse, ausschließlich über eine statische Methode erstellt. In dieser wird außerdem, das neu erzeugte \emph{Shared Pointer} Objekt, dem Zielobjekt übergeben. Würde ein Objekt sich selbst als \emph{Shared Pointer} speichern, könnte es niemals freigegeben werden. Daher nimmt es die eigene Instanz als \emph{Weak Pointer} auf (siehe Listing \ref{thisToPtr}).
+Es wird demnach ein Objekt einer Klasse ausschließlich über eine statische Methode erstellt. In dieser wird außerdem das neu erzeugte \emph{Shared Pointer} Objekt dem Zielobjekt als Weak-Pointer\verw{Ellis}{5.4. Weak pointers} übergeben (siehe Listing \ref{thisToPtr}).
 
-\begin{lstlisting}[label=thisToPtr, caption=Shared Pointer in VSTForx-Klassen]	
+\begin{code}{Shared Pointer in VSTForx-Klassen}{thisToPtr}
 class X {
 public:
 	typedef boost::shared_ptr<X> Ptr;
@@ -35,10 +35,10 @@ void X::foo() {
 	X::Ptr _this = self.lock();
 }
 
-\end{lstlisting} 
+\end{code} 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{SDK Probleme}
-Da VSTForx sowohl ein Plugin, als auch ein Host für Plugins ist, existieren gleich zwei potentielle Fehlerquellen. Zum einen muss sichergestellt werden, dass jede Host-Anwendung VSTForx Laden und Ausführen kann. Zum anderen sollte auch VSTForx in der Lage sein, jedes Plugin zu Laden und Auszuführen. Unglücklicherweise ist eine große schwäche des VST2.x-SKDs, die schlechte Dokumentation. So sind viele Funktionen ungenügend oder gar nicht beschrieben. Auch bleibt ungeklärt, in welcher Reihenfolge Operationen ausgeführt werden(siehe Abschnitt: Initalisierungsreihenfolge). Da es eine große Menge an Plugins und Hostanwendungen, unterschiedlicher Qualität gibt, führt dieser Umstand zu einer Reihe an Problemen, die erst durch viel ausprobieren ermittelt und behoben werden können. 
+Da VSTForx sowohl ein Plugin, als auch ein Host für Plugins ist, existieren gleich zwei potentielle Fehlerquellen. Zum einen muss sichergestellt werden, dass jede Host-Anwendung VSTForx laden und ausführen kann. Zum anderen sollte auch VSTForx in der Lage sein, jedes Plugin zu laden und auszuführen. Unglücklicherweise ist eine große Schwäche des VST2.x-SKDs die schlechte Dokumentation. So sind viele Funktionen ungenügend oder gar nicht beschrieben. Auch bleibt ungeklärt, in welcher Reihenfolge Operationen ausgeführt werden(siehe Abschnitt: Initalisierungsreihenfolge). Da es eine große Menge an Plugins und Hostanwendungen unterschiedlicher Qualität gibt, führt dieser Umstand zu einer Reihe an Problemen, die erst durch viel Ausprobieren ermittelt und behoben werden können. 
 \\\\
 Es folgen ein paar Beispiele, die während der Entwicklung von VSTForx auftraten:
 \subsubsection{Initalisierungsreihenfolge}
@@ -53,7 +53,7 @@ Zur Initialisierung eines Plugins sind vier verschiedene Opcodes verantwortlich:
 	\item[effMainsChanged] je nach Parameter 0: Plugin-Suspend (in einigen Hosts als Standby bezeichnet), 1: Plugin-Resume
 \end{description}
 
-Wie schon erwähnt, gibt es keinerlei Angaben, in welcher Reihenfolge diese Aufrufe zu erfolgen haben. So wurde anfangs, intuitiv folgende Initalisierungsreihenfolge gewählt (Pseudocode):
+Wie schon erwähnt, gibt es keinerlei Angaben, in welcher Reihenfolge diese Aufrufe zu erfolgen haben. So wurde anfangs, intuitiv, folgende Initalisierungsreihenfolge gewählt (Pseudocode):
 
 \begin{itemize}
 	\item \funktion{dispatcher(effOpen)}
@@ -61,7 +61,7 @@ Wie schon erwähnt, gibt es keinerlei Angaben, in welcher Reihenfolge diese Aufr
 	\item \funktion{dispatcher(effSetBlockSize, blockSize)}
 \end{itemize}
 
-Für einen Großteil der getesteten Plugins funktionierte dieser Vorgang. Bei einigen Plugins, kam es beim Öffnen zu Abstürzen oder sie funktionierten nicht Ordnungsgemäß. Auffällig war, dass die Abstürze meist beim Aufruf von \emph{effOpen} erfolgten. Mittels Debugger konnte schließlich ermittelt werden, in welcher Reihenfolge Cubase VSTForx initialisiert:
+Für einen Großteil der getesteten Plugins funktionierte dieser Vorgang. Bei einigen Plugins, kam es beim Öffnen zu Abstürzen oder sie funktionierten nicht ordnungsgemäß. Auffällig war, dass die Abstürze meist beim Aufruf von \emph{effOpen} erfolgten. Mittels Debugger konnte schließlich ermittelt werden, in welcher Reihenfolge Cubase VSTForx initialisiert:
  
 \begin{itemize}
 	\item \funktion{dispatcher(effSetSampleRate, sampleRate)}
@@ -72,22 +72,22 @@ Für einen Großteil der getesteten Plugins funktionierte dieser Vorgang. Bei ei
 	\item \funktion{dispatcher(effMainsChanged, 1) //resume}
 \end{itemize}
 
-Es ist zu anzunehmen, dass in einigen Fällen, \emph{effOpen} Speicher mittels \emph{Samplerate} und/oder \emph{Blockgröße} alloziert. Wird daher, \emph{effOpen} vor dem setzen der Samplerate/Blockgröße aufgerufen, kann es passieren, dass ein (unsauber programmiertes) Plugin versucht, Speicher mit undefinierter Größe zu allozieren. In C/C++ bedeutet undefiniert nicht '0' sondern irgendeine Zahl. Ist diese Zahl größer als der maximal verfügbare Speicher, bedeutet dies ein Absturz. 
+Es ist zu anzunehmen, dass in einigen Fällen \emph{effOpen} Speicher mittels \emph{Samplerate} und/oder \emph{Blockgröße} alloziert. Wird daher \emph{effOpen} vor dem setzen der Samplerate/Blockgröße aufgerufen, kann es passieren, dass ein (unsauber programmiertes) Plugin versucht, Speicher mit undefinierter Größe zu allozieren. In C/C++ bedeutet undefiniert nicht '0', sondern irgendeine Zahl. Ist diese Zahl größer als der maximal verfügbare Speicher, bedeutet dies ein Absturz. 
 \\\\
 Nachdem die ermittelte Reihenfolge übernommen wurde, waren keine Abstürze an der \emph{effOpen} Operation festzustellen. 
 
 \subsubsection{Stringoperation}
-Ein weiter Grund für Abstürze beim öffnen von Plugins, war das Anfordern von String-Informationen.
-So wird zum Beispiel der Pluginname mittels \codeinsert{\funktion{dispatcher(effGetEffectName, dstChar)}} Aufruf angefordert. Beim Parameter \emph{dstChar} handelt es sich um einen Zeiger auf eine \emph{char}-Reihung.
-Leider bietet das VST-SDK keinen Aufruf zum erfragen von String längen, sodass man gezwungen ist einer solchen Reihung eine feste länge zuzuweisen. Das VST-SDK gibt hierfür die Größen vor. So existiert für jeden Stringaufruf, eine Stringlängen-Konstante (zum Beispiel: \emph{kVstMaxEffectNameLen} für den Effektnamen oder \emph{kVstMaxVendorStrLen} für den Hersteller). Allerdings scheint es einige Plugins zu geben, die größere \emph{char}-Reihungen benötigen, als im VST-SDK angegeben. In solch einem Fall, kommt es zu einem Bufferüberlauf und somit zu einem Absturz. Behoben werden konnte dies, indem der entsprechenden Reihung mehr Speicher zugewiesen wurde (2048 Zeichen statt 64). Der Fehler ist somit Potentiell noch vorhanden, allerdings bietet das VST-SDK auch keine bessere Lösungsmöglichkeit.
+Ein weiter Grund für Abstürze beim Öffnen von Plugins war das Anfordern von String-Informationen.
+So wird zum Beispiel der Pluginname mittels \codeinsert{\funktion{dispatcher(effGetEffectName, dstCharPtr)}} Aufruf angefordert. Beim Parameter \emph{dstCharPtr} handelt es sich um einen Zeiger auf eine \emph{char}-Reihung.
+Leider bietet das VST-SDK keinen Aufruf zum Ermitteln von String längen, sodass man gezwungen ist einer solchen Reihung eine feste Länge zuzuweisen. Das VST-SDK gibt hierfür die Größen vor. So existiert für jeden Aufruftyp der ein String liefert, eine Stringlängen-Konstante (zum Beispiel: \emph{kVstMaxEffectNameLen} für den Effektnamen oder \emph{kVstMaxVendorStrLen} für den Hersteller). Allerdings scheint es einige Plugins zu geben, die größere \emph{char}-Reihungen benötigen, als im VST-SDK angegeben. In solch einem Fall, kommt es zu einem Bufferüberlauf und somit zu einem Absturz. Umgangen werden konnte dies, indem der entsprechenden Reihung mehr Speicher zugewiesen wurde (2048 Zeichen statt 64). Der Fehler ist somit potentiell noch vorhanden, allerdings bietet das VST-SDK auch keine bessere Lösungsmöglichkeit.
 
 \subsubsection{Ausführungsverzeichnis}
-In einigen Fällen, ist es für ein VST-Plugin erforderlich, zu wissen in welchem Verzeichnis es sich befindend.
-Hierfür bietet das VST-SDK eine Operation: \codeinsert{\funktion{AudioEffectX::getDirectory().}} Diese Methode veranlasst, einen ''Plugin nach Host''-\emph{dispatcher} Aufruf mit dem Opcode: \emph{audioMasterGetDirectory}.
-\emph{Cubase} und andere Hostanwendungen, liefern hierfür die gewünschte Information. Der weit verbreitete Sequenzer \emph{Ableton Live} liefert jedoch einen leeren String. Somit ist es notwendig, über plattformspezifische Aufrufe an die erforderliche Information zu gelangen.
+In einigen Fällen ist es für ein VST-Plugin erforderlich zu wissen, in welchem Verzeichnis es sich befindent.
+Hierfür bietet das VST-SDK eine Operation: \codeinsert{\funktion{AudioEffectX::getDirectory().}} Diese Methode veranlasst einen ''Plugin nach Host''-\emph{dispatcher} Aufruf mit dem Opcode: \emph{audioMasterGetDirectory}.
+\emph{Cubase} und andere Hostanwendungen liefern hierfür die gewünschte Information. Der weit verbreitete Sequenzer \emph{Ableton Live} liefert jedoch einen leeren String. Somit ist es notwendig, über plattformspezifische Aufrufe an die erforderliche Information zu gelangen.
 
 \subsubsection{Verzeichnisauswahl}
-Ein ähnliches Problem bereitete die Verzeichnisauswahl. Einige Hostanwendungen bieten die Möglichkeit, einen Verzeichnisauswahl-Dialog über das VST-SDK auszuführen. Andere nicht. Somit ist es erforderlich selbst einen Auswahldialog zu implementieren. Ist eine Hostanwendung in der Lage, einen eigenen Verzeichnisauswahl-Dialog anzubieten, so sollte dieser auch genutzt werden. Im Falle des Sequenzers \emph{Synapse Orion}\footnote{http://www.synapse-audio.com/}, wurde ein Verzeichnissauswahl-Dialog zwar angeboten, dieser aber liefert keinen Ergebnis-String. So konnte in besagtem Sequenzer, VSTForx zwar Pluginverzeichnisse zu Auswahl anbieten, aber nicht übernehmen. Als Lösung wird nun immer die eigene Implementierung verwendet (welche die plattformspezifischen Möglichkeiten nutzt).
+Ein ähnliches Problem bereitete die Verzeichnisauswahl. Einige Hostanwendungen bieten die Möglichkeit, einen Verzeichnisauswahl-Dialog über das VST-SDK auszuführen. Andere nicht. Somit ist es erforderlich selbst einen Auswahldialog zu implementieren. Ist eine Hostanwendung in der Lage, einen eigenen Verzeichnisauswahl-Dialog anzubieten, so sollte dieser auch genutzt werden. Im Falle des Sequenzers \emph{Synapse Orion}\footnote{http://www.synapse-audio.com/} wurde ein Verzeichnissauswahl-Dialog zwar angeboten, dieser aber liefert keinen Ergebnis-String. So konnte in besagtem Sequenzer VSTForx zwar Pluginverzeichnisse zur Auswahl anbieten, aber nicht übernehmen. Als Lösung wird nun immer die eigene Implementierung verwendet.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Graph-Test}
 Getestet wurde mittels dem Cppunit-Framework\footnote{http://sourceforge.net/projects/cppunit/}, welches eine C++ - Portierung von JUnit darstellt. Folgend sollen die getätigten Tests kurz beschrieben werden:
@@ -99,57 +99,58 @@ Das GraphBuilder-Modul besteht aus 4 Klassen:
 \begin{enumerate}
 	\item CreateAdapter<Adapter>: erzeugt ProcessAdapter
 	\item CreateSeries<Creator, N>: erzeugt N Creator-Objekte \\
-		  und Verknüpft diese seriell
+		  und verknüpft diese seriell
 	\item CreateParallel<Creator, N>: erzeugt N Creator-Objekte \\
-		  und Verknüpft diese parallel
+		  und verknüpft diese parallel
 	\item CreateBinaryTree<Creator, N>: erzeugt $2^N-1$ Creator-Objekte \\
-		  und Verknüpft diese als Binärbaum
+		  und verknüpft diese als Binärbaum
 \end{enumerate}
-Jede dieser Klassen besitzt einen Konstruktor, der ein Graphobjekt annimmt, sowie einen Eingangs- und Ausgangsknoten. Alle erzeugen einen Subgraphen und verknüpfen diesen, mit den übergeben Eingangs- und Ausgangsknoten.
+Jede dieser Klassen besitzt einen Konstruktor, der ein Graphobjekt annimmt sowie einen Eingangs- und Ausgangsknoten. Alle Klassen erzeugen einen Subgraphen und verknüpfen diesen, mit den übergebenen Eingangs- und Ausgangsknoten.
 So erzeugt zum Beispiel der Ausdruck: 
 \codeinsert{CreateAdapter<Volume>(graph, entry, exit);}
-ein (Volume) ProcessAdapter-Objekt, der im übergeben Graph zwischen \emph{entry} und \emph{exit} eingebunden wird.
+ein (Volume) ProcessAdapter-Objekt, der im übergebenen Graph zwischen \emph{entry} und \emph{exit} eingebunden wird.
 \\\\
-Die Klassen: \emph{CreateSeries, CreateParallel, CreateBinaryTree} sind durch den Template-Parameter Creator, 
+Die Klassen: \emph{CreateSeries, CreateParallel, CreateBinaryTree} sind durch den Template-Parameter Creator  
 mit beliebig vielen GraphBuilder-Klassen verschachtelbar (siehe Beispiele in Listing \ref{Graphbuilder}). 
 \\\\
-\begin{lstlisting}[label=Graphbuilder, caption=Beispiel: Anwendung der GraphBuilder-Konstrukte]	
+\begin{code}{Anwendung der GraphBuilder-Klassen}{Graphbuilder}
 typedef CreateAdapter<Volume> VolumeAdapter;
 
 // erzeugt 4 ProcessAdapter-Objekte 
 // und verknüpft diese seriell
 CreateSeries< VolumeAdapter, 4 > 
-(graph, entry, exit);
+	(graph, entry, exit);
 
 // erzeugt 4 seriell verknüpfte Subgraphen, bestehend aus
 // 2 parallel verknüpften ProcessAdapter-Objekten 
 CreateSeries< CreateParallel< VolumeAdapter, 2 > , 4 > 
-(graph, entry, exit);
+	(graph, entry, exit);
 
-\end{lstlisting} 
+\end{code} 
 
-\subsubsection{testAddRemoveNodes} 
-In diesem Test werden Knoten dem Graph hinzugefügt und entfernt. Es wird geprüft, ob die Knoten wie erwartet von der Graphstruktur aufgenommen werden. Auch wird das hinzufügen ungültiger Knoten (NULL-Zeiger) getestet. Solche Knoten sollten nicht vom Graph aufgenommen werden.  
-\subsubsection{testConnectNodes}
+\paragraph{testAddRemoveNodes} 
+In diesem Test werden Knoten dem Graph hinzugefügt und entfernt. Es wird geprüft, ob die Knoten wie erwartet von der Graphstruktur aufgenommen werden. Auch wird das Hinzufügen ungültiger Knoten (NULL-Zeiger) getestet. Solche Knoten sollten nicht vom Graph aufgenommen werden.  
+\paragraph{testConnectNodes}
 Dieser Test arbeitet ähnlich wie \emph{testConnectNodes}. Getestet wird zusätzlich das Verbinden von Knoten. Folgende Operationen sollten vom Graph verweigert werden:
 \begin{itemize}
-	\item verbinden eines Knoten mit einem ''NULL''-Knoten
-	\item verbinden eines Knoten mit einem Knotenobjekt das nicht vom Graph aufgenommen wurde.
-	\item erzeugen einer bereits vorhandenen Verbindung
-	\item erzeugen einer ''Rückkoppelnden'' Verbindung
+	\item Verbinden eines Knoten mit einem ''NULL''-Knoten
+	\item Verbinden eines Knoten mit einem Knotenobjekt das nicht vom Graph aufgenommen wurde.
+	\item Erzeugen einer bereits vorhandenen Verbindung
+	\item Erzeugen einer ''Rückkoppelnden'' Verbindung
 \end{itemize}
-\subsubsection{testSignalProcessPath}
+\paragraph{testSignalProcessPath}
 In diesem Test wird die vom Graph erstellte Prozess-Liste auf Korrektheit überprüft. Es werden verschiedene Szenarien erstellt und die jeweiligen Ausgaben mit entsprechenden Erwartungsergebnissen verglichen.
-\subsubsection{testDelayAdapter}
-Zum Testen der Delay-Compensation, wurde eigens ein ProcessAdapter implementiert. Den DelayAdapter. Dieser verzögert die Ausgabe eines Signals um N Millisekunden. Diese Funktionalität wird in diesem Test getestet.
-\subsubsection{testDelayCompensation}
-In diesem Test wird die Delay-Compensation getestet. Hierfür werden mehrere DelayAdapter Objekte, in verschiedenen Szenarien eingefügt. Es wird geprüft, ob die Verzögerung des Graph-Ausgabesignals, gleich der Verzögerung, des DelayAdapters mit dem größten Verzögerungswert ist.
-\subsubsection{testGraphConsistency}
-In diesem Test wird der Graph auf Stabilität geprüft. Es werden hintereinander, viele Objekte hinzugefügt und wieder entfernt. Es werden NULL-Objekte hinzugefügt. Es wird mehrfach die Samplerate und die Blockgröße geändert (auch mit ungültigen werten).
-\subsubsection{testGraphComplex}
-In dieser Testreihe werden verschiedene Graph-Szenarien aus Volume-Adapter erstellt. Jeder Adapter erhält den Wert '0.5', was zu einer Halbierung der Eingangswerte führt. Nun wird jeder Graph mit einer Eingangswertemenge prozessiert. Die Ausgabewertemenge muss einer Erwartungswertemenge entsprechen (siehe Abbildung \ref{testGraphComplex01} bis \ref{testGraphComplex03}). 
+\paragraph{testDelayAdapter}
+Zum Testen der Delay-Compensation wurde eigens ein ProcessAdapter implementiert. Der DelayAdapter. Dieser verzögert die Ausgabe eines Signals um N Millisekunden. Diese Funktionalität wird in diesem Test getestet.
+\paragraph{testDelayCompensation}
+In diesem Test wird die Delay-Compensation getestet. Hierfür werden mehrere DelayAdapter Objekte in verschiedenen Szenarien eingefügt. Es wird geprüft, ob die Verzögerung des Graph-Ausgabesignals einem Erwartungswert entspricht.
+\paragraph{testGraphConsistency}
+In diesem Test wird der Graph auf Stabilität geprüft. Es werden hintereinander viele Objekte hinzugefügt und wieder entfernt. Es werden NULL-Objekte hinzugefügt. Es wird mehrfach die Samplerate und die Blockgröße geändert (auch mit ungültigen Werten).
+\paragraph{testGraphComplex}
+In dieser Testreihe werden verschiedene Graph-Szenarien aus \\
+Volume-Adapter erstellt. Jeder Volume-Adapter erhält einen Volume-Multiplikator $vol$. Die verschiedenen Graph-Szenarien werden mit einer Eingangswertemenge($En$) prozessiert. Die Ausgabewertemenge($Ex$) muss einer Erwartungswertemenge entsprechen (siehe Abbildung \ref{testGraphComplex01} bis \ref{testGraphComplex03}). 
 \\\\
-Außerdem wird geprüft, ob die Anzahl der Frames-Objekt Kopiervorgänge, der in Abschnitt \ref{Optimierung} beschriebenen Optimierung entspricht. Hierfür wird ein Zählmechanismus genutzt, der ausschließlich mittels Präprozessor Schalter: 
+Außerdem wird geprüft, ob die Anzahl der Frames-Objekt Kopiervorgänge der in Abschnitt \ref{Optimierung} beschriebenen Optimierung entspricht. Hierfür wird ein Zählmechanismus genutzt, der ausschließlich mittels Präprozessor Schalter: 
 \codeinsert{\_FORX\_TESTSUITE}
 aktiviert wird.
 %
@@ -177,17 +178,17 @@ aktiviert wird.
 \end{center}
 \end{figure}
 
-\subsubsection{testSerialization}
-Es wird die Persistierungs-Funktionalität des Graphen getestet. Dazu wird ein Graphszenario, mit allen
-verfügbaren Graph-Objekten erstellt. Danach wird eine Referenz-Ausgabe-Ergebnismenge erstellt. Nun wird der Graph Serialisiert und gelöscht. Anschließend wird der Graph Deserialisiert und erneut eine Ausgabe-Ergebnismenge erstellt. Diese wird schließlich, mit der vorher erstellten Referenzmenge auf Gleichheit überprüft.
+\paragraph{testSerialization}
+Es wird die Persistierungs-Funktionalität des Graphen getestet. Dazu wird ein Graphszenario mit allen
+verfügbaren Graph-Objekten erstellt. Danach wird eine Referenz-Ausgabe-Ergebnismenge erstellt. Nun wird der Graph serialisiert und gelöscht. Anschließend wird der Graph deserialisiert und erneut eine Ausgabe-Ergebnismenge erstellt. Diese wird schließlich mit der vorher erstellten Referenzmenge auf Gleichheit überprüft.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Portierung Windows/MacOSX}
-Obwohl VSTForx von Anfang an für Windows sowie MacOSX geplant war, konnte aufgrund fehlender Hardware erst Relativ spät mit der MacOSX portierung begonnen werden. Da das VST-SDK für beide Plattformen kompilierbar ist, kann die Portierung mit relativ wenig aufwand erfolgen. Die wenigen Plattformspezifischen Aufrufe, wie zum Beispiel das Laden und Ausführen von Dynamischen Bibliotheken (den Plugins), wurden in das ''Paket'' '\emph{OS\_Specific}' separiert. Es enthält die ''Unterpakete'' '\emph{mac}' und '\emph{win}'. Je nach Plattform, werden nun die entsprechenden Dateien in das Projekt aufgenommen.  
+Obwohl VSTForx von Anfang an für Windows sowie für MacOSX geplant war, konnte aufgrund fehlender Hardware erst relativ spät mit der MacOSX Portierung begonnen werden. Da das VST-SDK für beide Plattformen kompilierbar ist, kann die Portierung mit relativ wenig Aufwand erfolgen. Die wenigen plattformspezifischen Aufrufe, wie zum Beispiel das Laden und Ausführen von Dynamischen Bibliotheken (den Plugins), wurden in das ''Paket'' '\emph{OS\_Specific}' separiert. Es enthält die ''Unterpakete'' '\emph{mac}' und '\emph{win}'. Je nach Plattform werden nur die entsprechenden Dateien in das Projekt aufgenommen.  
 \\\\
-Zwei Probleme traten beim ersten Kompiliervorgang der MacOSX Version auf:
+Zwei Problemtypen traten beim ersten Kompiliervorgang der MacOSX Version auf:
 
-\paragraph{Const-correctness} Folgendes Programm lässt sich mit dem \emph{Microsofts C++} Compiler anstandslos Kompilieren:
-\begin{lstlisting}	
+\paragraph{Const-correctness} Folgendes Programm lässt sich mit \emph{Microsofts C++\footnote{Compiler Version 6.1}} Compiler anstandslos kompilieren:
+\begin{code}{Beispiel eines 'const-correctness'-Fehlers}{constcorr}
 struct X {
 };
 
@@ -198,30 +199,51 @@ int main() {
   call ( X() );
   return 0;
 }
-\end{lstlisting} 
-Der \emph{GCC C++} Compiler liefert hier allerdings die Fehlermeldung: 
+\end{code}
+Der \emph{GCC C++\footnote{gcc version 4.2.1}} Compiler liefert hier allerdings die Fehlermeldung: 
 \\\\
 \fbox{
 \emph{''invalid initialization of non-const reference of type ‘X}\&\emph{’ from a temporary of type ‘X’''}. 
 }
 \\\\
-Es ist daher nicht erlaubt, einer Funktion mit (non-const) Refernz Parameter, ein Temporäres Objekt (in diesem Fall: X()), zu übergeben. Derartige Funktionen, gab es einige im Ürsprünglichen Quelltext. Zur Lösung muss einfach dem 'X\& x' Parameter, ein \emph{'const'} Qualifier hinzugefügt werden. Prinzpiell sollte, laut ''const-correctness'' Richtlinie, 'const' wann immer wenn möglich, eingesetzt werden\footnote{Herb Sutter and Andrei Alexandrescu (2005). C++ Coding Standards. p. 30. Boston: Addison Wesley}.
+Es ist daher nicht erlaubt, einer Funktion mit (non-const) Referenz-Parameter ein temporäres Objekt (in diesem Fall: X()) zu übergeben. Derartige Funktionen gab es einige im ursprünglichen Quelltext. Zur Lösung muss dem 'X\& x' Parameter ein \emph{'const'} Qualifier hinzugefügt werden. Prinzpiell sollte laut dem ''const-correctness'' Paradigma, 'const' wann immer wenn möglich verwendet werden\verw{Reddy}{S.180 
+ff}.
 
 \paragraph{Templates}
-Der Boost-Archive Serialisierungs Mechanismus, verlangt um ein Konkretes Objekt eines Oberklassen Zeigers, zu deserialiseren, die Registrierung jener Klasse mittels einer Template Methode. So wird zum Beispiel mittels 
+Der Boost-Archive Serialisierungs Mechanismus verlangt, um ein konkretes Objekt anhand eines Oberklassen Zeigers zu deserialiseren, die Registrierung jener Klasse mittels einer Template Methode. So wird zum Beispiel mittels 
 \codeinsert{archive.register\_type<Volume>();}
-die Konkrete-Klasse \emph{'Volume'} registriert. Dieser Aufruf findet in einer Methode statt, die ebenfalls Über einen Template-Parameter aufgerufen wird: 
+die Konkrete-Klasse \emph{'Volume'} registriert. Dieser Aufruf findet in einer Methode statt, die ebenfalls über einen Template-Parameter aufgerufen wird: 
 \codeinsert{template<typename Archive> void register\_types(Archive \&archive)}
-Der \emph{GCC C++} Compiler lieferte beim emph{''register\_type''} Aufruf folgende Fehlermeldung:
+Der \emph{GCC C++} Compiler lieferte beim \emph{''register\_type''} Aufruf folgende Fehlermeldung:
 \begin{center}
 \fbox{
 \emph{''expected primary-expression before '>' token''} 
 }
 \end{center}
-Das Problem rührt daher, dass der \emph{GCC-Compiler} in Template-Methoden, so früh wie möglich versucht, Fehler zu erkennen. Während der \emph{Microsoft-Compiler}, Template-Methoden erst dann Untersucht, wenn sie Konkret Verwendet werden. Das Fällt besonders dann auf, wenn eine Template-Methode Fehler enthält. Diese werden vom \emph{Microsoft-Compiler} erst entdeckt, sobald diese aufgerufen wurden. 
-\\\\
-Das Problem des \emph{GCC-Compilers} ist nun, dass versucht wird, auf ein \emph{Archive} Objekt zuzugreifen welches erst durch den Template-Parameter Spezifiziert wird. Die Lösung (die erst durch viel Ausprobieren gefunden wurde) ist, das Hinzufügen des Schlüsselwortes, ''\emph{template}'' vor entsprechenden Aufruf:
+Das Problem rührt daher, dass der \emph{GCC-Compiler} in Template-Methoden so früh wie möglich versucht, Fehler zu erkennen. Während der \emph{Microsoft-Compiler} Template-Methoden erst dann untersucht, wenn sie konkret verwendet werden (siehe Listing \ref{template}).  
+\begin{code}{Darstellung der Fehlererkennung in Template-Methoden}{template}
+template <typename T>
+void foo() {
+	x = 0; // keine Variable x deklariert
+}
+
+int main() {
+	// GCC 4.2.1 C++ Kompiler: 'x' was not declared in this scope.
+	// MSVC 6.1 Kompiliert ohne Fehler.
+	// Kommentar entfernen, um Fehler zu erhalten:
+	// foo<int>();
+	return 0;
+}
+\end{code}
+
+Das Problem des \emph{GCC-Compilers} ist nun, dass versucht wird, auf ein \emph{Archive} Objekt zuzugreifen, welches erst durch den Template-Parameter spezifiziert wird. Die Lösung ist das Hinzufügen des Schlüsselwortes, ''\emph{template}'' vor entsprechenden Aufruf:
 \codeinsert{archive.template register\_type<Volume>();}
+
+
+
+
+
+
 
 
 

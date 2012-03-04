@@ -19,10 +19,10 @@ Alle Module lassen sich über das Kontextmenü bedienen.
 Rufen Sie einfach das Kontextmenü dort auf, wo sich das gewünschte Modul befindet. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ukap{Das Plugin}
-VSTForx ist in der Lage beliebig viele Audio-Plugins (siehe Kapitel \ref{compatible} auf Seite \pageref{compatible}) zu laden und in den Signalweg einzubinden. Durch betätigen des (\includegraphics[scale=0.5]{../graphics/e}) Schalters im Plugin-Knoten, kann (falls vorhanden) das Plugin-Editor Fenster geöffnet werden. Das Plugin kann dort auf herkömmliche Art und Weise bedient werden. 
+VSTForx ist in der Lage beliebig viele Audio-Plugins (siehe Kapitel \ref{compatible} auf Seite \pageref{compatible}) zu laden und in den Signalweg einzubinden. Durch Betätigen des (\includegraphics[scale=0.5]{../graphics/e}) Schalters im Plugin-Knoten kann (falls vorhanden) das Plugin-Editor Fenster geöffnet werden. Das Plugin kann dort auf herkömmliche Art und Weise bedient werden. 
 \\\\
 \aktion{MIDI Eigenschaften}
-	Ist das entsprechende Plugin in der Lage MIDI-Daten zu empfangen, erscheint ein Untermenüpunkt \untermenupunkt{midi properties}. Der Signalweg hat keinen Einfluss auf die MIDI-Daten Verteilung in VSTForx. Alle in VSTForx eingehenden MIDI-Daten, werden an alle empfangsbereiten Plugins weitergeleitet. Um MIDI-Daten gezielt an ein Plugins zu leiten, muss eine MIDI-Kanal Einstellung an den betreffenden Plugins erfolgen. Über den \emph{'midi-channel'} Parameter, lässt sich dem Plugin ein MIDI-Kanal zuordnen. Einstellbar sind die Werte: \emph{0..16 sowie 'all'}.
+	Ist das entsprechende Plugin in der Lage MIDI-Daten zu empfangen, erscheint ein Untermenüpunkt \untermenupunkt{midi properties}. Der Signalweg hat keinen Einfluss auf die MIDI-Daten Verteilung in VSTForx. Alle in VSTForx eingehenden MIDI-Daten werden an alle empfangsbereiten Plugins weitergeleitet. Um MIDI-Daten gezielt an ein Plugins zu leiten, muss eine MIDI-Kanal Einstellung an den betreffenden Plugins erfolgen. Über den \emph{'midi-channel'} Parameter lässt sich dem Plugin ein MIDI-Kanal zuordnen. Einstellbar sind die Werte: \emph{0..16 sowie 'all'}.
 \aktion{Plugin Parameter}
 	Im Untermenü \untermenupunkt{Plugin-Name Parameter} befinden sich alle Plugin Parameter.
 \aktion{Plugin Programme}
@@ -54,13 +54,13 @@ Das Pan Modul gehört zu den Signal verändernden Modulen. Über ein Parameter l
 	\eParameterlist
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ukap{Das Eingangs-Step Modul} 
-Das Eingangs-Step Modul gehört zu den Signalwegschaltern. Es ist in der Lage zwischen beliebig vielen Eingängen, auf ein Ausgang zu Schalten. Dabei verhält sich das Eingangs-Step Modul wie ein Stepsequencer. Jeder Eingang wird für eine bestimmte Zeit geschaltet. Ist die Zeit abgelaufen wird der nächste Eingang geschaltet. Ist die letzte Stepstufe erreicht beginnt die Sequenz erneut. Es existieren zwei Modi für das Eingangs-Step Modul: \emph{''fix''} und \emph{''sync''}.\\
-\paragraph{fix} Im \emph{''fix''} modus kann für jede Stepstufe ein fester Millisekunden betrag eingestellt werden.
-\paragraph{sync} Im \emph{''sync''} modus werden Notenwerte für die Stepstufen festgelegt. 
+Das Eingangs-Step Modul gehört zu den Signalwegschaltern. Es ist in der Lage zwischen beliebig vielen Eingängen auf einen Ausgang zu schalten. Dabei verhält sich das Eingangs-Step Modul wie ein Stepsequencer. Jeder Eingang wird für eine bestimmte Zeit geschaltet. Ist die Zeit abgelaufen, wird der nächste Eingang geschaltet. Ist die letzte Stepstufe erreicht, beginnt die Sequenz erneut. Es existieren zwei Modi für das Eingangs-Step Modul: \emph{''fix''} und \emph{''sync''}.\\
+\paragraph{fix} Im \emph{''fix''}-Modus kann für jede Stepstufe ein fester Millisekundenbetrag eingestellt werden.
+\paragraph{sync} Im \emph{''sync''}-Modus werden Notenwerte für die Stepstufen festgelegt. 
 \\\\
-\tip{Wann der Syncmodus die Stepsequenz beginnt ist abhängig davon,an welcher Taktposition, in der Hostanwendung die Start-Taste gedrückt wurde. Gestartet wird immer an dem nächst liegenden Viertelnotenwert.}
+\tip{Wann der Syncmodus die Stepsequenz beginnt, ist abhängig davon, an welcher Taktposition in der Hostanwendung die Start-Taste gedrückt wurde. Gestartet wird immer an dem nächst liegenden Viertelnotenwert.}
 \aktion{Einen weiteren Eingang hinzufügen}
-	Wählen Sie den Menüpunkt \menupunkt{add\_input\_node} um einen weiteren Moduleingang hinzuzufügen.
+	Wählen Sie den Menüpunkt \menupunkt{add\_input\_node}, um einen weiteren Moduleingang hinzuzufügen.
 \aktion{Modul Parameter}
 	Der Untermenüpunkt \untermenupunkt{input\_step parameter} enthält folgende Parameter:
 	\bParameterlist
@@ -77,9 +77,9 @@ Das Eingangs-Step Modul gehört zu den Signalwegschaltern. Es ist in der Lage zw
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ukap{Das Ausgangs-Step Modul}
 Die Funktionsweise des Ausgangs-Step Modules ist im wesentlichen identisch mit dem Eingangs-Step Modul. Einziger Unterschied:
-es werden keine Eingänge sondern Ausgänge geschaltet.
+Es werden keine Eingänge sondern Ausgänge geschaltet.
 \aktion{Einen weiteren Ausgang hinzufügen}
-	Wählen Sie den Menüpunkt \menupunkt{add\_output\_node} um einen weiteren Modulausgang hinzuzufügen.
+	Wählen Sie den Menüpunkt \menupunkt{add\_output\_node}, um einen weiteren Modulausgang hinzuzufügen.
 \aktion{Modul Parameter}
 	Der Untermenüpunkt \untermenupunkt{output\_step parameter} enthält folgende Parameter:
 	\bParameterlist
@@ -95,9 +95,9 @@ es werden keine Eingänge sondern Ausgänge geschaltet.
 \ssstern : siehe Abbildung \ref{curvetypes} auf Seite \pageref{curvetypes}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ukap{Das Eingangs-Switch Modul} 
-Genau wie die Step Module, gehört das Eingangs-Step Modul zu den Signalwegschaltern. Es ist ebenso in der Lage zwischen beliebig vielen Eingängen, auf einen Ausgang zu Schalten. Welcher Eingang aktuell geschaltet ist hängt von einem Parameter ab.
+Genau wie die Step Module gehört das Eingangs-Step Modul zu den Signalwegschaltern. Es ist ebenso in der Lage zwischen beliebig vielen Eingängen auf einen Ausgang zu schalten. Welcher Eingang aktuell geschaltet ist, hängt von einem Parameter ab.
 \aktion{Einen weiteren Eingang hinzufügen}
-	Wählen Sie den Menüpunkt \menupunkt{add\_input\_node} um einen weiteren Moduleingang hinzuzufügen.
+	Wählen Sie den Menüpunkt \menupunkt{add\_input\_node}, um einen weiteren Moduleingang hinzuzufügen.
 \aktion{Modul Parameter}
 	Der Untermenüpunkt \untermenupunkt{input\_switch parameter} enthält folgende Parameter:
 	\bParameterlist
@@ -111,7 +111,7 @@ Genau wie die Step Module, gehört das Eingangs-Step Modul zu den Signalwegschal
 \sstern : siehe Abbildung \ref{curvetypes} auf Seite \pageref{curvetypes}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ukap{Das Ausgangs-Switch Modul}
-Wie Eingangs-Switch Modul, ausser: es werden Ausgänge geschaltet. 
+Die Funktionsweise ist identisch zum Eingangs-Switch Modul. Einziger Unterschied: Es werden Ausgänge geschaltet. 
 \aktion{Einen weiteren Ausgang hinzufügen}
 	Wählen Sie den Menüpunkt \menupunkt{add\_output\_node} um einen weiteren Modulausgang hinzuzufügen.
 \aktion{Modul Parameter}
@@ -127,7 +127,7 @@ Wie Eingangs-Switch Modul, ausser: es werden Ausgänge geschaltet.
 \sstern : siehe Abbildung \ref{curvetypes} auf Seite \pageref{curvetypes}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ukap{Das Peaktracker Modul}
-Das Peaktracker Modul gehört zu den Signal nach Parameterwert Umwandlern. Diese analysieren das anliegende Eingangssignal und senden das Ergebnis an einen Ausgabeparameter. Somit ist es möglich, Plugin- sowie Modulparameter über ein Audiosignal zu steuern. Im Falle des Peaktracker Modules wird das anliegende Audiosignal direkt in einen Parameterwert umgewandelt. Signalausschläge wie zum Beispiel bei einer Snaredrum würden 1:1 an den Ausgabeparameter übertragen.
+Das Peaktracker Modul gehört zu den ''Signal nach Parameterwert Umwandler''. Diese analysieren das anliegende Eingangssignal und senden das Ergebnis an einen Ausgabeparameter. Somit ist es möglich, Plugin- sowie Modulparameter über ein Audiosignal zu steuern. Im Falle des Peaktracker Modules wird das anliegende Audiosignal direkt in einen Parameterwert umgewandelt. Signalausschläge wie zum Beispiel bei einer Snaredrum würden direkt an den Ausgabeparameter übertragen.
 
 \aktion{Modul Parameter}
 	Der Untermenüpunkt \untermenupunkt{peak\_tracker parameter} enthält folgende Parameter:
@@ -138,7 +138,7 @@ Das Peaktracker Modul gehört zu den Signal nach Parameterwert Umwandlern. Diese
 \ukap{Das ADSR-Trigger Modul}
 Das ADSR-Trigger Modul gehört ebenfalls zu den Signal nach Parameterwert Umwandlern. Ähnlich herkömmlicher Synthesizer wird hier eine ADSR-Sequenz (siehe \ref{adsr} auf Seite \pageref{adsr}) ausgelöst. Nur mit dem Unterschied, dass diese Sequenz nicht durch einen Tastendruck ausgelöst wird, sondern durch das anliegende Eingangssignal. 
 \\\\
-Am Eingangssignal liegt ein Schwellwert-Trigger. Ist ein Schwellwert überschritten, startet der ADS-teil der Sequenz. Wird der Schwellwert wieder unterschritten, geht die Sequenz in den R-teil über.\\ 
+Am Eingangssignal liegt ein Schwellwert-Trigger. Ist ein Schwellwert überschritten, startet der ADS-Teil der Sequenz. Wird der Schwellwert wieder unterschritten, geht die Sequenz in den R-Teil über.\\ 
 %Das ADSR-Trigger Modul kann in zwei Modi arbeiten: \emph{''absolut''} und \emph{''relativ''}.
 %\paragraph{Absolut}
 %Im Absolut-Modus wird 
@@ -157,9 +157,9 @@ Am Eingangssignal liegt ein Schwellwert-Trigger. Ist ein Schwellwert überschrit
 \sstern : siehe Abbildung \ref{curvetypes} auf Seite \pageref{curvetypes}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ukap{Das MIDI-Daten-Empfänger Modul}
-Das MIDI-Daten-Empfänger Modul empfängt MIDI-Controlldaten und überträgt dessen Werte an die jeweiligen Parameter.
+Das MIDI-Daten-Empfänger Modul empfängt MIDI-Kontrolldaten und überträgt dessen Werte an die jeweiligen Parameter.
 \aktion{MIDI Eigenschaften}
-Genau wie bei den (MIDI-fähigen) Plugins, lässt sich über den Untermenüpunkt \untermenupunkt{midi properties} der MIDI-empfangskanal einstellen.
+Genau wie bei den (MIDI-fähigen) Plugins lässt sich über den Untermenüpunkt \untermenupunkt{midi properties} der MIDI-Empfangskanal einstellen.
 \aktion{Modul Parameter}
 Im Untermenüpunkt \untermenupunkt{midi\_receiver parameter} befinden sich alle 127 MIDI-Control + Pitchbend Parameter. 
 \begin{figure}[pth]

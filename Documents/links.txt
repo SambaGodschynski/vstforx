@@ -1,0 +1,96 @@
+#Opcodes:
+\grabit
+Yvan Grabit
+http://ygrabit.steinberg.de/~ygrabit/public_html/vstgui/vstsupport.html
+
+#vst-sdk
+http://www.oifii.org/ns-org/nsd/ar/cp/audio_linuxsampler-cvscheckout/vstsdk2.4/doc/html/class_audio_effect_x.html
+
+http://www.gersic.com/vstsdk/html/plug/1.0/AudioEffect.html
+
+#verbeitung von vst
+\Karkos
+Digitale Musikproduktion von der Idee zum fertigen Song
+von Konrad Karkos, 2010, MAGIX AG, ISBN: 3-86960-280-5
+S.196
+
+#Adsr
+\Goerne
+Tontechnik
+ von Thomas Görne, Carl Hanser Verlag GmbH & CO. KG ( 8. Mai 2008)
+ 3-44641-591-2 S.234
+
+#Midi
+Tontechnik
+ von Thomas Görne, Carl Hanser Verlag GmbH & CO. KG ( 8. Mai 2008)
+ 3-44641-591-2 S.234 S.264f
+
+#au
+http://www.kvraudio.com/wiki/?id=Audio+Units
+#dx
+http://www.kvraudio.com/wiki/?id=DirectX
+#ladspa
+http://www.kvraudio.com/wiki/?id=LADSPA
+
+#vst-process
+\Newman
+An Investigation into Music-Oriented Software-Based Audio Signal Processing,
+Including Development of a Real-time Audio Application Using C++
+Toby Newman
+University of Derby 2002
+
+#reaktor
+\Reaktor
+http://www.native-instruments.com/#/de/products/producer/reaktor-55/?page=1626
+native Instruments
+
+#ableton
+\Ableton
+Ableton Benutzerhandbuch Version 8, Seite 270 f.
+
+#zykel
+Jeremy G.Siek: The Boost Graph Library. Addison-Wesely 2001, ISBN 0-201-72914-8
+S.48
+#zykel lok
+The Boost Graph Library
+S.198 f.
+
+#mutex
+Andrew S. Tanenbaum: Moderne Betriebssysteme. Pearson Education 2009, ISBN 978-3-82737-342-7, S. 176ff
+
+#befehl
+\Gof
+Erich Gamma: Entwurfsmuster. Addison-Wesely 2009, ISBN 978-3-8273-2199-2
+S.273ff
+
+#RAII
+\Stephens
+D. Ryan Stephens, C++ Cookbook, O'Reilly 2005, 978-0-596-00761-4
+S.291ff
+
+#singleton
+Erich Gamma: Entwurfsmuster. Addison-Wesely 2009, ISBN 978-3-8273-2199-2
+S. 157ff
+
+#libpng
+http://www.libpng.org/pub/png/libpng.html
+
+#zlib
+http://zlib.net/
+Jean-loup Gailly and Mark Adler.
+
+#boost 
+http://www.boost.org/
+Beman Dawes, David Abrahams, 1998-2005.
+Copyright Rene Rivera
+
+#sqlite
+http://www.sqlite.org/
+Hwaci
+
+#weak pointer
+http://www.boost.org/doc/libs/1_49_0/libs/smart_ptr/weak_ptr.htm
+
+#const
+Martin Reddy, API Design for C++, Academic Press 2011
+S. 180ff
