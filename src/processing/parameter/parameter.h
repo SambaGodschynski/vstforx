@@ -17,6 +17,8 @@
 #include "boost/function.hpp"
 #include "processing/PObject.h"
 #include <boost/math/special_functions/fpclassify.hpp>
+#include <boost/foreach.hpp>
+#include <boost/unordered_set.hpp>
 
 namespace processing {
 namespace parameter {
@@ -80,17 +82,12 @@ private:
 	 */
 	template < typename Archive >
 	void serialize( Archive &ar, const unsigned int version ){
-		ar & u;
-		ar & v;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	string name;
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	ConnectionOperator(){}
-	//--------------------------------------------------------------------------------------------------------
-	Parameter *u,*v;// TODO: existeren nur zur OperatorParamter(zb.:slope)
-					// nach ConnectionParameter kommunikation / alternative finden
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -105,32 +102,203 @@ public:
 	void setName ( const string &_name ) { name = _name; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * @return Parameter A der Verbindung
-	 */
-	Parameter * getParameterA() const { return u; }
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * @return Parameter B der Verbindung
-	 */
-	Parameter * getParameterB() const { return v; }
-	//--------------------------------------------------------------------------------------------------------
-	/**
 	 * implementiert Operation
 	 * @param f urspuengl. Parameter Wert
 	 * @return Parameterwert nach Operation
 	 */
-	virtual float operate ( float f ) = 0;
+	virtual VstNumber operate ( VstNumber f ) = 0;
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * @return inverser ConnectionOperator
+	 * implementiert inverse Operation
+	 * @param f urspuengl. Parameter Wert
+	 * @return Parameterwert nach Operation
 	 */
-	virtual ConnectionOperator * newInvereseOperator() = 0;
-	//--------------------------------------------------------------------------------------------------------
-	ConnectionOperator( Parameter *u, Parameter *v );
+	virtual VstNumber operateInverse ( VstNumber f ) = 0;
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~ConnectionOperator() {}
 };
 //============================================================================================================
+/**
+ * @class ParameterConnection.
+ * Repraesentiert Parameter-Verbindung.
+ */
+class ParameterConnection {
+//============================================================================================================
+friend class boost::serialization::access;
+public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::shared_ptr<ParameterConnection> Ptr;
+private:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (DE)Serialisierung eines ConnectionOperator-Objektes.
+	 * @param ar boost::Archive-Objekt.
+	 * @param version
+	 */
+	template < typename Archive >
+	void serialize( Archive &ar, const unsigned int version ){
+		ar & a;
+		ar & b;
+		ar & ops;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	ParameterPtr a, b;
+	//--------------------------------------------------------------------------------------------------------
+	ParameterConnection(ParameterPtr a, ParameterPtr b);
+	//--------------------------------------------------------------------------------------------------------
+	typedef std::list<ConnectionOperator::Ptr> Operators;
+	//--------------------------------------------------------------------------------------------------------
+	Operators ops;
+public:
+	//--------------------------------------------------------------------------------------------------------
+	const Operators & getOperators() const {
+		return ops;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	void addOperator(ConnectionOperator::Ptr op) {
+		ops.push_back(op);
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * erstellt ParameterConnection-Objekt
+	 * @param Parameter A 
+	 * @param Parameter B 
+	 */
+	static Ptr create(ParameterPtr a, ParameterPtr b) {
+		Ptr neu( new ParameterConnection(a,b) );
+		return neu;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Parameter A ValueChanged-Handler
+	 * @param
+	 * @param
+	 */
+	void onChangedA(void *src, const VstNumber &newValue);
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Parameter B ValueChanged-Handler
+	 * @param
+	 * @param
+	 */
+	void onChangedB(void *src, const VstNumber &newValue);
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Parameter A
+	 */
+	ParameterPtr getParameterA() const {
+		return a;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Parameter B
+	 */
+	ParameterPtr getParameterB() const {
+		return b;
+	}
+	
+};
+//============================================================================================================
+/**
+ *  @class ParameterConnectionComparator.
+ *  vergleicht zwei ParameterConnection. Wobei Reihenfolge egal ist:  
+ *  A<->B oder B<->A ist die gleiche Verbindung.
+ */
+struct ParameterConnectionComparator : std::binary_function<std::string, std::string, bool> 
+{
+//============================================================================================================
+	//--------------------------------------------------------------------------------------------------------   
+	bool operator()(ParameterConnection::Ptr l,
+        ParameterConnection::Ptr r) const
+    {
+        return ( l->getParameterA() == r->getParameterA() &&
+			     l->getParameterB() == r->getParameterB() ) ||
+			   ( l->getParameterA() == r->getParameterB() &&
+			     l->getParameterB() == r->getParameterA() );
+    }
+};
+//============================================================================================================
+/**
+ *  @class ParameterConnectionSetHash.
+ */
+struct ParameterConnectionSetHash : std::unary_function<std::string, std::size_t> 
+{
+//============================================================================================================
+	//-------------------------------------------------------------------------------------------------------- 
+    std::size_t operator()(ParameterConnection::Ptr x) const
+    {
+        std::size_t seed = 0;
+        std::locale locale;
+		// create hash by the two target parameters
+		std::size_t a = (std::size_t)x->getParameterA().get();
+		std::size_t b = (std::size_t)x->getParameterB().get();
+        boost::hash_combine(seed, max(a,b)); // always higher value first
+		boost::hash_combine(seed, min(a,b));
+        return seed;
+    }
+};
+//============================================================================================================
+/**
+ * @class ParameterConnectionSet.
+ * Container fuer ParameterConnection. Nimmt keine Verbindung doppelt auf. 
+ */
+class ParameterConnectionSet : 
+	public boost::unordered_set<ParameterConnection::Ptr, 
+			ParameterConnectionSetHash,
+			ParameterConnectionComparator>
+{
+//============================================================================================================
+public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::unordered_set<ParameterConnection::Ptr, 
+		ParameterConnectionSetHash,
+		ParameterConnectionComparator> Base;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Verbindet Parameter a mit Parameter b.
+	 * @return true, wenn erfolgt
+	 */
+	virtual bool connectParameter(ParameterPtr a, ParameterPtr b) {
+		if (!a || !b)
+			return false;
+		pair<Base::iterator,bool> ret;
+		ParameterConnection::Ptr cn = ParameterConnection::create(a,b);
+		ret = insert(cn);
+		return ret.second;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Entfernt ParameterVerbindung a<->b falls vorhanden.
+	 * Parameter-Reihenfolge a,b) oder (b,a) spielt keine Rolle. 
+	 * @return true, wenn erfolgt
+	 */
+	virtual bool removeConnection(ParameterPtr a, ParameterPtr b) {
+		if (!a || !b)
+			return false;
+		ParameterConnection::Ptr cn = ParameterConnection::create(a,b);
+		Base::iterator it = find(cn);
+		if (it==end()) 
+			return false;
+		erase(it);
+		return true;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * liefert ParameterVerbindung a<->b falls vorhanden.
+	 * Parameter-Reihenfolge a,b) oder (b,a) spielt keine Rolle. 
+	 * @return NULL, falls keine Verbindung existiert.
+	 */
+	virtual ParameterConnection::Ptr getConnection(ParameterPtr a, ParameterPtr b) {
+		if (!a || !b)
+			return ParameterConnection::Ptr();
+		ParameterConnection::Ptr cn = ParameterConnection::create(a,b);
+		Base::iterator it = find(cn);
+		if (it==end()) 
+			return ParameterConnection::Ptr();
+		return *it;
+	}
+};
+
 /**
  * @class Parameter.
  * Kann Fliesskommawert anehmen.
@@ -151,10 +319,6 @@ public:
 private:
 	//--------------------------------------------------------------------------------------------------------
 	typedef Parameter* U; //verbundener Parameter
-	//--------------------------------------------------------------------------------------------------------
-	typedef ConnectionOperator::Container V; //Operatoren
-	//--------------------------------------------------------------------------------------------------------
-	typedef map <U, V> ParameterConnection; // TODO: Verbindung als Klasse
 	//--------------------------------------------------------------------------------------------------------
 	VstNumber _min, _max;
 	//--------------------------------------------------------------------------------------------------------
@@ -209,36 +373,6 @@ protected:
 	 * blockt updateConnections() gegen removeConnection()
 	 */
 	Mutex mutex;
-	//--------------------------------------------------------------------------------------------------------
-	// Parameter Connections
-	ParameterConnection connections;
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 *  aktualisiert Parameterverbindungen.
-	 */
-	virtual void updateConnections();
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * fuegt gerichtete Parameterverbindung hinzu.
-	 * @param dest
-	 * @return true, wenn erfolgt
-	 */
-	virtual bool _addConnection ( Parameter *dest ){
-		TRY_TO_LOCK_TIMED(mutex);
-		if (!dest) return false;
-		pair < ParameterConnection::iterator, bool > ret = connections.insert ( 
-			pair< Parameter*, ConnectionOperator::Container > ( dest, 
-																	list< ConnectionOperator::Ptr >() 
-															       ) 
-		);
-		return ret.second;
-	}
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * entfernt gerichtete Parameterverbindung.
-	 * @param dst
-	 */
-	virtual void _removeConnection ( Parameter *dst );
 	//--------------------------------------------------------------------------------------------------------
 	Parameter( int index = 0 );
 public:
@@ -318,7 +452,6 @@ public:
 		}
 		value = com::getMin<VstNumber>( _max, com::getMax<VstNumber>( _min, v ) );
 		notifyListeners(this, *this);
-		updateConnections();
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -330,7 +463,6 @@ public:
 		if ( updateLock ) return;
 		value = com::getMin<VstNumber>( _max, com::getMax<VstNumber>( _min, v ) );
 		notifyListeners( this, *this, skipThis );
-		updateConnections();
 	}
 	//--------------------------------------------------------------------------------------------------------
 	void operator=(VstNumber v){ setValue (v); }
@@ -374,66 +506,6 @@ public:
 	 * @return Parameter-Maximum
 	 */
 	virtual VstNumber getMax() { return _max; }
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * fuegt bidirektionale Verbindung zwischen hinzu (this<->dest).
-	 * Keine Mehrfachverbindungen.
-	 * @param dest
-	 * @return true, wenn erfolgt
-	 */
-	virtual bool addBiConnection ( Parameter *dest ){
-		if ( dest == this ) return false;
-		return _addConnection ( dest ) && dest->_addConnection ( this );
-	}
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * fuegt bidirektionaler Verbindung (this<->dst) Operatoren hinzu:
-	 * this->dst: Operator
-	 * dst->this: Operator->getInverseOperator()
-	 * @param dst
-	 * @param pProcessor
-	 */
-	virtual void addConnectionOperator ( Parameter *dst, const ConnectionOperator::Ptr &op ){
-		TRY_TO_LOCK_TIMED(mutex);
-		ParameterConnection::iterator it = connections.find ( dst );
-		if ( it == connections.end() ) 
-			throw ppiError::IndexOutOfBoundException("No Connection", __FILE__, __LINE__ );
-		(*it).second.push_back ( ConnectionOperator::Ptr(op) );
-	}
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * @param dst
-	 * @return Operatoren zur bidirektionalen Verbindung this<->dst.
-	 */
-	virtual const ConnectionOperator::Container & getConnectionOperators ( Parameter *dst ) const {
-		ParameterConnection::const_iterator it = connections.find ( dst );
-		if ( it == connections.end() ) 
-			throw ppiError::IndexOutOfBoundException("No Connection", __FILE__, __LINE__ );
-		return (*it).second;
-	}
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * entfernt Operatoren zur bidirektionalen Verbindung this<->dst.
-	 * @param src
-	 * @param pProcessor
-	 */
-	virtual void removeConnectionOperator ( Parameter *src, const ConnectionOperator::Ptr &pProcessor ){
-		TRY_TO_LOCK_TIMED(mutex);
-		ParameterConnection::iterator it = connections.find ( src );
-		if ( it == connections.end() ) return;
-		(*it).second.remove ( pProcessor );
-	}
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * entfernt bidirektionale Verbindung this<->dst.
-	 * @param dst
-	 */
-	virtual void removeBiConnection ( Parameter *dst );
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * @return Anzahl aller Parameter-Verbindungen
-	 */
-	virtual int getNumConnections () { return connections.size(); }
 };
 //============================================================================================================
 // Klasse: Parameter.
@@ -451,7 +523,6 @@ void Parameter::serialize( Archiv &ar, const unsigned int version) {
 	ar & value;
 	ar & nr;
 	ar & index;
-	ar & connections;
 }
 } // namespace parameter
 } // namespace processing

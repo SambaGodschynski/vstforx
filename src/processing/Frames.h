@@ -17,6 +17,7 @@
 // TODO: durch ErrorKlassen ersetzen 
 #define SIZE_ERROR "size_error"
 #define RANGE_ERROR "range_error"
+#define INVALID_MEM_ALLOC "invalid_mem_alloc"
 
 #ifdef _FORX_TESTSUITE
 #define ONLY_FOR_FORX_TEST(expr) expr
@@ -51,6 +52,8 @@ private:
 	Int ___size_;
 	//--------------------------------------------------------------------------------------------------------
 	void allocData ( Int size ) {
+		if (externData)
+			throw INVALID_MEM_ALLOC;
 		___size_ = size; 
 		if ( size==0 ) return;
 		for ( Int i=0; i<CHANNELS; ++i ) data[i] = new T[size];
@@ -58,6 +61,8 @@ private:
 	}
 	//--------------------------------------------------------------------------------------------------------
 	void reAlloc ( Int size ) {
+		if (externData)
+			throw INVALID_MEM_ALLOC;
 		if ( getSize()==0 ) {
 			allocData ( size );
 			___size_ = size;

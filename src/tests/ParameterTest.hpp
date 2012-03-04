@@ -12,11 +12,13 @@ class ParameterTest : public CPPUNIT_NS::TestFixture {
 	CPPUNIT_TEST( testConstructor );
 	CPPUNIT_TEST( testMinMax );
 	CPPUNIT_TEST( testConnection );
+	CPPUNIT_TEST( testConnectionSet );
 	CPPUNIT_TEST_SUITE_END();
 private:
 public:
 	void setUp(){}
 	void tearDown(){}
+	void testConnectionSet();
 	void testConnection();
 	void testConstructor();
 	void testMinMax();

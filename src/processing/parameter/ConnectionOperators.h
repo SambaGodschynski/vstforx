@@ -40,6 +40,9 @@ namespace parameter {
 //============================================================================================================
 class InverseConnection : public ConnectionOperator {
 friend class boost::serialization::access;
+public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::shared_ptr<InverseConnection> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -52,7 +55,9 @@ private:
 		ar & boost::serialization::base_object<ConnectionOperator> ( *this );
 	}
 	//--------------------------------------------------------------------------------------------------------
-	InverseConnection (){}
+	InverseConnection () : ConnectionOperator () {
+		setName ("Inverse Operator");
+	}
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -60,18 +65,22 @@ public:
 	 * @param f urspuengl. Parameter Wert
 	 * @return Parameterwert nach Operation
 	 */
-	virtual float operate ( float dest ){
+	virtual VstNumber operate ( VstNumber dest ){
 		return 1.0 - dest;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	InverseConnection ( Parameter *u, Parameter *v ) : ConnectionOperator ( u, v ) {
-		setName ("Inverse Operator");
+	/**
+	 * implementiert inverseOperation
+	 * @param f urspuengl. Parameter Wert
+	 * @return Parameterwert nach Operation
+	 */
+	virtual VstNumber operateInverse ( VstNumber dest ){
+		return operate(dest);
 	}
 	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * @return InverseConnection-Objekt
-	 */
-	virtual ConnectionOperator * newInvereseOperator() { return new InverseConnection(u,v); }
+	static Ptr create() {
+		return Ptr(new InverseConnection());
+	}
 };
 //============================================================================================================
 /**
@@ -81,9 +90,10 @@ public:
 class OffsetConnection : public ConnectionOperator, public HasParameter {
 //============================================================================================================
 friend class boost::serialization::access;
-private:
+public:
 	//--------------------------------------------------------------------------------------------------------
-	bool inverse; // is inverse?
+	typedef boost::shared_ptr<OffsetConnection> Ptr;
+private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * (De)Serialisiert OffsetConnection-Objekt
@@ -94,7 +104,6 @@ private:
 	void serialize ( Archive &ar, const unsigned int version ) {
 		ar & boost::serialization::base_object<ConnectionOperator> ( *this );
 		ar & offset;
-		ar & inverse;
 		if ( Archive::is_loading::value ) {
 			Parameter::ParameterListenerFunction f = 
 			boost::bind( &OffsetConnection::parameterChanged, this, _1, _2 );
@@ -114,10 +123,7 @@ private:
 	 */
 	void parameterChanged ( void *src, const float &p );
 	//--------------------------------------------------------------------------------------------------------
-	OffsetConnection (){}
-public:
-	//--------------------------------------------------------------------------------------------------------
-	OffsetConnection ( Parameter *u, Parameter *v ) : ConnectionOperator ( u, v ), inverse(false)
+	OffsetConnection () : ConnectionOperator ()
 	 {
 		setName ("Offset Operator");
 		offset = Parameter::create();
@@ -127,6 +133,11 @@ public:
 		offset->addValueChangedListenerF (f);
 		*offset = 0.5f;
 	}
+public:
+	//--------------------------------------------------------------------------------------------------------
+	static Ptr create() {
+		return Ptr(new OffsetConnection());
+	}
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~OffsetConnection() {}
 	//--------------------------------------------------------------------------------------------------------
@@ -135,8 +146,17 @@ public:
 	 * @param f urspuengl. Parameter Wert
 	 * @return Parameterwert nach Operation
 	 */
-	virtual float operate ( float x ){
-		return inverse ?  x - *offset + 0.5f : x + *offset - 0.5f;
+	virtual VstNumber operate ( VstNumber x ){
+		return x + *offset - 0.5f;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * implementiert inverse Operation
+	 * @param f urspuengl. Parameter Wert
+	 * @return Parameterwert nach Operation
+	 */
+	virtual VstNumber operateInverse ( VstNumber x ){
+		return x - *offset + 0.5f;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -151,12 +171,6 @@ public:
 	 * @return 1
 	 */
 	virtual size_t getNumParameter () const { return 1; }
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 *
-	 * @return OffsetConnection-Objekt, wobei inverse = true
-	 */
-	virtual ConnectionOperator * newInvereseOperator();
 };
 
 //============================================================================================================
@@ -168,6 +182,9 @@ class ExpConnection : public ConnectionOperator, public HasParameter {
 //============================================================================================================
 friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
+public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::shared_ptr<ExpConnection> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -190,9 +207,6 @@ private:
 		ar >> boost::serialization::base_object<ConnectionOperator> ( *this );
 		ar >> a;
 		ar >> slope;
-		Parameter::ParameterListenerFunction f = 
-			boost::bind( &ExpConnection::parameterChanged, this, _1, _2 );
-		slope->addValueChangedListenerF (f);
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -202,15 +216,7 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	VstNumber a;
 	//--------------------------------------------------------------------------------------------------------
-	void parameterChanged ( void *src, const float &p ){ 
-		a = -log (p); 
-		u->setValue(u->getValue()); 
-	} 
-	//--------------------------------------------------------------------------------------------------------
-	ExpConnection (){}
-public:
-	//--------------------------------------------------------------------------------------------------------
-	ExpConnection ( Parameter *u, Parameter *v ) : ConnectionOperator ( u, v )
+	ExpConnection () : ConnectionOperator ( )
 	 {
 		setName ("EXP Operator");
 		slope = Parameter::create();
@@ -219,9 +225,11 @@ public:
 		slope->setMax(0.9999f);
 		a = -log ( *slope ); // == log (1/slope)
 		ExpConnection::slope->setName ("EXP/LOG slope");
-		Parameter::ParameterListenerFunction f = 
-			boost::bind( &ExpConnection::parameterChanged, this, _1, _2 );
-		ExpConnection::slope->addValueChangedListenerF (f);
+	}
+public:
+	//--------------------------------------------------------------------------------------------------------
+	static Ptr create() {
+		return Ptr(new ExpConnection());
 	}
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~ExpConnection (){}
@@ -231,9 +239,26 @@ public:
 	 * @param f urspuengl. Parameter Wert
 	 * @return Parameterwert nach Operation
 	 */
-	virtual float operate ( float x ){
+	virtual VstNumber operate ( VstNumber x ){
 		if ( x == 0.0f ) return 0.0001f; 
 		return exp( a*x ) * *slope;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * implementiert inverse Operation
+	 * @param f urspuengl. Parameter Wert
+	 * @return Parameterwert nach Operation
+	 */
+	virtual VstNumber operateInverse ( VstNumber x ){
+		if ( x == 0.0f ) return 0.0f; 
+		float v = -log( x ) / a  + 1;
+		// problem with ambience reverb when using log/exp to dry/wet.
+		// soundoutput will stop. following limitation will handle it:		
+		if (v<0.0f)
+			return 0.0f;
+		if (v>1.0f)
+			return 1.0f;
+		return v;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -248,12 +273,6 @@ public:
 	 */
 	//--------------------------------------------------------------------------------------------------------
 	virtual size_t getNumParameter () const { return 1; }
-
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * @return LogConnection-Objekt
-	 */
-	virtual ConnectionOperator * newInvereseOperator();
 };
 //============================================================================================================
 // Klasse: LogConnection.
@@ -262,6 +281,9 @@ public:
 class LogConnection : public ConnectionOperator, public HasParameter {
 friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
+public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::shared_ptr<LogConnection> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -284,32 +306,9 @@ private:
 		ar >> boost::serialization::base_object<ConnectionOperator> ( *this );
 		ar >> a;
 		ar >> slope;
-		Parameter::ParameterListenerFunction f = 
-			boost::bind( &LogConnection::parameterChanged, this, _1, _2 );
-		slope->addValueChangedListenerF (f);
 	}
 	//--------------------------------------------------------------------------------------------------------
-	LogConnection (){}
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * Slope-Parameter der Log. funktion
-	 */
-	Parameter::Ptr slope;
-	//--------------------------------------------------------------------------------------------------------
-	VstNumber a;
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * Slope-Paramter Handler
-	 * @param src
-	 * @param p
-	 */
-	void parameterChanged ( void *src, const float &p ) { 
-		a = log ( p ); 
-		u->setValue(u->getValue()); 
-	} 
-public:
-	//--------------------------------------------------------------------------------------------------------
-	LogConnection ( Parameter *u, Parameter *v ) : ConnectionOperator ( u, v ) {	
+	LogConnection () : ConnectionOperator () {	
 		setName ("LOG Operator");
 		slope = Parameter::create();
 		*slope = STD_SLOPE;
@@ -317,9 +316,18 @@ public:
 		slope->setMax(0.9999f);
 		slope->setName("LOG/EXP slope");
 		a = log( *slope );
-		ValueChangedSender<float>::ValueChangedFunction f = 
-			boost::bind( &LogConnection::parameterChanged, this, _1, _2 );
-		LogConnection::slope->addValueChangedListenerF (f);
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Slope-Parameter der Log. funktion
+	 */
+	Parameter::Ptr slope;
+	//--------------------------------------------------------------------------------------------------------
+	VstNumber a;
+public:
+	//--------------------------------------------------------------------------------------------------------
+	static Ptr create() {
+		return Ptr(new LogConnection());
 	}
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~LogConnection(){}
@@ -329,7 +337,7 @@ public:
 	 * @param f urspuengl. Parameter Wert
 	 * @return Parameterwert nach Operation
 	 */
-	virtual float operate ( float x ){
+	virtual VstNumber operate ( VstNumber x ){
 		if ( x == 0.0f ) return 0.0f; 
 		float v = -log( x ) / a  + 1;
 		// problem with ambience reverb when using log/exp to dry/wet.
@@ -339,6 +347,16 @@ public:
 		if (v>1.0f)
 			return 1.0f;
 		return v;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * implementiert inverse Operation
+	 * @param f urspuengl. Parameter Wert
+	 * @return Parameterwert nach Operation
+	 */
+	virtual VstNumber operateInverse ( VstNumber x ){
+		if ( x == 0.0f ) return 0.0001f; 
+		return exp( a*x ) * *slope;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -353,12 +371,6 @@ public:
 	 * @return 1
 	 */
 	virtual size_t getNumParameter () const { return 1; }
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 *
-	 * @return ExpConnection-Objekt
-	 */
-	virtual ConnectionOperator * newInvereseOperator();
 };
 } //namespace parameter 
 } //namespace processing

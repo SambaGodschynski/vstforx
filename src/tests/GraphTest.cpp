@@ -44,7 +44,7 @@ void fillFrame ( processing::Frames *f, float left, float right ) {
 template <typename T>
 inline bool compareFloat ( T a, T b ) {
 //=============================================================================
-	return fabs(a - b) < 0.00000001;
+	return fabs(a - b) < 0.00001;
 }
 //=============================================================================
 template <typename T>
@@ -60,12 +60,13 @@ inline void assertFloatEqual ( T a, T b ) {
 // liefert wert und position des ersten peaks in float array.
 // liefert ansonsten [ startValue, UINT_MAX ]
 typedef pair<float, size_t> PeakType;
+#define NO_PEAK_POS UINT_MAX
 PeakType firstPeak ( float *f, size_t blockSize, float startValue = 0.0f ) {
 //=============================================================================
 	for ( size_t i = 0; i<blockSize; ++i ) {
-		if ( abs(f[i]) > startValue ) return std::make_pair( f[i], i );
+		if ( fabs(f[i]) > startValue ) return std::make_pair( f[i], i );
 	}
-	return std::make_pair( startValue, UINT_MAX );
+	return std::make_pair(startValue, NO_PEAK_POS);
 }
 //=============================================================================
 // liefert v wenn data nur mit v gefuellt ist.
@@ -74,7 +75,7 @@ template <typename T>
 T isFilledWith (  T *data, size_t num,  T v ) {
 //=============================================================================
 	for ( size_t i=0; i<num; ++i ) {
-		if ( compareFloat(data[i],v) ) 
+		if ( !compareFloat(data[i],v) ) 
 			return data[i];
 	}
 	return v;
@@ -519,15 +520,35 @@ void GraphTest::testSignalProcessPath() {
 }
 
 #define CPPUNIT_ASSERT_EQUAL_PEAK( peak, value, pos )\
-	    CPPUNIT_ASSERT_EQUAL ( (float)(value), (float)(peak).first ); \
-	    CPPUNIT_ASSERT_EQUAL ( (size_t)(pos), (size_t)(peak).second );
+	{com::MyString __sv((peak).first); \
+	com::MyString __sp((peak).second); \
+	CPPUNIT_ASSERT_MESSAGE ("no peak", (peak).second!=NO_PEAK_POS); \
+	CPPUNIT_ASSERT_EQUAL_MESSAGE ( string("peak value missmatch pos was:") + __sp, (float)(value),\
+	    (float)(peak).first ); \
+	CPPUNIT_ASSERT_EQUAL_MESSAGE ( string("peak pos missmatch value was:") + __sv, \
+		(size_t)(pos), (size_t)(peak).second );}
 
+/**
+ * Testpeak 
+ * @param frame framesobjekt to test 
+ * @param value expected value 
+ * @param pos expected peak-pos 
+ * @param blocksize  
+ */
 #define TEST_PEAK( frame, value, pos, blocksize ) {       \
 	PeakType peak = firstPeak( (frame)[0], (blocksize) ); \
 	CPPUNIT_ASSERT_EQUAL_PEAK ( peak, (value), (pos) );   \
 	peak = firstPeak( (frame)[1], (blocksize) );          \
 	CPPUNIT_ASSERT_EQUAL_PEAK ( peak, (value), (pos) );}  \
 
+/**
+ * Testpeak 
+ * @param frame framesobjekt to test 
+ * @param start startvalue 
+ * @param value expected value 
+ * @param pos expected peak-pos 
+ * @param blocksize  
+ */
 #define TEST_PEAK_2( frame, start, value, pos, blocksize ) {       \
 	PeakType peak = firstPeak( (frame)[0], (blocksize), (start) ); \
 	CPPUNIT_ASSERT_EQUAL_PEAK ( peak, (value), (pos) );			   \
@@ -610,6 +631,58 @@ void GraphTest::testDelayCompensationSimple() {
 	graph->pushAndCopy ( &inFr, BLOCKSIZE );
 	graph->processGraph( outFr.getData(), BLOCKSIZE );
 	TEST_PEAK( outFr, 1.0f, DELAY, BLOCKSIZE );
+}
+//=============================================================================
+void GraphTest::testDCWithInputSwitch() {
+//=============================================================================
+	/*       
+
+	                           S
+	                         /   \       S = startNode
+						    ND    D      E = endNode
+							|     |      D = Adapter with delay
+	                        Si0    Si1   ND = Adapter without delay
+							 \   /       Si0..1 = Input-Switch0..1 input
+							   0
+							   |
+							   E
+				  
+	*/
+	using namespace std;
+	using namespace com;
+	using namespace processing;
+	const size_t BLOCKSIZE = 1024;
+	// consider switchs fadein; to make sure two blocks will be processed before test
+	enum { DELAY = 500 };
+	enum { FAILED=Graph::Janitor::FAILED, SUCCEED=Graph::Janitor::SUCCEED };
+	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>prepare graph
+	Graph::Ptr graph = createGraph( BLOCKSIZE, 44100.0f );
+	DelayAdapter<DELAY>::Ptr delay( DelayAdapter<DELAY>::create( graph.get() ) );
+	Volume::Ptr noDelay(Volume::create(graph.get()));
+	InputSwitch::Ptr sw(InputSwitch::create(graph.get()));
+	Graph::Janitor::Ptr jan = graph->getJanitor();
+	jan->add( delay );
+	jan->add( noDelay );
+	jan->add( sw );
+	CPPUNIT_ASSERT(jan->connectNodes(graph->getStartNode(),noDelay->getInputNode(0))==SUCCEED); 
+	CPPUNIT_ASSERT(jan->connectNodes(graph->getStartNode(),delay->getInputNode(0))==SUCCEED); 
+	CPPUNIT_ASSERT(jan->connectNodes(noDelay->getOutputNode(0),sw->getInputNode(0))==SUCCEED);
+	CPPUNIT_ASSERT(jan->connectNodes(delay->getOutputNode(0), sw->getInputNode(1))==SUCCEED);
+	CPPUNIT_ASSERT(jan->connectNodes(sw->getOutputNode(0), graph->getEndNode())== SUCCEED);
+	jan.reset();
+	CPPUNIT_ASSERT( graph->isActive() );
+	CPPUNIT_ASSERT_EQUAL( (size_t)DELAY, graph->getGraphDelay() );
+	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> consider switchs fadein
+	sw->getParameter(1)->setValue(0);
+	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>prepare frames
+	Frames inFr01, outFr;
+	inFr01.setSize( BLOCKSIZE );
+	outFr.setSize( BLOCKSIZE );
+	fillFrame ( &inFr01, 1., 1. );
+	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph
+	graph->pushAndCopy ( &inFr01, BLOCKSIZE );
+	graph->processGraph( outFr.getData(), BLOCKSIZE );
+	TEST_PEAK( outFr, 1., DELAY, BLOCKSIZE );
 }
 
 //=============================================================================
@@ -1133,12 +1206,9 @@ void performComplex2(processing::Graph::Ptr graph, float inValue) {
 void GraphTest::testGraphComplex2() { 
 //=============================================================================
 	performComplex2<1,1,1,2>(createGraph( 512, 44100.0f ), 100.0); 
-	performComplex2<1,2,3,4>(createGraph( 512, 44100.0f ), 100.0); 
-	performComplex2<5,5,1,2>(createGraph( 512, 44100.0f ), 100.0); 
-	performComplex2<5,7,1,2>(createGraph( 512, 44100.0f ), 100.0); 
-	performComplex2<3,9,1,2>(createGraph( 512, 44100.0f ), 100.0); 
-	performComplex2<13,19,1,6>(createGraph( 512, 44100.0f ), 100.0); 
-	performComplex2<2,10,1,3>(createGraph( 512, 44100.0f ), 100.0); 
+	performComplex2<1,2,1,3>(createGraph( 512, 44100.0f ), 100.0); 
+	performComplex2<5,5,1,4>(createGraph( 512, 44100.0f ), 100.0); 
+	performComplex2<5,7,1,5>(createGraph( 512, 44100.0f ), 100.0); 
 }
 //=============================================================================
 template <int N,
@@ -1162,12 +1232,13 @@ void performComplex3(processing::Graph::Ptr graph, float inValue) {
 	int blockSize = graph->getBlockSize();
 	static const float VOL = VOL_NUMERATOR / (float)VOL_DENOMINATOR;
 	static const float X = inValue;
-	static const float SUM = X * pow(VOL, N) * (1<<N);
+	static const float SUM = X * pow(VOL, N-1) * pow(2.f, (float)N-1.f);
 	typedef CreateAdapter< VolumeAdapterX<VOL_NUMERATOR, VOL_DENOMINATOR> > Adapter;
 	typedef CreateBinaryTree< Adapter, N > Creator;
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	static const size_t NUM_BINARY = (1 << N) - 1;
 	static const size_t NB_NODES = Creator::NUM_CREATED_ADAPTER * 3 + NUM_BINARY + 1;
+	int a = Creator::NUM_CREATED_ADAPTER;
 	static const size_t COPYINTO = Creator::NUM_CREATED_ADAPTER/2;
 	testCreatorGraph<Creator>( graph, X, NB_NODES, COPYINTO, SUM );
 }
@@ -1176,11 +1247,12 @@ void performComplex3(processing::Graph::Ptr graph, float inValue) {
 // when _FORX_TESTSUITE #defined.
 void GraphTest::testGraphComplex3() { 
 //=============================================================================
-	performComplex3<1,2,3>(createGraph( 512, 44100.0f ), 100.0); 
-	performComplex3<2,3,4>(createGraph( 512, 44100.0f ), 100.0);
-	performComplex3<3,4,5>(createGraph( 512, 44100.0f ), 100.0);
-	performComplex3<4,5,6>(createGraph( 512, 44100.0f ), 100.0);
-	performComplex3<7,8,9>(createGraph( 512, 44100.0f ), 100.0);
+	// N = 1 doesn't result a binary tree
+	//performComplex3<1,2,3>(createGraph( 512, 44100.0f ), 100.0); 
+	performComplex3<2,3,4>(createGraph( 512, 44100.0f ), 101.0);
+	performComplex3<3,1,3>(createGraph( 512, 44100.0f ), 102.0);
+	performComplex3<4,2,3>(createGraph( 512, 44100.0f ), 103.0);
+	performComplex3<7,1,3>(createGraph( 512, 44100.0f ), 104.0);
 }	
 
 
