@@ -1,6 +1,6 @@
 % !TEX encoding = UTF-8 Unicode
 \section{Fazit}
-Mit \emph{C++} als Entwicklungssprache wurde eine mächtige und performante, aber auch fehleranfällige und unsicherere Programmiersprache gewählt. Einerseits wurden die in ''modernen'' Programmiersprachen eher unspektakulären Aufgaben, wie das Einbinden einer externen Bibliothek, als besonders zeitaufwändig empfunden (fehlendes Paketmanagment). Andererseits wird der Entwickler gerade durch solche Fallstricke zu mehr Sorgfalt gezwungen und das allgemeine Verständnis für Programmiersprachen erhöht. 
+Mit \emph{C++} als Entwicklungssprache wurde eine mächtige und performante, aber auch fehleranfällige und unsicherere Programmiersprache gewählt. Einerseits wurden die in ''modernen'' Programmiersprachen eher unspektakulären Aufgaben, wie das Einbinden einer externen Bibliothek, als besonders zeitaufwändig empfunden (fehlendes Paketmanagment). Andererseits wird der Entwickler gerade durch solche Fallstricke zu mehr Sorgfalt gezwungen, und das allgemeine Verständnis für Programmiersprachen erhöht. 
 Insbesondere wurde die Boost-Bibliothek schätzen gelernt, welche \emph{C++} um ''moderne'' Programmiertechniken wie den 'Smart Pointer' erweitert. 
 \\\\
 Mit VSTForx ist es - nach Meinung des Autors - gelungen, ein interessantes und spanendes Werkzeug zu entwickeln. Dennoch ist die Entwicklung an VSTForx noch nicht abgeschlossen. Folgend werden zukünftige (mögliche) Verbesserungen oder Erweiterungen besprochen. 
@@ -12,7 +12,7 @@ Wünschenswert wäre hier die Verwendung eines GUI-Toolkits, wie \emph{Qt\footno
 \\\\
 Im Falle einer Eigenentwicklung käme die \emph{Cairo\footnote{http://cairographics.org/}}-Bibliothek in Frage. Diese bietet sehr leistungsfähige Zeichenfunktionen und ist, wie gefordert, in bestehende Fensterumgebungen einbindbar.
 \subsection{'Signal nach Parameterwert'-Problem}
-'Signal nach Parameterwert'-Module, welche ein Eingangsignal analysieren, um einen Parameterwert zu steuern, haben eine Einschränkung: sie werden, da sie als \emph{ProcessAdapter} in den Graph eingebunden, nur einmal pro Sampleblock ausgeführt. Das bedeutet, dass ein Parameterwert sich immer seltener ändert, je höher die Sampleblockgröße ist. Bei einer Samplerate von 44100.0Hz und einer (üblichen) Blockgröße von 1024 wird demnach ein Parameter alle 23Ms aktualisiert. Dies ist vermutlich kaum wahrnehmbar, nach Meinung des Autors dennoch ein kleiner Schönheitsfehler.
+'Signal nach Parameterwert'-Module, welche ein Eingangsignal analysieren, um einen Parameterwert zu steuern, haben eine Einschränkung: Sie werden, da sie als \emph{ProcessAdapter} in den Graph eingebunden sind, nur einmal pro Sampleblock ausgeführt. Das bedeutet, dass ein Parameterwert sich immer seltener ändert, je höher die Sampleblockgröße ist. Bei einer Samplerate von 44100.0Hz und einer (üblichen) Blockgröße von 1024 wird demnach ein Parameter alle 23Ms aktualisiert. Dies ist vermutlich kaum wahrnehmbar, nach Meinung des Autors dennoch ein kleiner Schönheitsfehler.
 \\\\
 Zur Lösung müsste die Parameter-Aktualisierung entsprechender Module in einem separaten Thread mit fester Aktualisierungsrate durchgeführt werden. 
 \subsection{Weitere Module}

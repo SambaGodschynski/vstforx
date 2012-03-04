@@ -72,7 +72,7 @@ Für einen Großteil der getesteten Plugins funktionierte dieser Vorgang. Bei ei
 	\item \funktion{dispatcher(effMainsChanged, 1) //resume}
 \end{itemize}
 
-Es ist zu anzunehmen, dass in einigen Fällen \emph{effOpen} Speicher mittels \emph{Samplerate} und/oder \emph{Blockgröße} alloziert. Wird daher \emph{effOpen} vor dem setzen der Samplerate/Blockgröße aufgerufen, kann es passieren, dass ein (unsauber programmiertes) Plugin versucht, Speicher mit undefinierter Größe zu allozieren. In C/C++ bedeutet undefiniert nicht '0', sondern irgendeine Zahl. Ist diese Zahl größer als der maximal verfügbare Speicher, bedeutet dies ein Absturz. 
+Es ist zu anzunehmen, dass in einigen Fällen \emph{effOpen} Speicher mittels \emph{Samplerate} und/oder \emph{Blockgröße} alloziert. Wird daher \emph{effOpen} vor dem setzen der Samplerate/Blockgröße aufgerufen, kann es passieren, dass ein (unsauber programmiertes) Plugin versucht, Speicher mit undefinierter Größe zu allozieren. In C/C++ bedeutet undefiniert nicht '0', sondern irgendeine Zahl. Ist diese Zahl größer als der maximal verfügbare Speicher, bedeutet dies einen Absturz. 
 \\\\
 Nachdem die ermittelte Reihenfolge übernommen wurde, waren keine Abstürze an der \emph{effOpen} Operation festzustellen. 
 
