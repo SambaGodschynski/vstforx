@@ -21,7 +21,7 @@ MidiEventProcessor::MidiEventProcessor() : midiChannel( parameter::Parameter::cr
 	Parameter::ValueChangedFunction f = boost::bind( 
 		&MidiEventProcessor::midiChannelChanged, this, _1, _2 
 	);
-	midiChannel->addValueChangedListenerF ( f );
+	midiChannel->addValueChangedListener ( f );
 	midiChannel->setValue ( 1.0f );
 	midiChannel->setName ("midi channel"); 
 }

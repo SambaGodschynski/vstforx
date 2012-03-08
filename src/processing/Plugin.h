@@ -87,26 +87,15 @@ private:
 		ar & editorPosY;
 		ar & editorOpen;
 		if ( Archive::is_loading::value ) {
-			// register editor pos parameter in plugin
-			Parameter::ParameterListenerFunction xC = boost::bind( 
-				&Plugin::paramEditorPosXChanged, this, _1, _2 
-			);
-			Parameter::ParameterListenerFunction yC = boost::bind( 
-				&Plugin::paramEditorPosYChanged, this, _1, _2 
-			);
-			Parameter::ParameterListenerFunction oC = boost::bind( 
-				&Plugin::paramEditorOpenChanged, this, _1, _2 
-			);
-			Parameter::ParameterListenerFunction dC = boost::bind( 
-				&Plugin::paramEditorOpenDisplayChanged, this, _1, _2 
-			);
-			editorPosX->addValueChangedListenerF( xC );
-			editorPosY->addValueChangedListenerF( yC );
-			editorOpen->addValueChangedListenerF( oC );
-			editorOpen->addValueChangedListenerF( dC );
+			initListener();
 		}
 	}
 protected:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Initalisiert Listener.
+	 */
+	void initListener();
 	//--------------------------------------------------------------------------------------------------------
 	Plugin() {}
 	//--------------------------------------------------------------------------------------------------------

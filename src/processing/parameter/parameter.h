@@ -18,7 +18,7 @@
 #include "processing/PObject.h"
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/foreach.hpp>
-#include <boost/unordered_set.hpp>
+#include <boost/unordered_map.hpp>
 
 
 namespace processing {
@@ -131,6 +131,15 @@ public:
 	typedef boost::shared_ptr<ParameterConnection> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	boost::weak_ptr<ParameterConnection> self;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Initalisiert Listener.
+	 * !NUR AUFRUFEN WENN self-Ptr valid!
+	 * @throw com::ppiError::NullPointer
+	 */
+	void initListener();
+	//--------------------------------------------------------------------------------------------------------
 	bool updateLock;
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -143,6 +152,10 @@ private:
 		ar & a;
 		ar & b;
 		ar & ops;
+		ar & self;
+		if (Archive::is_loading::value) {
+			initListener();
+		}
 	}
 	//--------------------------------------------------------------------------------------------------------
 	ParameterPtr a, b;
@@ -155,6 +168,10 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	Operators ops;
 public:
+	//--------------------------------------------------------------------------------------------------------
+	Ptr getPtr() const {
+		return self.lock();
+	}
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~ParameterConnection();
 	//--------------------------------------------------------------------------------------------------------
@@ -177,6 +194,8 @@ public:
 	 */
 	static Ptr create(ParameterPtr a, ParameterPtr b) {
 		Ptr neu( new ParameterConnection(a,b) );
+		neu->self = neu;
+		neu->initListener();
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -219,13 +238,13 @@ struct ParameterConnectionComparator : std::binary_function<std::string, std::st
 {
 //============================================================================================================
 	//--------------------------------------------------------------------------------------------------------   
-	bool operator()(ParameterConnection::Ptr l,
-        ParameterConnection::Ptr r) const
+	bool operator()(const std::pair<ParameterPtr, ParameterPtr> &r,
+        const std::pair<ParameterPtr, ParameterPtr> &l) const
     {
-        return ( l->getParameterA() == r->getParameterA() &&
-			     l->getParameterB() == r->getParameterB() ) ||
-			   ( l->getParameterA() == r->getParameterB() &&
-			     l->getParameterB() == r->getParameterA() );
+        return ( l.first == r.first &&
+			     l.second == r.second ) ||
+			   ( l.first == r.second &&
+			     l.second == r.first );
     }
 };
 //============================================================================================================
@@ -236,13 +255,13 @@ struct ParameterConnectionSetHash : std::unary_function<std::string, std::size_t
 {
 //============================================================================================================
 	//-------------------------------------------------------------------------------------------------------- 
-    std::size_t operator()(ParameterConnection::Ptr x) const
+    std::size_t operator()(const std::pair<ParameterPtr, ParameterPtr> &x) const
     {
         std::size_t seed = 0;
         std::locale locale;
 		// create hash by the two target parameters
-		std::size_t a = (std::size_t)x->getParameterA().get();
-		std::size_t b = (std::size_t)x->getParameterB().get();
+		std::size_t a = (std::size_t)x.first.get();
+		std::size_t b = (std::size_t)x.second.get();
         boost::hash_combine(seed, max(a,b)); // always higher value first
 		boost::hash_combine(seed, min(a,b));
         return seed;
@@ -254,7 +273,9 @@ struct ParameterConnectionSetHash : std::unary_function<std::string, std::size_t
  * Container fuer ParameterConnection. Nimmt keine Verbindung doppelt auf. 
  */
 class ParameterConnectionSet : 
-	public boost::unordered_set<ParameterConnection::Ptr, 
+	public boost::unordered_map<
+			std::pair<ParameterPtr, ParameterPtr>,
+			ParameterConnection::Ptr, 
 			ParameterConnectionSetHash,
 			ParameterConnectionComparator>
 {
@@ -263,9 +284,18 @@ friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::unordered_set<ParameterConnection::Ptr, 
-		ParameterConnectionSetHash,
-		ParameterConnectionComparator> Base;
+	typedef boost::unordered_map<
+			std::pair<ParameterPtr, ParameterPtr>,
+			ParameterConnection::Ptr, 
+			ParameterConnectionSetHash,
+			ParameterConnectionComparator> Base;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return map key value (parameter A, parameter B)
+	 */
+	static Base::key_type createKey( ParameterConnection::Ptr cn ) {
+		return std::make_pair(cn->getParameterA(), cn->getParameterB());
+	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Verbindet Parameter a mit Parameter b.
@@ -276,7 +306,7 @@ public:
 			return ParameterConnection::Ptr();
 		pair<Base::iterator,bool> ret;
 		ParameterConnection::Ptr cn = ParameterConnection::create(a,b);
-		ret = insert(cn);
+		ret = insert(std::make_pair(createKey(cn), cn));
 		return ret.second ? cn : ParameterConnection::Ptr();
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -288,8 +318,7 @@ public:
 	bool removeConnection(ParameterPtr a, ParameterPtr b) {
 		if (!a || !b)
 			return false;
-		ParameterConnection::Ptr cn = ParameterConnection::create(a,b);
-		Base::iterator it = find(cn);
+		Base::iterator it = find( std::make_pair(a, b) );
 		if (it==end()) 
 			return false;
 		erase(it);
@@ -304,11 +333,10 @@ public:
 	ParameterConnection::Ptr getConnection(ParameterPtr a, ParameterPtr b) {
 		if (!a || !b)
 			return ParameterConnection::Ptr();
-		ParameterConnection::Ptr cn = ParameterConnection::create(a,b);
-		Base::iterator it = find(cn);
+		Base::iterator it = find(std::make_pair(a, b));
 		if (it==end()) 
 			return ParameterConnection::Ptr();
-		return *it;
+		return it->second;
 	}
 private:
 	//--------------------------------------------------------------------------------------------------------
@@ -324,8 +352,8 @@ private:
 		//'serialize': Ist kein Element von 'boost::unordered_set<T,H,P>'
 		//ar & boost::serialization::base_object<Base> (*this);
 		list<ParameterConnection::Ptr>  l;
-		BOOST_FOREACH(ParameterConnection::Ptr obj, *this) {
-			l.push_back(obj);
+		BOOST_FOREACH(const Base::value_type &obj, *this) {
+			l.push_back(obj.second);
 		}
 		ar << l;
 	}
@@ -343,8 +371,8 @@ private:
 		//ar & boost::serialization::base_object<Base> (*this);
 		list<ParameterConnection::Ptr>  l;
 		ar >> l;
-		BOOST_FOREACH(ParameterConnection::Ptr obj, l) {
-			insert(obj);
+		BOOST_FOREACH(ParameterConnection::Ptr cn, l) {
+			insert(std::make_pair(createKey(cn), cn));
 		}
 	}
 };
@@ -501,18 +529,7 @@ public:
 			v = 0;
 		}
 		value = com::getMin<VstNumber>( _max, com::getMax<VstNumber>( _min, v ) );
-		notifyListeners(this, *this);
-	}
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * @deprecated TODO: entfernen
-	 * @param setzt Parameterwert.
-	 * @param skipThis ueberspringt Listener
-	 */
-	virtual void setValue( VstNumber v, ParameterListenerFunction &skipThis ){
-		if ( updateLock ) return;
-		value = com::getMin<VstNumber>( _max, com::getMax<VstNumber>( _min, v ) );
-		notifyListeners( this, *this, skipThis );
+		ValueChangedSender<float>::notifyListeners(this, *this);
 	}
 	//--------------------------------------------------------------------------------------------------------
 	void operator=(VstNumber v){ setValue (v); }

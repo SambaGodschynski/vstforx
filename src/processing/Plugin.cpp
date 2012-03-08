@@ -18,6 +18,25 @@ enum { ALL_CHANNEL = 16 };
 // Plugin
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
+void Plugin::initListener() {
+	Parameter::ParameterListenerFunction xC = boost::bind( 
+		&Plugin::paramEditorPosXChanged, this, _1, _2 
+	);
+	Parameter::ParameterListenerFunction yC = boost::bind( 
+		&Plugin::paramEditorPosYChanged, this, _1, _2 
+	);
+	Parameter::ParameterListenerFunction oC = boost::bind( 
+		&Plugin::paramEditorOpenChanged, this, _1, _2 
+	);
+	Parameter::ParameterListenerFunction dC = boost::bind( 
+		&Plugin::paramEditorOpenDisplayChanged, this, _1, _2 
+	);
+	editorPosX->addValueChangedListener(xC);
+	editorPosY->addValueChangedListener(yC);
+	editorOpen->addValueChangedListener(oC);
+	editorOpen->addValueChangedListener(dC);
+}
+//------------------------------------------------------------------------------------------------------------
 Plugin::Plugin ( IHostInfo *hostInfo, const string &location, size_t numInputs , size_t numOutputs ) :
 ProcessAdapter ( hostInfo, numInputs, numOutputs ),
 editorPosX ( processing::parameter::Parameter::create() ),
@@ -32,40 +51,11 @@ editorOpen ( processing::parameter::Parameter::create() )
 	editorOpen->setName("editor open");
 	*editorPosX = 0.72f; // 0.5 = 0 SCREEN_X
 	*editorPosY = 0.72f; // 0.5 = 0 SCREEN_Y
-	// register editor pos parameter in plugin
-	parameter::Parameter::ParameterListenerFunction xC = boost::bind( 
-		&Plugin::paramEditorPosXChanged, this, _1, _2 
-	);
-	parameter::Parameter::ParameterListenerFunction yC = boost::bind( 
-		&Plugin::paramEditorPosYChanged, this, _1, _2 
-	);
-	Parameter::ParameterListenerFunction oC = boost::bind( 
-		&Plugin::paramEditorOpenChanged, this, _1, _2 
-	);
-	Parameter::ParameterListenerFunction dC = boost::bind( 
-		&Plugin::paramEditorOpenDisplayChanged, this, _1, _2 
-	);
-	editorPosX->addValueChangedListenerF( xC );
-	editorPosY->addValueChangedListenerF( yC );
-	editorOpen->addValueChangedListenerF( oC );
-	editorOpen->addValueChangedListenerF( dC );
 	*editorOpen = 0.0f;
+	initListener();
 }
 //------------------------------------------------------------------------------------------------------------
 Plugin::~Plugin() {
-	// unregister editor pos parameter in plugin
-	Parameter::ParameterListenerFunction xC = boost::bind( 
-		&Plugin::paramEditorPosXChanged, this, _1, _2 
-	);
-	Parameter::ParameterListenerFunction yC = boost::bind( 
-		&Plugin::paramEditorPosYChanged, this, _1, _2 
-	);
-	Parameter::ParameterListenerFunction oC = boost::bind( 
-		&Plugin::paramEditorOpenChanged, this, _1, _2 
-	);
-	editorPosX->removeValueChangedListenerF( xC );
-	editorPosY->removeValueChangedListenerF( yC );
-	editorOpen->removeValueChangedListenerF( oC );
 }
 //============================================================================================================
 // Klasse: PluginFactory.

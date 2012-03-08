@@ -54,7 +54,7 @@ public:
 	/**
 	 * @return PObject Pointer
 	 */
-	Ptr getPtr() { return self.lock(); }
+	Ptr getPtr() const { return self.lock(); }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return true, wenn POBject von einem Graph enthalten.

@@ -44,14 +44,22 @@ class Volume :
 //============================================================================================================
 public ProcessAdapter, 
 public HasParameter, 
-public Serializable,
-public events::ValueChangedListener<float>
+public Serializable
 {
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<Volume> Ptr;
 private:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Initalisiert Listener.
+	 */
+	void initListener() {
+		volume->addValueChangedListener (
+			boost::bind(&Volume::valueChanged, this, _1, _2)
+		);
+	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * (De)Serialisiert Volume-Objekt
@@ -63,7 +71,7 @@ private:
 		ar & boost::serialization::base_object< ProcessAdapter > ( *this );
 		ar & volume;
 		if ( Archive::is_loading::value ) {
-			volume->addValueChangedListener (this);
+			initListener();
 			fader.setDuration( getFaderDuration( hostInfo->getSampleRate() ) );  
 			fader.setValue ( *volume );
 		}
@@ -85,7 +93,6 @@ protected:
 		setName ("Volume");
 		volume = Parameter::create();
 		volume->setName ("Volume");
-		volume->addValueChangedListener (this);
 		*volume = initValue;
 		getInputNode(0)->setName ("Volume Input Node");
 		getOutputNode(0)->setName ("Volume Output Node");
@@ -105,6 +112,7 @@ public:
 	static Ptr create( IHostInfo *hostInfo, float initValue = 1.0f ) {
 		Ptr neu( new Volume(hostInfo, initValue ) );
 		neu->self = neu;
+		neu->initListener();
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -141,7 +149,7 @@ public:
 	 */
 	virtual size_t getNumParameter () const { return 1; }
 	//--------------------------------------------------------------------------------------------------------
-	virtual ~Volume (){
+	virtual ~Volume () {
 		TOLOG ( "-" + getName() );
 	}
 };
@@ -254,10 +262,10 @@ private:
 			);
 
 			for ( int i=0; i<numStates; ++i ) {
-				nDurationIN[i]->addValueChangedListenerF ( dI );
-				nDurationOUT[i]->addValueChangedListenerF ( dO );
-				nCurveTypeIN[i]->addValueChangedListenerF ( cT );
-				nCurveTypeOUT[i]->addValueChangedListenerF ( cT );
+				nDurationIN[i]->addValueChangedListener ( dI );
+				nDurationOUT[i]->addValueChangedListener ( dO );
+				nCurveTypeIN[i]->addValueChangedListener ( cT );
+				nCurveTypeOUT[i]->addValueChangedListener ( cT );
 			}
 		}
 	}
@@ -433,7 +441,6 @@ public ProcessAdapter,
 public Serializable, 
 public Switch,
 public VariableOutputAdapter,
-public ValueChangedListener<float>,
 public IHasState
 {
 //============================================================================================================
@@ -558,7 +565,6 @@ public ProcessAdapter,
 public Serializable, 
 public Switch,
 public VariableInputAdapter,
-public ValueChangedListener<float>,
 public IHasState
 {
 friend class boost::serialization::access;
@@ -706,7 +712,7 @@ private:
 			&Step::durationParameterChanged, this, _1, _2 
 		);
 		for (int i=0; i<steps; ++i) {
-			nDuration[i]->addValueChangedListenerF ( f );
+			nDuration[i]->addValueChangedListener ( f );
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -1448,8 +1454,7 @@ class MidiProcessor :
 public ProcessAdapter, 
 public HasParameter, 
 public Serializable,
-public MidiEventProcessor,
-public events::ValueChangedListener<float>
+public MidiEventProcessor
 {
 //============================================================================================================
 friend class boost::serialization::access;

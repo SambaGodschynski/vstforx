@@ -36,7 +36,6 @@ using namespace parameter;
 class VSTPlugin: 
 	public OS_VSTPlugNode2x, // Plattformspezifische impl.
 	public Plugin, 
-	public ValueChangedListener<float>,
 	public Serializable
 {
 //============================================================================================================
@@ -148,7 +147,8 @@ public:
 	 */
 	static Ptr create( IHostInfo *hostInfo, const string &filename ) {
 		Ptr neu( new VSTPlugin(hostInfo, filename) );
-		if ( !neu ) return Ptr();
+		if ( !neu ) 
+			return Ptr();
 		neu->self = neu;
 		return neu;
 	}

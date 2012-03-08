@@ -89,22 +89,22 @@ void Switch::_addState() {
 	nDurationIN[i]->setName("fade-in duration " + MyString(i+1) );
 	nDurationIN[i]->setLabel("ms");
 	nDurationIN[i]->setMin(FLT_MIN);
-	nDurationIN[i]->addValueChangedListenerF ( dI );
+	nDurationIN[i]->addValueChangedListener ( dI );
 	nDurationOUT[i] = Parameter::create(i);
 	parameterMap.push_back( nDurationOUT[i] );
 	nDurationOUT[i]->setName("fade-out duration " + MyString(i+1) );
 	nDurationOUT[i]->setLabel("ms");
 	nDurationOUT[i]->setMin(FLT_MIN);
-	nDurationIN[i]->addValueChangedListenerF ( dO );
+	nDurationIN[i]->addValueChangedListener ( dO );
 	// prepare curve type parameter
 	nCurveTypeIN[i] = Parameter::create(i);
 	parameterMap.push_back( nCurveTypeIN[i] );
 	nCurveTypeIN[i]->setName("fade-in curve type " + MyString(i+1) );
-	nCurveTypeIN[i]->addValueChangedListenerF ( cT );
+	nCurveTypeIN[i]->addValueChangedListener ( cT );
 	nCurveTypeOUT[i] = Parameter::create(i);
 	parameterMap.push_back( nCurveTypeOUT[i] );
 	nCurveTypeOUT[i]->setName("fade-out curve type " + MyString(i+1) );
-	nCurveTypeOUT[i]->addValueChangedListenerF ( cT );
+	nCurveTypeOUT[i]->addValueChangedListener ( cT );
 	// init
 	*nDurationIN[i] = 0.01f;
 	*nDurationOUT[i] = 0.01f;
@@ -166,7 +166,9 @@ Switch ( initStates, hostInfo->getSampleRate() ), outpMatrix( OutputMatrix(initS
 	setName ( "OutputSwitch" );
 	selector = Parameter::create();
 	selector->setName ("selector switch");
-	selector->addValueChangedListener ( this );
+	selector->addValueChangedListener ( 
+		boost::bind(&OutputSwitch::valueChanged, this, _1, _2)
+	);
 	parameterMap.push_back ( selector );
 	getInputNode(0)->setName ( getName() + " InputNode" );
 	for ( size_t i=0; i<getNumOutputNodes(); ++i ) {
@@ -234,7 +236,9 @@ void OutputSwitch::load(com::iArchive &ar, const unsigned int version) {
 	ar >> selector;
 	Switch::setSampleRate( hostInfo->getSampleRate() );
 	outpMatrix = OutputMatrix ( getNumStates(), NULL );
-	selector->addValueChangedListener ( this );
+	selector->addValueChangedListener ( 
+		boost::bind(&OutputSwitch::valueChanged, this, _1, _2)
+	);
 
 }
 //============================================================================================================
@@ -268,7 +272,9 @@ Switch ( initStates, hostInfo->getSampleRate() ), inputMatrix( InputMatrix(initS
 	setName ( "InputSwitch" );
 	selector = Parameter::create();
 	selector->setName ("selector switch");
-	selector->addValueChangedListener ( this );
+	selector->addValueChangedListener ( 
+		boost::bind(&InputSwitch::valueChanged, this, _1, _2)
+	);
 	parameterMap.push_back ( selector );
 	getOutputNode(0)->setName ( getName() + " OutputNode" );
 	for ( size_t i=0; i<getNumInputNodes(); ++i ) {
@@ -332,7 +338,9 @@ void InputSwitch::load(com::iArchive &ar, const unsigned int version) {
 	ar >> selector;
 	Switch::setSampleRate( hostInfo->getSampleRate() );
 	inputMatrix = InputMatrix ( getNumStates(), NULL );
-	selector->addValueChangedListener ( this );
+	selector->addValueChangedListener ( 
+		boost::bind(&InputSwitch::valueChanged, this, _1, _2)
+	);
 
 }
 //============================================================================================================
@@ -351,7 +359,7 @@ currTranslator(tr), Switch (initSteps, sampleRate ),  steps(initSteps), nDuratio
 		nDuration[i] = Parameter::create(); 
 		Parameter::Ptr p = getParameter(i);
 		p->setName ( "Step " + MyString(i+1) + " duration." );
-		p->addValueChangedListenerF (f);
+		p->addValueChangedListener (f);
 		p->setValue(0.35f);
 	}
 	resetDuration();
@@ -371,7 +379,7 @@ void Step::addState() {
 	nDuration[i] = Parameter::create(); 
 	Parameter::Ptr p = getParameter(i);
 	p->setName ( "Step " + MyString(i+1) + " duration." );
-	p->addValueChangedListenerF (f);
+	p->addValueChangedListener (f);
 	p->setValue(0.35f);
 
 }
@@ -420,7 +428,7 @@ void OutputStep::init(){
 	Parameter::ParameterListenerFunction f = boost::bind( 
 			&OutputStep::typeChanged, this, _1, _2 
 	);
-	type->addValueChangedListenerF (f);
+	type->addValueChangedListener (f);
 	// Adapter Nodes:
 	for ( int i=0; i<cStep->getNumSteps(); ++i ) {
 		outputNodes[i]->setName("StepOutputode["+MyString(i+1)+"]");
@@ -550,7 +558,7 @@ void OutputStep::load(com::iArchive &ar, const unsigned int version) {
 	Parameter::ParameterListenerFunction f = boost::bind( 
 			&OutputStep::typeChanged, this, _1, _2 
 	);
-	type->addValueChangedListenerF ( f );
+	type->addValueChangedListener ( f );
 	outpMatrix = OutputMatrix( cStep->getNumSteps(), (Frames*)NULL );
 }
 //============================================================================================================
@@ -582,7 +590,7 @@ void InputStep::init(){
 	Parameter::ParameterListenerFunction f = boost::bind( 
 			&InputStep::typeChanged, this, _1, _2 
 	);
-	type->addValueChangedListenerF (f);
+	type->addValueChangedListener (f);
 	// Adapter Nodes:
 	for ( int i=0; i<cStep->getNumSteps(); ++i ) {
 		inputNodes[i]->setName("StepInputNode["+MyString(i+1)+"]");
@@ -710,7 +718,7 @@ void InputStep::load(com::iArchive &ar, const unsigned int version) {
 	Parameter::ParameterListenerFunction f = boost::bind( 
 			&InputStep::typeChanged, this, _1, _2 
 	);
-	type->addValueChangedListenerF ( f );
+	type->addValueChangedListener ( f );
 	inputMatrix = InputMatrix( cStep->getNumSteps(), (Frames*)NULL );
 }
 //============================================================================================================

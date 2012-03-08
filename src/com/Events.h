@@ -11,7 +11,8 @@
 #include <list>
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
-#include <boost/function_equal.hpp>
+#include <boost/signals2.hpp>
+#include <boost/smart_ptr.hpp>
 
 using namespace std;
 
@@ -32,12 +33,6 @@ class Listener;
 template < class EventType >
 class EventListener;
 //============================================================================================================
-//	Template IValueChangedEvent:
-//  Interface fuer alle das ereigniss Value Changed.
-//============================================================================================================
-template < class T >
-class ValueChangedListener;
-//============================================================================================================
 //	Template ValueChangedSender:
 //============================================================================================================
 template < class T >
@@ -47,11 +42,6 @@ class ValueChangedSender;
 //============================================================================================================
 template < class EventType >
 class EventSender;
-//============================================================================================================
-//	Klasse MultiEventSender :
-//============================================================================================================
-template < typename TLIST >
-class MultiEventSender;
 
 } // namespace events
 } // namespace com
@@ -96,18 +86,6 @@ public:
 	typedef list<Listener*> ListenerContainer;
 };
 //============================================================================================================
-//	Template IValueChangedEvent:
-//  Interface fuer alle das ereigniss Value Changed.
-//============================================================================================================
-template < class T >
-class ValueChangedListener : public Listener {
-private:
-protected:
-public:
-	//--------------------------------------------------------------------------------------------------------
-	virtual void valueChanged ( void *src, const T &value ) = 0;  
-};
-//============================================================================================================
 //	Template ValueChangedEventSender:
 //============================================================================================================
 template < class T >
@@ -116,94 +94,38 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::function< void ( void*, const T& ) > ValueChangedFunction;
 	//--------------------------------------------------------------------------------------------------------
-	typedef list < ValueChangedListener<T>* > ListenerType;
+	typedef boost::signals2::signal< void ( void*, const T& ) > Signal;
 	//--------------------------------------------------------------------------------------------------------
-	typedef list < ValueChangedFunction > ListenerTypeF;
+	typedef boost::signals2::connection Connection;
 private:
 	//--------------------------------------------------------------------------------------------------------
-	ListenerType listeners;
-	//--------------------------------------------------------------------------------------------------------
-	ListenerTypeF funcListeners;
+	Signal signal;
 protected:
 public:
 	//--------------------------------------------------------------------------------------------------------
-	void addValueChangedListener ( ValueChangedListener<T> *vCl ) { listeners.push_back (vCl); }
-	//--------------------------------------------------------------------------------------------------------
-	void removeValueChangedListener ( ValueChangedListener<T> *vCl ) {
-		if ( listeners.empty() ) return;
-		typename ListenerType::iterator it = listeners.begin();
-		for ( ; it!=listeners.end(); ++it ) {
-			if ( *it == vCl ) *it = NULL;
-		}
+	Connection addValueChangedListener ( const ValueChangedFunction &vCl ) { 
+		return signal.connect(vCl);
 	}
 	//--------------------------------------------------------------------------------------------------------
-	void addValueChangedListenerF ( const ValueChangedFunction &vCl ) { funcListeners.push_back (vCl); }
-	//--------------------------------------------------------------------------------------------------------
-	void removeValueChangedListenerF ( const ValueChangedFunction &vCl ) { 
-		if ( funcListeners.empty() ) return;
-		typename list< ValueChangedFunction >::iterator it = funcListeners.begin();
-		for ( ; it != funcListeners.end(); ++it ){
-			if ( vCl.functor.func_ptr == (*it).functor.func_ptr ){
-				*it = NULL; // removing while notify(currency safe)
-			}
-		}
+	/**
+	 * Fuegt Listener hinzu und aktiviert tracking.
+	 * @see http://www.boost.org/doc/libs/1_40_0/doc/html/signals2/tutorial.html#id1664686 
+	 * Section: Automatic Connection Management (Intermediate)
+	 * @param 
+	 * @param weak pointer zum zu trackenden Objekt
+	 */
+	Connection addTrackedValueChangedListener ( const ValueChangedFunction &vCl,
+		const boost::weak_ptr<void> &toTrack ) 
+	{ 
+		return signal.connect(
+			Signal::slot_type(vCl).track(toTrack)
+		);
 	}
 	//--------------------------------------------------------------------------------------------------------
-	void notifyListeners ( void *src, const T &value );
-	//--------------------------------------------------------------------------------------------------------
-	// notify listeners with the option to skip one function ptr ( e.g. to avoid feedback calls )
-	void notifyListeners ( void *src, const T &value, ValueChangedFunction &skipThis );
+	void notifyListeners ( void *src, const T &value ) {
+		signal( src, value );
+	}
 };
-//============================================================================================================
-// Template Definitionen:
-//============================================================================================================
-//------------------------------------------------------------------------------------------------------------
-template < class T >
-void ValueChangedSender<T>::notifyListeners( void *src, const T &value ) {
-	//////////listener
-	if ( !listeners.empty() ) {
-		typename ListenerType::iterator it = listeners.begin();
-		while ( it!=listeners.end() ) {
-			if (*it) (*it)->valueChanged ( src, value );
-			if ( !(*it) ) it = listeners.erase (it);
-			else ++it;
-		}
-	}
-	if ( funcListeners.empty() ) return;
-	//////////functions
-	typename ListenerTypeF::iterator itF = funcListeners.begin();
-	while ( itF!=funcListeners.end() ) {
-		if (*itF) (*itF)( src, value );
-		if ( !(*itF) ) itF = funcListeners.erase (itF);
-		else ++itF;
-	}
-}
-//------------------------------------------------------------------------------------------------------------
-template < class T >
-void ValueChangedSender<T>::notifyListeners( void *src, const T &value, ValueChangedFunction &skipThis ) {
-	//////////Objekt Listener 
-	if ( !listeners.empty() ) {
-		typename ListenerType::iterator it = listeners.begin();
-		while ( it!=listeners.end() ) {
-			if (*it) (*it)->valueChanged ( src, value );
-			if ( !(*it) ) it = listeners.erase (it);
-			else ++it;
-		}
-	}
-	if ( funcListeners.empty() ) return;
-	//////////Functions Listener 
-	typename ListenerTypeF::iterator itF = funcListeners.begin();
-	while ( itF!=funcListeners.end() ) {
-		if ( itF->functor.func_ptr == skipThis.functor.func_ptr ) {
-			++itF;
-			continue;
-		}
-		if (*itF) (*itF)( src, value );
-		if ( !(*itF) ) itF = funcListeners.erase (itF);
-		else ++itF;
-	}
-}
-
 //============================================================================================================
 //	Klasse EventListener:
 //============================================================================================================
@@ -221,69 +143,45 @@ public:
 //	Klasse EventSender:
 //============================================================================================================
 template < typename EventType >
-class EventSender {
+class EventSender  {
+public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef typename ValueChangedSender<EventType>::Connection EventConnection;
+	//--------------------------------------------------------------------------------------------------------
+	typedef typename ValueChangedSender<EventType>::Signal EventSignal;
 private:
+	//--------------------------------------------------------------------------------------------------------
+	// nicht beerben sonst mehrdeudikeitsprobleme!
+	ValueChangedSender<EventType> sender;
 	//--------------------------------------------------------------------------------------------------------
 	// stellt sicher dass EventType vom Typ Event ist.
 	enum { eventTypeVerification = EventType::verification };
-	//--------------------------------------------------------------------------------------------------------
-	typedef list < EventListener<EventType>* > ListenerType;
-	//--------------------------------------------------------------------------------------------------------
-	typedef boost::function< void ( void*, const EventType& ) > EventFunction;
-	//--------------------------------------------------------------------------------------------------------
-	typedef list < EventFunction > ListenerTypeF;
-	//--------------------------------------------------------------------------------------------------------
-	ListenerType listeners;
-	//--------------------------------------------------------------------------------------------------------
-	ListenerTypeF funcListeners;
-protected:
 public:
 	//--------------------------------------------------------------------------------------------------------
-	void addEventListener ( EventListener<EventType> *eL ) { listeners.push_back (eL); }
-	//--------------------------------------------------------------------------------------------------------
-	void removeEventListener ( EventListener<EventType> *eL ) {
-		if ( listeners.empty() ) return;
-		typename ListenerType::iterator it = listeners.begin();
-		for ( ; it!=listeners.end(); ++it ) {
-			if ( *it == eL ) *it = NULL; // removing while notify(currency safe)
-		}
+	EventConnection addEventListener ( EventListener<EventType> *eL ) { 
+		return sender.addValueChangedListener(
+			boost::bind( &EventListener<EventType>::eventHandler, eL, _1, _2)
+		);	
 	}
 	//--------------------------------------------------------------------------------------------------------
-	void addEventListenerF ( const EventFunction &f ) { funcListeners.push_back (f); }
-	//--------------------------------------------------------------------------------------------------------
-	void removeEventListenerF ( const EventFunction &f ) { 
-		if ( funcListeners.empty() ) return;
-		typename list< EventFunction >::iterator it = funcListeners.begin();
-		for ( ; it != funcListeners.end(); ++it ){
-			if ( f.functor.func_ptr == (*it).functor.func_ptr ){
-				*it = NULL; // removing while notify(currency safe)
-			}
-		}
+	/**
+	 * Fuegt Listener hinzu und aktiviert tracking.
+	 * @see http://www.boost.org/doc/libs/1_40_0/doc/html/signals2/tutorial.html#id1664686 
+	 * Section: Automatic Connection Management (Intermediate)
+	 * @param 
+	 * @param weak pointer zum zu trackenden Objekt
+	 */
+	typename EventConnection addTrackedEventListener ( EventListener<EventType> *eL,
+		const boost::weak_ptr<void> &toTrack ) 
+	{ 
+		return sender.addTrackedValueChangedListener(
+			boost::bind( typename &EventListener<EventType>::eventHandler, eL, _1, _2),
+			toTrack
+		);	
 	}
 	//--------------------------------------------------------------------------------------------------------
-	void notifyEventListeners ( void *src, const EventType &ev ) {
-		//////////Listener
-		if ( listeners.empty() ) return;
-		typename ListenerType::iterator it = listeners.begin();
-		while ( it!=listeners.end() ) {
-			if (*it) 
-				(*it)->eventHandler ( src, ev );
-			if 
-				( !(*it) ) it = listeners.erase (it);
-			else
-				++it;
-		}
-
-		//////////functions 
-		typename ListenerTypeF::iterator itF = funcListeners.begin();
-		while ( itF!=funcListeners.end() ) {
-			if (*itF) 
-				(*itF)( src, ev );
-			if ( !(*itF) ) 
-				itF = funcListeners.erase (itF);
-			else 
-				++itF;
-		}
+	void notifyEventListeners( void *src, const EventType &ev ) {
+		sender.notifyListeners(src, ev);
 	}
 };
 

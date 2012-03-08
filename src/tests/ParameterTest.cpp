@@ -143,4 +143,52 @@ void ParameterTest::testConnection() {
 	CPPUNIT_ASSERT_EQUAL( value , p1->getValue() );
 	CPPUNIT_ASSERT_EQUAL( value2, p2->getValue() );
 }
+//=============================================================================
+struct ListenerFClass {
+	float v;
+	void onParameterChanged(void *src, const float &newValue) {
+		v = newValue;
+	}
+	ListenerFClass() :  v(0) {}
+};
+//=============================================================================
+void ParameterTest::testParameterListenerF() {
+//=============================================================================
+	using namespace std;
+	using namespace com;
+	using namespace processing;
+	using namespace processing::parameter;
+	ListenerFClass f01;
+	ListenerFClass f02;
+	Parameter::Ptr p01 = Parameter::create();
+	
+	Parameter::ParameterListenerFunction ev01 =
+		boost::bind(&ListenerFClass::onParameterChanged, &f01, _1, _2);
+	Parameter::ParameterListenerFunction ev02 =
+		boost::bind(&ListenerFClass::onParameterChanged, &f02, _1, _2);
+	
+	Parameter::Connection cn01 = p01->addValueChangedListener(ev01);
+	Parameter::Connection cn02 = p01->addValueChangedListener(ev02);
+
+	p01->setValue(.5f);
+	CPPUNIT_ASSERT_EQUAL(.5f, f01.v);
+	CPPUNIT_ASSERT_EQUAL(.5f, f02.v);
+	
+	cn02.disconnect();
+	p01->setValue(1.f);
+	
+	CPPUNIT_ASSERT_EQUAL(1.f, f01.v);
+	CPPUNIT_ASSERT_EQUAL(.5f, f02.v); // nothing changed
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<test tracked listener
+	{ // extra scope
+		Parameter::Ptr toTrack = Parameter::create();
+		p01->addTrackedValueChangedListener(ev02, toTrack);
+		p01->setValue(.1f);
+		CPPUNIT_ASSERT_EQUAL(.1f, f01.v);
+		CPPUNIT_ASSERT_EQUAL(.1f, f02.v);
+	} // auto disconnect on toTrack's dispose
+	p01->setValue(1.f);
+	CPPUNIT_ASSERT_EQUAL(1.f, f01.v);
+	CPPUNIT_ASSERT_EQUAL(.1f, f02.v); // nothing changed
+}
 } // namespace tests

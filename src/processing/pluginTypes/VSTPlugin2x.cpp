@@ -231,7 +231,9 @@ void VSTPlugin::initParameter(){
 		aEff->dispatcher ( aEff, effGetParamDisplay, i, NULL, &bff[0], NULL );
 		param[i]->setDisplay( MyString(bff) );
 		// add listener
-		param[i]->addValueChangedListener ( this );
+		param[i]->addValueChangedListener ( 
+			boost::bind(&VSTPlugin::valueChanged, this, _1, _2)
+		);
 		// get properties
 		VstParameterProperties *prop = getVSTParameterProperties(aEff, i);
 		if (!prop)
@@ -367,7 +369,9 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 	// parameter
 	ar >> param;
 	for ( size_t i=0; i<param.size(); ++i ) {
-		param[i]->addValueChangedListener ( this );
+		param[i]->addValueChangedListener (
+			boost::bind(&VSTPlugin::valueChanged, this, _1, _2)
+		);
 		param[i]->setValue ( *param[i] );
 	}
 	// chunk

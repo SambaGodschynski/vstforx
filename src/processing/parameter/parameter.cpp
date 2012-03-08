@@ -19,25 +19,23 @@ namespace parameter {
 ParameterConnection::ParameterConnection(ParameterPtr a, ParameterPtr b) : 
 	updateLock(false), a(a), b(b) 
 {
-	Parameter::ParameterListenerFunction aC = boost::bind( 
-		&ParameterConnection::onChangedA, this, _1, _2 
+}
+//------------------------------------------------------------------------------------------------------------
+void ParameterConnection::initListener() {
+	ParameterConnection::Ptr ptr = getPtr();
+	if (!ptr)
+		throw com::ppiError::NullPointer("NullPointer", __FILE__, __LINE__);
+	a->addTrackedValueChangedListener( 
+		boost::bind(&ParameterConnection::onChangedA, this, _1, _2),
+		ptr
 	);
-	Parameter::ParameterListenerFunction bC = boost::bind( 
-		&ParameterConnection::onChangedB, this, _1, _2 
+	b->addTrackedValueChangedListener(
+		boost::bind(&ParameterConnection::onChangedB, this, _1, _2 ),
+		ptr
 	);
-	a->addValueChangedListenerF(aC);
-	b->addValueChangedListenerF(bC);
 }
 //------------------------------------------------------------------------------------------------------------
 ParameterConnection::~ParameterConnection() {
-	Parameter::ParameterListenerFunction aC = boost::bind( 
-		&ParameterConnection::onChangedA, this, _1, _2 
-	);
-	Parameter::ParameterListenerFunction bC = boost::bind( 
-		&ParameterConnection::onChangedB, this, _1, _2 
-	);
-	a->removeValueChangedListenerF(aC);
-	b->removeValueChangedListenerF(bC);
 }
 //------------------------------------------------------------------------------------------------------------
 void ParameterConnection::onChangedA(void *src, const VstNumber &newValue) {
@@ -55,6 +53,7 @@ void ParameterConnection::onChangedA(void *src, const VstNumber &newValue) {
 void ParameterConnection::onChangedB(void *src, const VstNumber &newValue) {
 	if (updateLock) // wichtig sonst: StackOverflow
 		return;
+	updateLock = true;
 	VstNumber t = newValue;
 	BOOST_FOREACH(ConnectionOperator::Ptr op, ops) {
 		t = op->operateInverse(t);

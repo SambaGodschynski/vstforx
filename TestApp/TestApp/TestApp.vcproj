@@ -262,6 +262,10 @@
 				RelativePath=".\startTest.hpp"
 				>
 			</File>
+			<File
+				RelativePath=".\TestConfig.hpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Ressourcendateien"
