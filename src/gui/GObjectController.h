@@ -17,6 +17,7 @@
 #include <boost/bimap.hpp> 
 #include "gui/VstPlugView.h"
 #include "processing/MidiEventProcessor.h"
+#include <boost/unordered_map.hpp>
 
 
 namespace ppiGui{
@@ -425,6 +426,18 @@ class GKnobController :
 {
 private:
 	//--------------------------------------------------------------------------------------------------------
+	// one tracking dummy per gknob
+	typedef boost::unordered_map<GKnob::Ptr, com::events::TrackingDummy::Ptr> TrackingMap;
+	//--------------------------------------------------------------------------------------------------------
+	TrackingMap trackMap;
+	//--------------------------------------------------------------------------------------------------------
+	void removeFromTrackMap(GKnob::Ptr knob) {
+		TrackingMap::iterator it = trackMap.find(knob);
+		if (it==trackMap.end())
+			return;
+		trackMap.erase(it);
+	}
+	//--------------------------------------------------------------------------------------------------------
 	bool isPassiveKnob( GKnob *knb ) { return dynamic_cast<GPassiveKnob*> (knb); }
 public:
 	//--------------------------------------------------------------------------------------------------------
@@ -534,6 +547,9 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef list<IHasState::Ptr> StateNodes;
 private:
+	//--------------------------------------------------------------------------------------------------------
+	// solange switch objekte auf stage
+	com::events::TrackingDummy::Ptr whileActive;
 	//--------------------------------------------------------------------------------------------------------
 	StateNodes stateNodes;
 public:

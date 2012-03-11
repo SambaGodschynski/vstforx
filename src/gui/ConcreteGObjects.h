@@ -1267,6 +1267,8 @@ public:
 private:
 	//--------------------------------------------------------------------------------------------------------
 	GObjList gObjList;
+	//--------------------------------------------------------------------------------------------------------
+	void initListener();
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	PlaceGObject ( CircuidView *parent, const GObject::Ptr &content );
@@ -1277,12 +1279,14 @@ public:
 	static PlaceGObject::Ptr create( CircuidView *parent, const GObject::Ptr &content ) {
 		PlaceGObject::Ptr neu( new PlaceGObject ( parent, content ) );
 		neu->_setSelfPtr ( neu );
+		neu->initListener();
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	static PlaceGObject::Ptr create( CircuidView *parent, const GObjList &content ) {
 		PlaceGObject::Ptr neu( new PlaceGObject ( parent, content ) );
 		neu->_setSelfPtr ( neu );
+		neu->initListener();
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------

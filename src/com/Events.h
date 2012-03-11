@@ -16,68 +16,61 @@
 
 using namespace std;
 
-namespace com{
-namespace events{
-//============================================================================================================
-//	Klasse Event:
-//============================================================================================================
-struct Event;
-//============================================================================================================
-//	Klasse Listener:
-//  Oberklasse fuer alle Listener.
-//============================================================================================================
-class Listener;
-//============================================================================================================
-//	Klasse EventListener:
-//============================================================================================================
-template < class EventType >
-class EventListener;
-//============================================================================================================
-//	Template ValueChangedSender:
-//============================================================================================================
-template < class T >
-class ValueChangedSender;
-//============================================================================================================
-//	Template EventSender:
-//============================================================================================================
-template < class EventType >
-class EventSender;
-
-} // namespace events
-} // namespace com
 
 namespace com{
 namespace events{
 //============================================================================================================
-//	Klasse Event:
-//============================================================================================================
+/**
+ * @class Event: 
+ */
 struct Event {
+//============================================================================================================
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Event(){}
 	//--------------------------------------------------------------------------------------------------------
 	enum EventTypeVerification { verification }; 
 };
 //============================================================================================================
-//	Klasse ValueChangedEvent:
-//============================================================================================================
+/**
+ * @class ValueChangedEvent:
+ */
 template < typename T >
 struct ValueChangedEvent : public Event {
+//============================================================================================================
 	T value;
 	ValueChangedEvent ( const T &value ) : value(value) {}
 };
 //============================================================================================================
-// Event Klasse OnDestroy :
-//============================================================================================================
+/** 
+ * @class OnDestroy :
+ */
 template < typename T >
 struct OnDestroy : public Event {
+//============================================================================================================
 	T *src;
 	OnDestroy ( T *src ) : src(src) {}
 };
 //============================================================================================================
-//	Klasse Listener:
-//  Oberklasse fuer alle Listener.
+/** 
+ * @class TrackingDummy.
+ * Kann fuer signal::track verwendet werden.
+ */
+struct TrackingDummy {
+//============================================================================================================
+	typedef boost::shared_ptr<TrackingDummy> Ptr;
+	static Ptr create() {
+		return Ptr( new TrackingDummy() );
+	}
+	virtual ~TrackingDummy(){}
+};
+//============================================================================================================
+/**	
+ * @class Listener:
+ * Oberklasse fuer alle Listener.
+ */
 //============================================================================================================
 class Listener {
+//============================================================================================================
 	//--------------------------------------------------------------------------------------------------------
 public:
 	//--------------------------------------------------------------------------------------------------------
@@ -86,10 +79,12 @@ public:
 	typedef list<Listener*> ListenerContainer;
 };
 //============================================================================================================
-//	Template ValueChangedEventSender:
-//============================================================================================================
+/*
+ * @class ValueChangedEventSender.
+ */
 template < class T >
 class ValueChangedSender {
+//============================================================================================================
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::function< void ( void*, const T& ) > ValueChangedFunction;
@@ -106,6 +101,13 @@ public:
 	Connection addValueChangedListener ( const ValueChangedFunction &vCl ) { 
 		return signal.connect(vCl);
 	}
+	//--------------------------------------------------------------------------------------------------------
+	// kann nicht sicher impl. werden :
+	// http://www.boost.org/doc/libs/1_49_0/doc/html/function/faq.html 
+	// Why can't I compare boost::function objects with operator== or operator!=?
+	// Alternative:
+	// addTrackedValueChangedListener UND ggf. TrackingDummy
+	// void removealueChangedListener ( const ValueChangedFunction &vCl ) {}
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Fuegt Listener hinzu und aktiviert tracking.
@@ -127,10 +129,12 @@ public:
 	}
 };
 //============================================================================================================
-//	Klasse EventListener:
-//============================================================================================================
+/**	
+ * @class EventListener:
+ */
 template < typename EventType >
 class EventListener : public Listener {
+//============================================================================================================
 private:
 	// stellt sicher dass EventType vom Typ Event ist.
 	enum { eventTypeVerification = EventType::verification };
@@ -140,10 +144,12 @@ public:
 	virtual void eventHandler ( void *src, const EventType &ev ) = 0;  
 };
 //============================================================================================================
-//	Klasse EventSender:
-//============================================================================================================
+/**
+ * @class EventSender.
+ */
 template < typename EventType >
 class EventSender  {
+//============================================================================================================
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef typename ValueChangedSender<EventType>::Connection EventConnection;
@@ -151,12 +157,18 @@ public:
 	typedef typename ValueChangedSender<EventType>::Signal EventSignal;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	typedef ValueChangedSender<EventType> Base;
+	//--------------------------------------------------------------------------------------------------------
 	// nicht beerben sonst mehrdeudikeitsprobleme!
 	ValueChangedSender<EventType> sender;
 	//--------------------------------------------------------------------------------------------------------
 	// stellt sicher dass EventType vom Typ Event ist.
 	enum { eventTypeVerification = EventType::verification };
 public:
+	//--------------------------------------------------------------------------------------------------------
+	EventConnection addEventListener ( typename const Base::ValueChangedFunction &f ) { 
+		return sender.addValueChangedListener(f);	
+	}
 	//--------------------------------------------------------------------------------------------------------
 	EventConnection addEventListener ( EventListener<EventType> *eL ) { 
 		return sender.addValueChangedListener(
@@ -175,9 +187,15 @@ public:
 		const boost::weak_ptr<void> &toTrack ) 
 	{ 
 		return sender.addTrackedValueChangedListener(
-			boost::bind( typename &EventListener<EventType>::eventHandler, eL, _1, _2),
+			boost::bind(&EventListener<EventType>::eventHandler, eL, _1, _2),
 			toTrack
 		);	
+	}
+	//--------------------------------------------------------------------------------------------------------
+	typename EventConnection addTrackedEventListener ( typename const Base::ValueChangedFunction &f,
+		const boost::weak_ptr<void> &toTrack ) 
+	{ 
+		return sender.addTrackedValueChangedListener(f, toTrack);	
 	}
 	//--------------------------------------------------------------------------------------------------------
 	void notifyEventListeners( void *src, const EventType &ev ) {

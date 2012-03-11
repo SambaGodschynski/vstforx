@@ -105,23 +105,26 @@ bool PpiEditor::open( void *ptr ){
 	this->frame = mainCtrl.get();
 	if ( firstInit ) {
 		firstInit = false;
-		circuidView = new CircuidView ( getCircuidViewSize() );
-		addViewRelation ( circuidView, graph ); // registriere View=>Graph
-		frame->addView ( (CView*)circuidView );
+		circuidView = CircuidView::create( getCircuidViewSize() );
+		addViewRelation ( circuidView.get(), graph ); // registriere View=>Graph
+		frame->addView ( (CView*)circuidView.get() );
 		// erst nach addView weil: NULL Pointer bei getFrame()
 		// da addView() protected Member Atribute der View initalisiert.
-		circuidControl = new CircuidControl ( circuidView, view2model );
-		mainCtrl->getToolBox()->EventSender<ToolBoxBtnPressed>::addEventListener ( circuidControl );
+		circuidControl = CircuidControl::create( circuidView.get(), view2model );
+		mainCtrl->getToolBox()->
+			EventSender<ToolBoxBtnPressed>::
+				addTrackedEventListener(circuidControl.get(), circuidControl);
 		circuidControl->initView();
 	}
 	else {
 		loadView();
-		MToolBox *t = mainCtrl->getToolBox();
-		t->EventSender<ToolBoxBtnPressed>::addEventListener ( circuidControl );
+		MToolBox::Ptr t = mainCtrl->getToolBox();
+		t->EventSender<ToolBoxBtnPressed>::
+			addTrackedEventListener (circuidControl.get(), circuidControl);
 	}
 
-	mainCtrl->EventSender<OnResize>::addEventListener ( this );
-	mainCtrl->getSetupCtrl()->EventSender<ScanInterrupted>::addEventListener ( this );
+	mainCtrl->EventSender<OnResize>::addEventListener(this);
+	mainCtrl->getSetupCtrl()->EventSender<ScanInterrupted>::addEventListener(this);
 
 	if ( scanInterrupted ) {
 		com::MessageBox ( "VSTForx", 
@@ -129,8 +132,6 @@ bool PpiEditor::open( void *ptr ){
 						  com::MSG_ALERT );
 		scanInterrupted = false;
 	}
-	/*idleTimer = new OwnIdleTimer( this );
-	idleTimer->start();*/
 	return true;
 }
 
@@ -171,7 +172,8 @@ void PpiEditor::load( iArchive &ar, processing::Graph::Ptr &graph ) {
 	viewbuffer.str(viewStr);
 	if ( frame ) {
 		loadView();
-		getMainCtrl()->getToolBox()->EventSender<ToolBoxBtnPressed>::addEventListener ( circuidControl );
+		getMainCtrl()->getToolBox()->
+			EventSender<ToolBoxBtnPressed>::addTrackedEventListener (circuidControl.get(), circuidControl);
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -182,9 +184,9 @@ void PpiEditor::loadView() {
 	ia >> circuidView;
 	VSTGUI::CRect vS = getCircuidViewSize();
 	circuidView->setViewSize ( vS );
-	addViewRelation ( circuidView, graph ); // registriere View=>Graph
-	frame->addView ( (CView*)circuidView );
-	circuidControl = new CircuidControl ( circuidView, view2model );
+	addViewRelation ( circuidView.get(), graph ); // registriere View=>Graph
+	frame->addView ( (CView*)circuidView.get() );
+	circuidControl = CircuidControl::create( circuidView.get(), view2model );
 	circuidControl->load ( ia );
 	view2model.loadViewRelation ( ia );
 	circuidControl->getFrontController().reRegisterObjects();
@@ -229,11 +231,8 @@ void PpiEditor::releaseView(){
 		   frontController.clear() => gobjects werden geloescht */
 	circuidView->clear();
 	circuidControl->getFrontController().clear();
-	getMainCtrl()->getToolBox()->EventSender<ToolBoxBtnPressed>::removeEventListener ( circuidControl );
-	frame->removeView( circuidView, false );
-	removeViewRelation ( circuidView, graph );
-	delete circuidControl;
-	delete circuidView;	
+	frame->removeView( circuidView.get(), false );
+	removeViewRelation ( circuidView.get(), graph );
 }
 //------------------------------------------------------------------------------------------------------------
 void PpiEditor::idle() {

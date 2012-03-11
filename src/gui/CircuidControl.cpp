@@ -33,8 +33,6 @@ view2model(vr),
 normCursor(true)
 {
 	initMouseActions();
-	view->EventSender<OnMouseClick>::addEventListener ( this );
-	view->EventSender<OnMouseDrag>::addEventListener ( this );
 	gObjCtrlDirector = new FrontController ( view2model );
 	gObjCtrlDirector->setMouseAction ( currMouseAction );
 	// Fuege Selection Object ein
@@ -42,7 +40,6 @@ normCursor(true)
 	selection->setColor ( ppiGui::red );
 	view->addGObject (selection, CircuidView::SELECTION);
 	contextMenu = menu::CMenu::create( view->getFrame() );
-	contextMenu->EventSender<OnMouseLeave>::addEventListener ( this );
 	selectionRect = GRect::create ( view );
 	view->addGObject ( selectionRect );
 	selectionRect->setWidth (1);
@@ -51,9 +48,15 @@ normCursor(true)
 	selectionRect->setColor ( black );
 	selectionRect->setVisible ( false );
 	pluginCollection = PluginCollection::getPluginCollection();
+}
+//------------------------------------------------------------------------------------------------------------
+void CircuidControl::initListener() {
+	view->EventSender<OnMouseClick>::addTrackedEventListener (this, self);
+	view->EventSender<OnMouseDrag>::addTrackedEventListener (this, self);
+	contextMenu->EventSender<OnMouseLeave>::addTrackedEventListener (this, self);
 	// idle listener
 	PpiEditor* ed = static_cast<PpiEditor*> ( view->getFrame()->getEditor() );
-	ed->EventSender<OnIdle>::addEventListener ( this );
+	ed->EventSender<OnIdle>::addTrackedEventListener (this, self);
 }
 //------------------------------------------------------------------------------------------------------------
 void CircuidControl::initView() {
@@ -288,9 +291,6 @@ inline void CircuidControl::getMenuEntryList ( menu::MenuEntryList &mE ){
 //------------------------------------------------------------------------------------------------------------
 CircuidControl::~CircuidControl(){
 	if ( contextMenu->isVisible() ) contextMenu->hide();
-	// remove idle listener
-	PpiEditor* ed = static_cast<PpiEditor*> ( view->getFrame()->getEditor() );
-	ed->EventSender<OnIdle>::removeEventListener ( this );
 	for ( int i=0; i<NUM_MACTIONS; i++ ) delete comMActions[i];
 	delete comMActions;
 	delete gObjCtrlDirector;

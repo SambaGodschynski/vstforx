@@ -132,7 +132,9 @@ VstInt32 PPIVst::canDo ( char *text ) {
 //---------------------------------------------------------------------------------------
 void PPIVst::initHostParameter() {
 	for ( int i=0; i<graph->getNumHostParameter(); ++i ){
-		graph->getHostParameter(i)->addValueChangedListener ( this );
+		graph->getHostParameter(i)->addValueChangedListener ( 
+			boost::bind(&PPIVst::valueChanged, this, _1, _2)
+		);
 	}
 }
 //---------------------------------------------------------------------------------------

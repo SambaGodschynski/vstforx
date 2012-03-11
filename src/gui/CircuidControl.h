@@ -52,7 +52,12 @@ class CircuidControl :
 	public EventListener< OnMouseLeave >,
 	public EventListener< OnIdle >
 {
+public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::shared_ptr<CircuidControl> Ptr;
 private:
+	//--------------------------------------------------------------------------------------------------------
+	boost::weak_ptr<CircuidControl> self;
 	//--------------------------------------------------------------------------------------------------------
 	GObject::Ptr onMouseObj; // objekt das aktuell unter maus liegt
 	//--------------------------------------------------------------------------------------------------------
@@ -90,8 +95,19 @@ private:
 	void createDynMenuPlugTree ( menu::MenuEntryList &me, const PluginCollection::Folder &folder );
 	//--------------------------------------------------------------------------------------------------------
 	void getMenuEntryList ( menu::MenuEntryList &me );
+	//--------------------------------------------------------------------------------------------------------
+	void initListener();
 protected:
+	//--------------------------------------------------------------------------------------------------------
+	CircuidControl ( CircuidView *view, ViewRelations &viewRelations );
 public:
+	//--------------------------------------------------------------------------------------------------------
+	static Ptr create(CircuidView *view, ViewRelations &viewRelations) {
+		Ptr neu (new CircuidControl(view, viewRelations));
+		neu->self = neu;
+		neu->initListener();
+		return neu;
+	}
 	//========================================================================================================
 	// MouseActions:
 	// Kontext fuer eine Drag Aktion auf einem Objekt. 
@@ -105,8 +121,6 @@ public:
 	};
 	//--------------------------------------------------------------------------------------------------------
 	ViewRelations & getViewRelations(){ return view2model; }
-	//--------------------------------------------------------------------------------------------------------
-	CircuidControl ( CircuidView *view, ViewRelations &viewRelations );
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~CircuidControl ();
 	//--------------------------------------------------------------------------------------------------------

@@ -318,28 +318,29 @@ void GKnobController::parameterValueChanged ( void *src, const float &value ){
 void GKnobController::registerObject ( GObject::Ptr vObj, PObject::Ptr mObj ){ 
 	GKnob::Ptr knob = boost::shared_dynamic_cast<GKnob, GObject>(vObj);
 	Parameter::Ptr p = boost::shared_dynamic_cast<Parameter, PObject>(mObj);
+	// listener tracks
+	trackMap[knob] = com::events::TrackingDummy::create();
 	// Knob Listener
 	Parameter::ParameterListenerFunction kf=boost::bind(&GKnobController::knobValueChanged,this,_1,_2);
-	knob->addValueChangedListenerF (kf);
+	knob->addTrackedValueChangedListener (kf, knob);
 	// Parameter Listener
 	Parameter::ParameterListenerFunction pf=boost::bind(&GKnobController::parameterValueChanged,this,_1,_2);
-	p->addValueChangedListenerF (pf);
+	p->addTrackedValueChangedListener (pf, trackMap[knob]);
 	// OnConnect Event
-	knob->EventSender<OnConnect>::addEventListener ( this );
+	knob->EventSender<OnConnect>::addTrackedEventListener (this, knob);
 	// OnDestroy Event
-	knob->EventSender< OnDestroy<GObject> >::addEventListener ( this );
-
-	knob->setValue ( *p );
+	knob->EventSender< OnDestroy<GObject> >::addEventListener (this);
+	knob->setValue (*p);
 }
 //------------------------------------------------------------------------------------------------------------
 void GKnobController::eventHandler( void *src, const OnDestroy<GObject> &ev ){
+	/*  TODO: warum hier nochmal extra parameterValueChanged entfernen
 	GKnob::Ptr knob = boost::shared_dynamic_cast<GKnob, GObject>( ev.src->getPtr() );
 	// entferne Parameter Listener Funktion
 	Parameter::ParameterListenerFunction pf=boost::bind(&GKnobController::parameterValueChanged,this,_1,_2);
 	Parameter::Ptr p = frntCtrl.getViewRelations().get<Parameter> ( knob );
 	if (!p) return;
-	p->removeValueChangedListenerF (pf);
-	
+	p->removeValueChangedListenerF (pf);*/
 }
 //------------------------------------------------------------------------------------------------------------
 void GKnobController::eventHandler ( void *_src, const OnConnect &ev ){
@@ -354,12 +355,9 @@ void GKnobController::unregisterObject ( GObject::Ptr vObj, PObject::Ptr pObj ) 
 	GKnob::Ptr knob = boost::shared_dynamic_cast<GKnob, GObject>( vObj );
 	Parameter::Ptr p = boost::shared_dynamic_cast<Parameter, PObject>(pObj);
 	if ( frntCtrl.getModelRelation().count (p) == 1 ) { // war das der letzte knob mit diesem parameter
-		// value changed listener entfernen
-		Parameter::ParameterListenerFunction pf=boost::bind(&GKnobController::parameterValueChanged,this,_1,_2);
-		p->removeValueChangedListenerF (pf);
+		removeFromTrackMap(knob);
 	}
 	// onDestroy listener entfernen
-	knob->EventSender< OnDestroy<GObject> >::removeEventListener (this);
 	Graph::Ptr g = getRelatedGraph( vObj->getParentView() );
 	Graph::Janitor::Ptr updater = g->getJanitor();
 	updater->remove ( p );
@@ -510,16 +508,16 @@ void GSwitchNodeController::eventHandler ( void *src, const OnDestroy<GObject> &
 	}
 	// alle weg go home idle listener
 	if ( stateNodes.empty() ) {
-		PpiEditor *ed = static_cast<PpiEditor*> ( vObj->getParentView()->getFrame()->getEditor() );
-		ed->EventSender<OnIdle>::removeEventListener( this );
+		whileActive.reset();
 	}
 }
 //------------------------------------------------------------------------------------------------------------
 void GSwitchNodeController::registerObject( GObject::Ptr vObj, PObject::Ptr mObj ) {
 	// noch kein switch reg. => erstma idle listener anmelden
 	if ( stateNodes.empty() ) {
+		whileActive = com::events::TrackingDummy::create();
 		PpiEditor *ed = static_cast<PpiEditor*> ( vObj->getParentView()->getFrame()->getEditor() );
-		ed->EventSender<OnIdle>::addEventListener( this );
+		ed->EventSender<OnIdle>::addTrackedEventListener(this, whileActive);
 	}
 
 	IHasState::Ptr stN = boost::shared_dynamic_cast<IHasState, GObject> (vObj);
@@ -536,8 +534,7 @@ void GSwitchNodeController::unregisterObject( GObject::Ptr vObj, PObject::Ptr mO
 	}
 	// alle weg go home idle listener
 	if ( stateNodes.empty() ) {
-		PpiEditor *ed = static_cast<PpiEditor*> ( vObj->getParentView()->getFrame()->getEditor() );
-		ed->EventSender<OnIdle>::removeEventListener( this );
+		whileActive.reset();
 	}
 	frntCtrl.getController(FrontController::CTRL_GPROCESSOR)->unregisterObject ( vObj, mObj );
 }
@@ -707,10 +704,10 @@ void GPluginController::registerObject( GObject::Ptr vObj, processing::PObject::
 	PpiEditor *ed = (PpiEditor*)gPlug->getParentView()->getEditor();
 	VSTPlugView::Ptr view = VSTPlugView::create( ed, plug ); 
 	vstPlugViewMap.insert ( VSTPlugViewMap::value_type( gPlug, view ) );
-	view->EventSender<OnClose>::addEventListener (this);
-	view->EventSender<OnMoving>::addEventListener (this);
-	plug->EventSender<EditorPositionEvent>::addEventListener (this);
-	plug->EventSender<EditorOpenParameterChanged>::addEventListener (this);
+	view->EventSender<OnClose>::addTrackedEventListener (this, gPlug);
+	view->EventSender<OnMoving>::addTrackedEventListener (this, gPlug);
+	plug->EventSender<EditorPositionEvent>::addTrackedEventListener (this, gPlug);
+	plug->EventSender<EditorOpenParameterChanged>::addTrackedEventListener (this, gPlug);
 	if ( plug->getEditorOpen()->getValue() > 0.5f ) // editor open parmeter marks open
 		openEdWindow ( gPlug ); 
 }
@@ -745,7 +742,7 @@ void GPluginController::eventHandler(void *src, const ppiGui::OnClose &ev) {
 	// search whether keepOpenState contains plug
 	PlugNodeList::iterator pIt = com::find<PlugNodeList> ( keepOpenState, plug );
 	if ( pIt == keepOpenState.end() ) // nothing found
-		plug->getEditorOpen()->setValue ( 0.0f, oC );
+		plug->getEditorOpen()->setValue ( 0.0f/*, oC*/ );
     else keepOpenState.erase( pIt );
 }
 //------------------------------------------------------------------------------------------------------------
@@ -797,12 +794,6 @@ void GPluginController::eventHandler(void *src, const ppiGui::OnDestroy<GObject>
 	view->closeWindow();
 	// rease from map
 	vstPlugViewMap.left.erase (it);
-	// remove listeners
-	gPlug->EventSender< OnDestroy<GObject> >::removeEventListener(this);
-	plug->EventSender<EditorPositionEvent>::removeEventListener (this);
-	plug->EventSender<EditorOpenParameterChanged>::removeEventListener (this);
-	view->EventSender<OnClose>::removeEventListener (this);
-	view->EventSender<OnMoving>::removeEventListener (this);
 }
 //------------------------------------------------------------------------------------------------------------
 void GPluginController::eventHandler(void *src, const ppiGui::OnMoving &ev) {
@@ -836,17 +827,11 @@ void GPluginController::eventHandler(void *src, const ppiGui::EditorPositionEven
 void GPluginController::unregisterObject ( GObject::Ptr gObj, PObject::Ptr pObj ) { 
 	GVSTPlugNode::Ptr gPlug = boost::shared_dynamic_cast<GVSTPlugNode, GObject> (gObj);
 	Plugin::Ptr plug = boost::shared_dynamic_cast<Plugin, PObject> (pObj);
-	// unregister listener
-	gPlug->EventSender< OnDestroy<GObject> >::removeEventListener(this);
-	plug->EventSender<EditorPositionEvent>::removeEventListener (this);
-	plug->EventSender<EditorOpenParameterChanged>::removeEventListener (this);
 	// entferne pobject
 	VSTPlugViewMap::left_map::iterator it = vstPlugViewMap.left.find ( gPlug );
 	if ( it != vstPlugViewMap.left.end() ) {
 		VSTPlugView::Ptr view = it->second; 
 		view->closeWindow();
-		view->EventSender<OnClose>::removeEventListener (this);
-		view->EventSender<OnMoving>::removeEventListener (this);
 		vstPlugViewMap.left.erase (it);
 	}
 	ObjectController *ctrl = frntCtrl.getController ( FrontController::CTRL_GPROCESSOR );
@@ -866,7 +851,7 @@ void GPluginController::openEdWindow ( const GVSTPlugNode::Ptr &gPlug ) {
 	Parameter::ParameterListenerFunction oC = boost::bind( 
 		&Plugin::paramEditorOpenChanged, plug.get(), _1, _2 
 	);
-	plug->getEditorOpen()->setValue ( 1.0f, oC ); 
+	plug->getEditorOpen()->setValue ( 1.0f/*, oC*/ ); 
 	// set (e) button
 	GButton *btn = gPlug->getEButton();
 	if ( btn->getValue() != 1.0f ) {

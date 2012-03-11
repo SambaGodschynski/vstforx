@@ -26,19 +26,20 @@ editor (ed)
 	aEff = vstPlugNode->getAEffect();
 	if (!vstPlugNode->can (effFlagsHasEditor)) 
 		throw ppiError::IllegalOperation ("Effect has no Editor.", __FILE__, __LINE__ );
-
-	vstPlugNode->EventSender<processing::ResizeEditorEvent>::addEventListener ( this );
-
+}
+//------------------------------------------------------------------------------------------------------------
+void VSTPlugView::initListener() {
+	vstPlugNode->EventSender<processing::ResizeEditorEvent>::addTrackedEventListener (this, self);
 }
 //------------------------------------------------------------------------------------------------------------
 VSTPlugView::Ptr VSTPlugView::create( PpiEditor *ed, processing::VSTPlugin::Ptr vstPlugNode ) {
 	Ptr neu = Ptr ( new VSTPlugView ( ed, vstPlugNode ) );
 	neu->self = neu;
+	neu->initListener();
 	return neu;
 }
 //------------------------------------------------------------------------------------------------------------
 VSTPlugView::~VSTPlugView(){
-	vstPlugNode->EventSender<processing::ResizeEditorEvent>::removeEventListener ( this );
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugView::openWindow( size_t posX, size_t posY ) {
@@ -55,9 +56,10 @@ void VSTPlugView::openWindow( size_t posX, size_t posY ) {
 		Window::TITLE_BAR | Window::SYSTEM_MENU,
 		editor->getSystemWindow()
 	);
-	win->EventSender<OnOpen> ::addEventListener ( this );
-	win->EventSender<OnClose>::addEventListener ( this );
-	win->EventSender<OnMoving>::addEventListener ( this );
+	whileOpen = com::events::TrackingDummy::create();
+	win->EventSender<OnOpen> ::addTrackedEventListener (this, whileOpen);
+	win->EventSender<OnClose>::addTrackedEventListener (this, whileOpen);
+	win->EventSender<OnMoving>::addTrackedEventListener (this, whileOpen);
 	win->setCaption ( vstPlugNode->getPlugName() );
 	ERect *size = NULL;
 	// get editor size
@@ -70,7 +72,7 @@ void VSTPlugView::openWindow( size_t posX, size_t posY ) {
 	// call effect: open 
 	aEff->dispatcher ( aEff, effEditOpen, 0, 0, win->getHandle(), 0);
 	// add event listener: IDLE
-	editor->EventSender<OnIdle>::addEventListener ( this );
+	editor->EventSender<OnIdle>::addTrackedEventListener (this, whileOpen);
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugView::closeWindow() {
@@ -91,14 +93,10 @@ void VSTPlugView::eventHandler( void *scr, const OnOpen &ev ) {
 void VSTPlugView::eventHandler( void *scr, const OnClose &ev ) {
 	TRY_TO_LOCK_TIMED(mutex);
 	if ( !isOpen() ) return;
-	// entf. movinglistener
-	win->EventSender<OnMoving>::removeEventListener (this);
-	// close
+	// listener entfernen via tracking-objekt
+	whileOpen.reset();
+	// EditClose
 	aEff->dispatcher ( aEff, effEditClose, 0, 0, win->getHandle(), 0);
-	// Idle Listener unregist.
-	editor->EventSender<OnIdle>::removeEventListener (this);
-	win->EventSender<OnOpen> ::removeEventListener ( this );
-	win->EventSender<OnClose>::removeEventListener ( this );
 	// notify OnClose
 	EventSender<OnClose>::notifyEventListeners( this, OnClose() );
 }
