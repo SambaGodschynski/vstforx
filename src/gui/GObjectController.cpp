@@ -735,14 +735,15 @@ void GPluginController::eventHandler(void *src, const ppiGui::OnClose &ev) {
 	// get related plugNode
 	Plugin::Ptr plug = frntCtrl.getViewRelations().get<Plugin>( gPlug );
 	if (!plug) return;
-	// notify parameter skipping listener function:
-	Parameter::ParameterListenerFunction oC = boost::bind( 
-		&Plugin::paramEditorOpenChanged, plug.get(), _1, _2 
-	);
+	
 	// search whether keepOpenState contains plug
 	PlugNodeList::iterator pIt = com::find<PlugNodeList> ( keepOpenState, plug );
-	if ( pIt == keepOpenState.end() ) // nothing found
-		plug->getEditorOpen()->setValue ( 0.0f/*, oC*/ );
+	if ( pIt == keepOpenState.end() ) { // nothing found
+		boost::signals2::shared_connection_block block(
+			plug->getParamEditorOpenConnection()
+		);
+		plug->getEditorOpen()->setValue (0.0f);
+	}
     else keepOpenState.erase( pIt );
 }
 //------------------------------------------------------------------------------------------------------------
@@ -847,11 +848,14 @@ void GPluginController::openEdWindow ( const GVSTPlugNode::Ptr &gPlug ) {
 	// get related plugNode
 	Plugin::Ptr plug = frntCtrl.getViewRelations().get<Plugin>( gPlug );
 	if (!plug) return;
-	// notify parameter skipping listener function:
-	Parameter::ParameterListenerFunction oC = boost::bind( 
-		&Plugin::paramEditorOpenChanged, plug.get(), _1, _2 
-	);
-	plug->getEditorOpen()->setValue ( 1.0f/*, oC*/ ); 
+	
+	{ // signal-block scope
+		boost::signals2::shared_connection_block block(
+			plug->getParamEditorOpenConnection()
+		);
+		plug->getEditorOpen()->setValue (1.0f); 
+	}
+	
 	// set (e) button
 	GButton *btn = gPlug->getEButton();
 	if ( btn->getValue() != 1.0f ) {

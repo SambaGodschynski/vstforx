@@ -33,7 +33,7 @@ void Plugin::initListener() {
 	);
 	editorPosX->addValueChangedListener(xC);
 	editorPosY->addValueChangedListener(yC);
-	editorOpen->addValueChangedListener(oC);
+	paramEditorOpenConnection = editorOpen->addValueChangedListener(oC);
 	editorOpen->addValueChangedListener(dC);
 }
 //------------------------------------------------------------------------------------------------------------

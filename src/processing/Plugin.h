@@ -63,6 +63,8 @@ public:
 	typedef boost::shared_ptr<Plugin> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	parameter::Parameter::Connection paramEditorOpenConnection;
+	//--------------------------------------------------------------------------------------------------------
 	PluginInfo pluginInfo;
 	//--------------------------------------------------------------------------------------------------------
 	string plugVendor;
@@ -101,6 +103,19 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	Plugin( IHostInfo *hostInfo, const string &location, size_t numInputs = 1, size_t numOutputs = 1 );
 public:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Wird von GPluginController benoetigt um bei bedarf verbindung zu blockieren.
+	 * TODO: schlechte Loesung!
+	 * @return Parameter-EditorOpenChanged-Connection
+	 */
+	const parameter::Parameter::Connection & getParamEditorOpenConnection() const {
+		return paramEditorOpenConnection;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	parameter::Parameter::Connection & getParamEditorOpenConnection() {
+		return paramEditorOpenConnection;
+	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Editor-Pos-X Parameter

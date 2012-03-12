@@ -233,6 +233,8 @@ void PpiEditor::releaseView(){
 	circuidControl->getFrontController().clear();
 	frame->removeView( circuidView.get(), false );
 	removeViewRelation ( circuidView.get(), graph );
+	circuidControl.reset();
+	circuidView.reset();	
 }
 //------------------------------------------------------------------------------------------------------------
 void PpiEditor::idle() {
