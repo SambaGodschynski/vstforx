@@ -21,21 +21,38 @@ ParameterConnection::ParameterConnection(ParameterPtr a, ParameterPtr b) :
 {
 }
 //------------------------------------------------------------------------------------------------------------
+void ParameterConnection::initListener(ConnectionOperator::Ptr op) {
+	HasParameter *hP = dynamic_cast<HasParameter*>(op.get());
+	if (!hP)
+		return;
+	for (size_t i=0; i<hP->getNumParameter(); ++i) {
+		hP->getParameter(i)->addTrackedValueChangedListener(
+			boost::bind(&ParameterConnection::onOperatorParameterChanged, this, _1, _2),
+			self
+		);
+	}
+}
+//------------------------------------------------------------------------------------------------------------
 void ParameterConnection::initListener() {
-	ParameterConnection::Ptr ptr = getPtr();
-	if (!ptr)
-		throw com::ppiError::NullPointer("NullPointer", __FILE__, __LINE__);
 	a->addTrackedValueChangedListener( 
 		boost::bind(&ParameterConnection::onChangedA, this, _1, _2),
-		ptr
+		self
 	);
 	b->addTrackedValueChangedListener(
 		boost::bind(&ParameterConnection::onChangedB, this, _1, _2 ),
-		ptr
+		self
 	);
+	BOOST_FOREACH(ConnectionOperator::Ptr op, ops) {
+		initListener(op);
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 ParameterConnection::~ParameterConnection() {
+}
+//------------------------------------------------------------------------------------------------------------
+void ParameterConnection::onOperatorParameterChanged(void *src, const VstNumber &newValue) {
+	// update a to refresh connection
+	a->setValue(*a);
 }
 //------------------------------------------------------------------------------------------------------------
 void ParameterConnection::onChangedA(void *src, const VstNumber &newValue) {

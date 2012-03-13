@@ -172,6 +172,12 @@ public:
 	typedef boost::shared_ptr<ExpConnection> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	void initListener() {
+		slope->addValueChangedListener(
+			boost::bind(&ExpConnection::onSlopeChanged, this, _1, _2)
+		);
+	}
+	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Serialisiert ExpConnection-Objekt
 	 * @param ar boost::Archive-Objekt
@@ -192,6 +198,7 @@ private:
 		ar >> boost::serialization::base_object<ConnectionOperator> ( *this );
 		ar >> a;
 		ar >> slope;
+		initListener();
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -209,7 +216,12 @@ private:
 		slope->setMin(0.0001f);
 		slope->setMax(0.9999f);
 		a = -log ( *slope ); // == log (1/slope)
+		initListener();
 		ExpConnection::slope->setName ("EXP/LOG slope");
+	}
+	//--------------------------------------------------------------------------------------------------------
+	void onSlopeChanged(void *src, const float &value) {
+		a = -log( value );
 	}
 public:
 	//--------------------------------------------------------------------------------------------------------
@@ -236,7 +248,7 @@ public:
 	 */
 	virtual VstNumber operateInverse ( VstNumber x ){
 		if ( x == 0.0f ) return 0.0f; 
-		float v = -log( x ) / a  + 1;
+		float v = -log( x ) / -a  + 1;
 		// problem with ambience reverb when using log/exp to dry/wet.
 		// soundoutput will stop. following limitation will handle it:		
 		if (v<0.0f)
@@ -261,7 +273,7 @@ public:
 };
 //============================================================================================================
 // Klasse: LogConnection.
-// Proportionale Verbindung mit Log anstieg.
+// Proportionale Verbindung mit log Anstieg.
 //============================================================================================================
 class LogConnection : public ConnectionOperator, public HasParameter {
 friend class boost::serialization::access;
@@ -270,6 +282,12 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<LogConnection> Ptr;
 private:
+	//--------------------------------------------------------------------------------------------------------
+	void initListener() {
+		slope->addValueChangedListener(
+			boost::bind(&LogConnection::onSlopeChanged, this, _1, _2)
+		);
+	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Serialisiert LogConnection-Objekt
@@ -291,6 +309,7 @@ private:
 		ar >> boost::serialization::base_object<ConnectionOperator> ( *this );
 		ar >> a;
 		ar >> slope;
+		initListener();
 	}
 	//--------------------------------------------------------------------------------------------------------
 	LogConnection () : ConnectionOperator () {	
@@ -301,6 +320,7 @@ private:
 		slope->setMax(0.9999f);
 		slope->setName("LOG/EXP slope");
 		a = log( *slope );
+		initListener();
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -309,6 +329,10 @@ private:
 	Parameter::Ptr slope;
 	//--------------------------------------------------------------------------------------------------------
 	VstNumber a;
+	//--------------------------------------------------------------------------------------------------------
+	void onSlopeChanged(void *src, const float &value) {
+		a = log( value );
+	}
 public:
 	//--------------------------------------------------------------------------------------------------------
 	static Ptr create() {
@@ -341,7 +365,7 @@ public:
 	 */
 	virtual VstNumber operateInverse ( VstNumber x ){
 		if ( x == 0.0f ) return 0.0001f; 
-		return exp( a*x ) * *slope;
+		return exp( -a*x ) * *slope;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**

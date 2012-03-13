@@ -9,12 +9,6 @@
 #include "gui/Resources.h"
 #include "com/RegisterBoostTypes.h"
 
-/*
-	==============================================================
-	*			      	PPIVst Test-Plugin						 *
-	==============================================================
-*/
-
 extern HINSTANCE GetInstance();
 
 using namespace processing;

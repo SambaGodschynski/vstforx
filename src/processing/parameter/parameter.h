@@ -136,9 +136,10 @@ private:
 	/**
 	 * Initalisiert Listener.
 	 * !NUR AUFRUFEN WENN self-Ptr valid!
-	 * @throw com::ppiError::NullPointer
 	 */
 	void initListener();
+	//--------------------------------------------------------------------------------------------------------
+	void initListener(ConnectionOperator::Ptr op);
 	//--------------------------------------------------------------------------------------------------------
 	bool updateLock;
 	//--------------------------------------------------------------------------------------------------------
@@ -167,37 +168,8 @@ private:
 	typedef ConnectionOperator::Container Operators;
 	//--------------------------------------------------------------------------------------------------------
 	Operators ops;
-public:
 	//--------------------------------------------------------------------------------------------------------
-	Ptr getPtr() const {
-		return self.lock();
-	}
-	//--------------------------------------------------------------------------------------------------------
-	virtual ~ParameterConnection();
-	//--------------------------------------------------------------------------------------------------------
-	Operators & getOperators() {
-		return ops;
-	}
-	//--------------------------------------------------------------------------------------------------------
-	const Operators & getOperators() const {
-		return ops;
-	}
-	//--------------------------------------------------------------------------------------------------------
-	void addOperator(ConnectionOperator::Ptr op) {
-		ops.push_back(op);
-	}
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * erstellt ParameterConnection-Objekt
-	 * @param Parameter A 
-	 * @param Parameter B 
-	 */
-	static Ptr create(ParameterPtr a, ParameterPtr b) {
-		Ptr neu( new ParameterConnection(a,b) );
-		neu->self = neu;
-		neu->initListener();
-		return neu;
-	}
+	void onOperatorParameterChanged(void *src, const VstNumber &newValue);
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Parameter A ValueChanged-Handler
@@ -212,6 +184,44 @@ public:
 	 * @param
 	 */
 	void onChangedB(void *src, const VstNumber &newValue);
+public:
+	//--------------------------------------------------------------------------------------------------------
+	Ptr getPtr() const {
+		return self.lock();
+	}
+	//--------------------------------------------------------------------------------------------------------
+	virtual ~ParameterConnection();
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Operators-Objekt
+	 */
+	Operators & getOperators() {
+		return ops;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return const Operators-Objekt
+	 */
+	const Operators & getOperators() const {
+		return ops;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	void addOperator(ConnectionOperator::Ptr op) {
+		ops.push_back(op);
+		initListener(op);
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * erstellt ParameterConnection-Objekt
+	 * @param Parameter A 
+	 * @param Parameter B 
+	 */
+	static Ptr create(ParameterPtr a, ParameterPtr b) {
+		Ptr neu( new ParameterConnection(a,b) );
+		neu->self = neu;
+		neu->initListener();
+		return neu;
+	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Parameter A
