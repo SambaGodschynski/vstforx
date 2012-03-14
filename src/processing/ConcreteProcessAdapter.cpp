@@ -6,6 +6,7 @@
  */
 #include "ConcreteProcessAdapter.h"
 #include <stack>
+#include <sambag/lua/LuaSequence.hpp>
 
 namespace processing{
 //============================================================================================================
@@ -825,5 +826,62 @@ void MidiProcessor::processMidiEvents ( VstEvents *ev ) {
 				break;
 		}
 	}
+}
+//============================================================================================================
+// LuaProcessor:
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+LuaProcessor::LuaProcessor ( IHostInfo *iHost ) :
+		ProcessAdapter( iHost, 1, 1 ),
+		scriptValid(false),
+		parameters( 1, Parameter::create() )
+{
+	setName ("lua_processor");
+	L = luaL_newstate();
+	luaL_openlibs(L);
+	TOLOG ( "+" + getName() );
+}
+//------------------------------------------------------------------------------------------------------------
+LuaProcessor::~LuaProcessor() {
+	lua_close(L);
+	TOLOG ( "-" + getName() );
+}
+//------------------------------------------------------------------------------------------------------------
+void LuaProcessor::processAdapter(Processor::Int numSamples) {
+	Frames *frame = getInputNode(0)->popFrame();
+	
+	if (!scriptValid) { // script invalid
+		outputNodes[0]->pushAndCopy(frame, numSamples);
+		return;
+	}
+
+	using namespace sambag::lua;
+	LuaSequenceEx<float> r((*frame)[0], numSamples);
+	LuaSequenceEx<float> l((*frame)[1], numSamples);
+	
+	try {
+		// execute processFunction
+		callLuaFunc(L, "processFrames", 2, r, l, numSamples);
+		// get result
+		get(l, r, L, -1);
+	} catch( const LuaException &ex ) {
+		TOLOG("lua script:" + scriptfile + " failed!\n  " + ex.errMsg);
+		scriptValid = false;
+		outputNodes[0]->pushAndCopy(frame, numSamples);
+		return;
+	}
+
+	outputNodes[0]->pushAndCopy(frame, numSamples);
+}
+//------------------------------------------------------------------------------------------------------------
+void LuaProcessor::parameterValueChanged ( void *src, const float &value ) {	
+}
+//------------------------------------------------------------------------------------------------------------
+void LuaProcessor::loadScript(const std::string &scriptfile) {
+	if (!boost::filesystem::exists(scriptfile))
+		throw com::ppiError::FileIOException("loading failed: " + scriptfile, __FILE__, __LINE__ );
+	LuaProcessor::scriptfile = scriptfile;
+	luaL_dofile(L, scriptfile.c_str());
+	scriptValid = true;
 }
 }//namespace processing

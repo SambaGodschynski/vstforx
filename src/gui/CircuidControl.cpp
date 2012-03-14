@@ -265,6 +265,11 @@ inline void CircuidControl::getMenuEntryList ( menu::MenuEntryList &mE ){
 	ADD_MENU_LABEL ( mE, "add_peak_tracker", new CmdCreatePeakTracker ( view, gObjCtrlDirector ) );
 	ADD_MENU_LABEL ( mE, "add_adsr_trigger", new CmdCreateADSRTriggerNode ( view, gObjCtrlDirector ) );
 	ADD_MENU_LABEL ( mE, "add_midi_receiver", new CmdCreateMidiProcessor ( view, gObjCtrlDirector ) );
+	ADD_MENU_LABEL ( mE, "add_lua_processor", 
+		new CmdCreateLuaProcessor ( getHomeDirectory() + "adelay.lua", 
+		view,
+		gObjCtrlDirector )
+	);
 	ADD_MENU_LABEL ( mE, "add_free_knob", new CmdCreateFreeGKnob( view, gObjCtrlDirector ) );
 	
 	CMenu::Ptr pCM = CSubMenu::create( view->getFrame() );

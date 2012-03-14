@@ -131,6 +131,7 @@ FrontController::FrontController ( ViewRelations &viewRelations ) :
 	controllerMap.insert ( pair<U, V> ( hash<GPeakTracker>(), controller[CTRL_GPROCESSOR] ) );
 	controllerMap.insert ( pair<U, V> ( hash<GADSRTrigger>(), controller[CTRL_GPROCESSOR] ) );
 	controllerMap.insert ( pair<U, V> ( hash<GMidiProcessor>(), controller[CTRL_GPROCESSOR] ) );
+	controllerMap.insert ( pair<U, V> ( hash<GLuaProcessor>(), controller[CTRL_GPROCESSOR] ) );
 	// GConnection
 	controller[CTRL_GKNOB_CONNECTION] = new GKnobConnectionController( *this );
 	controllerMap.insert ( pair<U, V> ( hash<GConnectionPaPa>(), controller[CTRL_GKNOB_CONNECTION] ) );

@@ -519,6 +519,25 @@ void GMidiProcessor::draw ( CDrawContext *cc ){
 GMidiProcessor::~GMidiProcessor(){
 }
 //============================================================================================================
+//	Klasse GLuaProcessor:
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+GLuaProcessor::GLuaProcessor(ppiGui::CircuidView *view ) : GProcessorNode ( view ){
+	name = "lua_processor";
+	skin = resources->getResourceBitmap( Resources::PEAK_TRACK_ADAPTER );
+	bBox = VSTGUI::CRect ( 0,0, skin->getWidth(), skin->getHeight() );
+	focus = CPoint ( skin->getWidth()>>1, skin->getHeight()>>1 );
+	radius = skin->getWidth()>>1;
+	focus = CPoint (bBox.width()>>1, bBox.height()>>1);
+}
+//------------------------------------------------------------------------------------------------------------
+void GLuaProcessor::draw ( CDrawContext *cc ){
+	skin->draw ( cc, bBox );
+}
+//------------------------------------------------------------------------------------------------------------
+GLuaProcessor::~GLuaProcessor(){
+}
+//============================================================================================================
 //	Klasse GKnob:
 //  Ein GKnob Objekt ist ein ueber eine Mausaktion regelbares Grafisches Objekt. 
 //  Erbt von VSTGUI::CAnimKob.

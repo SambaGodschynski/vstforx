@@ -2,6 +2,15 @@
  * ===========================================================================================================
  * ConcreteProcessAdapter.h
  *      Author: Johannes Unger
+ * To add a new adapter-type do:
+ *   - implement new processing::ProcessAdapter 
+ *   - implement new ppiGui::GProcessorNode and its load_construct_data function
+ *   - make a icon-rep. for new GProcessorNode and add it to Resources.h and PPIVst::loadResources
+ *   - register new type for boost archive. see RegisterBoostTypes.h
+ *   - register new GProcessorNode in FrontController
+ *   - additional: implement a new Controller for new GProcessorNode type
+ *   - implement create command
+ *   - add command to menu
  * ===========================================================================================================
  */
 #ifndef CONCRETE_PROCESS_ADAPTER
@@ -13,6 +22,7 @@
 #include "dspTools.h"
 #include "com/Serialization.h"
 #include "MidiEventProcessor.h"
+#include <sambag/lua/LuaHelper.hpp>
 
 //============================================================================================================
 //	Vorwaertz Deklarationen
@@ -1551,6 +1561,91 @@ public:
 	virtual ~MidiProcessor (){
 		TOLOG ( "-" + getName() );
 	}
+};
+//============================================================================================================
+/**
+ * @class LuaProcessor.
+ * Leitet process an lua-script weiter.
+ */
+class LuaProcessor : 
+public ProcessAdapter, 
+public HasParameter, 
+public Serializable
+{
+//============================================================================================================
+friend class boost::serialization::access;
+public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::shared_ptr<LuaProcessor> Ptr;
+private:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * is script valid?
+	 */
+	bool scriptValid;
+	//--------------------------------------------------------------------------------------------------------
+	lua_State *L;
+	//--------------------------------------------------------------------------------------------------------
+	std::string scriptfile;
+	//--------------------------------------------------------------------------------------------------------
+	typedef vector<Parameter::Ptr> Parameters;
+	//--------------------------------------------------------------------------------------------------------
+	Parameters parameters;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (De)Serialisiert PeakTracker-Objekt
+	 * @param ar boost::Archive-
+	 * @param version
+	 */
+	template < typename Archive >
+	void serialize ( Archive &ar, const unsigned int version ) {
+		ar & boost::serialization::base_object < ProcessAdapter > ( *this );
+		ar & parameters; 
+		ar & scriptfile;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	LuaProcessor () : scriptValid(false) {} // wird nur von boost::serial. benutzt
+protected:
+	//--------------------------------------------------------------------------------------------------------
+	LuaProcessor ( IHostInfo *hostInfo );
+public:
+	//--------------------------------------------------------------------------------------------------------
+	void loadScript(const std::string &scriptfile);
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param hostInfo
+	 * @return neues MidiProcessor-Objekt
+	 */
+	static Ptr create( IHostInfo *hostInfo ) {
+		Ptr neu( new LuaProcessor(hostInfo ) );
+		neu->self = neu;
+		return neu;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param src
+	 * @param value
+	 */
+	virtual void parameterValueChanged( void *src, const float &value );
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Verarbeitet Samplemenge der Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
+	 * @param numSamples Anzahl der zu bearbeitenden Samples
+	 */
+	virtual void processAdapter( Processor::Int numSamples );
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param index
+	 * @return liefert Parameter zu index. Wirft: std::out_of_range
+	 */
+	virtual Parameter::Ptr getParameter ( size_t index = 0 ) const { return parameters[index]; }
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Anzahl aller MidiProcessor-Parameter
+	 */
+	virtual size_t getNumParameter () const { return parameters.size(); }
+	//--------------------------------------------------------------------------------------------------------
+	virtual ~LuaProcessor ();
 };
 }// namespace processing
 

@@ -148,6 +148,7 @@ public:
 //============================================================================================================
 //	Klasse CmdCreateProcessorNode:
 //  Oberklasse fuer Knoten Objekte die eine ProcessorAdapter Objekt repraesentieren.
+// TODO: ganze klasse template
 //============================================================================================================
 class CmdCreateProcessorNode : public ViewCommand {
 protected:
@@ -285,6 +286,22 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	CmdCreateMidiProcessor(CircuidView *cView, FrontController *ctrl):
 	  CmdCreateProcessorNode(cView,ctrl){}
+};
+//============================================================================================================
+//	Klasse CmdCreateLuaProcessor:
+//  Erstellt CmdCreateLuaProcessor
+//============================================================================================================
+class CmdCreateLuaProcessor : public CmdCreateProcessorNode {
+private:
+	//--------------------------------------------------------------------------------------------------------
+	std::string scriptfile;
+	//--------------------------------------------------------------------------------------------------------
+	virtual void _execute();
+protected:
+public:
+	//--------------------------------------------------------------------------------------------------------
+	CmdCreateLuaProcessor(const std::string &scriptfile, CircuidView *cView, FrontController *ctrl):
+	  CmdCreateProcessorNode(cView,ctrl), scriptfile(scriptfile) {}
 };
 //============================================================================================================
 //	Klasse CmdCreateFreeGKnob
