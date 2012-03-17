@@ -23,6 +23,7 @@
 #include "com/Serialization.h"
 #include "MidiEventProcessor.h"
 #include <sambag/lua/LuaHelper.hpp>
+#include <sambag/lua/LuaMap.hpp>
 
 //============================================================================================================
 //	Vorwaertz Deklarationen
@@ -1564,6 +1565,31 @@ public:
 };
 //============================================================================================================
 /**
+ * @class ProcessorScriptInfo.
+ * Script-Info POD-Kontainer
+ */
+//============================================================================================================
+struct ProcessorScriptInfo {
+	// processor setup
+	size_t numInputs;
+	size_t numOutputs;
+	bool valid;
+	// parameter
+	// Key = parameterName, Value = parameter init value
+	typedef sambag::lua::LuaMap<std::string, float> ParameterMap;
+	ParameterMap parameterMap;
+	bool hasParameterChangedHandler;
+	// constructor
+	ProcessorScriptInfo() :
+		numInputs(0),
+		numOutputs(0),
+		valid(false),
+		hasParameterChangedHandler(false)
+	{
+	}
+};
+//============================================================================================================
+/**
  * @class LuaProcessor.
  * Leitet process an lua-script weiter.
  */
@@ -1579,12 +1605,20 @@ public:
 	typedef boost::shared_ptr<LuaProcessor> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * is script valid?
-	 */
-	bool scriptValid;
+	// lock lua calls 
+	com::Mutex mutex;
 	//--------------------------------------------------------------------------------------------------------
-	lua_State *L;
+	static void getScriptInfo(sambag::lua::LuaStateRef, ProcessorScriptInfo &outValue);
+	//--------------------------------------------------------------------------------------------------------
+	ProcessorScriptInfo scriptInfo;
+	//--------------------------------------------------------------------------------------------------------
+	void initListener();
+	//--------------------------------------------------------------------------------------------------------
+	void initScript();
+	//--------------------------------------------------------------------------------------------------------
+	void initParameter();
+	//--------------------------------------------------------------------------------------------------------
+	sambag::lua::LuaStateRef luaState;
 	//--------------------------------------------------------------------------------------------------------
 	std::string scriptfile;
 	//--------------------------------------------------------------------------------------------------------
@@ -1602,9 +1636,12 @@ private:
 		ar & boost::serialization::base_object < ProcessAdapter > ( *this );
 		ar & parameters; 
 		ar & scriptfile;
+		if (Archive::is_loading::value) {
+			loadScript(scriptfile);
+		}
 	}
 	//--------------------------------------------------------------------------------------------------------
-	LuaProcessor () : scriptValid(false) {} // wird nur von boost::serial. benutzt
+	LuaProcessor (){} // wird nur von boost::serial. benutzt
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	LuaProcessor ( IHostInfo *hostInfo );
@@ -1648,7 +1685,6 @@ public:
 	virtual ~LuaProcessor ();
 };
 }// namespace processing
-
 #endif
 
 

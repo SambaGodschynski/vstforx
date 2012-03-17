@@ -296,7 +296,7 @@ private:
 	 * liefert Hashwert zu Type.
 	 */
 	template < typename T >
-	long hash(){
+	long getKey(){
 		const char *type_name = typeid(T).name();
 		return MyString(type_name).hash();
 	}
@@ -305,7 +305,7 @@ private:
 	 * liefert Hashwert zu GObject-Objekt.
 	 * @param obj
 	 */
-	long hash( GObject::Ptr obj ){
+	long getKey( GObject::Ptr obj ){
 		const char *type_name = typeid( *( obj.get() ) ).name();
 		return MyString(type_name).hash();
 	}
@@ -316,6 +316,7 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Abbildung: Objekttype -> Kontroller
+	 * TODO: use loki::TypeInfo for key
 	 */
 	typedef map<U, V> ControllerMap;
 	//--------------------------------------------------------------------------------------------------------

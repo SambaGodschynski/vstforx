@@ -808,6 +808,15 @@ public:
 	virtual ~GMidiProcessor();
 };
 //============================================================================================================
+// Frei stehende Methoden fuer boost archive: GMidiProcessor
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+template < typename Archive >
+inline void save_construct_data( Archive & ar, const GMidiProcessor * t, const unsigned int file_version ) {
+	ppiGui::CircuidView *view = t->getParentView();
+	ar << view;
+}
+//============================================================================================================
 //	Klasse GLuaProcessor:
 //============================================================================================================
 class GLuaProcessor : public GProcessorNode, public Serializable {
@@ -840,11 +849,11 @@ public:
 	virtual ~GLuaProcessor();
 };
 //============================================================================================================
-// Frei stehende Methoden fuer boost archive: GADSRTrigger
+// Frei stehende Methoden fuer boost archive: GLuaProcessor
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
 template < typename Archive >
-inline void save_construct_data( Archive & ar, const GMidiProcessor * t, const unsigned int file_version ) {
+inline void save_construct_data( Archive & ar, const GLuaProcessor * t, const unsigned int file_version ) {
 	ppiGui::CircuidView *view = t->getParentView();
 	ar << view;
 }

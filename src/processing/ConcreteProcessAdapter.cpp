@@ -7,6 +7,7 @@
 #include "ConcreteProcessAdapter.h"
 #include <stack>
 #include <sambag/lua/LuaSequence.hpp>
+#include <boost/foreach.hpp>
 
 namespace processing{
 //============================================================================================================
@@ -831,26 +832,81 @@ void MidiProcessor::processMidiEvents ( VstEvents *ev ) {
 // LuaProcessor:
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
+namespace {
+	const std::string ON_PARAMETER_CHANGED = "onParameterChanged";
+	const std::string NUM_INPUTS = "numInputs";
+	const std::string NUM_OUTPUTS = "numOutputs";
+	const std::string PARAMETER_SETUP = "parameterSetup";
+	const std::string PROCESS_FRAMES = "processFrames";
+}
+//------------------------------------------------------------------------------------------------------------
 LuaProcessor::LuaProcessor ( IHostInfo *iHost ) :
-		ProcessAdapter( iHost, 1, 1 ),
-		scriptValid(false),
-		parameters( 1, Parameter::create() )
+		ProcessAdapter( iHost, 1, 1 )
 {
 	setName ("lua_processor");
-	L = luaL_newstate();
-	luaL_openlibs(L);
+	luaState = sambag::lua::createLuaStateRef();
+	//lua_gc(luaState.get(), LUA_GCSETPAUSE, 1);
+	//lua_gc(luaState.get(), LUA_GCSETSTEPMUL, 1000);
 	TOLOG ( "+" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
 LuaProcessor::~LuaProcessor() {
-	lua_close(L);
-	TOLOG ( "-" + getName() );
+	int sizeInKb = lua_gc(luaState.get(), LUA_GCCOUNT, 0);
+	TOLOG ( "-" + getName() + "[" + MyString(sizeInKb) + "kb]" );
+	luaState.reset();
+}
+//------------------------------------------------------------------------------------------------------------
+void LuaProcessor::initParameter() {
+	using namespace processing::parameter;
+	parameters.reserve(scriptInfo.parameterMap.size());
+	BOOST_FOREACH( 
+		const ProcessorScriptInfo::ParameterMap::value_type &v, 
+		scriptInfo.parameterMap) 
+	{
+		Parameter::Ptr p = Parameter::create();
+		p->setName(v.first);
+		p->setValue(v.second);
+		parameters.push_back(p);
+	}
+	initListener();
+}
+//------------------------------------------------------------------------------------------------------------
+void LuaProcessor::initListener() {
+	BOOST_FOREACH(Parameter::Ptr p, parameters) {
+		p->addTrackedValueChangedListener(
+			boost::bind(&LuaProcessor::parameterValueChanged, this, _1, _2),
+			luaState
+		);
+		p->setValue(*p);
+	}
+}
+//------------------------------------------------------------------------------------------------------------
+void LuaProcessor::initScript() {
+	getScriptInfo(luaState, scriptInfo);
+	initParameter();
+}
+//------------------------------------------------------------------------------------------------------------
+void LuaProcessor::getScriptInfo(sambag::lua::LuaStateRef luaState, ProcessorScriptInfo &outValue) {
+	using namespace sambag;
+	// processor setup
+	if ( !lua::getGlobal(outValue.numInputs, luaState.get(), NUM_INPUTS) )
+		outValue.numInputs = 0;
+	if ( !lua::getGlobal(outValue.numOutputs, luaState.get(), NUM_OUTPUTS) )
+		outValue.numOutputs = 0;
+	// parameter
+	if ( !lua::getGlobal(outValue.parameterMap, luaState.get(), PARAMETER_SETUP) )
+		outValue.parameterMap.clear();
+	if ( !lua::hasFunction(luaState.get(), ON_PARAMETER_CHANGED) )
+		outValue.hasParameterChangedHandler = false;
+	else
+		outValue.hasParameterChangedHandler = true;
 }
 //------------------------------------------------------------------------------------------------------------
 void LuaProcessor::processAdapter(Processor::Int numSamples) {
+	TRY_TO_LOCK_TIMED(mutex);
 	Frames *frame = getInputNode(0)->popFrame();
 	
-	if (!scriptValid) { // script invalid
+	if (!scriptInfo.valid) { // script invalid
 		outputNodes[0]->pushAndCopy(frame, numSamples);
 		return;
 	}
@@ -861,27 +917,51 @@ void LuaProcessor::processAdapter(Processor::Int numSamples) {
 	
 	try {
 		// execute processFunction
-		callLuaFunc(L, "processFrames", 2, r, l, numSamples);
+		callLuaFunc(luaState.get(), PROCESS_FRAMES, 2, r, l, numSamples);
 		// get result
-		get(l, r, L, -1);
+		get(l, r, luaState.get(), -1);
+		lua_pop(luaState.get(), 2);
 	} catch( const LuaException &ex ) {
 		TOLOG("lua script:" + scriptfile + " failed!\n  " + ex.errMsg);
-		scriptValid = false;
+		scriptInfo.valid = false;
 		outputNodes[0]->pushAndCopy(frame, numSamples);
 		return;
 	}
-
 	outputNodes[0]->pushAndCopy(frame, numSamples);
 }
 //------------------------------------------------------------------------------------------------------------
-void LuaProcessor::parameterValueChanged ( void *src, const float &value ) {	
+void LuaProcessor::parameterValueChanged ( void *src, const float &value ) {
+	using namespace sambag::lua;
+	using namespace processing::parameter;
+
+	TRY_TO_LOCK_TIMED(mutex);
+	Parameter *p = static_cast<Parameter*>(src);
+	if (!scriptInfo.valid || !scriptInfo.hasParameterChangedHandler) 
+		return;
+	// call lua function
+	try {
+		callLuaFunc(luaState.get(), ON_PARAMETER_CHANGED, 0, p->getName(), value);
+	} catch (const LuaException &ex) {
+		TOLOG("lua script:" + scriptfile + " failed!\n  " + ex.errMsg);
+		scriptInfo.valid = false;
+		return;
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 void LuaProcessor::loadScript(const std::string &scriptfile) {
-	if (!boost::filesystem::exists(scriptfile))
+	scriptInfo.valid = true;
+	if (!boost::filesystem::exists(scriptfile)) {
+		scriptInfo.valid = false;
 		throw com::ppiError::FileIOException("loading failed: " + scriptfile, __FILE__, __LINE__ );
+	}
 	LuaProcessor::scriptfile = scriptfile;
-	luaL_dofile(L, scriptfile.c_str());
-	scriptValid = true;
+	try {
+		sambag::lua::executeFile(luaState.get(), scriptfile);
+	} catch (const sambag::lua::LuaException &ex) {
+		TOLOG("lua script:" + scriptfile + " failed!\n  " + ex.errMsg);
+		scriptInfo.valid = false;
+		return;
+	}
+	initScript();
 }
 }//namespace processing

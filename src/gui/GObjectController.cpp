@@ -118,37 +118,37 @@ FrontController::FrontController ( ViewRelations &viewRelations ) :
 	controller[CTRL_GOBJECT] = new GObjectController ( *this );
 	// GKnob controller
 	controller[CTRL_GKNOB] = new GKnobController( *this );
-	controllerMap.insert ( pair<U, V> ( hash<GStdKnob>(), controller[CTRL_GKNOB] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GPassiveKnob>(), controller[CTRL_GKNOB] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GStdKnob>(), controller[CTRL_GKNOB] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GPassiveKnob>(), controller[CTRL_GKNOB] ) );
 	// GIONode Controller
 	controller[CTRL_GIONODE] = new GIONodeController( *this );
-	controllerMap.insert ( pair<U, V> ( hash<GInputNode>(), controller[CTRL_GIONODE] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GOutputNode>(), controller[CTRL_GIONODE] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GInputNode>(), controller[CTRL_GIONODE] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GOutputNode>(), controller[CTRL_GIONODE] ) );
 	// GProcessorNodeController
 	controller[CTRL_GPROCESSOR] = new GProcessorNodeController( *this );
-	controllerMap.insert ( pair<U, V> ( hash<GVolumeNode>(), controller[CTRL_GPROCESSOR] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GPanAdapter>(), controller[CTRL_GPROCESSOR] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GPeakTracker>(), controller[CTRL_GPROCESSOR] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GADSRTrigger>(), controller[CTRL_GPROCESSOR] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GMidiProcessor>(), controller[CTRL_GPROCESSOR] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GLuaProcessor>(), controller[CTRL_GPROCESSOR] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GVolumeNode>(), controller[CTRL_GPROCESSOR] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GPanAdapter>(), controller[CTRL_GPROCESSOR] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GPeakTracker>(), controller[CTRL_GPROCESSOR] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GADSRTrigger>(), controller[CTRL_GPROCESSOR] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GMidiProcessor>(), controller[CTRL_GPROCESSOR] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GLuaProcessor>(), controller[CTRL_GPROCESSOR] ) );
 	// GConnection
 	controller[CTRL_GKNOB_CONNECTION] = new GKnobConnectionController( *this );
-	controllerMap.insert ( pair<U, V> ( hash<GConnectionPaPa>(), controller[CTRL_GKNOB_CONNECTION] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GConnectionPrPa>(), controller[CTRL_GKNOB_CONNECTION] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GConnectionPaPa>(), controller[CTRL_GKNOB_CONNECTION] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GConnectionPrPa>(), controller[CTRL_GKNOB_CONNECTION] ) );
 	controller[CTRL_IO_CONNECTION] = new GIOConnectionController( *this );
-	controllerMap.insert ( pair<U, V> ( hash<GConnectionIO>(), controller[CTRL_IO_CONNECTION] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GConnectionPrIn>(), controller[CTRL_IO_CONNECTION] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GConnectionPrOut>(), controller[CTRL_IO_CONNECTION] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GConnectionIO>(), controller[CTRL_IO_CONNECTION] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GConnectionPrIn>(), controller[CTRL_IO_CONNECTION] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GConnectionPrOut>(), controller[CTRL_IO_CONNECTION] ) );
 	// GOutputStepNode
 	controller[CTRL_GSWITCH_NODE] = new GSwitchNodeController( *this );
-	controllerMap.insert ( pair<U, V> ( hash<GOutputStepNode>(), controller[CTRL_GSWITCH_NODE] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GInputStepNode>(), controller[CTRL_GSWITCH_NODE] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GOutputSwitch>(), controller[CTRL_GSWITCH_NODE] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GInputSwitch>(), controller[CTRL_GSWITCH_NODE] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GOutputStepNode>(), controller[CTRL_GSWITCH_NODE] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GInputStepNode>(), controller[CTRL_GSWITCH_NODE] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GOutputSwitch>(), controller[CTRL_GSWITCH_NODE] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GInputSwitch>(), controller[CTRL_GSWITCH_NODE] ) );
 	// GVSTPlugNode
 	controller[CTRL_GVST_PLUGIN] = new GPluginController( *this );
-	controllerMap.insert ( pair<U, V> ( hash<GVSTPlugNode>(), controller[CTRL_GVST_PLUGIN] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GVSTPlugNode>(), controller[CTRL_GVST_PLUGIN] ) );
 	// ...
 		
 }
@@ -182,7 +182,7 @@ void FrontController::unregisterObject( GObject::Ptr vObj ) {
 }
 //------------------------------------------------------------------------------------------------------------
 ObjectController * FrontController::getController( GObject::Ptr obj ){
-	ControllerMap::iterator it = controllerMap.find ( hash(obj) );
+	ControllerMap::iterator it = controllerMap.find ( getKey(obj) );
 	if ( it == controllerMap.end() ) {
 		LOG_ASSERT (0);
 		return NULL;

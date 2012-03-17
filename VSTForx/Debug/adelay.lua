@@ -1,3 +1,7 @@
+--setup
+parameterSetup = { direct = 0.5, delay=0.5, feedback=0.4 }
+maxbuff = 44100
+
 
 function initBuffer(numSamples)
     res={}
@@ -6,11 +10,12 @@ function initBuffer(numSamples)
     end
     return res 
 end
+buffer=initBuffer(maxbuff)
 
-buffer=initBuffer(44100)
 cursor = 1
 delay = 10000
-feedback = 0.4
+feedback = 0.8
+direct = 0.5
 
 function incCursor()
   cursor = cursor + 1
@@ -21,15 +26,25 @@ end
 
 
 function processFrames(l, r, numSamples)
-    f1 = 0.5
-    f2 = 0.15
     for i=1, numSamples, 1 do
         x = l[i]
 	y = buffer[cursor]
  	buffer[cursor] = x + y * feedback
 	incCursor()
-	l[i] = y
-	r[i] = y
+	l[i] = y + direct * l[i]
+	r[i] = y + direct * r[i]
     end
     return l, r
+end
+
+function onParameterChanged(name, value)
+    if name=='feedback' then
+        feedback = value
+    end
+    if name=='delay' then
+       delay = value * maxbuff
+    end
+    if name=='direct' then
+       direct = value
+    end
 end
