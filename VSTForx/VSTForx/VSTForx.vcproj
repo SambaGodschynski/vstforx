@@ -882,6 +882,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\..\..\sambag\src\sambag\lua\LuaSequence.hpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\..\..\sambag\src\sambag\cpsqlite\sambag_sqlite.c"
 					>
 				</File>

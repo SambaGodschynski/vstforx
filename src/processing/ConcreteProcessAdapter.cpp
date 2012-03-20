@@ -912,15 +912,21 @@ void LuaProcessor::processAdapter(Processor::Int numSamples) {
 	}
 
 	using namespace sambag::lua;
-	LuaSequenceEx<float> r((*frame)[0], numSamples);
-	LuaSequenceEx<float> l((*frame)[1], numSamples);
 	
+	boost::tuple< LuaSequenceEx<float>, LuaSequenceEx<float>, int > args = boost::make_tuple ( 
+		LuaSequenceEx<float>((*frame)[0], numSamples),
+		LuaSequenceEx<float>((*frame)[1], numSamples),
+		numSamples
+	);
+
+	boost::tuple< LuaSequenceEx<float>, LuaSequenceEx<float> > ret = boost::make_tuple ( 
+		LuaSequenceEx<float>((*frame)[0], numSamples),
+		LuaSequenceEx<float>((*frame)[1], numSamples)
+	);
+
 	try {
 		// execute processFunction
-		callLuaFunc(luaState.get(), PROCESS_FRAMES, 2, r, l, numSamples);
-		// get result
-		get(l, r, luaState.get(), -1);
-		lua_pop(luaState.get(), 2);
+		callLuaFunc(luaState.get(), PROCESS_FRAMES, args, ret);
 	} catch( const LuaException &ex ) {
 		TOLOG("lua script:" + scriptfile + " failed!\n  " + ex.errMsg);
 		scriptInfo.valid = false;
@@ -940,7 +946,7 @@ void LuaProcessor::parameterValueChanged ( void *src, const float &value ) {
 		return;
 	// call lua function
 	try {
-		callLuaFunc(luaState.get(), ON_PARAMETER_CHANGED, 0, p->getName(), value);
+		callLuaFunc(luaState.get(), ON_PARAMETER_CHANGED, boost::make_tuple(p->getName(), value));
 	} catch (const LuaException &ex) {
 		TOLOG("lua script:" + scriptfile + " failed!\n  " + ex.errMsg);
 		scriptInfo.valid = false;
