@@ -36,7 +36,6 @@ namespace menu{
 CMenu::CMenu ( CFrame *frame ) : CView(VSTGUI::CRect ()), hold(false), subMenu(NULL) {
 	CView::pParentFrame = frame;
 	entr_offset = 0;
-	visible = false;
 	scrollSwitch = new CMenuScrollSwitch( this );
 	nullEntry = new CNullEntry();
 	subMenuListener.parent = this;
@@ -50,40 +49,39 @@ CMenu::Ptr CMenu::create ( CFrame *frame ) {
 }
 //------------------------------------------------------------------------------------------------------------
 void CMenu::showAt(const CPoint &p){
-	if (menuEntries.empty()) return;
-	if ( visible ) return;
+	if (menuEntries.empty()) 
+		return;
+	if ( isVisible() ) 
+		return;
 	getFrame()->addView ( this );
 	MenuEntryList::iterator it = menuEntries.begin();
+	whenVisible = com::events::TrackingDummy::create();
 	for (; it!=menuEntries.end(); ++it) {
-		(*it)->EventSender<OnMouseClick>::addEventListener ( this );
+		(*it)->EventSender<OnMouseClick>::addTrackedEventListener (this, whenVisible);
 		CSubMenuEntry *sub = dynamic_cast <CSubMenuEntry*> ( (*it).get() );
 		if ( sub ) { //wenn entry == submenuEntry
-			sub->EventSender<OnMouseEnter>::addEventListener ( &subMenuListener );
-			sub->EventSender<OnMouseLeave>::addEventListener ( &subMenuListener );
-			sub->EventSender<ShowSubMenu>::addEventListener ( this );
-			sub->EventSender<HideSubMenu>::addEventListener ( this );
+			sub->EventSender<OnMouseEnter>::addTrackedEventListener ( &subMenuListener, whenVisible );
+			sub->EventSender<OnMouseLeave>::addTrackedEventListener ( &subMenuListener, whenVisible );
+			sub->EventSender<ShowSubMenu>::addTrackedEventListener ( this, whenVisible );
+			sub->EventSender<HideSubMenu>::addTrackedEventListener ( this, whenVisible );
 		}
 	}
 	//moveTo ( p );
 	VSTGUI::CRect tmp = calcSize();
 	setOutline( tmp, calcMenuPos(tmp, p) );
-	visible = true;
-	( (PpiEditor*)getFrame()->getEditor() )->EventSender<OnIdle>::addEventListener ( this );
+	( (PpiEditor*)getFrame()->getEditor() )->EventSender<OnIdle>::addTrackedEventListener ( this, whenVisible );
 	setDirty();
 }
 //------------------------------------------------------------------------------------------------------------
 void CMenu::hide() {
-	if ( !isVisible() ) return;
+	if ( !isVisible() ) 
+		return;
+	whenVisible.reset(); // tracking dummy removes listener on dispose
 	//boost::lock_guard<boost::mutex> lock(onClickMutex);
 	MenuEntryList::iterator it = menuEntries.begin();
 	for (; it!=menuEntries.end(); ++it) {
-		(*it)->EventSender<OnMouseClick>::removeEventListener ( this );
 		CSubMenuEntry *sub = dynamic_cast <CSubMenuEntry*> ( (*it).get() );
 		if ( sub ) { // wenn: CSubMenuEntry
-			sub->EventSender<OnMouseEnter>::removeEventListener ( &subMenuListener );
-			sub->EventSender<OnMouseLeave>::removeEventListener ( &subMenuListener );
-			sub->EventSender<ShowSubMenu>::removeEventListener ( this );
-			sub->EventSender<HideSubMenu>::removeEventListener ( this );
 			sub->resetDelay();
 			sub->getSubMenu()->hide();
 		}
@@ -95,22 +93,23 @@ void CMenu::hide() {
 	clearEntries();
 	scroller = nullEntry;
 	PpiEditor *ed = (PpiEditor*)getFrame()->getEditor();
-	ed->EventSender<OnIdle>::removeEventListener ( this );
 	ed->addCommand ( Command::Ptr ( new CmdRemoveMenu( getPtr() ) ) );
-	visible = false;
 	
 }
 //------------------------------------------------------------------------------------------------------------
 void CMenu::draw ( CDrawContext *cc ) {
-	if (!visible) return;
+	if (!isVisible()) 
+		return;
 	drawFrame ( cc, size );
 	drawEntries ( cc );
 	setDirty(false);
 }
 //------------------------------------------------------------------------------------------------------------
 VSTGUI::CRect CMenu::calcSize() {
-	if (menuEntries.empty()) VSTGUI::CRect();
-	if (menuEntries.size() > (maxEntries+1) ) scroller = scrollSwitch;
+	if (menuEntries.empty()) 
+		VSTGUI::CRect();
+	if (menuEntries.size() > (maxEntries+1) ) 
+		scroller = scrollSwitch;
 	else scroller = nullEntry;
 	MenuEntryList::iterator it = menuEntries.begin();
 	int i=0; //entr_offset cnt 
@@ -118,11 +117,14 @@ VSTGUI::CRect CMenu::calcSize() {
 	VSTGUI::CRect tmp;
 	tmp.setWidth ( 85 ); // minimale breite
 	for ( ; it!=menuEntries.end(); ++it ) {
-		if ( i++ < entr_offset ) continue; // ueberspringe eintraege < offset
+		if ( i++ < entr_offset ) 
+			continue; // ueberspringe eintraege < offset
 		CMenuEntry *view = (*it).get();
-		if ( tmp.width() < view->getWidth() ) tmp.setWidth ( view->getWidth() ); // akt. max. breite
+		if ( tmp.width() < view->getWidth() ) 
+			tmp.setWidth ( view->getWidth() ); // akt. max. breite
 		// addiere Hoehe wenn maxEntries noch nicht erreicht.
-		if ( n++ <= maxEntries ) tmp.setHeight ( view->getHeight() + tmp.height() + 1 );
+		if ( n++ <= maxEntries ) 
+			tmp.setHeight ( view->getHeight() + tmp.height() + 1 );
 	}
 	tmp.setHeight ( tmp.getHeight() + scroller->getHeight() ); 
 	return tmp;
@@ -325,7 +327,7 @@ void CMenu::clearEntries(){
 //------------------------------------------------------------------------------------------------------------
 void CMenu::mouse(CDrawContext *cc, CPoint &p, long btn ) {
 	Ptr hold = self.lock();
-	if ( !visible ) return;
+	if ( !isVisible() ) return;
 	if ( scrollSwitch->hitTest ( p ) ) {
 		scrollSwitch->mouse(cc,p,btn);
 		return;
@@ -471,9 +473,6 @@ CSubMenuEntry::CSubMenuEntry ( const MyString &text, const CMenu::Ptr &subMenu, 
 }
 //------------------------------------------------------------------------------------------------------------
 CSubMenuEntry::~CSubMenuEntry() {
-	subMenu->EventSender<OnMouseEnter>::removeEventListener ( this );
-	subMenu->EventSender<OnMouseLeave>::removeEventListener ( this );
-	subMenu->EventSender<OnMouseClick>::removeEventListener ( this );
 }
 //------------------------------------------------------------------------------------------------------------
 void CSubMenuEntry::eventHandler(void *scr, const ppiGui::OnMouseEnter &ev) {
@@ -545,9 +544,9 @@ void CSubMenuEntry::draw( CDrawContext *cc, const CPoint &mousePos ) {
 			}
 			subMenuPos = calcMenuPos();
 			EventSender<ShowSubMenu>::notifyEventListeners ( this, ShowSubMenu( subMenu.get() ) );
-			subMenu->EventSender<OnMouseEnter>::addEventListener ( this );
-			subMenu->EventSender<OnMouseLeave>::addEventListener ( this );
-			subMenu->EventSender<OnMouseClick>::addEventListener ( this );
+			subMenu->EventSender<OnMouseEnter>::addTrackedEventListener(this, subMenu->whenVisible);
+			subMenu->EventSender<OnMouseLeave>::addTrackedEventListener(this, subMenu->whenVisible);
+			subMenu->EventSender<OnMouseClick>::addTrackedEventListener(this, subMenu->whenVisible);
 		}
 	}
 	

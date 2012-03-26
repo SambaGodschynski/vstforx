@@ -19,7 +19,7 @@ namespace ppiGui{
 MainCtrl::MainCtrl( VSTGUI::CRect &size, void *pSystemWindow, void *pEditor ) : 
 CFrame ( size, pSystemWindow, pEditor )
 {
-	toolBx = new MToolBox ( this );
+	toolBx = MToolBox::create( this );
 	setupCtrl = new SetupCtrl ( this );
 	toolBx->EventSender<ToolBoxBtnPressed>::addEventListener( this );
 	setupCtrl->EventSender<OnClose>::addEventListener ( this );
@@ -37,7 +37,6 @@ bool MainCtrl::setSize (CCoord width, CCoord height) {
 }
 //------------------------------------------------------------------------------------------------------------
 MainCtrl::~MainCtrl(){
-	delete toolBx;
 	delete setupCtrl;
 }
 //------------------------------------------------------------------------------------------------------------
@@ -84,9 +83,11 @@ void ButtonGroupListener::valueChanged(CDrawContext *cD, CControl *pControl) {
 // MainToolBox enthaelt Buttons die die CircuidControl Steuern.
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-void MToolBox::initGroups() {
+void MToolBox::initListener() {
+	MainCtrl *mCtrl = static_cast<MainCtrl*>( frame );
+	mCtrl->EventSender<OnResize>::addTrackedEventListener (this, self);
 	for ( int i=0; i<groups.size(); ++i ) {
-		groups[i].EventSender<ToolBoxBtnPressed>::addEventListener ( this );
+		groups[i]->EventSender<ToolBoxBtnPressed>::addTrackedEventListener (this,self);
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -100,15 +101,11 @@ void MToolBox::addControl ( CView *view ) {
 }
 //------------------------------------------------------------------------------------------------------------
 MToolBox::MToolBox( CFrame *frame ) : 
-	CView (VSTGUI::CRect()), 
+	CView (VSTGUI::CRect()),
 	lastXPos( 2 ), 
-	frame(frame), 
-	groups(1)
+	frame(frame),
+	groups(1, ButtonGroupListener::Ptr(new ButtonGroupListener()))
 {
-	MainCtrl *mCtrl = static_cast<MainCtrl*>( frame );
-	mCtrl->EventSender<OnResize>::addEventListener ( this );
-	//--------------------------------------------------------------------------------------------------------
-	initGroups();
 	//--------------------------------------------------------------------------------------------------------
 	views = new CView*[tNum];
 	//--------------------------------------------------------------------------------------------------------
@@ -126,24 +123,24 @@ MToolBox::MToolBox( CFrame *frame ) :
 	size = VSTGUI::CRect( 0, 0, bmp->getWidth(), bmp->getHeight()/2 );
 	size.offset ( 0, 1 );
 	CPoint p;
-	views[tBtnUse] = new CMovieButton ( size, &groups[0], tBtnUse, bmp->getHeight()/2, bmp, p );
+	views[tBtnUse] = new CMovieButton ( size, groups[0].get(), tBtnUse, bmp->getHeight()/2, bmp, p );
 	( (CControl*)views[tBtnUse] )->setValue ( 1.0f );
 	addControl ( views[tBtnUse] );
-	groups[0].addControl ( (CControl*)views[tBtnUse] );
+	groups[0]->addControl ( (CControl*)views[tBtnUse] );
 	//--------------------------------------------------------------------------------------------------------
 	// Connect Btn
 	bmp = resources->getResourceBitmap( Resources::TLBX_BTN_CNT );
 	p = CPoint();
-	views[tBtnConnect] = new CMovieButton ( size, &groups[0], tBtnConnect,  bmp->getHeight()/2, bmp, p );
+	views[tBtnConnect] = new CMovieButton ( size, groups[0].get(), tBtnConnect,  bmp->getHeight()/2, bmp, p );
 	addControl ( views[tBtnConnect] );
-	groups[0].addControl ( (CControl*)views[tBtnConnect] );
+	groups[0]->addControl ( (CControl*)views[tBtnConnect] );
 	//--------------------------------------------------------------------------------------------------------
 	// Move Btn
 	bmp = resources->getResourceBitmap( Resources::TLBX_BTN_MOVE );
 	p = CPoint();
-	views[tBtnMove] = new CMovieButton ( size, &groups[0], tBtnMove,  bmp->getHeight()/2, bmp, p );
+	views[tBtnMove] = new CMovieButton ( size, groups[0].get(), tBtnMove,  bmp->getHeight()/2, bmp, p );
 	addControl ( views[tBtnMove] );
-	groups[0].addControl ( (CControl*)views[tBtnMove] );
+	groups[0]->addControl ( (CControl*)views[tBtnMove] );
 	//--------------------------------------------------------------------------------------------------------
 	// Setup Btn
 	bmp = resources->getResourceBitmap( Resources::TLBX_BTN_SETUP );

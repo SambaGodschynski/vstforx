@@ -320,7 +320,7 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, processing::
 	// is fastscan?
 	if ( settings->isFastScan() ) {
 		out_info.access = PluginInfo::NOT_CHECKED;
-		out_info.name = Path( out_info.location ).filename();
+		out_info.name = Path( out_info.location ).filename().string();
 		// set not the timestamp! because if rescan without the fast option we want to peek in plug
 		// out_info.timestamp = last_write_time(out_info.location);
 		return;

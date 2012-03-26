@@ -13,6 +13,7 @@ class ParameterTest : public CPPUNIT_NS::TestFixture {
 	CPPUNIT_TEST( testMinMax );
 	CPPUNIT_TEST( testConnection );
 	CPPUNIT_TEST( testConnectionSet );
+	CPPUNIT_TEST( testParameterListenerF );
 	CPPUNIT_TEST_SUITE_END();
 private:
 public:
@@ -21,6 +22,7 @@ public:
 	void testConnectionSet();
 	void testConnection();
 	void testConstructor();
+	void testParameterListenerF();
 	void testMinMax();
 };
 } // namespace tests

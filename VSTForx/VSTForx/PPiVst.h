@@ -37,7 +37,6 @@ using namespace parameter;
 //===========================================================================================
 class PPIVst :
 	public AudioEffectX, 
-	public ValueChangedListener<float>, 
 	public EventListener<ppiGui::OnClose>,
 	public EventListener<GraphChanged>,
 	public IHostInfo

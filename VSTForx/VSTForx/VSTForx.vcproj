@@ -41,8 +41,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\boost_1_42_0&quot;;&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\vstgui.sf\vstgui_3.0&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\zlib&quot;;&quot;$(ProjectDir)..\..\..\..\lpng1239&quot;;$(NOINHERIT)"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;VSTFORX_EXPORTS;USE_LIBPNG;BOOST_FILESYSTEM_VERSION=2"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost_1_49_0&quot;;&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\vstgui.sf\vstgui_3.0&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\zlib&quot;;&quot;$(ProjectDir)..\..\..\..\lpng1239&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua-5.2.0\src&quot;;$(NOINHERIT)"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;VSTFORX_EXPORTS;USE_LIBPNG"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -64,7 +64,7 @@
 				AdditionalDependencies="gdiplus.lib"
 				OutputFile="$(OutDir)\$(ProjectName)_d.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;C:\Eigene Dateien\Eigene Progs\boost_1_42_0\stage\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\boost_1_49_0\stage\lib&quot;"
 				ModuleDefinitionFile="vstplug.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -119,8 +119,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\boost_1_42_0&quot;;&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\vstgui.sf\vstgui_3.0&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\zlib&quot;;&quot;$(ProjectDir)..\..\..\..\lpng1239&quot;;$(NOINHERIT)"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;VSTFORX_EXPORTS;USE_LIBPNG;BOOST_FILESYSTEM_VERSION 2"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost_1_49_0&quot;;&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\vstgui.sf\vstgui_3.0&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\zlib&quot;;&quot;$(ProjectDir)..\..\..\..\lpng1239&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua-5.2.0\src&quot;;$(NOINHERIT)"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;VSTFORX_EXPORTS;USE_LIBPNG"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -140,7 +140,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="gdiplus.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;C:\Eigene Dateien\Eigene Progs\boost_1_42_0\stage\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\boost_1_49_0\stage\lib&quot;"
 				ModuleDefinitionFile="vstplug.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -197,8 +197,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\boost_1_42_0&quot;;&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\vstgui.sf\vstgui_3.0&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\zlib&quot;;&quot;$(ProjectDir)..\..\..\..\lpng1239&quot;;$(NOINHERIT)"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;VSTFORX_EXPORTS;USE_LIBPNG;FORX_IS_SYNTH;BOOST_FILESYSTEM_VERSION 2"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost_1_49_0&quot;;&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\vstgui.sf\vstgui_3.0&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\zlib&quot;;&quot;$(ProjectDir)..\..\..\..\lpng1239&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua-5.2.0\src&quot;;$(NOINHERIT)"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;VSTFORX_EXPORTS;USE_LIBPNG;FORX_IS_SYNTH"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -219,7 +219,7 @@
 				AdditionalDependencies="gdiplus.lib"
 				OutputFile="$(OutDir)\i$(ProjectName).dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;C:\Eigene Dateien\Eigene Progs\boost_1_42_0\stage\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\boost_1_49_0\stage\lib&quot;"
 				ModuleDefinitionFile="vstplug.def"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -494,6 +494,90 @@
 					</Filter>
 				</Filter>
 				<Filter
+					Name="com"
+					>
+					<File
+						RelativePath="..\..\src\com\Command.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\Command.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\Events.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\Log.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\Log.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\MyString.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\MyString.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\one4All.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\one4All.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\PluginCollection.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\PluginCollection.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\PluginCollectionSQL.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\PPIError.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\PPIError.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\RegisterBoostTypes.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\Serialization.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\Settings.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\Settings.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\SystemCommand.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\SystemCommand.h"
+						>
+					</File>
+				</Filter>
+				<Filter
 					Name="processing"
 					>
 					<File
@@ -612,90 +696,6 @@
 							>
 						</File>
 					</Filter>
-				</Filter>
-				<Filter
-					Name="com"
-					>
-					<File
-						RelativePath="..\..\src\com\Command.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\Command.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\Events.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\Log.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\Log.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\MyString.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\MyString.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\one4All.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\one4All.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\PluginCollection.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\PluginCollection.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\PluginCollectionSQL.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\PPIError.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\PPIError.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\RegisterBoostTypes.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\Serialization.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\Settings.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\Settings.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\SystemCommand.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\SystemCommand.h"
-						>
-					</File>
 				</Filter>
 			</Filter>
 			<Filter
@@ -874,15 +874,251 @@
 				Name="sambag"
 				>
 				<File
-					RelativePath="..\..\..\..\..\sambag\src\sambag\cpsqlite\DataBase.cpp"
+					RelativePath="..\..\..\..\..\clibs\sambag\src\sambag\cpsqlite\DataBase.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\..\sambag\src\sambag\com\FileSystem.cpp"
+					RelativePath="..\..\..\..\..\clibs\sambag\src\sambag\com\FileSystem.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\..\sambag\src\sambag\cpsqlite\sambag_sqlite.c"
+					RelativePath="..\..\..\..\..\clibs\sambag\src\sambag\lua\LuaSequence.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\sambag\src\sambag\cpsqlite\sambag_sqlite.c"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="lua"
+				>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lapi.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lapi.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lauxlib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lauxlib.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lbaselib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lbitlib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lcode.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lcode.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lcorolib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lctype.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lctype.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\ldblib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\ldebug.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\ldebug.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\ldo.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\ldo.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\ldump.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lfunc.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lfunc.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lgc.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lgc.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\linit.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\liolib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\llex.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\llex.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\llimits.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lmathlib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lmem.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lmem.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\loadlib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lobject.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lobject.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lopcodes.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lopcodes.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\loslib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lparser.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lparser.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lstate.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lstate.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lstring.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lstring.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lstrlib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\ltable.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\ltable.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\ltablib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\ltm.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\ltm.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lua.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lua.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\luaconf.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lualib.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lundump.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lundump.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lvm.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lvm.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lzio.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lzio.h"
 					>
 				</File>
 			</Filter>

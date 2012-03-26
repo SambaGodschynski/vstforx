@@ -9,12 +9,6 @@
 #include "gui/Resources.h"
 #include "com/RegisterBoostTypes.h"
 
-/*
-	==============================================================
-	*			      	PPIVst Test-Plugin						 *
-	==============================================================
-*/
-
 extern HINSTANCE GetInstance();
 
 using namespace processing;
@@ -132,7 +126,9 @@ VstInt32 PPIVst::canDo ( char *text ) {
 //---------------------------------------------------------------------------------------
 void PPIVst::initHostParameter() {
 	for ( int i=0; i<graph->getNumHostParameter(); ++i ){
-		graph->getHostParameter(i)->addValueChangedListener ( this );
+		graph->getHostParameter(i)->addValueChangedListener ( 
+			boost::bind(&PPIVst::valueChanged, this, _1, _2)
+		);
 	}
 }
 //---------------------------------------------------------------------------------------
@@ -344,7 +340,7 @@ std::string getHomeDirectory() {
 		LOG_ASSERT ( r );
 		com::Filename f( _d  );
 		if ( is_regular_file(f) ) home_dir = f.remove_filename().string();
-		else home_dir = f.directory_string();
+		else home_dir = f.string();
 	}
 	return home_dir;
 }

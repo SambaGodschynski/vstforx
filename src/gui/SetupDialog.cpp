@@ -416,11 +416,12 @@ void SetupCtrl::scan() {
 	// add window
 	modView->addWindowView ( dlgScanning );
 	modView->setDirty();
-	pC->EventSender<OnLoadFile>::addEventListener ( dlgScanning );
-	pC->EventSender<OnFileLoaded>::addEventListener ( dlgScanning );
-	pC->EventSender<OnFileLoaded>::addEventListenerF ( &ScanLogger::pluginScanned );
-	pC->EventSender<ScanComplete>::addEventListener ( this );
-	pC->EventSender<CleaningUpDataBase>::addEventListener ( this );
+	whileScanning = com::events::TrackingDummy::create();
+	pC->EventSender<OnLoadFile>::addTrackedEventListener ( dlgScanning, whileScanning );
+	pC->EventSender<OnFileLoaded>::addTrackedEventListener ( dlgScanning, whileScanning );
+	pC->EventSender<OnFileLoaded>::addTrackedEventListener ( &ScanLogger::pluginScanned, whileScanning );
+	pC->EventSender<ScanComplete>::addTrackedEventListener ( this, whileScanning );
+	pC->EventSender<CleaningUpDataBase>::addTrackedEventListener ( this, whileScanning );
 	// create new scanlog 
 	ScanLogger::createNewFile();
 	ed->addExtraTimerCmd ( SystemCommand::Ptr( new CmdUpdatePluginCollection( pC, ed->getGraph() ) ) );
@@ -429,11 +430,8 @@ void SetupCtrl::scan() {
 void SetupCtrl::eventHandler(void *src, const com::ScanComplete &ev) {
 
 	PluginCollection::Ptr pC = PluginCollection::getPluginCollection();
-	pC->EventSender<OnLoadFile>::removeEventListener ( dlgScanning ); // wichtig!
-	pC->EventSender<OnFileLoaded>::removeEventListener ( dlgScanning );
-	pC->EventSender<ScanComplete>::removeEventListener ( this );
-	pC->EventSender<OnFileLoaded>::removeEventListenerF ( &ScanLogger::pluginScanned );
-	pC->EventSender<CleaningUpDataBase>::removeEventListener ( this );
+	// auto listener remove:
+	whileScanning.reset();
 	ListBox &lB = dlgScanning->getListBox();
 	// suma sumarum
 	lB.addString("=========================================================");
@@ -459,12 +457,6 @@ void SetupCtrl::close() {
 //------------------------------------------------------------------------------------------------------------
 SetupCtrl::~SetupCtrl() {
 	PluginCollection::Ptr pC = PluginCollection::getPluginCollection();
-	pC->EventSender<OnLoadFile>::removeEventListener ( dlgScanning ); // wichtig!
-	pC->EventSender<OnFileLoaded>::removeEventListener ( dlgScanning );
-	pC->EventSender<ScanComplete>::removeEventListener ( this );
-	pC->EventSender<OnFileLoaded>::removeEventListenerF ( &ScanLogger::pluginScanned );
-	pC->EventSender<CleaningUpDataBase>::removeEventListener ( this );
-	
 	if ( pC->isScanning() ) {
 		pC->stopScanning();
 		EventSender<ScanInterrupted>::notifyEventListeners ( this, ScanInterrupted() );

@@ -2,6 +2,15 @@
  * ===========================================================================================================
  * ConcreteProcessAdapter.h
  *      Author: Johannes Unger
+ * To add a new adapter-type do:
+ *   - implement new processing::ProcessAdapter 
+ *   - implement new ppiGui::GProcessorNode and its load_construct_data function
+ *   - make a icon-rep. for new GProcessorNode and add it to Resources.h and PPIVst::loadResources
+ *   - register new type for boost archive. see RegisterBoostTypes.h
+ *   - register new GProcessorNode in FrontController
+ *   - additional: implement a new Controller for new GProcessorNode type
+ *   - implement create command
+ *   - add command to menu
  * ===========================================================================================================
  */
 #ifndef CONCRETE_PROCESS_ADAPTER
@@ -13,6 +22,8 @@
 #include "dspTools.h"
 #include "com/Serialization.h"
 #include "MidiEventProcessor.h"
+#include <sambag/lua/LuaHelper.hpp>
+#include <sambag/lua/LuaMap.hpp>
 
 //============================================================================================================
 //	Vorwaertz Deklarationen
@@ -44,14 +55,22 @@ class Volume :
 //============================================================================================================
 public ProcessAdapter, 
 public HasParameter, 
-public Serializable,
-public events::ValueChangedListener<float>
+public Serializable
 {
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<Volume> Ptr;
 private:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Initalisiert Listener.
+	 */
+	void initListener() {
+		volume->addValueChangedListener (
+			boost::bind(&Volume::valueChanged, this, _1, _2)
+		);
+	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * (De)Serialisiert Volume-Objekt
@@ -63,7 +82,7 @@ private:
 		ar & boost::serialization::base_object< ProcessAdapter > ( *this );
 		ar & volume;
 		if ( Archive::is_loading::value ) {
-			volume->addValueChangedListener (this);
+			initListener();
 			fader.setDuration( getFaderDuration( hostInfo->getSampleRate() ) );  
 			fader.setValue ( *volume );
 		}
@@ -85,7 +104,6 @@ protected:
 		setName ("Volume");
 		volume = Parameter::create();
 		volume->setName ("Volume");
-		volume->addValueChangedListener (this);
 		*volume = initValue;
 		getInputNode(0)->setName ("Volume Input Node");
 		getOutputNode(0)->setName ("Volume Output Node");
@@ -105,6 +123,7 @@ public:
 	static Ptr create( IHostInfo *hostInfo, float initValue = 1.0f ) {
 		Ptr neu( new Volume(hostInfo, initValue ) );
 		neu->self = neu;
+		neu->initListener();
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -141,7 +160,7 @@ public:
 	 */
 	virtual size_t getNumParameter () const { return 1; }
 	//--------------------------------------------------------------------------------------------------------
-	virtual ~Volume (){
+	virtual ~Volume () {
 		TOLOG ( "-" + getName() );
 	}
 };
@@ -254,10 +273,10 @@ private:
 			);
 
 			for ( int i=0; i<numStates; ++i ) {
-				nDurationIN[i]->addValueChangedListenerF ( dI );
-				nDurationOUT[i]->addValueChangedListenerF ( dO );
-				nCurveTypeIN[i]->addValueChangedListenerF ( cT );
-				nCurveTypeOUT[i]->addValueChangedListenerF ( cT );
+				nDurationIN[i]->addValueChangedListener ( dI );
+				nDurationOUT[i]->addValueChangedListener ( dO );
+				nCurveTypeIN[i]->addValueChangedListener ( cT );
+				nCurveTypeOUT[i]->addValueChangedListener ( cT );
 			}
 		}
 	}
@@ -433,7 +452,6 @@ public ProcessAdapter,
 public Serializable, 
 public Switch,
 public VariableOutputAdapter,
-public ValueChangedListener<float>,
 public IHasState
 {
 //============================================================================================================
@@ -558,7 +576,6 @@ public ProcessAdapter,
 public Serializable, 
 public Switch,
 public VariableInputAdapter,
-public ValueChangedListener<float>,
 public IHasState
 {
 friend class boost::serialization::access;
@@ -706,7 +723,7 @@ private:
 			&Step::durationParameterChanged, this, _1, _2 
 		);
 		for (int i=0; i<steps; ++i) {
-			nDuration[i]->addValueChangedListenerF ( f );
+			nDuration[i]->addValueChangedListener ( f );
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -1448,8 +1465,7 @@ class MidiProcessor :
 public ProcessAdapter, 
 public HasParameter, 
 public Serializable,
-public MidiEventProcessor,
-public events::ValueChangedListener<float>
+public MidiEventProcessor
 {
 //============================================================================================================
 friend class boost::serialization::access;
@@ -1547,8 +1563,128 @@ public:
 		TOLOG ( "-" + getName() );
 	}
 };
+//============================================================================================================
+/**
+ * @class ProcessorScriptInfo.
+ * Script-Info POD-Kontainer
+ */
+//============================================================================================================
+struct ProcessorScriptInfo {
+	// processor setup
+	size_t numInputs;
+	size_t numOutputs;
+	bool valid;
+	// parameter
+	// Key = parameterName, Value = parameter init value
+	typedef sambag::lua::LuaMap<std::string, float> ParameterMap;
+	ParameterMap parameterMap;
+	bool hasParameterChangedHandler;
+	// constructor
+	ProcessorScriptInfo() :
+		numInputs(0),
+		numOutputs(0),
+		valid(false),
+		hasParameterChangedHandler(false)
+	{
+	}
+};
+//============================================================================================================
+/**
+ * @class LuaProcessor.
+ * Leitet process an lua-script weiter.
+ */
+class LuaProcessor : 
+public ProcessAdapter, 
+public HasParameter, 
+public Serializable
+{
+//============================================================================================================
+friend class boost::serialization::access;
+public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::shared_ptr<LuaProcessor> Ptr;
+private:
+	//--------------------------------------------------------------------------------------------------------
+	// lock lua calls 
+	com::Mutex mutex;
+	//--------------------------------------------------------------------------------------------------------
+	static void getScriptInfo(sambag::lua::LuaStateRef, ProcessorScriptInfo &outValue);
+	//--------------------------------------------------------------------------------------------------------
+	ProcessorScriptInfo scriptInfo;
+	//--------------------------------------------------------------------------------------------------------
+	void initListener();
+	//--------------------------------------------------------------------------------------------------------
+	void initScript();
+	//--------------------------------------------------------------------------------------------------------
+	void initParameter();
+	//--------------------------------------------------------------------------------------------------------
+	sambag::lua::LuaStateRef luaState;
+	//--------------------------------------------------------------------------------------------------------
+	std::string scriptfile;
+	//--------------------------------------------------------------------------------------------------------
+	typedef vector<Parameter::Ptr> Parameters;
+	//--------------------------------------------------------------------------------------------------------
+	Parameters parameters;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (De)Serialisiert PeakTracker-Objekt
+	 * @param ar boost::Archive-
+	 * @param version
+	 */
+	template < typename Archive >
+	void serialize ( Archive &ar, const unsigned int version ) {
+		ar & boost::serialization::base_object < ProcessAdapter > ( *this );
+		ar & parameters; 
+		ar & scriptfile;
+		if (Archive::is_loading::value) {
+			loadScript(scriptfile);
+		}
+	}
+	//--------------------------------------------------------------------------------------------------------
+	LuaProcessor (){} // wird nur von boost::serial. benutzt
+protected:
+	//--------------------------------------------------------------------------------------------------------
+	LuaProcessor ( IHostInfo *hostInfo );
+public:
+	//--------------------------------------------------------------------------------------------------------
+	void loadScript(const std::string &scriptfile);
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param hostInfo
+	 * @return neues MidiProcessor-Objekt
+	 */
+	static Ptr create( IHostInfo *hostInfo ) {
+		Ptr neu( new LuaProcessor(hostInfo ) );
+		neu->self = neu;
+		return neu;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param src
+	 * @param value
+	 */
+	virtual void parameterValueChanged( void *src, const float &value );
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Verarbeitet Samplemenge der Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
+	 * @param numSamples Anzahl der zu bearbeitenden Samples
+	 */
+	virtual void processAdapter( Processor::Int numSamples );
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param index
+	 * @return liefert Parameter zu index. Wirft: std::out_of_range
+	 */
+	virtual Parameter::Ptr getParameter ( size_t index = 0 ) const { return parameters[index]; }
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Anzahl aller MidiProcessor-Parameter
+	 */
+	virtual size_t getNumParameter () const { return parameters.size(); }
+	//--------------------------------------------------------------------------------------------------------
+	virtual ~LuaProcessor ();
+};
 }// namespace processing
-
 #endif
 
 

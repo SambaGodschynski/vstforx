@@ -16,31 +16,67 @@ namespace parameter {
 // Klasse: ParameterConnection.
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-ParameterConnection::ParameterConnection(ParameterPtr a, ParameterPtr b) : a(a), b(b) {
-	Parameter::ParameterListenerFunction aC = boost::bind( 
-		&ParameterConnection::onChangedA, this, _1, _2 
+ParameterConnection::ParameterConnection(ParameterPtr a, ParameterPtr b) : 
+	updateLock(false), a(a), b(b) 
+{
+}
+//------------------------------------------------------------------------------------------------------------
+void ParameterConnection::initListener(ConnectionOperator::Ptr op) {
+	HasParameter *hP = dynamic_cast<HasParameter*>(op.get());
+	if (!hP)
+		return;
+	for (size_t i=0; i<hP->getNumParameter(); ++i) {
+		hP->getParameter(i)->addTrackedValueChangedListener(
+			boost::bind(&ParameterConnection::onOperatorParameterChanged, this, _1, _2),
+			self
+		);
+	}
+}
+//------------------------------------------------------------------------------------------------------------
+void ParameterConnection::initListener() {
+	a->addTrackedValueChangedListener( 
+		boost::bind(&ParameterConnection::onChangedA, this, _1, _2),
+		self
 	);
-	Parameter::ParameterListenerFunction bC = boost::bind( 
-		&ParameterConnection::onChangedA, this, _1, _2 
+	b->addTrackedValueChangedListener(
+		boost::bind(&ParameterConnection::onChangedB, this, _1, _2 ),
+		self
 	);
-	a->addValueChangedListenerF(aC);
-	b->addValueChangedListenerF(aC);
+	BOOST_FOREACH(ConnectionOperator::Ptr op, ops) {
+		initListener(op);
+	}
+}
+//------------------------------------------------------------------------------------------------------------
+ParameterConnection::~ParameterConnection() {
+}
+//------------------------------------------------------------------------------------------------------------
+void ParameterConnection::onOperatorParameterChanged(void *src, const VstNumber &newValue) {
+	// update a to refresh connection
+	a->setValue(*a);
 }
 //------------------------------------------------------------------------------------------------------------
 void ParameterConnection::onChangedA(void *src, const VstNumber &newValue) {
+	if (updateLock) // wichtig sonst: StackOverflow
+		return;
+	updateLock = true;
 	VstNumber t = newValue;
 	BOOST_FOREACH(ConnectionOperator::Ptr op, ops) {
 		t = op->operate(t);
 	}
 	b->setValue(t);
+	updateLock = false;
 }
 //------------------------------------------------------------------------------------------------------------
 void ParameterConnection::onChangedB(void *src, const VstNumber &newValue) {
+	if (updateLock) // wichtig sonst: StackOverflow
+		return;
+	updateLock = true;
 	VstNumber t = newValue;
 	BOOST_FOREACH(ConnectionOperator::Ptr op, ops) {
 		t = op->operateInverse(t);
 	}
 	a->setValue(t);
+	updateLock = false;
 }
 //============================================================================================================
 // Klasse: Parameter.

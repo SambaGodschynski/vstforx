@@ -9,8 +9,11 @@
 #include "MyStringTest.hpp"
 #include "com/MyString.h"
 #include <iostream>
+
+#ifndef FORX_FASTTEST
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::MyStringTest );
+#endif
 
 namespace tests {
 //=============================================================================

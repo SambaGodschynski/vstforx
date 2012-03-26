@@ -79,18 +79,18 @@ attackVal(0.0f)
 	// mode.
 	mode = Parameter::create();
 	mode->setName ("mode");
-	mode->addValueChangedListenerF ( mC );
+	mode->addValueChangedListener ( mC );
 	parameterMap.push_back ( mode );
 	
 	for ( int i=A; i<NUM_STATES; ++i ){
 		curveType[i] = Parameter::create();
 		curveType[i]->setIndex (i);
 		curveType[i]->setName (MyString(bff[i]) + " slope type"); 
-		curveType[i]->addValueChangedListenerF (cT); 
+		curveType[i]->addValueChangedListener (cT); 
 		curveType[i]->setValue(0.0f); 
 		duration[i] = Parameter::create();
 		duration[i]->setIndex (i);
-		duration[i]->addValueChangedListenerF(dC);
+		duration[i]->addValueChangedListener(dC);
 		duration[i]->setName (MyString(bff[i]) + " duration"); 
 		duration[i]->setLabel(" s"); 
 		duration[i]->setDisplay("?");
@@ -99,7 +99,7 @@ attackVal(0.0f)
 		level[i]->setIndex (i);
 		level[i]->setValue (1.0f - (i*1.0f/4.0f) ); 
 		level[i]->setName (MyString(bff[i]) + " level"); 
-		level[i]->addValueChangedListenerF (lC);
+		level[i]->addValueChangedListener (lC);
 		parameterMap.push_back ( level[i] );
 		parameterMap.push_back ( duration[i] );
 		parameterMap.push_back ( curveType[i] );
@@ -114,7 +114,7 @@ attackVal(0.0f)
 	Parameter::ParameterListenerFunction hC=boost::bind( &ADSR::holdChanged, this, _1, _2 );
 	hold = Parameter::create();
 	*hold = 0.1f;
-	hold->addValueChangedListenerF(hC);
+	hold->addValueChangedListener(hC);
 	hold->setName ("trigger_hold");
 	hold->setLabel("s");
 	parameterMap.push_back ( hold );
@@ -160,12 +160,12 @@ void ADSR::load ( iArchive &ar, const unsigned int version ) {
 		ar >> duration[i];
 		ar >> level[i];
 		ar >> curveType[i];
-		duration[i]->addValueChangedListenerF ( dC );
-		level[i]->addValueChangedListenerF ( lC );
-		curveType[i]->addValueChangedListenerF ( cT );
+		duration[i]->addValueChangedListener ( dC );
+		level[i]->addValueChangedListener ( lC );
+		curveType[i]->addValueChangedListener ( cT );
 	}
 	ar >> mode;
-	mode->addValueChangedListenerF ( mC );
+	mode->addValueChangedListener ( mC );
 	ar >> threshold;
 	ar >> fader;
 	ar >> parameterMap;
@@ -175,7 +175,7 @@ void ADSR::load ( iArchive &ar, const unsigned int version ) {
 	ar >> trigger;
 	ar >> fadeFinished;
 	ar >> hold;
-	hold->addValueChangedListenerF ( hC );
+	hold->addValueChangedListener ( hC );
 	ar >> holdSamples;
 	ar >> attackVal;
 }

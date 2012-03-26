@@ -46,6 +46,8 @@ class SerializationError;
 }//namespace ppiError
 }//namespace com
 
+//TODO: ueberall zweite konstruktor variante (src, line, addinfo) hinzufuegen.
+
 //============================================================================================================
 // Klasse: PPIError.
 // Basisklasse fuer alle Fehler.

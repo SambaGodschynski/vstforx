@@ -76,9 +76,9 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	Mutex mutex;
 	//--------------------------------------------------------------------------------------------------------
-	CircuidView *circuidView;
+	CircuidView::Ptr circuidView;
 	//--------------------------------------------------------------------------------------------------------
-	CircuidControl *circuidControl;
+	CircuidControl::Ptr circuidControl;
 	//--------------------------------------------------------------------------------------------------------
 	ScanResults scanResults; // wird waehrend scan gefuellt und von scanDlg wieder entfernt
 	                             // zweck: zwischen sp. falls close() waehrend scan.

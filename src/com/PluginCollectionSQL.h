@@ -102,7 +102,7 @@ struct TblFolder {
 		string subQ = "( SELECT id FROM folders WHERE location = ? )";
 		ss<<"INSERT INTO folders ( name, parentFolderID, location, scanstamp ) VALUES ( ?, "<<subQ<<", ?, ? );";
 		size_t index = 1;
-		out_pL.push_back( TextParameter::create( index++, path.filename() ) );
+		out_pL.push_back( TextParameter::create( index++, path.filename().string() ) );
 		out_pL.push_back( TextParameter::create( index++, parentFolderLoc ) );
 		out_pL.push_back( TextParameter::create( index++, path2String(path) ) );
 		out_pL.push_back( IntParameter::create( index++, scanstamp ) );
@@ -131,7 +131,7 @@ struct TblFolder {
 	{
 		using namespace sambag::cpsqlite;
 		string q = "INSERT INTO folders ( name, parentFolderID, location, scanstamp ) VALUES ( ?, ?, ?, ? );";
-		out_pL.push_back( TextParameter::create( 1, path.filename() ) );
+		out_pL.push_back( TextParameter::create( 1, path.filename().string() ) );
 		out_pL.push_back( IntParameter::create( 2, parentFolderID ) );
 		out_pL.push_back( TextParameter::create( 3, path2String( path ) ) );
 		out_pL.push_back( IntParameter::create( 4, scanstamp ) );

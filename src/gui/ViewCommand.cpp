@@ -27,7 +27,11 @@ void CmdConnectGKnob::_execute(){
 	// Modell
 	Parameter::Ptr pA = ctrl->getViewRelations().get<Parameter> ( src );
 	Parameter::Ptr pB = ctrl->getViewRelations().get<Parameter> ( dst );
-	if ( !pA->addBiConnection ( pB.get() ) ) return;
+	Graph::Ptr g = getRelatedGraph(cView);
+	if (!g)
+		throw com::ppiError::NullPointer("NULL Pointer", __FILE__, __LINE__);
+	if (!g->connectParameter(pA, pB))
+		return;
 	pB->setValue ( *pA );
 	// View
 	gc = GConnectionPaPa::create ( cView, src, dst );
@@ -426,6 +430,21 @@ void CmdCreateMidiProcessor::_execute(){
 	GObjectList gObjs;
 	create<GMidiProcessor, MidiProcessor, 0, 0>();
 	gObjs.push_back( newGPr );
+	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
+	cView->addGObject ( pG );
+	cView->CView::setDirty();
+}
+//============================================================================================================
+//	Klasse CmdCreateLuaProcessor:
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void CmdCreateLuaProcessor::_execute(){
+	GObjectList gObjs;
+	create<GLuaProcessor, LuaProcessor, 1, 1>();
+	LuaProcessor::Ptr lua = boost::shared_dynamic_cast<LuaProcessor, PObject>(newPrA);
+	lua->loadScript(scriptfile);
+	gObjs.push_back( newGPr );
+	newGPr->getIOs ( gObjs );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
 	cView->addGObject ( pG );
 	cView->CView::setDirty();

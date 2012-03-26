@@ -19,6 +19,7 @@
 #include "com/Command.h"
 #include <boost/function.hpp>
 #include "Font.h"
+#include <boost/unordered_map.hpp>
 
 #define ADD_MENU_LABEL(menulist, label, cmd) \
 	(menulist).push_back ( menu::CMenuLabel::create ( (label), Command::Ptr( (cmd) ) ) )
@@ -136,6 +137,7 @@ public:
 private:
 friend struct RemoveMenu;
 friend class CSubMenu;
+friend class CSubMenuEntry;
 	//--------------------------------------------------------------------------------------------------------
 	struct SubMenuListener : 
 		public EventListener<OnMouseEnter>,
@@ -163,6 +165,12 @@ friend class CSubMenu;
 	processing::ClockEdge focusTrigger;
 protected:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * ein trackingobjekt wenn menu sichtbar
+	 */
+	//--------------------------------------------------------------------------------------------------------
+	com::events::TrackingDummy::Ptr whenVisible;
+	//--------------------------------------------------------------------------------------------------------
 	boost::weak_ptr<CMenu> self;
 	//--------------------------------------------------------------------------------------------------------
 	inline void setOutline ( const VSTGUI::CRect &size, const CPoint &p ); 
@@ -189,8 +197,6 @@ protected:
 	// Ist entweder scrollSwitch oder nullEntry je nachdem ob benoetigt oder nicht.
 	CMenuEntry *scroller;
 	//--------------------------------------------------------------------------------------------------------
-	bool visible;
-	//--------------------------------------------------------------------------------------------------------
 	int entr_offset;
 public:
 	//--------------------------------------------------------------------------------------------------------
@@ -211,7 +217,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void hide();
 	//--------------------------------------------------------------------------------------------------------
-	bool isVisible() { return visible; }
+	bool isVisible() { return whenVisible.get()!=NULL ; }
 	//--------------------------------------------------------------------------------------------------------
 	virtual bool hitTest ( CPoint &p ) { return ( isVisible() ) ? CView::hitTest(p) : false; }
 	//--------------------------------------------------------------------------------------------------------

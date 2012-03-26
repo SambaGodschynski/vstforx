@@ -118,36 +118,37 @@ FrontController::FrontController ( ViewRelations &viewRelations ) :
 	controller[CTRL_GOBJECT] = new GObjectController ( *this );
 	// GKnob controller
 	controller[CTRL_GKNOB] = new GKnobController( *this );
-	controllerMap.insert ( pair<U, V> ( hash<GStdKnob>(), controller[CTRL_GKNOB] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GPassiveKnob>(), controller[CTRL_GKNOB] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GStdKnob>(), controller[CTRL_GKNOB] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GPassiveKnob>(), controller[CTRL_GKNOB] ) );
 	// GIONode Controller
 	controller[CTRL_GIONODE] = new GIONodeController( *this );
-	controllerMap.insert ( pair<U, V> ( hash<GInputNode>(), controller[CTRL_GIONODE] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GOutputNode>(), controller[CTRL_GIONODE] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GInputNode>(), controller[CTRL_GIONODE] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GOutputNode>(), controller[CTRL_GIONODE] ) );
 	// GProcessorNodeController
 	controller[CTRL_GPROCESSOR] = new GProcessorNodeController( *this );
-	controllerMap.insert ( pair<U, V> ( hash<GVolumeNode>(), controller[CTRL_GPROCESSOR] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GPanAdapter>(), controller[CTRL_GPROCESSOR] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GPeakTracker>(), controller[CTRL_GPROCESSOR] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GADSRTrigger>(), controller[CTRL_GPROCESSOR] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GMidiProcessor>(), controller[CTRL_GPROCESSOR] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GVolumeNode>(), controller[CTRL_GPROCESSOR] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GPanAdapter>(), controller[CTRL_GPROCESSOR] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GPeakTracker>(), controller[CTRL_GPROCESSOR] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GADSRTrigger>(), controller[CTRL_GPROCESSOR] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GMidiProcessor>(), controller[CTRL_GPROCESSOR] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GLuaProcessor>(), controller[CTRL_GPROCESSOR] ) );
 	// GConnection
 	controller[CTRL_GKNOB_CONNECTION] = new GKnobConnectionController( *this );
-	controllerMap.insert ( pair<U, V> ( hash<GConnectionPaPa>(), controller[CTRL_GKNOB_CONNECTION] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GConnectionPrPa>(), controller[CTRL_GKNOB_CONNECTION] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GConnectionPaPa>(), controller[CTRL_GKNOB_CONNECTION] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GConnectionPrPa>(), controller[CTRL_GKNOB_CONNECTION] ) );
 	controller[CTRL_IO_CONNECTION] = new GIOConnectionController( *this );
-	controllerMap.insert ( pair<U, V> ( hash<GConnectionIO>(), controller[CTRL_IO_CONNECTION] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GConnectionPrIn>(), controller[CTRL_IO_CONNECTION] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GConnectionPrOut>(), controller[CTRL_IO_CONNECTION] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GConnectionIO>(), controller[CTRL_IO_CONNECTION] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GConnectionPrIn>(), controller[CTRL_IO_CONNECTION] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GConnectionPrOut>(), controller[CTRL_IO_CONNECTION] ) );
 	// GOutputStepNode
 	controller[CTRL_GSWITCH_NODE] = new GSwitchNodeController( *this );
-	controllerMap.insert ( pair<U, V> ( hash<GOutputStepNode>(), controller[CTRL_GSWITCH_NODE] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GInputStepNode>(), controller[CTRL_GSWITCH_NODE] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GOutputSwitch>(), controller[CTRL_GSWITCH_NODE] ) );
-	controllerMap.insert ( pair<U, V> ( hash<GInputSwitch>(), controller[CTRL_GSWITCH_NODE] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GOutputStepNode>(), controller[CTRL_GSWITCH_NODE] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GInputStepNode>(), controller[CTRL_GSWITCH_NODE] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GOutputSwitch>(), controller[CTRL_GSWITCH_NODE] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GInputSwitch>(), controller[CTRL_GSWITCH_NODE] ) );
 	// GVSTPlugNode
 	controller[CTRL_GVST_PLUGIN] = new GPluginController( *this );
-	controllerMap.insert ( pair<U, V> ( hash<GVSTPlugNode>(), controller[CTRL_GVST_PLUGIN] ) );
+	controllerMap.insert ( pair<U, V> ( getKey<GVSTPlugNode>(), controller[CTRL_GVST_PLUGIN] ) );
 	// ...
 		
 }
@@ -181,7 +182,7 @@ void FrontController::unregisterObject( GObject::Ptr vObj ) {
 }
 //------------------------------------------------------------------------------------------------------------
 ObjectController * FrontController::getController( GObject::Ptr obj ){
-	ControllerMap::iterator it = controllerMap.find ( hash(obj) );
+	ControllerMap::iterator it = controllerMap.find ( getKey(obj) );
 	if ( it == controllerMap.end() ) {
 		LOG_ASSERT (0);
 		return NULL;
@@ -318,28 +319,29 @@ void GKnobController::parameterValueChanged ( void *src, const float &value ){
 void GKnobController::registerObject ( GObject::Ptr vObj, PObject::Ptr mObj ){ 
 	GKnob::Ptr knob = boost::shared_dynamic_cast<GKnob, GObject>(vObj);
 	Parameter::Ptr p = boost::shared_dynamic_cast<Parameter, PObject>(mObj);
+	// listener tracks
+	trackMap[knob] = com::events::TrackingDummy::create();
 	// Knob Listener
 	Parameter::ParameterListenerFunction kf=boost::bind(&GKnobController::knobValueChanged,this,_1,_2);
-	knob->addValueChangedListenerF (kf);
+	knob->addTrackedValueChangedListener (kf, knob);
 	// Parameter Listener
 	Parameter::ParameterListenerFunction pf=boost::bind(&GKnobController::parameterValueChanged,this,_1,_2);
-	p->addValueChangedListenerF (pf);
+	p->addTrackedValueChangedListener (pf, trackMap[knob]);
 	// OnConnect Event
-	knob->EventSender<OnConnect>::addEventListener ( this );
+	knob->EventSender<OnConnect>::addTrackedEventListener (this, knob);
 	// OnDestroy Event
-	knob->EventSender< OnDestroy<GObject> >::addEventListener ( this );
-
-	knob->setValue ( *p );
+	knob->EventSender< OnDestroy<GObject> >::addEventListener (this);
+	knob->setValue (*p);
 }
 //------------------------------------------------------------------------------------------------------------
 void GKnobController::eventHandler( void *src, const OnDestroy<GObject> &ev ){
+	/*  TODO: warum hier nochmal extra parameterValueChanged entfernen
 	GKnob::Ptr knob = boost::shared_dynamic_cast<GKnob, GObject>( ev.src->getPtr() );
 	// entferne Parameter Listener Funktion
 	Parameter::ParameterListenerFunction pf=boost::bind(&GKnobController::parameterValueChanged,this,_1,_2);
 	Parameter::Ptr p = frntCtrl.getViewRelations().get<Parameter> ( knob );
 	if (!p) return;
-	p->removeValueChangedListenerF (pf);
-	
+	p->removeValueChangedListenerF (pf);*/
 }
 //------------------------------------------------------------------------------------------------------------
 void GKnobController::eventHandler ( void *_src, const OnConnect &ev ){
@@ -354,12 +356,9 @@ void GKnobController::unregisterObject ( GObject::Ptr vObj, PObject::Ptr pObj ) 
 	GKnob::Ptr knob = boost::shared_dynamic_cast<GKnob, GObject>( vObj );
 	Parameter::Ptr p = boost::shared_dynamic_cast<Parameter, PObject>(pObj);
 	if ( frntCtrl.getModelRelation().count (p) == 1 ) { // war das der letzte knob mit diesem parameter
-		// value changed listener entfernen
-		Parameter::ParameterListenerFunction pf=boost::bind(&GKnobController::parameterValueChanged,this,_1,_2);
-		p->removeValueChangedListenerF (pf);
+		removeFromTrackMap(knob);
 	}
 	// onDestroy listener entfernen
-	knob->EventSender< OnDestroy<GObject> >::removeEventListener (this);
 	Graph::Ptr g = getRelatedGraph( vObj->getParentView() );
 	Graph::Janitor::Ptr updater = g->getJanitor();
 	updater->remove ( p );
@@ -510,16 +509,16 @@ void GSwitchNodeController::eventHandler ( void *src, const OnDestroy<GObject> &
 	}
 	// alle weg go home idle listener
 	if ( stateNodes.empty() ) {
-		PpiEditor *ed = static_cast<PpiEditor*> ( vObj->getParentView()->getFrame()->getEditor() );
-		ed->EventSender<OnIdle>::removeEventListener( this );
+		whileActive.reset();
 	}
 }
 //------------------------------------------------------------------------------------------------------------
 void GSwitchNodeController::registerObject( GObject::Ptr vObj, PObject::Ptr mObj ) {
 	// noch kein switch reg. => erstma idle listener anmelden
 	if ( stateNodes.empty() ) {
+		whileActive = com::events::TrackingDummy::create();
 		PpiEditor *ed = static_cast<PpiEditor*> ( vObj->getParentView()->getFrame()->getEditor() );
-		ed->EventSender<OnIdle>::addEventListener( this );
+		ed->EventSender<OnIdle>::addTrackedEventListener(this, whileActive);
 	}
 
 	IHasState::Ptr stN = boost::shared_dynamic_cast<IHasState, GObject> (vObj);
@@ -536,8 +535,7 @@ void GSwitchNodeController::unregisterObject( GObject::Ptr vObj, PObject::Ptr mO
 	}
 	// alle weg go home idle listener
 	if ( stateNodes.empty() ) {
-		PpiEditor *ed = static_cast<PpiEditor*> ( vObj->getParentView()->getFrame()->getEditor() );
-		ed->EventSender<OnIdle>::removeEventListener( this );
+		whileActive.reset();
 	}
 	frntCtrl.getController(FrontController::CTRL_GPROCESSOR)->unregisterObject ( vObj, mObj );
 }
@@ -553,6 +551,7 @@ void GKnobConnectionController::getMenuEntryList ( GObject::Ptr obj, menu::MenuE
 	Parameter::Ptr b = frntCtrl.getViewRelations().get<Parameter>( gc->getObjectB() );
 	if ( !a || !b ) throw com::ppiError::MapError ( "object not found.", __FILE__, __LINE__ );
 	CircuidView *view = obj->getParentView();
+	Graph::Ptr g = getRelatedGraph( view );
 	// connection ops.
 	ADD_MENU_TITLE ( mL, a->getName() + " to " + b->getName() );
 	ADD_MENU_LABEL ( mL, "add +/- operator", 
@@ -565,7 +564,11 @@ void GKnobConnectionController::getMenuEntryList ( GObject::Ptr obj, menu::MenuE
 		new CmdAddConnectionOperator<parameter::LogConnection> (a,b, view ) ); 
 	ADD_MENU_LABEL ( mL, "remove connection", new CmdRemoveGObject( view, gc ) );
 	// connection op. parameter:
-	ConnectionOperator::Container l = a->getConnectionOperators( b.get() );
+	// get connection:
+	ParameterConnection::Ptr cn = g->getParameterConnection(a, b);
+	if (!cn)
+		return;
+	ConnectionOperator::Container l = cn->getOperators();
 	ConnectionOperator::Container::iterator it = l.begin();
 	MenuEntryList aMl;
 	ADD_MENU_TITLE ( aMl, "operator parameter:" );
@@ -584,13 +587,17 @@ void GKnobConnectionController::registerObject ( GObject::Ptr gObj, PObject::Ptr
 void GKnobConnectionController::unregisterObject ( GObject::Ptr gObj, PObject::Ptr pObj ) {
 	if ( !dynamic_cast<GConnectionPaPa*>( gObj.get() ) ) return;
 	GConnection::Ptr gc = boost::shared_dynamic_cast<GConnection, GObject> (gObj);
+	Graph::Ptr g = getRelatedGraph(gObj->getParentView());
+	if (!g)
+		throw com::ppiError::NullPointer("NULL Pointer", __FILE__, __LINE__);
 	// Hole GObjects ...
 	GObject::Ptr knA = gc->getObjectA();
 	GObject::Ptr knB = gc->getObjectB();
 	// ... und PObjects 
 	Parameter::Ptr pA = frntCtrl.getViewRelations().get<Parameter> ( knA );
 	Parameter::Ptr pB = frntCtrl.getViewRelations().get<Parameter> ( knB );
-	if ( pA && pB ) pA->removeBiConnection ( pB.get() );
+	if ( pA && pB ) 
+		g->removeParameterConnection(pA, pB);
 	TOLOG ( pA->getName() + ", " + pB->getName() + " connection removed" );
 }
 //============================================================================================================
@@ -698,10 +705,10 @@ void GPluginController::registerObject( GObject::Ptr vObj, processing::PObject::
 	PpiEditor *ed = (PpiEditor*)gPlug->getParentView()->getEditor();
 	VSTPlugView::Ptr view = VSTPlugView::create( ed, plug ); 
 	vstPlugViewMap.insert ( VSTPlugViewMap::value_type( gPlug, view ) );
-	view->EventSender<OnClose>::addEventListener (this);
-	view->EventSender<OnMoving>::addEventListener (this);
-	plug->EventSender<EditorPositionEvent>::addEventListener (this);
-	plug->EventSender<EditorOpenParameterChanged>::addEventListener (this);
+	view->EventSender<OnClose>::addTrackedEventListener (this, gPlug);
+	view->EventSender<OnMoving>::addTrackedEventListener (this, gPlug);
+	plug->EventSender<EditorPositionEvent>::addTrackedEventListener (this, gPlug);
+	plug->EventSender<EditorOpenParameterChanged>::addTrackedEventListener (this, gPlug);
 	if ( plug->getEditorOpen()->getValue() > 0.5f ) // editor open parmeter marks open
 		openEdWindow ( gPlug ); 
 }
@@ -729,14 +736,15 @@ void GPluginController::eventHandler(void *src, const ppiGui::OnClose &ev) {
 	// get related plugNode
 	Plugin::Ptr plug = frntCtrl.getViewRelations().get<Plugin>( gPlug );
 	if (!plug) return;
-	// notify parameter skipping listener function:
-	Parameter::ParameterListenerFunction oC = boost::bind( 
-		&Plugin::paramEditorOpenChanged, plug.get(), _1, _2 
-	);
+	
 	// search whether keepOpenState contains plug
 	PlugNodeList::iterator pIt = com::find<PlugNodeList> ( keepOpenState, plug );
-	if ( pIt == keepOpenState.end() ) // nothing found
-		plug->getEditorOpen()->setValue ( 0.0f, oC );
+	if ( pIt == keepOpenState.end() ) { // nothing found
+		boost::signals2::shared_connection_block block(
+			plug->getParamEditorOpenConnection()
+		);
+		plug->getEditorOpen()->setValue (0.0f);
+	}
     else keepOpenState.erase( pIt );
 }
 //------------------------------------------------------------------------------------------------------------
@@ -788,12 +796,6 @@ void GPluginController::eventHandler(void *src, const ppiGui::OnDestroy<GObject>
 	view->closeWindow();
 	// rease from map
 	vstPlugViewMap.left.erase (it);
-	// remove listeners
-	gPlug->EventSender< OnDestroy<GObject> >::removeEventListener(this);
-	plug->EventSender<EditorPositionEvent>::removeEventListener (this);
-	plug->EventSender<EditorOpenParameterChanged>::removeEventListener (this);
-	view->EventSender<OnClose>::removeEventListener (this);
-	view->EventSender<OnMoving>::removeEventListener (this);
 }
 //------------------------------------------------------------------------------------------------------------
 void GPluginController::eventHandler(void *src, const ppiGui::OnMoving &ev) {
@@ -827,17 +829,11 @@ void GPluginController::eventHandler(void *src, const ppiGui::EditorPositionEven
 void GPluginController::unregisterObject ( GObject::Ptr gObj, PObject::Ptr pObj ) { 
 	GVSTPlugNode::Ptr gPlug = boost::shared_dynamic_cast<GVSTPlugNode, GObject> (gObj);
 	Plugin::Ptr plug = boost::shared_dynamic_cast<Plugin, PObject> (pObj);
-	// unregister listener
-	gPlug->EventSender< OnDestroy<GObject> >::removeEventListener(this);
-	plug->EventSender<EditorPositionEvent>::removeEventListener (this);
-	plug->EventSender<EditorOpenParameterChanged>::removeEventListener (this);
 	// entferne pobject
 	VSTPlugViewMap::left_map::iterator it = vstPlugViewMap.left.find ( gPlug );
 	if ( it != vstPlugViewMap.left.end() ) {
 		VSTPlugView::Ptr view = it->second; 
 		view->closeWindow();
-		view->EventSender<OnClose>::removeEventListener (this);
-		view->EventSender<OnMoving>::removeEventListener (this);
 		vstPlugViewMap.left.erase (it);
 	}
 	ObjectController *ctrl = frntCtrl.getController ( FrontController::CTRL_GPROCESSOR );
@@ -853,11 +849,14 @@ void GPluginController::openEdWindow ( const GVSTPlugNode::Ptr &gPlug ) {
 	// get related plugNode
 	Plugin::Ptr plug = frntCtrl.getViewRelations().get<Plugin>( gPlug );
 	if (!plug) return;
-	// notify parameter skipping listener function:
-	Parameter::ParameterListenerFunction oC = boost::bind( 
-		&Plugin::paramEditorOpenChanged, plug.get(), _1, _2 
-	);
-	plug->getEditorOpen()->setValue ( 1.0f, oC ); 
+	
+	{ // signal-block scope
+		boost::signals2::shared_connection_block block(
+			plug->getParamEditorOpenConnection()
+		);
+		plug->getEditorOpen()->setValue (1.0f); 
+	}
+	
 	// set (e) button
 	GButton *btn = gPlug->getEButton();
 	if ( btn->getValue() != 1.0f ) {

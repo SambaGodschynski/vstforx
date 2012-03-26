@@ -17,6 +17,7 @@
 #include <boost/bimap.hpp> 
 #include "gui/VstPlugView.h"
 #include "processing/MidiEventProcessor.h"
+#include <boost/unordered_map.hpp>
 
 
 namespace ppiGui{
@@ -295,7 +296,7 @@ private:
 	 * liefert Hashwert zu Type.
 	 */
 	template < typename T >
-	long hash(){
+	long getKey(){
 		const char *type_name = typeid(T).name();
 		return MyString(type_name).hash();
 	}
@@ -304,7 +305,7 @@ private:
 	 * liefert Hashwert zu GObject-Objekt.
 	 * @param obj
 	 */
-	long hash( GObject::Ptr obj ){
+	long getKey( GObject::Ptr obj ){
 		const char *type_name = typeid( *( obj.get() ) ).name();
 		return MyString(type_name).hash();
 	}
@@ -315,6 +316,7 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Abbildung: Objekttype -> Kontroller
+	 * TODO: use loki::TypeInfo for key
 	 */
 	typedef map<U, V> ControllerMap;
 	//--------------------------------------------------------------------------------------------------------
@@ -331,6 +333,7 @@ public:
 	 * liefert Menüeintraege zu GObject.
 	 * @param outMl Ziel-MenuEntryList
 	 * @param obj entsprechendes GObject
+	 * @throw com::ppiError::NullPointer
 	 */
 	void getMenuEntryList ( menu::MenuEntryList &outMl, GObject::Ptr obj ){
 		ObjectController *ctrl = getController(obj);
@@ -423,6 +426,18 @@ class GKnobController :
 	public EventListener< OnDestroy<GObject> >
 {
 private:
+	//--------------------------------------------------------------------------------------------------------
+	// one tracking dummy per gknob
+	typedef boost::unordered_map<GKnob::Ptr, com::events::TrackingDummy::Ptr> TrackingMap;
+	//--------------------------------------------------------------------------------------------------------
+	TrackingMap trackMap;
+	//--------------------------------------------------------------------------------------------------------
+	void removeFromTrackMap(GKnob::Ptr knob) {
+		TrackingMap::iterator it = trackMap.find(knob);
+		if (it==trackMap.end())
+			return;
+		trackMap.erase(it);
+	}
 	//--------------------------------------------------------------------------------------------------------
 	bool isPassiveKnob( GKnob *knb ) { return dynamic_cast<GPassiveKnob*> (knb); }
 public:
@@ -533,6 +548,9 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef list<IHasState::Ptr> StateNodes;
 private:
+	//--------------------------------------------------------------------------------------------------------
+	// solange switch objekte auf stage
+	com::events::TrackingDummy::Ptr whileActive;
 	//--------------------------------------------------------------------------------------------------------
 	StateNodes stateNodes;
 public:

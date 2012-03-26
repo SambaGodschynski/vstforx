@@ -17,6 +17,7 @@
 #include <map>
 #include "CMenu.h"
 #include "processing/Graph.h"
+#include <boost/unordered_map.hpp>
 using namespace std;
 
 namespace ppiGui{
@@ -34,8 +35,11 @@ friend class CircuidControl;
 friend class CmdAddObjectToView;
 friend class CmdRemoveObjectFromView;
 friend class boost::serialization::access;
+//friend void load_construct_data( iArchive & ar, CircuidView * t, const unsigned int file_version );
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::shared_ptr<CircuidView> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	CBitmap *background;
@@ -43,6 +47,13 @@ private:
 	typedef int U; typedef GObject::Ptr V;
 	//--------------------------------------------------------------------------------------------------------
 	typedef multimap< U, V > GObjectStageBuffer; 
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * ein trackingobjekt pro hizugefuegtem gobjekt.
+	 */
+	typedef boost::unordered_map<GObject::Ptr, com::events::TrackingDummy::Ptr> EventTrackMap;
+	//--------------------------------------------------------------------------------------------------------
+	EventTrackMap trackMap;
 	//--------------------------------------------------------------------------------------------------------
 	// Enthaelt GObjects.
 	GObjectStageBuffer gObjectBuffer;
@@ -62,12 +73,16 @@ private:
 	void load ( iArchive &ar, const unsigned int version ) {}
 public:
 	//--------------------------------------------------------------------------------------------------------
+	CircuidView (const VSTGUI::CRect &size);
+	//--------------------------------------------------------------------------------------------------------
+	static Ptr create(const VSTGUI::CRect &size) {
+		return Ptr(new CircuidView(size));
+	}
+	//--------------------------------------------------------------------------------------------------------
 	void clear();
 	//--------------------------------------------------------------------------------------------------------
 	// Standart Stages
 	enum Stages { BOTTOM, CONNECTIONS, DEFAULT, SELECTION, TOP };
-	//--------------------------------------------------------------------------------------------------------
-	CircuidView ( const VSTGUI::CRect &size );
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~CircuidView();
 	//--------------------------------------------------------------------------------------------------------
@@ -137,7 +152,7 @@ inline void save_construct_data( Archive & ar, const CircuidView * t, const unsi
 }
 //------------------------------------------------------------------------------------------------------------
 template<class Archive>
-inline void load_construct_data( Archive & ar, CircuidView * t, const unsigned int file_version ){
+inline void load_construct_data( Archive & ar, CircuidView * t, const unsigned int file_version ) {
 	long top, left, right, bottom;
 	ar >> left;
 	ar >> top;

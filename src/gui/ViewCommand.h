@@ -148,6 +148,7 @@ public:
 //============================================================================================================
 //	Klasse CmdCreateProcessorNode:
 //  Oberklasse fuer Knoten Objekte die eine ProcessorAdapter Objekt repraesentieren.
+// TODO: ganze klasse template
 //============================================================================================================
 class CmdCreateProcessorNode : public ViewCommand {
 protected:
@@ -285,6 +286,22 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	CmdCreateMidiProcessor(CircuidView *cView, FrontController *ctrl):
 	  CmdCreateProcessorNode(cView,ctrl){}
+};
+//============================================================================================================
+//	Klasse CmdCreateLuaProcessor:
+//  Erstellt CmdCreateLuaProcessor
+//============================================================================================================
+class CmdCreateLuaProcessor : public CmdCreateProcessorNode {
+private:
+	//--------------------------------------------------------------------------------------------------------
+	std::string scriptfile;
+	//--------------------------------------------------------------------------------------------------------
+	virtual void _execute();
+protected:
+public:
+	//--------------------------------------------------------------------------------------------------------
+	CmdCreateLuaProcessor(const std::string &scriptfile, CircuidView *cView, FrontController *ctrl):
+	  CmdCreateProcessorNode(cView,ctrl), scriptfile(scriptfile) {}
 };
 //============================================================================================================
 //	Klasse CmdCreateFreeGKnob
@@ -512,10 +529,15 @@ public:
 //------------------------------------------------------------------------------------------------------------
 template < class OP >
 void CmdAddConnectionOperator<OP>::_execute(){
-	ConnectionOperator::Ptr op =  ConnectionOperator::Ptr ( new OP ( parameterA.get(), parameterB.get() ) );
-	ConnectionOperator::Ptr inv = ConnectionOperator::Ptr ( op->newInvereseOperator() );
-	parameterA->addConnectionOperator ( parameterB.get(), op );
-	parameterB->addConnectionOperator ( parameterA.get(), inv );
+	Graph::Ptr g = getRelatedGraph(cView);
+	if (!g)
+		throw com::ppiError::NullPointer("NULL Pointer", __FILE__, __LINE__);
+	ParameterConnection::Ptr cn = g->getParameterConnection(parameterA, parameterB);
+	if (!cn)
+		return;
+
+	ConnectionOperator::Ptr op = OP::create();
+	cn->addOperator(op);
 	parameterA->setValue ( parameterA->getValue() );
 	CmdAddConnectionOperator<OP>::cView->CView::setDirty();
 	TOLOG ( parameterA->getName() + " >>> " + parameterB->getName() + " :: " + op->getName() + " added." ); 

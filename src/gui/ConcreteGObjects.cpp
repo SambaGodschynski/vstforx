@@ -519,6 +519,25 @@ void GMidiProcessor::draw ( CDrawContext *cc ){
 GMidiProcessor::~GMidiProcessor(){
 }
 //============================================================================================================
+//	Klasse GLuaProcessor:
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+GLuaProcessor::GLuaProcessor(ppiGui::CircuidView *view ) : GProcessorNode ( view ){
+	name = "lua_processor";
+	skin = resources->getResourceBitmap( Resources::PEAK_TRACK_ADAPTER );
+	bBox = VSTGUI::CRect ( 0,0, skin->getWidth(), skin->getHeight() );
+	focus = CPoint ( skin->getWidth()>>1, skin->getHeight()>>1 );
+	radius = skin->getWidth()>>1;
+	focus = CPoint (bBox.width()>>1, bBox.height()>>1);
+}
+//------------------------------------------------------------------------------------------------------------
+void GLuaProcessor::draw ( CDrawContext *cc ){
+	skin->draw ( cc, bBox );
+}
+//------------------------------------------------------------------------------------------------------------
+GLuaProcessor::~GLuaProcessor(){
+}
+//============================================================================================================
 //	Klasse GKnob:
 //  Ein GKnob Objekt ist ein ueber eine Mausaktion regelbares Grafisches Objekt. 
 //  Erbt von VSTGUI::CAnimKob.
@@ -678,24 +697,24 @@ PlaceGObject::PlaceGObject ( CircuidView *parent, const GObject::Ptr &content ) 
 	gObjList.push_back(content);
 	bBox = content->getSize();
 	focus = content->getPos();
+}
+//------------------------------------------------------------------------------------------------------------
+void PlaceGObject::initListener() {
+	GObject::Ptr ptr = getPtr();
+	if (!ptr)
+		throw com::ppiError::NullPointer("NullPointer", __FILE__, __LINE__);
 	// IdleListener registrieren
 	PpiEditor *ed = static_cast<PpiEditor*> ( getParentView()->getEditor() );
-	ed->EventSender<OnIdle>::addEventListener ( this );
+	ed->EventSender<OnIdle>::addTrackedEventListener (this, ptr);
 }
 //------------------------------------------------------------------------------------------------------------
 PlaceGObject::PlaceGObject ( CircuidView *parent, const GObjList &content ) : GObject ( parent ){
 	gObjList = content; 
 	bBox = normalizeRect( getBoundingBox( gObjList.begin(), gObjList.end() ) );
 	focus = CPoint ( bBox.left + bBox.width()/2, bBox.top + bBox.height()/2 ); 
-	// IdleListener registrieren
-	PpiEditor *ed = static_cast<PpiEditor*> ( getParentView()->getEditor() );
-	ed->EventSender<OnIdle>::addEventListener ( this );
 }
 //------------------------------------------------------------------------------------------------------------
-PlaceGObject::~PlaceGObject(){
-	// MouseMotionListener austragen
-	PpiEditor *ed = static_cast<PpiEditor*> ( getParentView()->getEditor() );
-	ed->EventSender<OnIdle>::removeEventListener ( this );
+PlaceGObject::~PlaceGObject() {
 }
 //------------------------------------------------------------------------------------------------------------
 void PlaceGObject::onMouse ( CDrawContext *cc, CPoint &p, long btn ){
@@ -705,9 +724,8 @@ void PlaceGObject::onMouse ( CDrawContext *cc, CPoint &p, long btn ){
 		parentView->addGObject ( *it );
 		it = gObjList.erase(it);
 	}
-	PpiEditor *ed = static_cast<PpiEditor*> ( getParentView()->getEditor() );
-	ed->EventSender<OnIdle>::removeEventListener ( this );
-	parentView->removeGObject ( self.lock() );
+	GObject::Ptr ptr = self.lock();
+	parentView->removeGObject ( ptr );
 	parentView->setDirty(this);
 }
 //------------------------------------------------------------------------------------------------------------

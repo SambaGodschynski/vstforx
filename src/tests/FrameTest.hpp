@@ -9,7 +9,6 @@
 #include "processing/Graph.h"
 #include "DummyFX.h"
 
-
 namespace tests {
 //=============================================================================
 class FrameTest : public CPPUNIT_NS::TestFixture {

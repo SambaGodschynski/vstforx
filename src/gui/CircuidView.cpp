@@ -25,13 +25,21 @@ CircuidView::CircuidView ( const VSTGUI::CRect &size ) :
 //------------------------------------------------------------------------------------------------------------
 void CircuidView::addGObject( const GObject::Ptr &gObj, int stage ){
 	TRY_TO_LOCK_TIMED(updateLock);
-	gObj->EventSender<OnMouseClick>::addEventListener ( this );
+	// neues track-objekt
+	trackMap[gObj] = com::events::TrackingDummy::create();
+	gObj->EventSender<OnMouseClick>::addTrackedEventListener (this, trackMap[gObj]);
+	// add to stage
 	gObjectBuffer.insert( pair <U, V> (stage, gObj) );
 	gObj->setZPos ( stage );
 }
 //------------------------------------------------------------------------------------------------------------
 void CircuidView::removeGObject( const GObject::Ptr &gObj ){
-	gObj->EventSender<OnMouseClick>::removeEventListener ( this );
+	// remove listener via remove TrackingDummy-Objekt
+	EventTrackMap::iterator tIt = trackMap.find(gObj);
+	if (tIt==trackMap.end())
+		throw com::ppiError::IteratorError("IteratorError", __FILE__, __LINE__);
+	trackMap.erase(tIt);
+	// remove from stage
 	gObj->EventSender<OnRemove>::notifyEventListeners ( this, OnRemove ( gObj.get() ) );
 	GObjectStageBuffer::iterator it = gObjectBuffer.begin();
 	TRY_TO_LOCK_TIMED(updateLock);

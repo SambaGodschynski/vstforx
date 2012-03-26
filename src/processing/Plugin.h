@@ -63,6 +63,8 @@ public:
 	typedef boost::shared_ptr<Plugin> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	parameter::Parameter::Connection paramEditorOpenConnection;
+	//--------------------------------------------------------------------------------------------------------
 	PluginInfo pluginInfo;
 	//--------------------------------------------------------------------------------------------------------
 	string plugVendor;
@@ -87,31 +89,33 @@ private:
 		ar & editorPosY;
 		ar & editorOpen;
 		if ( Archive::is_loading::value ) {
-			// register editor pos parameter in plugin
-			Parameter::ParameterListenerFunction xC = boost::bind( 
-				&Plugin::paramEditorPosXChanged, this, _1, _2 
-			);
-			Parameter::ParameterListenerFunction yC = boost::bind( 
-				&Plugin::paramEditorPosYChanged, this, _1, _2 
-			);
-			Parameter::ParameterListenerFunction oC = boost::bind( 
-				&Plugin::paramEditorOpenChanged, this, _1, _2 
-			);
-			Parameter::ParameterListenerFunction dC = boost::bind( 
-				&Plugin::paramEditorOpenDisplayChanged, this, _1, _2 
-			);
-			editorPosX->addValueChangedListenerF( xC );
-			editorPosY->addValueChangedListenerF( yC );
-			editorOpen->addValueChangedListenerF( oC );
-			editorOpen->addValueChangedListenerF( dC );
+			initListener();
 		}
 	}
 protected:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Initalisiert Listener.
+	 */
+	void initListener();
 	//--------------------------------------------------------------------------------------------------------
 	Plugin() {}
 	//--------------------------------------------------------------------------------------------------------
 	Plugin( IHostInfo *hostInfo, const string &location, size_t numInputs = 1, size_t numOutputs = 1 );
 public:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Wird von GPluginController benoetigt um bei bedarf verbindung zu blockieren.
+	 * TODO: schlechte Loesung!
+	 * @return Parameter-EditorOpenChanged-Connection
+	 */
+	const parameter::Parameter::Connection & getParamEditorOpenConnection() const {
+		return paramEditorOpenConnection;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	parameter::Parameter::Connection & getParamEditorOpenConnection() {
+		return paramEditorOpenConnection;
+	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Editor-Pos-X Parameter

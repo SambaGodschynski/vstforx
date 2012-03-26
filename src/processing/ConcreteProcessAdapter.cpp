@@ -6,6 +6,8 @@
  */
 #include "ConcreteProcessAdapter.h"
 #include <stack>
+#include <sambag/lua/LuaSequence.hpp>
+#include <boost/foreach.hpp>
 
 namespace processing{
 //============================================================================================================
@@ -89,22 +91,22 @@ void Switch::_addState() {
 	nDurationIN[i]->setName("fade-in duration " + MyString(i+1) );
 	nDurationIN[i]->setLabel("ms");
 	nDurationIN[i]->setMin(FLT_MIN);
-	nDurationIN[i]->addValueChangedListenerF ( dI );
+	nDurationIN[i]->addValueChangedListener ( dI );
 	nDurationOUT[i] = Parameter::create(i);
 	parameterMap.push_back( nDurationOUT[i] );
 	nDurationOUT[i]->setName("fade-out duration " + MyString(i+1) );
 	nDurationOUT[i]->setLabel("ms");
 	nDurationOUT[i]->setMin(FLT_MIN);
-	nDurationIN[i]->addValueChangedListenerF ( dO );
+	nDurationIN[i]->addValueChangedListener ( dO );
 	// prepare curve type parameter
 	nCurveTypeIN[i] = Parameter::create(i);
 	parameterMap.push_back( nCurveTypeIN[i] );
 	nCurveTypeIN[i]->setName("fade-in curve type " + MyString(i+1) );
-	nCurveTypeIN[i]->addValueChangedListenerF ( cT );
+	nCurveTypeIN[i]->addValueChangedListener ( cT );
 	nCurveTypeOUT[i] = Parameter::create(i);
 	parameterMap.push_back( nCurveTypeOUT[i] );
 	nCurveTypeOUT[i]->setName("fade-out curve type " + MyString(i+1) );
-	nCurveTypeOUT[i]->addValueChangedListenerF ( cT );
+	nCurveTypeOUT[i]->addValueChangedListener ( cT );
 	// init
 	*nDurationIN[i] = 0.01f;
 	*nDurationOUT[i] = 0.01f;
@@ -166,7 +168,9 @@ Switch ( initStates, hostInfo->getSampleRate() ), outpMatrix( OutputMatrix(initS
 	setName ( "OutputSwitch" );
 	selector = Parameter::create();
 	selector->setName ("selector switch");
-	selector->addValueChangedListener ( this );
+	selector->addValueChangedListener ( 
+		boost::bind(&OutputSwitch::valueChanged, this, _1, _2)
+	);
 	parameterMap.push_back ( selector );
 	getInputNode(0)->setName ( getName() + " InputNode" );
 	for ( size_t i=0; i<getNumOutputNodes(); ++i ) {
@@ -234,7 +238,9 @@ void OutputSwitch::load(com::iArchive &ar, const unsigned int version) {
 	ar >> selector;
 	Switch::setSampleRate( hostInfo->getSampleRate() );
 	outpMatrix = OutputMatrix ( getNumStates(), NULL );
-	selector->addValueChangedListener ( this );
+	selector->addValueChangedListener ( 
+		boost::bind(&OutputSwitch::valueChanged, this, _1, _2)
+	);
 
 }
 //============================================================================================================
@@ -268,7 +274,9 @@ Switch ( initStates, hostInfo->getSampleRate() ), inputMatrix( InputMatrix(initS
 	setName ( "InputSwitch" );
 	selector = Parameter::create();
 	selector->setName ("selector switch");
-	selector->addValueChangedListener ( this );
+	selector->addValueChangedListener ( 
+		boost::bind(&InputSwitch::valueChanged, this, _1, _2)
+	);
 	parameterMap.push_back ( selector );
 	getOutputNode(0)->setName ( getName() + " OutputNode" );
 	for ( size_t i=0; i<getNumInputNodes(); ++i ) {
@@ -332,7 +340,9 @@ void InputSwitch::load(com::iArchive &ar, const unsigned int version) {
 	ar >> selector;
 	Switch::setSampleRate( hostInfo->getSampleRate() );
 	inputMatrix = InputMatrix ( getNumStates(), NULL );
-	selector->addValueChangedListener ( this );
+	selector->addValueChangedListener ( 
+		boost::bind(&InputSwitch::valueChanged, this, _1, _2)
+	);
 
 }
 //============================================================================================================
@@ -351,7 +361,7 @@ currTranslator(tr), Switch (initSteps, sampleRate ),  steps(initSteps), nDuratio
 		nDuration[i] = Parameter::create(); 
 		Parameter::Ptr p = getParameter(i);
 		p->setName ( "Step " + MyString(i+1) + " duration." );
-		p->addValueChangedListenerF (f);
+		p->addValueChangedListener (f);
 		p->setValue(0.35f);
 	}
 	resetDuration();
@@ -371,7 +381,7 @@ void Step::addState() {
 	nDuration[i] = Parameter::create(); 
 	Parameter::Ptr p = getParameter(i);
 	p->setName ( "Step " + MyString(i+1) + " duration." );
-	p->addValueChangedListenerF (f);
+	p->addValueChangedListener (f);
 	p->setValue(0.35f);
 
 }
@@ -420,7 +430,7 @@ void OutputStep::init(){
 	Parameter::ParameterListenerFunction f = boost::bind( 
 			&OutputStep::typeChanged, this, _1, _2 
 	);
-	type->addValueChangedListenerF (f);
+	type->addValueChangedListener (f);
 	// Adapter Nodes:
 	for ( int i=0; i<cStep->getNumSteps(); ++i ) {
 		outputNodes[i]->setName("StepOutputode["+MyString(i+1)+"]");
@@ -550,7 +560,7 @@ void OutputStep::load(com::iArchive &ar, const unsigned int version) {
 	Parameter::ParameterListenerFunction f = boost::bind( 
 			&OutputStep::typeChanged, this, _1, _2 
 	);
-	type->addValueChangedListenerF ( f );
+	type->addValueChangedListener ( f );
 	outpMatrix = OutputMatrix( cStep->getNumSteps(), (Frames*)NULL );
 }
 //============================================================================================================
@@ -582,7 +592,7 @@ void InputStep::init(){
 	Parameter::ParameterListenerFunction f = boost::bind( 
 			&InputStep::typeChanged, this, _1, _2 
 	);
-	type->addValueChangedListenerF (f);
+	type->addValueChangedListener (f);
 	// Adapter Nodes:
 	for ( int i=0; i<cStep->getNumSteps(); ++i ) {
 		inputNodes[i]->setName("StepInputNode["+MyString(i+1)+"]");
@@ -710,7 +720,7 @@ void InputStep::load(com::iArchive &ar, const unsigned int version) {
 	Parameter::ParameterListenerFunction f = boost::bind( 
 			&InputStep::typeChanged, this, _1, _2 
 	);
-	type->addValueChangedListenerF ( f );
+	type->addValueChangedListener ( f );
 	inputMatrix = InputMatrix( cStep->getNumSteps(), (Frames*)NULL );
 }
 //============================================================================================================
@@ -817,5 +827,147 @@ void MidiProcessor::processMidiEvents ( VstEvents *ev ) {
 				break;
 		}
 	}
+}
+//============================================================================================================
+// LuaProcessor:
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+namespace {
+	const std::string ON_PARAMETER_CHANGED = "onParameterChanged";
+	const std::string NUM_INPUTS = "numInputs";
+	const std::string NUM_OUTPUTS = "numOutputs";
+	const std::string PARAMETER_SETUP = "parameterSetup";
+	const std::string PROCESS_FRAMES = "processFrames";
+}
+//------------------------------------------------------------------------------------------------------------
+LuaProcessor::LuaProcessor ( IHostInfo *iHost ) :
+		ProcessAdapter( iHost, 1, 1 )
+{
+	setName ("lua_processor");
+	luaState = sambag::lua::createLuaStateRef();
+	//lua_gc(luaState.get(), LUA_GCSETPAUSE, 1);
+	//lua_gc(luaState.get(), LUA_GCSETSTEPMUL, 1000);
+	TOLOG ( "+" + getName() );
+}
+//------------------------------------------------------------------------------------------------------------
+LuaProcessor::~LuaProcessor() {
+	int sizeInKb = lua_gc(luaState.get(), LUA_GCCOUNT, 0);
+	TOLOG ( "-" + getName() + "[" + MyString(sizeInKb) + "kb]" );
+	luaState.reset();
+}
+//------------------------------------------------------------------------------------------------------------
+void LuaProcessor::initParameter() {
+	using namespace processing::parameter;
+	parameters.reserve(scriptInfo.parameterMap.size());
+	BOOST_FOREACH( 
+		const ProcessorScriptInfo::ParameterMap::value_type &v, 
+		scriptInfo.parameterMap) 
+	{
+		Parameter::Ptr p = Parameter::create();
+		p->setName(v.first);
+		p->setValue(v.second);
+		parameters.push_back(p);
+	}
+	initListener();
+}
+//------------------------------------------------------------------------------------------------------------
+void LuaProcessor::initListener() {
+	BOOST_FOREACH(Parameter::Ptr p, parameters) {
+		p->addTrackedValueChangedListener(
+			boost::bind(&LuaProcessor::parameterValueChanged, this, _1, _2),
+			luaState
+		);
+		p->setValue(*p);
+	}
+}
+//------------------------------------------------------------------------------------------------------------
+void LuaProcessor::initScript() {
+	getScriptInfo(luaState, scriptInfo);
+	initParameter();
+}
+//------------------------------------------------------------------------------------------------------------
+void LuaProcessor::getScriptInfo(sambag::lua::LuaStateRef luaState, ProcessorScriptInfo &outValue) {
+	using namespace sambag;
+	// processor setup
+	if ( !lua::getGlobal(outValue.numInputs, luaState.get(), NUM_INPUTS) )
+		outValue.numInputs = 0;
+	if ( !lua::getGlobal(outValue.numOutputs, luaState.get(), NUM_OUTPUTS) )
+		outValue.numOutputs = 0;
+	// parameter
+	if ( !lua::getGlobal(outValue.parameterMap, luaState.get(), PARAMETER_SETUP) )
+		outValue.parameterMap.clear();
+	if ( !lua::hasFunction(luaState.get(), ON_PARAMETER_CHANGED) )
+		outValue.hasParameterChangedHandler = false;
+	else
+		outValue.hasParameterChangedHandler = true;
+}
+//------------------------------------------------------------------------------------------------------------
+void LuaProcessor::processAdapter(Processor::Int numSamples) {
+	TRY_TO_LOCK_TIMED(mutex);
+	Frames *frame = getInputNode(0)->popFrame();
+	
+	if (!scriptInfo.valid) { // script invalid
+		outputNodes[0]->pushAndCopy(frame, numSamples);
+		return;
+	}
+
+	using namespace sambag::lua;
+	
+	boost::tuple< LuaSequenceEx<float>, LuaSequenceEx<float>, int > args = boost::make_tuple ( 
+		LuaSequenceEx<float>((*frame)[0], numSamples),
+		LuaSequenceEx<float>((*frame)[1], numSamples),
+		numSamples
+	);
+
+	boost::tuple< LuaSequenceEx<float>, LuaSequenceEx<float> > ret = boost::make_tuple ( 
+		LuaSequenceEx<float>((*frame)[0], numSamples),
+		LuaSequenceEx<float>((*frame)[1], numSamples)
+	);
+
+	try {
+		// execute processFunction
+		callLuaFunc(luaState.get(), PROCESS_FRAMES, args, ret);
+	} catch( const LuaException &ex ) {
+		TOLOG("lua script:" + scriptfile + " failed!\n  " + ex.errMsg);
+		scriptInfo.valid = false;
+		outputNodes[0]->pushAndCopy(frame, numSamples);
+		return;
+	}
+	outputNodes[0]->pushAndCopy(frame, numSamples);
+}
+//------------------------------------------------------------------------------------------------------------
+void LuaProcessor::parameterValueChanged ( void *src, const float &value ) {
+	using namespace sambag::lua;
+	using namespace processing::parameter;
+
+	TRY_TO_LOCK_TIMED(mutex);
+	Parameter *p = static_cast<Parameter*>(src);
+	if (!scriptInfo.valid || !scriptInfo.hasParameterChangedHandler) 
+		return;
+	// call lua function
+	try {
+		callLuaFunc(luaState.get(), ON_PARAMETER_CHANGED, boost::make_tuple(p->getName(), value));
+	} catch (const LuaException &ex) {
+		TOLOG("lua script:" + scriptfile + " failed!\n  " + ex.errMsg);
+		scriptInfo.valid = false;
+		return;
+	}
+}
+//------------------------------------------------------------------------------------------------------------
+void LuaProcessor::loadScript(const std::string &scriptfile) {
+	scriptInfo.valid = true;
+	if (!boost::filesystem::exists(scriptfile)) {
+		scriptInfo.valid = false;
+		throw com::ppiError::FileIOException("loading failed: " + scriptfile, __FILE__, __LINE__ );
+	}
+	LuaProcessor::scriptfile = scriptfile;
+	try {
+		sambag::lua::executeFile(luaState.get(), scriptfile);
+	} catch (const sambag::lua::LuaException &ex) {
+		TOLOG("lua script:" + scriptfile + " failed!\n  " + ex.errMsg);
+		scriptInfo.valid = false;
+		return;
+	}
+	initScript();
 }
 }//namespace processing
