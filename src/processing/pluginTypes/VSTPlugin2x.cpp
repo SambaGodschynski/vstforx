@@ -51,7 +51,7 @@ canReceiveVstEvents(false)
 //------------------------------------------------------------------------------------------------------------
 MyString VSTPlugin::extractNameFromFilename( const string &fileName ){
 	boost::filesystem::path p(fileName);
-	return MyString ( p.stem() );
+	return MyString ( p.stem().string() );
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::processMidiEvents( VstEvents * events ) {
