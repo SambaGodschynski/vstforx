@@ -1,14 +1,14 @@
-% !TEX encoding = UTF-8 Unicode 
+% !TEX encoding = UTF-8 Unicode
 \section{Lösungsansätze}
 %%%%%%
 \subsection{Analyse vorhandener Systeme}
-Es existieren bereits einige Systeme, welche die gewünschten Funktionalität teilweise oder ganz umsetzen. Folgend sollen diese betrachtet werden. Es soll geklärt werden, welche Funktionen übernommen beziehungsweise sinnvoll erweitert werden können.
+Es existieren bereits einige Systeme, welche die gewünschte Funktionalität teilweise oder ganz umsetzen. Folgend sollen diese betrachtet werden. Es soll geklärt werden, welche Funktionen übernommen beziehungsweise sinnvoll erweitert werden können.
 \subsubsection{Native Instruments Reaktor}
 \emph{Reaktor\footnote{http://www.native-instruments.com/\#/en/products/producer/reaktor-55/. \\Abgerufen am 05.Februar 2011}} ist ein leistungsstarkes System zum Erschaffen von Effekten und Synthesizern. Es gibt eine Vielzahl an Modulen, die frei ''verdrahtet'' werden können. Ab Version 5 ist es sogar möglich, eigene Module mittels DSP-Schaltungen zu entwerfen\verw{Reaktor}. Die Module werden durch Parameter gesteuert, welche in Form von Drehreglern, auf einem frei gestaltbaren Bedien-Panel platziert werden können. Die Bedienung ist zwar direkt und intuitiv, der Programm-Anfänger jedoch ist schnell überfordert durch die Vielzahl an Funktionen und Modulen. Hier ist eine lange Einarbeitungszeit notwendig. Reaktor ist u.a. als VST-Plugin verfügbar, bietet aber keine Möglichkeit VST-Plugins zu laden und zu verwenden.
 \subsubsection{Ableton Live}
 \emph{Ableton Live\footnote{http://www.ableton.com/. Abgerufen am 05.Februar 2011}} ist in erster Linie ein Sequenzer. Der Fokus liegt daher auf dem Erstellen von Musikstücken. Ähnlich zu Cubase existiert hier ebenfalls das Spur/Mischpult-Prinzip. Effekte lassen sich somit ausschließlich nach vorgegebenen ''Bahnen'' verknüpfen. Einen interessanten Ansatz bieten die sogenannten ''Makro-Regler''. Diese erlauben es beliebig viele Bedienelemente, d.h auch VST-Pluginparameter, über einen ''Marco''-Regler zu steuern. Das Regelverhalten ist umkehrbar\verw{Ableton}{S.252 f}. 
 \\\\
-Die Benutzung solcher ''Makro-Regler'' ist wenig intuitiv. Um eine ''Makro''-Verbindung zu erstellen, sind mehrere Kontextmenü-Aufrufe an unterschiedlichen und teilweise unerwarteten Stellen notwendig. 
+Die Benutzung solcher ''Makro-Regler'' ist wenig intuitiv. Um eine ''Makro''-Verbindung zu erstellen, sind mehrere Kontextmenüaufrufe an unterschiedlichen und teilweise unerwarteten Stellen notwendig. 
 Dargestellt werden schließlich diese Verbindungen in einer Tabellen-Ansicht. Somit ist auf einen Blick nicht sofort erkennbar, welche Verbindungen bestehen. Dennoch ist der Zweck dieser Funktionalität interessant:  verschiedene Parameter verschiedener Effekte sinnvoll zu gruppieren.  
 \subsubsection{Metaplugin}
 Das VST-Plugin \emph{Metaplugin\footnote{http://www.ddmf.eu/product.php?id=3. Abgerufen am 05.Februar 2011}} erlaubt es, beliebig viele VST-Plugins auf einer ''Bühne'' zu platzieren und beliebig miteinander zu ''verdrahten''. Darüber hinaus bietet es keine weiteren Funktionen. Dadurch ist es allerdings auch sehr gut bedienbar. Die gesamte Funktionalität kann in innerhalb weniger Minuten allein durch Ausprobieren intuitiv erfasst werden.
@@ -30,13 +30,13 @@ Gegeben sei folgendes Beispiel:
 \\\\
 Der erforderliche Prozessablauf für Abbildung \ref{g01} wäre:
 \begin{enumerate}
-	\item bereite Inputsampleblöcke für Plugin-A vor
-	\item führe ''processReplace'' mit Plugin-A aus
-	\item bereite Inputsampleblöcke für Plugin-B vor (mit der Ausgabe von Plugin-A)
-	\item führe ''processReplace'' mit Plugin-B aus
-	\item\label{PlugC}bereite Inputsampleblöcke für Plugin-C vor (mit der Ausgabe von Plugin-A und B)
-	\item führe ''processReplace'' mit Plugin-C aus
-	\item übertrage die Ausgabe von Plugin-C in die Programm(VSTForx) Ausgabesampleblöcke
+	\item Vorbereitung der Inputsampleblöcke für Plugin-A
+	\item Ausführung von Plugin-A : ''processReplace''
+	\item Vorbereitung der Inputsampleblöcke für Plugin-B (mit der Ausgabe von Plugin-A)
+	\item Ausführung von Plugin-B: ''processReplace''
+	\item\label{PlugC}Vorbereitung der Inputsampleblöcke für Plugin-C (mit der Ausgabe von Plugin-A und B)
+	\item Ausführung von Plugin-C: ''processReplace''
+	\item Übertragung der Ausgabe von Plugin-C in die Programm (VSTForx) Ausgabesampleblöcke
 \end{enumerate}
 Wie in Schritt \ref{PlugC} zu sehen, ist zur korrekten Ausführung von Plugin-C notwendig, dass die Plugins A und B bereits bearbeitet wurden. Das bedeutet: Plugin-C ist von Plugin-A und Plugin-B abhängig. \\\\
 In der Graphentheorie gibt es einen Algorithmus, der in der Lage ist Abhängigkeiten aufzulösen: die Topologische Sortierung.
@@ -64,17 +64,15 @@ Die Topologischen Sortierung ist allerdings in der Lage zu erkennen, ob ein Grap
 Werden Plugins parallel verbunden, kann es unter Umständen zu einem Problem kommen:
 es gibt Plugins, die eine Latenzzeit größer 0 aufweisen. Das bedeutet die Pluginausgabe ist zeitlich verzögert.
 Bei einer Parallelschaltung, zweier Plugins mit unterschiedlichen Latenzwerten, wird das Eingangsignal schließlich unterschiedlich verzögert ausgegeben. Die Signale erklingen daher versetzt. 
-\\\\
+\NP
 Um unterschiedliche Latenzen in einem komplexen Graph auszugleichen, sind folgende Schritte notwendig:
 \begin{itemize}
-	\item Hinzufügen eines berechneten Latenzwert je Knoten : $GL$ = Graphlatenz = die Latenz im Graph an Position des Knoten.
-	\begin{description}
-		\item[$GL$ = ] Maximum($GL$-Wert der Elternknoten) + Knoten(Plugin)-Latenzewert
-	\end{description}
+	\item Hinzufügen eines berechneten Latenzwert je Knoten: $GL$ = die Latenz im Graph an Position des Knoten = Maximum($GL$-Wert der Elternknoten) + Knoten-Latenzewert (Pluginlatenz)
+	
 	\item der $GL$-Wert des Graph-Ausgangsknoten = Gesamtlatenz des Graphen = $SUML$
-	\item Hinzufügen eines Buffers je Knoten
-	\item die Ausgaben aller Elternknoten $x$, an Position = $SUML - GL(x)$ dem Buffer hinzumischen (siehe Abbildung \ref{dc}).\\
-	\item Sampledatenmenge des Buffer als Eingabe weiterverwenden
+	\item Hinzufügen eines Buffers je Knoten der in der Lage ist, Sampledatenmengen mit unterschiedlichen Verzögerungswerten aufzunehmen
+	\item die Ausgaben aller Elternknoten $x$, dem Buffer hinzufügen. Verzögerungswert = $SUML - GL(x)$  (siehe Abbildung \ref{dc})\\
+	\item Sampledatenmenge des Buffers als Eingabe weiterverwenden
 \end{itemize}
 \begin{figure}[h]
 	\centering
@@ -86,7 +84,7 @@ Um unterschiedliche Latenzen in einem komplexen Graph auszugleichen, sind folgen
 \subsection{Nebenläufigkeit}
 Ein VST-Plugin kann optional einen Editor implementieren. Ein Editor ist ein Fenster, welches die Benutzeroberfläche des Plugins enthält. Es wird von der DAW bei Bedarf geöffnet. Da Eingaben auf der Benutzeroberfläche zu einem unbestimmten Zeitpunkt geschehen und der Pluginprozess kontinuierlich ausgeführt wird, ist die Grundvorraussetzung für Nebenläufigkeitsprobleme gegeben. 
 \\\\
-Wird der Effekt-Graph geändert, während er vom Prozess bearbeitet wird, kann dies ein undefiniertes Verhalten verursachen. \\
+Wird der Effektgraph geändert, während er vom Prozess bearbeitet wird, kann dies ein undefiniertes Verhalten verursachen. \\
 Folgend sollen drei verschiedene Lösungsansätze, zur Vermeidung solcher Probleme, beschrieben werden:
 \paragraph{Blockieren des Prozesses}
 Es wäre möglich jede Graph verändernde Methode solange zu blockieren, wie die Graph-Prozessoperation ausgeführt wird. Umgekehrt wird die Ausführung der Prozessoperation blockiert, solange eine Graphverändernde Methode bearbeitet wird. Ein Verfahren, welches solch eine Blockierung bietet, ist das Mutex-Verfahren\verw{Tan}{S.176ff}.
@@ -111,6 +109,7 @@ public:
 };	
 		
 \end{code}
+\NP
 Der Nachteil dieser Methode ist, je komplexer die Graphklasse und ihre enthaltenden Methoden, um so höher ist die Gefahr, dass es ''vergessen'' wird ein gesperrtes Mutex wieder zu entsperren (siehe Listing \ref{block02}). Ein Deadlock wäre die Folge.
 \\\\
 \begin{code}{Beispiel eines potentiellen Deadlocks}{block02}
@@ -135,15 +134,13 @@ public:
 };	
 		
 \end{code} 
-\paragraph{Das Befehl Entwurfsmuster}
+\paragraph{Das Befehl-Entwurfsmuster}
 Das Befehl-Entwurfsmuster gehört zu den Verhaltensmustern der ''GoF'' Entwurfsmuster.  Es dient dazu Programmbefehle in einem Objekt zu kapseln \verw{Gof}{S.273 ff}. \\
 Der Graph würde seine verändernden Befehle nicht mehr als öffentliche Methoden anbieten, sondern nur noch Befehlsobjekte entgegennehmen.
 Solch ein Objekt würde dann vom Graph zu einem sicheren Zeitpunkt (zum Beispiel nach Abschluss der Prozessmethode) ausgeführt (siehe Listing \ref{command}).
-
-\begin{code}{Lösung des Nebenläufigkeitsproblemes durch das Befehl Entwurfsmuster}{command}
-
+\NP
+\begin{code}{Lösung des Nebenläufigkeitsproblemes durch das Befehl-Entwurfsmuster}{command}
 // Datei AenderGraph.h
-
 #include "ICommand.h"
 #include "Graph.h"
 
@@ -159,7 +156,6 @@ public:
 		graph->veraenderGraph();
 	}
 };
-
 // Datei Graph.h
 #include "ICommand.h"
 
@@ -185,11 +181,11 @@ public:
 	}	 
 };	
 \end{code} 
-Da es möglich ist ein VST-Plugin über die DAW in einen Standbymodus zu schalten, kann es mit dieser Lösung passieren, dass die entgegengenommenen Befehlsobjekte nicht mehr ausgeführt werden. Da die entsprechende Prozessoperation nicht mehr ausgeführt wird. Daher ist diese Vorgehensweise nicht geeignet.
+Da es möglich ist ein VST-Plugin über die DAW in einen Standbymodus\footnote{die Prozessmethode wird nicht mehr ausgeführt} zu schalten, kann es mit dieser Lösung passieren, dass die entgegengenommenen Befehlsobjekte nicht mehr ausgeführt werden. Da die entsprechende Prozessoperation nicht mehr ausgeführt wird. Daher ist diese Vorgehensweise nicht geeignet.
 
 \paragraph{Automatisches Blockieren und Freigeben}
 Mittels sogenannter RAII\footnote{Resource Acquisition Is Initialization}-Mechanismen\verw{Stephens}{S.291 ff} ist es möglich eine Lösung zu entwerfen, die dafür sorgt, dass der Prozess automatisch blockiert und wieder freigegeben wird, solange der Graph verändert wird. Realisiert wird dies durch eine Klasse namens ''Janitor''.
-Die Janitor-Klasse enthält exklusiv alle Graph verändernden Methoden. Der Konstruktor des Janitors blockiert die Prozessmethode, der Destruktor gibt sie wieder frei. Somit kann sichergestellt werden, dass, solange ein Janitior-Objekt existiert, der Graph nicht weiter abgearbeitet werden kann (siehe Listing \ref{janitor}).
+Die Janitor-Klasse enthält exklusiv alle Graph verändernden Methoden. Der Konstruktor des Janitors blockiert die Prozessmethode, der Destruktor gibt sie wieder frei. Somit kann sichergestellt werden, dass, solange ein Janitor-Objekt existiert, der Graph nicht weiter abgearbeitet werden kann (siehe Listing \ref{janitor}).
 \\\\
 Zusammen mit dem ''Smart Pointer''\verw{Ellis}{3.4. Smart pointers} Konzept kann erreicht werden, dass ein Janitor-Objekt von mehreren Stellen ohne gegenseitige Blockierung genutzt werden kann.\\
 Da nach jeder Graphänderung eine Prozess-Liste (siehe Abschnitt \ref{process}) erstellt werden muss, existiert mit dieser Lösung ein weiterer Vorteil:

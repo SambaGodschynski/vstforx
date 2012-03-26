@@ -8,9 +8,8 @@ Um solchartige Probleme von vornherein zu umgehen, wurde ein bewährtes Lösungs
 Ein Nachteil beim Verwenden von \emph{Shared Pointer} ist allerdings, dass aus einem '\emph{this}' Zeiger eines Objektes kein \emph{Shared Pointer} erzeugt werden kann. So könnte zum Beispiel ein Objekt nicht sich selbst einer Methode übergeben, die ausschließlich \emph{Shared Pointer} entgegennimmt.
 Eine Lösung für dieses Problem findet sich im Abschnitt ''Smart Pointer Programming Techniques'', der \emph{Boost Shared Pointer Library Dokumentation}\verw{Boost}{Abschn.: 'Obtaining a shared\_ptr to this'}
 \\\\
-Es wird demnach ein Objekt einer Klasse ausschließlich über eine statische Methode erstellt. In dieser wird außerdem das neu erzeugte \emph{Shared Pointer} Objekt dem Zielobjekt als Weak-Pointer\verw{Ellis}{5.4. Weak pointers} übergeben (siehe Listing \ref{thisToPtr}).
-
-\begin{code}{Shared Pointer in VSTForx-Klassen}{thisToPtr}
+Es wird demnach ein Objekt einer Klasse ausschließlich über eine statische Methode erstellt. In dieser wird außerdem das neu erzeugte \emph{Shared Pointer}-Objekt dem Zielobjekt als Weak-Pointer\verw{Ellis}{5.4. Weak pointers} übergeben (siehe Listing \ref{thisToPtr}).
+\begin{code}{Shared-Pointer Erzeugungsparadigma in VSTForx }{thisToPtr}
 class X {
 public:
 	typedef boost::shared_ptr<X> Ptr;
@@ -26,15 +25,12 @@ public:
 		return neu;
 	}
 };
-
 // erzeugen einer Instanz:
 X::Ptr x = X::create();
-
 // erzeugen eines 'this'-Shared Pointer
 void X::foo() {
 	X::Ptr _this = self.lock();
 }
-
 \end{code} 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{SDK Probleme}
@@ -60,8 +56,8 @@ Wie schon erwähnt, gibt es keinerlei Angaben, in welcher Reihenfolge diese Aufr
 	\item \funktion{dispatcher(effSetSampleRate, sampleRate)}
 	\item \funktion{dispatcher(effSetBlockSize, blockSize)}
 \end{itemize}
-
-Für einen Großteil der getesteten Plugins funktionierte dieser Vorgang. Bei einigen Plugins, kam es beim Öffnen zu Abstürzen oder sie funktionierten nicht ordnungsgemäß. Auffällig war, dass die Abstürze meist beim Aufruf von \emph{effOpen} erfolgten. Mittels Debugger konnte schließlich ermittelt werden, in welcher Reihenfolge Cubase VSTForx initialisiert:
+\NP
+Für einen Großteil der getesteten Plugins funktionierte dieser Vorgang. Bei einigen Plugins kam es beim Öffnen zu Abstürzen oder sie funktionierten nicht ordnungsgemäß. Auffällig war, dass die Abstürze meist beim Aufruf von \emph{effOpen} erfolgten. Mittels Debugger konnte schließlich ermittelt werden, in welcher Reihenfolge Cubase VSTForx initialisiert:
  
 \begin{itemize}
 	\item \funktion{dispatcher(effSetSampleRate, sampleRate)}
@@ -72,14 +68,14 @@ Für einen Großteil der getesteten Plugins funktionierte dieser Vorgang. Bei ei
 	\item \funktion{dispatcher(effMainsChanged, 1) //resume}
 \end{itemize}
 
-Es ist zu anzunehmen, dass in einigen Fällen \emph{effOpen} Speicher mittels \emph{Samplerate} und/oder \emph{Blockgröße} alloziert. Wird daher \emph{effOpen} vor dem setzen der Samplerate/Blockgröße aufgerufen, kann es passieren, dass ein (unsauber programmiertes) Plugin versucht, Speicher mit undefinierter Größe zu allozieren. In C/C++ bedeutet undefiniert nicht '0', sondern irgendeine Zahl. Ist diese Zahl größer als der maximal verfügbare Speicher, bedeutet dies ein Absturz. 
+Es ist anzunehmen, dass in einigen Fällen \emph{effOpen} Speicher mittels \emph{Samplerate} und/oder \emph{Blockgröße} alloziert. Wird daher \emph{effOpen} vor dem setzen der Samplerate/Blockgröße aufgerufen, kann es passieren, dass ein (unsauber programmiertes) Plugin versucht, Speicher mit undefinierter Größe zu allozieren. In C/C++ bedeutet undefiniert nicht '0', sondern irgendeine Zahl. Ist diese Zahl größer als der maximal verfügbare Speicher, bedeutet dies einen Absturz. 
 \\\\
 Nachdem die ermittelte Reihenfolge übernommen wurde, waren keine Abstürze an der \emph{effOpen} Operation festzustellen. 
 
 \subsubsection{Stringoperation}
 Ein weiter Grund für Abstürze beim Öffnen von Plugins war das Anfordern von String-Informationen.
 So wird zum Beispiel der Pluginname mittels \codeinsert{\funktion{dispatcher(effGetEffectName, dstCharPtr)}} Aufruf angefordert. Beim Parameter \emph{dstCharPtr} handelt es sich um einen Zeiger auf eine \emph{char}-Reihung.
-Leider bietet das VST-SDK keinen Aufruf zum Ermitteln von String längen, sodass man gezwungen ist einer solchen Reihung eine feste Länge zuzuweisen. Das VST-SDK gibt hierfür die Größen vor. So existiert für jeden Aufruftyp der ein String liefert, eine Stringlängen-Konstante (zum Beispiel: \emph{kVstMaxEffectNameLen} für den Effektnamen oder \emph{kVstMaxVendorStrLen} für den Hersteller). Allerdings scheint es einige Plugins zu geben, die größere \emph{char}-Reihungen benötigen, als im VST-SDK angegeben. In solch einem Fall, kommt es zu einem Bufferüberlauf und somit zu einem Absturz. Umgangen werden konnte dies, indem der entsprechenden Reihung mehr Speicher zugewiesen wurde (2048 Zeichen statt 64). Der Fehler ist somit potentiell noch vorhanden, allerdings bietet das VST-SDK auch keine bessere Lösungsmöglichkeit.
+Leider bietet das VST-SDK keinen Aufruf zum Ermitteln von Stringlängen, sodass man gezwungen ist einer solchen Reihung eine feste Länge zuzuweisen. Das VST-SDK gibt hierfür die Größen vor. So existiert für jeden Aufruftyp der ein String liefert, eine Stringlängen-Konstante (zum Beispiel: \emph{kVstMaxEffectNameLen} für den Effektnamen oder \emph{kVstMaxVendorStrLen} für den Hersteller). Allerdings scheint es einige Plugins zu geben, die größere \emph{char}-Reihungen benötigen, als im VST-SDK angegeben. In solch einem Fall, kommt es zu einem Bufferüberlauf und somit zu einem Absturz. Umgangen werden konnte dies, indem der entsprechenden Reihung mehr Speicher zugewiesen wurde (2048 Zeichen statt 64). Der Fehler ist somit potentiell noch vorhanden, allerdings bietet das VST-SDK auch keine bessere Lösungsmöglichkeit.
 
 \subsubsection{Ausführungsverzeichnis}
 In einigen Fällen ist es für ein VST-Plugin erforderlich zu wissen, in welchem Verzeichnis es sich befindent.
@@ -87,7 +83,7 @@ Hierfür bietet das VST-SDK eine Operation: \codeinsert{\funktion{AudioEffectX::
 \emph{Cubase} und andere Hostanwendungen liefern hierfür die gewünschte Information. Der weit verbreitete Sequenzer \emph{Ableton Live} liefert jedoch einen leeren String. Somit ist es notwendig, über plattformspezifische Aufrufe an die erforderliche Information zu gelangen.
 
 \subsubsection{Verzeichnisauswahl}
-Ein ähnliches Problem bereitete die Verzeichnisauswahl. Einige Hostanwendungen bieten die Möglichkeit, einen Verzeichnisauswahl-Dialog über das VST-SDK auszuführen. Andere nicht. Somit ist es erforderlich selbst einen Auswahldialog zu implementieren. Ist eine Hostanwendung in der Lage, einen eigenen Verzeichnisauswahl-Dialog anzubieten, so sollte dieser auch genutzt werden. Im Falle des Sequenzers \emph{Synapse Orion}\footnote{http://www.synapse-audio.com/} wurde ein Verzeichnissauswahl-Dialog zwar angeboten, dieser aber liefert keinen Ergebnis-String. So konnte in besagtem Sequenzer VSTForx zwar Pluginverzeichnisse zur Auswahl anbieten, aber nicht übernehmen. Als Lösung wird nun immer die eigene Implementierung verwendet.
+Ein ähnliches Problem bereitete die Verzeichnisauswahl. Einige Hostanwendungen bieten die Möglichkeit, einen Verzeichnisauswahl-Dialog über das VST-SDK auszuführen, andere nicht. Somit ist es erforderlich selbst einen Auswahldialog zu implementieren. Ist eine Hostanwendung in der Lage, einen eigenen Verzeichnisauswahl-Dialog anzubieten, so sollte dieser auch genutzt werden. Im Falle des Sequenzers \emph{Synapse Orion}\footnote{http://www.synapse-audio.com/} wurde ein Verzeichnissauswahl-Dialog zwar angeboten, dieser aber liefert keinen Ergebnis-String. So konnte im genannten Sequenzer VSTForx zwar Pluginverzeichnisse zur Auswahl anbieten, aber nicht übernehmen. Als Lösung wird nun immer die eigene Implementierung verwendet.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Graph-Test}
 Getestet wurde mittels dem Cppunit-Framework\footnote{http://sourceforge.net/projects/cppunit/}, welches eine C++ - Portierung von JUnit darstellt. Folgend sollen die getätigten Tests kurz beschrieben werden:
@@ -134,23 +130,23 @@ In diesem Test werden Knoten dem Graph hinzugefügt und entfernt. Es wird geprü
 Dieser Test arbeitet ähnlich wie \emph{testConnectNodes}. Getestet wird zusätzlich das Verbinden von Knoten. Folgende Operationen sollten vom Graph verweigert werden:
 \begin{itemize}
 	\item Verbinden eines Knoten mit einem ''NULL''-Knoten
-	\item Verbinden eines Knoten mit einem Knotenobjekt das nicht vom Graph aufgenommen wurde.
+	\item Verbinden eines Knoten mit einem Knotenobjekt, das nicht vom Graph aufgenommen wurde.
 	\item Erzeugen einer bereits vorhandenen Verbindung
-	\item Erzeugen einer ''Rückkoppelnden'' Verbindung
+	\item Erzeugen einer ''rückkoppelnden'' Verbindung
 \end{itemize}
 \paragraph{testSignalProcessPath}
 In diesem Test wird die vom Graph erstellte Prozess-Liste auf Korrektheit überprüft. Es werden verschiedene Szenarien erstellt und die jeweiligen Ausgaben mit entsprechenden Erwartungsergebnissen verglichen.
 \paragraph{testDelayAdapter}
-Zum Testen der Delay-Compensation wurde eigens ein ProcessAdapter implementiert. Der DelayAdapter. Dieser verzögert die Ausgabe eines Signals um N Millisekunden. Diese Funktionalität wird in diesem Test getestet.
+Zum Testen der Delay-Compensation wurde eigens ein ProcessAdapter implementiert, der DelayAdapter. Dieser verzögert die Ausgabe eines Signals um N Millisekunden. Diese Funktionalität wird in diesem Test getestet.
 \paragraph{testDelayCompensation}
-In diesem Test wird die Delay-Compensation getestet. Hierfür werden mehrere DelayAdapter Objekte in verschiedenen Szenarien eingefügt. Es wird geprüft, ob die Verzögerung des Graph-Ausgabesignals einem Erwartungswert entspricht.
+In diesem Test wird die Delay-Compensation getestet. Hierfür werden mehrere DelayAdapter-Objekte in verschiedenen Szenarien eingefügt. Es wird geprüft, ob die Verzögerung des Graph-Ausgabesignals einem Erwartungswert entspricht.
 \paragraph{testGraphConsistency}
 In diesem Test wird der Graph auf Stabilität geprüft. Es werden hintereinander viele Objekte hinzugefügt und wieder entfernt. Es werden NULL-Objekte hinzugefügt. Es wird mehrfach die Samplerate und die Blockgröße geändert (auch mit ungültigen Werten).
 \paragraph{testGraphComplex}
 In dieser Testreihe werden verschiedene Graph-Szenarien aus \\
 Volume-Adapter erstellt. Jeder Volume-Adapter erhält einen Volume-Multiplikator $vol$. Die verschiedenen Graph-Szenarien werden mit einer Eingangswertemenge($En$) prozessiert. Die Ausgabewertemenge($Ex$) muss einer Erwartungswertemenge entsprechen (siehe Abbildung \ref{testGraphComplex01} bis \ref{testGraphComplex03}). 
 \\\\
-Außerdem wird geprüft, ob die Anzahl der Frames-Objekt Kopiervorgänge der in Abschnitt \ref{Optimierung} beschriebenen Optimierung entspricht. Hierfür wird ein Zählmechanismus genutzt, der ausschließlich mittels Präprozessor Schalter: 
+Außerdem wird geprüft, ob die Anzahl der Frames-Objekt-Kopiervorgänge der in Abschnitt \ref{Optimierung} beschriebenen Optimierung entspricht. Hierfür wird ein Zählmechanismus genutzt, der ausschließlich mittels Präprozessor Schalter: 
 \codeinsert{\_FORX\_TESTSUITE}
 aktiviert wird.
 %
@@ -184,7 +180,7 @@ verfügbaren Graph-Objekten erstellt. Danach wird eine Referenz-Ausgabe-Ergebnis
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Portierung Windows/MacOSX}
 Obwohl VSTForx von Anfang an für Windows sowie für MacOSX geplant war, konnte aufgrund fehlender Hardware erst relativ spät mit der MacOSX Portierung begonnen werden. Da das VST-SDK für beide Plattformen kompilierbar ist, kann die Portierung mit relativ wenig Aufwand erfolgen. Die wenigen plattformspezifischen Aufrufe, wie zum Beispiel das Laden und Ausführen von Dynamischen Bibliotheken (den Plugins), wurden in das ''Paket'' '\emph{OS\_Specific}' separiert. Es enthält die ''Unterpakete'' '\emph{mac}' und '\emph{win}'. Je nach Plattform werden nur die entsprechenden Dateien in das Projekt aufgenommen.  
-\\\\
+\NP
 Zwei Problemtypen traten beim ersten Kompiliervorgang der MacOSX Version auf:
 
 \paragraph{Const-correctness} Folgendes Programm lässt sich mit \emph{Microsofts C++\footnote{Compiler Version 6.1}} Compiler anstandslos kompilieren:
@@ -206,20 +202,21 @@ Der \emph{GCC C++\footnote{gcc version 4.2.1}} Compiler liefert hier allerdings 
 \emph{''invalid initialization of non-const reference of type ‘X}\&\emph{’ from a temporary of type ‘X’''}. 
 }
 \\\\
-Es ist daher nicht erlaubt, einer Funktion mit (non-const) Referenz-Parameter ein temporäres Objekt (in diesem Fall: X()) zu übergeben. Derartige Funktionen gab es einige im ursprünglichen Quelltext. Zur Lösung muss dem 'X\& x' Parameter ein \emph{'const'} Qualifier hinzugefügt werden. Prinzpiell sollte laut dem ''const-correctness'' Paradigma, 'const' wann immer wenn möglich verwendet werden\verw{Reddy}{S.180 
+Es ist daher nicht erlaubt, einer Funktion mit (non-const) Referenz-Parameter ein temporäres Objekt (in diesem Fall: X()) zu übergeben. Zur Lösung muss dem 'X\& x' Parameter ein \emph{'const'} Qualifier hinzugefügt werden. Prinzpiell sollte laut dem ''const-correctness'' Paradigma, 'const' wann immer wenn möglich verwendet werden\verw{Reddy}{S.180 
 ff}.
 
 \paragraph{Templates}
-Der Boost-Archive Serialisierungs Mechanismus verlangt, um ein konkretes Objekt anhand eines Oberklassen Zeigers zu deserialiseren, die Registrierung jener Klasse mittels einer Template Methode. So wird zum Beispiel mittels 
+Der Boost-Archive Serialisierungs Mechanismus verlangt, um ein konkretes Objekt anhand eines Oberklassen Zeigers zu deserialiseren, die Registrierung jener Klasse mittels einer Template Methode. So wird zum Beispiel mit dem Aufruf von 
 \codeinsert{archive.register\_type<Volume>();}
 die Konkrete-Klasse \emph{'Volume'} registriert. Dieser Aufruf findet in einer Methode statt, die ebenfalls über einen Template-Parameter aufgerufen wird: 
-\codeinsert{template<typename Archive> void register\_types(Archive \&archive)}
-Der \emph{GCC C++} Compiler lieferte beim \emph{''register\_type''} Aufruf folgende Fehlermeldung:
+\codeinsert{template<typename Archive> void register\_types(Archive \&archive)\{...\}}
+Der \emph{GCC C++} Compiler lieferte am \emph{''register\_type''} Aufruf folgende Fehlermeldung:
 \begin{center}
 \fbox{
 \emph{''expected primary-expression before '>' token''} 
 }
 \end{center}
+\NP
 Das Problem rührt daher, dass der \emph{GCC-Compiler} in Template-Methoden so früh wie möglich versucht, Fehler zu erkennen. Während der \emph{Microsoft-Compiler} Template-Methoden erst dann untersucht, wenn sie konkret verwendet werden (siehe Listing \ref{template}).  
 \begin{code}{Darstellung der Fehlererkennung in Template-Methoden}{template}
 template <typename T>
@@ -236,8 +233,9 @@ int main() {
 }
 \end{code}
 
-Das Problem des \emph{GCC-Compilers} ist nun, dass versucht wird, auf ein \emph{Archive} Objekt zuzugreifen, welches erst durch den Template-Parameter spezifiziert wird. Die Lösung ist das Hinzufügen des Schlüsselwortes, ''\emph{template}'' vor entsprechenden Aufruf:
+Das Problem des \emph{GCC-Compilers} ist nun, dass versucht wird, auf ein \emph{Archive}-Objekt zuzugreifen, welches erst durch den Template-Parameter spezifiziert wird. Die Lösung ist das Hinzufügen des Schlüsselwortes, ''\emph{template}'' vor entsprechendem Aufruf:
 \codeinsert{archive.template register\_type<Volume>();}
+
 
 
 

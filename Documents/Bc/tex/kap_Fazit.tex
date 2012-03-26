@@ -1,27 +1,27 @@
 % !TEX encoding = UTF-8 Unicode
 \section{Fazit}
-Mit \emph{C++} als Entwicklungssprache wurde eine mächtige und performante, aber auch fehleranfällige und unsicherere Programmiersprache gewählt. Einerseits wurden die in ''modernen'' Programmiersprachen eher unspektakulären Aufgaben, wie das Einbinden einer externen Bibliothek, als besonders zeitaufwändig empfunden (fehlendes Paketmanagment). Andererseits wird der Entwickler gerade durch solche Fallstricke zu mehr Sorgfalt gezwungen und das allgemeine Verständnis für Programmiersprachen erhöht. 
+Mit \emph{C++} als Entwicklungssprache wurde eine mächtige und performante, aber auch fehleranfällige und unsicherere Programmiersprache gewählt. Einerseits wurden die in ''modernen'' Programmiersprachen eher unspektakulären Aufgaben, wie das Einbinden einer externen Bibliothek, als besonders zeitaufwändig empfunden (fehlendes Paketmanagment). Andererseits wird der Entwickler gerade durch solche Fallstricke zu mehr Sorgfalt gezwungen, und das allgemeine Verständnis für Programmiersprachen erhöht. 
 Insbesondere wurde die Boost-Bibliothek schätzen gelernt, welche \emph{C++} um ''moderne'' Programmiertechniken wie den 'Smart Pointer' erweitert. 
 \\\\
 Mit VSTForx ist es - nach Meinung des Autors - gelungen, ein interessantes und spanendes Werkzeug zu entwickeln. Dennoch ist die Entwicklung an VSTForx noch nicht abgeschlossen. Folgend werden zukünftige (mögliche) Verbesserungen oder Erweiterungen besprochen. 
 \subsection{Verbesserungen}
-\subsection{GUI}
-Die VST-GUI Bibliothek bietet leider zu wenig oder unzureichend implementierte Funktionen, um eine vollwertige GUI-Anwendung zu entwickeln. So sind die meisten Elemente in VST-GUI, bitmapbasierend und mit festen Positionen versehen. Eine Schaltfläche muss daher erst gezeichnet und dann platziert werden. Eine dynamische Anwendung (Objekte veränderbarer in Größe und Position) mit einheitlichem Look-And-Feel, kann somit nur sehr schwer umgesetzt werden. 
+\subsubsection{GUI}
+Die VST-GUI Bibliothek bietet leider zu wenig oder unzureichend implementierte Funktionen, um eine vollwertige GUI-Anwendung zu entwickeln. So sind die meisten Elemente in VST-GUI, bitmapbasierend und mit festen Positionen versehen. Eine Schaltfläche muss daher erst gezeichnet und dann platziert werden. Eine dynamische Anwendung (Objekte veränderbar in Größe und Position) mit einheitlichem Look-And-Feel, kann somit nur sehr schwer umgesetzt werden. 
 \\\\
 Wünschenswert wäre hier die Verwendung eines GUI-Toolkits, wie \emph{Qt\footnote{http://qt.nokia.com}} oder \emph{WxWidgets\footnote{http://www.wxwidgets.org}}. Leider konnte  noch kein passendes Toolkit gefunden werden. Jedes (bisher geprüfte) Toolkit erzeugt und verwaltet ein eigenes Fenster, um darin Objekte zu platzieren. VST-Plugins verwenden allerdings ein von der Hostanwendug (teilweise mit eigener Dekoration) erzeugtes Fenster. Es muss daher ein Toolkit gefunden (oder entwickelt) werden, welches basierend auf einen bereits existierenden ''Window-Handler'', GUI-Funktionen bietet.
 \\\\
 Im Falle einer Eigenentwicklung käme die \emph{Cairo\footnote{http://cairographics.org/}}-Bibliothek in Frage. Diese bietet sehr leistungsfähige Zeichenfunktionen und ist, wie gefordert, in bestehende Fensterumgebungen einbindbar.
-\subsection{'Signal nach Parameterwert'-Problem}
-'Signal nach Parameterwert'-Module, welche ein Eingangsignal analysieren, um einen Parameterwert zu steuern, haben eine Einschränkung: sie werden, da sie als \emph{ProcessAdapter} in den Graph eingebunden, nur einmal pro Sampleblock ausgeführt. Das bedeutet, dass ein Parameterwert sich immer seltener ändert, je höher die Sampleblockgröße ist. Bei einer Samplerate von 44100.0Hz und einer (üblichen) Blockgröße von 1024 wird demnach ein Parameter alle 23Ms aktualisiert. Dies ist vermutlich kaum wahrnehmbar, nach Meinung des Autors dennoch ein kleiner Schönheitsfehler.
+\subsubsection{'Signal nach Parameterwert'-Problem}
+'Signal nach Parameterwert'-Module, welche ein Eingangsignal analysieren, um einen Parameterwert zu steuern, haben eine Einschränkung: Sie werden, da sie als \emph{ProcessAdapter} in den Graph eingebunden sind, nur einmal pro Sampleblock ausgeführt. Das bedeutet, dass ein Parameterwert sich immer seltener ändert, je höher die Sampleblockgröße ist. Bei einer Samplerate von 44100.0Hz und einer (üblichen) Blockgröße von 1024 wird demnach ein Parameter alle 23Ms aktualisiert. Dies ist vermutlich kaum wahrnehmbar, nach Meinung des Autors dennoch ein kleiner Schönheitsfehler.
 \\\\
 Zur Lösung müsste die Parameter-Aktualisierung entsprechender Module in einem separaten Thread mit fester Aktualisierungsrate durchgeführt werden. 
-\subsection{Weitere Module}
+\subsubsection{Weitere Module}
 \paragraph{'Frequenz nach Wert'-Modul}
 Denkbar wäre ein 'Signal nach Parameterwert'-Modul, welches die Grundtonfrequenz eines Signals ermittelt und als Parameterwert ausgibt. In einem früheren Projekt wurde ähnliches mittels FFT-Analyse bereits realisiert. Der Algorithmus - welcher in der Sprache C vorliegt - müsste angepasst und als \emph{ProcessAdapter} eingebunden werden.  
 \paragraph{Skript-Unterstützung}
 Da die Entwicklung zusätzlicher Module viel Arbeit und Zeit in Anspruch nimmt (Implementierung verschiedener Klassen, lange Kompilierungszeiten), wäre es hilfreich, mittels einer dynamischen Skriptsprache Module zu entwerfen, ohne das eigentliche Programm neu kompilieren zu müssen. 
 \\\\
-So wäre eine Modultyp denkbar, der seine Berechnungszeit an ein externes Skript weitereichen würde. Besonders geeignet wäre hierfür die Skriptsprache \emph{Lua\footnote{http://www.lua.org/}}. Lua ist kompiliert nur wenige Kilobyte groß und sehr leicht in ein bestehendes C/C++ - Programm einbindbar. 
+So wäre ein Modultyp denkbar, der seine Berechnungszeit an ein externes Skript weitereichen würde. Besonders geeignet wäre hierfür die Skriptsprache \emph{Lua\footnote{http://www.lua.org/}}. Lua ist kompiliert nur wenige Kilobyte groß und sehr leicht in ein bestehendes C/C++ - Programm einbindbar. 
 Auf ähnlichem Wege wären auch benutzerdefinierte Parameter-Operatoren denkbar.
 
  
