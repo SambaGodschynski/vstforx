@@ -234,6 +234,8 @@ void VSTPlugin::initParameter(){
 		param[i]->addValueChangedListener ( 
 			boost::bind(&VSTPlugin::valueChanged, this, _1, _2)
 		);
+		/* 
+		TODO: occurs issue#147, checkout whether this functionality ever works
 		// get properties
 		VstParameterProperties *prop = getVSTParameterProperties(aEff, i);
 		if (!prop)
@@ -242,7 +244,7 @@ void VSTPlugin::initParameter(){
 		if ( isFlag(kVstParameterUsesIntegerMinMax, prop->flags) ) {
 			param[i]->setMin( (float)prop->minInteger ); 
 			param[i]->setMax( (float)prop->maxInteger );
-		}
+		}*/
 	}
 }
 //------------------------------------------------------------------------------------------------------------
