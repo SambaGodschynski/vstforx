@@ -120,7 +120,7 @@ public:
 		const boost::weak_ptr<void> &toTrack ) 
 	{ 
 		return signal.connect(
-			Signal::slot_type(vCl).track(toTrack)
+			typename Signal::slot_type(vCl).track(toTrack)
 		);
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -166,7 +166,7 @@ private:
 	enum { eventTypeVerification = EventType::verification };
 public:
 	//--------------------------------------------------------------------------------------------------------
-	EventConnection addEventListener ( typename const Base::ValueChangedFunction &f ) { 
+	EventConnection addEventListener ( const typename Base::ValueChangedFunction &f ) { 
 		return sender.addValueChangedListener(f);	
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -183,7 +183,7 @@ public:
 	 * @param 
 	 * @param weak pointer zum zu trackenden Objekt
 	 */
-	typename EventConnection addTrackedEventListener ( EventListener<EventType> *eL,
+	EventConnection addTrackedEventListener ( EventListener<EventType> *eL,
 		const boost::weak_ptr<void> &toTrack ) 
 	{ 
 		return sender.addTrackedValueChangedListener(
@@ -192,7 +192,7 @@ public:
 		);	
 	}
 	//--------------------------------------------------------------------------------------------------------
-	typename EventConnection addTrackedEventListener ( typename const Base::ValueChangedFunction &f,
+	EventConnection addTrackedEventListener ( const typename Base::ValueChangedFunction &f,
 		const boost::weak_ptr<void> &toTrack ) 
 	{ 
 		return sender.addTrackedValueChangedListener(f, toTrack);	

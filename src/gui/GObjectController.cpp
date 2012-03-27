@@ -887,7 +887,8 @@ GPluginController::~GPluginController() {
 
 namespace {
 //============================================================================================================
-// DynMenuEntry List
+// DynMenuEntry List:
+// distributing a lot of menuentries into submenu entries.
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
 template <typename Tag>
@@ -997,7 +998,7 @@ inline void entriesToMenuList ( const typename Tag::TagType &object,
 							    ppiGui::FrontController *ctrl,
 								size_t num_entries )
 {
-	if ( num_entries < Tag::MAX_ENTRIES )
+	if ( num_entries < (size_t)Tag::MAX_ENTRIES )
 		allEntriesAtOnce<Tag> ( object, mL, src, ctrl, num_entries );
 	else 
 		entriesSpread<Tag> ( object, mL, src, ctrl, num_entries );

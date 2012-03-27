@@ -40,7 +40,7 @@ void register_types( A &ar ){
 	ar.template register_type<ADSRTrigger>();
 	ar.template register_type <MidiProcessor>();
 	ar.template register_type <FadeValue>();
-	ar.template register_type <LuaProcessor>();
+	//ar.template register_type <LuaProcessor>();
 	//view
 	ar.template register_type<ppiGui::GStdKnob>();
 	ar.template register_type<ppiGui::GPassiveKnob>();

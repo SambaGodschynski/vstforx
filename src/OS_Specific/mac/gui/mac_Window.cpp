@@ -38,12 +38,12 @@ Window::Window ( const VSTGUI::CRect &size, const WindowFlags &flags, void *pare
 	
 	WindowGroupRef grp = GetWindowGroup( (HWND) parentHandle );
 	
-	if (err != noErr || grp == NULL) { 
+	if (err != (OSStatus)noErr || grp == NULL) { 
 		throw com::ppiError::SystemError("could not create Window", __FILE__, __LINE__);
 		hwnd = NULL;
 	}
 	err = SetWindowGroup ( hwnd, grp );
-	if (err != noErr) throw com::ppiError::SystemError("could handle not assign to group", __FILE__, __LINE__);
+	if (err != (OSStatus)noErr) throw com::ppiError::SystemError("could handle not assign to group", __FILE__, __LINE__);
 }
 //------------------------------------------------------------------------------------------------------------
 void Window::showWindow( const CPoint &p ) {
@@ -118,7 +118,7 @@ void Window::destroyWindow() {
 //------------------------------------------------------------------------------------------------------------
 pascal OSStatus Window::messageFromOs (EventHandlerCallRef inHandlerCallRef, EventRef inEvent, void *inUserData) {
 	UInt32 eventClass = GetEventClass (inEvent);
-	if ( eventClass != kEventClassWindow ) return noErr;
+	if ( eventClass != (UInt32)kEventClassWindow ) return noErr;
 	UInt32 eventKind = GetEventKind (inEvent);
 	Rect bounds;
 	/*
@@ -173,7 +173,7 @@ VSTGUI::CRect getScreenSize() {
 	::Rect rect;
 	OSStatus res = 
 		GetAvailableWindowPositioningBounds ( NULL, &rect );
-	if ( res == noErr )
+	if ( res == (OSStatus)noErr )
 		return VSTGUI::CRect ( rect.left, rect.top, rect.right, rect.bottom );
 	return VSTGUI::CRect();
 

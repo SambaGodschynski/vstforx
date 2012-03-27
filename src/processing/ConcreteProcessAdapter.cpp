@@ -6,7 +6,7 @@
  */
 #include "ConcreteProcessAdapter.h"
 #include <stack>
-#include <sambag/lua/LuaSequence.hpp>
+//#include <sambag/lua/LuaSequence.hpp>
 #include <boost/foreach.hpp>
 
 namespace processing{
@@ -802,8 +802,8 @@ MidiProcessor::MidiProcessor ( IHostInfo *iHost ) :
 	setName ("midi_receiver");
 	initParameter ( PITCH_BEND , "pitchbend" );
 	midiParameters[PITCH_BEND]->setValue(0.5f);
-	for ( size_t i=NUM_NO_CC_PARAMETER; i<NUM_OUT_PARAM; ++i ) {
-		size_t c = i - NUM_NO_CC_PARAMETER;
+	for ( size_t i=(size_t)NUM_NO_CC_PARAMETER; i<(size_t)NUM_OUT_PARAM; ++i ) {
+		size_t c = i - (size_t)NUM_NO_CC_PARAMETER;
 		initParameter ( i, "cc(" + MyString(c) + ")" + musicalValues::getCCName(c) );
 	}
 	TOLOG ( "+" + getName() );
@@ -821,13 +821,14 @@ void MidiProcessor::processMidiEvents ( VstEvents *ev ) {
 				break;
 			case 0xB /*cc*/        :
 				cc = midiEv->midiData[1];
-				if ( cc >= NUM_CC ) continue;
+				if ( cc >= (size_t)NUM_CC ) continue;
 				gv = midiEv->midiData[2];
-				midiParameters[ cc + NUM_NO_CC_PARAMETER  ]->setValue( gv/127.0f );
+				midiParameters[ cc + (size_t)NUM_NO_CC_PARAMETER  ]->setValue( gv/127.0f );
 				break;
 		}
 	}
 }
+#ifdef NOTHINGTOCOMPILE
 //============================================================================================================
 // LuaProcessor:
 //============================================================================================================
@@ -970,4 +971,5 @@ void LuaProcessor::loadScript(const std::string &scriptfile) {
 	}
 	initScript();
 }
+#endif // NOTHINGTOCOMPILE
 }//namespace processing

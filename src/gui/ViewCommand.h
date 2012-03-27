@@ -8,11 +8,12 @@
 #ifndef VIEWCOMMAND_H
 #define VIEWCOMMAND_H
 
+// TODO: see what can be forward declared for increase independency 
 #include "com/Command.h"
 #include "processing/processing.h"
 #include "processing/parameter/parameter.h"
 #include "vstgui.h"
-#include "com/PluginCollection.h"
+#include "com/PluginCollection.h" 
 #include "ConcreteGObjects.h"
 #include "gui/CMenu.h"
 #include "gui/VstPlugView.h"
@@ -526,6 +527,7 @@ public:
 //	Klasse CmdAddConnectionOperator
 //  Fuegt einer Parameter Verbindung ein Operator hinzu.
 //============================================================================================================
+extern processing::Graph::Ptr getRelatedGraph ( CircuidView* );
 //------------------------------------------------------------------------------------------------------------
 template < class OP >
 void CmdAddConnectionOperator<OP>::_execute(){

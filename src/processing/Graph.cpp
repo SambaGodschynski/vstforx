@@ -4,14 +4,19 @@
  *      Author: Johannes Unger
  * ===========================================================================================================
  */
+
+
+#include <boost/graph/reverse_graph.hpp> // occurs compiler error: 'declaration does not declare anything'
+										 // when declared after '#include "Graph.h"' on XCode with gcc4.0
+
 #include "Graph.h"
 #include "OS_Specific/OS_com.h"
 #include "OS_Specific/OS_processing.h"
-#include <boost/graph/reverse_graph.hpp>
-using namespace com;
 
 namespace processing {
+
 using namespace parameter;
+using namespace com; 
 //============================================================================================================
 // class DFSVisitor
 //============================================================================================================

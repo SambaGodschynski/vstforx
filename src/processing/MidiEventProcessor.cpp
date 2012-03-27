@@ -30,7 +30,7 @@ void MidiEventProcessor::processEvents( VstEvents *ev ) {
 	typedef unsigned char Byte;
 	Byte *rawData = NULL;
 	VstEvents *tmpEvents = NULL;
-	if ( ev->numEvents <= EVENTS_OVERHEAD ) { // overhead sufficient
+	if ( ev->numEvents <= (size_t)EVENTS_OVERHEAD ) { // overhead sufficient
 		tmpEvents = (VstEvents*) &staticEvent; // use static event
 	}
 	else { // numEvents > overhead => create dynamic event 
@@ -58,7 +58,7 @@ inline void MidiEventProcessor::filterEvents( VstEvents * src, VstEvents * dst )
 		// get channel
 		char* midiData = _event->midiData;
 		VstInt32 channel = midiData[0] & 0xf;	
-		if ( channel != n && n!=ALL_CHANNEL ) continue;
+		if ( channel != n && n!=(size_t)ALL_CHANNEL ) continue;
 		dst->events[dst->numEvents++] = src->events[i];
 	}
 }
@@ -66,6 +66,6 @@ inline void MidiEventProcessor::filterEvents( VstEvents * src, VstEvents * dst )
 void MidiEventProcessor::midiChannelChanged ( void *src, const float &val ) {
 	using namespace parameter;
 	int n = mapInteger ( midiChannel->getValue(), 17 ); // 16 midi channels + all channels
-	midiChannel->setDisplay ( ( n==ALL_CHANNEL ? "all" : MyString(n+1) ) ); 
+	midiChannel->setDisplay ( ( n==(size_t)ALL_CHANNEL ? "all" : MyString(n+1) ) ); 
 }
 }//namespace processing

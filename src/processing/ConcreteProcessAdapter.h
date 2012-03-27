@@ -22,8 +22,8 @@
 #include "dspTools.h"
 #include "com/Serialization.h"
 #include "MidiEventProcessor.h"
-#include <sambag/lua/LuaHelper.hpp>
-#include <sambag/lua/LuaMap.hpp>
+//#include <sambag/lua/LuaHelper.hpp>
+//#include <sambag/lua/LuaMap.hpp>
 
 //============================================================================================================
 //	Vorwaertz Deklarationen
@@ -1563,6 +1563,7 @@ public:
 		TOLOG ( "-" + getName() );
 	}
 };
+#ifdef NOTHINGTOCOMPILE
 //============================================================================================================
 /**
  * @class ProcessorScriptInfo.
@@ -1684,6 +1685,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~LuaProcessor ();
 };
+#endif // NOTHINGTOCOMPILE
 }// namespace processing
 #endif
 

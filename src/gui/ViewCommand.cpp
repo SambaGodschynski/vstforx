@@ -439,7 +439,7 @@ void CmdCreateMidiProcessor::_execute(){
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
 void CmdCreateLuaProcessor::_execute(){
-	GObjectList gObjs;
+	/*GObjectList gObjs;
 	create<GLuaProcessor, LuaProcessor, 1, 1>();
 	LuaProcessor::Ptr lua = boost::shared_dynamic_cast<LuaProcessor, PObject>(newPrA);
 	lua->loadScript(scriptfile);
@@ -447,7 +447,7 @@ void CmdCreateLuaProcessor::_execute(){
 	newGPr->getIOs ( gObjs );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
 	cView->addGObject ( pG );
-	cView->CView::setDirty();
+	cView->CView::setDirty();*/
 }
 //============================================================================================================
 //	Klasse CmdCreateFreeGKnob

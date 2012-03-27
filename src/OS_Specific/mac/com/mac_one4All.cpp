@@ -70,7 +70,7 @@ MessageBoxReturn MessageBox ( const string &title, const string &text, const Mes
 	
 	if ( type == com::MSG_QUESTION ) {
 		//Convert the result
-		if( result == kCFUserNotificationDefaultResponse )
+		if( result == (CFOptionFlags)kCFUserNotificationDefaultResponse )
 			return MSG_RET_YES;
 		else
 			return MSG_RET_NO;

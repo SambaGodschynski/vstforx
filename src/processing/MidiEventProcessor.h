@@ -45,7 +45,7 @@ private:
 			parameter::Parameter::ValueChangedFunction f = boost::bind( 
 				&MidiEventProcessor::midiChannelChanged, this, _1, _2 
 			);
-			midiChannel->addValueChangedListenerF ( f );
+			midiChannel->addValueChangedListener ( f );
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------

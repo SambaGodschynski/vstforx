@@ -4,8 +4,8 @@
  *      Author: Johannes Unger
  * ===========================================================================================================
  */
-#ifndef BGL_GRAPH_H_
-#define BGL_GRAPH_H_
+#ifndef VSTFORX_BGL_GRAPH_H_
+#define VSTFORX_BGL_GRAPH_H_
 
 #include <boost/utility.hpp>
 #include <boost/graph/adjacency_list.hpp>
