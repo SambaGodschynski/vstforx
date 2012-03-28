@@ -33,13 +33,17 @@ using namespace com;
 using namespace processing;
 using namespace parameter;
 //===========================================================================================
-//Klasse: PPIVst.
-//===========================================================================================
+/**
+ * @class PPIVst.
+ * AudioEffectX class for VSTForx.
+ * TODO: create one classfile for mac and win.
+ */
 class PPIVst :
 	public AudioEffectX, 
 	public EventListener<ppiGui::OnClose>,
 	public EventListener<GraphChanged>,
 	public IHostInfo
+//===========================================================================================
 {
 private:
 	//---------------------------------------------------------------------------------------

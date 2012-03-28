@@ -47,8 +47,6 @@ CBitmap ** loadResources() {
 	bitmaps[Resources::CHANNEL_SPLIT_ADAPTER]	= new CBitmap (IDB_PNG3);
 	bitmaps[Resources::MIDI_RECEIVER]	        = new CBitmap (IDB_PNG35);
 	bitmaps[Resources::BACKGROUND]			    = new CBitmap (IDB_PNG36);
-	bitmaps[Resources::ADSR_SWITCH]			    = new CBitmap (IDB_PNG2);
-	
 	// toolbox
 	bitmaps[Resources::EDIT_BUTTON]				= new CBitmap (IDB_PNG11);
 	bitmaps[Resources::MENU_ROCKER]				= new CBitmap (IDB_PNG14);
@@ -342,5 +340,5 @@ std::string getHomeDirectory() {
 		if ( is_regular_file(f) ) home_dir = f.remove_filename().string();
 		else home_dir = f.string();
 	}
-	return home_dir;
+	return home_dir + "/";
 }
