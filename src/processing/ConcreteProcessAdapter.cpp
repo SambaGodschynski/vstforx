@@ -6,7 +6,7 @@
  */
 #include "ConcreteProcessAdapter.h"
 #include <stack>
-//#include <sambag/lua/LuaSequence.hpp>
+#include <sambag/lua/LuaSequence.hpp>
 #include <boost/foreach.hpp>
 
 namespace processing{
@@ -828,7 +828,6 @@ void MidiProcessor::processMidiEvents ( VstEvents *ev ) {
 		}
 	}
 }
-#ifdef NOTHINGTOCOMPILE
 //============================================================================================================
 // LuaProcessor:
 //============================================================================================================
@@ -971,5 +970,4 @@ void LuaProcessor::loadScript(const std::string &scriptfile) {
 	}
 	initScript();
 }
-#endif // NOTHINGTOCOMPILE
 }//namespace processing
