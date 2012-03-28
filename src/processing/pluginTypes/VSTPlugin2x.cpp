@@ -200,15 +200,12 @@ void VSTPlugin::valueChanged(void *src, const float &v) {
 	param->setDisplay( MyString(bff) );
 }
 //------------------------------------------------------------------------------------------------------------
-VstParameterProperties * getVSTParameterProperties( AEffect *aEff, size_t index ) {
+int getVSTParameterProperties(AEffect *aEff, size_t index, VstParameterProperties &outRes) {
 	if (index > aEff->numParams) 
 		return NULL;
 
-	VstParameterProperties *res = NULL;
-	int ret = aEff->dispatcher ( aEff, effGetParameterProperties, index, NULL, res, NULL );
-	if (ret!=1)
-		return NULL;
-	return res;
+	int ret = aEff->dispatcher ( aEff, effGetParameterProperties, index, NULL, &outRes, NULL );
+	return ret;
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::initParameter(){
@@ -234,17 +231,17 @@ void VSTPlugin::initParameter(){
 		param[i]->addValueChangedListener ( 
 			boost::bind(&VSTPlugin::valueChanged, this, _1, _2)
 		);
-		/* 
-		TODO: occurs issue#147, checkout whether this functionality ever works
+		
+		// TODO: occurs issue#147, checkout whether this functionality ever works
 		// get properties
-		VstParameterProperties *prop = getVSTParameterProperties(aEff, i);
-		if (!prop)
+		VstParameterProperties prop;
+		if ( getVSTParameterProperties(aEff, i, prop) )
 			continue;
 		// (re)setMinMax
-		if ( isFlag(kVstParameterUsesIntegerMinMax, prop->flags) ) {
-			param[i]->setMin( (float)prop->minInteger ); 
-			param[i]->setMax( (float)prop->maxInteger );
-		}*/
+		if ( isFlag(kVstParameterUsesIntegerMinMax, prop.flags) ) {
+			param[i]->setMin( (float)prop.minInteger ); 
+			param[i]->setMax( (float)prop.maxInteger );
+		}
 	}
 }
 //------------------------------------------------------------------------------------------------------------
