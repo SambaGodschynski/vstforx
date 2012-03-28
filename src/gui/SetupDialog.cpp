@@ -360,7 +360,7 @@ ScanningDialog::~ScanningDialog() {
 // Klasse SetupCtrl:
 //============================================================================================================
 SetupCtrl::SetupCtrl ( CFrame *frame ) : 
-	scanStart ( tNone ), scanLock(false)
+	scanStart ( tNone )
 {
 	dlgSetup = new SetupDialog ( frame );
 	dlgScanning = new ScanningDialog ( frame );
@@ -403,13 +403,20 @@ void SetupCtrl::setupOk( long tag ) {
 }
 //------------------------------------------------------------------------------------------------------------
 void SetupCtrl::scan() {
-	// TODO: boolean lock wont work.
-	if (scanLock) return; // avoid double execution ( happens e.g when doubleclicked on fastscan )
-	scanLock = true;
-	PluginCollection::Ptr pC = PluginCollection::getPluginCollection();
-	if ( pC->isAllScanned() && scanStart != tScanNow ) {
-		eventHandler ( dlgScanning, OnClose() );
-		scanLock = false;
+	if (!scanLock.try_lock()) {
+		return;
+	}
+	PluginCollection::Ptr pC;
+	try {
+		pC = PluginCollection::getPluginCollection();
+		if ( pC->isAllScanned() && scanStart != tScanNow ) {
+			scanLock.unlock();
+			eventHandler ( dlgScanning, OnClose() );
+			return;
+		}
+	} catch(...) {
+		scanLock.unlock();
+		ShowDatabaseConnectionFailedMSG();
 		return;
 	}
 	PpiEditor *ed = static_cast<PpiEditor*>( dlgScanning->getFrame()->getEditor() );
@@ -441,8 +448,6 @@ void SetupCtrl::eventHandler(void *src, const com::ScanComplete &ev) {
 	lB.addString( std::string("see scan report: ") + getHomeDirectory() + Settings::SCAN_REPORT_FILENAME);
 	lB.addString("=========================================================");
 	lB.addString( "Don't forget to rescan when folder content changed!" );
-
-	
 }
 //------------------------------------------------------------------------------------------------------------
 void SetupCtrl::eventHandler(void *src, const com::CleaningUpDataBase &ev) {
@@ -456,10 +461,13 @@ void SetupCtrl::close() {
 }
 //------------------------------------------------------------------------------------------------------------
 SetupCtrl::~SetupCtrl() {
-	PluginCollection::Ptr pC = PluginCollection::getPluginCollection();
-	if ( pC->isScanning() ) {
-		pC->stopScanning();
-		EventSender<ScanInterrupted>::notifyEventListeners ( this, ScanInterrupted() );
+	try {
+		PluginCollection::Ptr pC = PluginCollection::getPluginCollection();
+		if ( pC->isScanning() ) {
+			pC->stopScanning();
+			EventSender<ScanInterrupted>::notifyEventListeners ( this, ScanInterrupted() );
+		}
+	} catch(...) {
 	}
 	
 	modView->removeView(dlgSetup, false);
@@ -474,7 +482,7 @@ SetupCtrl::~SetupCtrl() {
 //------------------------------------------------------------------------------------------------------------
 void SetupCtrl::scanningOk() {
 	dlgScanning->getListBox().clear();
-	scanLock = false;
+	scanLock.unlock();
 	if ( scanStart == tScanNow ) {
 		modView->removeWindowView ( dlgScanning );
 		return;

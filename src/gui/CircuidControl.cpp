@@ -156,8 +156,9 @@ inline void CircuidControl::showContextMenu( GObject::Ptr obj, CPoint& point ){
 	menu::MenuEntryList &mList = contextMenu->getMenuEntries();
 	if ( obj ) 
 		gObjCtrlDirector->getMenuEntryList ( mList, obj );
-	else
+	else {
 		getMenuEntryList ( mList );
+	}
 	contextMenu->showAt ( point );
 }
 //------------------------------------------------------------------------------------------------------------
@@ -254,7 +255,14 @@ inline void CircuidControl::createVSTPluginDynSubMenu ( menu::MenuEntryList &mE 
 //------------------------------------------------------------------------------------------------------------
 inline void CircuidControl::getMenuEntryList ( menu::MenuEntryList &mE ){
 	ADD_MENU_TITLE ( mE, "things you can do on this view:" );
-	createVSTPluginDynSubMenu (mE);
+	
+	try {
+		createVSTPluginDynSubMenu (mE);
+	} catch (const sambag::cpsqlite::DataBaseException &ex) {
+		ShowDatabaseConnectionFailedMSG();
+		return;
+	}
+	
 	// pr. nodes
 	ADD_MENU_LABEL ( mE, "add_volume_node", new CmdCreateVolumeNode ( view, gObjCtrlDirector ) );
 	ADD_MENU_LABEL ( mE, "add_pan_node", new CmdCreatePanAdapter ( view, gObjCtrlDirector ) );

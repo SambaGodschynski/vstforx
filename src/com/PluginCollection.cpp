@@ -11,6 +11,7 @@
 #include <sstream>
 #include "PluginCollectionSQL.h"
 #include <boost/filesystem.hpp>
+#include "OS_Specific/OS_com.h"
 
 
 #define DB_QUERY(x)											\
@@ -21,6 +22,14 @@
 	}
 
 namespace com {
+//------------------------------------------------------------------------------------------------------------
+void ShowDatabaseConnectionFailedMSG() {
+	MessageBox ( "Error.", 
+			"Could not create/access the databasefile in your VSTForx folder"
+			". Please check write protection or try to run host as administrator.", 
+		MSG_ALERT 
+	);
+}
 //============================================================================================================
 // class ScanVisitor
 //------------------------------------------------------------------------------------------------------------
@@ -132,11 +141,15 @@ PluginCollection::PluginCollection() :
 		// init db
 		initDB();
 	} catch ( ... ) {
-		// remove file, try again
-		database.reset();
-		boost::filesystem::remove( settings->getPlugCollectionDumpFilename() );
-		database = DataBase::getDataBase ( settings->getPlugCollectionDumpFilename() );
-		initDB();
+		try {
+			// remove file, try again
+			database.reset();
+			boost::filesystem::remove( settings->getPlugCollectionDumpFilename() );
+			database = DataBase::getDataBase ( settings->getPlugCollectionDumpFilename() );
+			initDB();
+		} catch(...) { // failed again
+			ShowDatabaseConnectionFailedMSG();
+		}
 	}
 }
 //------------------------------------------------------------------------------------------------------------

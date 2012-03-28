@@ -326,9 +326,12 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 	PluginInfo plugInfo;
 	ar>>plugInfo;
 
-	// restore/update via db
-	com::PluginCollection::Ptr pC = com::PluginCollection::getPluginCollection();
-	pC->restorePluginInfo ( hostInfo, plugInfo );
+	try {
+		// restore/update via db
+		com::PluginCollection::Ptr pC = com::PluginCollection::getPluginCollection();
+		pC->restorePluginInfo ( hostInfo, plugInfo );
+	} catch(...) {
+	}
 
 	//check type
 	if ( plugInfo.pluginType != PluginInfo::VST2X )

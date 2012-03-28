@@ -28,6 +28,8 @@ namespace com {
 using namespace events;
 class PluginCollection;
 //============================================================================================================
+extern void ShowDatabaseConnectionFailedMSG();
+//============================================================================================================
 /**
  * @class OnLoadFile.
  * Event: Datei wird geoeffnet.
