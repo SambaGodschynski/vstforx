@@ -200,14 +200,6 @@ void VSTPlugin::valueChanged(void *src, const float &v) {
 	param->setDisplay( MyString(bff) );
 }
 //------------------------------------------------------------------------------------------------------------
-int getVSTParameterProperties(AEffect *aEff, size_t index, VstParameterProperties &outRes) {
-	if (index > aEff->numParams) 
-		return NULL;
-
-	int ret = aEff->dispatcher ( aEff, effGetParameterProperties, index, NULL, &outRes, NULL );
-	return ret;
-}
-//------------------------------------------------------------------------------------------------------------
 void VSTPlugin::initParameter(){
 	char bff[255];
 	param = ParameterContainer ( aEff->numParams );
@@ -231,17 +223,6 @@ void VSTPlugin::initParameter(){
 		param[i]->addValueChangedListener ( 
 			boost::bind(&VSTPlugin::valueChanged, this, _1, _2)
 		);
-		
-		// TODO: occurs issue#147, checkout whether this functionality ever works
-		// get properties
-		VstParameterProperties prop;
-		if ( getVSTParameterProperties(aEff, i, prop) )
-			continue;
-		// (re)setMinMax
-		if ( isFlag(kVstParameterUsesIntegerMinMax, prop.flags) ) {
-			param[i]->setMin( (float)prop.minInteger ); 
-			param[i]->setMax( (float)prop.maxInteger );
-		}
 	}
 }
 //------------------------------------------------------------------------------------------------------------
