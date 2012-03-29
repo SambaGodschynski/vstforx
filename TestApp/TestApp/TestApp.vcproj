@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\cppunit-1.12.1\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\boost_1_42_0&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\..\sqlite\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\\vstgui.sf\vstgui&quot;;&quot;$(ProjectDir)..\..\..\..\..\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\sqlite&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit-1.12.1\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost_1_49_0&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\\vstgui.sf\vstgui&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua-5.2.0\src&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRTDBG_MAP_ALLOC;_FORX_TESTSUITE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -63,7 +63,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="cppunitd.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\boost_1_42_0\stage\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\cppunit-1.12.1\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\boost_1_49_0\stage\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit-1.12.1\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -117,7 +117,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\cppunit-1.12.1\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\boost_1_42_0&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\..\sqlite\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\\vstgui.sf\vstgui&quot;;&quot;$(ProjectDir)..\..\..\..\..\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\sqlite&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit-1.12.1\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost_1_49_0&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\\vstgui.sf\vstgui&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua-5.2.0\src&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_FORX_TESTSUITE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -138,7 +138,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib cppunitd.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\boost_1_42_0\stage\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\cppunit-1.12.1\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\boost_1_49_0\stage\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit-1.12.1\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -220,6 +220,10 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath="..\..\src\tests\TestDSPTools.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Headerdateien"
@@ -264,6 +268,10 @@
 			</File>
 			<File
 				RelativePath=".\TestConfig.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\tests\TestDSPTools.h"
 				>
 			</File>
 		</Filter>
@@ -432,15 +440,147 @@
 				Name="sambag"
 				>
 				<File
-					RelativePath="..\..\..\..\..\sambag\src\sambag\cpsqlite\DataBase.cpp"
+					RelativePath="..\..\..\..\..\clibs\sambag\src\sambag\cpsqlite\DataBase.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\..\sambag\src\sambag\com\FileSystem.cpp"
+					RelativePath="..\..\..\..\..\clibs\sambag\src\sambag\com\FileSystem.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\..\sambag\src\sambag\cpsqlite\sambag_sqlite.c"
+					RelativePath="..\..\..\..\..\clibs\sambag\src\sambag\cpsqlite\sambag_sqlite.c"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="lua"
+				>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lapi.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lauxlib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lbaselib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lbitlib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lcode.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lcorolib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lctype.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\ldblib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\ldebug.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\ldo.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\ldump.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lfunc.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lgc.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\linit.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\liolib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\llex.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lmathlib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lmem.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\loadlib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lobject.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lopcodes.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\loslib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lparser.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lstate.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lstring.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lstrlib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\ltable.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\ltablib.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\ltm.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lundump.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lvm.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\..\clibs\lua-5.2.0\src\lzio.c"
 					>
 				</File>
 			</Filter>

@@ -24,9 +24,8 @@
 
 
 // Registers the fixture into the 'registry'
-#ifndef FORX_FASTTEST
 //CPPUNIT_TEST_SUITE_REGISTRATION( tests::GraphTest );
-#endif
+
 
 
 namespace { 

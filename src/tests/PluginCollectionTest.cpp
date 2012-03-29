@@ -14,7 +14,7 @@
 #include <iostream>
 #include <boost/assign/list_of.hpp>
 #include <map>
-#include <boost/timer.hpp>
+#include <boost/timer/timer.hpp>
 #include "com/PluginCollectionSQL.h"
 
 #if WIN32
@@ -23,7 +23,7 @@
 #define VSTPLUG_EXT ".vst"
 #endif
 
-#define FAST_SCAN_TIME 12.0 //two seconds
+#define FAST_SCAN_TIME 12.0 //seconds
 
 // Registers the fixture into the 'registry'
 #ifndef FORX_FASTTEST
@@ -194,7 +194,7 @@ void PluginCollectionTest::testScan() {
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan whole folder. expect 93 plugs 
 	// setup folders
 	settings->clearVSTFolders();
-	sambag::com::Location path = boost::filesystem::complete("testVstFolder");
+	sambag::com::Location path = boost::filesystem::absolute("testVstFolder");
 	settings->addVSTFolder( path.string() );
 	// start scan
 	PluginCollection::Ptr pC( PluginCollection::getPluginCollection() );
@@ -220,9 +220,9 @@ void PluginCollectionTest::testScan() {
 	CPPUNIT_ASSERT_EQUAL ( (size_t)0, pC->getNumNotChecked() );
 	CPPUNIT_ASSERT ( pC->isAllScanned() );
 	//>>>>>>>>>>>>>>>>rescan, excpect fast execute because plugs already in db
-	boost::timer timer;
+	boost::timer::cpu_timer timer;
 	pC->update( graph.get() );
-	CPPUNIT_ASSERT ( timer.elapsed() < FAST_SCAN_TIME );
+	CPPUNIT_ASSERT ( timer.elapsed().user < FAST_SCAN_TIME );
 }
 //=============================================================================
 void PluginCollectionTest::testFastScan() {
@@ -242,12 +242,12 @@ void PluginCollectionTest::testFastScan() {
 	// setup folders
 	settings->clearVSTFolders();
 	settings->fastScan = true;
-	sambag::com::Location path =  boost::filesystem::complete("testVstFolder");
+	sambag::com::Location path =  boost::filesystem::absolute("testVstFolder");
 	settings->addVSTFolder( path.string() );
 	// start scan
-	boost::timer timer; 
+	boost::timer::cpu_timer timer; 
 	pC->update( graph.get() );
-	CPPUNIT_ASSERT ( timer.elapsed() < FAST_SCAN_TIME ); 
+	CPPUNIT_ASSERT ( timer.elapsed().user < FAST_SCAN_TIME ); 
 	settings->fastScan = false;
 	//checkTree ( pC );
 	// compare scanned tree with ExpMap
@@ -280,10 +280,10 @@ void PluginCollectionTest::testFolderIntegrity1(){
 	using namespace com;
 	using namespace processing;
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>open corrupt database file
-	sambag::com::Location pathA =  boost::filesystem::complete("testVstFolder");
+	sambag::com::Location pathA =  boost::filesystem::absolute("testVstFolder");
 	sambag::com::Location db = settings->getPlugCollectionDumpFilename();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>copy corrupt file to database file
-	sambag::com::Location corruptDatabase =  boost::filesystem::complete("testVstFolder/corrupt_database");
+	sambag::com::Location corruptDatabase =  boost::filesystem::absolute("testVstFolder/corrupt_database");
 	if ( exists( db ) ) remove(db);
 	copy_file ( corruptDatabase, db ); 
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>start scan
@@ -296,7 +296,7 @@ void PluginCollectionTest::testFolderIntegrity1(){
 	pC->update( graph.get() );
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 1, pC->getNumSucceed() );
 	//>>>>>>>>>>>>>>>>has to throw something like "given folder == sub folder"
-	sambag::com::Location pathB =  boost::filesystem::complete("testVstFolder/A");
+	sambag::com::Location pathB =  boost::filesystem::absolute("testVstFolder/A");
 	settings->addVSTFolder( pathA.string() );
 	CPPUNIT_ASSERT_THROW ( 
 		settings->addVSTFolder( pathB.string() ), 
@@ -310,12 +310,12 @@ void PluginCollectionTest::testFolderIntegrity1(){
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	settings->clearVSTFolders();
 	settings->addVSTFolder( pathB.string() );
-	boost::timer t;
+	boost::timer::cpu_timer t;
 	pC->update( graph.get() );
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION, pC->getNumSucceed() );
-	CPPUNIT_ASSERT ( t.elapsed() < FAST_SCAN_TIME ); 
+	CPPUNIT_ASSERT ( t.elapsed().user < FAST_SCAN_TIME ); 
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan testVstFolder/ instead testVstFolder
-	pathA =  boost::filesystem::complete("testVstFolder/");
+	pathA =  boost::filesystem::absolute("testVstFolder/");
 	settings->clearVSTFolders();
 	settings->addVSTFolder( pathA.string() );
 	pC->update( graph.get() );
@@ -358,7 +358,7 @@ void PluginCollectionTest::testFolderIntegrity2(){
 	resetPluginCollection( graph );
 	////>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>setup folders
 	settings->clearVSTFolders();
-	sambag::com::Location pathA =  boost::filesystem::complete("testVstFolder");
+	sambag::com::Location pathA =  boost::filesystem::absolute("testVstFolder");
 	sambag::com::Location pathB =  pathA.string() + "/NeuFolder";
 	create_directory(pathB);
 	string filename1  = string("mda Delay")  + VSTPLUG_EXT;
@@ -454,7 +454,7 @@ void PluginCollectionTest::testPortability() {
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>set/scan folder(A). 
 	// setup folders
 	settings->clearVSTFolders();
-	sambag::com::Location path =  boost::filesystem::complete("testVstFolder/A");
+	sambag::com::Location path =  boost::filesystem::absolute("testVstFolder/A");
 	sambag::com::Location plugLocation = path.string() + PLUGIN_LOACTION_1;
 	settings->addVSTFolder( path.string() );
 	// start scan
@@ -483,7 +483,7 @@ void PluginCollectionTest::testPortability() {
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>re-set folders
 	pC.reset();
 	settings->clearVSTFolders();
-	path =  boost::filesystem::complete("testVstFolder/B");
+	path =  boost::filesystem::absolute("testVstFolder/B");
 	settings->addVSTFolder( path.string() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan folder(B). 
     pC = PluginCollection::getPluginCollection();
@@ -498,7 +498,7 @@ void PluginCollectionTest::testPortability() {
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>re-set folders
 	pC.reset();
 	settings->clearVSTFolders();
-	path =  boost::filesystem::complete("testVstFolder/B/B2");
+	path =  boost::filesystem::absolute("testVstFolder/B/B2");
 	settings->addVSTFolder( path.string() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan folder(B2). 
     pC = PluginCollection::getPluginCollection();
@@ -529,15 +529,15 @@ void PluginCollectionTest::testMultipleDirectories() {
 	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>setup folders
 	settings->clearVSTFolders();
 	resetPluginCollection(graph);
-	sambag::com::Location pathB1 = boost::filesystem::complete("testVstFolder/B/B1");
-	sambag::com::Location pathB2 = boost::filesystem::complete("testVstFolder/B/B2");
-	sambag::com::Location pathA = boost::filesystem::complete("testVstFolder/A");
+	sambag::com::Location pathB1 = boost::filesystem::absolute("testVstFolder/B/B1");
+	sambag::com::Location pathB2 = boost::filesystem::absolute("testVstFolder/B/B2");
+	sambag::com::Location pathA = boost::filesystem::absolute("testVstFolder/A");
 	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add B2
 	// detected bug:
 	// path comparisation in isAllScanned failed because db saves "/" 
 	// and isAllScanned searchs for "\".
 	// directory_string returns windows path style (when runing in windows)
-	settings->addVSTFolder( pathB2.directory_string() );
+	settings->addVSTFolder( pathB2.string() );
 	CPPUNIT_ASSERT ( !pC->isAllScanned() );
 	// start scan
 	pC->update( graph.get() );
@@ -547,9 +547,9 @@ void PluginCollectionTest::testMultipleDirectories() {
 	settings->addVSTFolder( pathB1.string() );
 	CPPUNIT_ASSERT ( !pC->isAllScanned() );
 	// start scan
-	boost::timer timer;
+	boost::timer::cpu_timer timer;
 	pC->update( graph.get() );
-	CPPUNIT_ASSERT ( timer.elapsed() < FAST_SCAN_TIME ); 
+	CPPUNIT_ASSERT ( timer.elapsed().user < FAST_SCAN_TIME ); 
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION, pC->getNumSucceed() );
 	CPPUNIT_ASSERT ( pC->isAllScanned() );
 	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add A

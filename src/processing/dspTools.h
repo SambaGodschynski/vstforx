@@ -10,12 +10,12 @@
 
 #include <math.h>
 #include <string>
-#include "processing/processing.h"
+#include "processing/IHostInfo.h"
 #include "processing/parameter/parameter.h"
 #include "com/Serialization.h"
 #include "time.h"
 #include "processing/IHostInfo.h"
-#include <boost/timer.hpp>
+#include <boost/timer/timer.hpp>
 #include <map>
 
 namespace processing {
@@ -103,22 +103,49 @@ public:
 // isElapsed() hatt wahrheitswert true nach abgelaufener zeit (s).
 //========================================================================================================
 class Timer {
-private:
-	//----------------------------------------------------------------------------------------------------
-	boost::timer timer;
-	//----------------------------------------------------------------------------------------------------
-	bool _isRunning;
 public:
 	//----------------------------------------------------------------------------------------------------
-	Timer () : _isRunning(false) {}
+	typedef boost::timer::nanosecond_type NanosecondsType;
 	//----------------------------------------------------------------------------------------------------
-	void stop () { _isRunning=false; } 
+	typedef boost::timer::cpu_timer TimerImpl;
 	//----------------------------------------------------------------------------------------------------
-	void start () { _isRunning=true; timer.restart(); } 
+	static const NanosecondsType ONE_SECOND_IN_NANO = 1000000000;
 	//----------------------------------------------------------------------------------------------------
-	bool isElapsed( const double &t ) const { return timer.elapsed() > t && _isRunning; } 
+	static const NanosecondsType ONE_MILLI_IN_NANO = 1000000;
 	//----------------------------------------------------------------------------------------------------
-	bool isRunning() const { return _isRunning; }
+	typedef double SecondType;
+private:
+	//----------------------------------------------------------------------------------------------------
+	TimerImpl timer;
+public:
+	//----------------------------------------------------------------------------------------------------
+	const TimerImpl & getTimerImpl() const {return timer;}
+	//----------------------------------------------------------------------------------------------------
+	Timer(){}
+	//----------------------------------------------------------------------------------------------------
+	void stop () { 
+		timer.stop();
+	} 
+	//----------------------------------------------------------------------------------------------------
+	void start () { timer.start(); } 
+	//----------------------------------------------------------------------------------------------------
+	/**
+	 * @return elapsed time in nanoseconds
+	 */
+	inline NanosecondsType elapsed() const {
+		return timer.elapsed().wall;
+	}
+	//----------------------------------------------------------------------------------------------------
+	/**
+	 * @param t time in seconds
+	 * @return true if t > timer.elapsed()
+	 */
+	bool isElapsed( const SecondType &t ) const { 
+		SecondType tt = t*(SecondType)ONE_SECOND_IN_NANO;
+		return (NanosecondsType)tt < elapsed();
+	} 
+	//----------------------------------------------------------------------------------------------------
+	bool isRunning() const { return !timer.is_stopped(); }
 };
 //========================================================================================================
 // DelayedClockEdge:
@@ -141,7 +168,7 @@ private: // h_ HIGH / l_LOW
 	//----------------------------------------------------------------------------------------------------
 	Timer h_timer, l_timer;
 	//----------------------------------------------------------------------------------------------------
-	double duration;
+	Timer::SecondType duration;
 	//----------------------------------------------------------------------------------------------------
 	bool out;
 	//----------------------------------------------------------------------------------------------------
@@ -167,7 +194,7 @@ private: // h_ HIGH / l_LOW
 		}
 	}
 public:
-	DelayedClockEdge ( const double &duration_sec ) : duration( duration_sec ), out(false) {}
+	DelayedClockEdge ( const Timer::SecondType &duration_sec ) : duration( duration_sec ), out(false) {}
 	//----------------------------------------------------------------------------------------------------
 	ClockEdge::EdgeValue in ( bool expr ) {
 		h_in ( expr );
