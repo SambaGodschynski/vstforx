@@ -83,6 +83,7 @@ private:
 	void serialize ( Archive &ar, const unsigned int version ) {
 		using namespace processing::parameter;
 		ar & boost::serialization::base_object<ProcessAdapter> ( *this );
+		ar & boost::serialization::base_object<MidiEventProcessor> ( *this );
 		ar & pluginInfo;
 		ar & plugVendor;
 		ar & editorPosX;

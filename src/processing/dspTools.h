@@ -10,7 +10,6 @@
 
 #include <math.h>
 #include <string>
-#include "processing/IHostInfo.h"
 #include "processing/parameter/parameter.h"
 #include "com/Serialization.h"
 #include "time.h"
