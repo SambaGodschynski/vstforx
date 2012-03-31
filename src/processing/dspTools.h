@@ -202,19 +202,31 @@ public:
 	}
 };
 //========================================================================================================
-// Abstrakte Klasse AFadeValue:
-// Erreicht sein Zielwert nach d mal getValue() abfragen.
-// TODO: remove virtual hirachy -> FadeValue<Tweens> (Tweens = calculation policy) 
+/** 
+ * @class FadeValue:
+ * Erreicht sein Zielwert nach d mal getValue() abfragen.
+ * TODO: remove virtual hirachy -> FadeValue<Tweens> (Tweens = calculation policy)
+ * CalcPolicy concepts:
+ *   struct CalculatorPolicy {
+ *     template < typename Archive >
+ *	   void serialize ( Archive &ar, const unsigned int version );
+ *     T calc(T b, T d, T c, T t);
+ *   }
+ */
 //========================================================================================================
-class AFadeValue {
+template <class CalcPolicy> 
+class FadeValueImpl : public CalcPolicy {
 friend class boost::serialization::access;
 public:
 	//----------------------------------------------------------------------------------------------------
-	typedef float T;
+	typedef typename CalcPolicy::T T;
+	//----------------------------------------------------------------------------------------------------
+	typedef CalcPolicy CalcPolicyType;
 private:
 	//----------------------------------------------------------------------------------------------------
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){
+		ar & boost::serialization::base_object<CalcPolicy> ( *this );
 		ar & b;
 		ar & e;
 		ar & d;
@@ -222,13 +234,11 @@ private:
 		ar & t;
 		ar & value;
 	}
-protected:
 	//----------------------------------------------------------------------------------------------------
 	T b,e,d,c,t,value; // b = anfangswert, e = endwert, d = dauer (in samples), c = e - b
+public:
 	//----------------------------------------------------------------------------------------------------
-	virtual T _getValue() = 0;
-	//----------------------------------------------------------------------------------------------------
-	explicit AFadeValue ( const T &initvalue = 0 ) : 
+	explicit FadeValueImpl ( const T &initvalue = 0 ) : 
 	t(0), b(0), e(0), d(1), c(0), value(initvalue)
 	{
 		if (initvalue>0) {
@@ -238,7 +248,7 @@ protected:
 	} 
 public:
 	//----------------------------------------------------------------------------------------------------
-	void clone ( const AFadeValue &n ){
+	void clone ( const FadeValueImpl &n ){
 		b = n.b;
 		e = n.e;
 		c = n.c;
@@ -253,7 +263,7 @@ public:
 	T getValue() { 
 		if ( t > d )  { return e; }
 		++t; 
-		return _getValue(); 
+		return CalcPolicy::calc(b, d, c, t); 
 	}
 	//----------------------------------------------------------------------------------------------------
 	void setValue ( const T &v ){
@@ -274,17 +284,17 @@ public:
 	void setDuration ( const T &v ){ d = (v>1.0f)? v : 1.0f; } // darf nicht 0 sein.
 	//----------------------------------------------------------------------------------------------------
 	void operator = ( const T &v ) { setValue (v); }
-	//----------------------------------------------------------------------------------------------------
-	virtual ~AFadeValue(){}
 };
 //========================================================================================================
-// Klasse FadeValue:
+// Klasse Tweens:
 // Berechnungen nach Robert Penner: Motion, Tweening, and Easing.
 // http://www.robertpenner.com/easing/penner_chapter7_tweening.pdf
 //========================================================================================================
-class FadeValue : public AFadeValue {
+class Tweens  {
 friend class boost::serialization::access;
 public:
+	//----------------------------------------------------------------------------------------------------
+	typedef float T;
 	//----------------------------------------------------------------------------------------------------
 	enum FadeType { LIN, QUAD, CUB, QUART, QUINT, EXP, NUM_FADE_TYPES };
 private:
@@ -293,7 +303,6 @@ private:
 	//----------------------------------------------------------------------------------------------------
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){
-		ar & boost::serialization::base_object< AFadeValue > ( *this );
 		ar & p;
 		ar & type;
 	}
@@ -301,40 +310,35 @@ private:
 	T p;
 public:
 	//----------------------------------------------------------------------------------------------------
-	explicit FadeValue ( const T &initValue = 0 ) : AFadeValue( initValue ), type (LIN) {
-		setDuration ( 1.0f );
-	} 
-	//----------------------------------------------------------------------------------------------------
 	void setType ( FadeType _type ) { type = _type; }
 	//----------------------------------------------------------------------------------------------------
 	FadeType getType () { return type; }
 	//----------------------------------------------------------------------------------------------------
-	virtual T _getValue() {
+	T calc(T b, T d, T c, T t) {
 		switch ( type ){
-			case LIN : return calcLIN(); 
-			case QUAD : return calcQUAD();
-			case CUB : return calcCUB(); 
-			case QUART : return calcQUART();
-			case QUINT : return calcQUINT();
-			case EXP : return calcEXP();
+			case LIN : return calcLIN(b, d, c, t); 
+			case QUAD : return calcQUAD(b, d, c, t);
+			case CUB : return calcCUB(b, d, c, t); 
+			case QUART : return calcQUART(b, d, c, t);
+			case QUINT : return calcQUINT(b, d, c, t);
+			case EXP : return calcEXP(b, d, c, t);
 		}
-		return calcLIN();
+		return calcLIN(b, d, c, t);
 	}
 	//----------------------------------------------------------------------------------------------------
-	T calcLIN(){ return c*t/d + b; }
+	T calcLIN(T b, T d, T c, T t){ return c*t/d + b; }
 	//----------------------------------------------------------------------------------------------------
-	T calcQUAD(){ p=t/d; return c*p*p + b; }
+	T calcQUAD(T b, T d, T c, T t){ p=t/d; return c*p*p + b; }
 	//----------------------------------------------------------------------------------------------------
-	T calcCUB(){ p=t/d; return c*p*p*p + b;  }
+	T calcCUB(T b, T d, T c, T t){ p=t/d; return c*p*p*p + b;  }
 	//----------------------------------------------------------------------------------------------------
-	T calcQUART(){ p=t/d; return c*p*p*p*p + b; }
+	T calcQUART(T b, T d, T c, T t){ p=t/d; return c*p*p*p*p + b; }
 	//----------------------------------------------------------------------------------------------------
-	T calcQUINT(){ p=t/d; return c*p*p*p*p*p + b; }
+	T calcQUINT(T b, T d, T c, T t){ p=t/d; return c*p*p*p*p*p + b; }
 	//----------------------------------------------------------------------------------------------------
-	T calcEXP(){ p=t/d; return c * (float)pow(2.0, 10.0 * ( p - 1.0 )) + b; }
-	//----------------------------------------------------------------------------------------------------
-	void operator = ( const T &v ) { setValue (v); }
+	T calcEXP(T b, T d, T c, T t){ p=t/d; return c * (float)pow(2.0, 10.0 * ( p - 1.0 )) + b; }
 };
+typedef FadeValueImpl<Tweens> FadeValue;
 //========================================================================================================
 // Klasse ADSR :
 // Attack, Decay, Sustain, Release bestehend aus FadeValue
