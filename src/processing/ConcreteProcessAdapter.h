@@ -435,7 +435,7 @@ public:
 	 * @param n
 	 * @return Fader-Wert und erhoert Fader-t um 1.
 	 */
-	const FadeValue::T & getFaderValueAndIncT ( size_t n ) { return nFader[n].getValue(); } 
+	FadeValue::T getFaderValueAndIncT ( size_t n ) { return nFader[n].getValue(); } 
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param n

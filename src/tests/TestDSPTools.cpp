@@ -12,7 +12,7 @@
 
 
 // Registers the fixture into the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( tests::TestDSPTools );
+//CPPUNIT_TEST_SUITE_REGISTRATION( tests::TestDSPTools );
 
 void _testTimer(processing::Timer::SecondType timeToWait) {
 	using namespace processing;

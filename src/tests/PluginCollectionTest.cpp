@@ -26,7 +26,7 @@
 #define FAST_SCAN_TIME 12.0 //seconds
 
 // Registers the fixture into the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( tests::PluginCollectionTest );
+//CPPUNIT_TEST_SUITE_REGISTRATION( tests::PluginCollectionTest );
 
 
 namespace tests {

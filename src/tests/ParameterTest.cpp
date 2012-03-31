@@ -14,7 +14,7 @@
 #include "com/one4All.h"
 
 // Registers the fixture into the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( tests::ParameterTest );
+///CPPUNIT_TEST_SUITE_REGISTRATION( tests::ParameterTest );
 
 #define SMALL_VALUE 0.001f
 #define TEST_BORDERS(p,_min,_max) \

@@ -204,6 +204,7 @@ public:
 //========================================================================================================
 // Abstrakte Klasse AFadeValue:
 // Erreicht sein Zielwert nach d mal getValue() abfragen.
+// TODO: remove virtual hirachy -> FadeValue<Tweens> (Tweens = calculation policy) 
 //========================================================================================================
 class AFadeValue {
 friend class boost::serialization::access;
@@ -220,18 +221,21 @@ private:
 		ar & c;
 		ar & t;
 		ar & value;
-		ar & fin;
 	}
 protected:
 	//----------------------------------------------------------------------------------------------------
 	T b,e,d,c,t,value; // b = anfangswert, e = endwert, d = dauer (in samples), c = e - b
 	//----------------------------------------------------------------------------------------------------
-	virtual const T & _getValue() = 0;
+	virtual T _getValue() = 0;
 	//----------------------------------------------------------------------------------------------------
 	explicit AFadeValue ( const T &initvalue = 0 ) : 
-	t(0), b(0), e(0), d(1), c(0), value(initvalue), fin(false) {} 
-	//----------------------------------------------------------------------------------------------------
-	bool fin;
+	t(0), b(0), e(0), d(1), c(0), value(initvalue)
+	{
+		if (initvalue>0) {
+			e = initvalue;
+			b = initvalue;
+		}
+	} 
 public:
 	//----------------------------------------------------------------------------------------------------
 	void clone ( const AFadeValue &n ){
@@ -239,17 +243,15 @@ public:
 		e = n.e;
 		c = n.c;
 		t = n.t;
-		fin = n.fin;
 		value = n.value;
 	}
 	//----------------------------------------------------------------------------------------------------
 	operator T() { return getValue(); }
 	//----------------------------------------------------------------------------------------------------
-	bool isFinished(){ return fin; }
+	bool isFinished(){ return t>d; }
 	//----------------------------------------------------------------------------------------------------
-	const T & getValue() { 
-		if ( t > d )  { fin=true;return e; }
-		fin = false;
+	T getValue() { 
+		if ( t > d )  { return e; }
 		++t; 
 		return _getValue(); 
 	}
@@ -259,7 +261,6 @@ public:
 		e = v;
 		c = e - b;
 		t = 0;
-		fin = false;
 	}
 	//----------------------------------------------------------------------------------------------------
 	void resetEndValue ( const T &v ){
@@ -308,7 +309,7 @@ public:
 	//----------------------------------------------------------------------------------------------------
 	FadeType getType () { return type; }
 	//----------------------------------------------------------------------------------------------------
-	virtual const T & _getValue() {
+	virtual T _getValue() {
 		switch ( type ){
 			case LIN : return calcLIN(); 
 			case QUAD : return calcQUAD();
@@ -320,17 +321,17 @@ public:
 		return calcLIN();
 	}
 	//----------------------------------------------------------------------------------------------------
-	const T & calcLIN(){ value = c*t/d + b; return value; }
+	T calcLIN(){ return c*t/d + b; }
 	//----------------------------------------------------------------------------------------------------
-	const T & calcQUAD(){ p=t/d; value = c*p*p + b; return value; }
+	T calcQUAD(){ p=t/d; return c*p*p + b; }
 	//----------------------------------------------------------------------------------------------------
-	const T & calcCUB(){ p=t/d; value = c*p*p*p + b; return value; }
+	T calcCUB(){ p=t/d; return c*p*p*p + b;  }
 	//----------------------------------------------------------------------------------------------------
-	const T & calcQUART(){ p=t/d; value = c*p*p*p*p + b; return value; }
+	T calcQUART(){ p=t/d; return c*p*p*p*p + b; }
 	//----------------------------------------------------------------------------------------------------
-	const T & calcQUINT(){ p=t/d; value = c*p*p*p*p*p + b; return value; }
+	T calcQUINT(){ p=t/d; return c*p*p*p*p*p + b; }
 	//----------------------------------------------------------------------------------------------------
-	const T & calcEXP(){ p=t/d; value = c * (float)pow(2.0, 10.0 * ( p - 1.0 )) + b; return value; }
+	T calcEXP(){ p=t/d; return c * (float)pow(2.0, 10.0 * ( p - 1.0 )) + b; }
 	//----------------------------------------------------------------------------------------------------
 	void operator = ( const T &v ) { setValue (v); }
 };
