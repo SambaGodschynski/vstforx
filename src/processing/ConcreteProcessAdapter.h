@@ -99,8 +99,8 @@ protected:
 		return one_ms*5.0f;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	Volume ( IHostInfo *hostInfo, float initValue ) : 
-		ProcessAdapter( hostInfo, 1, 1 ), fader( initValue ) 
+	Volume ( IHostInfo *hostInfo, float initValue = 1.0 ) : 
+		ProcessAdapter( hostInfo, 1, 1 ), fader(initValue) 
 	{
 		setName ("Volume");
 		volume = Parameter::create();

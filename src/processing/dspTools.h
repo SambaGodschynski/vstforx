@@ -41,8 +41,11 @@ inline int note2Sample ( double noteVal, double tempo, double samplerate ){
 	return (int) ( oneMsInSamples * wholeInMs * noteVal );
 }
 //========================================================================================================
-// Klasse SimpleFadeValue:
-// Erreicht sein Zielwert nach N schritten. ( n Abfragen bzw. Samples )
+/** 
+ * @deprecated
+ * @class SimpleFadeValue:
+ * Erreicht sein Zielwert nach N schritten. ( n Abfragen bzw. Samples )
+ */
 //========================================================================================================
 template <typename T, int N> 
 class SimpleFadeValue {
@@ -205,7 +208,6 @@ public:
 /** 
  * @class FadeValue:
  * Erreicht sein Zielwert nach d mal getValue() abfragen.
- * TODO: remove virtual hirachy -> FadeValue<Tweens> (Tweens = calculation policy)
  * CalcPolicy concepts:
  *   struct CalculatorPolicy {
  *     template < typename Archive >
@@ -248,22 +250,17 @@ public:
 	} 
 public:
 	//----------------------------------------------------------------------------------------------------
-	void clone ( const FadeValueImpl &n ){
-		b = n.b;
-		e = n.e;
-		c = n.c;
-		t = n.t;
-		value = n.value;
-	}
-	//----------------------------------------------------------------------------------------------------
 	operator T() { return getValue(); }
 	//----------------------------------------------------------------------------------------------------
 	bool isFinished(){ return t>d; }
 	//----------------------------------------------------------------------------------------------------
 	T getValue() { 
-		if ( t > d )  { return e; }
+		if ( t > d )  { 
+			return e; 
+		}
 		++t; 
-		return CalcPolicy::calc(b, d, c, t); 
+		value = CalcPolicy::calc(b, d, c, t); 
+		return value;
 	}
 	//----------------------------------------------------------------------------------------------------
 	void setValue ( const T &v ){
