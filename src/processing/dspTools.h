@@ -337,6 +337,7 @@ public:
 //========================================================================================================
 // Klasse ADSR :
 // Attack, Decay, Sustain, Release bestehend aus FadeValue
+// TODO: split adsr and trigger
 //========================================================================================================
 class ADSR : public processing::parameter::HasParameter {
 friend class boost::serialization::access;
