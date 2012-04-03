@@ -11,7 +11,6 @@
 #include "processing/ConcreteProcessAdapter.h"
 #include "PpiEditor.h"
 #include "OS_Specific/WindowDef.h"
-#include "processing/RemoteChannel.h"
 
 namespace ppiGui{
 using namespace menu;
@@ -300,24 +299,7 @@ inline void CircuidControl::getMenuEntryList ( menu::MenuEntryList &mE ){
 			view->getFrame()									               // CFrame 
 		);
 	}
-	ADD_SUB_MENU ( mE, "host_knobs", pCM );
-
-	// add remote channels
-	using namespace processing;
-	const RegisteredChannels &channels = 
-		RemoteChannelManager::instance()->getRegisteredChannels();
-	if (channels.empty())
-		return;
-
-	CMenu::Ptr remotChannelSub = CSubMenu::create( view->getFrame() );
-	MenuEntryList &rsub = remotChannelSub->getMenuEntries();
-
-	BOOST_FOREACH(const RemoteChannel &channel, channels) {
-		ADD_MENU_LABEL ( rsub, channel.name, new CmdCreateVolumeNode ( view, gObjCtrlDirector ) );
-	}
-
-	ADD_SUB_MENU ( mE, "remote_channels", remotChannelSub );
-	
+	ADD_SUB_MENU ( mE, "host_knobs", pCM );	
 }
 //------------------------------------------------------------------------------------------------------------
 CircuidControl::~CircuidControl(){
