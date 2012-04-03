@@ -9,7 +9,9 @@
 #include <boost/interprocess/managed_shared_memory.hpp>
 
 namespace boost { namespace interprocess {
-	typedef allocator<int, managed_shared_memory::segment_manager>  ShmemAllocator;
+	typedef allocator<int, 
+		managed_shared_memory::segment_manager
+	>  ShmemAllocator;
 }}
 
 namespace processing {
@@ -18,7 +20,12 @@ namespace processing {
 struct RemoteChannel {
 //=============================================================================
 	std::string name;
+	std::string bufferId;
 	RemoteChannel(const std::string &name) : name(name) {}
+	typedef std::vector<
+		float, 
+		boost::interprocess::ShmemAllocator
+	> Buffer;
 };
 
 typedef std::vector<
@@ -31,7 +38,9 @@ class RemoteChannelManager {
 //=============================================================================
 private:
 	RemoteChannelManager();
+	void createChannelBuffer(RemoteChannel &channel);
 public:
+	RemoteChannel::Buffer & getChannelBuffer(const RemoteChannel &channel);
 	static RemoteChannelManager * instance();
 	RemoteChannel * createRemoteChannel(const std::string &name);
 	void removeRemoteChannel(const std::string &name);
