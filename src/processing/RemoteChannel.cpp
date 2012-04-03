@@ -6,6 +6,7 @@ using namespace boost::interprocess;
 
 #define REMOTE_CHANNEL "VSTForx RemoteChannel"
 #define CHANNEL_REGISTER "VSTForx ChannelRegister"
+#define CHANNEL_BUFFER "Channel Buffer"
 
 namespace {
 	managed_shared_memory segment;
@@ -35,6 +36,20 @@ void initSharedMemory(int tries = 0) {
 // RemoteChannelManager
 //=============================================================================
 //-----------------------------------------------------------------------------
+void RemoteChannelManager::createChannelBuffer(RemoteChannel &channel) {
+	const ShmemAllocator alloc_inst (segment.get_segment_manager());
+	channel.bufferId = channel.name + " " + CHANNEL_BUFFER;
+	segment.find_or_construct<RemoteChannel::Buffer>
+		(channel.bufferId.c_str())(alloc_inst);
+}
+//-----------------------------------------------------------------------------
+RemoteChannel::Buffer & 
+RemoteChannelManager::getChannelBuffer(const RemoteChannel &channel) 
+{
+	return *segment.find<RemoteChannel::Buffer>
+		(channel.bufferId.c_str()).first;
+}
+//-----------------------------------------------------------------------------
 RemoteChannelManager::RemoteChannelManager() {
 	initSharedMemory();
 }
@@ -48,6 +63,7 @@ RemoteChannel *
 RemoteChannelManager::createRemoteChannel(const std::string &name)
 {
 	channels->push_back(RemoteChannel(name));
+	createChannelBuffer(channels->back());
 	return &channels->back();
 }
 //-----------------------------------------------------------------------------
@@ -55,6 +71,7 @@ void RemoteChannelManager::removeRemoteChannel(const std::string &name) {
 	RegisteredChannels::iterator it = channels->begin();
 	for(; it!=channels->end(); ++it) {
 		if(it->name==name) {
+			segment.destroy<RemoteChannel::Buffer>(it->bufferId.c_str());
 			channels->erase(it);
 			break;
 		}
