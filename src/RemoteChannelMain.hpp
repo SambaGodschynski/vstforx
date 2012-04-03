@@ -7,43 +7,37 @@
 #ifndef REMOTECHANNEL_MAIN_HPP_
 #define REMOTECHANNEL_MAIN_HPP_
 
-#include <sambag/dsp/VST2xPluginWrapper.hpp>
+#include <sambag/dsp/DspPlugin.hpp>
 #include <string>
+#include "processing/RemoteChannel.h"
 
 //=============================================================================
-struct ParameterAcessor {
-	template <class Plugin, typename T>
-	void setParameterValue(Plugin &plugin, int index, const T &value){
-		plugin.volume = value;
-	}
-	template <class Plugin, typename T>
-	void getParameterValue(const Plugin &plugin, int index, T &value){
-		value = plugin.volume;
-	}
-	template <class Plugin, class String>
-	void getParameterName (const Plugin &plugin, int index, String &outStr){
-		outStr = "volume";
-	}
-	template <class Plugin, class String>
-	void getParameterLabel(const Plugin &plugin, int index, String &outStr){
-	}
-	template <class Plugin, class String>
-	void getParameterDisplay(const Plugin &plugin, int index, String &outStr){
-	}
-};
-
+class RemoteChannelProcessor : public sambag::dsp::PluginProcessorBase {
 //=============================================================================
-class RemoteChannelProcessor {
-//=============================================================================
-friend struct ParameterAcessor;
 private:
 	//-------------------------------------------------------------------------
+	processing::RemoteChannel * remoteChannel;
+	//-------------------------------------------------------------------------
 	float volume;
+	//-------------------------------------------------------------------------
+	static int instances;
+	//-------------------------------------------------------------------------
+	std::string name;
 public:
 	//-------------------------------------------------------------------------
-	RemoteChannelProcessor() : volume(0) {}
+	~RemoteChannelProcessor();
 	//-------------------------------------------------------------------------
-	void process(float **in, float**out, VstInt32 numSamples);
+	RemoteChannelProcessor();
+	//-------------------------------------------------------------------------
+	void process(float **in, float**out, int numSamples);
+	//-------------------------------------------------------------------------
+	void setParameterValue(int index, float value) {
+		volume = value;
+	}
+	//-------------------------------------------------------------------------
+	void getParameterValue(int index, float &outValue) {
+		outValue = volume;
+	}
 };
 
 #endif //VSTFORX_MAIN_HPP_

@@ -1,9 +1,28 @@
 #include "RemoteChannelMain.hpp"
 #include "com/One4All.h"
 #include <stdlib.h>
+#include <sambag/dsp/VST2xPluginWrapper.hpp>
+#include <sstream>
+
 //=============================================================================
 // class RemoteChannelProcessor 
 //=============================================================================
+//-----------------------------------------------------------------------------
+int RemoteChannelProcessor::instances = 0;
+//-----------------------------------------------------------------------------
+RemoteChannelProcessor::RemoteChannelProcessor() : volume(0) {
+	using namespace processing;
+	std::stringstream ss;
+	ss << "remoteChannel " << instances++;
+	name = ss.str();
+	remoteChannel = 
+		RemoteChannelManager::instance()->createRemoteChannel(name);
+}
+//-----------------------------------------------------------------------------
+RemoteChannelProcessor::~RemoteChannelProcessor() {
+	using namespace processing;
+	RemoteChannelManager::instance()->removeRemoteChannel(name);
+}
 //-----------------------------------------------------------------------------
 void RemoteChannelProcessor::process(float **in, float **out, int numSamples) {
 	// noisy
@@ -23,8 +42,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 	typedef VST2xPluginWrapper<
 		RemoteChannelProcessor, // Processor
 		'frxr', // uid
-		StdPluginTraits<1,1,false,1>, // plugin constructor
-		ParameterAcessor
+		sambag::dsp::StdPluginTraits<1,1,false,1> // plugin constructor
 	> Plugin;
 	// create plugin
 	try{
