@@ -664,6 +664,10 @@
 						RelativePath="..\..\src\processing\processing.h"
 						>
 					</File>
+					<File
+						RelativePath="..\..\src\processing\RemoteChannel.cpp"
+						>
+					</File>
 					<Filter
 						Name="parameter"
 						>

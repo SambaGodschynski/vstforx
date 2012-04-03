@@ -37,6 +37,9 @@ using namespace parameter;
  * @class PPIVst.
  * AudioEffectX class for VSTForx.
  * TODO: create one classfile for mac and win.
+ * Problems trying migrate to VSTPluginWrapper:
+ *   - Editor needs graph on open
+ *   - IHostInfo where to get?
  */
 class PPIVst :
 	public AudioEffectX, 
