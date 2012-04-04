@@ -26,18 +26,17 @@ void initSharedMemory(int tries = 0) {
 		return;
 	}
 	//Initialize shared memory STL-compatible allocator
-	const ShmemAllocator alloc_inst (segment.get_segment_manager());
+	const ChannelAllocator alloc_inst (segment.get_segment_manager());
 	//Construct a vector in shared memory with argument alloc_inst
 	channels = 
 		segment.find_or_construct<RegisteredChannels>(CHANNEL_REGISTER)(alloc_inst);
 }
-
 //=============================================================================
 // RemoteChannelManager
 //=============================================================================
 //-----------------------------------------------------------------------------
 void RemoteChannelManager::createChannelBuffer(RemoteChannel &channel) {
-	const ShmemAllocator alloc_inst (segment.get_segment_manager());
+	BufferAllocator alloc_inst (segment.get_segment_manager());
 	channel.bufferId = channel.name + " " + CHANNEL_BUFFER;
 	segment.find_or_construct<RemoteChannel::Buffer>
 		(channel.bufferId.c_str())(alloc_inst);
@@ -62,9 +61,11 @@ RemoteChannelManager * RemoteChannelManager::instance() {
 RemoteChannel * 
 RemoteChannelManager::createRemoteChannel(const std::string &name)
 {
+	using namespace boost::interprocess;
 	channels->push_back(RemoteChannel(name));
-	createChannelBuffer(channels->back());
-	return &channels->back();
+	RemoteChannel &neu = channels->back();
+	createChannelBuffer(neu);
+	return &neu;
 }
 //-----------------------------------------------------------------------------
 void RemoteChannelManager::removeRemoteChannel(const std::string &name) {
@@ -84,5 +85,4 @@ void RemoteChannelManager::removeRemoteChannel(const std::string &name) {
 const RegisteredChannels & RemoteChannelManager::getRegisteredChannels() {
 	return *channels;
 }
-
 } // namespace

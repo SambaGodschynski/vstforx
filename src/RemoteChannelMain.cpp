@@ -13,10 +13,22 @@ int RemoteChannelProcessor::instances = 0;
 RemoteChannelProcessor::RemoteChannelProcessor() : volume(0) {
 	using namespace processing;
 	std::stringstream ss;
-	ss << "remoteChannel " << instances++;
+	instance = instances++;
+	ss << "remoteChannel " << instance;
 	name = ss.str();
 	remoteChannel = 
 		RemoteChannelManager::instance()->createRemoteChannel(name);
+	if (instance==0) {
+		buffer =
+			&RemoteChannelManager::instance()->getChannelBuffer(*remoteChannel);
+		buffer->resize(255);
+	}
+	if (instance==1) {
+		const RemoteChannel &remoteChannel = 
+			RemoteChannelManager::instance()->getRegisteredChannels()[0];
+		buffer =
+			&RemoteChannelManager::instance()->getChannelBuffer(remoteChannel);
+	}
 }
 //-----------------------------------------------------------------------------
 RemoteChannelProcessor::~RemoteChannelProcessor() {
@@ -24,11 +36,31 @@ RemoteChannelProcessor::~RemoteChannelProcessor() {
 	RemoteChannelManager::instance()->removeRemoteChannel(name);
 }
 //-----------------------------------------------------------------------------
+void writeBuffer(float **in, float **out, processing::RemoteChannel::Buffer &bff) {
+	using namespace processing;
+	for (size_t i=0; i<255; ++i) {
+		bff[i] = in[0][i];
+	}
+}
+//-----------------------------------------------------------------------------
+void readBuffer(float **in, float **out, processing::RemoteChannel::Buffer &bff) {
+	for (size_t i=0; i<255; ++i) {
+		out[0][i] = bff[i];
+		out[1][i] = bff[i];
+	}
+	/*// noisy
+	for (int i=0; i<255; ++i) {
+		out[0][i] = (float)rand()/(float)RAND_MAX;
+		out[1][i] = (float)rand()/(float)RAND_MAX;
+	}*/
+}
+//-----------------------------------------------------------------------------
 void RemoteChannelProcessor::process(float **in, float **out, int numSamples) {
-	// noisy
-	for (int i=0; i<numSamples; ++i) {
-		out[0][i] = (float)rand()/(float)RAND_MAX * volume;
-		out[1][i] = (float)rand()/(float)RAND_MAX * volume;
+	if (instance==0) {
+		writeBuffer(in, out, *buffer);
+	}
+	if (instance==1) {
+		readBuffer(in, out, *buffer);
 	}
 }
 

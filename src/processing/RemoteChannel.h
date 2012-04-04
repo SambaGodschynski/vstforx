@@ -3,16 +3,18 @@
 
 #include "processing/Frames.h"
 #include <string>
-#include <vector>
+//#include <vector>
+#include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/containers/vector.hpp>
 #include <boost/interprocess/allocators/allocator.hpp>
-#include <boost/interprocess/managed_shared_memory.hpp>
 
-namespace boost { namespace interprocess {
-	typedef allocator<int, 
-		managed_shared_memory::segment_manager
-	>  ShmemAllocator;
-}}
+using namespace boost::interprocess;
+
+
+typedef allocator<float, 
+	managed_shared_memory::segment_manager
+>  BufferAllocator;
+
 
 namespace processing {
 
@@ -22,15 +24,19 @@ struct RemoteChannel {
 	std::string name;
 	std::string bufferId;
 	RemoteChannel(const std::string &name) : name(name) {}
-	typedef std::vector<
+	typedef vector<
 		float, 
-		boost::interprocess::ShmemAllocator
+		BufferAllocator
 	> Buffer;
 };
 
-typedef std::vector<
+typedef allocator<RemoteChannel, 
+	managed_shared_memory::segment_manager
+>  ChannelAllocator;
+
+typedef vector<
 	RemoteChannel, 
-	boost::interprocess::ShmemAllocator
+	ChannelAllocator
 > RegisteredChannels;
 
 //=============================================================================
