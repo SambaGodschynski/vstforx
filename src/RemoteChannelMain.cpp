@@ -17,23 +17,25 @@ RemoteChannelProcessor::RemoteChannelProcessor() : volume(0) {
 	ss << "remoteChannel " << instance;
 	name = ss.str();
 	remoteChannel = 
-		RemoteChannelManager::instance()->createRemoteChannel(name);
+		getRemoteChannelManager()->createRemoteChannel(name);
 	if (instance==0) {
-		buffer =
-			&RemoteChannelManager::instance()->getChannelBuffer(*remoteChannel);
+		buffer = &(getRemoteChannelManager()->getChannelBuffer(remoteChannel));
 		buffer->resize(255);
 	}
 	if (instance==1) {
-		const RemoteChannel &remoteChannel = 
-			RemoteChannelManager::instance()->getRegisteredChannels()[0];
-		buffer =
-			&RemoteChannelManager::instance()->getChannelBuffer(remoteChannel);
+		readChannel = 
+			(getRemoteChannelManager()->getRegisteredChannels()["remoteChannel 0"].first);
+		buffer = &(getRemoteChannelManager()->getChannelBuffer(readChannel));
 	}
 }
 //-----------------------------------------------------------------------------
 RemoteChannelProcessor::~RemoteChannelProcessor() {
 	using namespace processing;
-	RemoteChannelManager::instance()->removeRemoteChannel(name);
+	if (instance==1) {
+		getRemoteChannelManager()->releaseChannelBuffer(readChannel);
+	}
+	getRemoteChannelManager()->releaseChannelBuffer(remoteChannel);
+	getRemoteChannelManager()->releaseChannel(remoteChannel);
 }
 //-----------------------------------------------------------------------------
 void writeBuffer(float **in, float **out, processing::RemoteChannel::Buffer &bff) {
@@ -74,7 +76,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 	typedef VST2xPluginWrapper<
 		RemoteChannelProcessor, // Processor
 		'frxr', // uid
-		sambag::dsp::StdPluginTraits<1,1,false,1> // plugin constructor
+		sambag::dsp::StdPluginTraits<1,1,false,0> // plugin constructor
 	> Plugin;
 	// create plugin
 	try{

@@ -26,14 +26,31 @@ void initSharedMemory(int tries = 0) {
 		return;
 	}
 	//Initialize shared memory STL-compatible allocator
-	const ChannelAllocator alloc_inst (segment.get_segment_manager());
+	ChannelAllocator alloc_inst (segment.get_segment_manager());
 	//Construct a vector in shared memory with argument alloc_inst
 	channels = 
-		segment.find_or_construct<RegisteredChannels>(CHANNEL_REGISTER)(alloc_inst);
+		segment.find_or_construct<RegisteredChannels>
+		(CHANNEL_REGISTER)(std::less<std::string>(), alloc_inst);
 }
 //=============================================================================
 // RemoteChannelManager
 //=============================================================================
+//-----------------------------------------------------------------------------
+RCMValueType RemoteChannelManager::create(const std::string &name) {
+	RCMappedType v(RemoteChannel(name), 1);
+	return RCMValueType(name, v);
+}
+//-----------------------------------------------------------------------------
+int & RemoteChannelManager::getNbReferences(const RemoteChannel &channel) {
+	RegisteredChannels::iterator it = channels->find(channel.name);
+	if (it==channels->end()) {
+		// occurs when all references gone
+		static int dummy = -1;
+		return dummy;
+	}
+	return (it->second.second);
+}
+
 //-----------------------------------------------------------------------------
 void RemoteChannelManager::createChannelBuffer(RemoteChannel &channel) {
 	BufferAllocator alloc_inst (segment.get_segment_manager());
@@ -45,8 +62,28 @@ void RemoteChannelManager::createChannelBuffer(RemoteChannel &channel) {
 RemoteChannel::Buffer & 
 RemoteChannelManager::getChannelBuffer(const RemoteChannel &channel) 
 {
+	int &refs = getNbReferences(channel.name);
+	refs++;
 	return *segment.find<RemoteChannel::Buffer>
 		(channel.bufferId.c_str()).first;
+}
+//-----------------------------------------------------------------------------
+void RemoteChannelManager::releaseChannel(const RemoteChannel &channel) {
+	int &refs = getNbReferences(channel.name);
+	if (--refs!= 0) 
+		return;
+	RegisteredChannels::iterator it = channels->find(channel.name);
+	segment.destroy<RemoteChannel::Buffer>(it->second.first.bufferId.c_str());
+	channels->erase(it);
+
+	if (channels->size() == 0) { // remove shared memory when vector is empty
+		shared_memory_object::remove(REMOTE_CHANNEL);
+	}
+	
+}
+//-----------------------------------------------------------------------------
+void RemoteChannelManager::releaseChannelBuffer(const RemoteChannel &channel) {
+	releaseChannel(channel);	
 }
 //-----------------------------------------------------------------------------
 RemoteChannelManager::RemoteChannelManager() {
@@ -58,31 +95,22 @@ RemoteChannelManager * RemoteChannelManager::instance() {
 	return &mngr;
 }
 //-----------------------------------------------------------------------------
-RemoteChannel * 
+RemoteChannel 
 RemoteChannelManager::createRemoteChannel(const std::string &name)
 {
 	using namespace boost::interprocess;
-	channels->push_back(RemoteChannel(name));
-	RemoteChannel &neu = channels->back();
+	channels->insert(create(name));
+	RemoteChannel &neu = (*channels)[name].first;
 	createChannelBuffer(neu);
-	return &neu;
+	return neu;
 }
 //-----------------------------------------------------------------------------
-void RemoteChannelManager::removeRemoteChannel(const std::string &name) {
-	RegisteredChannels::iterator it = channels->begin();
-	for(; it!=channels->end(); ++it) {
-		if(it->name==name) {
-			segment.destroy<RemoteChannel::Buffer>(it->bufferId.c_str());
-			channels->erase(it);
-			break;
-		}
-	}
-	if (channels->size() == 0) {
-		shared_memory_object::remove(REMOTE_CHANNEL);
-	}
+const RegisteredChannels & RemoteChannelManager::getRegisteredChannels() const 
+{
+	return *channels;
 }
 //-----------------------------------------------------------------------------
-const RegisteredChannels & RemoteChannelManager::getRegisteredChannels() {
+RegisteredChannels & RemoteChannelManager::getRegisteredChannels() {
 	return *channels;
 }
 } // namespace
