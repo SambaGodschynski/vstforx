@@ -4,7 +4,7 @@
 #include "processing/Frames.h"
 #include <string>
 #include <boost/interprocess/managed_shared_memory.hpp>
-#include <boost/interprocess/containers/vector.hpp>
+#include <boost/circular_buffer.hpp>
 #include <boost/interprocess/containers/map.hpp>
 #include <boost/interprocess/allocators/allocator.hpp>
 #include <utility>
@@ -28,7 +28,7 @@ struct RemoteChannel {
 	std::string name;
 	std::string bufferId;
 	RemoteChannel(const std::string &name="unnamed") : name(name) {}
-	typedef bi::vector<
+	typedef boost::circular_buffer<
 		float, 
 		bi::BufferAllocator
 	> Buffer;
@@ -67,11 +67,37 @@ private:
 	int & getNbReferences(const RemoteChannel &channel);
 	RCMValueType create(const std::string &name);
 public:
+	/**
+	 * @param channel
+	 * @return channel buffer related to RemoteChannel
+	 */
 	RemoteChannel::Buffer & getChannelBuffer(const RemoteChannel &channel);
+	/**
+	 * Decreases related reference counter.
+	 * Channel will be destroyed when reference counter == 0
+	 * @param channel
+	 */
 	void releaseChannel(const RemoteChannel &channel);
+	/**
+	 * Decreases related channel reference counter.
+	 * Channel will be destroyed when reference counter == 0
+	 * @param channel
+	 */
 	void releaseChannelBuffer(const RemoteChannel &channel);
+	/**
+	 * @return ChannelManager
+	 */
 	static RemoteChannelManager * instance();
+	/**
+	 * Creates a RemoteChannel object and a related buffer.
+	 * @param name
+	 * @return RemoteChannel handler
+	 */
 	RemoteChannel createRemoteChannel(const std::string &name);
+	/**
+	 * @return all registered channels.
+	 * TODO: return only handler intead whole map.
+	 */
 	const RegisteredChannels & getRegisteredChannels() const;
 	RegisteredChannels & getRegisteredChannels();
 };

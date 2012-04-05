@@ -10,7 +10,10 @@
 //-----------------------------------------------------------------------------
 int RemoteChannelProcessor::instances = 0;
 //-----------------------------------------------------------------------------
-RemoteChannelProcessor::RemoteChannelProcessor() : volume(0) {
+RemoteChannelProcessor::RemoteChannelProcessor() :
+volume(0),
+t(0)
+{
 	using namespace processing;
 	std::stringstream ss;
 	instance = instances++;
@@ -22,7 +25,7 @@ RemoteChannelProcessor::RemoteChannelProcessor() : volume(0) {
 		buffer = &(getRemoteChannelManager()->getChannelBuffer(remoteChannel));
 		buffer->resize(255);
 	}
-	if (instance==1) {
+	if (instance>=1) {
 		readChannel = 
 			(getRemoteChannelManager()->getRegisteredChannels()["remoteChannel 0"].first);
 		buffer = &(getRemoteChannelManager()->getChannelBuffer(readChannel));
@@ -31,7 +34,7 @@ RemoteChannelProcessor::RemoteChannelProcessor() : volume(0) {
 //-----------------------------------------------------------------------------
 RemoteChannelProcessor::~RemoteChannelProcessor() {
 	using namespace processing;
-	if (instance==1) {
+	if (instance>=1) {
 		getRemoteChannelManager()->releaseChannelBuffer(readChannel);
 	}
 	getRemoteChannelManager()->releaseChannelBuffer(remoteChannel);
@@ -61,7 +64,7 @@ void RemoteChannelProcessor::process(float **in, float **out, int numSamples) {
 	if (instance==0) {
 		writeBuffer(in, out, *buffer);
 	}
-	if (instance==1) {
+	if (instance>=1) {
 		readBuffer(in, out, *buffer);
 	}
 }
