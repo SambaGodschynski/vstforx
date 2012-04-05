@@ -4,7 +4,7 @@
 #include "processing/Frames.h"
 #include <string>
 #include <boost/interprocess/managed_shared_memory.hpp>
-#include <boost/circular_buffer.hpp>
+#include <boost/interprocess/containers/vector.hpp>
 #include <boost/interprocess/containers/map.hpp>
 #include <boost/interprocess/allocators/allocator.hpp>
 #include <utility>
@@ -28,10 +28,16 @@ struct RemoteChannel {
 	std::string name;
 	std::string bufferId;
 	RemoteChannel(const std::string &name="unnamed") : name(name) {}
-	typedef boost::circular_buffer<
-		float, 
-		bi::BufferAllocator
-	> Buffer;
+	struct Buffer;
+};
+//=============================================================================
+struct RemoteChannel::Buffer {
+//=============================================================================
+	Buffer(const bi::BufferAllocator &alloc) : data(alloc) {}
+	typedef bi::vector<float, bi::BufferAllocator> _Buffer;
+	_Buffer data;
+	_Buffer::value_type & operator[](size_t i) {return data[i];}
+	const _Buffer::value_type & operator[](size_t i) const {return data[i];}
 };
 //=============================================================================
 // RemoteChannel Map 

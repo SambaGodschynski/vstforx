@@ -23,7 +23,7 @@ t(0)
 		getRemoteChannelManager()->createRemoteChannel(name);
 	if (instance==0) {
 		buffer = &(getRemoteChannelManager()->getChannelBuffer(remoteChannel));
-		buffer->resize(255);
+		buffer->data.resize(255);
 	}
 	if (instance>=1) {
 		readChannel = 
