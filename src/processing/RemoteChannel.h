@@ -12,15 +12,6 @@
 
 namespace bi = boost::interprocess;
 
-//=============================================================================
-// Buffer Allocator
-//=============================================================================
-namespace boost { namespace interprocess {
-	typedef allocator<float, 
-		managed_shared_memory::segment_manager
-	>  BufferAllocator;
-}} // namespaces
-
 namespace processing {
 //=============================================================================
 struct RemoteChannel {
@@ -33,8 +24,10 @@ struct RemoteChannel {
 //=============================================================================
 struct RemoteChannel::Buffer {
 //=============================================================================
-	Buffer(const bi::BufferAllocator &alloc) : data(alloc) {}
-	typedef bi::vector<float, bi::BufferAllocator> _Buffer;
+	typedef bi::allocator<float, bi::managed_shared_memory::segment_manager>  
+		Allocator;
+	Buffer(const Allocator &alloc) : data(alloc) {}
+	typedef bi::vector<float, Allocator> _Buffer;
 	_Buffer data;
 	_Buffer::value_type & operator[](size_t i) {return data[i];}
 	const _Buffer::value_type & operator[](size_t i) const {return data[i];}

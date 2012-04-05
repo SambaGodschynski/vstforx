@@ -53,7 +53,7 @@ int & RemoteChannelManager::getNbReferences(const RemoteChannel &channel) {
 
 //-----------------------------------------------------------------------------
 void RemoteChannelManager::createChannelBuffer(RemoteChannel &channel) {
-	BufferAllocator alloc_inst (segment.get_segment_manager());
+	RemoteChannel::Buffer::Allocator alloc_inst (segment.get_segment_manager());
 	channel.bufferId = channel.name + " " + CHANNEL_BUFFER;
 	segment.find_or_construct<RemoteChannel::Buffer>
 		(channel.bufferId.c_str())(alloc_inst);
