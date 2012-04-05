@@ -26,8 +26,9 @@ t(0)
 		buffer->data.resize(255);
 	}
 	if (instance>=1) {
-		readChannel = 
-			(getRemoteChannelManager()->getRegisteredChannels()["remoteChannel 0"].first);
+		std::vector<RemoteChannel> rChs;
+		getRemoteChannelManager()->getRegisteredChannels(rChs);
+		readChannel = rChs[0];
 		buffer = &(getRemoteChannelManager()->getChannelBuffer(readChannel));
 	}
 }

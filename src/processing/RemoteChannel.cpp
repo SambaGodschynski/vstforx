@@ -10,11 +10,13 @@ using namespace boost::interprocess;
 
 namespace {
 	managed_shared_memory segment;
-	RegisteredChannels * channels;
 }
 
+//=============================================================================
+// RemoteChannelManager
+//=============================================================================
 //-----------------------------------------------------------------------------
-void initSharedMemory(int tries = 0) {
+void RemoteChannelManager::initSharedMemory(int tries) {
 	try {
 		segment = 
 			managed_shared_memory(open_or_create, REMOTE_CHANNEL, 65536);
@@ -32,9 +34,8 @@ void initSharedMemory(int tries = 0) {
 		segment.find_or_construct<RegisteredChannels>
 		(CHANNEL_REGISTER)(std::less<std::string>(), alloc_inst);
 }
-//=============================================================================
-// RemoteChannelManager
-//=============================================================================
+//-----------------------------------------------------------------------------
+RegisteredChannels * RemoteChannelManager::channels = NULL;
 //-----------------------------------------------------------------------------
 RCMValueType RemoteChannelManager::create(const std::string &name) {
 	RCMappedType v(RemoteChannel(name), 1);
@@ -103,14 +104,5 @@ RemoteChannelManager::createRemoteChannel(const std::string &name)
 	RemoteChannel &neu = (*channels)[name].first;
 	createChannelBuffer(neu);
 	return neu;
-}
-//-----------------------------------------------------------------------------
-const RegisteredChannels & RemoteChannelManager::getRegisteredChannels() const 
-{
-	return *channels;
-}
-//-----------------------------------------------------------------------------
-RegisteredChannels & RemoteChannelManager::getRegisteredChannels() {
-	return *channels;
 }
 } // namespace

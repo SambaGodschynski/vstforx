@@ -7,6 +7,7 @@
 #include <boost/interprocess/containers/vector.hpp>
 #include <boost/interprocess/containers/map.hpp>
 #include <boost/interprocess/allocators/allocator.hpp>
+#include <boost/foreach.hpp>
 #include <utility>
 #include <map>
 
@@ -65,6 +66,8 @@ private:
 	void createChannelBuffer(RemoteChannel &channel);
 	int & getNbReferences(const RemoteChannel &channel);
 	RCMValueType create(const std::string &name);
+	static RegisteredChannels *channels;
+	void initSharedMemory(int tries = 0);
 public:
 	/**
 	 * @param channel
@@ -95,10 +98,14 @@ public:
 	RemoteChannel createRemoteChannel(const std::string &name);
 	/**
 	 * @return all registered channels.
-	 * TODO: return only handler intead whole map.
 	 */
-	const RegisteredChannels & getRegisteredChannels() const;
-	RegisteredChannels & getRegisteredChannels();
+	template <class ChannelContainer>
+	void getRegisteredChannels(ChannelContainer &outContainer) {
+		typedef RegisteredChannels::value_type V;
+		BOOST_FOREACH(const V &v, *channels) {
+			outContainer.push_back(v.second.first);
+		}
+	}
 };
 
 inline RemoteChannelManager * getRemoteChannelManager() {
