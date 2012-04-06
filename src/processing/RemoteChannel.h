@@ -27,11 +27,15 @@ struct RemoteChannel::Buffer {
 //=============================================================================
 	typedef bi::allocator<float, bi::managed_shared_memory::segment_manager>  
 		Allocator;
-	Buffer(const Allocator &alloc) : data(alloc) {}
+        Buffer(const Allocator &alloc) : data(alloc), wrote(0) {}
 	typedef bi::vector<float, Allocator> _Buffer;
 	_Buffer data;
-	_Buffer::value_type & operator[](size_t i) {return data[i];}
-	const _Buffer::value_type & operator[](size_t i) const {return data[i];}
+	_Buffer::value_type & operator[](size_t i) {return data[i%data.size()];}
+	const _Buffer::value_type & operator[](size_t i) const {return data[i%data.size()];}
+	int wrote;
+	void write(float **in, size_t numSamples);
+	void read(float **out, size_t numSamples) const;
+	static const int preBuffer = 1024;
 };
 //=============================================================================
 // RemoteChannel Map 

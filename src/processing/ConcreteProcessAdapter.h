@@ -24,6 +24,7 @@
 #include "MidiEventProcessor.h"
 #include <sambag/lua/LuaMap.hpp>
 #include <sambag/lua/LuaHelper.hpp>
+#include "RemoteChannel.h"
 
 
 //============================================================================================================
@@ -1687,6 +1688,71 @@ public:
 	virtual size_t getNumParameter () const { return parameters.size(); }
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~LuaProcessor ();
+};
+//============================================================================================================
+/**
+ * @class RemoteChannelReceiver.
+ */
+class RemoteChannelReceiver:
+//============================================================================================================
+public ProcessAdapter, 
+public Serializable
+{
+friend class boost::serialization::access;
+public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::shared_ptr<RemoteChannelReceiver> Ptr;
+private:
+	//--------------------------------------------------------------------------------------------------------
+	Frames frames;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * (De)Serialisiert RemoteChannelReceiver-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
+	template < typename Archive >
+	void serialize ( Archive &ar, const unsigned int version ){
+		ar & boost::serialization::base_object<ProcessAdapter> (*this);
+	}
+	//--------------------------------------------------------------------------------------------------------
+	RemoteChannelReceiver (){} // wird nur von boost::serial. benutzt
+protected:
+	//--------------------------------------------------------------------------------------------------------
+	RemoteChannelReceiver (IHostInfo *hostInfo);
+	//--------------------------------------------------------------------------------------------------------
+	RemoteChannel rCHandler;
+	//--------------------------------------------------------------------------------------------------------
+	RemoteChannel::Buffer *buffer;
+public:
+	//--------------------------------------------------------------------------------------------------------
+	void setRemoteChannelHandler(const RemoteChannel &rCHandler);
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param hostInfo
+	 * @param initValue
+	 * @return neues Volume-Objekt
+	 */
+	static Ptr create( IHostInfo *hostInfo ) {
+		Ptr neu( new RemoteChannelReceiver(hostInfo) );
+		neu->self = neu;
+		return neu;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * HostInfo(Samplerate/Blocksize) geaendert.
+	 */
+	virtual void hostInfoChanged() {
+		frames.setSize( getHostInfo()->getBlockSize() );
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Verarbeitet Samplemenge des Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
+	 * @param numSamples Anzahl der zu verarbeitenden Samples
+	 */
+	virtual void processAdapter( Processor::Int numSamples );
+	//--------------------------------------------------------------------------------------------------------
+	virtual ~RemoteChannelReceiver();
 };
 }// namespace processing
 #endif

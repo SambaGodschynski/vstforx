@@ -15,6 +15,7 @@
 #include "processing/parameter/ConnectionOperators.h"
 #include "GObjectController.h"
 #include "com/PluginCollection.h"
+#include "processing/RemoteChannel.h"
 #include <string>
 
 
@@ -443,6 +444,22 @@ void CmdCreateLuaProcessor::_execute(){
 	create<GLuaProcessor, LuaProcessor, 1, 1>();
 	LuaProcessor::Ptr lua = boost::shared_dynamic_cast<LuaProcessor, PObject>(newPrA);
 	lua->loadScript(scriptfile);
+	gObjs.push_back( newGPr );
+	newGPr->getIOs ( gObjs );
+	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
+	cView->addGObject ( pG );
+	cView->CView::setDirty();
+}
+//============================================================================================================
+//	Klasse CmdCreateRemoteChannelReceiver:
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void CmdCreateRemoteChannelReceiver::_execute(){
+	GObjectList gObjs;
+	create<GRemoteChannelReceiver, RemoteChannelReceiver, 0, 1>();
+	RemoteChannelReceiver::Ptr rcr = 
+		boost::shared_dynamic_cast<RemoteChannelReceiver>(newPrA);
+	rcr->setRemoteChannelHandler(rChHandler);
 	gObjs.push_back( newGPr );
 	newGPr->getIOs ( gObjs );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );

@@ -17,8 +17,10 @@
 #include "ConcreteGObjects.h"
 #include "gui/CMenu.h"
 #include "gui/VstPlugView.h"
+#include "processing/RemoteChannel.h"
 
-using namespace processing;
+using namespace processing; // TODO: remove
+
 namespace ppiGui{
 //------------------------------------------------------------------------------------------------------------
 // ein paar vorwaerts Deklarationen:
@@ -276,7 +278,7 @@ public:
 };
 //============================================================================================================
 //	Klasse CmdCreateMidiProcessor:
-//  Erstellt CmdCreateMidiProcessor
+//  Erstellt MidiProcessor
 //============================================================================================================
 class CmdCreateMidiProcessor : public CmdCreateProcessorNode {
 private:
@@ -290,7 +292,7 @@ public:
 };
 //============================================================================================================
 //	Klasse CmdCreateLuaProcessor:
-//  Erstellt CmdCreateLuaProcessor
+//  Erstellt LuaProcessor
 //============================================================================================================
 class CmdCreateLuaProcessor : public CmdCreateProcessorNode {
 private:
@@ -303,6 +305,22 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	CmdCreateLuaProcessor(const std::string &scriptfile, CircuidView *cView, FrontController *ctrl):
 	  CmdCreateProcessorNode(cView,ctrl), scriptfile(scriptfile) {}
+};
+//============================================================================================================
+//	Klasse CmdCreateRemoteChannelReceiver
+//  Erstellt RemoteChannelReceiver
+//============================================================================================================
+class CmdCreateRemoteChannelReceiver : public CmdCreateProcessorNode {
+private:
+	//--------------------------------------------------------------------------------------------------------
+	RemoteChannel rChHandler;
+	//--------------------------------------------------------------------------------------------------------
+	virtual void _execute();
+protected:
+public:
+	//--------------------------------------------------------------------------------------------------------
+	CmdCreateRemoteChannelReceiver(const RemoteChannel &rChHandler, CircuidView *cView, FrontController *ctrl):
+	  CmdCreateProcessorNode(cView,ctrl), rChHandler(rChHandler) {}
 };
 //============================================================================================================
 //	Klasse CmdCreateFreeGKnob

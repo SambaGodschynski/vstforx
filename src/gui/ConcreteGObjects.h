@@ -849,11 +849,43 @@ public:
 	virtual ~GLuaProcessor();
 };
 //============================================================================================================
-// Frei stehende Methoden fuer boost archive: GLuaProcessor
+//	Klasse GRemoteChannelReceiver:
+//============================================================================================================
+class GRemoteChannelReceiver : public GProcessorNode, public Serializable {
+friend class boost::serialization::access;
+friend void load_construct_data( iArchive&, GRemoteChannelReceiver*, const unsigned int);
+public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::shared_ptr<GRemoteChannelReceiver> Ptr;
+private:
+	//--------------------------------------------------------------------------------------------------------
+	template < typename Archive >
+	void serialize ( Archive &ar, const unsigned int version ){
+		ar & boost::serialization::base_object< GProcessorNode > ( *this );
+	} 
+	//--------------------------------------------------------------------------------------------------------
+	CBitmap *skin;
+protected:
+	//--------------------------------------------------------------------------------------------------------
+	GRemoteChannelReceiver ( CircuidView *view );
+public:
+	//--------------------------------------------------------------------------------------------------------
+	static Ptr create( CircuidView *parent ) {
+		Ptr neu( new GRemoteChannelReceiver ( parent ) );
+		neu->_setSelfPtr ( neu );
+		return neu;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	virtual void draw( CDrawContext *cc );
+	//--------------------------------------------------------------------------------------------------------
+	virtual ~GRemoteChannelReceiver();
+};
+//============================================================================================================
+// Frei stehende Methoden fuer boost archive: GRemoteChannelReceiver
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
 template < typename Archive >
-inline void save_construct_data( Archive & ar, const GLuaProcessor * t, const unsigned int file_version ) {
+void save_construct_data(Archive & ar, const GRemoteChannelReceiver * t, const unsigned int file_version ) {
 	ppiGui::CircuidView *view = t->getParentView();
 	ar << view;
 }

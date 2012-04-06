@@ -304,8 +304,8 @@ inline void CircuidControl::getMenuEntryList ( menu::MenuEntryList &mE ){
 
 	// add remote channels
 	using namespace processing;
-	const RegisteredChannels &channels = 
-		RemoteChannelManager::instance()->getRegisteredChannels();
+	std::list<RemoteChannel> channels;
+	getRemoteChannelManager()->getRegisteredChannels(channels);
 	if (channels.empty())
 		return;
 
@@ -313,7 +313,10 @@ inline void CircuidControl::getMenuEntryList ( menu::MenuEntryList &mE ){
 	MenuEntryList &rsub = remotChannelSub->getMenuEntries();
 
 	BOOST_FOREACH(const RemoteChannel &channel, channels) {
-		ADD_MENU_LABEL ( rsub, channel.name, new CmdCreateVolumeNode ( view, gObjCtrlDirector ) );
+		ADD_MENU_LABEL ( rsub, 
+			channel.name, 
+			new CmdCreateRemoteChannelReceiver (channel, view, gObjCtrlDirector)
+		);
 	}
 
 	ADD_SUB_MENU ( mE, "remote_channels", remotChannelSub );

@@ -12,12 +12,14 @@ namespace {
 	managed_shared_memory segment;
 }
 
+
 //=============================================================================
 // RemoteChannelManager
 //=============================================================================
 //-----------------------------------------------------------------------------
 void RemoteChannelManager::initSharedMemory(int tries) {
 	try {
+		// open shared memory
 		segment = 
 			managed_shared_memory(open_or_create, REMOTE_CHANNEL, 65536);
 	} catch (...) {
@@ -27,12 +29,11 @@ void RemoteChannelManager::initSharedMemory(int tries) {
 		initSharedMemory(tries+1);
 		return;
 	}
-	//Initialize shared memory STL-compatible allocator
 	ChannelAllocator alloc_inst (segment.get_segment_manager());
-	//Construct a vector in shared memory with argument alloc_inst
+	// create or find registered channels
 	channels = 
 		segment.find_or_construct<RegisteredChannels>
-		(CHANNEL_REGISTER)(std::less<std::string>(), alloc_inst);
+			(CHANNEL_REGISTER)(std::less<std::string>(), alloc_inst);
 }
 //-----------------------------------------------------------------------------
 RegisteredChannels * RemoteChannelManager::channels = NULL;
@@ -93,7 +94,7 @@ RemoteChannelManager::RemoteChannelManager() {
 //-----------------------------------------------------------------------------
 RemoteChannelManager * RemoteChannelManager::instance() {
 	static RemoteChannelManager mngr;
-	return &mngr;
+	return &mngr;	
 }
 //-----------------------------------------------------------------------------
 RemoteChannel 
@@ -105,4 +106,28 @@ RemoteChannelManager::createRemoteChannel(const std::string &name)
 	createChannelBuffer(neu);
 	return neu;
 }
+//=============================================================================
+// struct RemoteChannel::Buffer
+//=============================================================================
+//-----------------------------------------------------------------------------
+void RemoteChannel::Buffer::write(float **in, size_t numSamples) {
+	size_t c=0;
+	int i=wrote;
+	for (; i<wrote+numSamples; ++i) {
+		(*this)[i] = in[0][c++];
+	}
+	wrote = i;
+}
+//----------------------------------------------------------------------------- 
+void RemoteChannel::Buffer::read(float **out, size_t numSamples) const {
+	if(wrote<preBuffer)
+		return;
+	size_t c=0;
+	int start = wrote - preBuffer;
+	for (int i=start; i<=start + numSamples; ++i) {
+		out[0][c]   = (*this)[i];
+		out[1][c++] = (*this)[i];
+	}
+}
+
 } // namespace
