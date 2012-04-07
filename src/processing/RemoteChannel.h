@@ -7,6 +7,7 @@
 #include <boost/interprocess/containers/vector.hpp>
 #include <boost/interprocess/containers/map.hpp>
 #include <boost/interprocess/allocators/allocator.hpp>
+#include <boost/interprocess/sync/interprocess_upgradable_mutex.hpp>
 #include <boost/foreach.hpp>
 #include <utility>
 #include <map>
@@ -27,15 +28,14 @@ struct RemoteChannel::Buffer {
 //=============================================================================
 	typedef bi::allocator<float, bi::managed_shared_memory::segment_manager>  
 		Allocator;
-        Buffer(const Allocator &alloc) : data(alloc), wrote(0) {}
+        Buffer(const Allocator &alloc) : data(alloc) {}
 	typedef bi::vector<float, Allocator> _Buffer;
 	_Buffer data;
-	_Buffer::value_type & operator[](size_t i) {return data[i%data.size()];}
-	const _Buffer::value_type & operator[](size_t i) const {return data[i%data.size()];}
-	int wrote;
+	mutable bi::interprocess_upgradable_mutex mutex;
+	_Buffer::value_type & operator[](size_t i) {return data[i];}
+	const _Buffer::value_type & operator[](size_t i) const {return data[i];}
 	void write(float **in, size_t numSamples);
 	void read(float **out, size_t numSamples) const;
-	static const int preBuffer = 1024;
 };
 //=============================================================================
 // RemoteChannel Map 

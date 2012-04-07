@@ -986,8 +986,8 @@ RemoteChannelReceiver::RemoteChannelReceiver (IHostInfo *hostInfo) :
 }
 //------------------------------------------------------------------------------------------------------------
 void RemoteChannelReceiver::processAdapter(Processor::Int numSamples) {
-	//if (buffer)
-	//	buffer->read(frames.getData(), numSamples);
+	if (buffer)
+		buffer->read(frames.getData(), numSamples);
 
 	getOutputNode(0)->pushAndCopy(&frames, numSamples);
 }

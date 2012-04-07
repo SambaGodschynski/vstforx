@@ -111,23 +111,20 @@ RemoteChannelManager::createRemoteChannel(const std::string &name)
 //=============================================================================
 //-----------------------------------------------------------------------------
 void RemoteChannel::Buffer::write(float **in, size_t numSamples) {
-	size_t c=0;
-	int i=wrote;
-	for (; i<wrote+numSamples; ++i) {
-		(*this)[i] = in[0][c++];
+	mutex.lock();
+	for (size_t i=0; i<numSamples; ++i) {
+		(*this)[i] = in[0][i];
 	}
-	wrote = i;
+	mutex.unlock();
 }
 //----------------------------------------------------------------------------- 
 void RemoteChannel::Buffer::read(float **out, size_t numSamples) const {
-	if(wrote<preBuffer)
-		return;
-	size_t c=0;
-	int start = wrote - preBuffer;
-	for (int i=start; i<=start + numSamples; ++i) {
-		out[0][c]   = (*this)[i];
-		out[1][c++] = (*this)[i];
+	mutex.lock_sharable();
+	for (int i=0; i<numSamples; ++i) {
+		out[0][i]   = (*this)[i];
+		out[1][i]   = (*this)[i];
 	}
+	mutex.unlock_sharable();
 }
 
 } // namespace
