@@ -18,9 +18,9 @@ private:
 	//-------------------------------------------------------------------------
 	int instance;
 	//-------------------------------------------------------------------------
-	processing::RemoteChannel remoteChannel, readChannel;
+	processing::RemoteChannelHandler RemoteChannelHandler, readChannel;
 	//-------------------------------------------------------------------------
-	processing::RemoteChannel::Buffer * buffer;
+	processing::RemoteChannelHandler::Buffer * buffer;
 	//-------------------------------------------------------------------------
 	float volume;
 	//-------------------------------------------------------------------------

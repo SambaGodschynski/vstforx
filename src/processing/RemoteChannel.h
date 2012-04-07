@@ -16,15 +16,15 @@ namespace bi = boost::interprocess;
 
 namespace processing {
 //=============================================================================
-struct RemoteChannel {
+struct RemoteChannelHandler {
 //=============================================================================
 	std::string name;
 	std::string bufferId;
-	RemoteChannel(const std::string &name="unnamed") : name(name) {}
+	RemoteChannelHandler(const std::string &name="unnamed") : name(name) {}
 	struct Buffer;
 };
 //=============================================================================
-struct RemoteChannel::Buffer {
+struct RemoteChannelHandler::Buffer {
 //=============================================================================
 	typedef bi::allocator<float, bi::managed_shared_memory::segment_manager>  
 		Allocator;
@@ -38,11 +38,11 @@ struct RemoteChannel::Buffer {
 	void read(float **out, size_t numSamples) const;
 };
 //=============================================================================
-// RemoteChannel Map 
+// RemoteChannelHandler Map 
 // channel name => ( channel obj., reference counter )
 //=============================================================================
 typedef std::string RCMKeyType;
-typedef std::pair<RemoteChannel, int> RCMappedType;
+typedef std::pair<RemoteChannelHandler, int> RCMappedType;
 typedef std::pair<const RCMKeyType, RCMappedType> RCMValueType;
 
 } // namespace procesing
@@ -67,39 +67,39 @@ class RemoteChannelManager {
 //=============================================================================
 private:
 	RemoteChannelManager();
-	void createChannelBuffer(RemoteChannel &channel);
-	int & getNbReferences(const RemoteChannel &channel);
+	void createChannelBuffer(RemoteChannelHandler &channel);
+	int & getNbReferences(const RemoteChannelHandler &channel);
 	RCMValueType create(const std::string &name);
 	static RegisteredChannels *channels;
 	void initSharedMemory(int tries = 0);
 public:
 	/**
 	 * @param channel
-	 * @return channel buffer related to RemoteChannel
+	 * @return channel buffer related to RemoteChannelHandler
 	 */
-	RemoteChannel::Buffer & getChannelBuffer(const RemoteChannel &channel);
+	RemoteChannelHandler::Buffer & getChannelBuffer(const RemoteChannelHandler &channel);
 	/**
 	 * Decreases related reference counter.
 	 * Channel will be destroyed when reference counter == 0
 	 * @param channel
 	 */
-	void releaseChannel(const RemoteChannel &channel);
+	void releaseChannel(const RemoteChannelHandler &channel);
 	/**
 	 * Decreases related channel reference counter.
 	 * Channel will be destroyed when reference counter == 0
 	 * @param channel
 	 */
-	void releaseChannelBuffer(const RemoteChannel &channel);
+	void releaseChannelBuffer(const RemoteChannelHandler &channel);
 	/**
 	 * @return ChannelManager
 	 */
 	static RemoteChannelManager * instance();
 	/**
-	 * Creates a RemoteChannel object and a related buffer.
+	 * Creates a RemoteChannelHandler object and a related buffer.
 	 * @param name
-	 * @return RemoteChannel handler
+	 * @return RemoteChannelHandler handler
 	 */
-	RemoteChannel createRemoteChannel(const std::string &name);
+	RemoteChannelHandler createRemoteChannel(const std::string &name);
 	/**
 	 * @return all registered channels.
 	 */

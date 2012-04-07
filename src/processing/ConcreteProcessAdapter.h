@@ -1721,12 +1721,12 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	RemoteChannelReceiver (IHostInfo *hostInfo);
 	//--------------------------------------------------------------------------------------------------------
-	RemoteChannel rCHandler;
+	RemoteChannelHandler rCHandler;
 	//--------------------------------------------------------------------------------------------------------
-	RemoteChannel::Buffer *buffer;
+	RemoteChannelHandler::Buffer *buffer;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	void setRemoteChannelHandler(const RemoteChannel &rCHandler);
+	void setRemoteChannelHandler(const RemoteChannelHandler &rCHandler);
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param hostInfo

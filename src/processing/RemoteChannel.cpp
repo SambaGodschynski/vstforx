@@ -4,7 +4,7 @@
 namespace processing {
 using namespace boost::interprocess;
 
-#define REMOTE_CHANNEL "VSTForx RemoteChannel"
+#define REMOTE_CHANNEL "VSTForx RemoteChannelHandler"
 #define CHANNEL_REGISTER "VSTForx ChannelRegister"
 #define CHANNEL_BUFFER "Channel Buffer"
 
@@ -39,11 +39,11 @@ void RemoteChannelManager::initSharedMemory(int tries) {
 RegisteredChannels * RemoteChannelManager::channels = NULL;
 //-----------------------------------------------------------------------------
 RCMValueType RemoteChannelManager::create(const std::string &name) {
-	RCMappedType v(RemoteChannel(name), 1);
+	RCMappedType v(RemoteChannelHandler(name), 1);
 	return RCMValueType(name, v);
 }
 //-----------------------------------------------------------------------------
-int & RemoteChannelManager::getNbReferences(const RemoteChannel &channel) {
+int & RemoteChannelManager::getNbReferences(const RemoteChannelHandler &channel) {
 	RegisteredChannels::iterator it = channels->find(channel.name);
 	if (it==channels->end()) {
 		// occurs when all references gone
@@ -54,28 +54,28 @@ int & RemoteChannelManager::getNbReferences(const RemoteChannel &channel) {
 }
 
 //-----------------------------------------------------------------------------
-void RemoteChannelManager::createChannelBuffer(RemoteChannel &channel) {
-	RemoteChannel::Buffer::Allocator alloc_inst (segment.get_segment_manager());
+void RemoteChannelManager::createChannelBuffer(RemoteChannelHandler &channel) {
+	RemoteChannelHandler::Buffer::Allocator alloc_inst (segment.get_segment_manager());
 	channel.bufferId = channel.name + " " + CHANNEL_BUFFER;
-	segment.find_or_construct<RemoteChannel::Buffer>
+	segment.find_or_construct<RemoteChannelHandler::Buffer>
 		(channel.bufferId.c_str())(alloc_inst);
 }
 //-----------------------------------------------------------------------------
-RemoteChannel::Buffer & 
-RemoteChannelManager::getChannelBuffer(const RemoteChannel &channel) 
+RemoteChannelHandler::Buffer & 
+RemoteChannelManager::getChannelBuffer(const RemoteChannelHandler &channel) 
 {
 	int &refs = getNbReferences(channel.name);
 	refs++;
-	return *segment.find<RemoteChannel::Buffer>
+	return *segment.find<RemoteChannelHandler::Buffer>
 		(channel.bufferId.c_str()).first;
 }
 //-----------------------------------------------------------------------------
-void RemoteChannelManager::releaseChannel(const RemoteChannel &channel) {
+void RemoteChannelManager::releaseChannel(const RemoteChannelHandler &channel) {
 	int &refs = getNbReferences(channel.name);
 	if (--refs!= 0) 
 		return;
 	RegisteredChannels::iterator it = channels->find(channel.name);
-	segment.destroy<RemoteChannel::Buffer>(it->second.first.bufferId.c_str());
+	segment.destroy<RemoteChannelHandler::Buffer>(it->second.first.bufferId.c_str());
 	channels->erase(it);
 
 	if (channels->size() == 0) { // remove shared memory when vector is empty
@@ -84,7 +84,7 @@ void RemoteChannelManager::releaseChannel(const RemoteChannel &channel) {
 	
 }
 //-----------------------------------------------------------------------------
-void RemoteChannelManager::releaseChannelBuffer(const RemoteChannel &channel) {
+void RemoteChannelManager::releaseChannelBuffer(const RemoteChannelHandler &channel) {
 	releaseChannel(channel);	
 }
 //-----------------------------------------------------------------------------
@@ -97,20 +97,20 @@ RemoteChannelManager * RemoteChannelManager::instance() {
 	return &mngr;	
 }
 //-----------------------------------------------------------------------------
-RemoteChannel 
+RemoteChannelHandler 
 RemoteChannelManager::createRemoteChannel(const std::string &name)
 {
 	using namespace boost::interprocess;
 	channels->insert(create(name));
-	RemoteChannel &neu = (*channels)[name].first;
+	RemoteChannelHandler &neu = (*channels)[name].first;
 	createChannelBuffer(neu);
 	return neu;
 }
 //=============================================================================
-// struct RemoteChannel::Buffer
+// struct RemoteChannelHandler::Buffer
 //=============================================================================
 //-----------------------------------------------------------------------------
-void RemoteChannel::Buffer::write(float **in, size_t numSamples) {
+void RemoteChannelHandler::Buffer::write(float **in, size_t numSamples) {
 	mutex.lock();
 	for (size_t i=0; i<numSamples; ++i) {
 		(*this)[i] = in[0][i];
@@ -118,7 +118,7 @@ void RemoteChannel::Buffer::write(float **in, size_t numSamples) {
 	mutex.unlock();
 }
 //----------------------------------------------------------------------------- 
-void RemoteChannel::Buffer::read(float **out, size_t numSamples) const {
+void RemoteChannelHandler::Buffer::read(float **out, size_t numSamples) const {
 	mutex.lock_sharable();
 	for (int i=0; i<numSamples; ++i) {
 		out[0][i]   = (*this)[i];

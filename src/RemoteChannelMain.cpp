@@ -16,19 +16,19 @@ volume(0)
 	using namespace processing;
 	std::stringstream ss;
 	instance = instances++;
-	ss << "remoteChannel " << instance;
+	ss << "RemoteChannelHandler " << instance;
 	name = ss.str();
-	remoteChannel = 
+	RemoteChannelHandler = 
 		getRemoteChannelManager()->createRemoteChannel(name);
 	
-	buffer = &(getRemoteChannelManager()->getChannelBuffer(remoteChannel));
+	buffer = &(getRemoteChannelManager()->getChannelBuffer(RemoteChannelHandler));
 	buffer->data.resize(255);
 }
 //-----------------------------------------------------------------------------
 RemoteChannelProcessor::~RemoteChannelProcessor() {
 	using namespace processing;
-	getRemoteChannelManager()->releaseChannelBuffer(remoteChannel);
-	getRemoteChannelManager()->releaseChannel(remoteChannel);
+	getRemoteChannelManager()->releaseChannelBuffer(RemoteChannelHandler);
+	getRemoteChannelManager()->releaseChannel(RemoteChannelHandler);
 }
 //-----------------------------------------------------------------------------
 void RemoteChannelProcessor::process(float **in, float **out, int numSamples) {
@@ -51,7 +51,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 	try{
 		return new Plugin(audioMaster);
 	}catch(...){
-		MessageBox ( NULL, "Could not create RemoteChannel "
+		MessageBox ( NULL, "Could not create RemoteChannelHandler "
 			"Effect Instance!", "Error!", 0 );
 		return NULL;
 	}

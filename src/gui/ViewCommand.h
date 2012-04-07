@@ -313,13 +313,13 @@ public:
 class CmdCreateRemoteChannelReceiver : public CmdCreateProcessorNode {
 private:
 	//--------------------------------------------------------------------------------------------------------
-	RemoteChannel rChHandler;
+	RemoteChannelHandler rChHandler;
 	//--------------------------------------------------------------------------------------------------------
 	virtual void _execute();
 protected:
 public:
 	//--------------------------------------------------------------------------------------------------------
-	CmdCreateRemoteChannelReceiver(const RemoteChannel &rChHandler, CircuidView *cView, FrontController *ctrl):
+	CmdCreateRemoteChannelReceiver(const RemoteChannelHandler &rChHandler, CircuidView *cView, FrontController *ctrl):
 	  CmdCreateProcessorNode(cView,ctrl), rChHandler(rChHandler) {}
 };
 //============================================================================================================

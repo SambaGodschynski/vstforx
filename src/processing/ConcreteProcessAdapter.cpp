@@ -992,7 +992,7 @@ void RemoteChannelReceiver::processAdapter(Processor::Int numSamples) {
 	getOutputNode(0)->pushAndCopy(&frames, numSamples);
 }
 //------------------------------------------------------------------------------------------------------------
-void RemoteChannelReceiver::setRemoteChannelHandler(const RemoteChannel &_rCHandler) {
+void RemoteChannelReceiver::setRemoteChannelHandler(const RemoteChannelHandler &_rCHandler) {
 	rCHandler = _rCHandler;
 	buffer = 
 		&getRemoteChannelManager()->getChannelBuffer(rCHandler);
