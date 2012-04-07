@@ -105,6 +105,16 @@
 		A28D9A1B1520EC9F00250BA9 /* lundump.c in Sources */ = {isa = PBXBuildFile; fileRef = A28D99D21520EC9F00250BA9 /* lundump.c */; };
 		A28D9A1C1520EC9F00250BA9 /* lvm.c in Sources */ = {isa = PBXBuildFile; fileRef = A28D99D41520EC9F00250BA9 /* lvm.c */; };
 		A28D9A1D1520EC9F00250BA9 /* lzio.c in Sources */ = {isa = PBXBuildFile; fileRef = A28D99D61520EC9F00250BA9 /* lzio.c */; };
+		A29235A71524E69300D54BDA /* auto_timers_construction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A29235A51524E69300D54BDA /* auto_timers_construction.cpp */; };
+		A29235A81524E69300D54BDA /* cpu_timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A29235A61524E69300D54BDA /* cpu_timer.cpp */; };
+		A29235A91524E69300D54BDA /* auto_timers_construction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A29235A51524E69300D54BDA /* auto_timers_construction.cpp */; };
+		A29235AA1524E69300D54BDA /* cpu_timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A29235A61524E69300D54BDA /* cpu_timer.cpp */; };
+		A29235B11524E6BF00D54BDA /* chrono.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A29235AE1524E6BF00D54BDA /* chrono.cpp */; };
+		A29235B21524E6BF00D54BDA /* process_cpu_clocks.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A29235AF1524E6BF00D54BDA /* process_cpu_clocks.cpp */; };
+		A29235B31524E6BF00D54BDA /* thread_clock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A29235B01524E6BF00D54BDA /* thread_clock.cpp */; };
+		A29235B41524E6BF00D54BDA /* chrono.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A29235AE1524E6BF00D54BDA /* chrono.cpp */; };
+		A29235B51524E6BF00D54BDA /* process_cpu_clocks.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A29235AF1524E6BF00D54BDA /* process_cpu_clocks.cpp */; };
+		A29235B61524E6BF00D54BDA /* thread_clock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A29235B01524E6BF00D54BDA /* thread_clock.cpp */; };
 		A2B2F8E0149F67D900EB3714 /* DataBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8DC149F67D900EB3714 /* DataBase.cpp */; };
 		A2B2F8E1149F67D900EB3714 /* sambag_sqlite.c in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8DF149F67D900EB3714 /* sambag_sqlite.c */; };
 		A2B2F8E2149F67D900EB3714 /* DataBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8DC149F67D900EB3714 /* DataBase.cpp */; };
@@ -462,6 +472,11 @@
 		A28D9A4F1520F14B00250BA9 /* LuaMap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LuaMap.hpp; sourceTree = "<group>"; };
 		A28D9A501520F14B00250BA9 /* LuaRegisterFunction.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LuaRegisterFunction.hpp; sourceTree = "<group>"; };
 		A28D9A511520F14B00250BA9 /* LuaSequence.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LuaSequence.hpp; sourceTree = "<group>"; };
+		A29235A51524E69300D54BDA /* auto_timers_construction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = auto_timers_construction.cpp; sourceTree = "<group>"; };
+		A29235A61524E69300D54BDA /* cpu_timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cpu_timer.cpp; sourceTree = "<group>"; };
+		A29235AE1524E6BF00D54BDA /* chrono.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = chrono.cpp; sourceTree = "<group>"; };
+		A29235AF1524E6BF00D54BDA /* process_cpu_clocks.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = process_cpu_clocks.cpp; sourceTree = "<group>"; };
+		A29235B01524E6BF00D54BDA /* thread_clock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = thread_clock.cpp; sourceTree = "<group>"; };
 		A2B2F8DC149F67D900EB3714 /* DataBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataBase.cpp; sourceTree = "<group>"; };
 		A2B2F8DD149F67D900EB3714 /* DataBase.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DataBase.hpp; sourceTree = "<group>"; };
 		A2B2F8DE149F67D900EB3714 /* Parameter.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Parameter.hpp; sourceTree = "<group>"; };
@@ -869,6 +884,27 @@
 			path = src/sambag/lua;
 			sourceTree = "<group>";
 		};
+		A29235A41524E69300D54BDA /* timer */ = {
+			isa = PBXGroup;
+			children = (
+				A29235A51524E69300D54BDA /* auto_timers_construction.cpp */,
+				A29235A61524E69300D54BDA /* cpu_timer.cpp */,
+			);
+			name = timer;
+			path = ../boost_1_49_0/libs/timer/src;
+			sourceTree = "<group>";
+		};
+		A29235AD1524E6BF00D54BDA /* chrono */ = {
+			isa = PBXGroup;
+			children = (
+				A29235AE1524E6BF00D54BDA /* chrono.cpp */,
+				A29235AF1524E6BF00D54BDA /* process_cpu_clocks.cpp */,
+				A29235B01524E6BF00D54BDA /* thread_clock.cpp */,
+			);
+			name = chrono;
+			path = ../boost_1_49_0/libs/chrono/src;
+			sourceTree = "<group>";
+		};
 		A2B2F8D6149F66A300EB3714 /* sambag */ = {
 			isa = PBXGroup;
 			children = (
@@ -1079,6 +1115,8 @@
 		A897C5C7131D8C7E0006416C /* boost */ = {
 			isa = PBXGroup;
 			children = (
+				A29235AD1524E6BF00D54BDA /* chrono */,
+				A29235A41524E69300D54BDA /* timer */,
 				A28D99671520EAC900250BA9 /* filesystem */,
 				A897C65B131D8F6B0006416C /* serialization */,
 				A897C638131D8F3D0006416C /* system */,
@@ -1501,6 +1539,11 @@
 				A28D99F81520EC9F00250BA9 /* lundump.c in Sources */,
 				A28D99F91520EC9F00250BA9 /* lvm.c in Sources */,
 				A28D99FA1520EC9F00250BA9 /* lzio.c in Sources */,
+				A29235A71524E69300D54BDA /* auto_timers_construction.cpp in Sources */,
+				A29235A81524E69300D54BDA /* cpu_timer.cpp in Sources */,
+				A29235B11524E6BF00D54BDA /* chrono.cpp in Sources */,
+				A29235B21524E6BF00D54BDA /* process_cpu_clocks.cpp in Sources */,
+				A29235B31524E6BF00D54BDA /* thread_clock.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1640,6 +1683,11 @@
 				A28D9A1B1520EC9F00250BA9 /* lundump.c in Sources */,
 				A28D9A1C1520EC9F00250BA9 /* lvm.c in Sources */,
 				A28D9A1D1520EC9F00250BA9 /* lzio.c in Sources */,
+				A29235A91524E69300D54BDA /* auto_timers_construction.cpp in Sources */,
+				A29235AA1524E69300D54BDA /* cpu_timer.cpp in Sources */,
+				A29235B41524E6BF00D54BDA /* chrono.cpp in Sources */,
+				A29235B51524E6BF00D54BDA /* process_cpu_clocks.cpp in Sources */,
+				A29235B61524E6BF00D54BDA /* thread_clock.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
