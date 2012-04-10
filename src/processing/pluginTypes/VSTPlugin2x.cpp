@@ -430,6 +430,9 @@ VstIntPtr VSTCALLBACK pluginCallToPlugNode (AEffect* effect,
 {
 	switch (opcode)
 	{
+		// for shell support:
+		// audioMasterCurrentId
+
 		case audioMasterVersion :
 			return 2400;
 
