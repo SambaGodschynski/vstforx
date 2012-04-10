@@ -80,7 +80,7 @@ attackVal(0.0f)
 	mode = Parameter::create();
 	mode->setName ("mode");
 	mode->addValueChangedListener ( mC );
-	parameterMap.push_back ( mode );
+	//parameterMap.push_back ( mode );
 	
 	for ( int i=A; i<NUM_STATES; ++i ){
 		curveType[i] = Parameter::create();

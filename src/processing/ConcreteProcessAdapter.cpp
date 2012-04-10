@@ -123,9 +123,13 @@ void Switch::addState() {
 }
 //--------------------------------------------------------------------------------------------------------
 void Switch::durationINChanged ( void *src, const float &v ) {
+	Parameter *p = (Parameter*)src;
+	p->setDisplay(MyString(v*1000.0));
 }
 //--------------------------------------------------------------------------------------------------------
 void Switch::durationOUTChanged ( void *src, const float &v ) {
+	Parameter *p = (Parameter*)src;
+	p->setDisplay(MyString(v*1000.0));
 }
 //--------------------------------------------------------------------------------------------------------
 void Switch::curveTypeChanged ( void *src, const float &v ) {
