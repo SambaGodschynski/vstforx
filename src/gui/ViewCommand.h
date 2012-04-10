@@ -289,22 +289,6 @@ public:
 	  CmdCreateProcessorNode(cView,ctrl){}
 };
 //============================================================================================================
-//	Klasse CmdCreateLuaProcessor:
-//  Erstellt CmdCreateLuaProcessor
-//============================================================================================================
-class CmdCreateLuaProcessor : public CmdCreateProcessorNode {
-private:
-	//--------------------------------------------------------------------------------------------------------
-	std::string scriptfile;
-	//--------------------------------------------------------------------------------------------------------
-	virtual void _execute();
-protected:
-public:
-	//--------------------------------------------------------------------------------------------------------
-	CmdCreateLuaProcessor(const std::string &scriptfile, CircuidView *cView, FrontController *ctrl):
-	  CmdCreateProcessorNode(cView,ctrl), scriptfile(scriptfile) {}
-};
-//============================================================================================================
 //	Klasse CmdCreateFreeGKnob
 //============================================================================================================
 class CmdCreateFreeGKnob : public ViewCommand {

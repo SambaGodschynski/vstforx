@@ -2,6 +2,8 @@
  * ===========================================================================================================
  * ConcreteGObjects.h
  *      Author: Johannes Unger
+ * TODO:
+ * Split all classes into seperate files and use this file as 'including farm'. 
  * ===========================================================================================================
  */
 #ifndef CONCRETEGOBJECTS_H
@@ -813,47 +815,6 @@ public:
 //------------------------------------------------------------------------------------------------------------
 template < typename Archive >
 inline void save_construct_data( Archive & ar, const GMidiProcessor * t, const unsigned int file_version ) {
-	ppiGui::CircuidView *view = t->getParentView();
-	ar << view;
-}
-//============================================================================================================
-//	Klasse GLuaProcessor:
-//============================================================================================================
-class GLuaProcessor : public GProcessorNode, public Serializable {
-friend class boost::serialization::access;
-friend void load_construct_data( iArchive&, GLuaProcessor*, const unsigned int);
-public:
-	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<GLuaProcessor> Ptr;
-private:
-	//--------------------------------------------------------------------------------------------------------
-	template < typename Archive >
-	void serialize ( Archive &ar, const unsigned int version ){
-		ar & boost::serialization::base_object< GProcessorNode > ( *this );
-	} 
-	//--------------------------------------------------------------------------------------------------------
-	CBitmap *skin;
-protected:
-	//--------------------------------------------------------------------------------------------------------
-	GLuaProcessor ( CircuidView *view );
-public:
-	//--------------------------------------------------------------------------------------------------------
-	static GLuaProcessor::Ptr create( CircuidView *parent ) {
-		GLuaProcessor::Ptr neu( new GLuaProcessor ( parent ) );
-		neu->_setSelfPtr ( neu );
-		return neu;
-	}
-	//--------------------------------------------------------------------------------------------------------
-	virtual void draw( CDrawContext *cc );
-	//--------------------------------------------------------------------------------------------------------
-	virtual ~GLuaProcessor();
-};
-//============================================================================================================
-// Frei stehende Methoden fuer boost archive: GLuaProcessor
-//============================================================================================================
-//------------------------------------------------------------------------------------------------------------
-template < typename Archive >
-inline void save_construct_data( Archive & ar, const GLuaProcessor * t, const unsigned int file_version ) {
 	ppiGui::CircuidView *view = t->getParentView();
 	ar << view;
 }
