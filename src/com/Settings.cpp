@@ -181,7 +181,7 @@ Settings::Ptr Settings::getSettings(){
 }
 //------------------------------------------------------------------------------------------------------------
 string Settings::versionToString( const unsigned int version ) {
-	return "0.4.xxx";
+	//return "0.4.xxx";
 	stringstream ss;
 	ss.width (7);
 	ss.fill ('0');
@@ -190,7 +190,7 @@ string Settings::versionToString( const unsigned int version ) {
 	ss.str("");
 	ss.clear();
 	ss.fill (' ');
-	ss<<tmp[0]<<tmp[1]<<"."<<tmp[2]<<tmp[3]<<"."<<tmp[4]<<tmp[5]<<tmp[6]<<PPI_VERSION_EXTRA_CHAR;
+	ss<<tmp[0]<<tmp[1]<<"."<<tmp[2]<<tmp[3]<<"."<<tmp[4]<<tmp[5]<<tmp[6];
 	return ss.str();
 }
 
