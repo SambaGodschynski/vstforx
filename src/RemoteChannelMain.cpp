@@ -33,8 +33,11 @@ RemoteChannelProcessor::~RemoteChannelProcessor() {
 //-----------------------------------------------------------------------------
 void RemoteChannelProcessor::process(float **in, float **out, int numSamples) {
 	buffer->write(in, numSamples);
+	for (size_t i=0; i<numSamples; ++i) {
+		out[0][i] = in[0][i] * volume;
+		out[1][i] = in[1][i] * volume;
+	}
 }
-
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 	
@@ -45,7 +48,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 	typedef VST2xPluginWrapper<
 		RemoteChannelProcessor, // Processor
 		'frxr', // uid
-		sambag::dsp::StdPluginTraits<1,1,false,0> // plugin constructor
+		sambag::dsp::StdPluginTraits<2,2,false,1> // plugin constructor
 	> Plugin;
 	// create plugin
 	try{

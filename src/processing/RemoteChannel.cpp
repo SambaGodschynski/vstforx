@@ -44,12 +44,14 @@ RCMValueType RemoteChannelManager::create(const std::string &name) {
 }
 //-----------------------------------------------------------------------------
 int & RemoteChannelManager::getNbReferences(const RemoteChannelHandler &channel) {
-	RegisteredChannels::iterator it = channels->find(channel.name);
-	if (it==channels->end()) {
-		// occurs when all references gone
-		static int dummy = -1;
+	// used when all references gone
+	static int dummy = -1;
+	if (!channels) 
 		return dummy;
-	}
+	RegisteredChannels::iterator it = channels->find(channel.name);
+	if (it==channels->end()) 
+		return dummy;
+	
 	return (it->second.second);
 }
 
@@ -71,15 +73,18 @@ RemoteChannelManager::getChannelBuffer(const RemoteChannelHandler &channel)
 }
 //-----------------------------------------------------------------------------
 void RemoteChannelManager::releaseChannel(const RemoteChannelHandler &channel) {
+	// decrease nbReferences for channel
 	int &refs = getNbReferences(channel.name);
 	if (--refs!= 0) 
 		return;
+	// release channel
 	RegisteredChannels::iterator it = channels->find(channel.name);
 	segment.destroy<RemoteChannelHandler::Buffer>(it->second.first.bufferId.c_str());
 	channels->erase(it);
 
 	if (channels->size() == 0) { // remove shared memory when vector is empty
 		shared_memory_object::remove(REMOTE_CHANNEL);
+		channels = NULL;
 	}
 	
 }
@@ -101,6 +106,8 @@ RemoteChannelHandler
 RemoteChannelManager::createRemoteChannel(const std::string &name)
 {
 	using namespace boost::interprocess;
+	if (!channels)
+		initSharedMemory();
 	channels->insert(create(name));
 	RemoteChannelHandler &neu = (*channels)[name].first;
 	createChannelBuffer(neu);
