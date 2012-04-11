@@ -708,6 +708,26 @@
 							>
 						</File>
 					</Filter>
+					<Filter
+						Name="concreteAdapter"
+						>
+						<File
+							RelativePath="..\..\src\processing\concreteAdapter\LuaProcessor.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\processing\concreteAdapter\LuaProcessor.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\processing\concreteAdapter\RemoteChannelReceiver.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\processing\concreteAdapter\RemoteChannelReceiver.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 			<Filter
