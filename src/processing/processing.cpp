@@ -39,6 +39,27 @@ void ProcessorNode::prepareFramesContainer( size_t num ) {
 		else frameContainer.pop_back();
 	}
 }
+//------------------------------------------------------------------------------------------------------------
+Frames * ProcessorNode::mixInputsToFrames( Processor::Int numSamples ) {
+	if ( parents.empty() ) {
+		tmpFrames->setZero( numSamples );
+		return tmpFrames;
+	}
+	ProcessorNode *n;
+	if ( parents.size() == 1 ) { // sonderzug nach pankow:
+		n = parents.front();
+		assert ( n->isActive() );
+		return n->popFrame();
+	}
+	Parents::iterator it = parents.begin();
+	for ( ; it!=parents.end(); ++it ) {
+		n = *it;
+		if ( !n->isActive() ) continue;
+		stream.addFrame ( n->popFrame(), numSamples, getNodeDelay() - n->getNodeDelay() );
+	}
+	stream.flush ( numSamples, tmpFrames->getData() );
+	return tmpFrames;
+}
 //============================================================================================================
 // class ProcessAdapterNode
 //============================================================================================================
@@ -79,6 +100,22 @@ ProcessAdapter::InputNode::InputNode ( const string &name, ProcessAdapter *paren
 	parent(parent)
 {
 }
+//--------------------------------------------------------------------------------------------------------
+void ProcessAdapter::InputNode::_processNode( Processor::Int numSamples, size_t delay ) { 
+	if (delay == 0) {
+		ProcessorNode::processNode(numSamples);
+		return;
+	}
+	ProcessorNode *n;
+	Parents::iterator it = parents.begin();
+	for ( ; it!=parents.end(); ++it ) {
+		n = *it;
+		if ( !n->isActive() ) continue;
+		stream.addFrame ( n->popFrame(), numSamples, delay - n->getNodeDelay() );
+	}
+	stream.flush ( numSamples, tmpFrames->getData() );
+	pushAndCopy(tmpFrames, numSamples);
+}
 //============================================================================================================
 // class ProcessAdapter::OutputNode
 //============================================================================================================
@@ -109,6 +146,14 @@ ProcessAdapter::ProcessAdapter( IHostInfo * hostInfo, size_t numInputNodes , siz
 	}
 }
 //------------------------------------------------------------------------------------------------------------
+void ProcessAdapter::setDelay(size_t v) {
+	if (inputNodes.size()<=1)
+		return;
+	for ( int i=0; i<inputNodes.size(); ++i ) {
+		inputNodes[i]->getDCStream().setMaxDelay(v);
+	} 
+}
+//------------------------------------------------------------------------------------------------------------
 ProcessAdapter::InputNode::Ptr ProcessAdapter::createInputNode( const string &name  ) {
 	InputNode::Ptr n = InputNode::create ( name, this );
 	inputNodes.push_back ( n );
@@ -126,5 +171,19 @@ ProcessAdapter::~ProcessAdapter() {
 //------------------------------------------------------------------------------------------------------------
 size_t ProcessAdapter::getNumActiveOutputNodes() const {
 	return aNode->getNumActiveChildren();
+}
+//------------------------------------------------------------------------------------------------------------
+void ProcessAdapter::process(Processor::Int numSamples) {
+	if (inputNodes.size() == 1) { // one parent => no dc needed
+		inputNodes[0]->_processNode(numSamples, 0);
+		processAdapter(numSamples);
+		return;
+	}
+	InputNodes::iterator it = inputNodes.begin();
+	for ( ; it!=inputNodes.end(); ++it ) {
+		(*it)->_processNode(numSamples, aNode->getNodeDelay());
+	}
+	// final call
+	processAdapter(numSamples);
 }
 } // namespace processing

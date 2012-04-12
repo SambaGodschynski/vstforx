@@ -48,6 +48,7 @@ class GraphTest : public CPPUNIT_NS::TestFixture {
 	CPPUNIT_TEST( testDelayCompensationTree );
 	CPPUNIT_TEST( testDelayCompensationComplex1 );
 	CPPUNIT_TEST( testDCWithInputSwitch );
+	CPPUNIT_TEST( testDCWithInputSwitch02 );
 	CPPUNIT_TEST( testGraphConsistency );
 	CPPUNIT_TEST( testJanitorCreate );
 	CPPUNIT_TEST( testGraphSeries );
@@ -72,6 +73,7 @@ public:
 	void testConnectNodes();
 	void testDelayCompensationSimple();
 	void testDCWithInputSwitch();
+	void testDCWithInputSwitch02();
 	void testDelayCompensationTree();
 	void testSerialization();
 	void testDelayCompensationComplex1();

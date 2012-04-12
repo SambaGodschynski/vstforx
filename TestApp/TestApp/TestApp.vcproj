@@ -415,43 +415,11 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\processing\concreteAdapter\InputStep.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\processing\concreteAdapter\InputStep.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\processing\concreteAdapter\InputSwitch.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\processing\concreteAdapter\InputSwitch.h"
-						>
-					</File>
-					<File
 						RelativePath="..\..\src\processing\concreteAdapter\MidiProcessor.cpp"
 						>
 					</File>
 					<File
 						RelativePath="..\..\src\processing\concreteAdapter\MidiProcessor.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\processing\concreteAdapter\OutputStep.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\processing\concreteAdapter\OutputStep.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\processing\concreteAdapter\OutputSwitch.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\processing\concreteAdapter\OutputSwitch.h"
 						>
 					</File>
 					<File
@@ -479,7 +447,7 @@
 						>
 					</File>
 					<Filter
-						Name="switch"
+						Name="switches"
 						>
 						<File
 							RelativePath="..\..\src\processing\concreteAdapter\FixTimeTranslator.cpp"
@@ -487,6 +455,38 @@
 						</File>
 						<File
 							RelativePath="..\..\src\processing\concreteAdapter\FixTimeTranslator.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\processing\concreteAdapter\InputStep.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\processing\concreteAdapter\InputStep.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\processing\concreteAdapter\InputSwitch.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\processing\concreteAdapter\InputSwitch.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\processing\concreteAdapter\OutputStep.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\processing\concreteAdapter\OutputStep.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\processing\concreteAdapter\OutputSwitch.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\processing\concreteAdapter\OutputSwitch.h"
 							>
 						</File>
 						<File
