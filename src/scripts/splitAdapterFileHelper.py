@@ -7,10 +7,10 @@ purpose:
 '''
 
 #io
-name = 'RemoteChannel'
+name = 'OutputSwitch'
 incpp = 'adapter.txt'
 inh = 'adapterHeaderTmp.txt'
-outdir = '../concreteAdapter/'
+outdir = '../processing/concreteAdapter/'
 
 #replacments
 repmap = {'$$$AUTHOR$$$': 'Johannes Unger',
