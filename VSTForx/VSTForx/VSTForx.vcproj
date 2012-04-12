@@ -565,6 +565,18 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\src\com\ScriptCollection.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\ScriptCollection.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\com\ScriptInfo.h"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\com\Serialization.h"
 						>
 					</File>

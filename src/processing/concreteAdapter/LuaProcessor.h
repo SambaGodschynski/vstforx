@@ -12,7 +12,7 @@
 #include "com/Serialization.h"
 #include <sambag/lua/LuaMap.hpp>
 #include <sambag/lua/LuaHelper.hpp>
-
+#include "com/ScriptInfo.h"
 
 namespace processing {
 using namespace parameter;
@@ -22,7 +22,7 @@ using namespace parameter;
  * Script-Info POD-Kontainer
  */
 //============================================================================================================
-struct ProcessorScriptInfo {
+struct ProcessorScriptInfo : public com::ScriptInfo {
 	// processor setup
 	size_t numInputs;
 	size_t numOutputs;
@@ -40,8 +40,15 @@ struct ProcessorScriptInfo {
 		hasParameterChangedHandler(false)
 	{
 	}
+	ProcessorScriptInfo(const std::string &location) :
+		numInputs(0),
+		numOutputs(0),
+		valid(false),
+		hasParameterChangedHandler(false),
+		ScriptInfo(location)
+	{
+	}
 };
-
 //============================================================================================================
 /**
  * @class LuaProcessor.
@@ -88,9 +95,9 @@ private:
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ) {
 		ar & boost::serialization::base_object < ProcessAdapter > ( *this );
-		ar & parameters; 
 		ar & scriptfile;
 		if (Archive::is_loading::value) {
+			luaState = sambag::lua::createLuaStateRef();
 			loadScript(scriptfile);
 		}
 	}

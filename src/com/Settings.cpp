@@ -181,7 +181,7 @@ Settings::Ptr Settings::getSettings(){
 }
 //------------------------------------------------------------------------------------------------------------
 string Settings::versionToString( const unsigned int version ) {
-	return "0.4.xxx";
+	return "0.x.xxx s";
 	stringstream ss;
 	ss.width (7);
 	ss.fill ('0');

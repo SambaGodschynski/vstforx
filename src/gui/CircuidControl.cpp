@@ -12,6 +12,8 @@
 #include "PpiEditor.h"
 #include "OS_Specific/WindowDef.h"
 #include "processing/RemoteChannel.h"
+#include "com/ScriptCollection.h"
+#include "com/ScriptInfo.h"
 
 namespace ppiGui{
 using namespace menu;
@@ -254,6 +256,45 @@ inline void CircuidControl::createVSTPluginDynSubMenu ( menu::MenuEntryList &mE 
 	ADD_SUB_MENU ( mE, str_add, plugMenu );
 }
 //------------------------------------------------------------------------------------------------------------
+void CircuidControl::getScripts ( menu::MenuEntryList &mE ) {
+	using namespace com;
+	std::list<ScriptInfo> l;
+	ScriptCollection::getScriptsInDirectory(getHomeDirectory(), l);
+	if (l.empty())
+		return;
+	CMenu::Ptr sub = CSubMenu::create( view->getFrame() );
+	MenuEntryList &mesub = sub->getMenuEntries();
+	BOOST_FOREACH(const ScriptInfo& obj, l) {
+		ADD_MENU_LABEL ( mesub, "add " + obj.name, 
+			new CmdCreateLuaProcessor ( obj.location, 
+				view,
+				gObjCtrlDirector 
+			)
+		);
+	}
+	ADD_SUB_MENU ( mE, "script_modules", sub );
+}
+//------------------------------------------------------------------------------------------------------------
+void CircuidControl::getRemoteChannels ( menu::MenuEntryList &mE ) {
+	// add remote channels
+	using namespace processing;
+	std::list<RemoteChannelHandler> channels;
+	getRemoteChannelManager()->getRegisteredChannels(channels);
+	if (channels.empty())
+		return;
+
+	CMenu::Ptr remotChannelSub = CSubMenu::create( view->getFrame() );
+	MenuEntryList &rsub = remotChannelSub->getMenuEntries();
+
+	BOOST_FOREACH(const RemoteChannelHandler &channel, channels) {
+		ADD_MENU_LABEL ( rsub, 
+			channel.name, 
+			new CmdCreateRemoteChannelReceiver (channel, view, gObjCtrlDirector)
+		);
+	}
+	ADD_SUB_MENU ( mE, "remote_channels", remotChannelSub );
+}
+//------------------------------------------------------------------------------------------------------------
 inline void CircuidControl::getMenuEntryList ( menu::MenuEntryList &mE ){
 	ADD_MENU_TITLE ( mE, "things you can do on this view:" );
 	
@@ -274,11 +315,6 @@ inline void CircuidControl::getMenuEntryList ( menu::MenuEntryList &mE ){
 	ADD_MENU_LABEL ( mE, "add_peak_tracker", new CmdCreatePeakTracker ( view, gObjCtrlDirector ) );
 	ADD_MENU_LABEL ( mE, "add_adsr_trigger", new CmdCreateADSRTriggerNode ( view, gObjCtrlDirector ) );
 	ADD_MENU_LABEL ( mE, "add_midi_receiver", new CmdCreateMidiProcessor ( view, gObjCtrlDirector ) );
-	ADD_MENU_LABEL ( mE, "add_lua_processor", 
-		new CmdCreateLuaProcessor ( getHomeDirectory() + "adelay.lua", 
-		view,
-		gObjCtrlDirector )
-	);
 	ADD_MENU_LABEL ( mE, "add_free_knob", new CmdCreateFreeGKnob( view, gObjCtrlDirector ) );
 	
 	CMenu::Ptr pCM = CSubMenu::create( view->getFrame() );
@@ -302,25 +338,8 @@ inline void CircuidControl::getMenuEntryList ( menu::MenuEntryList &mE ){
 	}
 	ADD_SUB_MENU ( mE, "host_knobs", pCM );
 
-	// add remote channels
-	using namespace processing;
-	std::list<RemoteChannelHandler> channels;
-	getRemoteChannelManager()->getRegisteredChannels(channels);
-	if (channels.empty())
-		return;
-
-	CMenu::Ptr remotChannelSub = CSubMenu::create( view->getFrame() );
-	MenuEntryList &rsub = remotChannelSub->getMenuEntries();
-
-	BOOST_FOREACH(const RemoteChannelHandler &channel, channels) {
-		ADD_MENU_LABEL ( rsub, 
-			channel.name, 
-			new CmdCreateRemoteChannelReceiver (channel, view, gObjCtrlDirector)
-		);
-	}
-
-	ADD_SUB_MENU ( mE, "remote_channels", remotChannelSub );
-	
+	getScripts(mE);
+	getRemoteChannels(mE);
 }
 //------------------------------------------------------------------------------------------------------------
 CircuidControl::~CircuidControl(){

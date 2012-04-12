@@ -849,6 +849,15 @@ public:
 	virtual ~GLuaProcessor();
 };
 //============================================================================================================
+// Frei stehende Methoden fuer boost archive: GLuaProcessor
+//============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+template < typename Archive >
+void save_construct_data(Archive & ar, const GLuaProcessor * t, const unsigned int file_version ) {
+	ppiGui::CircuidView *view = t->getParentView();
+	ar << view;
+}
+//============================================================================================================
 //	Klasse GRemoteChannelReceiver:
 //============================================================================================================
 class GRemoteChannelReceiver : public GProcessorNode, public Serializable {
