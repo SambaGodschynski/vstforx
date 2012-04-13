@@ -1,0 +1,160 @@
+/*
+ * ===========================================================================================================
+ * OutputStep.h
+ *      Author: Johannes Unger
+ * ===========================================================================================================
+ */
+#ifndef FORX_OUTPUTSTEP_H
+#define FORX_OUTPUTSTEP_H
+
+#include "processing/processing.h"
+#include "processing/parameter/parameter.h"
+#include "com/Serialization.h"
+#include "com/One4All.h"
+#include "Step.h"
+#include "FixTimeTranslator.h"
+#include "SyncTranslator.h"
+
+namespace processing {
+using namespace parameter;
+//============================================================================================================
+/**
+ * @class OutputStep.
+ * Schaltet Eingangs-Samplemengen auf N Ausgaenge.
+ */
+class OutputStep: 
+public ProcessAdapter, 
+public HasParameter, 
+public Serializable, 
+public VariableOutputAdapter,
+public IHasState
+{
+//============================================================================================================
+friend class boost::serialization::access;
+BOOST_SERIALIZATION_SPLIT_MEMBER()
+public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::shared_ptr<OutputStep> Ptr;
+private:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Serialisiert OutputStep-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
+	void save ( oArchive &ar, const unsigned int version ) const;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Deserialisiert OutputStep-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
+	void load ( iArchive &ar, const unsigned int version );
+	//--------------------------------------------------------------------------------------------------------
+	OutputStep() : fixTimeValue(0.0f, 0.0f) {};
+private:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * blockt hinzufuegen von OutputNode gegen processAdapter()
+	 */
+	com::Mutex mutex;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Flankenschalter auf Host-Transport (@see VST-SDK VstTimeInfo)
+	 */
+	ClockEdge transport;
+	//--------------------------------------------------------------------------------------------------------
+	Parameter::Ptr type;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * initalisiert OutputStep
+	 */
+	void init();
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * wird aufgerufen wenn Host-Transport sich aendert (play gedureckt)
+	 * Setzt Step-Dauer verschiebung, um die naechste 1/4 Note zu treffen.
+	 */
+	inline void reset();
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Step-Typ geandert (Sync/Fixed)
+	 * @param src
+	 * @param v
+	 */
+	void typeChanged ( void *src, const float& v );
+	//--------------------------------------------------------------------------------------------------------
+	typedef vector<Frames*> OutputMatrix;
+	//--------------------------------------------------------------------------------------------------------
+	OutputMatrix outpMatrix;
+	//--------------------------------------------------------------------------------------------------------
+	inline void processFrames ( Frames *iFrame, OutputMatrix &fr, Processor::Int numSamples );
+protected:
+	//--------------------------------------------------------------------------------------------------------
+	vector<Parameter::Ptr> parameterMap;
+	//--------------------------------------------------------------------------------------------------------
+	Step *cStep;
+	//--------------------------------------------------------------------------------------------------------
+	FixTimeValue fixTimeValue;
+	//--------------------------------------------------------------------------------------------------------
+	SyncTranslator *sync;
+	//--------------------------------------------------------------------------------------------------------
+	virtual void setState ( size_t ignore ) {} 
+	//--------------------------------------------------------------------------------------------------------
+	OutputStep( IHostInfo *hostInfo, int initSteps = 2 );
+public:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param hostInfo
+	 * @param initSteps
+	 * @return neues OutputStep-Objekt
+	 */
+	static Ptr create( IHostInfo *hostInfo, int initSteps = 2 ) {
+		Ptr neu( new OutputStep(hostInfo, initSteps) );
+		neu->self = neu;
+		return neu;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * resetet SampleRate
+	 */
+	virtual void hostInfoChanged() {
+		fixTimeValue.hostInfoChanged( hostInfo->getSampleRate() );
+		if (sync) sync->hostInfoChanged();
+		cStep->setSampleRate ( hostInfo->getSampleRate() );
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Verarbeitet Samplemenge der Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
+	 * @param numSamples Anzahl der zu bearbeitenden Samples
+	 */
+	virtual void processAdapter( Processor::Int numSamples );
+	//--------------------------------------------------------------------------------------------------------
+	virtual ~OutputStep();
+	/**
+	 * @param index
+	 * @return liefert Parameter zu index. Wirft: std::out_of_range
+	 */
+	virtual Parameter::Ptr getParameter ( size_t index = 0 ) const {return parameterMap.at(index);}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return aktuellen State. Wenn inaktiv (@see ProcessorNode::isActive()) UINT_MAX
+	 */
+	virtual size_t getState() const { return aNode->isActive() ? cStep->getState() : UINT_MAX; }
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Anzahl aller OutputStep-Parameter
+	 */
+	virtual size_t getNumParameter () const { return parameterMap.size(); }
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Fuegt neuen OutputNode hinzu.
+	 * @return neues OutputNode-Objekt
+	 */
+	ProcessorNode::Ptr addOutputNode();
+};
+}// namespace processing
+
+#endif  // FORX_OUTPUTSTEP_H
+
+
