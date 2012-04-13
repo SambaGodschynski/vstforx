@@ -2,6 +2,8 @@
  * ===========================================================================================================
  * ConcreteGObjects.h
  *      Author: Johannes Unger
+ * TODO:
+ * Split all classes into seperate files and use this file as 'including farm'. 
  * ===========================================================================================================
  */
 #ifndef CONCRETEGOBJECTS_H

@@ -95,7 +95,7 @@ public:
 	static const int COMMAND_WORKER_INTERVAL_MS = 1000;
 	static const int STD_KNOB_SUBPIXMAPS = 100;
 	static const int PROGRAM_PARAMETER = 512;
-	static const int PPI_VERSION = /*000*/ 4300; // xx.xx.xxx
+	static const int PPI_VERSION = /*000*/ 4444; // xx.xx.xxx
 	static const char PPI_VERSION_EXTRA_CHAR = 'd';
 	static const unsigned int MIN_WINDOW_WIDTH = 800;
 	static const unsigned int MIN_WINDOW_HEIGHT = 600;

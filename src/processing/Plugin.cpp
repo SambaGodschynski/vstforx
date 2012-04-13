@@ -48,7 +48,7 @@ editorOpen ( processing::parameter::Parameter::create() )
 	// init editorPos parameters
 	editorPosX->setName("editor_X");
 	editorPosY->setName("editor_Y");
-	editorOpen->setName("editor open");
+	editorOpen->setName("editor_visibility");
 	*editorPosX = 0.72f; // 0.5 = 0 SCREEN_X
 	*editorPosY = 0.72f; // 0.5 = 0 SCREEN_Y
 	*editorOpen = 0.0f;

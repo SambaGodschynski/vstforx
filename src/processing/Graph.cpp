@@ -48,11 +48,16 @@ void DFSVisitor::processNodeParents( ProcessorNode::Ptr node ) {
 		if ( inDegree == 1 ) { // ja => addiere delay wert
 			delay += n->getNodeDelay();
 		} else { // nein => uebernehme max. wert
-			if ( n->getNodeDelay() > delay ) delay = n->getNodeDelay();
+			if ( n->getNodeDelay() > delay ) 
+				delay = n->getNodeDelay();
 		}
 	}
 	// setze delay
-	node->delay = delay;
+	node->setNodeDelay(delay);
+	// TODO:
+	// not every node needs a dc stream:
+	//   - nodes with parent <= 1
+	//     BUT: Adapter::InputNodes still needs 
 	node->getDCStream().setSize ( graph->getBlockSize(), delay );
 }
 //------------------------------------------------------------------------------------------------------------

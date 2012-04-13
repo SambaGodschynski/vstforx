@@ -686,6 +686,66 @@ void GraphTest::testDCWithInputSwitch() {
 }
 
 //=============================================================================
+void GraphTest::testDCWithInputSwitch02() {
+//=============================================================================
+	/*       
+
+	                           S--------+
+	                         /   \      |       S = startNode
+						    ND    D     D       E = endNode
+							|     |     |       D = Adapter with delay
+	                        Si0    Si1  Si2     ND = Adapter without delay
+							 \   /      |       Si0..2 = Input-Switch0..1 input
+							   0--------+
+							   |
+							   E 
+				  
+	*/
+	using namespace std;
+	using namespace com;
+	using namespace processing;
+	const size_t BLOCKSIZE = 1024;
+	// consider switchs fadein; to make sure two blocks will be processed before test
+	enum { DELAY = 500, DELAY02 = 550 };
+	enum { FAILED=Graph::Janitor::FAILED, SUCCEED=Graph::Janitor::SUCCEED };
+	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>prepare graph
+	Graph::Ptr graph = createGraph( BLOCKSIZE, 44100.0f );
+	DelayAdapter<DELAY>::Ptr delay( DelayAdapter<DELAY>::create( graph.get() ) );
+	DelayAdapter<DELAY02>::Ptr delay02( DelayAdapter<DELAY02>::create( graph.get() ) );
+	Volume::Ptr noDelay(Volume::create(graph.get()));
+	InputSwitch::Ptr sw(InputSwitch::create(graph.get()));
+	sw->addInputNode();
+	Graph::Janitor::Ptr jan = graph->getJanitor();
+	jan->add( delay );
+	jan->add( delay02 );
+	jan->add( noDelay );
+	jan->add( sw );
+	CPPUNIT_ASSERT(jan->connectNodes(graph->getStartNode(),noDelay->getInputNode(0))==SUCCEED); 
+	CPPUNIT_ASSERT(jan->connectNodes(graph->getStartNode(),delay->getInputNode(0))==SUCCEED); 
+	CPPUNIT_ASSERT(jan->connectNodes(graph->getStartNode(),delay02->getInputNode(0))==SUCCEED); 
+
+	CPPUNIT_ASSERT(jan->connectNodes(noDelay->getOutputNode(0),sw->getInputNode(0))==SUCCEED);
+	CPPUNIT_ASSERT(jan->connectNodes(delay->getOutputNode(0), sw->getInputNode(1))==SUCCEED);
+	CPPUNIT_ASSERT(jan->connectNodes(delay02->getOutputNode(0), sw->getInputNode(2))==SUCCEED);
+
+	CPPUNIT_ASSERT(jan->connectNodes(sw->getOutputNode(0), graph->getEndNode())== SUCCEED);
+	jan.reset();
+	CPPUNIT_ASSERT( graph->isActive() );
+	CPPUNIT_ASSERT_EQUAL( (size_t)DELAY02, graph->getGraphDelay() );
+	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> consider switchs fadein
+	sw->getParameter(1)->setValue(0);
+	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>prepare frames
+	Frames inFr01, outFr;
+	inFr01.setSize( BLOCKSIZE );
+	outFr.setSize( BLOCKSIZE );
+	fillFrame (&inFr01, 1.f,  1.f);
+	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph
+	graph->pushAndCopy ( &inFr01, BLOCKSIZE );
+	graph->processGraph( outFr.getData(), BLOCKSIZE );
+	TEST_PEAK( outFr, 1., DELAY02, BLOCKSIZE );
+}
+
+//=============================================================================
 void GraphTest::testDelayCompensationTree() {
 //=============================================================================
 	/*                         S

@@ -81,6 +81,29 @@ public:
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
+	 * ist true wenn Node die Graph-ProzessKette beeinflusst.
+	 */
+	bool active;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Anzahl der aktiven Knoten Nachfolger wird in DFSVisitor ermittelt
+	 */
+	size_t activeChildren;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Signal-Verabeitungs-Verzoegerung im graph
+	 */
+	size_t delay;
+protected:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * ist ergebnis Frames-Objekt von mixInputToFrames()
+	 */
+	Frames *tmpFrames;
+	//--------------------------------------------------------------------------------------------------------
+	virtual void setNodeDelay(size_t v) { delay = v; }
+	//--------------------------------------------------------------------------------------------------------
+	/**
 	 * Eltern ProcessorNode-Objekte. Werden in DFSVisitor ueber updateGraph() ermittelt
 	 */
 	Parents parents;
@@ -133,36 +156,10 @@ private:
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * ist true wenn Node die Graph-ProzessKette beeinflusst.
-	 */
-	bool active;
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * Anzahl der aktiven Knoten Nachfolger wird in DFSVisitor ermittelt
-	 */
-	size_t activeChildren;
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * ist ergebnis Frames-Objekt von mixInputToFrames()
-	 */
-	Frames *tmpFrames;
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * Signal-Verabeitungs-Verzoegerung im graph
-	 */
-	size_t delay;
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * @return Signal-Verabeitungs-Verzoegerung im Graph ( unter beachtung der Vorgaenger )
-	 */
-	size_t getNodeDelay() const { return delay; }
-	//--------------------------------------------------------------------------------------------------------
-	/**
 	 * bestimmt ob ProcessorNode-Objekt aktiv/nicht aktiv. Wird von DFSVisitor aufgerufen.
 	 * @param stat
 	 */
 	void setActive( bool stat ){ active = stat; }
-protected:
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Ausgabe-Sampleblockmenge-Ergebniss-Stack.
@@ -185,26 +182,7 @@ protected:
 	 * @param numSamples Anzahl der zu berarbeitenden Samples
 	 * @return Frames-Objekt
 	 */
-	Frames * mixInputsToFrames( Processor::Int numSamples ) {
-		if ( parents.empty() ) {
-			tmpFrames->setZero( numSamples );
-			return tmpFrames;
-		}
-		ProcessorNode *n;
-		if ( parents.size() == 1 ) { // sonderzug nach pankow:
-			n = parents.front();
-			assert ( n->isActive() );
-			return n->popFrame();
-		}
-		Parents::iterator it = parents.begin();
-		for ( ; it!=parents.end(); ++it ) {
-			n = *it;
-			if ( !n->isActive() ) continue;
-			stream.addFrame ( n->popFrame(), numSamples, getNodeDelay() - n->getNodeDelay() );
-		}
-		stream.flush ( numSamples, tmpFrames->getData() );
-		return tmpFrames;
-	}
+	Frames * mixInputsToFrames( Processor::Int numSamples );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Bereitet Knoten vor um schliesslich processFrames() aufzurufen.
@@ -215,7 +193,13 @@ protected:
 	}
 	//--------------------------------------------------------------------------------------------------------
 	ProcessorNode ( const string &name="unnamed" );
+	//--------------------------------------------------------------------------------------------------------
 public:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Signal-Verabeitungs-Verzoegerung im Graph ( unter beachtung der Vorgaenger )
+	 */
+	size_t getNodeDelay() const { return delay; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return zum ProcessorNode-Objekt zugeordneter BGL-Vertex.
@@ -576,10 +560,24 @@ protected:
 	InputNodePtr createInputNode( const string &name = "unnamed" );
 	//--------------------------------------------------------------------------------------------------------
 	ProcessAdapter( IHostInfo * hostInfo, size_t numInputNodes = 1, size_t numOutputNodes = 1 );
-public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Wird von AdapterNode, durch AdapterNode::processNode(), aufgerufen.
+	 * Bereitet Inputdatenmenge vor (falls notwendig) und leitet an processAdapter() weiter.
+	 * @param numSamples Anzahl der zu verarbeitenden Samples
+	 */
+	void process(Processor::Int numSamples);
+public:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * setted by adapternode. value is delay value of adapternode an represents the
+	 * current signal delay in graph on adapter position. 
+	 * @param
+	 */
+	void setDelay(size_t v);
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Wird von process() aufgerufen.
 	 * Verarbeitet Samplemenge des Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
 	 * @param numSamples Anzahl der zu verarbeitenden Samples
 	 */
@@ -701,6 +699,7 @@ public:
 //============================================================================================================
 class ProcessAdapter::InputNode : public NOPNode {
 friend class boost::serialization::access;
+friend class ProcessAdapter;
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<InputNode> Ptr;
@@ -721,6 +720,16 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	ProcessAdapter *parent;
 	//--------------------------------------------------------------------------------------------------------
+	virtual void processNode( Processor::Int numSamples ){}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * to handle issue#157, adapter calls _processNode with specific delay value before
+	 * processAdapter. Original processNode does nothing.
+	 * @param numSamples
+	 * @param delay
+	 */ 
+	void _processNode( Processor::Int numSamples, size_t delay );
+	//--------------------------------------------------------------------------------------------------------
 	InputNode( const string &name, ProcessAdapter *parent );
 public:
 	//--------------------------------------------------------------------------------------------------------
@@ -730,11 +739,11 @@ public:
 	 * @param parent uebergeordnetes ProcessAdapter-Objekt
 	 * @return
 	 */
-		static Ptr create( const string &name, ProcessAdapter *parent ) {
+	static Ptr create( const string &name, ProcessAdapter *parent ) {
 		Ptr neu( new InputNode(name, parent) );
 		neu->self = neu;
 		return neu;
-		}
+	}
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~InputNode(){}
 	//--------------------------------------------------------------------------------------------------------
@@ -785,6 +794,11 @@ private:
 	ProcessAdapterNode( ProcessAdapter *processAdapter );
 public:
 	//--------------------------------------------------------------------------------------------------------
+	virtual void setNodeDelay(size_t v) {
+		parent->setDelay(v);
+		ProcessorNode::setNodeDelay(v);
+	}
+	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Erzeugt neues ProcessAdapterNode-Objekt
 	 * @param processAdapter
@@ -819,7 +833,7 @@ public:
 	 * ruft ProcessAdapter::processAdapter() auf.
 	 * @param numSamples Anzahl der zu bearbeitenden Samples.
 	 */
-	virtual void processNode( Processor::Int numSamples ) { parent->processAdapter( numSamples ); }
+	virtual void processNode( Processor::Int numSamples ) { parent->process(numSamples); }
 }; //class ProcessAdapterNode
 } // namespace Processing
 

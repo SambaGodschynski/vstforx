@@ -653,7 +653,7 @@ void GPluginController::getPluginMenu ( Plugin::Ptr plug,
 		CMenu::Ptr sub = menu::CSubMenu::create ( obj->getParentView()->getFrame() );
 		MenuEntryList &subEntr = sub->getMenuEntries();
 		entriesToMenuList<PlugProgram_Tag> ( plug, subEntr, obj, &frntCtrl, plug->getNumPrograms() );
-		ADD_SUB_MENU ( mL, "programs", sub );
+		ADD_SUB_MENU ( mL, "presets", sub );
 		
 							   
 	}

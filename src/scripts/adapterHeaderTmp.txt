@@ -1,0 +1,21 @@
+/*
+ * ===========================================================================================================
+ * $$$NAME$$$.h
+ *      Author: $$$AUTHOR$$$
+ * ===========================================================================================================
+ */
+#ifndef $$$ONCE$$$
+#define $$$ONCE$$$
+
+#include "processing/processing.h"
+#include "processing/parameter/parameter.h"
+#include "com/Serialization.h"
+
+
+namespace processing {
+using namespace parameter;
+}// namespace processing
+
+#endif  // $$$ONCE$$$
+
+
