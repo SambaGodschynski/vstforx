@@ -6,7 +6,10 @@
  */
 #include "LuaProcessor.h"
 #include <sambag/lua/LuaSequence.hpp>
+#include <sambag/lua/LuaRegisterFunction.hpp>
 #include <boost/foreach.hpp>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
 
 namespace processing{
 //============================================================================================================
@@ -14,11 +17,27 @@ namespace processing{
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
 namespace {
-	const std::string ON_PARAMETER_CHANGED = "onParameterChanged";
-	const std::string NUM_INPUTS = "numInputs";
-	const std::string NUM_OUTPUTS = "numOutputs";
-	const std::string PARAMETER_SETUP = "parameterSetup";
-	const std::string PROCESS_FRAMES = "processFrames";
+	// LC = lua call (vorx2lua)
+	// GP = global parameter
+	const std::string LC_PARAMETER_CHANGED = "lcOnParameterChanged";
+	const std::string GP_NUM_INPUTS = "gpNumInputs";
+	const std::string GP_NUM_OUTPUTS = "gpNumOutputs";
+	const std::string GP_PARAMETER_SETUP = "gpParameterSetup";
+	const std::string LC_PROCESS_FRAMES = "lcProcess";
+	const std::string LC_INIT = "lcInit";
+	// function tags
+	struct SetLatency_Tag {
+		typedef boost::function<void(int)> Function;
+		static const char * name() { return "frxSetModuleLatency"; }
+	};
+	struct SetFramesToOutput_Tag {
+		typedef boost::function<void()> Function;
+		static const char * name() { return "frxSetFramesToOutput"; }
+	};
+	struct GetFramesFromInput_Tag {
+		typedef boost::function<LuaProcessor::LuaFrames(int)> Function;
+		static const char * name() { return "frxGetFramesFromInput"; }
+	};
 }
 //------------------------------------------------------------------------------------------------------------
 LuaProcessor::LuaProcessor ( IHostInfo *iHost ) :
@@ -26,8 +45,6 @@ LuaProcessor::LuaProcessor ( IHostInfo *iHost ) :
 {
 	setName ("lua_processor");
 	luaState = sambag::lua::createLuaStateRef();
-	//lua_gc(luaState.get(), LUA_GCSETPAUSE, 1);
-	//lua_gc(luaState.get(), LUA_GCSETSTEPMUL, 1000);
 	TOLOG ( "+" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
@@ -62,25 +79,53 @@ void LuaProcessor::initListener() {
 	}
 }
 //------------------------------------------------------------------------------------------------------------
+void LuaProcessor::initCallbackFunctions() {
+	using namespace sambag;
+	lua::registerFunction<SetLatency_Tag>(
+		luaState.get(),
+		boost::bind(&LuaProcessor::frxSetModuleLatency, this, _1)
+	);
+	lua::registerFunction<SetFramesToOutput_Tag>(
+		luaState.get(),
+		boost::bind(&LuaProcessor::frxSetFramesToOutput, this)
+	);
+	lua::registerFunction<GetFramesFromInput_Tag>(
+		luaState.get(),
+		boost::bind(&LuaProcessor::frxGetFramesFromInput, this, _1)
+	);
+}
+//------------------------------------------------------------------------------------------------------------
+void LuaProcessor::initIO() {
+	iodata.resize(1); 
+}
+//------------------------------------------------------------------------------------------------------------
 void LuaProcessor::initScript() {
 	getScriptInfo(luaState, scriptInfo);
+	initIO();
 	initParameter();
+	initCallbackFunctions();
+	if (scriptInfo.hasInitFunction)
+		sambag::lua::callLuaFunc(luaState.get(), LC_INIT, 0);
 }
 //------------------------------------------------------------------------------------------------------------
 void LuaProcessor::getScriptInfo(sambag::lua::LuaStateRef luaState, ProcessorScriptInfo &outValue) {
 	using namespace sambag;
 	// processor setup
-	if ( !lua::getGlobal(outValue.numInputs, luaState.get(), NUM_INPUTS) )
+	if ( !lua::getGlobal(outValue.numInputs, luaState.get(), GP_NUM_INPUTS) )
 		outValue.numInputs = 0;
-	if ( !lua::getGlobal(outValue.numOutputs, luaState.get(), NUM_OUTPUTS) )
+	if ( !lua::getGlobal(outValue.numOutputs, luaState.get(), GP_NUM_OUTPUTS) )
 		outValue.numOutputs = 0;
 	// parameter
-	if ( !lua::getGlobal(outValue.parameterMap, luaState.get(), PARAMETER_SETUP) )
+	if ( !lua::getGlobal(outValue.parameterMap, luaState.get(), GP_PARAMETER_SETUP) )
 		outValue.parameterMap.clear();
-	if ( !lua::hasFunction(luaState.get(), ON_PARAMETER_CHANGED) )
+	if ( !lua::hasFunction(luaState.get(), LC_PARAMETER_CHANGED) )
 		outValue.hasParameterChangedHandler = false;
 	else
 		outValue.hasParameterChangedHandler = true;
+	if ( !lua::hasFunction(luaState.get(), LC_INIT) )
+		outValue.hasInitFunction = false;
+	else
+		outValue.hasInitFunction = true;
 }
 //------------------------------------------------------------------------------------------------------------
 void LuaProcessor::processAdapter(Processor::Int numSamples) {
@@ -94,20 +139,11 @@ void LuaProcessor::processAdapter(Processor::Int numSamples) {
 
 	using namespace sambag::lua;
 	
-	boost::tuple< LuaSequenceEx<float>, LuaSequenceEx<float>, int > args = boost::make_tuple ( 
-		LuaSequenceEx<float>((*frame)[0], numSamples),
-		LuaSequenceEx<float>((*frame)[1], numSamples),
-		numSamples
-	);
-
-	boost::tuple< LuaSequenceEx<float>, LuaSequenceEx<float> > ret = boost::make_tuple ( 
-		LuaSequenceEx<float>((*frame)[0], numSamples),
-		LuaSequenceEx<float>((*frame)[1], numSamples)
-	);
+	iodata[0] = frame;
 
 	try {
 		// execute processFunction
-		callLuaFunc(luaState.get(), PROCESS_FRAMES, args, ret);
+		callLuaFunc(luaState.get(), LC_PROCESS_FRAMES, boost::make_tuple(numSamples));
 	} catch( const LuaException &ex ) {
 		TOLOG("lua script:" + scriptfile + " failed!\n  " + ex.errMsg);
 		scriptInfo.valid = false;
@@ -127,7 +163,7 @@ void LuaProcessor::parameterValueChanged ( void *src, const float &value ) {
 		return;
 	// call lua function
 	try {
-		callLuaFunc(luaState.get(), ON_PARAMETER_CHANGED, boost::make_tuple(p->getName(), value));
+		callLuaFunc(luaState.get(), LC_PARAMETER_CHANGED, boost::make_tuple(p->getName(), value));
 	} catch (const LuaException &ex) {
 		TOLOG("lua script:" + scriptfile + " failed!\n  " + ex.errMsg);
 		scriptInfo.valid = false;
@@ -150,5 +186,35 @@ void LuaProcessor::loadScript(const std::string &scriptfile) {
 		return;
 	}
 	initScript();
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Callback Functions
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------------------------------------
+void LuaProcessor::frxSetModuleLatency(int latency) {
+	scriptInfo.latency = latency;
+	hostInfo->ioChanged();
+}
+//------------------------------------------------------------------------------------------------------------
+void LuaProcessor::frxSetFramesToOutput() {
+	using namespace sambag::lua;
+	Frames &frames = *iodata[0];
+	size_t numSamples = frames.getSize();
+	boost::tuple<LuaSequenceEx<float>, LuaSequenceEx<float>, int> args = boost::make_tuple ( 
+		LuaSequenceEx<float>(frames[1], numSamples),
+		LuaSequenceEx<float>(frames[0], numSamples),
+		0
+	);
+	pop(luaState.get(), args);
+}
+//------------------------------------------------------------------------------------------------------------
+LuaProcessor::LuaFrames LuaProcessor::frxGetFramesFromInput(int channel) {
+	using namespace sambag::lua;
+	Frames &frames = *iodata[0];
+	size_t numSamples = frames.getSize();
+	return boost::make_tuple ( 
+		LuaSequenceEx<float>(frames[0], numSamples),
+		LuaSequenceEx<float>(frames[1], numSamples)
+	);
 }
 }// namespace processing

@@ -35,6 +35,13 @@ struct IHostInfo {
 	virtual AudioMasterCallback getAudioMasterCallback() = 0;
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~IHostInfo(){}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * something changed, update needed.
+	 * @return value is given by vst-sdk but not documented. So I don't know what
+	 *         the return value means.
+	 */
+	virtual bool ioChanged() = 0;
 };
 } // namepsace processing
 #endif

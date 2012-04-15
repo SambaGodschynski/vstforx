@@ -1,5 +1,5 @@
 --setup
-parameterSetup = { direct = 0.5, delay=0.5, feedback=0.4 }
+gpParameterSetup = { direct = 0.5, delay=0.5, feedback=0.4 }
 maxbuff = 44100
 
 
@@ -8,7 +8,7 @@ function initBuffer(numSamples)
     for i=1, numSamples, 1 do
     	res[i] = 0.0
     end
-    return res 
+    return res
 end
 buffer=initBuffer(maxbuff)
 
@@ -25,7 +25,7 @@ function incCursor()
 end
 
 
-function processFrames(l, r, numSamples)
+function frxProcess(l, r, numSamples)
     for i=1, numSamples, 1 do
         x = l[i]
 	y = buffer[cursor]
@@ -37,7 +37,7 @@ function processFrames(l, r, numSamples)
     return l, r
 end
 
-function onParameterChanged(name, value)
+function lcOnParameterChanged(name, value)
     if name=='feedback' then
         feedback = value
     end

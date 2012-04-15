@@ -244,6 +244,12 @@ bgl::Edge Graph::findEdge( ProcessorNode::Ptr source, ProcessorNode::Ptr target 
 	}
 	return nullEdge;
 }
+//------------------------------------------------------------------------------------------------------------
+bool Graph::ioChanged() {
+	Janitor::Ptr jan = getJanitor(); 
+	// update when janitor looses scope
+	return hostInfo->ioChanged();
+}
 //============================================================================================================
 // Klasse Janitor
 // Ermoeglicht hinzufuegen und entfernen von PObjects und Verbindungen.
@@ -266,7 +272,7 @@ Graph::Janitor::~Janitor() {
 			(*it)->hostInfoChanged();
 		}
 	}
-	/*if ( graph->getBlockSize() > 0 )*/ graph->updateGraph();
+	graph->updateGraph();
 	graph->getProcessingLock().unlock(); // entsperre processing
 }
 //------------------------------------------------------------------------------------------------------------

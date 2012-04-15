@@ -12,7 +12,9 @@
 #include "com/Serialization.h"
 #include <sambag/lua/LuaMap.hpp>
 #include <sambag/lua/LuaHelper.hpp>
+#include <boost/tuple/tuple.hpp>
 #include "com/ScriptInfo.h"
+#include <sambag/lua/LuaSequence.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -26,25 +28,22 @@ struct ProcessorScriptInfo : public com::ScriptInfo {
 	// processor setup
 	size_t numInputs;
 	size_t numOutputs;
+	size_t latency;
 	bool valid;
 	// parameter
 	// Key = parameterName, Value = parameter init value
 	typedef sambag::lua::LuaMap<std::string, float> ParameterMap;
 	ParameterMap parameterMap;
 	bool hasParameterChangedHandler;
+	bool hasInitFunction;
 	// constructor
-	ProcessorScriptInfo() :
+	ProcessorScriptInfo(const std::string &location="") :
 		numInputs(0),
 		numOutputs(0),
-		valid(false),
-		hasParameterChangedHandler(false)
-	{
-	}
-	ProcessorScriptInfo(const std::string &location) :
-		numInputs(0),
-		numOutputs(0),
+		latency(0),
 		valid(false),
 		hasParameterChangedHandler(false),
+		hasInitFunction(false),
 		ScriptInfo(location)
 	{
 	}
@@ -77,6 +76,10 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	void initScript();
 	//--------------------------------------------------------------------------------------------------------
+	void initIO();
+	//--------------------------------------------------------------------------------------------------------
+	void initCallbackFunctions();
+	//--------------------------------------------------------------------------------------------------------
 	void initParameter();
 	//--------------------------------------------------------------------------------------------------------
 	sambag::lua::LuaStateRef luaState;
@@ -103,6 +106,29 @@ private:
 	}
 	//--------------------------------------------------------------------------------------------------------
 	LuaProcessor (){} // wird nur von boost::serial. benutzt
+protected:
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// LuaCallbacks
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// configuration
+	//--------------------------------------------------------------------------------------------------------
+	void frxSetModuleLatency(int latency);
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// processing
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////
+public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::tuple< sambag::lua::LuaSequenceEx<float>, sambag::lua::LuaSequenceEx<float> > LuaFrames;
+protected:
+	//--------------------------------------------------------------------------------------------------------
+	vector<Frames*> iodata;
+	//--------------------------------------------------------------------------------------------------------
+	/** 
+	 * args will be poped from lua stack, to use faster LuaSeuqenceX structure.
+	 */
+	void frxSetFramesToOutput();
+	//--------------------------------------------------------------------------------------------------------
+	LuaFrames frxGetFramesFromInput(int channel);
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	LuaProcessor ( IHostInfo *hostInfo );
@@ -144,6 +170,11 @@ public:
 	virtual size_t getNumParameter () const { return parameters.size(); }
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~LuaProcessor ();
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Signal-Verabeitungs-Verzoegerung des uebergeordneten ProcessAdapter
+	 */
+	virtual size_t getProcessDelay() const { return scriptInfo.latency; }
 };
 }// namespace processing
 
