@@ -282,19 +282,19 @@ inline VSTPlugin * VSTPlugin::getVSTPlugNode(AEffect *aEff){
 	return (*it).second;
 }
 //------------------------------------------------------------------------------------------------------------
-void VSTPlugin::editorParameterChanged ( AEffect *aEff, int index, float value ){
-	VSTPlugin *plug = getVSTPlugNode ( aEff );
-	if (!plug) return;
-	
-	if ( plug->param.empty() ) return;
+void VSTPlugin::onIOChanged() {
+}
+//------------------------------------------------------------------------------------------------------------
+void VSTPlugin::onEditorParameterChanged (int index, float value){
+	if ( param.empty() ) return;
 	// try to lock:
-	boost::unique_lock<boost::timed_mutex> lock( plug->mutex, boost::try_to_lock);
+	boost::unique_lock<boost::timed_mutex> lock( mutex, boost::try_to_lock);
 	if (!lock.owns_lock()) return; // lock failed
 
-	if ( index > plug->getNumParameter() ) return;
-	plug->onPlugChangeParameterIndex = index; 
-	plug->param[index]->setValue ( value );
-	plug->onPlugChangeParameterIndex = -1;
+	if ( index > getNumParameter() ) return;
+	onPlugChangeParameterIndex = index; 
+	param[index]->setValue ( value );
+	onPlugChangeParameterIndex = -1;
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::save(com::oArchive &ar, const unsigned int version) const {
@@ -370,13 +370,8 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 	delete *data;
 }
 //------------------------------------------------------------------------------------------------------------
-void VSTPlugin::plugRequestWindowResize ( AEffect* effect, size_t w, size_t h ) {
-	RelatedPlugNode::iterator it = relatedPlugNode.find ( effect );
-	if ( it == relatedPlugNode.end() ) return;
-	VSTPlugin *pl = it->second;
-	if ( !pl ) return;
-	pl->EventSender<ResizeEditorEvent>::notifyEventListeners( pl, ResizeEditorEvent(w,h) );
-
+void VSTPlugin::onPlugRequestWindowResize (size_t w, size_t h) {
+	EventSender<ResizeEditorEvent>::notifyEventListeners( this, ResizeEditorEvent(w,h) );
 }
 //------------------------------------------------------------------------------------------------------------
 VstIntPtr VSTPlugin::_hostCallback ( AEffect* effect, 
@@ -386,7 +381,7 @@ VstIntPtr VSTPlugin::_hostCallback ( AEffect* effect,
 						 void* ptr, 
 						 float opt ) 
 {
-	
+	// special case: call during loadmodule
  	if ( callBkOnInit.first && callBkOnInit.second ) { 
 		// Set callBkOnInit to zero before call.
 		// Because when VSTForx is loaded in VSTForx then this
@@ -399,12 +394,26 @@ VstIntPtr VSTPlugin::_hostCallback ( AEffect* effect,
 		callBkOnInit = tmp;
 		return ret;
 	}
-	
+
+	// find related plugin
 	RelatedPlugNode::iterator it = relatedPlugNode.find ( effect );
 	if ( it == relatedPlugNode.end() ) return 0;
 	VSTPlugin *pl = it->second;
 	if ( !pl ) return 0;
+	
+	switch (opcode) {
+		case audioMasterAutomate:
+			pl->onEditorParameterChanged (index, opt);
+			return 0;
+		case audioMasterSizeWindow : // plugin fordert windowresize
+			pl->onPlugRequestWindowResize ((size_t)index, (size_t)value);
+			return 1;
+		case audioMasterIOChanged:
+			pl->onIOChanged();
+			return 1;
+	}
 
+	// no specific handling: call VSTForx's host
 	AudioMasterCallback hostCallback = pl->hostInfo->getAudioMasterCallback();
 	if ( !hostCallback ) return 0;
 	// eigentlicher host callback ( VSTForx nach host )
@@ -440,20 +449,12 @@ VstIntPtr VSTCALLBACK pluginCallToPlugNode (AEffect* effect,
 		case audioMasterEndEdit   : 
 			return 0;
 
-		case audioMasterAutomate :
-			processing::VSTPlugin::editorParameterChanged ( effect, index, opt );
-			return 0;
-
-		case audioMasterSizeWindow : // plugin fordert windowresize
-			processing::VSTPlugin::plugRequestWindowResize ( effect, (size_t)index, (size_t)value );
-			return 1;
-
-		case audioMasterCanDo :
+		case audioMasterCanDo : {
 			const char *text = (const char*) ptr;
 			if (!strcmp (text, "sizeWindow") )
 				return 1;
 			else break;
-
+		}
 	}
 
 	return processing::VSTPlugin::_hostCallback ( effect, opcode, index, value, ptr, opt );

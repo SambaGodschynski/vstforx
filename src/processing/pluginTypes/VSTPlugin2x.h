@@ -48,6 +48,27 @@ public:
 	typedef boost::shared_ptr<VSTPlugin> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * plugin calls ioChanged.
+	 */
+	void onIOChanged();
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Plugin-Editor Parameter. Handler
+	 * @param aEff
+	 * @param index
+	 * @param value
+	 */
+	void onEditorParameterChanged ( int index, float value ); 
+		//--------------------------------------------------------------------------------------------------------
+	/**
+	 * VST-Plugin Editorfenster-Resize Callbackmethode
+	 * @param effect
+	 * @param w
+	 * @param h
+	 */
+	void onPlugRequestWindowResize ( size_t w, size_t h);
+	//--------------------------------------------------------------------------------------------------------
 	typedef vector<string> ProgramNames;
 	//--------------------------------------------------------------------------------------------------------
 	ProgramNames programNames;
@@ -214,14 +235,6 @@ public:
 	virtual void valueChanged ( void *src, const float &value );
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * Plugin-Editor Parameter. Handler
-	 * @param aEff
-	 * @param index
-	 * @param value
-	 */
-	static void editorParameterChanged ( AEffect *aEff, int index, float value ); 
-	//--------------------------------------------------------------------------------------------------------
-	/**
 	 * @param index
 	 * @return liefert Parameter zu index. Wirft: std::out_of_range
 	 */
@@ -286,14 +299,6 @@ public:
 	static bool can ( VstInt32 flag, AEffect *aEff ) {
 		return isFlag(flag, aEff->flags); 
 	}
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * VST-Plugin Editorfenster-Resize Callbackmethode
-	 * @param effect
-	 * @param w
-	 * @param h
-	 */
-	static void plugRequestWindowResize (  AEffect* effect, size_t w, size_t h );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Host->Plugin Callbackmethode. (@see VST-SDK)

@@ -8,7 +8,6 @@
 #ifndef PPIGUI_H
 #define PPIGUI_H
 #include <list>
-#include <iterator>
 #include "vstgui.h"
 #include "com/one4all.h"
 #include "ViewEvents.h"
@@ -712,15 +711,17 @@ protected:
 	GProcessorNode ( CircuidView *parent );
 public:
 	//--------------------------------------------------------------------------------------------------------
+	void resetIOPosition();
+	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return InputNode-Container
 	 */
-	const InputNodeContainer & getInputNodes() { return ins; } 
+	const InputNodeContainer & getInputNodes() const { return ins; } 
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return OutputNode-Container
 	 */
-	const OutputNodeContainer & getOutputNodes() { return outs; } 
+	const OutputNodeContainer & getOutputNodes() const { return outs; } 
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * erzeugt N Eingangs und M Ausgangsknoten

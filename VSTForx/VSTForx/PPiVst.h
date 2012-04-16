@@ -152,7 +152,10 @@ public:
 	//---------------------------------------------------------------------------------------
 	virtual AudioMasterCallback getAudioMasterCallback() { return audioMaster; }
 	//---------------------------------------------------------------------------------------
-	virtual bool IHostInfo::ioChanged() { return true; }
+	virtual bool IHostInfo::ioChanged() { 
+		// issue handled during GraphChanged event.
+		return true; 
+	}
 };
 
 #endif

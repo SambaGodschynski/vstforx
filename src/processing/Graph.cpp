@@ -157,8 +157,7 @@ void Graph::updateGraph() {
 		boost::visitor(vis).	// !! http://www.boost.org/doc/libs/1_46_1/libs/graph/doc/bgl_named_params.html
 		root_vertex( endNode->getBglVertex() ) 
 	);
-	/*
-	EventSender<GraphChanged>::notifyEventListeners( this, GraphChanged( getGraphDelay() ) );*/
+	EventSender<GraphChanged>::notifyEventListeners( this, GraphChanged( getGraphDelay() ) );
 }
 //------------------------------------------------------------------------------------------------------------
 void Graph::initHostParameter(){
