@@ -559,6 +559,16 @@ protected:
 	 */
 	InputNodePtr createInputNode( const string &name = "unnamed" );
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * entfernt InputNode
+	 */
+	void removeInputNode(InputNodePtr node);
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * entfernt OutputNode
+	 */
+	void removeOutputNode(OutputNodePtr node);
+	//--------------------------------------------------------------------------------------------------------
 	ProcessAdapter( IHostInfo * hostInfo, size_t numInputNodes = 1, size_t numOutputNodes = 1 );
 	//--------------------------------------------------------------------------------------------------------
 	/**

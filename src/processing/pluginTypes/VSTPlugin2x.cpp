@@ -246,7 +246,8 @@ void VSTPlugin::processAdapter( Processor::Int numSamples ) {
 		inMatrix[i+1] = (*fr)[1];
 	}
 	
-	for ( int i=0; i<framebuffer.size(); ++i ) framebuffer[i].setZero( numSamples );
+	for ( int i=0; i<framebuffer.size(); ++i ) 
+		framebuffer[i].setZero( numSamples );
 
 	// Process Event
 	if ( can( effFlagsCanReplacing ) ) { 

@@ -166,6 +166,26 @@ ProcessAdapter::OutputNode::Ptr ProcessAdapter::createOutputNode( const string &
 	return n;
 }
 //------------------------------------------------------------------------------------------------------------
+void ProcessAdapter::removeInputNode(ProcessAdapter::InputNodePtr node) {
+	InputNodes::iterator it = inputNodes.begin();
+	for (; it!=inputNodes.end(); ++it) {
+		if (*it == node) {
+			inputNodes.erase(it);
+			break;
+		}
+	}
+}
+//------------------------------------------------------------------------------------------------------------
+void ProcessAdapter::removeOutputNode(ProcessAdapter::OutputNodePtr node) {
+	OutputNodes::iterator it = outputNodes.begin();
+	for (; it!=outputNodes.end(); ++it) {
+		if (*it == node) {
+			outputNodes.erase(it);
+			break;
+		}
+	}
+}
+//------------------------------------------------------------------------------------------------------------
 ProcessAdapter::~ProcessAdapter() {
 }
 //------------------------------------------------------------------------------------------------------------

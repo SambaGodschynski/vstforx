@@ -96,7 +96,12 @@ void LuaProcessor::initCallbackFunctions() {
 }
 //------------------------------------------------------------------------------------------------------------
 void LuaProcessor::initIO() {
-	iodata.resize(1); 
+	iodata.resize(1);
+/*	for (size_t i=0; i<scriptInfo.numInputs; ++i)
+		ProcessAdapter::createInputNode("LuaProcessor Input: " + MyString(i));
+	for (size_t i=0; i<scriptInfo.numOutputs; ++i)
+		ProcessAdapter::createOutputNode("LuaProcessor Output: " + MyString(i));
+	//com::events::EventSender<IOChangedEvent>::notifyEventListeners(this, IOChangedEvent());*/
 }
 //------------------------------------------------------------------------------------------------------------
 void LuaProcessor::initScript() {
@@ -111,21 +116,12 @@ void LuaProcessor::initScript() {
 void LuaProcessor::getScriptInfo(sambag::lua::LuaStateRef luaState, ProcessorScriptInfo &outValue) {
 	using namespace sambag;
 	// processor setup
-	if ( !lua::getGlobal(outValue.numInputs, luaState.get(), GP_NUM_INPUTS) )
-		outValue.numInputs = 0;
-	if ( !lua::getGlobal(outValue.numOutputs, luaState.get(), GP_NUM_OUTPUTS) )
-		outValue.numOutputs = 0;
-	// parameter
-	if ( !lua::getGlobal(outValue.parameterMap, luaState.get(), GP_PARAMETER_SETUP) )
+	lua::getGlobal(luaState.get(), outValue.numInputs, (size_t)0, GP_NUM_INPUTS);
+	lua::getGlobal(luaState.get(), outValue.numOutputs, (size_t)0, GP_NUM_OUTPUTS);
+	if ( !lua::getGlobal(luaState.get(), outValue.parameterMap, GP_PARAMETER_SETUP) )
 		outValue.parameterMap.clear();
-	if ( !lua::hasFunction(luaState.get(), LC_PARAMETER_CHANGED) )
-		outValue.hasParameterChangedHandler = false;
-	else
-		outValue.hasParameterChangedHandler = true;
-	if ( !lua::hasFunction(luaState.get(), LC_INIT) )
-		outValue.hasInitFunction = false;
-	else
-		outValue.hasInitFunction = true;
+	outValue.hasParameterChangedHandler = lua::hasFunction(luaState.get(), LC_PARAMETER_CHANGED);
+	outValue.hasInitFunction = lua::hasFunction(luaState.get(), LC_INIT);
 }
 //------------------------------------------------------------------------------------------------------------
 void LuaProcessor::processAdapter(Processor::Int numSamples) {
