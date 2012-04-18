@@ -28,7 +28,8 @@ OS_VSTPlugNode2x ( filename ), // initalisiert aEff
 Plugin ( hostInfo, filename, 0,  0 ),  // ProcessAdapter
 onPlugChangeParameterIndex (0),
 param(NULL),
-canReceiveVstEvents(false)
+canReceiveVstEvents(false),
+ioChangedLock(false)
 { 
 	loadModule( HostCallBackOnInit (          // erzeugt Mutex lock bis fertig geladen
 		hostInfo->getAudioMasterCallback(), 
@@ -231,7 +232,7 @@ size_t VSTPlugin::getProcessDelay() const {
 }
 //------------------------------------------------------------------------------------------------------------
 //ruft die processReplacing Methode des zugeordneten VST-Plugin auf.
-void VSTPlugin::processAdapter( Processor::Int numSamples ) { 
+void VSTPlugin::processAdapter( Processor::Int numSamples ) {
 	// breite daten vor ( mappe frames => matrix )
 	for ( int i=0; i<getNumInputNodes(); i+=2 ) {
 		ProcessorNode::Ptr pr = getInputNode(i/2);
@@ -247,13 +248,15 @@ void VSTPlugin::processAdapter( Processor::Int numSamples ) {
 	}
 	
 	for ( int i=0; i<framebuffer.size(); ++i ) framebuffer[i].setZero( numSamples );
-
-	// Process Event
-	if ( can( effFlagsCanReplacing ) ) { 
-		//aEff->processReplacing ( *aEffect, **src, **dst, frameSize );
-		aEff->processReplacing ( aEff, inMatrix, outMatrix, numSamples );
-	}else { 
-		aEff->DECLARE_VST_DEPRECATED(process) ( aEff, inMatrix, outMatrix, numSamples );
+	
+	if (!ioChangedLock) {
+		// Process Event
+		if ( can( effFlagsCanReplacing ) ) { 
+			//aEff->processReplacing ( *aEffect, **src, **dst, frameSize );
+			aEff->processReplacing ( aEff, inMatrix, outMatrix, numSamples );
+		}else { 
+			aEff->DECLARE_VST_DEPRECATED(process) ( aEff, inMatrix, outMatrix, numSamples );
+		}
 	}
 	if ( aEff->numOutputs == 1 ) { // mono
 		framebuffer[0].mixMonoToAll( numSamples );
@@ -272,7 +275,8 @@ VSTPlugin::~VSTPlugin() {
 	delete[] inMatrix;
 	delete[] outMatrix;
 	// TODO: hier gab es probleme, unload muss aber stattfinden
-	if ( aEff != &nullAEff ) unloadModule();
+	if ( aEff != &nullAEff )
+		unloadModule();
 	TOLOG ( "-" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
@@ -283,6 +287,16 @@ inline VSTPlugin * VSTPlugin::getVSTPlugNode(AEffect *aEff){
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::onIOChanged() {
+	int a =  getNumInputNodes() * 2;
+	int b =  getNumOutputNodes() * 2;
+	if( aEff->numInputs   != getNumInputNodes() * 2 ||
+		aEff->numOutputs  != getNumOutputNodes() * 2 ||
+		aEff->numParams != param.size() ) 
+	{
+		com::MessageBox(getPlugName(), getPlugName() + " I/O configuration has changed."
+			" Plugin output ist stopped until reload!", com::MSG_ALERT);
+		ioChangedLock = true;
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::onEditorParameterChanged (int index, float value){
@@ -347,8 +361,8 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 	);
 	
 	param.clear();
-	initPlug ( *this );
 
+	initPlug ( *this );
 	// parameter
 	ar >> param;
 	for ( size_t i=0; i<param.size(); ++i ) {
@@ -368,6 +382,9 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 	aEff->dispatcher ( aEff, effSetChunk, 0, size, *data, 0 );
 	resetPlugin();
 	delete *data;
+
+	//checkIOchanges
+	onIOChanged();
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::onPlugRequestWindowResize (size_t w, size_t h) {
@@ -410,7 +427,7 @@ VstIntPtr VSTPlugin::_hostCallback ( AEffect* effect,
 			return 1;
 		case audioMasterIOChanged:
 			pl->onIOChanged();
-			return 1;
+			return 0;
 	}
 
 	// no specific handling: call VSTForx's host

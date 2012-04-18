@@ -229,8 +229,8 @@ void GProcessorNode::resetIOPosition() {
 	int numOutputs = (int)outs.size();
 	int c=0;
 	float d = 100.0/(float)numInputs;
+	int num = 1;
 	for (int i=0; i<numInputs/2; ++i ) { // eine haelfte nach links faechern
-		int num = i + 1;
 		rotate (p, num*-d, getPos() );
 		ins[i]->moveTo(p);
 		p = u;
@@ -238,9 +238,8 @@ void GProcessorNode::resetIOPosition() {
 	}
 	if (numInputs%2==1)
 		ins[c++]->moveTo(p); // mitte
-
+	num = 1;
 	for (int i=c; i<numInputs; i++ ) { // andere haelfte nach rechts faechern
-		int num = -numInputs + c + i + 1;
 		rotate (p, num*d, getPos() );
 		ins[i]->moveTo(p);
 		p = u;
@@ -251,8 +250,8 @@ void GProcessorNode::resetIOPosition() {
 	u = p; // start
 	d = 100.0/(float)numOutputs;
 	c = 0;
+	num = 1;
 	for (int i=0; i<numOutputs/2; ++i ) { // eine haelfte nach rechts faechern
-		int num = i + 1;
 		rotate (p, num*d, getPos() );
 		outs[i]->moveTo(p);
 		p = u;
@@ -260,8 +259,8 @@ void GProcessorNode::resetIOPosition() {
 	}
 	if (numOutputs%2==1) 
 		outs[c++]->moveTo(p); // mitte
+	num = 1;
 	for (int i=c; i<numOutputs; ++i ) { // andere haelfte nach links faechern
-		int num = -numOutputs + c + i + 1;
 		rotate (p, num*-d, getPos() );
 		outs[i]->moveTo(p);
 		p = u;

@@ -94,13 +94,18 @@ private:
 	 */
 	void save ( oArchive &ar, const unsigned int version ) const;
 	//--------------------------------------------------------------------------------------------------------
-	VSTPlugin() : onPlugChangeParameterIndex(-1) {}
+	VSTPlugin() : onPlugChangeParameterIndex(-1), ioChangedLock(false) {}
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Blockiert Deserialisierung gegen nebenlaufige
 	 * Parameteraenderungen, verursacht durch Host.
 	 */
 	Mutex mutex;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Blockiert ioChanged gegen process
+	 */
+	bool ioChangedLock;
 	//--------------------------------------------------------------------------------------------------------
 	typedef vector<Parameter::Ptr> ParameterContainer;
 	//--------------------------------------------------------------------------------------------------------

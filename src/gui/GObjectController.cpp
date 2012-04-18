@@ -153,7 +153,8 @@ FrontController::FrontController ( ViewRelations &viewRelations ) :
 }
 //------------------------------------------------------------------------------------------------------------
 FrontController::~FrontController (){
-	for ( int i=0; i<NUM_CTRL; ++i ) delete controller[i]; 
+	for ( int i=0; i<NUM_CTRL; ++i ) 
+		delete controller[i]; 
 }
 //------------------------------------------------------------------------------------------------------------
 void FrontController::registerObject( GObject::Ptr vObj, PObject::Ptr mObj) {
