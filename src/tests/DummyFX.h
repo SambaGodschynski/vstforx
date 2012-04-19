@@ -34,6 +34,7 @@ struct DummyFX : public AudioEffectX, public IHostInfo {
 	virtual VstTimeInfo * getVstTimeInfo ( VstInt32 filter ) { return getTimeInfo(filter); }
 	virtual AudioEffectX * getAudioEffectX() { return this; }
 	virtual AudioMasterCallback getAudioMasterCallback() { return audioMaster; }
+	virtual bool ioChanged() {return true;}
 	virtual ~DummyFX(){}
 };
 
