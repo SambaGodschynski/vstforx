@@ -36,10 +36,16 @@ ioChangedLock(false)
 		hostInfo->getAudioEffectX() ) 
 	);
 	
-	if (shellPlugId==0) {
+	VstPlugCategory pluginCategory = (VstPlugCategory)
+		aEff->dispatcher(aEff, effGetPlugCategory, 0, 0, 0, 0);
+	
+	// shellplugid is setted by loadModule (the filename contains the
+	// information eg.: 'plugin.dll@12345')
+	if (shellPlugId==0 && pluginCategory==kPlugCategShell) {
 		ShellPluginInfos infos;
 		getShellPluginInfos(infos);
-
+		// plugin delivers shell plugins, at this pouint we can't go
+		// on because we have to specify which plugin we want.
 		if (!infos.empty())
 			throw 
 				ShellPluginException(infos);
