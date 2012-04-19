@@ -12,9 +12,12 @@
 #include "MouseAction.h"
 #include "ViewEvents.h"
 #include "processing/processing.h"
+#include "processing/PlugInfo.h"
+#include "processing/pluginTypes/VSTPlugin2x.h"
 #include "CMenu.h"
 #include "GObjectController.h"
 #include "com/PluginCollection.h"
+
 
 namespace ppiGui{
 using namespace std;
@@ -40,7 +43,8 @@ struct SubMenuHostParameterCallback {
 	StartEnd startEnd;
 	SubMenuHostParameterCallback ( StartEnd startEnd ) : startEnd(startEnd) {} 
 };
-
+//------------------------------------------------------------------------------------------------------------
+class CmdAddVSTPlugNode;
 //============================================================================================================
 // class CircuidControl:
 // Controler Klasse fuer CircuidView gemaess MVC.
@@ -52,6 +56,7 @@ class CircuidControl :
 	public EventListener< OnMouseLeave >,
 	public EventListener< OnIdle >
 {
+friend class CmdAddVSTPlugNode; // shell plugin (exception); shows alternative menu
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<CircuidControl> Ptr;
@@ -97,17 +102,26 @@ private:
 	void getMenuEntryList ( menu::MenuEntryList &me );
 	//--------------------------------------------------------------------------------------------------------
 	void initListener();
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * ShellPlugin Exception:
+	 * CmdAddVSTPlugNode try's to load a plug. These plug is a shell plugin type
+	 * (http://ygrabit.steinberg.de/~ygrabit/public_html/vstsdk/OnlineDoc/vstsdk2.3/html/plug/2.0/AudioEffectX.html#getNextSchellPlugin)
+	 * and could not load without an extra information which concrete plugin is to load, so 
+	 * an ShellPluginException will be raised.
+	 * CmdAddVSTPlugNode catches this exception and calls the function below.
+	 * @param p where
+	 */ 
+	void showVSTShellSelectionMenu(CPoint &p, 
+		const PluginInfo &plugInfo,
+		const VSTPlugin::ShellPluginInfos &infos
+	);
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	CircuidControl ( CircuidView *view, ViewRelations &viewRelations );
 public:
 	//--------------------------------------------------------------------------------------------------------
-	static Ptr create(CircuidView *view, ViewRelations &viewRelations) {
-		Ptr neu (new CircuidControl(view, viewRelations));
-		neu->self = neu;
-		neu->initListener();
-		return neu;
-	}
+	static Ptr create(CircuidView *view, ViewRelations &viewRelations);
 	//========================================================================================================
 	// MouseActions:
 	// Kontext fuer eine Drag Aktion auf einem Objekt. 
@@ -151,8 +165,11 @@ public:
 	// schaut was fuer objekt unter maus sitzt.
 	void eventHandler ( void *src, const OnIdle &ev );
 };
-} // namespace ppiGui
 
+//============================================================================================================
+extern CircuidControl::Ptr getCircuidControl(CircuidView * view);
+
+} // namespace ppiGui
 #endif
 
 

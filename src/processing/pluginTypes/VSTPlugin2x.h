@@ -46,6 +46,23 @@ BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<VSTPlugin> Ptr;
+	//--------------------------------------------------------------------------------------------------------
+	struct ShellPluginInfo {
+		std::string name;
+		VstInt32 id;
+		ShellPluginInfo(const std::string &name="", VstInt32 id=0) : name(name), id(id) {}
+	};
+	//--------------------------------------------------------------------------------------------------------
+	typedef std::list<ShellPluginInfo> ShellPluginInfos;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @class ShellPluginException
+	 * Plugin is a Shellplugin.
+	 */
+	struct ShellPluginException {
+		ShellPluginInfos content;
+		ShellPluginException(const ShellPluginInfos &content) : content(content) {}
+	};
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -161,6 +178,8 @@ private:
 	 * plug => parameter[index] => plug
 	 */
 	int onPlugChangeParameterIndex;
+	//--------------------------------------------------------------------------------------------------------
+	void getShellPluginInfos(ShellPluginInfos &out);
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	VSTPlugin( IHostInfo *hostInfo, const string &filename );

@@ -93,13 +93,18 @@ com::Mutex OS_VSTPlugNode2x::onInitLock;
 //------------------------------------------------------------------------------------------------------------
 bool OS_VSTPlugNode2x::loadModule( const HostCallBackOnInit &_callBkOnInit ) {
 	if ( moduleLocation.length() == 0 ) return false;
+	std::string filename;
+	boost::tie(filename, shellPlugId) = com::extractVSTPluginFilename(moduleLocation);
 	{ // lock scope
 		TRY_TO_LOCK_TIMED (onInitLock)
+		shellPlugIdOnInit = shellPlugId;
 		OS_VSTPlugNode2x::callBkOnInit = _callBkOnInit;
-		::loadModule ( moduleLocation.c_str(), &module, &aEff );
+		::loadModule ( filename.c_str(), &module, &aEff );
 		OS_VSTPlugNode2x::callBkOnInit = HostCallBackOnInit(NULL, NULL);
+		shellPlugIdOnInit = 0;
 	}
-	if ( aEff ) return true;
+	if ( aEff ) 
+		return true;
 	aEff = &nullAEff;
 	::unloadModule ( module );
 	return false;

@@ -297,6 +297,8 @@ processing::PluginInfo PluginCollection::restorePluginInfo ( processing::IHostIn
 															 processing::PluginInfo &info ) 
 {
 	using namespace processing;
+	int shellId;
+	boost::tie(info.location, shellId) = com::extractVSTPluginFilename(info.location);
 	PluginInfo pI = getPlugInfo ( info.location );
 	// plugin not in db => search in db
 	if ( !pI.isValid() ) {
@@ -306,6 +308,7 @@ processing::PluginInfo PluginCollection::restorePluginInfo ( processing::IHostIn
 		if ( !b ) // plugin not found
 			return processing::PluginInfo(); // NULL
 	}
+	info.location = createVSTPluginFilename(info.location, shellId);
 	return info;
 }
 //------------------------------------------------------------------------------------------------------------

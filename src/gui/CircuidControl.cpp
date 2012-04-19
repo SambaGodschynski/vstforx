@@ -11,13 +11,32 @@
 #include "processing/ConcreteProcessAdapter.h"
 #include "PpiEditor.h"
 #include "OS_Specific/WindowDef.h"
+#include <map>
+#include <boost/foreach.hpp>
 
 namespace ppiGui{
+namespace {
+	typedef std::map<CircuidView*, boost::weak_ptr<CircuidControl> > Ctrl2View;
+	Ctrl2View ctrl2View;
+}
 using namespace menu;
+//============================================================================================================
+CircuidControl::Ptr getCircuidControl(CircuidView * view) {
+//============================================================================================================
+	return ctrl2View[view].lock();
+}
 //============================================================================================================
 // class CircuidControl:
 // Controler Klasse fuer CircuidView gemaess MVC.
 //============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+CircuidControl::Ptr CircuidControl::create(CircuidView *view, ViewRelations &viewRelations) {
+	Ptr neu (new CircuidControl(view, viewRelations));
+	neu->self = neu;
+	neu->initListener();
+	ctrl2View[view] = neu;
+	return neu;
+}
 //------------------------------------------------------------------------------------------------------------
 void CircuidControl::initMouseActions() {
 	comMActions = new MouseAction*[NUM_MACTIONS];
@@ -152,7 +171,7 @@ inline void CircuidControl::spanSelectionRect ( const OnMouseDrag &ev ){
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-inline void CircuidControl::showContextMenu( GObject::Ptr obj, CPoint& point ){
+void CircuidControl::showContextMenu( GObject::Ptr obj, CPoint& point ){
 	menu::MenuEntryList &mList = contextMenu->getMenuEntries();
 	if ( obj ) 
 		gObjCtrlDirector->getMenuEntryList ( mList, obj );
@@ -160,6 +179,22 @@ inline void CircuidControl::showContextMenu( GObject::Ptr obj, CPoint& point ){
 		getMenuEntryList ( mList );
 	}
 	contextMenu->showAt ( point );
+}
+//------------------------------------------------------------------------------------------------------------
+void CircuidControl::showVSTShellSelectionMenu(CPoint &p, 
+	const PluginInfo &plugInfo, 
+	const VSTPlugin::ShellPluginInfos &infos)
+{
+	if ( contextMenu->isVisible() ) contextMenu->hide();
+	menu::MenuEntryList &mList = contextMenu->getMenuEntries();
+	ADD_MENU_TITLE(mList, "Select Plugin:");
+	BOOST_FOREACH(const VSTPlugin::ShellPluginInfo &obj, infos) {
+		PluginInfo nInfo(plugInfo);
+		nInfo.location = createVSTPluginFilename(plugInfo.location, obj.id);
+		ADD_MENU_LABEL ( mList, obj.name, 
+			new CmdAddVSTPlugNode( view, pluginCollection, nInfo, gObjCtrlDirector )  );
+	}
+	contextMenu->showAt (p);
 }
 //------------------------------------------------------------------------------------------------------------
 // wird von eventHandler( void *src, const OnGetVSTFolder &ev ) aufgerufen

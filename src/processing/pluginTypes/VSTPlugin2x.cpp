@@ -35,6 +35,15 @@ ioChangedLock(false)
 		hostInfo->getAudioMasterCallback(), 
 		hostInfo->getAudioEffectX() ) 
 	);
+	
+	if (shellPlugId==0) {
+		ShellPluginInfos infos;
+		getShellPluginInfos(infos);
+
+		if (!infos.empty())
+			throw 
+				ShellPluginException(infos);
+	}
 
 	// init i/o 
 	size_t c = ( aEff->numInputs%2==0 ) ? aEff->numInputs/2 : aEff->numInputs/2 + 1; // anzahl der eingaenge
@@ -64,7 +73,7 @@ void VSTPlugin::initPlug( VSTPlugin &plug ) {
 	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	// Objekt registrieren
 	relatedPlugNode.insert ( pair < AEffect*, VSTPlugin* >( plug.aEff, &plug ) );
-
+	plug.turnOff();
 	//hole name und hersteller
 	char bff[MAX_BFF_STR];
 	bff[0] = '\0';
@@ -91,7 +100,8 @@ void VSTPlugin::initPlug( VSTPlugin &plug ) {
 	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	// reihenfolge wichtig! ( ueber debugger ermittelt )
 	// setze samplerate  
-	
+	float sr = plug.hostInfo->getSampleRate();
+	int bs = plug.hostInfo->getBlockSize();
 	plug.aEff->dispatcher ( plug.aEff, effSetSampleRate, 0, 0, 0, plug.hostInfo->getSampleRate() );
 	// setze blockSize  
 	plug.aEff->dispatcher ( plug.aEff, effSetBlockSize, 0, plug.hostInfo->getBlockSize(), 0, 0 );
@@ -287,8 +297,6 @@ inline VSTPlugin * VSTPlugin::getVSTPlugNode(AEffect *aEff){
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::onIOChanged() {
-	int a =  getNumInputNodes() * 2;
-	int b =  getNumOutputNodes() * 2;
 	if( aEff->numInputs   != getNumInputNodes() * 2 ||
 		aEff->numOutputs  != getNumOutputNodes() * 2 ||
 		aEff->numParams != param.size() ) 
@@ -391,6 +399,19 @@ void VSTPlugin::onPlugRequestWindowResize (size_t w, size_t h) {
 	EventSender<ResizeEditorEvent>::notifyEventListeners( this, ResizeEditorEvent(w,h) );
 }
 //------------------------------------------------------------------------------------------------------------
+void VSTPlugin::getShellPluginInfos(VSTPlugin::ShellPluginInfos &out) {
+	// scan shell for subplugins
+	char tempName[256] = {0}; 
+	VstInt32 plugUniqueID = 0;
+	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
+	while ((plugUniqueID = aEff->dispatcher (aEff, effShellGetNextPlugin, 0, 0, tempName, 0)) != 0) { 
+		// subplug needs a name 
+		if (tempName[0] != 0) {
+			out.push_back(ShellPluginInfo(std::string(tempName), plugUniqueID));
+		}
+	}
+}
+//------------------------------------------------------------------------------------------------------------
 VstIntPtr VSTPlugin::_hostCallback ( AEffect* effect, 
 						 VstInt32 opcode, 
 						 VstInt32 index, 
@@ -405,6 +426,9 @@ VstIntPtr VSTPlugin::_hostCallback ( AEffect* effect,
 		// call occurs a stack overflow. 
 		// ( it calls callBkOnInit[static] again and again because it is not zero )
 		// see bug: 0000088
+		if (opcode==audioMasterCurrentId) {
+			return shellPlugIdOnInit;
+		}
 		HostCallBackOnInit tmp = callBkOnInit;
 		callBkOnInit = HostCallBackOnInit( NULL, NULL );
 		int ret = tmp.first( tmp.second->getAeffect(), opcode, index, value, ptr, opt );
@@ -432,7 +456,8 @@ VstIntPtr VSTPlugin::_hostCallback ( AEffect* effect,
 
 	// no specific handling: call VSTForx's host
 	AudioMasterCallback hostCallback = pl->hostInfo->getAudioMasterCallback();
-	if ( !hostCallback ) return 0;
+	if ( !hostCallback ) 
+		return 0;
 	// eigentlicher host callback ( VSTForx nach host )
 	return hostCallback( pl->hostInfo->getAudioEffectX()->getAeffect(), opcode, index, value, ptr, opt);
 }
@@ -454,11 +479,7 @@ VstIntPtr VSTCALLBACK pluginCallToPlugNode (AEffect* effect,
 									void* ptr, 
 									float opt ) 
 {
-	switch (opcode)
-	{
-		// for shell support:
-		// audioMasterCurrentId
-
+	switch (opcode) {
 		case audioMasterVersion :
 			return 2400;
 
@@ -470,7 +491,8 @@ VstIntPtr VSTCALLBACK pluginCallToPlugNode (AEffect* effect,
 			const char *text = (const char*) ptr;
 			if (!strcmp (text, "sizeWindow") )
 				return 1;
-			else break;
+			else
+				break;
 		}
 	}
 
