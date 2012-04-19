@@ -63,6 +63,13 @@ public:
 		ShellPluginInfos content;
 		ShellPluginException(const ShellPluginInfos &content) : content(content) {}
 	};
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param fileName
+	 * @return Liefert Pluginname aus Speicherort. Zb.:
+	 * C:/VSTPlugin.dll => VSTPlugin
+	 */
+	static MyString extractNameFromFilename ( const string &fileName );
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -148,13 +155,6 @@ private:
 	 * Wird fuer Host-Callbacks benoetigt.
 	 */
 	static RelatedPlugNode relatedPlugNode;
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * @param fileName
-	 * @return Liefert Pluginname aus Speicherort. Zb.:
-	 * C:/VSTPlugin.dll => VSTPlugin
-	 */
-	static MyString extractNameFromFilename ( const string &fileName );
 	//--------------------------------------------------------------------------------------------------------
 	bool canReceiveVstEvents;
 	//--------------------------------------------------------------------------------------------------------
