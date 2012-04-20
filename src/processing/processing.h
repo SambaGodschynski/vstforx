@@ -19,6 +19,7 @@
 #include "IVstEventProcessor.h"
 #include "BglGraph.h"
 #include "Frames.h"
+#include "com/Events.h"
 
 //============================================================================================================
 //	Vorwaerts Deklarationen
@@ -447,6 +448,14 @@ public:
 	 */
 	virtual bool isEndNode() const { return true; }
 };
+//============================================================================================================
+/**
+ * @class IOChangedEvent.
+ * Event: wird aufgerufen wenn Adapter Eingangs-/Ausgangskonfiguration geaendert wurde.
+ */
+struct IOChangedEvent : public com::events::Event {
+//============================================================================================================
+};
 
 //============================================================================================================
 /**
@@ -456,7 +465,7 @@ public:
  * Sind diese einem Graph hinzugefuegt, wird - wenn ProcessFrames() des AdapterNode
  * ausgefuehrt - an processAdapter() weitergeleitet.
  */
-class ProcessAdapter: public PObject {
+class ProcessAdapter: public PObject, public com::events::EventSender<IOChangedEvent> {
 //Klasse: ProcessAdapter.
 //    Input_Node0-O   O -  Input_Node1 ... Input_NodeN
 //                 \ /

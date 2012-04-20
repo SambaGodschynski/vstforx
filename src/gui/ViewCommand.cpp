@@ -16,6 +16,7 @@
 #include "GObjectController.h"
 #include "com/PluginCollection.h"
 #include "processing/RemoteChannel.h"
+#include "processing/pluginTypes/VSTPlugin2x.h"
 #include <string>
 
 
@@ -153,18 +154,26 @@ void CmdAddVSTPlugNode::_execute(){
 	PluginCollection::Ptr pC = PluginCollection::getPluginCollection();
 	Graph::Ptr graph = getRelatedGraph ( cView );
 	// get plugin from database
-	Plugin::Ptr adapter = pC->restorePlugNode( graph.get(), plugInfo ); 
-	
+	Plugin::Ptr adapter;
+	CPoint point; cView->getMouseLocation (point);
+
+	try {
+		adapter = pC->restorePlugNode( graph.get(), plugInfo ); 
+	} catch (const VSTPlugin::ShellPluginException &ex) {
+		CircuidControl::Ptr ctrl = getCircuidControl(cView);
+		if (!ctrl) {
+			return;
+		}
+		ctrl->showVSTShellSelectionMenu(point, plugInfo, ex.content);
+		return;
+	}
 	// adapter im graph einfuegen ( danach janitor freigeben um graph::processingLock freizugeben )
 	Graph::Janitor::Ptr updater = graph->getJanitor(); // <-------------------------Graph::processingLock-Start
 	updater->add(adapter);
 	updater.reset();  // <----------------------------------------------------------Graph::processingLock-Ende
-
+	// erzeuge view objs
 	int numINodes = adapter->getNumInputNodes();
 	int numONodes = adapter->getNumOutputNodes();
-
-	// erzeuge view objs
-	CPoint point; cView->getMouseLocation (point);
 	
 	// GObjekt erzeugen 
 	GVSTPlugNode::Ptr gProcessor = GVSTPlugNode::create ( cView );

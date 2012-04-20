@@ -39,6 +39,10 @@ private:
 	string moduleLocation;
 protected:
 	//--------------------------------------------------------------------------------------------------------
+	int shellPlugId;
+	//--------------------------------------------------------------------------------------------------------
+	static int shellPlugIdOnInit; // setted during loadModule for hostcallack on init
+	//--------------------------------------------------------------------------------------------------------
 	static HostCallBackOnInit callBkOnInit;
 	//--------------------------------------------------------------------------------------------------------
 	// Zeiger auf AEffect Klasse
@@ -53,13 +57,13 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	const string & getModuleLocation () const { return moduleLocation; }
 	//--------------------------------------------------------------------------------------------------------
-	OS_VSTPlugNode2x() {}
+	OS_VSTPlugNode2x() : shellPlugId(0) {}
 public:
 	//--------------------------------------------------------------------------------------------------------
 	const Module & getModule() const { return module; }
 	//--------------------------------------------------------------------------------------------------------
 	OS_VSTPlugNode2x ( const string &moduleLocation ) : 
-	  moduleLocation(moduleLocation), aEff(NULL), module(NULL){}
+	  moduleLocation(moduleLocation), shellPlugId(0), aEff(NULL), module(NULL){}
 	//--------------------------------------------------------------------------------------------------------
 	AEffect * getAEffect (){ return aEff; }
 

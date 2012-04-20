@@ -12,6 +12,7 @@
 #include "PluginCollectionSQL.h"
 #include <boost/filesystem.hpp>
 #include "OS_Specific/OS_com.h"
+#include "processing/pluginTypes/VSTPlugin2x.h"
 
 
 #define DB_QUERY(x)											\
@@ -297,6 +298,8 @@ processing::PluginInfo PluginCollection::restorePluginInfo ( processing::IHostIn
 															 processing::PluginInfo &info ) 
 {
 	using namespace processing;
+	int shellId;
+	boost::tie(info.location, shellId) = com::extractVSTPluginFilename(info.location);
 	PluginInfo pI = getPlugInfo ( info.location );
 	// plugin not in db => search in db
 	if ( !pI.isValid() ) {
@@ -306,6 +309,7 @@ processing::PluginInfo PluginCollection::restorePluginInfo ( processing::IHostIn
 		if ( !b ) // plugin not found
 			return processing::PluginInfo(); // NULL
 	}
+	info.location = createVSTPluginFilename(info.location, shellId);
 	return info;
 }
 //------------------------------------------------------------------------------------------------------------
@@ -340,20 +344,33 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, processing::
 	}
 	TOLOG ("peek " + out_info.location );
 	appendLog ( out_info.location );		   // eintrag ins scan log	
-	Plugin::Ptr n = PluginFactory::createPlugNode ( hostinfo, out_info.location );
+	Plugin::Ptr n;
+	try {
+		n = PluginFactory::createPlugNode ( hostinfo, out_info.location );
+	} catch(const VSTPlugin::ShellPluginException &ex) {
+		// TODO: insert as folder with concrete hell ids as content
+		out_info.access = PluginInfo::SUCCEED;
+		out_info.name = VSTPlugin::extractNameFromFilename(out_info.location);
+		out_info.timestamp = last_write_time(out_info.location);
+		return;
+	} catch(...) {
+		n = Plugin::Ptr();
+	}
 	if ( !n ) { // loading failed
 		appendLog ( "?" + out_info.location );
 		                                   // nochmal ins log damit nach einem evntl. absturz
 										   // im scan diese datei nicht nochmal versucht wird zu laden. 
 		out_info.access = PluginInfo::FAILED;
-		// set timestamp
+		// set timestamp and name
 		out_info.timestamp = last_write_time(out_info.location);
+		out_info.name = VSTPlugin::extractNameFromFilename(out_info.location);
 		return;
 	}
 	if ( ! n->isAccessable() ) {
 		out_info.access = PluginInfo::FAILED;
-		// set timestamp
+		// set timestamp and name
 		out_info.timestamp = last_write_time(out_info.location);
+		out_info.name = VSTPlugin::extractNameFromFilename(out_info.location);
 		return;
 	}
 	// fill out

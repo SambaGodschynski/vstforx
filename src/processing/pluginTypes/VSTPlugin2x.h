@@ -46,7 +46,52 @@ BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<VSTPlugin> Ptr;
+	//--------------------------------------------------------------------------------------------------------
+	struct ShellPluginInfo {
+		std::string name;
+		VstInt32 id;
+		ShellPluginInfo(const std::string &name="", VstInt32 id=0) : name(name), id(id) {}
+	};
+	//--------------------------------------------------------------------------------------------------------
+	typedef std::list<ShellPluginInfo> ShellPluginInfos;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @class ShellPluginException
+	 * Plugin is a Shellplugin.
+	 */
+	struct ShellPluginException {
+		ShellPluginInfos content;
+		ShellPluginException(const ShellPluginInfos &content) : content(content) {}
+	};
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param fileName
+	 * @return Liefert Pluginname aus Speicherort. Zb.:
+	 * C:/VSTPlugin.dll => VSTPlugin
+	 */
+	static MyString extractNameFromFilename ( const string &fileName );
 private:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * plugin calls ioChanged.
+	 */
+	void onIOChanged();
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Plugin-Editor Parameter. Handler
+	 * @param aEff
+	 * @param index
+	 * @param value
+	 */
+	void onEditorParameterChanged ( int index, float value ); 
+		//--------------------------------------------------------------------------------------------------------
+	/**
+	 * VST-Plugin Editorfenster-Resize Callbackmethode
+	 * @param effect
+	 * @param w
+	 * @param h
+	 */
+	void onPlugRequestWindowResize ( size_t w, size_t h);
 	//--------------------------------------------------------------------------------------------------------
 	typedef vector<string> ProgramNames;
 	//--------------------------------------------------------------------------------------------------------
@@ -73,13 +118,18 @@ private:
 	 */
 	void save ( oArchive &ar, const unsigned int version ) const;
 	//--------------------------------------------------------------------------------------------------------
-	VSTPlugin() : onPlugChangeParameterIndex(-1) {}
+	VSTPlugin() : onPlugChangeParameterIndex(-1), ioChangedLock(false) {}
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Blockiert Deserialisierung gegen nebenlaufige
 	 * Parameteraenderungen, verursacht durch Host.
 	 */
 	Mutex mutex;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Blockiert ioChanged gegen process
+	 */
+	bool ioChangedLock;
 	//--------------------------------------------------------------------------------------------------------
 	typedef vector<Parameter::Ptr> ParameterContainer;
 	//--------------------------------------------------------------------------------------------------------
@@ -106,13 +156,6 @@ private:
 	 */
 	static RelatedPlugNode relatedPlugNode;
 	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * @param fileName
-	 * @return Liefert Pluginname aus Speicherort. Zb.:
-	 * C:/VSTPlugin.dll => VSTPlugin
-	 */
-	static MyString extractNameFromFilename ( const string &fileName );
-	//--------------------------------------------------------------------------------------------------------
 	bool canReceiveVstEvents;
 	//--------------------------------------------------------------------------------------------------------
 	float ** inMatrix;
@@ -135,6 +178,8 @@ private:
 	 * plug => parameter[index] => plug
 	 */
 	int onPlugChangeParameterIndex;
+	//--------------------------------------------------------------------------------------------------------
+	void getShellPluginInfos(ShellPluginInfos &out);
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	VSTPlugin( IHostInfo *hostInfo, const string &filename );
@@ -214,14 +259,6 @@ public:
 	virtual void valueChanged ( void *src, const float &value );
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * Plugin-Editor Parameter. Handler
-	 * @param aEff
-	 * @param index
-	 * @param value
-	 */
-	static void editorParameterChanged ( AEffect *aEff, int index, float value ); 
-	//--------------------------------------------------------------------------------------------------------
-	/**
 	 * @param index
 	 * @return liefert Parameter zu index. Wirft: std::out_of_range
 	 */
@@ -286,14 +323,6 @@ public:
 	static bool can ( VstInt32 flag, AEffect *aEff ) {
 		return isFlag(flag, aEff->flags); 
 	}
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * VST-Plugin Editorfenster-Resize Callbackmethode
-	 * @param effect
-	 * @param w
-	 * @param h
-	 */
-	static void plugRequestWindowResize (  AEffect* effect, size_t w, size_t h );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Host->Plugin Callbackmethode. (@see VST-SDK)

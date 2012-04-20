@@ -28,12 +28,28 @@ OS_VSTPlugNode2x ( filename ), // initalisiert aEff
 Plugin ( hostInfo, filename, 0,  0 ),  // ProcessAdapter
 onPlugChangeParameterIndex (0),
 param(NULL),
-canReceiveVstEvents(false)
+canReceiveVstEvents(false),
+ioChangedLock(false)
 { 
 	loadModule( HostCallBackOnInit (          // erzeugt Mutex lock bis fertig geladen
 		hostInfo->getAudioMasterCallback(), 
 		hostInfo->getAudioEffectX() ) 
 	);
+	
+	VstPlugCategory pluginCategory = (VstPlugCategory)
+		aEff->dispatcher(aEff, effGetPlugCategory, 0, 0, 0, 0);
+	
+	// shellplugid is setted by loadModule (the filename contains the
+	// information eg.: 'plugin.dll@12345')
+	if (shellPlugId==0 && pluginCategory==kPlugCategShell) {
+		ShellPluginInfos infos;
+		getShellPluginInfos(infos);
+		// plugin delivers shell plugins, at this pouint we can't go
+		// on because we have to specify which plugin we want.
+		if (!infos.empty())
+			throw 
+				ShellPluginException(infos);
+	}
 
 	// init i/o 
 	size_t c = ( aEff->numInputs%2==0 ) ? aEff->numInputs/2 : aEff->numInputs/2 + 1; // anzahl der eingaenge
@@ -63,7 +79,7 @@ void VSTPlugin::initPlug( VSTPlugin &plug ) {
 	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	// Objekt registrieren
 	relatedPlugNode.insert ( pair < AEffect*, VSTPlugin* >( plug.aEff, &plug ) );
-
+	plug.turnOff();
 	//hole name und hersteller
 	char bff[MAX_BFF_STR];
 	bff[0] = '\0';
@@ -90,7 +106,7 @@ void VSTPlugin::initPlug( VSTPlugin &plug ) {
 	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	// reihenfolge wichtig! ( ueber debugger ermittelt )
 	// setze samplerate  
-	
+
 	plug.aEff->dispatcher ( plug.aEff, effSetSampleRate, 0, 0, 0, plug.hostInfo->getSampleRate() );
 	// setze blockSize  
 	plug.aEff->dispatcher ( plug.aEff, effSetBlockSize, 0, plug.hostInfo->getBlockSize(), 0, 0 );
@@ -231,7 +247,7 @@ size_t VSTPlugin::getProcessDelay() const {
 }
 //------------------------------------------------------------------------------------------------------------
 //ruft die processReplacing Methode des zugeordneten VST-Plugin auf.
-void VSTPlugin::processAdapter( Processor::Int numSamples ) { 
+void VSTPlugin::processAdapter( Processor::Int numSamples ) {
 	// breite daten vor ( mappe frames => matrix )
 	for ( int i=0; i<getNumInputNodes(); i+=2 ) {
 		ProcessorNode::Ptr pr = getInputNode(i/2);
@@ -246,15 +262,16 @@ void VSTPlugin::processAdapter( Processor::Int numSamples ) {
 		inMatrix[i+1] = (*fr)[1];
 	}
 	
-	for ( int i=0; i<framebuffer.size(); ++i ) 
-		framebuffer[i].setZero( numSamples );
-
-	// Process Event
-	if ( can( effFlagsCanReplacing ) ) { 
-		//aEff->processReplacing ( *aEffect, **src, **dst, frameSize );
-		aEff->processReplacing ( aEff, inMatrix, outMatrix, numSamples );
-	}else { 
-		aEff->DECLARE_VST_DEPRECATED(process) ( aEff, inMatrix, outMatrix, numSamples );
+	for ( int i=0; i<framebuffer.size(); ++i ) framebuffer[i].setZero( numSamples );
+	
+	if (!ioChangedLock) {
+		// Process Event
+		if ( can( effFlagsCanReplacing ) ) { 
+			//aEff->processReplacing ( *aEffect, **src, **dst, frameSize );
+			aEff->processReplacing ( aEff, inMatrix, outMatrix, numSamples );
+		}else { 
+			aEff->DECLARE_VST_DEPRECATED(process) ( aEff, inMatrix, outMatrix, numSamples );
+		}
 	}
 	if ( aEff->numOutputs == 1 ) { // mono
 		framebuffer[0].mixMonoToAll( numSamples );
@@ -273,7 +290,8 @@ VSTPlugin::~VSTPlugin() {
 	delete[] inMatrix;
 	delete[] outMatrix;
 	// TODO: hier gab es probleme, unload muss aber stattfinden
-	if ( aEff != &nullAEff ) unloadModule();
+	if ( aEff != &nullAEff )
+		unloadModule();
 	TOLOG ( "-" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
@@ -283,19 +301,27 @@ inline VSTPlugin * VSTPlugin::getVSTPlugNode(AEffect *aEff){
 	return (*it).second;
 }
 //------------------------------------------------------------------------------------------------------------
-void VSTPlugin::editorParameterChanged ( AEffect *aEff, int index, float value ){
-	VSTPlugin *plug = getVSTPlugNode ( aEff );
-	if (!plug) return;
-	
-	if ( plug->param.empty() ) return;
+void VSTPlugin::onIOChanged() {
+	if( aEff->numInputs   != getNumInputNodes() * 2 ||
+		aEff->numOutputs  != getNumOutputNodes() * 2 ||
+		aEff->numParams != param.size() ) 
+	{
+		com::MessageBox(getPlugName(), getPlugName() + " I/O configuration has changed."
+			" Plugin output ist stopped until reload!", com::MSG_ALERT);
+		ioChangedLock = true;
+	}
+}
+//------------------------------------------------------------------------------------------------------------
+void VSTPlugin::onEditorParameterChanged (int index, float value){
+	if ( param.empty() ) return;
 	// try to lock:
-	boost::unique_lock<boost::timed_mutex> lock( plug->mutex, boost::try_to_lock);
+	boost::unique_lock<boost::timed_mutex> lock( mutex, boost::try_to_lock);
 	if (!lock.owns_lock()) return; // lock failed
 
-	if ( index > plug->getNumParameter() ) return;
-	plug->onPlugChangeParameterIndex = index; 
-	plug->param[index]->setValue ( value );
-	plug->onPlugChangeParameterIndex = -1;
+	if ( index > getNumParameter() ) return;
+	onPlugChangeParameterIndex = index; 
+	param[index]->setValue ( value );
+	onPlugChangeParameterIndex = -1;
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::save(com::oArchive &ar, const unsigned int version) const {
@@ -348,8 +374,8 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 	);
 	
 	param.clear();
-	initPlug ( *this );
 
+	initPlug ( *this );
 	// parameter
 	ar >> param;
 	for ( size_t i=0; i<param.size(); ++i ) {
@@ -369,15 +395,26 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 	aEff->dispatcher ( aEff, effSetChunk, 0, size, *data, 0 );
 	resetPlugin();
 	delete *data;
+
+	//checkIOchanges
+	onIOChanged();
 }
 //------------------------------------------------------------------------------------------------------------
-void VSTPlugin::plugRequestWindowResize ( AEffect* effect, size_t w, size_t h ) {
-	RelatedPlugNode::iterator it = relatedPlugNode.find ( effect );
-	if ( it == relatedPlugNode.end() ) return;
-	VSTPlugin *pl = it->second;
-	if ( !pl ) return;
-	pl->EventSender<ResizeEditorEvent>::notifyEventListeners( pl, ResizeEditorEvent(w,h) );
-
+void VSTPlugin::onPlugRequestWindowResize (size_t w, size_t h) {
+	EventSender<ResizeEditorEvent>::notifyEventListeners( this, ResizeEditorEvent(w,h) );
+}
+//------------------------------------------------------------------------------------------------------------
+void VSTPlugin::getShellPluginInfos(VSTPlugin::ShellPluginInfos &out) {
+	// scan shell for subplugins
+	char tempName[256] = {0}; 
+	VstInt32 plugUniqueID = 0;
+	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
+	while ((plugUniqueID = aEff->dispatcher (aEff, effShellGetNextPlugin, 0, 0, tempName, 0)) != 0) { 
+		// subplug needs a name 
+		if (tempName[0] != 0) {
+			out.push_back(ShellPluginInfo(std::string(tempName), plugUniqueID));
+		}
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 VstIntPtr VSTPlugin::_hostCallback ( AEffect* effect, 
@@ -387,27 +424,45 @@ VstIntPtr VSTPlugin::_hostCallback ( AEffect* effect,
 						 void* ptr, 
 						 float opt ) 
 {
-	
+	// special case: call during loadmodule
  	if ( callBkOnInit.first && callBkOnInit.second ) { 
 		// Set callBkOnInit to zero before call.
 		// Because when VSTForx is loaded in VSTForx then this
 		// call occurs a stack overflow. 
 		// ( it calls callBkOnInit[static] again and again because it is not zero )
 		// see bug: 0000088
+		if (opcode==audioMasterCurrentId) {
+			return shellPlugIdOnInit;
+		}
 		HostCallBackOnInit tmp = callBkOnInit;
 		callBkOnInit = HostCallBackOnInit( NULL, NULL );
 		int ret = tmp.first( tmp.second->getAeffect(), opcode, index, value, ptr, opt );
 		callBkOnInit = tmp;
 		return ret;
 	}
-	
+
+	// find related plugin
 	RelatedPlugNode::iterator it = relatedPlugNode.find ( effect );
 	if ( it == relatedPlugNode.end() ) return 0;
 	VSTPlugin *pl = it->second;
 	if ( !pl ) return 0;
+	
+	switch (opcode) {
+		case audioMasterAutomate:
+			pl->onEditorParameterChanged (index, opt);
+			return 0;
+		case audioMasterSizeWindow : // plugin fordert windowresize
+			pl->onPlugRequestWindowResize ((size_t)index, (size_t)value);
+			return 1;
+		case audioMasterIOChanged:
+			pl->onIOChanged();
+			return 0;
+	}
 
+	// no specific handling: call VSTForx's host
 	AudioMasterCallback hostCallback = pl->hostInfo->getAudioMasterCallback();
-	if ( !hostCallback ) return 0;
+	if ( !hostCallback ) 
+		return 0;
 	// eigentlicher host callback ( VSTForx nach host )
 	return hostCallback( pl->hostInfo->getAudioEffectX()->getAeffect(), opcode, index, value, ptr, opt);
 }
@@ -429,11 +484,7 @@ VstIntPtr VSTCALLBACK pluginCallToPlugNode (AEffect* effect,
 									void* ptr, 
 									float opt ) 
 {
-	switch (opcode)
-	{
-		// for shell support:
-		// audioMasterCurrentId
-
+	switch (opcode) {
 		case audioMasterVersion :
 			return 2400;
 
@@ -441,20 +492,13 @@ VstIntPtr VSTCALLBACK pluginCallToPlugNode (AEffect* effect,
 		case audioMasterEndEdit   : 
 			return 0;
 
-		case audioMasterAutomate :
-			processing::VSTPlugin::editorParameterChanged ( effect, index, opt );
-			return 0;
-
-		case audioMasterSizeWindow : // plugin fordert windowresize
-			processing::VSTPlugin::plugRequestWindowResize ( effect, (size_t)index, (size_t)value );
-			return 1;
-
-		case audioMasterCanDo :
+		case audioMasterCanDo : {
 			const char *text = (const char*) ptr;
 			if (!strcmp (text, "sizeWindow") )
 				return 1;
-			else break;
-
+			else
+				break;
+		}
 	}
 
 	return processing::VSTPlugin::_hostCallback ( effect, opcode, index, value, ptr, opt );

@@ -32,6 +32,7 @@
 #include <float.h>
 #include "TList.h"
 #include <sambag/com/FileSystem.hpp>
+
 using namespace std;
 
 #define MAX_STR 50 // char str[MAX_STR]
@@ -182,6 +183,14 @@ namespace com {
 		//----------------------------------------------------------------------------------------------------
 		virtual size_t getState() const = 0;
 	};
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * If Plugin is shellplugtype specific shell id comes with filename(eg): "plugin.dll@172832".
+	 * @return pair<filename, shellid>
+	 */
+	std::pair<std::string, int> extractVSTPluginFilename(const std::string &filename);
+	//--------------------------------------------------------------------------------------------------------
+	std::string createVSTPluginFilename(const std::string &filename, int shellId);
 	/*//========================================================================================================
 	//	Funktion: typeDetector.
 	//  Gebeben werden TypeList und zeiger zu objekt .

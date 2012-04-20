@@ -1034,6 +1034,10 @@
 				Name="sambag"
 				>
 				<File
+					RelativePath="..\..\..\..\..\clibs\sambag\src\sambag\com\Common.hpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\..\..\clibs\sambag\src\sambag\cpsqlite\DataBase.cpp"
 					>
 				</File>

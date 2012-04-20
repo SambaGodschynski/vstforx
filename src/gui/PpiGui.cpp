@@ -7,9 +7,7 @@
 
 #include "PpiGui.h"
 #include "CircuidView.h"
-#include "ViewCommand.h"
-#include "PpiEditor.h"
-#include "MainCtrl.h"
+#include "OS_Specific/OS_gui.h"
 #include "OS_Specific/WindowDef.h"
 #include "CircuidView.h"
 
@@ -222,45 +220,64 @@ void GCircle::draw ( CDrawContext *cc, int renderRadius ) {
 //------------------------------------------------------------------------------------------------------------
 GProcessorNode::GProcessorNode(CircuidView *parent) : GCircle ( parent, "GProcessorNode" ) {}
 //------------------------------------------------------------------------------------------------------------
-void GProcessorNode::createIONodes ( int numInputs, int numOutputs  )
-{
-	if ( numInputs==0 && numOutputs==0 ) return;
+void GProcessorNode::resetIOPosition() {
 	// Input Nodes erstellen---------------------------------------
 	CPoint p = getPos();
 	p.offset ( 0, - bBox.height() );
 	CPoint u = p; // start
+	int numInputs = (int)ins.size();
+	int numOutputs = (int)outs.size();
+	int c=0;
 	float d = 100.0/(float)numInputs;
-	for ( int i=0; i<numInputs/2; ++i ) { // eine haelfte nach links faechern
-		int f = numInputs/2 - i;
-		rotate (p, f*-d, getPos() );
-		ins.push_back ( createInNode(p) );
+	int num = 1;
+	for (int i=0; i<numInputs/2; ++i ) { // eine haelfte nach links faechern
+		rotate (p, (num++)*-d, getPos() );
+		ins[i]->moveTo(p);
+		p = u;
+		++c;
+	}
+	if (numInputs%2==1)
+		ins[c++]->moveTo(p); // mitte
+	num = 1;
+	for (int i=c; i<numInputs; i++ ) { // andere haelfte nach rechts faechern
+		rotate (p, (num++)*d, getPos() );
+		ins[i]->moveTo(p);
 		p = u;
 	}
-	if (numInputs%2==1) ins.push_back ( createInNode(p) ); // mitte
-	for ( int i=0; i<numInputs/2; ++i ) { // andere haelfte nach rechts faechern
-		int f = numInputs/2 - i;
-		rotate (p, f*d, getPos() );
-		ins.push_back ( createInNode(p) );
-		p = u;
-	}
-	// Output Nodes erstellen---------------------------------------
+	// Output Nodes ---------------------------------------
 	p = getPos();
 	p.offset ( 0, bBox.height() );
 	u = p; // start
 	d = 100.0/(float)numOutputs;
-	for ( int i=0; i<numOutputs/2; ++i ) { // eine haelfte nach links faechern
-		int f = numOutputs/2 - i;
-		rotate (p, f*d, getPos() );
-		outs.push_back ( createOutNode(p) );
+	c = 0;
+	num = 1;
+	for (int i=0; i<numOutputs/2; ++i ) { // eine haelfte nach rechts faechern
+		rotate (p, (num++)*d, getPos() );
+		outs[i]->moveTo(p);
+		p = u;
+		++c;
+	}
+	if (numOutputs%2==1) 
+		outs[c++]->moveTo(p); // mitte
+	num = 1;
+	for (int i=c; i<numOutputs; ++i ) { // andere haelfte nach links faechern
+		rotate (p, (num++)*-d, getPos() );
+		outs[i]->moveTo(p);
 		p = u;
 	}
-	if (numOutputs%2==1)outs.push_back ( createOutNode(p) ); // mitte
-	for ( int i=0; i<numOutputs/2; ++i ) { // andere haelfte nach rechts faechern
-		int f = numOutputs/2 - i;
-		rotate (p, f*-d, getPos() );
-		outs.push_back ( createOutNode(p) );
-		p = u;
+}
+//------------------------------------------------------------------------------------------------------------
+void GProcessorNode::createIONodes ( int numInputs, int numOutputs  )
+{
+	if ( numInputs==0 && numOutputs==0 ) return;
+	for ( int i=0; i<numInputs; ++i ) { // eine haelfte nach links faechern
+		ins.push_back(GInputNode::create( parentView, Resources::VSTPLUG_INPUT));
 	}
+	
+	for ( int i=0; i<numOutputs; ++i ) { // eine haelfte nach links faechern
+		outs.push_back(GOutputNode::create(parentView, Resources::VSTPLUG_OUTPUT));
+	}
+	resetIOPosition();
 }
 //------------------------------------------------------------------------------------------------------------
 GObject::Ptr GProcessorNode::createInNode(CPoint &p) {

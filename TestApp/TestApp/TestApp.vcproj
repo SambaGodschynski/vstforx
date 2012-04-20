@@ -224,6 +224,10 @@
 				RelativePath="..\..\src\tests\TestDSPTools.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\src\tests\TestOne4All.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Headerdateien"
@@ -272,6 +276,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\tests\TestDSPTools.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\tests\TestOne4All.hpp"
 				>
 			</File>
 		</Filter>
