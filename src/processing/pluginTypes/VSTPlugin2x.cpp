@@ -265,12 +265,12 @@ void VSTPlugin::processAdapter( Processor::Int numSamples ) {
 	
 	for ( int i=0; i<framebuffer.size(); ++i ) framebuffer[i].setZero( numSamples );
 	
-	if (!ioChangedLock) {
+	if (!ioChangedLock) { 
 		// Process Event
 		if ( can( effFlagsCanReplacing ) ) { 
 			//aEff->processReplacing ( *aEffect, **src, **dst, frameSize );
 			aEff->processReplacing ( aEff, inMatrix, outMatrix, numSamples );
-		}else { 
+		} else { 
 			aEff->DECLARE_VST_DEPRECATED(process) ( aEff, inMatrix, outMatrix, numSamples );
 		}
 	}
@@ -303,14 +303,7 @@ inline VSTPlugin * VSTPlugin::getVSTPlugNode(AEffect *aEff){
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::onIOChanged() {
-	if( aEff->numInputs   != getNumInputNodes() * 2 ||
-		aEff->numOutputs  != getNumOutputNodes() * 2 ||
-		aEff->numParams != param.size() ) 
-	{
-		com::MessageBox(getPlugName(), getPlugName() + " I/O configuration has changed."
-			" Plugin output ist stopped until reload!", com::MSG_ALERT);
-		ioChangedLock = true;
-	}
+	// not supported
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::onEditorParameterChanged (int index, float value){
@@ -339,6 +332,9 @@ void VSTPlugin::save(com::oArchive &ar, const unsigned int version) const {
 		ar << size;
 		return;
 	}
+	ar << aEff->numInputs; // to make sure that io config is the same after save/load
+	ar << aEff->numOutputs;
+	// save chunk
 	void *data;
 	//[ptr]: void** for chunk data address [index]: 0 for bank, 1 for program  @see AudioEffect::getChunk
 	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
@@ -364,31 +360,42 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 	//check type
 	if ( plugInfo.pluginType != PluginInfo::VST2X )
 		throw com::ppiError::SerializationError ("incompatible plugin types", __FILE__, __LINE__);
-
 	setLocation ( plugInfo.location );
-
 	// load Plugin
 	OS_VSTPlugNode2x::setModuleLocation ( getLocation() );
 	loadModule( HostCallBackOnInit (
 		hostInfo->getAudioMasterCallback(), 
 		hostInfo->getAudioEffectX() ) 
 	);
-	
 	param.clear();
-
 	initPlug ( *this );
 	// parameter
 	ar >> param;
+	// make sure that io config is the same after save/load
+	VstInt32 numInputs, numOutputs;
+	ar >> numInputs;
+	ar >> numOutputs;
+	if( aEff->numInputs   != numInputs  ||
+		aEff->numOutputs  != numOutputs ||
+		aEff->numParams != param.size() ) 
+	{
+		com::MessageBox(getPlugName(), getPlugName() + " I/O configuration has changed."
+			" Plugin output ist stopped until reload!", com::MSG_ALERT);
+		ioChangedLock = true;
+		return;
+	}
+	// init parameter
 	for ( size_t i=0; i<param.size(); ++i ) {
 		param[i]->addValueChangedListener (
 			boost::bind(&VSTPlugin::valueChanged, this, _1, _2)
 		);
 		param[i]->setValue ( *param[i] );
 	}
-	// chunk
+	// load chunk
 	size_t size;
 	ar >> size;
-	if (!size) return;
+	if (!size) 
+		return;
 	unsigned char *data[1] = { new unsigned char[size] };
 	if ( size ) ar.load_binary ( *data, size );
 	//[ptr]: chunk data [value]: byte size [index]: 0 for bank, 1 for program  @see AudioEffect::setChunk
@@ -396,9 +403,6 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 	aEff->dispatcher ( aEff, effSetChunk, 0, size, *data, 0 );
 	resetPlugin();
 	delete *data;
-
-	//checkIOchanges
-	onIOChanged();
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::onPlugRequestWindowResize (size_t w, size_t h) {
