@@ -89,6 +89,8 @@ namespace processing {
 //------------------------------------------------------------------------------------------------------------
 OS_VSTPlugNode2x::HostCallBackOnInit OS_VSTPlugNode2x::callBkOnInit = HostCallBackOnInit( NULL, NULL);
 //------------------------------------------------------------------------------------------------------------
+int OS_VSTPlugNode2x::shellPlugIdOnInit = 0;
+//------------------------------------------------------------------------------------------------------------
 com::Mutex OS_VSTPlugNode2x::onInitLock;
 //------------------------------------------------------------------------------------------------------------
 bool OS_VSTPlugNode2x::loadModule( const HostCallBackOnInit &_callBkOnInit ) {
