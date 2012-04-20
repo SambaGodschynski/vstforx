@@ -319,36 +319,37 @@ void VSTPlugin::onEditorParameterChanged (int index, float value){
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::save(com::oArchive &ar, const unsigned int version) const {
-	ar << boost::serialization::base_object< Plugin > ( *this );
+	ar << boost::serialization::base_object< Plugin > ( *this ); //.........................................1
 	// save plugInfo
 	const PluginInfo plugInfo = getPluginInfo();
-	ar << plugInfo;
+	ar << plugInfo; //......................................................................................2
 
 	// parameter
-	ar << param;
+	ar << param; //.........................................................................................3
+	ar << aEff->numInputs; // to make sure that io config is the same after save/load ......................4
+	ar << aEff->numOutputs; //..............................................................................5
 	// chunk
 	size_t size = 0;
 	if ( !can (effFlagsProgramChunks) ) {
-		ar << size;
+		// nothing to save: size = 0
+		ar << size; //......................................................................................6!
 		return;
 	}
-	ar << aEff->numInputs; // to make sure that io config is the same after save/load
-	ar << aEff->numOutputs;
 	// save chunk
 	void *data;
 	//[ptr]: void** for chunk data address [index]: 0 for bank, 1 for program  @see AudioEffect::getChunk
 	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
 	size = aEff->dispatcher ( aEff, effGetChunk, 0, 0, &data, 0 );
-	ar << size;
-	if ( size ) ar.save_binary ( data, size );
+	ar << size; //..........................................................................................6!
+	if ( size ) ar.save_binary ( data, size ); //...........................................................7
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 	TRY_TO_LOCK_TIMED(mutex);
-	ar >> boost::serialization::base_object< Plugin > ( *this );
+	ar >> boost::serialization::base_object< Plugin > ( *this ); //..........................................1
 	// get plugInfo
 	PluginInfo plugInfo;
-	ar>>plugInfo;
+	ar>>plugInfo; //.........................................................................................2
 
 	try {
 		// restore/update via db
@@ -370,11 +371,12 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 	param.clear();
 	initPlug ( *this );
 	// parameter
-	ar >> param;
+	ar >> param; //.........................................................................................3
+
 	// make sure that io config is the same after save/load
 	VstInt32 numInputs, numOutputs;
-	ar >> numInputs;
-	ar >> numOutputs;
+	ar >> numInputs;  //....................................................................................4
+	ar >> numOutputs; //....................................................................................5
 	if( aEff->numInputs   != numInputs  ||
 		aEff->numOutputs  != numOutputs ||
 		aEff->numParams != param.size() ) 
@@ -382,7 +384,7 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 		com::MessageBox(getPlugName(), getPlugName() + " I/O configuration has changed."
 			" Plugin output ist stopped until reload!", com::MSG_ALERT);
 		ioChangedLock = true;
-		return;
+		// do not return, because it breaks the restore mechanism
 	}
 	// init parameter
 	for ( size_t i=0; i<param.size(); ++i ) {
@@ -391,13 +393,14 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 		);
 		param[i]->setValue ( *param[i] );
 	}
+
 	// load chunk
 	size_t size;
-	ar >> size;
+	ar >> size; //..........................................................................................6
 	if (!size) 
 		return;
 	unsigned char *data[1] = { new unsigned char[size] };
-	if ( size ) ar.load_binary ( *data, size );
+	if ( size ) ar.load_binary ( *data, size ); //..........................................................7
 	//[ptr]: chunk data [value]: byte size [index]: 0 for bank, 1 for program  @see AudioEffect::setChunk
 	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
 	aEff->dispatcher ( aEff, effSetChunk, 0, size, *data, 0 );
