@@ -383,7 +383,7 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 		com::MessageBox(getPlugName(), getPlugName() + " I/O configuration has changed."
 			" Plugin output ist stopped until reload!", com::MSG_ALERT);
 		ioChangedLock = true;
-		return;
+		// do not return, because it breaks the restore mechanism
 	}
 	// init parameter
 	for ( size_t i=0; i<param.size(); ++i ) {
