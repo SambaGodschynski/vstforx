@@ -105,6 +105,34 @@
 		A28D9A1B1520EC9F00250BA9 /* lundump.c in Sources */ = {isa = PBXBuildFile; fileRef = A28D99D21520EC9F00250BA9 /* lundump.c */; };
 		A28D9A1C1520EC9F00250BA9 /* lvm.c in Sources */ = {isa = PBXBuildFile; fileRef = A28D99D41520EC9F00250BA9 /* lvm.c */; };
 		A28D9A1D1520EC9F00250BA9 /* lzio.c in Sources */ = {isa = PBXBuildFile; fileRef = A28D99D61520EC9F00250BA9 /* lzio.c */; };
+		A28F636C1541A0790065444E /* ADSRTrigger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63501541A0790065444E /* ADSRTrigger.cpp */; };
+		A28F636D1541A0790065444E /* FixTimeTranslator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63521541A0790065444E /* FixTimeTranslator.cpp */; };
+		A28F636E1541A0790065444E /* InputStep.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63541541A0790065444E /* InputStep.cpp */; };
+		A28F636F1541A0790065444E /* InputSwitch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63561541A0790065444E /* InputSwitch.cpp */; };
+		A28F63701541A0790065444E /* MidiProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63581541A0790065444E /* MidiProcessor.cpp */; };
+		A28F63711541A0790065444E /* OutputStep.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F635A1541A0790065444E /* OutputStep.cpp */; };
+		A28F63721541A0790065444E /* OutputSwitch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F635C1541A0790065444E /* OutputSwitch.cpp */; };
+		A28F63731541A0790065444E /* Pan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F635E1541A0790065444E /* Pan.cpp */; };
+		A28F63741541A0790065444E /* PeakTracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63601541A0790065444E /* PeakTracker.cpp */; };
+		A28F63751541A0790065444E /* Step.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63621541A0790065444E /* Step.cpp */; };
+		A28F63761541A07A0065444E /* Switch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63641541A0790065444E /* Switch.cpp */; };
+		A28F63771541A07A0065444E /* SyncTranslator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63661541A0790065444E /* SyncTranslator.cpp */; };
+		A28F63781541A07A0065444E /* ValueTranslator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63681541A0790065444E /* ValueTranslator.cpp */; };
+		A28F63791541A07A0065444E /* Volume.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F636A1541A0790065444E /* Volume.cpp */; };
+		A28F637A1541A07A0065444E /* ADSRTrigger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63501541A0790065444E /* ADSRTrigger.cpp */; };
+		A28F637B1541A07A0065444E /* FixTimeTranslator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63521541A0790065444E /* FixTimeTranslator.cpp */; };
+		A28F637C1541A07A0065444E /* InputStep.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63541541A0790065444E /* InputStep.cpp */; };
+		A28F637D1541A07A0065444E /* InputSwitch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63561541A0790065444E /* InputSwitch.cpp */; };
+		A28F637E1541A07A0065444E /* MidiProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63581541A0790065444E /* MidiProcessor.cpp */; };
+		A28F637F1541A07A0065444E /* OutputStep.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F635A1541A0790065444E /* OutputStep.cpp */; };
+		A28F63801541A07A0065444E /* OutputSwitch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F635C1541A0790065444E /* OutputSwitch.cpp */; };
+		A28F63811541A07A0065444E /* Pan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F635E1541A0790065444E /* Pan.cpp */; };
+		A28F63821541A07A0065444E /* PeakTracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63601541A0790065444E /* PeakTracker.cpp */; };
+		A28F63831541A07A0065444E /* Step.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63621541A0790065444E /* Step.cpp */; };
+		A28F63841541A07A0065444E /* Switch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63641541A0790065444E /* Switch.cpp */; };
+		A28F63851541A07A0065444E /* SyncTranslator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63661541A0790065444E /* SyncTranslator.cpp */; };
+		A28F63861541A07A0065444E /* ValueTranslator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63681541A0790065444E /* ValueTranslator.cpp */; };
+		A28F63871541A07A0065444E /* Volume.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F636A1541A0790065444E /* Volume.cpp */; };
 		A29235A71524E69300D54BDA /* auto_timers_construction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A29235A51524E69300D54BDA /* auto_timers_construction.cpp */; };
 		A29235A81524E69300D54BDA /* cpu_timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A29235A61524E69300D54BDA /* cpu_timer.cpp */; };
 		A29235A91524E69300D54BDA /* auto_timers_construction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A29235A51524E69300D54BDA /* auto_timers_construction.cpp */; };
@@ -472,6 +500,34 @@
 		A28D9A4F1520F14B00250BA9 /* LuaMap.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LuaMap.hpp; sourceTree = "<group>"; };
 		A28D9A501520F14B00250BA9 /* LuaRegisterFunction.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LuaRegisterFunction.hpp; sourceTree = "<group>"; };
 		A28D9A511520F14B00250BA9 /* LuaSequence.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = LuaSequence.hpp; sourceTree = "<group>"; };
+		A28F63501541A0790065444E /* ADSRTrigger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ADSRTrigger.cpp; path = concreteAdapter/ADSRTrigger.cpp; sourceTree = "<group>"; };
+		A28F63511541A0790065444E /* ADSRTrigger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ADSRTrigger.h; path = concreteAdapter/ADSRTrigger.h; sourceTree = "<group>"; };
+		A28F63521541A0790065444E /* FixTimeTranslator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FixTimeTranslator.cpp; path = concreteAdapter/FixTimeTranslator.cpp; sourceTree = "<group>"; };
+		A28F63531541A0790065444E /* FixTimeTranslator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FixTimeTranslator.h; path = concreteAdapter/FixTimeTranslator.h; sourceTree = "<group>"; };
+		A28F63541541A0790065444E /* InputStep.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InputStep.cpp; path = concreteAdapter/InputStep.cpp; sourceTree = "<group>"; };
+		A28F63551541A0790065444E /* InputStep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputStep.h; path = concreteAdapter/InputStep.h; sourceTree = "<group>"; };
+		A28F63561541A0790065444E /* InputSwitch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = InputSwitch.cpp; path = concreteAdapter/InputSwitch.cpp; sourceTree = "<group>"; };
+		A28F63571541A0790065444E /* InputSwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputSwitch.h; path = concreteAdapter/InputSwitch.h; sourceTree = "<group>"; };
+		A28F63581541A0790065444E /* MidiProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MidiProcessor.cpp; path = concreteAdapter/MidiProcessor.cpp; sourceTree = "<group>"; };
+		A28F63591541A0790065444E /* MidiProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MidiProcessor.h; path = concreteAdapter/MidiProcessor.h; sourceTree = "<group>"; };
+		A28F635A1541A0790065444E /* OutputStep.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OutputStep.cpp; path = concreteAdapter/OutputStep.cpp; sourceTree = "<group>"; };
+		A28F635B1541A0790065444E /* OutputStep.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OutputStep.h; path = concreteAdapter/OutputStep.h; sourceTree = "<group>"; };
+		A28F635C1541A0790065444E /* OutputSwitch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OutputSwitch.cpp; path = concreteAdapter/OutputSwitch.cpp; sourceTree = "<group>"; };
+		A28F635D1541A0790065444E /* OutputSwitch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OutputSwitch.h; path = concreteAdapter/OutputSwitch.h; sourceTree = "<group>"; };
+		A28F635E1541A0790065444E /* Pan.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Pan.cpp; path = concreteAdapter/Pan.cpp; sourceTree = "<group>"; };
+		A28F635F1541A0790065444E /* Pan.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pan.h; path = concreteAdapter/Pan.h; sourceTree = "<group>"; };
+		A28F63601541A0790065444E /* PeakTracker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PeakTracker.cpp; path = concreteAdapter/PeakTracker.cpp; sourceTree = "<group>"; };
+		A28F63611541A0790065444E /* PeakTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PeakTracker.h; path = concreteAdapter/PeakTracker.h; sourceTree = "<group>"; };
+		A28F63621541A0790065444E /* Step.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Step.cpp; path = concreteAdapter/Step.cpp; sourceTree = "<group>"; };
+		A28F63631541A0790065444E /* Step.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Step.h; path = concreteAdapter/Step.h; sourceTree = "<group>"; };
+		A28F63641541A0790065444E /* Switch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Switch.cpp; path = concreteAdapter/Switch.cpp; sourceTree = "<group>"; };
+		A28F63651541A0790065444E /* Switch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Switch.h; path = concreteAdapter/Switch.h; sourceTree = "<group>"; };
+		A28F63661541A0790065444E /* SyncTranslator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SyncTranslator.cpp; path = concreteAdapter/SyncTranslator.cpp; sourceTree = "<group>"; };
+		A28F63671541A0790065444E /* SyncTranslator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SyncTranslator.h; path = concreteAdapter/SyncTranslator.h; sourceTree = "<group>"; };
+		A28F63681541A0790065444E /* ValueTranslator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ValueTranslator.cpp; path = concreteAdapter/ValueTranslator.cpp; sourceTree = "<group>"; };
+		A28F63691541A0790065444E /* ValueTranslator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ValueTranslator.h; path = concreteAdapter/ValueTranslator.h; sourceTree = "<group>"; };
+		A28F636A1541A0790065444E /* Volume.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Volume.cpp; path = concreteAdapter/Volume.cpp; sourceTree = "<group>"; };
+		A28F636B1541A0790065444E /* Volume.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Volume.h; path = concreteAdapter/Volume.h; sourceTree = "<group>"; };
 		A29235A51524E69300D54BDA /* auto_timers_construction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = auto_timers_construction.cpp; sourceTree = "<group>"; };
 		A29235A61524E69300D54BDA /* cpu_timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cpu_timer.cpp; sourceTree = "<group>"; };
 		A29235AE1524E6BF00D54BDA /* chrono.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = chrono.cpp; sourceTree = "<group>"; };
@@ -884,6 +940,49 @@
 			path = src/sambag/lua;
 			sourceTree = "<group>";
 		};
+		A28F634E1541A0580065444E /* concreteAdapter */ = {
+			isa = PBXGroup;
+			children = (
+				A28F63501541A0790065444E /* ADSRTrigger.cpp */,
+				A28F63511541A0790065444E /* ADSRTrigger.h */,
+				A28F63581541A0790065444E /* MidiProcessor.cpp */,
+				A28F63591541A0790065444E /* MidiProcessor.h */,
+				A28F635E1541A0790065444E /* Pan.cpp */,
+				A28F635F1541A0790065444E /* Pan.h */,
+				A28F63601541A0790065444E /* PeakTracker.cpp */,
+				A28F63611541A0790065444E /* PeakTracker.h */,
+				A28F636A1541A0790065444E /* Volume.cpp */,
+				A28F636B1541A0790065444E /* Volume.h */,
+				A28F634F1541A0640065444E /* switches */,
+			);
+			name = concreteAdapter;
+			sourceTree = "<group>";
+		};
+		A28F634F1541A0640065444E /* switches */ = {
+			isa = PBXGroup;
+			children = (
+				A28F63521541A0790065444E /* FixTimeTranslator.cpp */,
+				A28F63531541A0790065444E /* FixTimeTranslator.h */,
+				A28F63541541A0790065444E /* InputStep.cpp */,
+				A28F63551541A0790065444E /* InputStep.h */,
+				A28F63561541A0790065444E /* InputSwitch.cpp */,
+				A28F63571541A0790065444E /* InputSwitch.h */,
+				A28F635A1541A0790065444E /* OutputStep.cpp */,
+				A28F635B1541A0790065444E /* OutputStep.h */,
+				A28F635C1541A0790065444E /* OutputSwitch.cpp */,
+				A28F635D1541A0790065444E /* OutputSwitch.h */,
+				A28F63621541A0790065444E /* Step.cpp */,
+				A28F63631541A0790065444E /* Step.h */,
+				A28F63641541A0790065444E /* Switch.cpp */,
+				A28F63651541A0790065444E /* Switch.h */,
+				A28F63661541A0790065444E /* SyncTranslator.cpp */,
+				A28F63671541A0790065444E /* SyncTranslator.h */,
+				A28F63681541A0790065444E /* ValueTranslator.cpp */,
+				A28F63691541A0790065444E /* ValueTranslator.h */,
+			);
+			name = switches;
+			sourceTree = "<group>";
+		};
 		A29235A41524E69300D54BDA /* timer */ = {
 			isa = PBXGroup;
 			children = (
@@ -1053,6 +1152,7 @@
 		A86FBA801341D228007D82DE /* processing */ = {
 			isa = PBXGroup;
 			children = (
+				A28F634E1541A0580065444E /* concreteAdapter */,
 				A28ADE2D14D97FC0003A22D8 /* Frames.cpp */,
 				A28ADE2E14D97FC0003A22D8 /* Frames.h */,
 				A8E9C25713B09E0F0038F83D /* MidiEventProcessor.cpp */,
@@ -1544,6 +1644,20 @@
 				A29235B11524E6BF00D54BDA /* chrono.cpp in Sources */,
 				A29235B21524E6BF00D54BDA /* process_cpu_clocks.cpp in Sources */,
 				A29235B31524E6BF00D54BDA /* thread_clock.cpp in Sources */,
+				A28F636C1541A0790065444E /* ADSRTrigger.cpp in Sources */,
+				A28F636D1541A0790065444E /* FixTimeTranslator.cpp in Sources */,
+				A28F636E1541A0790065444E /* InputStep.cpp in Sources */,
+				A28F636F1541A0790065444E /* InputSwitch.cpp in Sources */,
+				A28F63701541A0790065444E /* MidiProcessor.cpp in Sources */,
+				A28F63711541A0790065444E /* OutputStep.cpp in Sources */,
+				A28F63721541A0790065444E /* OutputSwitch.cpp in Sources */,
+				A28F63731541A0790065444E /* Pan.cpp in Sources */,
+				A28F63741541A0790065444E /* PeakTracker.cpp in Sources */,
+				A28F63751541A0790065444E /* Step.cpp in Sources */,
+				A28F63761541A07A0065444E /* Switch.cpp in Sources */,
+				A28F63771541A07A0065444E /* SyncTranslator.cpp in Sources */,
+				A28F63781541A07A0065444E /* ValueTranslator.cpp in Sources */,
+				A28F63791541A07A0065444E /* Volume.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1688,6 +1802,20 @@
 				A29235B41524E6BF00D54BDA /* chrono.cpp in Sources */,
 				A29235B51524E6BF00D54BDA /* process_cpu_clocks.cpp in Sources */,
 				A29235B61524E6BF00D54BDA /* thread_clock.cpp in Sources */,
+				A28F637A1541A07A0065444E /* ADSRTrigger.cpp in Sources */,
+				A28F637B1541A07A0065444E /* FixTimeTranslator.cpp in Sources */,
+				A28F637C1541A07A0065444E /* InputStep.cpp in Sources */,
+				A28F637D1541A07A0065444E /* InputSwitch.cpp in Sources */,
+				A28F637E1541A07A0065444E /* MidiProcessor.cpp in Sources */,
+				A28F637F1541A07A0065444E /* OutputStep.cpp in Sources */,
+				A28F63801541A07A0065444E /* OutputSwitch.cpp in Sources */,
+				A28F63811541A07A0065444E /* Pan.cpp in Sources */,
+				A28F63821541A07A0065444E /* PeakTracker.cpp in Sources */,
+				A28F63831541A07A0065444E /* Step.cpp in Sources */,
+				A28F63841541A07A0065444E /* Switch.cpp in Sources */,
+				A28F63851541A07A0065444E /* SyncTranslator.cpp in Sources */,
+				A28F63861541A07A0065444E /* ValueTranslator.cpp in Sources */,
+				A28F63871541A07A0065444E /* Volume.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

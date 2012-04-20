@@ -54,7 +54,7 @@ private:
 		if ( oldDelay == delay ) return;
 		setInitialDelay( delay );
 		oldDelay = delay;
-		ioChanged();
+		AudioEffectX::ioChanged();
 	}
 	//---------------------------------------------------------------------------------------
 	void initHostParameter();
@@ -131,6 +131,11 @@ public:
 	virtual AudioEffectX * getAudioEffectX() { return this; }
 	//--------------------------------------------------------------------------------------------------------
 	virtual AudioMasterCallback getAudioMasterCallback() { return audioMaster; }
+	//---------------------------------------------------------------------------------------
+	virtual bool ioChanged() { 
+		// issue handled during GraphChanged event.
+		return true; 
+	}
 };
 
 #endif
