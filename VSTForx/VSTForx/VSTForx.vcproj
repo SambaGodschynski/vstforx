@@ -262,10 +262,6 @@
 				RelativePath=".\PPiVst.cpp"
 				>
 			</File>
-			<File
-				RelativePath="..\..\src\VSTForxMain.cpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Headerdateien"
@@ -278,10 +274,6 @@
 			</File>
 			<File
 				RelativePath=".\resource.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\VSTForxMain.hpp"
 				>
 			</File>
 		</Filter>
