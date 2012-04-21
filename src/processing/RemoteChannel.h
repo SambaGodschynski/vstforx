@@ -1,6 +1,14 @@
 #ifndef REMOTE_CHANNEL_HPP_
 #define REMOTE_CHANNEL_HPP_
 
+// 'declaration does not declare anything' issue on mac. see:
+// http://stackoverflow.com/questions/8173620/c-boost-1-48-type-traits-and-cocoa-inclusion-weirdness
+#ifdef __APPLE__
+	#ifdef check
+		#undef check
+	#endif
+#endif
+
 #include "processing/Frames.h"
 #include <string>
 #include <boost/interprocess/managed_shared_memory.hpp>

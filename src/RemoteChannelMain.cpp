@@ -41,7 +41,9 @@ void RemoteChannelProcessor::process(float **in, float **out, int numSamples) {
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 	
+#if _WIN32
 	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); //VS memory tracking
+#endif
 
 	using namespace sambag::dsp::vst;
 	// settingup plugin
@@ -54,8 +56,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 	try{
 		return new Plugin(audioMaster);
 	}catch(...){
-		MessageBox ( NULL, "Could not create RemoteChannelHandler "
-			"Effect Instance!", "Error!", 0 );
+		com::MessageBox ( "Effect Instance!", "Could not create RemoteChannelHandler", com::MSG_ALERT);
 		return NULL;
 	}
 }

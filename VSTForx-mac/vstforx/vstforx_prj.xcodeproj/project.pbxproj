@@ -133,6 +133,29 @@
 		A28F63851541A07A0065444E /* SyncTranslator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63661541A0790065444E /* SyncTranslator.cpp */; };
 		A28F63861541A07A0065444E /* ValueTranslator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63681541A0790065444E /* ValueTranslator.cpp */; };
 		A28F63871541A07A0065444E /* Volume.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F636A1541A0790065444E /* Volume.cpp */; };
+		A28F63C21541A8B40065444E /* LuaProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63BE1541A8B40065444E /* LuaProcessor.cpp */; };
+		A28F63C31541A8B40065444E /* RemoteChannelReceiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63C01541A8B40065444E /* RemoteChannelReceiver.cpp */; };
+		A28F63C41541A8B40065444E /* LuaProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63BE1541A8B40065444E /* LuaProcessor.cpp */; };
+		A28F63C51541A8B40065444E /* RemoteChannelReceiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63C01541A8B40065444E /* RemoteChannelReceiver.cpp */; };
+		A28F63F31541B2EF0065444E /* RemoteChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63F01541B2EF0065444E /* RemoteChannel.cpp */; };
+		A28F63F51541B2EF0065444E /* RemoteChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63F01541B2EF0065444E /* RemoteChannel.cpp */; };
+		A28F64E01541BCBE0065444E /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08EA7FFBFE8413EDC02AAC07 /* Carbon.framework */; };
+		A28F64E11541BCBE0065444E /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AB71B512BBF02200431252 /* AppKit.framework */; };
+		A28F64E21541BCBE0065444E /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8AB71B612BBF02200431252 /* QuickTime.framework */; };
+		A28F64EE1541BD4D0065444E /* RemoteChannelMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F64EC1541BD4D0065444E /* RemoteChannelMain.cpp */; };
+		A28F64EF1541BD730065444E /* audioeffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8F9149F688900EB3714 /* audioeffect.cpp */; };
+		A28F64F01541BD730065444E /* audioeffectx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8FA149F688900EB3714 /* audioeffectx.cpp */; };
+		A28F64F11541BD730065444E /* vstplugmain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A2B2F8FB149F688900EB3714 /* vstplugmain.cpp */; };
+		A28F64F21541BDB50065444E /* RemoteChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28F63F01541B2EF0065444E /* RemoteChannel.cpp */; };
+		A28F65311541C34E0065444E /* mac_one4All.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A86FBA681341D228007D82DE /* mac_one4All.cpp */; };
+		A28F65341541C3760065444E /* codecvt_error_category.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28D99681520EAC900250BA9 /* codecvt_error_category.cpp */; };
+		A28F65351541C3760065444E /* operations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28D99691520EAC900250BA9 /* operations.cpp */; };
+		A28F65361541C3760065444E /* path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28D996A1520EAC900250BA9 /* path.cpp */; };
+		A28F65371541C3760065444E /* path_traits.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28D996B1520EAC900250BA9 /* path_traits.cpp */; };
+		A28F65381541C3760065444E /* portability.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28D996C1520EAC900250BA9 /* portability.cpp */; };
+		A28F65391541C3760065444E /* unique_path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28D996D1520EAC900250BA9 /* unique_path.cpp */; };
+		A28F653A1541C3760065444E /* utf8_codecvt_facet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A28D996E1520EAC900250BA9 /* utf8_codecvt_facet.cpp */; };
+		A28F653D1541C38C0065444E /* error_code.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A897C640131D8F3D0006416C /* error_code.cpp */; };
 		A29235A71524E69300D54BDA /* auto_timers_construction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A29235A51524E69300D54BDA /* auto_timers_construction.cpp */; };
 		A29235A81524E69300D54BDA /* cpu_timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A29235A61524E69300D54BDA /* cpu_timer.cpp */; };
 		A29235A91524E69300D54BDA /* auto_timers_construction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A29235A51524E69300D54BDA /* auto_timers_construction.cpp */; };
@@ -528,6 +551,18 @@
 		A28F63691541A0790065444E /* ValueTranslator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ValueTranslator.h; path = concreteAdapter/ValueTranslator.h; sourceTree = "<group>"; };
 		A28F636A1541A0790065444E /* Volume.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Volume.cpp; path = concreteAdapter/Volume.cpp; sourceTree = "<group>"; };
 		A28F636B1541A0790065444E /* Volume.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Volume.h; path = concreteAdapter/Volume.h; sourceTree = "<group>"; };
+		A28F63BE1541A8B40065444E /* LuaProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LuaProcessor.cpp; path = concreteAdapter/LuaProcessor.cpp; sourceTree = "<group>"; };
+		A28F63BF1541A8B40065444E /* LuaProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LuaProcessor.h; path = concreteAdapter/LuaProcessor.h; sourceTree = "<group>"; };
+		A28F63C01541A8B40065444E /* RemoteChannelReceiver.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RemoteChannelReceiver.cpp; path = concreteAdapter/RemoteChannelReceiver.cpp; sourceTree = "<group>"; };
+		A28F63C11541A8B40065444E /* RemoteChannelReceiver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RemoteChannelReceiver.h; path = concreteAdapter/RemoteChannelReceiver.h; sourceTree = "<group>"; };
+		A28F63F01541B2EF0065444E /* RemoteChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RemoteChannel.cpp; sourceTree = "<group>"; };
+		A28F63F11541B2EF0065444E /* RemoteChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RemoteChannel.h; sourceTree = "<group>"; };
+		A28F64E61541BCBE0065444E /* RemoteChannel.vst */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RemoteChannel.vst; sourceTree = BUILT_PRODUCTS_DIR; };
+		A28F64E71541BCBE0065444E /* Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info copy.plist"; sourceTree = "<group>"; };
+		A28F64E91541BD1A0065444E /* DspPlugin.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = DspPlugin.hpp; path = src/sambag/dsp/DspPlugin.hpp; sourceTree = "<group>"; };
+		A28F64EA1541BD1A0065444E /* VST2xPluginWrapper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = VST2xPluginWrapper.hpp; path = src/sambag/dsp/VST2xPluginWrapper.hpp; sourceTree = "<group>"; };
+		A28F64EC1541BD4D0065444E /* RemoteChannelMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RemoteChannelMain.cpp; path = ../../src/RemoteChannelMain.cpp; sourceTree = SOURCE_ROOT; };
+		A28F64ED1541BD4D0065444E /* RemoteChannelMain.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = RemoteChannelMain.hpp; path = ../../src/RemoteChannelMain.hpp; sourceTree = SOURCE_ROOT; };
 		A29235A51524E69300D54BDA /* auto_timers_construction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = auto_timers_construction.cpp; sourceTree = "<group>"; };
 		A29235A61524E69300D54BDA /* cpu_timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cpu_timer.cpp; sourceTree = "<group>"; };
 		A29235AE1524E6BF00D54BDA /* chrono.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = chrono.cpp; sourceTree = "<group>"; };
@@ -738,6 +773,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A28F64DF1541BCBE0065444E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A28F64E01541BCBE0065444E /* Carbon.framework in Frameworks */,
+				A28F64E11541BCBE0065444E /* AppKit.framework in Frameworks */,
+				A28F64E21541BCBE0065444E /* QuickTime.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A86FBA1A1341CFC3007D82DE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -759,6 +804,7 @@
 				089C1671FE841209C02AAC07 /* External Frameworks and Libraries */,
 				19C28FB4FE9D528D11CA2CBB /* Products */,
 				A86FBA1D1341CFC3007D82DE /* iVSTForx-Info.plist */,
+				A28F64E71541BCBE0065444E /* Info copy.plist */,
 			);
 			name = vstforx_prj;
 			sourceTree = "<group>";
@@ -833,6 +879,7 @@
 			children = (
 				A8B50E7012F84460008F61ED /* VSTForx.vst */,
 				A86FBA1C1341CFC3007D82DE /* iVSTForx.vst */,
+				A28F64E61541BCBE0065444E /* RemoteChannel.vst */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -943,6 +990,10 @@
 		A28F634E1541A0580065444E /* concreteAdapter */ = {
 			isa = PBXGroup;
 			children = (
+				A28F63BE1541A8B40065444E /* LuaProcessor.cpp */,
+				A28F63BF1541A8B40065444E /* LuaProcessor.h */,
+				A28F63C01541A8B40065444E /* RemoteChannelReceiver.cpp */,
+				A28F63C11541A8B40065444E /* RemoteChannelReceiver.h */,
 				A28F63501541A0790065444E /* ADSRTrigger.cpp */,
 				A28F63511541A0790065444E /* ADSRTrigger.h */,
 				A28F63581541A0790065444E /* MidiProcessor.cpp */,
@@ -983,6 +1034,24 @@
 			name = switches;
 			sourceTree = "<group>";
 		};
+		A28F64E81541BCEC0065444E /* dsp */ = {
+			isa = PBXGroup;
+			children = (
+				A28F64E91541BD1A0065444E /* DspPlugin.hpp */,
+				A28F64EA1541BD1A0065444E /* VST2xPluginWrapper.hpp */,
+			);
+			name = dsp;
+			sourceTree = "<group>";
+		};
+		A28F64EB1541BD250065444E /* RemoteChannelMain */ = {
+			isa = PBXGroup;
+			children = (
+				A28F64EC1541BD4D0065444E /* RemoteChannelMain.cpp */,
+				A28F64ED1541BD4D0065444E /* RemoteChannelMain.hpp */,
+			);
+			name = RemoteChannelMain;
+			sourceTree = "<group>";
+		};
 		A29235A41524E69300D54BDA /* timer */ = {
 			isa = PBXGroup;
 			children = (
@@ -1007,6 +1076,7 @@
 		A2B2F8D6149F66A300EB3714 /* sambag */ = {
 			isa = PBXGroup;
 			children = (
+				A28F64E81541BCEC0065444E /* dsp */,
 				A28D9A4B1520F14B00250BA9 /* lua */,
 				A28B82F6149FCD5D003F0F88 /* com */,
 				A8867090139CD6C300B5CBDD /* cpsqlite */,
@@ -1152,6 +1222,8 @@
 		A86FBA801341D228007D82DE /* processing */ = {
 			isa = PBXGroup;
 			children = (
+				A28F63F01541B2EF0065444E /* RemoteChannel.cpp */,
+				A28F63F11541B2EF0065444E /* RemoteChannel.h */,
 				A28F634E1541A0580065444E /* concreteAdapter */,
 				A28ADE2D14D97FC0003A22D8 /* Frames.cpp */,
 				A28ADE2E14D97FC0003A22D8 /* Frames.h */,
@@ -1301,6 +1373,7 @@
 		A8999BAF12B7F9FF003A5EDC /* EXT */ = {
 			isa = PBXGroup;
 			children = (
+				A28F64EB1541BD250065444E /* RemoteChannelMain */,
 				A28D999C1520EC9F00250BA9 /* lua */,
 				A2B2F8D6149F66A300EB3714 /* sambag */,
 				A86FBA271341D228007D82DE /* PPI */,
@@ -1366,6 +1439,24 @@
 			productReference = A8B50E7012F84460008F61ED /* VSTForx.vst */;
 			productType = "com.apple.product-type.bundle";
 		};
+		A28F641C1541BCBE0065444E /* RemoteChannel */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A28F64E31541BCBE0065444E /* Build configuration list for PBXNativeTarget "RemoteChannel" */;
+			buildPhases = (
+				A28F641D1541BCBE0065444E /* Resources */,
+				A28F64441541BCBE0065444E /* Sources */,
+				A28F64DF1541BCBE0065444E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RemoteChannel;
+			productInstallPath = "$(HOME)/Library/Bundles";
+			productName = vstforx_prj;
+			productReference = A28F64E61541BCBE0065444E /* RemoteChannel.vst */;
+			productType = "com.apple.product-type.bundle";
+		};
 		A86FBA1B1341CFC3007D82DE /* iVSTForx */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A86FBA201341CFC6007D82DE /* Build configuration list for PBXNativeTarget "iVSTForx" */;
@@ -1405,6 +1496,7 @@
 				8D01CCC60486CAD60068D4B7 /* VSTForx */,
 				A86FBA1B1341CFC3007D82DE /* iVSTForx */,
 				A809F42413437F490071F1D6 /* all */,
+				A28F641C1541BCBE0065444E /* RemoteChannel */,
 			);
 		};
 /* End PBXProject section */
@@ -1452,6 +1544,13 @@
 				A86FBAA01341D228007D82DE /* ppiVariables.dek in Resources */,
 				A8E9C21913B08DA60038F83D /* bmp10035.png in Resources */,
 				A8827AC313B511CB00B08463 /* bmp10036.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A28F641D1541BCBE0065444E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1658,6 +1757,30 @@
 				A28F63771541A07A0065444E /* SyncTranslator.cpp in Sources */,
 				A28F63781541A07A0065444E /* ValueTranslator.cpp in Sources */,
 				A28F63791541A07A0065444E /* Volume.cpp in Sources */,
+				A28F63C21541A8B40065444E /* LuaProcessor.cpp in Sources */,
+				A28F63C31541A8B40065444E /* RemoteChannelReceiver.cpp in Sources */,
+				A28F63F31541B2EF0065444E /* RemoteChannel.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A28F64441541BCBE0065444E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A28F64EE1541BD4D0065444E /* RemoteChannelMain.cpp in Sources */,
+				A28F64EF1541BD730065444E /* audioeffect.cpp in Sources */,
+				A28F64F01541BD730065444E /* audioeffectx.cpp in Sources */,
+				A28F64F11541BD730065444E /* vstplugmain.cpp in Sources */,
+				A28F64F21541BDB50065444E /* RemoteChannel.cpp in Sources */,
+				A28F65311541C34E0065444E /* mac_one4All.cpp in Sources */,
+				A28F65341541C3760065444E /* codecvt_error_category.cpp in Sources */,
+				A28F65351541C3760065444E /* operations.cpp in Sources */,
+				A28F65361541C3760065444E /* path.cpp in Sources */,
+				A28F65371541C3760065444E /* path_traits.cpp in Sources */,
+				A28F65381541C3760065444E /* portability.cpp in Sources */,
+				A28F65391541C3760065444E /* unique_path.cpp in Sources */,
+				A28F653A1541C3760065444E /* utf8_codecvt_facet.cpp in Sources */,
+				A28F653D1541C38C0065444E /* error_code.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1816,6 +1939,9 @@
 				A28F63851541A07A0065444E /* SyncTranslator.cpp in Sources */,
 				A28F63861541A07A0065444E /* ValueTranslator.cpp in Sources */,
 				A28F63871541A07A0065444E /* Volume.cpp in Sources */,
+				A28F63C41541A8B40065444E /* LuaProcessor.cpp in Sources */,
+				A28F63C51541A8B40065444E /* RemoteChannelReceiver.cpp in Sources */,
+				A28F63F51541B2EF0065444E /* RemoteChannel.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1957,6 +2083,87 @@
 			};
 			name = Release;
 		};
+		A28F64E41541BCBE0065444E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_VERSION = 4.2;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../src",
+					"$(SRCROOT)/../../../../clibs/vstsdk2.4/**",
+					"$(SRCROOT)/../../../../clibs/boost",
+					"$(SRCROOT)/../../../sambag/src",
+					"$(SRCROOT)/../../../../clibs/sqlite",
+					"$(SRCROOT)/../../../../clibs/lua/src",
+				);
+				HOCANIDELETETHESEENTRIES = "";
+				INFOPLIST_FILE = "Info copy.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				LIBRARY_SEARCH_PATHS = "";
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRELINK_FLAGS = "";
+				PRODUCT_NAME = RemoteChannel;
+				SDKROOT = macosx10.5;
+				VALID_ARCHS = "ppc970 i386 ppc ppc7400 ppc64 x86_64";
+				WRAPPER_EXTENSION = vst;
+				ZERO_LINK = "";
+				"arch[arch=*]" = "";
+			};
+			name = Debug;
+		};
+		A28F64E51541BCBE0065444E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_UNROLL_LOOPS = YES;
+				GCC_VERSION = 4.2;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../src",
+					"$(SRCROOT)/../../../../clibs/vstsdk2.4/**",
+					"$(SRCROOT)/../../../../clibs/boost",
+					"$(SRCROOT)/../../../sambag/src",
+					"$(SRCROOT)/../../../../clibs/sqlite",
+					"$(SRCROOT)/../../../../clibs/lua/src",
+				);
+				HOCANIDELETETHESEENTRIES = "";
+				INFOPLIST_FILE = "Info copy.plist";
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				LIBRARY_SEARCH_PATHS = "";
+				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = RemoteChannel;
+				SDKROOT = macosx10.5;
+				VALID_ARCHS = "ppc970 i386 ppc ppc7400 ppc64 x86_64";
+				WRAPPER_EXTENSION = vst;
+				ZERO_LINK = "";
+				"arch[arch=*]" = "";
+			};
+			name = Release;
+		};
 		A809F42513437F4B0071F1D6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2059,6 +2266,15 @@
 			buildConfigurations = (
 				4FADC23808B4156C00ABE55E /* Debug */,
 				4FADC23908B4156C00ABE55E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A28F64E31541BCBE0065444E /* Build configuration list for PBXNativeTarget "RemoteChannel" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A28F64E41541BCBE0065444E /* Debug */,
+				A28F64E51541BCBE0065444E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
