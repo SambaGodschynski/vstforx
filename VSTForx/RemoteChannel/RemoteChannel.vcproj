@@ -192,6 +192,10 @@
 				RelativePath="..\..\src\RemoteChannelMain.hpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\src\OS_Specific\windows\com\win_one4All.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Headerdateien"

@@ -43,7 +43,7 @@ void LogFile::writeIn(const std::string &str){
 	os.width (1);
 	os.fill ('0');
 	os.setf ( ios::left, ios::adjustfield );
-	os << "<" << nun->tm_hour << ":" << nun->tm_min << ":" << nun->tm_sec << "> " << str;
+	os << "<" << nun->tm_hour << ":" << nun->tm_min << ":" << nun->tm_sec << "> " << str << std::endl;
 	
 	os.close();
 }

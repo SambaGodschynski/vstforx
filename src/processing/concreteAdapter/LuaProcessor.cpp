@@ -24,6 +24,8 @@ namespace {
 	const std::string GP_NUM_OUTPUTS = "gpNumOutputs";
 	const std::string GP_PARAMETER_SETUP = "gpParameterSetup";
 	const std::string LC_PROCESS_FRAMES = "lcProcess";
+	const std::string LC_SET_BLOCKSIZE = "lcSetBlockSize";
+	const std::string LC_SET_SAMPLERATE = "lcSetSampleRate";
 	const std::string LC_INIT = "lcInit";
 	// function tags
 	struct SetLatency_Tag {
@@ -104,11 +106,26 @@ void LuaProcessor::initIO() {
 	//com::events::EventSender<IOChangedEvent>::notifyEventListeners(this, IOChangedEvent());*/
 }
 //------------------------------------------------------------------------------------------------------------
+void LuaProcessor::hostInfoChanged() {
+	using namespace sambag;
+	if ( lua::hasFunction(luaState.get(), LC_SET_BLOCKSIZE) ) {
+		lua::callLuaFunc(luaState.get(), LC_SET_BLOCKSIZE, 
+			boost::make_tuple(hostInfo->getBlockSize())
+		);
+	}
+	if ( lua::hasFunction(luaState.get(), LC_SET_SAMPLERATE) ) {
+		lua::callLuaFunc(luaState.get(), LC_SET_SAMPLERATE, 
+			boost::make_tuple(hostInfo->getSampleRate())
+		);
+}
+}
+//------------------------------------------------------------------------------------------------------------
 void LuaProcessor::initScript() {
 	getScriptInfo(luaState, scriptInfo);
 	initIO();
 	initParameter();
 	initCallbackFunctions();
+	hostInfoChanged(); // reset script sampleRate/blockSize
 	if (scriptInfo.hasInitFunction)
 		sambag::lua::callLuaFunc(luaState.get(), LC_INIT, 0);
 }
