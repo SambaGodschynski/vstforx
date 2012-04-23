@@ -14,6 +14,7 @@
 #include "gui/Resources.h"
 #include "cfileselector.h"
 #include "Shlobj.h"
+//#include <multimon.h>
 
 extern HINSTANCE GetInstance();
 
@@ -243,13 +244,17 @@ IWindow::Ptr createWindow ( const VSTGUI::CRect &size, const IWindow::WindowFlag
 	neu->__setPtr_ ( neu );
 	return neu;
 }
+
 //============================================================================================================
 // OS getScreenSize
 //============================================================================================================
 VSTGUI::CRect getScreenSize() {
-	RECT rc;
-	GetWindowRect ( GetDesktopWindow(), &rc );
-	return VSTGUI::CRect ( rc.left, rc.top, rc.right, rc.bottom );
+	return VSTGUI::CRect ( 
+		0, 
+		0, 
+		GetSystemMetrics(SM_CXVIRTUALSCREEN),
+		GetSystemMetrics(SM_CYVIRTUALSCREEN)
+	);
 }
 //============================================================================================================
 // setHasContextCursor
