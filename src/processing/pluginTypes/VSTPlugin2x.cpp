@@ -79,7 +79,6 @@ void VSTPlugin::initPlug( VSTPlugin &plug ) {
 	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	// Objekt registrieren
 	relatedPlugNode.insert ( pair < AEffect*, VSTPlugin* >( plug.aEff, &plug ) );
-	plug.turnOff();
 	//hole name und hersteller
 	char bff[MAX_BFF_STR];
 	bff[0] = '\0';
