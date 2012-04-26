@@ -158,6 +158,8 @@ FrontController::~FrontController (){
 }
 //------------------------------------------------------------------------------------------------------------
 void FrontController::registerObject( GObject::Ptr vObj, PObject::Ptr mObj) {
+	if (!vObj)
+		throw com::ppiError::NullPointer("NullPointerException", __FILE__, __LINE__);
 	view2model.registerRelation ( vObj, mObj );
 	if (mObj) registerModelRelation ( vObj, mObj );
 	controller[CTRL_GOBJECT]->registerObject ( vObj, mObj );
