@@ -39,8 +39,22 @@ class FrontController;
 class GStepNode;
 class GConnectionPaPa;
 class GConnectionIO;
-
 } // namespace ppiGui
+
+namespace processing {
+class Volume;
+class Pan;
+class OutputStep;
+class InputStep;
+class OutputSwitch;
+class InputSwitch;
+class PeakTracker;
+class ADSRTrigger;
+class MidiProcessor;
+} // namespace ppiGui
+
+
+
 
 namespace ppiGui{
 //============================================================================================================
@@ -149,19 +163,30 @@ public:
 	) : ViewCommand(cView), ctrl(ctrl) {}
 };
 //============================================================================================================
-//	Klasse CmdCreateProcessorNode:
-//  Oberklasse fuer Knoten Objekte die eine ProcessorAdapter Objekt repraesentieren.
-// TODO: ganze klasse template
+/**
+ * @class CmdCreateProcessorNode.
+ * Base class for create a procesor module command.
+ * Creates a ProcessAdapter and related GProcessorNode including represented I/O nodes,
+ * and registers the whole bunch in the controller unit.
+ */
 //============================================================================================================
+template <class GProcessorType, class AdapterType>
 class CmdCreateProcessorNode : public ViewCommand {
 protected:
 	//--------------------------------------------------------------------------------------------------------
-	template < typename PrNode, typename Adapter, int numINodes, int numONodes >
-	void create();
+	void create() {
+		createModule();
+		createIOs();
+	}
 	//--------------------------------------------------------------------------------------------------------
-	GProcessorNode::Ptr newGPr;
+	void createModule();
 	//--------------------------------------------------------------------------------------------------------
-	ProcessAdapter::Ptr newPrA;
+	void createIOs();
+	//--------------------------------------------------------------------------------------------------------
+	// created 
+	boost::shared_ptr<GProcessorType> gProcessor;
+	//--------------------------------------------------------------------------------------------------------
+	boost::shared_ptr<AdapterType> adapter;
 	//--------------------------------------------------------------------------------------------------------
 	FrontController *ctrl;
 public:
@@ -172,7 +197,7 @@ public:
 //============================================================================================================
 //	Klasse CmdCreateVolumeNode:
 //============================================================================================================
-class CmdCreateVolumeNode : public CmdCreateProcessorNode  {
+class CmdCreateVolumeNode : public CmdCreateProcessorNode<GVolumeNode, Volume>  {
 private:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void _execute();
@@ -185,7 +210,7 @@ public:
 //============================================================================================================
 //	Klasse CmdCreatePanAdapter:
 //============================================================================================================
-class CmdCreatePanAdapter : public CmdCreateProcessorNode {
+class CmdCreatePanAdapter : public CmdCreateProcessorNode<GPanAdapter, Pan> {
 private:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void _execute();
@@ -198,7 +223,7 @@ public:
 //============================================================================================================
 //	Klasse CmdCreateOStepNode:
 //============================================================================================================
-class CmdCreateOStepNode : public CmdCreateProcessorNode {
+class CmdCreateOStepNode : public CmdCreateProcessorNode<GOutputStepNode, OutputStep> {
 private:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void _execute();
@@ -211,7 +236,7 @@ public:
 //============================================================================================================
 //	Klasse CmdCreateIStepNode:
 //============================================================================================================
-class CmdCreateIStepNode : public CmdCreateProcessorNode {
+class CmdCreateIStepNode : public CmdCreateProcessorNode<GInputStepNode, InputStep> {
 private:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void _execute();
@@ -224,7 +249,7 @@ public:
 //============================================================================================================
 //	Klasse CmdCreateOutputSwitchNode:
 //============================================================================================================
-class CmdCreateOutputSwitchNode : public CmdCreateProcessorNode {
+class CmdCreateOutputSwitchNode : public CmdCreateProcessorNode<GOutputSwitch, OutputSwitch> {
 private:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void _execute();
@@ -238,7 +263,7 @@ public:
 //============================================================================================================
 //	Klasse CmdCreateOutputSwitchNode:
 //============================================================================================================
-class CmdCreateInputSwitchNode : public CmdCreateProcessorNode {
+class CmdCreateInputSwitchNode : public CmdCreateProcessorNode<GInputSwitch, InputSwitch> {
 private:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void _execute();
@@ -252,7 +277,7 @@ public:
 //	Klasse CmdCreatePeakTracker:
 //  Erstellt Volume2ValueNode
 //============================================================================================================
-class CmdCreatePeakTracker : public CmdCreateProcessorNode {
+class CmdCreatePeakTracker : public CmdCreateProcessorNode<GPeakTracker, PeakTracker> {
 private:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void _execute();
@@ -266,7 +291,7 @@ public:
 //	Klasse CmdCreateADSRTriggerNode:
 //  Erstellt AdsrTriggerNode
 //============================================================================================================
-class CmdCreateADSRTriggerNode : public CmdCreateProcessorNode {
+class CmdCreateADSRTriggerNode : public CmdCreateProcessorNode<GADSRTrigger, ADSRTrigger> {
 private:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void _execute();
@@ -280,7 +305,7 @@ public:
 //	Klasse CmdCreateMidiProcessor:
 //  Erstellt MidiProcessor
 //============================================================================================================
-class CmdCreateMidiProcessor : public CmdCreateProcessorNode {
+class CmdCreateMidiProcessor : public CmdCreateProcessorNode<GMidiProcessor, MidiProcessor> {
 private:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void _execute();
