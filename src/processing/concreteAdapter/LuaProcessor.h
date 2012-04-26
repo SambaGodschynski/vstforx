@@ -65,6 +65,8 @@ public:
 	typedef boost::shared_ptr<LuaProcessor> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	void loadScript();
+	//--------------------------------------------------------------------------------------------------------
 	// lock lua calls 
 	com::Mutex mutex;
 	//--------------------------------------------------------------------------------------------------------
@@ -99,9 +101,10 @@ private:
 	void serialize ( Archive &ar, const unsigned int version ) {
 		ar & boost::serialization::base_object < ProcessAdapter > ( *this );
 		ar & scriptfile;
+		// TODO: handle io changes
 		if (Archive::is_loading::value) {
 			luaState = sambag::lua::createLuaStateRef();
-			loadScript(scriptfile);
+			loadScript();
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -131,7 +134,7 @@ protected:
 	LuaFrames frxGetFramesFromInput(int channel);
 protected:
 	//--------------------------------------------------------------------------------------------------------
-	LuaProcessor ( IHostInfo *hostInfo );
+	LuaProcessor (IHostInfo *hostInfo, const std::string &scriptfile);
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -139,14 +142,12 @@ public:
 	 */
 	virtual void hostInfoChanged();
 	//--------------------------------------------------------------------------------------------------------
-	void loadScript(const std::string &scriptfile);
-	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param hostInfo
 	 * @return neues MidiProcessor-Objekt
 	 */
-	static Ptr create( IHostInfo *hostInfo ) {
-		Ptr neu( new LuaProcessor(hostInfo ) );
+	static Ptr create(IHostInfo *hostInfo, const std::string &scriptfile) {
+		Ptr neu( new LuaProcessor(hostInfo, scriptfile) );
 		neu->self = neu;
 		return neu;
 	}

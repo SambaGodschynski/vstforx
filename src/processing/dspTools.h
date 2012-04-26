@@ -458,7 +458,18 @@ public:
 	virtual size_t getNumParameter () const { return parameterMap.size(); }
 };
 
-
+//============================================================================================================
+// FFT
+//============================================================================================================
+/**
+ * @brief calculates fft for 'in' data. Assumes that out is allocated.
+ */
+extern void calcFFT(float *in, float *out, size_t numSamples);
+//------------------------------------------------------------------------------------------------------------
+/**
+ * @brief calculates onverse fft for 'in' data. Assumes that out is allocated.
+ */
+extern void calcInverseFFT(float *in, float *out, size_t numSamples);
 
 } //namespace com
 

@@ -42,11 +42,13 @@ namespace {
 	};
 }
 //------------------------------------------------------------------------------------------------------------
-LuaProcessor::LuaProcessor ( IHostInfo *iHost ) :
-		ProcessAdapter( iHost, 1, 1 )
+LuaProcessor::LuaProcessor (IHostInfo *iHost, const std::string &scriptfile) :
+	ProcessAdapter( iHost, 1, 1 ),
+	scriptfile(scriptfile)
 {
 	setName ("lua_processor");
 	luaState = sambag::lua::createLuaStateRef();
+	loadScript();
 	TOLOG ( "+" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
@@ -184,13 +186,12 @@ void LuaProcessor::parameterValueChanged ( void *src, const float &value ) {
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-void LuaProcessor::loadScript(const std::string &scriptfile) {
+void LuaProcessor::loadScript() {
 	scriptInfo.valid = true;
 	if (!boost::filesystem::exists(scriptfile)) {
 		scriptInfo.valid = false;
 		throw com::ppiError::FileIOException("loading failed: " + scriptfile, __FILE__, __LINE__ );
 	}
-	LuaProcessor::scriptfile = scriptfile;
 	try {
 		sambag::lua::executeFile(luaState.get(), scriptfile);
 	} catch (const sambag::lua::LuaException &ex) {

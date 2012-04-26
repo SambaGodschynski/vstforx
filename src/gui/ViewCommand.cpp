@@ -452,7 +452,6 @@ void CmdCreateLuaProcessor::_execute(){
 	GObjectList gObjs;
 	create<GLuaProcessor, LuaProcessor, 1, 1>();
 	LuaProcessor::Ptr lua = boost::shared_dynamic_cast<LuaProcessor, PObject>(newPrA);
-	lua->loadScript(scriptfile);
 	gObjs.push_back( newGPr );
 	newGPr->getIOs ( gObjs );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
