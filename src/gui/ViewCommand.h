@@ -51,6 +51,8 @@ class InputSwitch;
 class PeakTracker;
 class ADSRTrigger;
 class MidiProcessor;
+class LuaProcessor;
+class RemoteChannelReceiver;
 } // namespace ppiGui
 
 
@@ -173,6 +175,10 @@ public:
 template <class GProcessorType, class AdapterType>
 class CmdCreateProcessorNode : public ViewCommand {
 protected:
+	//--------------------------------------------------------------------------------------------------------
+	virtual void createProcessAdapter();
+	//--------------------------------------------------------------------------------------------------------
+	virtual void createGProcessor();
 	//--------------------------------------------------------------------------------------------------------
 	void create() {
 		createModule();
@@ -319,7 +325,7 @@ public:
 //	Klasse CmdCreateLuaProcessor:
 //  Erstellt LuaProcessor
 //============================================================================================================
-class CmdCreateLuaProcessor : public CmdCreateProcessorNode {
+class CmdCreateLuaProcessor : public CmdCreateProcessorNode<GLuaProcessor, LuaProcessor> {
 private:
 	//--------------------------------------------------------------------------------------------------------
 	std::string scriptfile;
@@ -335,7 +341,9 @@ public:
 //	Klasse CmdCreateRemoteChannelReceiver
 //  Erstellt RemoteChannelReceiver
 //============================================================================================================
-class CmdCreateRemoteChannelReceiver : public CmdCreateProcessorNode {
+class CmdCreateRemoteChannelReceiver : 
+	public CmdCreateProcessorNode<GRemoteChannelReceiver, RemoteChannelReceiver> 
+{
 private:
 	//--------------------------------------------------------------------------------------------------------
 	RemoteChannelHandler rChHandler;

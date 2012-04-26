@@ -454,10 +454,10 @@ void CmdCreateMidiProcessor::_execute(){
 //------------------------------------------------------------------------------------------------------------
 void CmdCreateLuaProcessor::_execute(){
 	GObjectList gObjs;
-	create<GLuaProcessor, LuaProcessor, 1, 1>();
-	LuaProcessor::Ptr lua = boost::shared_dynamic_cast<LuaProcessor, PObject>(newPrA);
-	gObjs.push_back( newGPr );
-	newGPr->getIOs ( gObjs );
+	create();
+	LuaProcessor::Ptr lua = adapter;
+	gObjs.push_back( gProcessor );
+	gProcessor->getIOs ( gObjs );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
 	cView->addGObject ( pG );
 	cView->CView::setDirty();
@@ -468,12 +468,11 @@ void CmdCreateLuaProcessor::_execute(){
 //------------------------------------------------------------------------------------------------------------
 void CmdCreateRemoteChannelReceiver::_execute(){
 	GObjectList gObjs;
-	create<GRemoteChannelReceiver, RemoteChannelReceiver, 0, 1>();
-	RemoteChannelReceiver::Ptr rcr = 
-		boost::shared_dynamic_cast<RemoteChannelReceiver>(newPrA);
+	create();
+	RemoteChannelReceiver::Ptr rcr = adapter;
 	rcr->setRemoteChannelHandler(rChHandler);
-	gObjs.push_back( newGPr );
-	newGPr->getIOs ( gObjs );
+	gObjs.push_back( gProcessor );
+	gProcessor->getIOs ( gObjs );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
 	cView->addGObject ( pG );
 	cView->CView::setDirty();
