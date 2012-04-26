@@ -216,24 +216,32 @@ void CmdAddVSTPlugNode::_execute(){
 //	Klasse CmdCreateProcessorNode:
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-template < typename GPrNode, typename Adapter, int numINodes, int numONodes >
-void CmdCreateProcessorNode::create(){
+template <class GProcessorType, class AdapterType>
+void CmdCreateProcessorNode<GProcessorType, AdapterType>::createModule() {
 	Graph::Ptr graph = getRelatedGraph ( cView );
 	CPoint point; cView->getMouseLocation (point);
 	// Graph Objekt erzeugen 
-	typename Adapter::Ptr adapter = Adapter::create( graph.get() );
+	adapter = AdapterType::create( graph.get() );
 	// adapter im graph einfuegen
 	Graph::Janitor::Ptr updater = graph->getJanitor(); // <-------------------------Graph::processingLock-Start
 	updater->add(adapter);
 	updater.reset();  // <----------------------------------------------------------Graph::processingLock-Ende
 	// GObjekt erzeugen 
-	typename GPrNode::Ptr gProcessor = GPrNode::create ( cView );
+	gProcessor = GProcessorType::create ( cView );
 	// GObject registrieren
 	ctrl->registerObject ( gProcessor, adapter );
 	// an Mauspos. verschieben
 	gProcessor->moveTo ( point );
+}
+//------------------------------------------------------------------------------------------------------------
+template <class GProcessorType, class AdapterType>
+void CmdCreateProcessorNode<GProcessorType, AdapterType>::createIOs() {
+	if (!gProcessor || !adapter)
+		return;
 	// GIONodes Erzeugen
-	gProcessor->createIONodes( numINodes, numONodes );
+	size_t numINodes = adapter->getNumInputNodes();
+	size_t numONodes = adapter->getNumOutputNodes();
+	gProcessor->createIONodes(numINodes, numONodes);
 	const GProcessorNode::InputNodeContainer  &ins =  gProcessor->getInputNodes();
 	const GProcessorNode::OutputNodeContainer &outs = gProcessor->getOutputNodes();
 	for ( int i=0; i<numINodes; ++i ) {
@@ -258,8 +266,8 @@ void CmdCreateProcessorNode::create(){
 		cView->addGObject ( con, CircuidView::CONNECTIONS );
 		ctrl->registerObject ( con );
 	}
-	newGPr = gProcessor;
-	newPrA = adapter;
+	gProcessor = gProcessor;
+	adapter = adapter;
 }
 //============================================================================================================
 //	Klasse CmdCreateVolumeNode:
@@ -267,20 +275,20 @@ void CmdCreateProcessorNode::create(){
 //------------------------------------------------------------------------------------------------------------
 void CmdCreateVolumeNode::_execute(){
 	GObjectList gObjs;
-	create<GVolumeNode, Volume, 1, 1>();
+	create();
 	// erzeugten Volume holen
-	Volume::Ptr vol = boost::shared_dynamic_cast<Volume, PObject>(newPrA);
+	Volume::Ptr vol = adapter;
 	// knob erzeugen
 	GKnob::Ptr knob = GStdKnob::create ( cView );
 	// knob an erzeugte GVolumeNode pos. verschieben
-	CPoint p (newGPr->getPos());
-	p.offset ( newGPr->getSize().width(), -newGPr->getSize().height() ); 
+	CPoint p (gProcessor->getPos());
+	p.offset ( gProcessor->getSize().width(), -gProcessor->getSize().height() ); 
 	knob->moveTo ( p );
 	//knob der view hinzufuegen
 	gObjs.push_back( knob );
 	// Knob Connection
-	gObjs.push_back ( newGPr );
-	GConnection::Ptr gc = GConnectionPrPa::create ( cView, newGPr, knob );
+	gObjs.push_back ( gProcessor );
+	GConnection::Ptr gc = GConnectionPrPa::create ( cView, gProcessor, knob );
 	ctrl->registerObject ( gc );
 	//Knob Connection der view hinzufuegen
 	cView->addGObject ( gc, CircuidView::CONNECTIONS);
@@ -290,7 +298,7 @@ void CmdCreateVolumeNode::_execute(){
 	param->setValue (1.0);
 	knob->setHeader ( param->getName() );
 	knob->setDisplay( param->getDisplay() );
-	newGPr->getIOs ( gObjs );
+	gProcessor->getIOs ( gObjs );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
 	cView->addGObject ( pG );
 	cView->CView::setDirty();
@@ -301,9 +309,9 @@ void CmdCreateVolumeNode::_execute(){
 //------------------------------------------------------------------------------------------------------------
 void CmdCreatePanAdapter::_execute(){
 	GObjectList gObjs;
-	create<GPanAdapter, Pan, 1, 1>();
-	gObjs.push_back( newGPr );
-	newGPr->getIOs ( gObjs );
+	create();
+	gObjs.push_back( gProcessor );
+	gProcessor->getIOs ( gObjs );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
 	cView->addGObject ( pG );
 	cView->CView::setDirty();
@@ -314,9 +322,9 @@ void CmdCreatePanAdapter::_execute(){
 //------------------------------------------------------------------------------------------------------------
 void CmdCreateOStepNode::_execute(){
 	GObjectList gObjs;
-	create<GOutputStepNode, OutputStep, 1, 2>();
-	gObjs.push_back( newGPr );
-	newGPr->getIOs ( gObjs );
+	create();
+	gObjs.push_back( gProcessor );
+	gProcessor->getIOs ( gObjs );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );   
 	cView->addGObject ( pG );
 	cView->CView::setDirty();
@@ -327,9 +335,9 @@ void CmdCreateOStepNode::_execute(){
 //------------------------------------------------------------------------------------------------------------
 void CmdCreateIStepNode::_execute(){
 	GObjectList gObjs;
-	create<GInputStepNode, InputStep, 2, 1>();
-	gObjs.push_back( newGPr );
-	newGPr->getIOs ( gObjs );
+	create();
+	gObjs.push_back( gProcessor );
+	gProcessor->getIOs ( gObjs );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
 	cView->addGObject ( pG );
 	cView->CView::setDirty();
@@ -340,9 +348,9 @@ void CmdCreateIStepNode::_execute(){
 //------------------------------------------------------------------------------------------------------------
 void CmdCreateOutputSwitchNode::_execute(){
 	GObjectList gObjs;
-	create<GOutputSwitch, OutputSwitch, 1, 2>();
-	gObjs.push_back( newGPr );
-	newGPr->getIOs ( gObjs );
+	create();
+	gObjs.push_back( gProcessor );
+	gProcessor->getIOs ( gObjs );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
 	cView->addGObject ( pG );
 	cView->CView::setDirty();
@@ -353,9 +361,9 @@ void CmdCreateOutputSwitchNode::_execute(){
 //------------------------------------------------------------------------------------------------------------
 void CmdCreateInputSwitchNode::_execute(){
 	GObjectList gObjs;
-	create<GInputSwitch, InputSwitch, 2, 1>();
-	gObjs.push_back( newGPr );
-	newGPr->getIOs ( gObjs );
+	create();
+	gObjs.push_back( gProcessor );
+	gProcessor->getIOs ( gObjs );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
 	cView->addGObject ( pG );
 	cView->CView::setDirty();
@@ -367,30 +375,28 @@ void CmdCreateInputSwitchNode::_execute(){
 //------------------------------------------------------------------------------------------------------------
 void CmdCreatePeakTracker::_execute(){
 	GObjectList gObjs;
-	create<GPeakTracker, PeakTracker, 1, 0>();
-	// downcast created processorNode
-	PeakTracker::Ptr vol = boost::shared_dynamic_cast<PeakTracker, PObject>(newPrA);
+	create();
 	// unsichtbare verbindung:
 	Graph::Ptr graph = getRelatedGraph ( cView );
 	Graph::Janitor::Ptr janitor = graph->getJanitor();
-	janitor->connectNodes( newPrA->getOutputNode(0).get(), graph->getEndNode().get() );
+	janitor->connectNodes( adapter->getOutputNode(0).get(), graph->getEndNode().get() );
 	// Output Knob
 	GKnob::Ptr knob = GPassiveKnob::create ( cView );
-	ctrl->registerObject ( knob, vol->getOutParameter() );
+	ctrl->registerObject ( knob, adapter->getOutParameter() );
 	// knob flag:
-	knob->setHeader ( vol->getOutParameter()->getName() );
-	knob->setDisplay ( vol->getOutParameter()->getDisplay() );
+	knob->setHeader ( adapter->getOutParameter()->getName() );
+	knob->setDisplay ( adapter->getOutParameter()->getDisplay() );
 	// knob pos.
-	CPoint p (newGPr->getPos());
-	p.offset ( newGPr->getSize().width(), -newGPr->getSize().height() ); 
+	CPoint p (gProcessor->getPos());
+	p.offset ( gProcessor->getSize().width(), -gProcessor->getSize().height() ); 
 	knob->moveTo ( p );
 	gObjs.push_back( knob );
-	gObjs.push_back( newGPr );
+	gObjs.push_back( gProcessor );
 	// Knob Connection
-	GConnection::Ptr gc = GConnectionPrPa::create ( cView, newGPr, knob );
+	GConnection::Ptr gc = GConnectionPrPa::create ( cView, gProcessor, knob );
 	ctrl->registerObject ( gc );
 	cView->addGObject ( gc, CircuidView::CONNECTIONS);
-	newGPr->getIOs ( gObjs );
+	gProcessor->getIOs ( gObjs );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
 	cView->addGObject ( pG );
 	cView->CView::setDirty();
@@ -402,30 +408,28 @@ void CmdCreatePeakTracker::_execute(){
 //------------------------------------------------------------------------------------------------------------
 void CmdCreateADSRTriggerNode::_execute(){
 	GObjectList gObjs;
-	create<GADSRTrigger, ADSRTrigger, 1, 0>();
-	// downcast created processorNode
-	ADSRTrigger::Ptr adsr = boost::shared_dynamic_cast<ADSRTrigger, PObject>(newPrA);
+	create();
 	// unsichtbare verbindung:
 	Graph::Ptr graph = getRelatedGraph ( cView );
 	Graph::Janitor::Ptr janitor = graph->getJanitor();
-	janitor->connectNodes( newPrA->getOutputNode(0).get(), graph->getEndNode().get() );
+	janitor->connectNodes( adapter->getOutputNode(0).get(), graph->getEndNode().get() );
 	// Outp. knob
 	GKnob::Ptr knob = GPassiveKnob::create ( cView );
-	ctrl->registerObject ( knob, adsr->getOutParameter() );
+	ctrl->registerObject ( knob, adapter->getOutParameter() );
 	// knob flag:
-	knob->setHeader ( adsr->getOutParameter()->getName() );
-	knob->setDisplay ( adsr->getOutParameter()->getDisplay() );
+	knob->setHeader ( adapter->getOutParameter()->getName() );
+	knob->setDisplay ( adapter->getOutParameter()->getDisplay() );
 	// knob pos.
-	CPoint p (newGPr->getPos());
-	p.offset ( newGPr->getSize().width(), -newGPr->getSize().height() ); 
+	CPoint p (gProcessor->getPos());
+	p.offset ( gProcessor->getSize().width(), -gProcessor->getSize().height() ); 
 	knob->moveTo ( p );
 	gObjs.push_back( knob );
-	gObjs.push_back( newGPr );
+	gObjs.push_back( gProcessor );
 	// Knob Connection
-	GConnection::Ptr gc = GConnectionPrPa::create ( cView, newGPr, knob );
+	GConnection::Ptr gc = GConnectionPrPa::create ( cView, gProcessor, knob );
 	ctrl->registerObject ( gc );
 	cView->addGObject ( gc, CircuidView::CONNECTIONS);
-	newGPr->getIOs ( gObjs );
+	gProcessor->getIOs ( gObjs );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
 	cView->addGObject ( pG );
 	cView->CView::setDirty();
@@ -437,8 +441,8 @@ void CmdCreateADSRTriggerNode::_execute(){
 //------------------------------------------------------------------------------------------------------------
 void CmdCreateMidiProcessor::_execute(){
 	GObjectList gObjs;
-	create<GMidiProcessor, MidiProcessor, 0, 0>();
-	gObjs.push_back( newGPr );
+	create();
+	gObjs.push_back( gProcessor );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
 	cView->addGObject ( pG );
 	cView->CView::setDirty();
