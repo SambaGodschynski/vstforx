@@ -40,6 +40,14 @@ namespace {
 		typedef boost::function<LuaProcessor::LuaFrames(int)> Function;
 		static const char * name() { return "frxGetFramesFromInput"; }
 	};
+	struct CalcFFT_Tag {
+		typedef boost::function<LuaProcessor::FFTData(LuaProcessor::FFTData)> Function;
+		static const char * name() { return "frxCalcFFT"; }
+	};
+	struct CalcInverseFFT_Tag {
+		typedef boost::function<LuaProcessor::FFTData(LuaProcessor::FFTData)> Function;
+		static const char * name() { return "frxCalcInverseFFT"; }
+	};
 }
 //------------------------------------------------------------------------------------------------------------
 LuaProcessor::LuaProcessor (IHostInfo *iHost, const std::string &scriptfile) :
@@ -96,6 +104,14 @@ void LuaProcessor::initCallbackFunctions() {
 	lua::registerFunction<GetFramesFromInput_Tag>(
 		luaState.get(),
 		boost::bind(&LuaProcessor::frxGetFramesFromInput, this, _1)
+	);
+	lua::registerFunction<CalcFFT_Tag>(
+		luaState.get(),
+		boost::bind(&LuaProcessor::frxCalcFFT, this, _1)
+	);
+	lua::registerFunction<CalcInverseFFT_Tag>(
+		luaState.get(),
+		boost::bind(&LuaProcessor::frxCalcInverseFFT, this, _1)
 	);
 }
 //------------------------------------------------------------------------------------------------------------
@@ -230,5 +246,13 @@ LuaProcessor::LuaFrames LuaProcessor::frxGetFramesFromInput(int channel) {
 		LuaSequenceEx<float>(frames[0], numSamples),
 		LuaSequenceEx<float>(frames[1], numSamples)
 	);
+}
+//------------------------------------------------------------------------------------------------------------
+LuaProcessor::FFTData LuaProcessor::frxCalcFFT(const FFTData &inData) {
+	return FFTData();
+}
+//------------------------------------------------------------------------------------------------------------
+LuaProcessor::FFTData LuaProcessor::frxCalcInverseFFT(const FFTData &inData) {
+	return FFTData();
 }
 }// namespace processing

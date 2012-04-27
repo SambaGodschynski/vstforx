@@ -222,13 +222,13 @@ void CmdCreateProcessorNode<GProcessorType, AdapterType, ModuleCreator>::createM
 	Graph::Ptr graph = getRelatedGraph ( cView );
 	CPoint point; cView->getMouseLocation (point);
 	// Graph Objekt erzeugen 
-	ModuleCreator::createProcessAdapter(graph);
+	adapter = ModuleCreator::createProcessAdapter(graph);
 	// adapter im graph einfuegen
 	Graph::Janitor::Ptr updater = graph->getJanitor(); // <-------------------------Graph::processingLock-Start
 	updater->add(adapter);
 	updater.reset();  // <----------------------------------------------------------Graph::processingLock-Ende
 	// GObjekt erzeugen 
-	ModuleCreator::createGProcessor(cView);
+	gProcessor = ModuleCreator::createGProcessor(cView);
 	// GObject registrieren
 	ctrl->registerObject ( gProcessor, adapter );
 	// an Mauspos. verschieben

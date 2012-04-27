@@ -25,7 +25,8 @@ function incCursor()
 end
 
 
-function frxProcess(l, r, numSamples)
+function lcProcess(numSamples)
+    l, r = frxGetFramesFromInput(1)
     for i=1, numSamples, 1 do
         x = l[i]
 	y = buffer[cursor]
@@ -34,7 +35,7 @@ function frxProcess(l, r, numSamples)
 	l[i] = y + direct * l[i]
 	r[i] = y + direct * r[i]
     end
-    return l, r
+    frxSetFramesToOutput(1, l, r)
 end
 
 function lcOnParameterChanged(name, value)
