@@ -161,10 +161,12 @@ FrontController::~FrontController (){
 //------------------------------------------------------------------------------------------------------------
 void FrontController::registerObject( GObject::Ptr vObj, PObject::Ptr mObj) {
 	view2model.registerRelation ( vObj, mObj );
-	if (mObj) registerModelRelation ( vObj, mObj );
+	if (mObj) 
+		registerModelRelation ( vObj, mObj );
 	controller[CTRL_GOBJECT]->registerObject ( vObj, mObj );
 	ObjectController *ctrl = getController (vObj);
-	if (!ctrl) return;
+	if (!ctrl) 
+		return;
 	ctrl->registerObject ( vObj, mObj );
 }
 //------------------------------------------------------------------------------------------------------------

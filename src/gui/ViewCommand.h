@@ -165,6 +165,16 @@ public:
 	) : ViewCommand(cView), ctrl(ctrl) {}
 };
 //============================================================================================================
+template <class GProcessorType, class AdapterType>
+struct StdModuleCreator {
+	boost::shared_ptr<AdapterType> createProcessAdapter(processing::Graph::Ptr graph) {
+		return AdapterType::create( graph.get() );
+	}
+	boost::shared_ptr<GProcessorType> createGProcessor(CircuidView *cView) {
+		return GProcessorType::create ( cView );
+	}
+};
+//============================================================================================================
 /**
  * @class CmdCreateProcessorNode.
  * Base class for create a procesor module command.
@@ -172,13 +182,11 @@ public:
  * and registers the whole bunch in the controller unit.
  */
 //============================================================================================================
-template <class GProcessorType, class AdapterType>
-class CmdCreateProcessorNode : public ViewCommand {
+template <class GProcessorType, 
+	class AdapterType, 
+	class ModuleCreator = StdModuleCreator<GProcessorType, AdapterType > >
+class CmdCreateProcessorNode : public ViewCommand, public ModuleCreator {
 protected:
-	//--------------------------------------------------------------------------------------------------------
-	virtual void createProcessAdapter();
-	//--------------------------------------------------------------------------------------------------------
-	virtual void createGProcessor();
 	//--------------------------------------------------------------------------------------------------------
 	void create() {
 		createModule();
@@ -322,20 +330,27 @@ public:
 	  CmdCreateProcessorNode(cView,ctrl){}
 };
 //============================================================================================================
+struct LuaProcessorCreator {
+	std::string scriptfile;
+	boost::shared_ptr<LuaProcessor> createProcessAdapter(processing::Graph::Ptr graph);
+	boost::shared_ptr<GLuaProcessor> createGProcessor(CircuidView *cView);
+};
+//============================================================================================================
 //	Klasse CmdCreateLuaProcessor:
 //  Erstellt LuaProcessor
 //============================================================================================================
-class CmdCreateLuaProcessor : public CmdCreateProcessorNode<GLuaProcessor, LuaProcessor> {
+class CmdCreateLuaProcessor : public CmdCreateProcessorNode<GLuaProcessor, LuaProcessor, LuaProcessorCreator> {
 private:
-	//--------------------------------------------------------------------------------------------------------
-	std::string scriptfile;
 	//--------------------------------------------------------------------------------------------------------
 	virtual void _execute();
 protected:
 public:
 	//--------------------------------------------------------------------------------------------------------
 	CmdCreateLuaProcessor(const std::string &scriptfile, CircuidView *cView, FrontController *ctrl):
-	  CmdCreateProcessorNode(cView,ctrl), scriptfile(scriptfile) {}
+	  CmdCreateProcessorNode(cView,ctrl) 
+	{
+		LuaProcessorCreator::scriptfile = scriptfile;
+	}
 };
 //============================================================================================================
 //	Klasse CmdCreateRemoteChannelReceiver

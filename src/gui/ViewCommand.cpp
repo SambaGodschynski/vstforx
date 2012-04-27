@@ -217,26 +217,26 @@ void CmdAddVSTPlugNode::_execute(){
 //	Klasse CmdCreateProcessorNode:
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-template <class GProcessorType, class AdapterType>
-void CmdCreateProcessorNode<GProcessorType, AdapterType>::createModule() {
+template <class GProcessorType, class AdapterType, class ModuleCreator>
+void CmdCreateProcessorNode<GProcessorType, AdapterType, ModuleCreator>::createModule() {
 	Graph::Ptr graph = getRelatedGraph ( cView );
 	CPoint point; cView->getMouseLocation (point);
 	// Graph Objekt erzeugen 
-	adapter = AdapterType::create( graph.get() );
+	ModuleCreator::createProcessAdapter(graph);
 	// adapter im graph einfuegen
 	Graph::Janitor::Ptr updater = graph->getJanitor(); // <-------------------------Graph::processingLock-Start
 	updater->add(adapter);
 	updater.reset();  // <----------------------------------------------------------Graph::processingLock-Ende
 	// GObjekt erzeugen 
-	gProcessor = GProcessorType::create ( cView );
+	ModuleCreator::createGProcessor(cView);
 	// GObject registrieren
 	ctrl->registerObject ( gProcessor, adapter );
 	// an Mauspos. verschieben
 	gProcessor->moveTo ( point );
 }
 //------------------------------------------------------------------------------------------------------------
-template <class GProcessorType, class AdapterType>
-void CmdCreateProcessorNode<GProcessorType, AdapterType>::createIOs() {
+template <class GProcessorType, class AdapterType, class ModuleCreator>
+void CmdCreateProcessorNode<GProcessorType, AdapterType, ModuleCreator>::createIOs() {
 	if (!gProcessor || !adapter)
 		return;
 	// GIONodes Erzeugen
@@ -451,6 +451,14 @@ void CmdCreateMidiProcessor::_execute(){
 //============================================================================================================
 //	Klasse CmdCreateLuaProcessor:
 //============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+boost::shared_ptr<LuaProcessor> LuaProcessorCreator::createProcessAdapter(processing::Graph::Ptr graph) {
+	return LuaProcessor::create(graph.get(), scriptfile);
+}
+//------------------------------------------------------------------------------------------------------------
+boost::shared_ptr<GLuaProcessor> LuaProcessorCreator::createGProcessor(CircuidView *cView) {
+	return GLuaProcessor::create ( cView );
+}
 //------------------------------------------------------------------------------------------------------------
 void CmdCreateLuaProcessor::_execute(){
 	GObjectList gObjs;
