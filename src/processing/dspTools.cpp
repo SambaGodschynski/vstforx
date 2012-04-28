@@ -272,4 +272,54 @@ std::string getCCName ( size_t index ) {
 }
 
 } // namespace musicalValues
+//============================================================================================================
+// FFT
+//============================================================================================================
+namespace {
+//------------------------------------------------------------------------------------------------------------
+/**
+ * origin: fftguru.com
+ */
+inline void _fft(float *r, float *i, size_t numSamples) {
+  long M = numSamples/2, lo = 0, hi, k, m, delta; 
+  long J = 0, K, L, N2 = numSamples/2;
+  float t, t1, x, y, twcos, twsin, pi = 3.1415926535897932f;
+  for (delta = M; delta > 0; delta = delta/2) {
+    x = pi/delta; hi = 0;
+    for (k = 0; k < M/delta; k++) {
+      lo = hi; hi = lo + delta;
+      for (m = 0; m < delta; m++) {
+	t = r[lo] - r[hi] ; r[lo] = r[lo] + r[hi] ; r[hi] = t ;
+	t1 = i[lo] - i[hi] ; i[lo] = i[lo] + i[hi] ; i[hi] = t1 ;
+	if ( m > 0 && delta > 1 ) { // do twiddle multiply, but not for twiddles of 0
+	  y = m*x;
+          twcos = cos (y) ; twsin = -sin (y) ;
+          t = (r[hi] - i[hi])*twsin ;
+          r[hi] = t + r[hi]*(twcos - twsin) ;
+          i[hi] = t + i[hi]*(twcos + twsin) ;
+	} // end if
+	lo++;               
+	hi++;
+      } // end for over m
+    } // end for over k
+  } // end for over delta
+  //******** bit reverse for radix 2 *****
+  for (L = 0; L < (numSamples-2); L++) {
+    if (L < J) {
+      t = r[L]; r[L] = r[J]; r[J] = t;
+      t1 = i[L]; i[L] = i[J]; i[J] = t1;
+    }
+    K = N2;
+    while (K <= J) {
+      J = J - K; K = K/2;
+    } // end while
+    J = J + K;
+  } // end for ***** bit reverse done ******
+}
+} //namespace
+//------------------------------------------------------------------------------------------------------------
+void fft(float *r, float *i, size_t numSamples) {
+	_fft(r, i, numSamples);
+}
+
 } // namespace com

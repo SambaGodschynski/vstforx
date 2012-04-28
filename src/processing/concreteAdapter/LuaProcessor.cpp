@@ -10,6 +10,7 @@
 #include <boost/foreach.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
+#include "processing/DspTools.h"
 
 namespace processing{
 //============================================================================================================
@@ -40,13 +41,9 @@ namespace {
 		typedef boost::function<LuaProcessor::LuaFrames(int)> Function;
 		static const char * name() { return "frxGetFramesFromInput"; }
 	};
-	struct CalcFFT_Tag {
-		typedef boost::function<LuaProcessor::FFTData(LuaProcessor::FFTData)> Function;
-		static const char * name() { return "frxCalcFFT"; }
-	};
-	struct CalcInverseFFT_Tag {
-		typedef boost::function<LuaProcessor::FFTData(LuaProcessor::FFTData)> Function;
-		static const char * name() { return "frxCalcInverseFFT"; }
+	struct FFT_Tag {
+		typedef boost::function<LuaProcessor::FFTData(size_t)> Function;
+		static const char * name() { return "frxFFT"; }
 	};
 }
 //------------------------------------------------------------------------------------------------------------
@@ -105,13 +102,9 @@ void LuaProcessor::initCallbackFunctions() {
 		luaState.get(),
 		boost::bind(&LuaProcessor::frxGetFramesFromInput, this, _1)
 	);
-	lua::registerFunction<CalcFFT_Tag>(
+	lua::registerFunction<FFT_Tag>(
 		luaState.get(),
-		boost::bind(&LuaProcessor::frxCalcFFT, this, _1)
-	);
-	lua::registerFunction<CalcInverseFFT_Tag>(
-		luaState.get(),
-		boost::bind(&LuaProcessor::frxCalcInverseFFT, this, _1)
+		boost::bind(&LuaProcessor::frxFFT, this, _1)
 	);
 }
 //------------------------------------------------------------------------------------------------------------
@@ -248,11 +241,10 @@ LuaProcessor::LuaFrames LuaProcessor::frxGetFramesFromInput(int channel) {
 	);
 }
 //------------------------------------------------------------------------------------------------------------
-LuaProcessor::FFTData LuaProcessor::frxCalcFFT(const FFTData &inData) {
-	return FFTData();
-}
-//------------------------------------------------------------------------------------------------------------
-LuaProcessor::FFTData LuaProcessor::frxCalcInverseFFT(const FFTData &inData) {
-	return FFTData();
+LuaProcessor::FFTData LuaProcessor::frxFFT(size_t numSamples) {
+	FFTData data;
+	pop(luaState.get(), data);
+	fft( &(boost::get<0>(data)[0]), &(boost::get<1>(data)[0]), numSamples);
+	return data;
 }
 }// namespace processing

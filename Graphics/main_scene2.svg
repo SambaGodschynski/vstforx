@@ -393,16 +393,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="480.84129"
-     inkscape:cy="662.40824"
+     inkscape:zoom="2"
+     inkscape:cx="189.29057"
+     inkscape:cy="321.8707"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="g3590"
      showgrid="false"
-     inkscape:window-width="1676"
-     inkscape:window-height="1006"
-     inkscape:window-x="4"
-     inkscape:window-y="0"
+     inkscape:window-width="1680"
+     inkscape:window-height="998"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true" />
@@ -414,7 +414,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -1895,6 +1895,181 @@
          width="85.128563"
          id="rect5915"
          style="fill:none;stroke:#00ffff;stroke-width:0.44662341000000000;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;opacity:0" />
+    </g>
+    <g
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\peak_tracker.png"
+       transform="translate(49.5227,396.11353)"
+       id="g3590"
+       style="display:inline">
+      <path
+         sodipodi:type="arc"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:37.28166962;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         id="path3592"
+         sodipodi:cx="228.29448"
+         sodipodi:cy="301.81885"
+         sodipodi:rx="88.893425"
+         sodipodi:ry="77.781746"
+         d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
+         transform="matrix(0.22992742,0,0,0.26277374,172.9589,178.60218)"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\script01.png"
+         inkscape:export-xdpi="90.578484"
+         inkscape:export-ydpi="90.578484" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:3.93565226;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none"
+         d="m 216.33169,255.04138 c 0.94653,-0.26517 20.90046,-0.0884 20.90046,-0.0884"
+         id="path3629"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\script01.png"
+         inkscape:export-xdpi="90.578484"
+         inkscape:export-ydpi="90.578484" />
+      <path
+         sodipodi:nodetypes="cc"
+         inkscape:connector-curvature="0"
+         id="path4399"
+         d="m 216.08169,249.14969 c 0.94653,-0.26517 10.11709,-1e-5 10.11709,-1e-5"
+         style="fill:none;stroke:#000000;stroke-width:3.93565226;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\script01.png"
+         inkscape:export-xdpi="90.578484"
+         inkscape:export-ydpi="90.578484" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:3.93565226;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none"
+         d="m 216.36201,261.09728 c 0.94653,-0.26517 19.48625,-1e-5 19.48625,-1e-5"
+         id="path4401"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\script01.png"
+         inkscape:export-xdpi="90.578484"
+         inkscape:export-ydpi="90.578484" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:3.93565226;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none"
+         d="m 216.78879,267.08688 c 0.94653,-0.26517 10.11709,-1e-5 10.11709,-1e-5"
+         id="path4403"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\script01.png"
+         inkscape:export-xdpi="90.578484"
+         inkscape:export-ydpi="90.578484" />
+      <path
+         transform="matrix(0.22992742,0,0,0.26277374,236.9589,178.85218)"
+         d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
+         sodipodi:ry="77.781746"
+         sodipodi:rx="88.893425"
+         sodipodi:cy="301.81885"
+         sodipodi:cx="228.29448"
+         id="path4405"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:37.28166962;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\script01_failed.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90" />
+      <path
+         sodipodi:nodetypes="cc"
+         inkscape:connector-curvature="0"
+         id="path4407"
+         d="m 280.33169,255.29138 c 0.94653,-0.26517 20.90046,-0.0884 20.90046,-0.0884"
+         style="fill:none;stroke:#ff0000;stroke-width:3.93565225999999990;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         style="fill:none;stroke:#ff0000;stroke-width:3.93565225999999990;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none"
+         d="m 280.08169,249.39969 c 0.94653,-0.26517 10.11709,-1e-5 10.11709,-1e-5"
+         id="path4409"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
+      <path
+         sodipodi:nodetypes="cc"
+         inkscape:connector-curvature="0"
+         id="path4411"
+         d="m 280.36201,261.34728 c 0.94653,-0.26517 19.48625,-1e-5 19.48625,-1e-5"
+         style="fill:none;stroke:#ff0000;stroke-width:3.93565225999999990;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         sodipodi:nodetypes="cc"
+         inkscape:connector-curvature="0"
+         id="path4413"
+         d="m 280.78879,267.33688 c 0.94653,-0.26517 10.11709,-1e-5 10.11709,-1e-5"
+         style="fill:none;stroke:#ff0000;stroke-width:3.93565225999999990;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         sodipodi:type="arc"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:37.28166962;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         id="path4415"
+         sodipodi:cx="228.29448"
+         sodipodi:cy="301.81885"
+         sodipodi:rx="88.893425"
+         sodipodi:ry="77.781746"
+         d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
+         transform="matrix(0.22992742,0,0,0.26277374,300.59851,178.85218)"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\script01_valid.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90" />
+      <path
+         style="fill:none;stroke:#0cff00;stroke-width:3.93565225999999990;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none"
+         d="m 343.9713,255.29138 c 0.94653,-0.26517 20.90046,-0.0884 20.90046,-0.0884"
+         id="path4417"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
+      <path
+         sodipodi:nodetypes="cc"
+         inkscape:connector-curvature="0"
+         id="path4419"
+         d="m 343.7213,249.39969 c 0.94653,-0.26517 10.11709,-1e-5 10.11709,-1e-5"
+         style="fill:none;stroke:#0cff00;stroke-width:3.93565225999999990;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none" />
+      <path
+         style="fill:none;stroke:#0cff00;stroke-width:3.93565225999999990;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none"
+         d="m 344.00162,261.34728 c 0.94653,-0.26517 19.48625,-1e-5 19.48625,-1e-5"
+         id="path4421"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
+      <path
+         style="fill:none;stroke:#0cff00;stroke-width:3.93565225999999990;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none"
+         d="m 344.4284,267.33688 c 0.94653,-0.26517 10.11709,-1e-5 10.11709,-1e-5"
+         id="path4423"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
+      <path
+         transform="matrix(0.22992742,0,0,0.26277374,95.884261,280.42556)"
+         d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
+         sodipodi:ry="77.781746"
+         sodipodi:rx="88.893425"
+         sodipodi:cy="301.81885"
+         sodipodi:cx="228.29448"
+         id="path4425"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:37.28166962;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\remoteChannel.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90" />
+      <path
+         sodipodi:type="arc"
+         style="stroke:#000000;stroke-width:4.5;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none"
+         id="path4435"
+         sodipodi:cx="196.00116"
+         sodipodi:cy="749.45532"
+         sodipodi:rx="1.016466"
+         sodipodi:ry="0.9722718"
+         d="m 197.01763,749.45532 a 1.016466,0.9722718 0 1 1 -2.03294,0 1.016466,0.9722718 0 1 1 2.03294,0 z"
+         transform="matrix(1.308543,0,0,1.2771132,-108.18554,-606.18394)"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\remoteChannel.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90" />
+      <path
+         style="fill:none;stroke:#000000;stroke-width:4.19999981;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         d="m 141.72158,358.91595 c 3.43992,3.29729 9.52208,3.064 12.72733,-0.0307"
+         id="path4439"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\remoteChannel.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90" />
+      <path
+         sodipodi:nodetypes="cc"
+         inkscape:connector-curvature="0"
+         id="path4441"
+         d="m 137.87669,365.50092 c 5.11929,5.99313 14.6486,6.51115 20.59389,0.27867"
+         style="fill:none;stroke:#000000;stroke-width:4.19999981;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\remoteChannel.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90" />
     </g>
   </g>
   <g

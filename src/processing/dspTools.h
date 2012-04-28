@@ -462,15 +462,12 @@ public:
 // FFT
 //============================================================================================================
 /**
- * @brief calculates fft for 'in' data. Assumes that out is allocated.
+ * @brief calculates fft for inplace for r and i.
+ * where r is the discrete signal and i should be 0. the result is a complex number.
+ * The amplitude for a frq can be calculated in that way:
+ *    amp = sqrt ( pow( r[index]/numSamples, 2 ) + pow ( i[index]/numSamples, 2 ) )
  */
-extern void calcFFT(float *in, float *out, size_t numSamples);
-//------------------------------------------------------------------------------------------------------------
-/**
- * @brief calculates onverse fft for 'in' data. Assumes that out is allocated.
- */
-extern void calcInverseFFT(float *in, float *out, size_t numSamples);
-
-} //namespace com
+extern void fft(float *r, float *i, size_t numSamples);
+} //namespace processing
 
 #endif
