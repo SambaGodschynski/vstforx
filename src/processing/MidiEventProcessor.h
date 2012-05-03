@@ -16,10 +16,13 @@
 
 namespace processing {
 //============================================================================================================
-// MidiEventProcessor :
-// verarbeitet midi events. channel filterbar
-//============================================================================================================
+/** 
+ * @class MidiEventProcessor.
+ *  verarbeitet midi events. channel filterbar.
+ *  TODO: seperate midiEvent / vstMidiEvent
+ */
 class MidiEventProcessor : public IVstEventProcessor {
+//============================================================================================================
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------

@@ -15,6 +15,8 @@
 #include <boost/tuple/tuple.hpp>
 #include "com/ScriptInfo.h"
 #include <sambag/lua/LuaSequence.hpp>
+#include "processing/MidiEventProcessor.h"
+#include <map>
 
 namespace processing {
 using namespace parameter;
@@ -36,6 +38,7 @@ struct ProcessorScriptInfo : public com::ScriptInfo {
 	ParameterMap parameterMap;
 	bool hasParameterChangedHandler;
 	bool hasInitFunction;
+	bool hasMidiEventHandler;
 	// constructor
 	ProcessorScriptInfo(const std::string &location="") :
 		numInputs(0),
@@ -44,6 +47,7 @@ struct ProcessorScriptInfo : public com::ScriptInfo {
 		valid(false),
 		hasParameterChangedHandler(false),
 		hasInitFunction(false),
+		hasMidiEventHandler(false),
 		ScriptInfo(location)
 	{
 	}
@@ -54,7 +58,8 @@ struct ProcessorScriptInfo : public com::ScriptInfo {
  * Leitet process an lua-script weiter.
  */
 class LuaProcessor : 
-public ProcessAdapter, 
+public ProcessAdapter,
+public MidiEventProcessor,
 public HasParameter, 
 public Serializable
 {
@@ -93,7 +98,9 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	std::string scriptfile;
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<Parameter::Ptr> Parameters;
+	typedef std::pair<Parameter::Ptr, Parameter::Connection> ParameterContainer;
+	//--------------------------------------------------------------------------------------------------------
+	typedef std::map<std::string, ParameterContainer> Parameters;
 	//--------------------------------------------------------------------------------------------------------
 	Parameters parameters;
 	//--------------------------------------------------------------------------------------------------------
@@ -113,7 +120,7 @@ private:
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------
-	LuaProcessor (){} // wird nur von boost::serial. benutzt
+	LuaProcessor () {} // wird nur von boost::serial. benutzt
 protected:
 	//////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// LuaCallbacks
@@ -136,10 +143,18 @@ protected:
 	void frxSetFramesToOutput();
 	//--------------------------------------------------------------------------------------------------------
 	LuaFrames frxGetFramesFromInput(int channel);
+	//--------------------------------------------------------------------------------------------------------
+	void frxSetParameterValue(const std::string &name, float value);
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	LuaProcessor (IHostInfo *hostInfo, const std::string &scriptfile);
 public:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Verarbeitet Midi-Events (@see VST-SDK VstEvents)
+	 * @param events
+	 */
+	virtual void processMidiEvents(VstEvents * events);
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * resetet SampleRate
@@ -172,8 +187,8 @@ public:
 	 * @param index
 	 * @return liefert Parameter zu index. Wirft: std::out_of_range
 	 */
-	virtual Parameter::Ptr getParameter ( size_t index = 0 ) const { return parameters[index]; }
-	//--------------------------------------------------------------------------------------------------------
+	virtual Parameter::Ptr getParameter ( size_t index = 0 ) const;
+	//-------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Anzahl aller MidiProcessor-Parameter
 	 */

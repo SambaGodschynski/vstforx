@@ -1,5 +1,6 @@
 --setup
 gpParameterSetup = { direct = 0.5, delay=0.5, feedback=0.4 }
+p = gpParameterSetup
 maxbuff = 44100
 
 
@@ -13,13 +14,10 @@ end
 buffer=initBuffer(maxbuff)
 
 cursor = 1
-delay = 10000
-feedback = 0.8
-direct = 0.5
 
 function incCursor()
   cursor = cursor + 1
-  if cursor > delay then
+  if cursor > p['delay'] then
      cursor = 1
   end
 end
@@ -30,22 +28,17 @@ function lcProcess(numSamples)
     for i=1, numSamples, 1 do
         x = l[i]
 	y = buffer[cursor]
- 	buffer[cursor] = x + y * feedback
+ 	buffer[cursor] = x + y * p['feedback']
 	incCursor()
-	l[i] = y + direct * l[i]
-	r[i] = y + direct * r[i]
+	l[i] = y + p['direct'] * l[i]
+	r[i] = y + p['direct'] * r[i]
     end
     frxSetFramesToOutput(1, l, r)
 end
 
 function lcOnParameterChanged(name, value)
-    if name=='feedback' then
-        feedback = value
-    end
     if name=='delay' then
-       delay = value * maxbuff
+       value = value * maxbuff
     end
-    if name=='direct' then
-       direct = value
-    end
+    p[name]=value
 end
