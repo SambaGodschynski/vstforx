@@ -52,6 +52,11 @@ CBitmap ** loadResources() {
 	bitmaps[Resources::ADSR_ADAPTER]			= createBitmap (IDB_PNG2);
 	bitmaps[Resources::PEAK_TRACK_ADAPTER]		= createBitmap (IDB_PNG8);
 	bitmaps[Resources::CHANNEL_SPLIT_ADAPTER]	= createBitmap (IDB_PNG3);
+	bitmaps[Resources::BACKGROUND]		     	= createBitmap (IDB_PNG36);
+	bitmaps[Resources::REMOTECHANNEL]			= createBitmap (IDB_PNG37);
+	bitmaps[Resources::SCRIPT_NORMAL]			= createBitmap (IDB_PNG38);
+	bitmaps[Resources::SCRIPT_FAILED]			= createBitmap (IDB_PNG39);
+	bitmaps[Resources::SCRIPT_VALID]			= createBitmap (IDB_PNG40);
 
 	// toolbox
 	bitmaps[Resources::EDIT_BUTTON]				= createBitmap (IDB_PNG11);
@@ -76,8 +81,6 @@ CBitmap ** loadResources() {
 	bitmaps[Resources::DLG_RESIZE_ROCKER_HEIGHT]= createBitmap (IDB_PNG33);
 	bitmaps[Resources::DLG_SCAN_NOW]			= createBitmap (IDB_PNG34);
 	bitmaps[Resources::MIDI_RECEIVER]			= createBitmap (IDB_PNG35);
-	bitmaps[Resources::BACKGROUND]		     	= createBitmap (IDB_PNG36);
-
 	return bitmaps;
 }
 //---------------------------------------------------------------------------------------

@@ -27,47 +27,59 @@ namespace ppiGui {
 //=======================================================================================
 //class PPIVst
 //=======================================================================================
+namespace {
+//---------------------------------------------------------------------------------------
+CBitmap * createBitmap ( long id ) {
+	CBitmap *bmp = new CBitmap ( id );
+	LOG_ASSERT ( bmp != NULL )
+	return bmp;
+}
+} // namespace
 //---------------------------------------------------------------------------------------
 CBitmap ** loadResources() { 
 	using namespace ppiGui;
 	CBitmap ** bitmaps = new CBitmap*[ppiGui::Resources::NUM_BITMAPS];
-	bitmaps[Resources::VSTPLUG_NODE]            = new CBitmap (IDB_PNG6);
-	bitmaps[Resources::VSTPLUG_INPUT]			= new CBitmap (IDB_PNG5);
-	bitmaps[Resources::VSTPLUG_OUTPUT]			= new CBitmap (IDB_PNG7);
-	bitmaps[Resources::VSTPLUG_OUTPUT_GLOW]		= new CBitmap (IDB_PNG20);
-	bitmaps[Resources::MAIN_INPUT_NODE]			= new CBitmap (IDB_PNG1);
-	bitmaps[Resources::MAIN_OUTPUT_NODE]		= new CBitmap (IDB_PNG4);
-	bitmaps[Resources::STD_KNOB]				= new CBitmap (IDB_PNG13);
-	bitmaps[Resources::PASSIVE_KNOB]			= new CBitmap (IDB_PNG12);
-	bitmaps[Resources::VOLUME_ADAPTER]			= new CBitmap (IDB_PNG10);
-	bitmaps[Resources::STEP_ADAPTER]			= new CBitmap (IDB_PNG9);
-	bitmaps[Resources::OSWITCH_ADAPTER]			= new CBitmap (IDB_PNG19);
-	bitmaps[Resources::ADSR_ADAPTER]			= new CBitmap (IDB_PNG2);
-	bitmaps[Resources::PEAK_TRACK_ADAPTER]		= new CBitmap (IDB_PNG8);
-	bitmaps[Resources::CHANNEL_SPLIT_ADAPTER]	= new CBitmap (IDB_PNG3);
-	bitmaps[Resources::MIDI_RECEIVER]	        = new CBitmap (IDB_PNG35);
-	bitmaps[Resources::BACKGROUND]			    = new CBitmap (IDB_PNG36);
+	bitmaps[Resources::VSTPLUG_NODE]            = createBitmap(IDB_PNG6);
+	bitmaps[Resources::VSTPLUG_INPUT]			= createBitmap(IDB_PNG5);
+	bitmaps[Resources::VSTPLUG_OUTPUT]			= createBitmap(IDB_PNG7);
+	bitmaps[Resources::VSTPLUG_OUTPUT_GLOW]		= createBitmap(IDB_PNG20);
+	bitmaps[Resources::MAIN_INPUT_NODE]			= createBitmap (IDB_PNG1);
+	bitmaps[Resources::MAIN_OUTPUT_NODE]		= createBitmap (IDB_PNG4);
+	bitmaps[Resources::STD_KNOB]				= createBitmap (IDB_PNG13);
+	bitmaps[Resources::PASSIVE_KNOB]			= createBitmap (IDB_PNG12);
+	bitmaps[Resources::VOLUME_ADAPTER]			= createBitmap (IDB_PNG10);
+	bitmaps[Resources::STEP_ADAPTER]			= createBitmap (IDB_PNG9);
+	bitmaps[Resources::OSWITCH_ADAPTER]			= createBitmap (IDB_PNG19);
+	bitmaps[Resources::ADSR_ADAPTER]			= createBitmap (IDB_PNG2);
+	bitmaps[Resources::PEAK_TRACK_ADAPTER]		= createBitmap (IDB_PNG8);
+	bitmaps[Resources::CHANNEL_SPLIT_ADAPTER]	= createBitmap (IDB_PNG3);
+	bitmaps[Resources::MIDI_RECEIVER]	        = createBitmap (IDB_PNG35);
+	bitmaps[Resources::BACKGROUND]			    = createBitmap (IDB_PNG36);
+	bitmaps[Resources::REMOTECHANNEL]			= createBitmap (IDB_PNG37);
+	bitmaps[Resources::SCRIPT_NORMAL]			= createBitmap (IDB_PNG38);
+	bitmaps[Resources::SCRIPT_FAILED]			= createBitmap (IDB_PNG39);
+	bitmaps[Resources::SCRIPT_VALID]			= createBitmap (IDB_PNG40);
 	// toolbox
-	bitmaps[Resources::EDIT_BUTTON]				= new CBitmap (IDB_PNG11);
-	bitmaps[Resources::MENU_ROCKER]				= new CBitmap (IDB_PNG14);
-	bitmaps[Resources::TLBX_BK]					= new CBitmap (IDB_PNG18);
-	bitmaps[Resources::TLBX_BTN_USE]			= new CBitmap (IDB_PNG17);
-	bitmaps[Resources::TLBX_BTN_CNT]			= new CBitmap (IDB_PNG15);
-	bitmaps[Resources::TLBX_BTN_MOVE]			= new CBitmap (IDB_PNG16);
-	bitmaps[Resources::TLBX_BTN_SETUP]			= new CBitmap (IDB_PNG21);
-	bitmaps[Resources::DLG_SYSM_EXIT]			= new CBitmap (IDB_PNG22);
-	bitmaps[Resources::DLG_SETTINGS_FRAME]		= new CBitmap (IDB_PNG23);
-	bitmaps[Resources::DLG_BTN_REMOVE_DIR]		= new CBitmap (IDB_PNG24);
-	bitmaps[Resources::DLG_BTN_ADD_DIR]			= new CBitmap (IDB_PNG25);
-	bitmaps[Resources::DLG_BTN_CANCEL]			= new CBitmap (IDB_PNG26);
-	bitmaps[Resources::DLG_BTN_CHDIR]			= new CBitmap (IDB_PNG27);
-	bitmaps[Resources::DLG_BTN_OK]				= new CBitmap (IDB_PNG28);
-	bitmaps[Resources::DLG_CHKBX_FASTSCAN]		= new CBitmap (IDB_PNG29);
-	bitmaps[Resources::DLG_SCANNING_FRAME]		= new CBitmap (IDB_PNG30);
-	bitmaps[Resources::DLG_RESIZE_ROCKER]		= new CBitmap (IDB_PNG31);
-	bitmaps[Resources::DLG_RESIZE_ROCKER_WIDTH]	= new CBitmap (IDB_PNG32);
-	bitmaps[Resources::DLG_RESIZE_ROCKER_HEIGHT]= new CBitmap (IDB_PNG33);
-	bitmaps[Resources::DLG_SCAN_NOW]			= new CBitmap (IDB_PNG34);
+	bitmaps[Resources::EDIT_BUTTON]				= createBitmap (IDB_PNG11);
+	bitmaps[Resources::MENU_ROCKER]				= createBitmap (IDB_PNG14);
+	bitmaps[Resources::TLBX_BK]					= createBitmap (IDB_PNG18);
+	bitmaps[Resources::TLBX_BTN_USE]			= createBitmap (IDB_PNG17);
+	bitmaps[Resources::TLBX_BTN_CNT]			= createBitmap (IDB_PNG15);
+	bitmaps[Resources::TLBX_BTN_MOVE]			= createBitmap (IDB_PNG16);
+	bitmaps[Resources::TLBX_BTN_SETUP]			= createBitmap (IDB_PNG21);
+	bitmaps[Resources::DLG_SYSM_EXIT]			= createBitmap (IDB_PNG22);
+	bitmaps[Resources::DLG_SETTINGS_FRAME]		= createBitmap (IDB_PNG23);
+	bitmaps[Resources::DLG_BTN_REMOVE_DIR]		= createBitmap (IDB_PNG24);
+	bitmaps[Resources::DLG_BTN_ADD_DIR]			= createBitmap (IDB_PNG25);
+	bitmaps[Resources::DLG_BTN_CANCEL]			= createBitmap (IDB_PNG26);
+	bitmaps[Resources::DLG_BTN_CHDIR]			= createBitmap (IDB_PNG27);
+	bitmaps[Resources::DLG_BTN_OK]				= createBitmap (IDB_PNG28);
+	bitmaps[Resources::DLG_CHKBX_FASTSCAN]		= createBitmap (IDB_PNG29);
+	bitmaps[Resources::DLG_SCANNING_FRAME]		= createBitmap (IDB_PNG30);
+	bitmaps[Resources::DLG_RESIZE_ROCKER]		= createBitmap (IDB_PNG31);
+	bitmaps[Resources::DLG_RESIZE_ROCKER_WIDTH]	= createBitmap (IDB_PNG32);
+	bitmaps[Resources::DLG_RESIZE_ROCKER_HEIGHT]= createBitmap (IDB_PNG33);
+	bitmaps[Resources::DLG_SCAN_NOW]			= createBitmap (IDB_PNG34);
 	return bitmaps;
 }
 //---------------------------------------------------------------------------------------
