@@ -40,7 +40,4 @@
 #define IDB_PNG34 10034
 #define IDB_PNG35 10035
 #define IDB_PNG36 10036
-#define IDB_PNG37 10037
-#define IDB_PNG38 10038
-#define IDB_PNG39 10039
-#define IDB_PNG40 10040
+

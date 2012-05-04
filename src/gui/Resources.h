@@ -58,10 +58,6 @@ public:
 		DLG_SCAN_NOW,
 		MIDI_RECEIVER,
 		BACKGROUND,
-		REMOTECHANNEL,
-		SCRIPT_NORMAL,
-		SCRIPT_FAILED,
-		SCRIPT_VALID,
 		NUM_BITMAPS
 	};	
 	//--------------------------------------------------------------------------------------------------------

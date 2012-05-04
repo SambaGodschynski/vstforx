@@ -15,7 +15,6 @@
 #include "processing/parameter/ConnectionOperators.h"
 #include "GObjectController.h"
 #include "com/PluginCollection.h"
-#include "processing/RemoteChannel.h"
 #include "processing/pluginTypes/VSTPlugin2x.h"
 #include <string>
 
@@ -444,43 +443,6 @@ void CmdCreateMidiProcessor::_execute(){
 	GObjectList gObjs;
 	create();
 	gObjs.push_back( gProcessor );
-	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
-	cView->addGObject ( pG );
-	cView->CView::setDirty();
-}
-//============================================================================================================
-//	Klasse CmdCreateLuaProcessor:
-//============================================================================================================
-//------------------------------------------------------------------------------------------------------------
-boost::shared_ptr<LuaProcessor> LuaProcessorCreator::createProcessAdapter(processing::Graph::Ptr graph) {
-	return LuaProcessor::create(graph.get(), scriptfile);
-}
-//------------------------------------------------------------------------------------------------------------
-boost::shared_ptr<GLuaProcessor> LuaProcessorCreator::createGProcessor(CircuidView *cView) {
-	return GLuaProcessor::create ( cView );
-}
-//------------------------------------------------------------------------------------------------------------
-void CmdCreateLuaProcessor::_execute(){
-	GObjectList gObjs;
-	create();
-	LuaProcessor::Ptr lua = adapter;
-	gObjs.push_back( gProcessor );
-	gProcessor->getIOs ( gObjs );
-	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
-	cView->addGObject ( pG );
-	cView->CView::setDirty();
-}
-//============================================================================================================
-//	Klasse CmdCreateRemoteChannelReceiver:
-//============================================================================================================
-//------------------------------------------------------------------------------------------------------------
-void CmdCreateRemoteChannelReceiver::_execute(){
-	GObjectList gObjs;
-	create();
-	RemoteChannelReceiver::Ptr rcr = adapter;
-	rcr->setRemoteChannelHandler(rChHandler);
-	gObjs.push_back( gProcessor );
-	gProcessor->getIOs ( gObjs );
 	PlaceGObject::Ptr pG = PlaceGObject::create ( cView, gObjs );
 	cView->addGObject ( pG );
 	cView->CView::setDirty();

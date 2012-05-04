@@ -104,10 +104,6 @@ IDB_PNG33               PNG                     "..\\..\\Graphics\\resizeHandler
 IDB_PNG34               PNG                     "..\\..\\Graphics\\dlg\\scan_now.png"
 IDB_PNG35               PNG                     "..\\..\\Graphics\\Nodes\\midiReceiver.png"
 IDB_PNG36               PNG                     "..\\..\\Graphics\\bk.png"
-IDB_PNG37               PNG                     "..\\..\\Graphics\\Nodes\\remoteChannel.png"
-IDB_PNG38               PNG                     "..\\..\\Graphics\\Nodes\\script01.png"
-IDB_PNG39               PNG                     "..\\..\\Graphics\\Nodes\\script01_failed.png"
-IDB_PNG40               PNG                     "..\\..\\Graphics\\Nodes\\script01_valid.png"
 //#endif    // Deutsch (Deutschland) resources
 /////////////////////////////////////////////////////////////////////////////
 

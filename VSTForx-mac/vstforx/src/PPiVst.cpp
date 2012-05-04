@@ -53,10 +53,6 @@ CBitmap ** loadResources() {
 	bitmaps[Resources::PEAK_TRACK_ADAPTER]		= createBitmap (IDB_PNG8);
 	bitmaps[Resources::CHANNEL_SPLIT_ADAPTER]	= createBitmap (IDB_PNG3);
 	bitmaps[Resources::BACKGROUND]		     	= createBitmap (IDB_PNG36);
-	bitmaps[Resources::REMOTECHANNEL]			= createBitmap (IDB_PNG37);
-	bitmaps[Resources::SCRIPT_NORMAL]			= createBitmap (IDB_PNG38);
-	bitmaps[Resources::SCRIPT_FAILED]			= createBitmap (IDB_PNG39);
-	bitmaps[Resources::SCRIPT_VALID]			= createBitmap (IDB_PNG40);
 
 	// toolbox
 	bitmaps[Resources::EDIT_BUTTON]				= createBitmap (IDB_PNG11);

@@ -28,10 +28,6 @@
 #include "concreteAdapter/InputStep.h"
 #include "concreteAdapter/OutputSwitch.h"
 #include "concreteAdapter/OutputStep.h"
-// Supporter Features:
-#include "concreteAdapter/LuaProcessor.h"
-#include "concreteAdapter/RemoteChannelReceiver.h"
-
 
 #endif
 

@@ -202,24 +202,6 @@ void load_construct_data( iArchive & ar, GMidiProcessor * t, const unsigned int 
 	ar >> view;
 	::new(t)ppiGui::GMidiProcessor ( view ); 
 }
-//============================================================================================================
-// Frei stehende Methoden fuer boost archive: GLuaProcessor
-//============================================================================================================
-//------------------------------------------------------------------------------------------------------------
-void load_construct_data( iArchive & ar, GLuaProcessor * t, const unsigned int file_version ){
-	ppiGui::CircuidView *view;
-	ar >> view;
-	::new(t)ppiGui::GLuaProcessor ( view ); 
-}
-//============================================================================================================
-// Frei stehende Methoden fuer boost archive: GRemoteChannelReceiver
-//============================================================================================================
-//------------------------------------------------------------------------------------------------------------
-void load_construct_data( iArchive & ar, GRemoteChannelReceiver * t, const unsigned int file_version ){
-	ppiGui::CircuidView *view;
-	ar >> view;
-	::new(t)ppiGui::GRemoteChannelReceiver ( view ); 
-}
 } //namespace ppiGui
 #endif
 

@@ -17,7 +17,6 @@
 #include "ConcreteGObjects.h"
 #include "gui/CMenu.h"
 #include "gui/VstPlugView.h"
-#include "processing/RemoteChannel.h"
 
 using namespace processing; // TODO: remove
 
@@ -328,47 +327,6 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	CmdCreateMidiProcessor(CircuidView *cView, FrontController *ctrl):
 	  CmdCreateProcessorNode(cView,ctrl){}
-};
-//============================================================================================================
-struct LuaProcessorCreator {
-	std::string scriptfile;
-	boost::shared_ptr<LuaProcessor> createProcessAdapter(processing::Graph::Ptr graph);
-	boost::shared_ptr<GLuaProcessor> createGProcessor(CircuidView *cView);
-};
-//============================================================================================================
-//	Klasse CmdCreateLuaProcessor:
-//  Erstellt LuaProcessor
-//============================================================================================================
-class CmdCreateLuaProcessor : public CmdCreateProcessorNode<GLuaProcessor, LuaProcessor, LuaProcessorCreator> {
-private:
-	//--------------------------------------------------------------------------------------------------------
-	virtual void _execute();
-protected:
-public:
-	//--------------------------------------------------------------------------------------------------------
-	CmdCreateLuaProcessor(const std::string &scriptfile, CircuidView *cView, FrontController *ctrl):
-	  CmdCreateProcessorNode(cView,ctrl) 
-	{
-		LuaProcessorCreator::scriptfile = scriptfile;
-	}
-};
-//============================================================================================================
-//	Klasse CmdCreateRemoteChannelReceiver
-//  Erstellt RemoteChannelReceiver
-//============================================================================================================
-class CmdCreateRemoteChannelReceiver : 
-	public CmdCreateProcessorNode<GRemoteChannelReceiver, RemoteChannelReceiver> 
-{
-private:
-	//--------------------------------------------------------------------------------------------------------
-	RemoteChannelHandler rChHandler;
-	//--------------------------------------------------------------------------------------------------------
-	virtual void _execute();
-protected:
-public:
-	//--------------------------------------------------------------------------------------------------------
-	CmdCreateRemoteChannelReceiver(const RemoteChannelHandler &rChHandler, CircuidView *cView, FrontController *ctrl):
-	  CmdCreateProcessorNode(cView,ctrl), rChHandler(rChHandler) {}
 };
 //============================================================================================================
 //	Klasse CmdCreateFreeGKnob

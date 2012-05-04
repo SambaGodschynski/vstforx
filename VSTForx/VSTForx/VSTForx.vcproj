@@ -557,18 +557,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\com\ScriptCollection.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\ScriptCollection.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\com\ScriptInfo.h"
-						>
-					</File>
-					<File
 						RelativePath="..\..\src\com\Serialization.h"
 						>
 					</File>
@@ -668,10 +656,6 @@
 						RelativePath="..\..\src\processing\processing.h"
 						>
 					</File>
-					<File
-						RelativePath="..\..\src\processing\RemoteChannel.cpp"
-						>
-					</File>
 					<Filter
 						Name="parameter"
 						>
@@ -724,14 +708,6 @@
 							>
 						</File>
 						<File
-							RelativePath="..\..\src\processing\concreteAdapter\LuaProcessor.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\LuaProcessor.h"
-							>
-						</File>
-						<File
 							RelativePath="..\..\src\processing\concreteAdapter\MidiProcessor.cpp"
 							>
 						</File>
@@ -753,14 +729,6 @@
 						</File>
 						<File
 							RelativePath="..\..\src\processing\concreteAdapter\PeakTracker.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\RemoteChannelReceiver.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\RemoteChannelReceiver.h"
 							>
 						</File>
 						<File
@@ -1035,10 +1003,6 @@
 				</File>
 				<File
 					RelativePath="..\..\..\..\..\clibs\sambag\src\sambag\com\FileSystem.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\..\..\clibs\sambag\src\sambag\lua\LuaSequence.hpp"
 					>
 				</File>
 				<File
