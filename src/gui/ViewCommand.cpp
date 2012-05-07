@@ -235,12 +235,14 @@ void CmdCreateProcessorNode<GProcessorType, AdapterType, ModuleCreator>::createM
 }
 //------------------------------------------------------------------------------------------------------------
 template <class GProcessorType, class AdapterType, class ModuleCreator>
-void CmdCreateProcessorNode<GProcessorType, AdapterType, ModuleCreator>::createIOs() {
+void CmdCreateProcessorNode<GProcessorType, AdapterType, ModuleCreator>::
+createIOs(int numInputs, int numOutputs) 
+{
 	if (!gProcessor || !adapter)
 		return;
 	// GIONodes Erzeugen
-	size_t numINodes = adapter->getNumInputNodes();
-	size_t numONodes = adapter->getNumOutputNodes();
+	size_t numINodes = numInputs  < 0 ? adapter->getNumInputNodes()  : numInputs;
+	size_t numONodes = numOutputs < 0 ? adapter->getNumOutputNodes() : numOutputs;
 	gProcessor->createIONodes(numINodes, numONodes);
 	const GProcessorNode::InputNodeContainer  &ins =  gProcessor->getInputNodes();
 	const GProcessorNode::OutputNodeContainer &outs = gProcessor->getOutputNodes();
@@ -266,8 +268,6 @@ void CmdCreateProcessorNode<GProcessorType, AdapterType, ModuleCreator>::createI
 		cView->addGObject ( con, CircuidView::CONNECTIONS );
 		ctrl->registerObject ( con );
 	}
-	gProcessor = gProcessor;
-	adapter = adapter;
 }
 //============================================================================================================
 //	Klasse CmdCreateVolumeNode:
@@ -375,7 +375,8 @@ void CmdCreateInputSwitchNode::_execute(){
 //------------------------------------------------------------------------------------------------------------
 void CmdCreatePeakTracker::_execute(){
 	GObjectList gObjs;
-	create();
+	createModule();
+	createIOs(1,0);
 	// unsichtbare verbindung:
 	Graph::Ptr graph = getRelatedGraph ( cView );
 	Graph::Janitor::Ptr janitor = graph->getJanitor();
@@ -408,7 +409,8 @@ void CmdCreatePeakTracker::_execute(){
 //------------------------------------------------------------------------------------------------------------
 void CmdCreateADSRTriggerNode::_execute(){
 	GObjectList gObjs;
-	create();
+	createModule();
+	createIOs(1,0);
 	// unsichtbare verbindung:
 	Graph::Ptr graph = getRelatedGraph ( cView );
 	Graph::Janitor::Ptr janitor = graph->getJanitor();

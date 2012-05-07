@@ -194,7 +194,12 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	void createModule();
 	//--------------------------------------------------------------------------------------------------------
-	void createIOs();
+	/**
+	 * creates graphic representations of i/o.
+	 * @param numInputs for the case that the num differs from adapter
+	 * @param numOutputs for the case that the num differs from adapter
+	 */
+	void createIOs(int numInputs =-1, int numOutputs=-1);
 	//--------------------------------------------------------------------------------------------------------
 	// created 
 	boost::shared_ptr<GProcessorType> gProcessor;
