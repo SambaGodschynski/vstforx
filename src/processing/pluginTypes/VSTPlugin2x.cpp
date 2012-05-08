@@ -26,7 +26,7 @@ boost::unordered_map < AEffect*, VSTPlugin* > VSTPlugin::relatedPlugNode;
 VSTPlugin::VSTPlugin( IHostInfo *hostInfo, const string &filename ) : 
 OS_VSTPlugNode2x ( filename ), // initalisiert aEff
 Plugin ( hostInfo, filename, 0,  0 ),  // ProcessAdapter
-onPlugChangeParameterIndex (0),
+onPlugChangeParameterIndex (-1),
 param(NULL),
 canReceiveVstEvents(false),
 ioChangedLock(false)
@@ -198,7 +198,8 @@ void VSTPlugin::hostInfoChanged() {
 void VSTPlugin::valueChanged(void *src, const float &v) {
 	Parameter *p = (Parameter*) src;
 	size_t index = p->getIndex();
-	if ( onPlugChangeParameterIndex == index ) return; // called by editorParameterChanged
+	if ( onPlugChangeParameterIndex == index ) 
+		return; // when called by editorParameterChanged
 	if ( index>=param.size() || index<0 ) return;
 	Parameter::Ptr param = getParameter (index);
 	aEff->setParameter ( aEff, index, param->getValue() );	
@@ -301,7 +302,14 @@ inline VSTPlugin * VSTPlugin::getVSTPlugNode(AEffect *aEff){
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::onIOChanged() {
-	// not supported
+/*
+	resolved with a message that i/o has changed.
+	dynamic i/o update was impossible because some plugs 
+	(that support dynamic i/o changes [in that case battery1]) gives no information what exactly changes. 
+	In detail:
+		the AEffect structure wasn't updated and a getSpeakerArrangement() 
+		call had no evaluable result. 
+*/
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::onEditorParameterChanged (int index, float value){

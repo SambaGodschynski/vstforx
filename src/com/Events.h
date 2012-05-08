@@ -136,8 +136,6 @@ template < typename EventType >
 class EventListener : public Listener {
 //============================================================================================================
 private:
-	// stellt sicher dass EventType vom Typ Event ist.
-	enum { eventTypeVerification = EventType::verification };
 protected:
 public:
 	//--------------------------------------------------------------------------------------------------------
