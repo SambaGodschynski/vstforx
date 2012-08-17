@@ -3,10 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C++ Express 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VSTForx", "VSTForx\VSTForx.vcproj", "{B54D99D6-511D-46F5-93CE-39105094B8C8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GuiStandalone", "GuiStandalone\GuiStandalone.vcproj", "{0C7F23C5-EC72-4D46-9E9D-86C60ABE7BBB}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sambag_lib", "..\..\..\..\clibs\sambag\projects\msVS2008\sambag\sambag.vcproj", "{8EE5989A-5379-4923-ABDA-6CA97180A74E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		iRelease|Win32 = iRelease|Win32
+		Library|Win32 = Library|Win32
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
@@ -14,8 +19,25 @@ Global
 		{B54D99D6-511D-46F5-93CE-39105094B8C8}.Debug|Win32.Build.0 = Debug|Win32
 		{B54D99D6-511D-46F5-93CE-39105094B8C8}.iRelease|Win32.ActiveCfg = iRelease|Win32
 		{B54D99D6-511D-46F5-93CE-39105094B8C8}.iRelease|Win32.Build.0 = iRelease|Win32
+		{B54D99D6-511D-46F5-93CE-39105094B8C8}.Library|Win32.ActiveCfg = iRelease|Win32
 		{B54D99D6-511D-46F5-93CE-39105094B8C8}.Release|Win32.ActiveCfg = Release|Win32
 		{B54D99D6-511D-46F5-93CE-39105094B8C8}.Release|Win32.Build.0 = Release|Win32
+		{0C7F23C5-EC72-4D46-9E9D-86C60ABE7BBB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0C7F23C5-EC72-4D46-9E9D-86C60ABE7BBB}.Debug|Win32.Build.0 = Debug|Win32
+		{0C7F23C5-EC72-4D46-9E9D-86C60ABE7BBB}.iRelease|Win32.ActiveCfg = Release|Win32
+		{0C7F23C5-EC72-4D46-9E9D-86C60ABE7BBB}.iRelease|Win32.Build.0 = Release|Win32
+		{0C7F23C5-EC72-4D46-9E9D-86C60ABE7BBB}.Library|Win32.ActiveCfg = Release|Win32
+		{0C7F23C5-EC72-4D46-9E9D-86C60ABE7BBB}.Library|Win32.Build.0 = Release|Win32
+		{0C7F23C5-EC72-4D46-9E9D-86C60ABE7BBB}.Release|Win32.ActiveCfg = Release|Win32
+		{0C7F23C5-EC72-4D46-9E9D-86C60ABE7BBB}.Release|Win32.Build.0 = Release|Win32
+		{8EE5989A-5379-4923-ABDA-6CA97180A74E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8EE5989A-5379-4923-ABDA-6CA97180A74E}.Debug|Win32.Build.0 = Debug|Win32
+		{8EE5989A-5379-4923-ABDA-6CA97180A74E}.iRelease|Win32.ActiveCfg = Release|Win32
+		{8EE5989A-5379-4923-ABDA-6CA97180A74E}.iRelease|Win32.Build.0 = Release|Win32
+		{8EE5989A-5379-4923-ABDA-6CA97180A74E}.Library|Win32.ActiveCfg = Library|Win32
+		{8EE5989A-5379-4923-ABDA-6CA97180A74E}.Library|Win32.Build.0 = Library|Win32
+		{8EE5989A-5379-4923-ABDA-6CA97180A74E}.Release|Win32.ActiveCfg = Release|Win32
+		{8EE5989A-5379-4923-ABDA-6CA97180A74E}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
