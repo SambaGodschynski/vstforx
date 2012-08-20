@@ -10,7 +10,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/timer/timer.hpp>
 #include <assert.h>
-#include <gui/components/FrxComponent.hpp>
+#include <gui/components/FrxCircuidView.hpp>
+#include <gui/components/FrxPluginNode.hpp>
 #include <gui/components/ui/FrxLookAndFeel.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
 
@@ -30,6 +31,7 @@ int main() {
 	)
 	using namespace sambag::disco;
 	using namespace sambag::disco::components;
+	namespace fgc = frx::gui::components;
 	std::cout<<"hello dave."<<std::endl;
 	FramedWindow::Ptr win = FramedWindow::create();
 	ui::UIManager::instance().installLookAndFeel(win->getRootPane(),
@@ -37,6 +39,16 @@ int main() {
 	);
 	win->setWindowBounds(sambag::disco::Rectangle(100,100,230,200));
 	win->setTitle("VSTForx [D.I.S.C.O.]");
+
+
+	fgc::FrxCircuidView::Ptr circ = fgc::FrxCircuidView::create();
+	win->getContentPane()->add(circ);
+	fgc::FrxComponent::Ptr comp = fgc::FrxPluginNode::create();
+	comp->setSize(Dimension(50, 50));
+	comp->setLocation(10, 10);
+	circ->add(comp);
+
+
 	win->validate();
 	win->open();
 	sdc::Window::startMainLoop();

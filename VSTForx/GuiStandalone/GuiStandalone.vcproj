@@ -188,6 +188,14 @@
 				Name="components"
 				>
 				<File
+					RelativePath="..\..\src\gui\components\FrxCircuidView.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxCircuidView.hpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\src\gui\components\FrxComponent.cpp"
 					>
 				</File>
@@ -195,11 +203,71 @@
 					RelativePath="..\..\src\gui\components\FrxComponent.hpp"
 					>
 				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxConnection.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxConnection.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxNode.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxNode.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxParameter.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxParameter.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxPluginNode.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxPluginNode.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxProcessorNode.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxProcessorNode.hpp"
+					>
+				</File>
 				<Filter
 					Name="ui"
 					>
 					<File
+						RelativePath="..\..\src\gui\components\ui\FrxCircuidViewUI.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxCircuidViewUI.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxComponentUI.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\gui\components\ui\FrxComponentUI.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxConnectionUI.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxConnectionUI.hpp"
 						>
 					</File>
 					<File
@@ -208,6 +276,38 @@
 					</File>
 					<File
 						RelativePath="..\..\src\gui\components\ui\FrxLookAndFeel.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxNodeUI.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxNodeUI.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxParameterUI.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxParameterUI.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxPluginNodeUI.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxPluginNodeUI.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxProcessorNodeUI.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxProcessorNodeUI.hpp"
 						>
 					</File>
 				</Filter>

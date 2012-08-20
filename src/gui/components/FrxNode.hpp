@@ -1,38 +1,40 @@
 /*
- * FrxComponent.hpp
+ * FrxNode.hpp
  *
- *  Created on: 17. Aug 2012
- *      Author: sambag
+ *  Created on: Mon Aug 20 10:43:58 2012
+ *      Author: Johannes Unger
  */
 
-#ifndef SAMBAG_FRXCOMPONENT_H
-#define SAMBAG_FRXCOMPONENT_H
+#ifndef SAMBAG_FRXNODE_H
+#define SAMBAG_FRXNODE_H
 
 #include <boost/shared_ptr.hpp>
-#include <sambag/disco/components/AContainer.hpp>
+#include "FrxComponent.hpp"
 
 namespace frx { namespace gui { namespace components {
 namespace sdc = sambag::disco::components;
+namespace sdcu = sdc::ui;
 //=============================================================================
 /** 
-  * @class FrxComponent.
+  * @class FrxNode.
   */
-class FrxComponent : public sdc::AContainer {
+class FrxNode : public FrxComponent {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef sdc::AContainer Super;
+	typedef FrxComponent Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxComponent> Ptr;
+	typedef boost::shared_ptr<FrxNode> Ptr;
 	//-------------------------------------------------------------------------
-	virtual sdc::ui::AComponentUIPtr 
-	getComponentUI(sdc::ui::ALookAndFeelPtr laf) const;
+	virtual sdcu::AComponentUIPtr getComponentUI(sdcu::ALookAndFeelPtr laf) const;
 protected:
 	//-------------------------------------------------------------------------
-	FrxComponent();
+	FrxNode();
 private:
 public:
-}; // FrxComponent
+	//-------------------------------------------------------------------------
+	SAMBAG_STD_STATIC_COMPONENT_CREATOR(FrxNode)
+}; // FrxNode
 }}} // namespace(s)
 
-#endif /* SAMBAG_FRXCOMPONENT_H */
+#endif /* SAMBAG_FRXNODE_H */

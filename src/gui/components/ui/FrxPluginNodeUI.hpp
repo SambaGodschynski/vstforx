@@ -1,17 +1,15 @@
 /*
- * FrxComponentUI.hpp
+ * FrxPluginNodeUI.hpp
  *
- *  Created on: Tue Aug 17 17:33:20 2012
+ *  Created on: Mon Aug 20 12:13:10 2012
  *      Author: Johannes Unger
  */
 
-#ifndef SAMBAG_FRXCOMPONENTUI_H
-#define SAMBAG_FRXCOMPONENTUI_H
+#ifndef SAMBAG_FRXPLUGINNODEUI_H
+#define SAMBAG_FRXPLUGINNODEUI_H
 
 #include <boost/shared_ptr.hpp>
-#include <sambag/disco/components/ui/AComponentUI.hpp>
-#include <sambag/disco/components/Forward.hpp>
-#include <sambag/disco/Geometry.hpp>
+#include "FrxProcessorNodeUI.hpp"
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -20,24 +18,22 @@ namespace sdc = sd::components;
 namespace sdcu = sdc::ui;
 //=============================================================================
 /** 
-  * @class FrxComponentUI.
+  * @class FrxPluginNodeUI.
   */
-class FrxComponentUI : public sdcu::AComponentUI {
+class FrxPluginNodeUI : public FrxProcessorNodeUI {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef AComponentUI Super;
+	typedef FrxProcessorNodeUI Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxComponentUI> Ptr;
+	typedef boost::shared_ptr<FrxPluginNodeUI> Ptr;
 protected:
 	//-------------------------------------------------------------------------
-	FrxComponentUI();
+	FrxPluginNodeUI();
 private:
 public:
 	//-------------------------------------------------------------------------
-	static Ptr create() {
-		return Ptr(new FrxComponentUI());
-	}
+	static Ptr create();
 	//-------------------------------------------------------------------------
 	virtual bool contains(sdc::AComponentPtr c, const sd::Point2D &p);
 	//-------------------------------------------------------------------------
@@ -53,7 +49,7 @@ public:
 	 * @param c
 	 */
 	virtual void draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c);
-}; // FrxComponentUI
+}; // FrxPluginNodeUI
 }}}} // namespace(s)
 
-#endif /* SAMBAG_FRXCOMPONENTUI_H */
+#endif /* SAMBAG_FRXPLUGINNODEUI_H */

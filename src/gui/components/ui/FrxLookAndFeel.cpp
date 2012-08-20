@@ -26,6 +26,15 @@
 #include <sambag/disco/svg/HtmlColors.hpp>
 #include <sambag/disco/components/Viewport.hpp>
 #include <sambag/disco/components/ScrollPane.hpp>
+// Frx
+#include <gui/components/FrxComponent.hpp>
+#include <gui/components/ui/FrxComponentUI.hpp>
+
+#include <gui/components/FrxPluginNode.hpp>
+#include <gui/components/ui/FrxPluginNodeUI.hpp>
+#include <gui/components/FrxCircuidView.hpp>
+#include <gui/components/ui/FrxCircuidViewUI.hpp>
+
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -51,6 +60,12 @@ void FrxLookAndFeel::installComponents() {
 	registerComponentUI<Panel, BasicPanelUI >();
 	registerComponentUI<Viewport, BasicPanelUI >();
 	registerComponentUI<ScrollPane, BasicScrollPaneUI>();
+	// frx
+	namespace fgc = frx::gui::components;
+	namespace fgcu = fgc::ui;
+	registerComponentUI<fgc::FrxPluginNode, fgcu::FrxPluginNodeUI>();
+	registerComponentUI<fgc::FrxCircuidView, fgcu::FrxCircuidViewUI>();
+
 }
 //-----------------------------------------------------------------------------
 void FrxLookAndFeel::installDefaults() {
@@ -62,7 +77,7 @@ void FrxLookAndFeel::installDefaults() {
 	UIManager &m = getUIManager();
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<global
 	m.putProperty("global.background", HtmlColors::getColor("lightblue"));
-	m.putProperty("global.foreground", HtmlColors::getColor("black"));
+	m.putProperty("global.foreground", HtmlColors::getColor("white"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<ScrollBar
 	m.putProperty("ScrollBar.minimumThumbSize", Dimension(15., 15.));
 	m.putProperty("ScrollBar.maximumThumbSize", Dimension(20., 20.));
