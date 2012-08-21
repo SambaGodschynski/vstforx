@@ -10,9 +10,11 @@
 
 #include <boost/shared_ptr.hpp>
 #include <sambag/disco/components/AContainer.hpp>
+#include <sambag/disco/Geometry.hpp>
 
 namespace frx { namespace gui { namespace components {
-namespace sdc = sambag::disco::components;
+namespace sd = sambag::disco;
+namespace sdc = sd::components;
 //=============================================================================
 /** 
   * @class FrxComponent.
@@ -32,6 +34,8 @@ protected:
 	FrxComponent();
 private:
 public:
+	//-------------------------------------------------------------------------
+	sd::Point2D getPivot() const; 
 }; // FrxComponent
 }}} // namespace(s)
 

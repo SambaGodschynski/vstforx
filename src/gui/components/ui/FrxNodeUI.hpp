@@ -11,6 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include <gui/components/FrxComponent.hpp>
 #include "FrxComponentUI.hpp"
+#include "FrxNodeMouseListener.hpp"
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -31,7 +32,11 @@ public:
 protected:
 	//-------------------------------------------------------------------------
 	FrxNodeUI(){}
+	//-------------------------------------------------------------------------
+	virtual void installUI(sdc::AComponentPtr c);
 private:
+	//-------------------------------------------------------------------------
+	FrxNodeMouseListener mouseListener;
 public:
 }; // FrxNodeUI
 }}}} // namespace(s)

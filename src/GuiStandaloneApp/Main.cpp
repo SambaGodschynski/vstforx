@@ -37,8 +37,7 @@ int main() {
 	ui::UIManager::instance().installLookAndFeel(win->getRootPane(),
 		frx::gui::components::ui::FrxLookAndFeel::create()
 	);
-	win->setWindowBounds(sambag::disco::Rectangle(100,100,230,200));
-	win->setTitle("VSTForx [D.I.S.C.O.]");
+	
 
 
 	fgc::FrxCircuidView::Ptr circ = fgc::FrxCircuidView::create();
@@ -48,7 +47,8 @@ int main() {
 	comp->setLocation(10, 10);
 	circ->add(comp);
 
-
+	win->setWindowBounds(sambag::disco::Rectangle(100,100,230,200));
+	win->setTitle("VSTForx [D.I.S.C.O.]");
 	win->validate();
 	win->open();
 	sdc::Window::startMainLoop();

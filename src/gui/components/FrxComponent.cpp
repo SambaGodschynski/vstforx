@@ -22,4 +22,9 @@ FrxComponent::getComponentUI(sdc::ui::ALookAndFeelPtr laf) const
 {
 	return laf->getUI<FrxComponent>();
 }
+//-----------------------------------------------------------------------------
+sd::Point2D FrxComponent::getPivot() const {
+	sd::Coordinate w = getWidth(), h = getHeight();
+	return sd::Point2D(w/2., h/2.);
+}
 }}} // namespace(s)

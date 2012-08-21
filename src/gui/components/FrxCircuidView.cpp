@@ -13,8 +13,16 @@ namespace frx { namespace gui { namespace components {
 //  Class FrxCircuidView
 //=============================================================================
 //-----------------------------------------------------------------------------
+void FrxCircuidView::add(sdc::AComponentPtr comp, ZOrder zord) {
+	Super::add(comp);
+}
+//-----------------------------------------------------------------------------
 FrxCircuidView::FrxCircuidView() {
 	setName("FrxCircuidView");
+}
+//-----------------------------------------------------------------------------
+void FrxCircuidView::remove(sdc::AComponentPtr comp, ZOrder zord) {
+	Super::remove(comp);
 }
 //-----------------------------------------------------------------------------
 sdcu::AComponentUIPtr FrxCircuidView::getComponentUI(sdcu::ALookAndFeelPtr laf) const

@@ -10,6 +10,10 @@ namespace components { namespace ui {
 FrxComponentUI::FrxComponentUI() {
 
 }
+//----------------------------------------------------------------------------
+void FrxComponentUI::postConstructor(FrxComponentUI::Ptr self) {
+	this->self = self;
+}
 //-----------------------------------------------------------------------------
 void FrxComponentUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	sd::Rectangle r(0,0,c->getWidth(), c->getHeight());

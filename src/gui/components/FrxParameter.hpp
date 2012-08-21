@@ -17,6 +17,7 @@ namespace sdcu = sdc::ui;
 //=============================================================================
 /** 
   * @class FrxParameter.
+  * TODO: subclass FrxKnob
   */
 class FrxParameter : public FrxNode {
 //=============================================================================

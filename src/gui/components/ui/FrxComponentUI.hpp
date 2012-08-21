@@ -9,9 +9,11 @@
 #define SAMBAG_FRXCOMPONENTUI_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include <sambag/disco/components/ui/AComponentUI.hpp>
 #include <sambag/disco/components/Forward.hpp>
 #include <sambag/disco/Geometry.hpp>
+
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -29,14 +31,20 @@ public:
 	typedef AComponentUI Super;
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<FrxComponentUI> Ptr;
+	//-------------------------------------------------------------------------
+	typedef boost::weak_ptr<FrxComponentUI> WPtr;
 protected:
 	//-------------------------------------------------------------------------
+	void postConstructor(Ptr self);
+	//-------------------------------------------------------------------------
 	FrxComponentUI();
+	//-------------------------------------------------------------------------
+	WPtr self;
 private:
 public:
 	//-------------------------------------------------------------------------
-	static Ptr create() {
-		return Ptr(new FrxComponentUI());
+	Ptr getPtr() const {
+		return self.lock();
 	}
 	//-------------------------------------------------------------------------
 	virtual bool contains(sdc::AComponentPtr c, const sd::Point2D &p);
