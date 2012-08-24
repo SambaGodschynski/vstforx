@@ -11,7 +11,7 @@
 #include <boost/timer/timer.hpp>
 #include <assert.h>
 #include <gui/components/FrxCircuidView.hpp>
-#include <gui/components/FrxPluginNode.hpp>
+#include <gui/components/FrxConcreteProcessor.hpp>
 #include <gui/components/FrxConcreteConnections.hpp>
 #include <gui/components/ui/FrxLookAndFeel.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
@@ -61,7 +61,7 @@ int main() {
 		frx::gui::components::ui::FrxLookAndFeel::create()
 	);
 	
-	enum { NUM = 150 };	fgc::FrxComponent::Ptr comps[NUM];
+	enum { NUM = 2 };	fgc::FrxComponent::Ptr comps[NUM];
 	fgc::FrxCircuidView::Ptr circ = fgc::FrxCircuidView::create();
 	win->getContentPane()->add(circ);
 	for (int i=0; i<NUM; ++i) {
