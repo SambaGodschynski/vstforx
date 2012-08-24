@@ -17,7 +17,7 @@ FrxProcessorNode::FrxProcessorNode() {
 	setName("FrxProcessorNode");
 }
 //-----------------------------------------------------------------------------
-sdcu::AComponentUIPtr FrxProcessorNode::getComponentUI(sdcu::ALookAndFeelPtr laf) const {
+sdcu::AComponentUIPtr FrxProcessorNode::createComponentUI(sdcu::ALookAndFeelPtr laf) const {
 	return laf->getUI<FrxProcessorNode>();
 }
 }}} // namespace(s)

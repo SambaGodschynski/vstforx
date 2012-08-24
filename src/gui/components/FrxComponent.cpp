@@ -18,7 +18,7 @@ FrxComponent::FrxComponent() {
 }
 //-----------------------------------------------------------------------------
 sdc::ui::AComponentUIPtr 
-FrxComponent::getComponentUI(sdc::ui::ALookAndFeelPtr laf) const 
+FrxComponent::createComponentUI(sdc::ui::ALookAndFeelPtr laf) const 
 {
 	return laf->getUI<FrxComponent>();
 }

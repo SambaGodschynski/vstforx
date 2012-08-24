@@ -17,7 +17,7 @@ FrxPluginNode::FrxPluginNode() {
 	setName("FrxPluginNode");
 }
 //-----------------------------------------------------------------------------
-sdcu::AComponentUIPtr FrxPluginNode::getComponentUI(sdcu::ALookAndFeelPtr laf) const
+sdcu::AComponentUIPtr FrxPluginNode::createComponentUI(sdcu::ALookAndFeelPtr laf) const
 {
 	return laf->getUI<FrxPluginNode>();
 }

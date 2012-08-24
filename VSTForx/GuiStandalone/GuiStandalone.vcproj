@@ -204,6 +204,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\src\gui\components\FrxConcreteConnections.hpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\src\gui\components\FrxConnection.cpp"
 					>
 				</File>

@@ -30,7 +30,7 @@ void FrxNodeMouseListener::drag(const sdc::events::MouseEvent &ev) {
 	sdc::AComponent::Ptr c = ev.getSource();
 	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
-	sd::Point2D loc = ev.getLocationOnScreen();
+	sd::Point2D loc = circ->getLocationOnComponent(ev.getLocationOnScreen());
 	boost::geometry::subtract_point(loc, clickLoc);
 	c->setLocation(loc);
 }
@@ -39,22 +39,31 @@ void FrxNodeMouseListener::beginConnecting(const sdc::events::MouseEvent &ev) {
 	sdc::AComponent::Ptr c = ev.getSource();
 	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
-	circ->add(toConnect, FrxCircuidView::Z_OnTop);
+	if (!circ->containsComponent(circ))
+		circ->add(toConnect, FrxCircuidView::Z_OnTop);
 	// setline coord.
 	FrxComponent::Ptr frxC = boost::shared_dynamic_cast<FrxComponent>(c);
 	SAMBAG_ASSERT(frxC);
-	sd::Point2D loc = c->getLocationOnScreen(frxC->getPivot());
+	sd::Point2D loc = frxC->getPivot();
+	boost::geometry::add_point(loc, frxC->getLocation());
 	sdsg::Line::Ptr line = toConnect->getObject();
 	line->getP0().x().setValue(loc.x());
 	line->getP0().y().setValue(loc.y());
+	line->getP1().x().setValue(loc.x());
+	line->getP1().y().setValue(loc.y());
+	toConnect->setVisible(true);
 }
 //-----------------------------------------------------------------------------
 void FrxNodeMouseListener::connecting(const sdc::events::MouseEvent &ev) {
+	sdc::AComponent::Ptr c = ev.getSource();
+	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
+	SAMBAG_ASSERT(circ);
 	// setline coord.
-	const sd::Point2D &loc = ev.getLocation();
+	const sd::Point2D &loc = circ->getLocationOnComponent(ev.getLocationOnScreen());
 	sdsg::Line::Ptr line = toConnect->getObject();
 	line->getP1().x().setValue(loc.x());
 	line->getP1().y().setValue(loc.y());
+	toConnect->updateBounds();
 	toConnect->redraw();
 }
 //-----------------------------------------------------------------------------
@@ -62,7 +71,7 @@ void FrxNodeMouseListener::endConnecting(const sdc::events::MouseEvent &ev) {
 	sdc::AComponent::Ptr c = ev.getSource();
 	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
-	circ->remove(toConnect, FrxCircuidView::Z_OnTop);
+	toConnect->setVisible(false);
 	circ->redraw();
 }
 //-----------------------------------------------------------------------------
@@ -104,7 +113,6 @@ void FrxNodeMouseListener::mouseWheelMoved(const sdc::events::MouseEvent &ev) {
 }
 //-----------------------------------------------------------------------------
 void FrxNodeMouseListener::onMouse(void *src, const sdc::events::MouseEvent &ev) {
-	std::cout<<ev.toString()<<std::endl;
 	sdc::events::MouseEventSwitch<>::
 		delegate(ev, *this);
 }

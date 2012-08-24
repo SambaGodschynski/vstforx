@@ -1,0 +1,19 @@
+/*
+ * TestFrxCircuidView.cpp
+ *
+ *  Created on: Thu Aug 23 12:20:07 2012
+ *      Author: Johannes Unger
+ */
+
+#include "TestFrxCircuidView.hpp"
+#include <cppunit/config/SourcePrefix.h>
+
+// Registers the fixture into the 'registry'
+CPPUNIT_TEST_SUITE_REGISTRATION( tests::TestFrxCircuidView );
+
+namespace tests {
+//=============================================================================
+//  Class TestFrxCircuidView
+//=============================================================================
+//-----------------------------------------------------------------------------
+} //namespace

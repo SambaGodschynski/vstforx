@@ -34,6 +34,9 @@
 #include <gui/components/ui/FrxPluginNodeUI.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/components/ui/FrxCircuidViewUI.hpp>
+#include <gui/components/FrxConcreteConnections.hpp>
+#include <gui/components/ui/FrxConnectionUI.hpp>
+
 
 
 namespace frx { namespace gui {
@@ -65,6 +68,7 @@ void FrxLookAndFeel::installComponents() {
 	namespace fgcu = fgc::ui;
 	registerComponentUI<fgc::FrxPluginNode, fgcu::FrxPluginNodeUI>();
 	registerComponentUI<fgc::FrxCircuidView, fgcu::FrxCircuidViewUI>();
+	registerComponentUI<fgc::IOCn, fgcu::FrxConnectionUI<fgc::IOCn::ConnectionType> >();
 
 }
 //-----------------------------------------------------------------------------

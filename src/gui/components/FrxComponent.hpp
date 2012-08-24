@@ -28,7 +28,7 @@ public:
 	typedef boost::shared_ptr<FrxComponent> Ptr;
 	//-------------------------------------------------------------------------
 	virtual sdc::ui::AComponentUIPtr 
-	getComponentUI(sdc::ui::ALookAndFeelPtr laf) const;
+	createComponentUI(sdc::ui::ALookAndFeelPtr laf) const;
 protected:
 	//-------------------------------------------------------------------------
 	FrxComponent();

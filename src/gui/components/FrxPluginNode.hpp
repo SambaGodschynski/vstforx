@@ -26,7 +26,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<FrxPluginNode> Ptr;
 	//-------------------------------------------------------------------------
-	virtual sdcu::AComponentUIPtr getComponentUI(sdcu::ALookAndFeelPtr laf) const;
+	virtual sdcu::AComponentUIPtr createComponentUI(sdcu::ALookAndFeelPtr laf) const;
 protected:
 	//-------------------------------------------------------------------------
 	FrxPluginNode();

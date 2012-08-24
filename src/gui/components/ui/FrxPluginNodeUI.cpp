@@ -33,7 +33,7 @@ void FrxPluginNodeUI::installUI(sdc::AComponentPtr c) {
 }
 //-----------------------------------------------------------------------------
 void FrxPluginNodeUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
-	Super::draw(cn, c);
+	//Super::draw(cn, c);
 	sd::Rectangle r(0, 0, c->getWidth(), c->getHeight());
 	sd::Point2D c0 = r.x0();
 	sd::Coordinate w = r.width(), h = r.height();

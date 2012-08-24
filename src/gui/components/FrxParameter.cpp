@@ -17,7 +17,7 @@ FrxParameter::FrxParameter() {
 	setName("FrxParameter");
 }
 //-----------------------------------------------------------------------------
-sdcu::AComponentUIPtr FrxParameter::getComponentUI(sdcu::ALookAndFeelPtr laf) const {
+sdcu::AComponentUIPtr FrxParameter::createComponentUI(sdcu::ALookAndFeelPtr laf) const {
 	return laf->getUI<FrxParameter>();
 }
 }}} // namespace(s)

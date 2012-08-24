@@ -9,11 +9,14 @@
 #define SAMBAG_FRXCONNECTION_H
 
 #include <boost/shared_ptr.hpp>
+#include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include "FrxComponent.hpp"
+#include <sambag/com/events/PropertyChanged.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace sdc = sambag::disco::components;
 namespace sdcu = sdc::ui;
+namespace sce = sambag::com::events;
 //=============================================================================
 /** 
   * @class FrxConnection.
@@ -25,13 +28,38 @@ public:
 	typedef FrxComponent Super;
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<FrxConnection> Ptr;
+private:
 	//-------------------------------------------------------------------------
-	virtual sdcu::AComponentUIPtr getComponentUI(sdcu::ALookAndFeelPtr laf) const;
+	FrxComponent::Ptr frxA, frxB;
+	//-------------------------------------------------------------------------
+	typedef FrxComponent::EventSender<sce::PropertyChanged>::Connection Connection;
+	//-------------------------------------------------------------------------
+	Connection cnA, cnB;
+	//-------------------------------------------------------------------------
+	Connection connect(FrxComponent::Ptr c);
 protected:
 	//-------------------------------------------------------------------------
+	void onComponentsPropertyChanged(void*, const sce::PropertyChanged &ev);
+	//-------------------------------------------------------------------------
+	void onPropertyChanged(void*, const sce::PropertyChanged &ev);
+	//-------------------------------------------------------------------------
 	FrxConnection();
+	//-------------------------------------------------------------------------
+	void resetBounds();
 private:
 public:
+	//-------------------------------------------------------------------------
+	Ptr getPtr() const {
+		return boost::shared_dynamic_cast<FrxConnection>(Super::getPtr());
+	}
+	//-------------------------------------------------------------------------
+	void setComponentA(FrxComponent::Ptr a);
+	//-------------------------------------------------------------------------
+	void setComponentB(FrxComponent::Ptr b);
+	//-------------------------------------------------------------------------
+	FrxComponent::Ptr getComponentA() const { return frxA; }
+	//-------------------------------------------------------------------------
+	FrxComponent::Ptr getComponentB() const { return frxB; }
 }; // FrxConnection
 }}} // namespace(s)
 

@@ -17,7 +17,7 @@ FrxNode::FrxNode() {
 	setName("FrxNode");
 }
 //-----------------------------------------------------------------------------
-sdcu::AComponentUIPtr FrxNode::getComponentUI(sdcu::ALookAndFeelPtr laf) const {
+sdcu::AComponentUIPtr FrxNode::createComponentUI(sdcu::ALookAndFeelPtr laf) const {
 	return laf->getUI<FrxNode>();
 }
 }}} // namespace(s)
