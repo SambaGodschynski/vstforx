@@ -108,6 +108,7 @@ void FrxConnectionUI<CT>::adjustBoundingRect(sd::Rectangle &r,
 //-----------------------------------------------------------------------------
 template <class CT>
 void FrxConnectionUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
+	//Super::draw(cn, c);
 	_ConcreteConnection::Ptr ccn = 
 		boost::shared_dynamic_cast<_ConcreteConnection>(c);
 	SAMBAG_ASSERT(ccn);
@@ -116,7 +117,7 @@ void FrxConnectionUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	boost::geometry::add_point(aLoc, ccn->getComponentA()->getPivot());
 	boost::geometry::subtract_point(aLoc, c->getLocation());
 	sd::Point2D bLoc = ccn->getComponentB()->getLocation();
-	boost::geometry::add_point(bLoc, ccn->getComponentA()->getPivot());
+	boost::geometry::add_point(bLoc, ccn->getComponentB()->getPivot());
 	boost::geometry::subtract_point(bLoc, c->getLocation());
 
 	setStyle<CT>(cn);

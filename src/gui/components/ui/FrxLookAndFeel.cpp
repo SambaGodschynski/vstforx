@@ -36,6 +36,8 @@
 #include <gui/components/ui/FrxCircuidViewUI.hpp>
 #include <gui/components/FrxConcreteConnections.hpp>
 #include <gui/components/ui/FrxConnectionUI.hpp>
+#include <gui/components/FrxConcreteIO.hpp>
+#include <gui/components/ui/FrxIOUI.hpp>
 
 
 
@@ -66,9 +68,19 @@ void FrxLookAndFeel::installComponents() {
 	// frx
 	namespace fgc = frx::gui::components;
 	namespace fgcu = fgc::ui;
-	registerComponentUI<fgc::FrxPluginNode, fgcu::FrxProcessorNodeUI<FrxPluginNode::ConcreteProcessor> >();
+	// view
 	registerComponentUI<fgc::FrxCircuidView, fgcu::FrxCircuidViewUI>();
+	// processor nodes
+	registerComponentUI<fgc::FrxPluginNode, fgcu::FrxProcessorNodeUI<FrxPluginNode::ConcreteProcessor> >();
+	// connections
 	registerComponentUI<fgc::IOCn, fgcu::FrxConnectionUI<fgc::IOCn::ConnectionType> >();
+	registerComponentUI<fgc::ProcessorInputCn, fgcu::FrxConnectionUI<fgc::ProcessorInputCn::ConnectionType> >();
+	registerComponentUI<fgc::ProcessorOutputCn, fgcu::FrxConnectionUI<fgc::ProcessorOutputCn::ConnectionType> >();
+	// io's
+	registerComponentUI<fgc::FrxInputNode, fgcu::FrxIOUI<fgc::FrxInputNode::IOType> >();
+	registerComponentUI<fgc::FrxOutputNode, fgcu::FrxIOUI<fgc::FrxOutputNode::IOType> >();
+	registerComponentUI<fgc::FrxEntryNode, fgcu::FrxIOUI<fgc::FrxEntryNode::IOType> >();
+	registerComponentUI<fgc::FrxExitNode, fgcu::FrxIOUI<fgc::FrxExitNode::IOType> >();
 
 }
 //-----------------------------------------------------------------------------

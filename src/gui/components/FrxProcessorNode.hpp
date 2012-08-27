@@ -10,6 +10,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include "FrxNode.hpp"
+#include <vector>
 
 namespace frx { namespace gui { namespace components {
 namespace sdc = sambag::disco::components;
@@ -26,12 +27,32 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<FrxProcessorNode> Ptr;
 	//-------------------------------------------------------------------------
-	virtual sdcu::AComponentUIPtr createComponentUI(sdcu::ALookAndFeelPtr laf) const;
+	typedef std::vector<FrxNode::Ptr> IOContainer;
 protected:
 	//-------------------------------------------------------------------------
+	IOContainer inputs;
+	//-------------------------------------------------------------------------
+	IOContainer outputs;
+	//-------------------------------------------------------------------------
 	FrxProcessorNode();
+	//-------------------------------------------------------------------------
+	FrxNode::Ptr addInputNode();
+	//-------------------------------------------------------------------------
+	FrxNode::Ptr addOutputNode();
 private:
 public:
+	//-------------------------------------------------------------------------
+	const IOContainer & getInputs() const { return inputs; }
+	//-------------------------------------------------------------------------
+	const IOContainer & getOutputs() const { return outputs; }
+	//-------------------------------------------------------------------------
+	void resetIOLocation() const;
+	//-------------------------------------------------------------------------
+	/**
+	 * adds and places io-nodes. Assumes that processor already added on 
+	 * FrxCircuidView.
+	 */
+	void configIO(int numInputs, int numOutputs);
 }; // FrxProcessorNode
 }}} // namespace(s)
 

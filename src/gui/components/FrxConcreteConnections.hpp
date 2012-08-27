@@ -64,14 +64,16 @@ public:
 namespace connectionTypes {
 	struct ConnectionTypeBase{ void init( FrxConnection::Ptr ){} };
 	struct IO : ConnectionTypeBase{};
-	struct AdapterIO : ConnectionTypeBase{};
-	struct AdapterParameter : ConnectionTypeBase{};
+	struct ProcessorInput : ConnectionTypeBase{};
+	struct ProcessorOutput : ConnectionTypeBase{};
+	struct ProcessorParameter : ConnectionTypeBase{};
 	struct Parameter : ConnectionTypeBase{};
 	struct ParameterOP : ConnectionTypeBase{};
 }
 typedef FrxConcreteConnection<connectionTypes::IO> IOCn;
-typedef FrxConcreteConnection<connectionTypes::AdapterIO> AdapterIOCn;
-typedef FrxConcreteConnection<connectionTypes::AdapterParameter> AdapterParameterCn;
+typedef FrxConcreteConnection<connectionTypes::ProcessorInput> ProcessorInputCn;
+typedef FrxConcreteConnection<connectionTypes::ProcessorOutput> ProcessorOutputCn;
+typedef FrxConcreteConnection<connectionTypes::ProcessorParameter> ProcessorParameterCn;
 typedef FrxConcreteConnection<connectionTypes::Parameter> ParameterCn;
 typedef FrxConcreteConnection<connectionTypes::ParameterOP> ParameterOPCn;
 

@@ -13,6 +13,7 @@
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/components/FrxConcreteProcessor.hpp>
 #include <gui/components/FrxConcreteConnections.hpp>
+#include <gui/components/FrxConcreteIO.hpp>
 #include <gui/components/ui/FrxLookAndFeel.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <sambag/disco/svg/HtmlColors.hpp>
@@ -35,10 +36,11 @@ namespace {
 		const HtmlColors::ColorMap &cm = HtmlColors::getColorMap();
 		int rnd = rand() % cm.size();
 		int i=0;
+		sd::ColorRGBA noneCol = HtmlColors::getColor("none");
 		BOOST_FOREACH(HtmlColors::ColorMap::value_type v, cm) {
 			if (i++ != rnd)
 				continue;
-			if (v.second == avoid)
+			if (v.second == avoid || v.second == noneCol)
 				return getRandomColor(avoid);
 			return v.second;
 		}
@@ -61,24 +63,23 @@ int main() {
 		frx::gui::components::ui::FrxLookAndFeel::create()
 	);
 	
-	enum { NUM = 2 };	fgc::FrxComponent::Ptr comps[NUM];
+	enum { NUM = 15 };	
 	fgc::FrxCircuidView::Ptr circ = fgc::FrxCircuidView::create();
 	win->getContentPane()->add(circ);
+	
+	fgc::FrxComponent::Ptr comp = fgc::FrxEntryNode::create();
+	comp->setLocation(100, 150);
+	comp->setForeground(sd::ColorRGBA(1));
+	circ->add(comp, fgc::FrxCircuidView::Z_IO);
+	
 	for (int i=0; i<NUM; ++i) {
-		fgc::FrxComponent::Ptr comp = fgc::FrxPluginNode::create();
-		comp->setSize(Dimension(50, 50));
+		fgc::FrxPluginNode::Ptr comp = fgc::FrxPluginNode::create();
 		int x = rand() % WIDTH;
 		int y = rand() % HEIGHT;
 		comp->setLocation(x, y);
 		comp->setForeground(getRandomColor(circ->getBackground()));
 		circ->add(comp, fgc::FrxCircuidView::Z_ProcessorNodes);
-		comps[i] = comp;
-		if (i==0)
-			continue;
-		fgc::FrxConnection::Ptr con = fgc::IOCn::create();
-		con->setComponentA( comps[i-1] );
-		con->setComponentB( comps[i] );
-		circ->add(con, fgc::FrxCircuidView::Z_Wires);
+		comp->configIO(rand() % 7, rand() % 7);
 	}
 	win->setWindowBounds(sambag::disco::Rectangle(100,100,WIDTH,HEIGHT));
 	win->setTitle("VSTForx [D.I.S.C.O.]");

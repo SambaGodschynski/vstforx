@@ -9,7 +9,7 @@
 #define SAMBAG_FRXPROCESSORNODEUI_H
 
 #include <boost/shared_ptr.hpp>
-#include <gui/components/FrxComponent.hpp>
+#include <gui/components/FrxProcessorNode.hpp>
 #include "FrxNodeUI.hpp"
 
 namespace frx { namespace gui {
@@ -61,6 +61,20 @@ public:
 }; // FrxProcessorNodeUI
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
+namespace {
+	template <class PrType>
+	void drawPr(sd::IDrawContext::Ptr cn, FrxProcessorNode::Ptr node) {
+		cn->translate(node->getPivot());
+		cn->arc(sd::Point2D(0, 0), node->getWidth() / 2.5);
+		cn->setFillColor(node->getForeground());
+		cn->fill();
+	}
+	template <class PrType>
+	void setPrSize(sdc::AComponentPtr c) {
+		c->setSize(sd::Dimension(50, 50));
+	}
+} // namespace
+//-----------------------------------------------------------------------------
 template <class CT>
 FrxProcessorNodeUI<CT>::FrxProcessorNodeUI() {
 }
@@ -73,20 +87,15 @@ bool FrxProcessorNodeUI<CT>::contains(sdc::AComponentPtr c, const sd::Point2D &p
 //-----------------------------------------------------------------------------
 template <class CT>
 void FrxProcessorNodeUI<CT>::installUI(sdc::AComponentPtr c) {
-	return Super::installUI(c);
+	setPrSize<CT>(c);
+	Super::installUI(c);
 }
 //-----------------------------------------------------------------------------
 template <class CT>
 void FrxProcessorNodeUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	//Super::draw(cn, c);
-	sd::Rectangle r(0, 0, c->getWidth(), c->getHeight());
-	sd::Point2D c0 = r.x0();
-	sd::Coordinate w = r.width(), h = r.height();
-	boost::geometry::add_point(c0, sd::Point2D(w/2., h/2.));
-	cn->translate(c0);
-	cn->arc(sd::Point2D(), w / 2.5);
-	cn->setFillColor(c->getForeground());
-	cn->fill();
+	FrxProcessorNode::Ptr node = boost::shared_dynamic_cast<FrxProcessorNode>(c);
+	drawPr<CT>(cn, node);
 }
 }}}} // namespace(s)
 
