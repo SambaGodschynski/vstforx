@@ -10,6 +10,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <gui/components/FrxProcessorNode.hpp>
+#include "FrxProcessorMouseListener.hpp"
 #include "FrxNodeUI.hpp"
 
 namespace frx { namespace gui {
@@ -33,6 +34,9 @@ public:
 	typedef FrxProcessorNodeUI<ConcreteProcessor> ThisClass;
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<ThisClass> Ptr;
+private:
+	//-------------------------------------------------------------------------
+	FrxProcessorMouseListener mouseListener;
 protected:
 	//-------------------------------------------------------------------------
 	FrxProcessorNodeUI();
@@ -88,7 +92,10 @@ bool FrxProcessorNodeUI<CT>::contains(sdc::AComponentPtr c, const sd::Point2D &p
 template <class CT>
 void FrxProcessorNodeUI<CT>::installUI(sdc::AComponentPtr c) {
 	setPrSize<CT>(c);
-	Super::installUI(c);
+	c->EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
+		boost::bind(&FrxProcessorMouseListener::onMouse, &mouseListener, _1, _2),
+		getPtr()
+	);
 }
 //-----------------------------------------------------------------------------
 template <class CT>

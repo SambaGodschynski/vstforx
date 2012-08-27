@@ -263,6 +263,14 @@
 					Name="ui"
 					>
 					<File
+						RelativePath="..\..\src\gui\components\ui\FrxCircuidMouseListener.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxCircuidMouseListener.hpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\gui\components\ui\FrxCircuidViewUI.cpp"
 						>
 					</File>
@@ -320,6 +328,14 @@
 					</File>
 					<File
 						RelativePath="..\..\src\gui\components\ui\FrxParameterUI.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxProcessorMouseListener.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxProcessorMouseListener.hpp"
 						>
 					</File>
 					<File

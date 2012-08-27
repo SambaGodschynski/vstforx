@@ -1,43 +1,36 @@
 /*
- * FrxNodeUI.hpp
+ * FrxProcessorMouseListener.hpp
  *
- *  Created on: Mon Aug 20 10:46:25 2012
+ *  Created on: Mon Aug 27 20:10:03 2012
  *      Author: Johannes Unger
  */
 
-#ifndef SAMBAG_FRXNODEUI_H
-#define SAMBAG_FRXNODEUI_H
+#ifndef SAMBAG_FRXPROCESSORMOUSELISTENER_H
+#define SAMBAG_FRXPROCESSORMOUSELISTENER_H
 
 #include <boost/shared_ptr.hpp>
-#include <gui/components/FrxComponent.hpp>
-#include "FrxComponentUI.hpp"
 #include "FrxNodeMouseListener.hpp"
-
 namespace frx { namespace gui {
 namespace components { namespace ui { 
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
-namespace sdcu = sdc::ui;
 //=============================================================================
 /** 
-  * @class FrxNodeUI.
+  * @class FrxProcessorMouseListener.
   */
-class FrxNodeUI : public FrxComponentUI {
+class FrxProcessorMouseListener : public FrxNodeMouseListener{
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef FrxComponentUI Super;
-	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxNodeUI> Ptr;
+	typedef boost::shared_ptr<FrxProcessorMouseListener> Ptr;
 protected:
 	//-------------------------------------------------------------------------
-	FrxNodeUI(){}
+	virtual void beginConnecting(const sdc::events::MouseEvent &ev) {}
 	//-------------------------------------------------------------------------
-	virtual void installUI(sdc::AComponentPtr c);
+	virtual void connecting(const sdc::events::MouseEvent &ev) {}
+	//-------------------------------------------------------------------------
+	virtual void endConnecting(const sdc::events::MouseEvent &ev) {}
 private:
-	//-------------------------------------------------------------------------
-	FrxNodeMouseListener mouseListener;
-}; // FrxNodeUI
+public:
+}; // FrxProcessorMouseListener
 }}}} // namespace(s)
 
-#endif /* SAMBAG_FRXNODEUI_H */
+#endif /* SAMBAG_FRXPROCESSORMOUSELISTENER_H */

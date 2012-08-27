@@ -17,9 +17,13 @@ class TestFrxCircuidView : public CPPUNIT_NS::TestFixture {
 private:
 	CPPUNIT_TEST_SUITE( TestFrxCircuidView );
 	CPPUNIT_TEST( testZOrder );
+	CPPUNIT_TEST( testFindComponentsFiltered );
+	CPPUNIT_TEST( testFindComponentsInArea );
 	CPPUNIT_TEST_SUITE_END();
 public:
 	void testZOrder();
+	void testFindComponentsFiltered();
+	void testFindComponentsInArea();
 };
 
 } // namespace

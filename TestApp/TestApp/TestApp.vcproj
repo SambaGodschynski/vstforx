@@ -728,6 +728,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\src\gui\components\FrxConcreteProcessor.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxConcreteProcessor.hpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\src\gui\components\FrxConnection.cpp"
 					>
 				</File>
@@ -749,14 +757,6 @@
 				</File>
 				<File
 					RelativePath="..\..\src\gui\components\FrxParameter.hpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxPluginNode.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxPluginNode.hpp"
 					>
 				</File>
 				<File

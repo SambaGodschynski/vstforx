@@ -17,6 +17,15 @@ FrxCircuidViewUI::FrxCircuidViewUI() {
 }
 //-----------------------------------------------------------------------------
 FrxCircuidViewUI::Ptr FrxCircuidViewUI::create() {
-	return Ptr(new FrxCircuidViewUI());
+	Ptr res(new FrxCircuidViewUI());
+	res->self = res;
+	return res;
+}
+//-----------------------------------------------------------------------------
+void FrxCircuidViewUI::installUI(sdc::AComponentPtr c) {
+	c->EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
+		boost::bind(&FrxCircuidMouseListener::onMouse, &mouseListener, _1, _2),
+		getPtr()
+	);
 }
 }}}} // namespace(s)

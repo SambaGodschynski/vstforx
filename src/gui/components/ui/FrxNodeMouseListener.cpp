@@ -39,7 +39,7 @@ void FrxNodeMouseListener::beginConnecting(const sdc::events::MouseEvent &ev) {
 	sdc::AComponent::Ptr c = ev.getSource();
 	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
-	if (!circ->containsComponent(circ))
+	if (!circ->containsComponent(toConnect))
 		circ->add(toConnect, FrxCircuidView::Z_OnTop);
 	// setline coord.
 	FrxComponent::Ptr frxC = boost::shared_dynamic_cast<FrxComponent>(c);

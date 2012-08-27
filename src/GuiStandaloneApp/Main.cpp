@@ -63,7 +63,7 @@ int main() {
 		frx::gui::components::ui::FrxLookAndFeel::create()
 	);
 	
-	enum { NUM = 15 };	
+	enum { NUM = 3 };	
 	fgc::FrxCircuidView::Ptr circ = fgc::FrxCircuidView::create();
 	win->getContentPane()->add(circ);
 	

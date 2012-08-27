@@ -1,16 +1,17 @@
 /*
- * FrxNodeMouseListener.hpp
+ * FrxCircuidViewMouseListener.hpp
  *
- *  Created on: Mon Aug 20 16:59:36 2012
+ *  Created on: Mon Aug 27 16:30:23 2012
  *      Author: Johannes Unger
  */
 
-#ifndef SAMBAG_FRXNODEMOUSELISTENER_H
-#define SAMBAG_FRXNODEMOUSELISTENER_H
+#ifndef SAMBAG_FRXCIRCUIDVIEWMOUSELISTENER_H
+#define SAMBAG_FRXCIRCUIDVIEWMOUSELISTENER_H
 
+#include <boost/shared_ptr.hpp>
 #include <sambag/disco/components/events/MouseEvent.hpp>
 #include <sambag/disco/Geometry.hpp>
-#include <sambag/disco/svg/graphicElements/Line.hpp>
+#include <sambag/disco/svg/graphicElements/Rect.hpp>
 #include <sambag/disco/components/ComponentWrapper.hpp>
 
 namespace frx { namespace gui {
@@ -21,9 +22,9 @@ namespace sdc = sd::components;
 namespace sdcu = sdc::ui; 
 //=============================================================================
 /** 
-  * @class FrxNodeMouseListener.
+  * @class FrxCircuidMouseListener.
   */
-class FrxNodeMouseListener {
+class FrxCircuidMouseListener {
 //=============================================================================
 public:
 protected:
@@ -31,23 +32,23 @@ private:
 	//-------------------------------------------------------------------------
 	sd::Point2D clickLoc;
 	//-------------------------------------------------------------------------
-	typedef sdc::ComponentWrapper<sdsg::Line> Line;
+	typedef sdc::ComponentWrapper<sdsg::Rect> Rect;
 	//-------------------------------------------------------------------------
-	Line::Ptr toConnect;
+	Rect::Ptr selection;
 	//-------------------------------------------------------------------------
 protected:
-	// MouseActions on object:
+	// MouseActions on view:
 	virtual void drag(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
-	virtual void beginConnecting(const sdc::events::MouseEvent &ev);
+	virtual void beginSpanning(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
-	virtual void connecting(const sdc::events::MouseEvent &ev);
+	virtual void spanning(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
-	virtual void endConnecting(const sdc::events::MouseEvent &ev);
+	virtual void endSpanning(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
 public:
 	//-------------------------------------------------------------------------
-	FrxNodeMouseListener();
+	FrxCircuidMouseListener();
 	//-------------------------------------------------------------------------
 	// MouseEvents
 	virtual void mousePressed(const sdc::events::MouseEvent &ev);
@@ -68,7 +69,7 @@ public:
 	//-------------------------------------------------------------------------
 public:
 	void onMouse(void *src, const sdc::events::MouseEvent &ev);
-}; // FrxNodeMouseListener
+}; // FrxCircuidMouseListener
 }}}} // namespace(s)
 
-#endif /* SAMBAG_FRXNODEMOUSELISTENER_H */
+#endif /* SAMBAG_FRXCIRCUIDVIEWMOUSELISTENER_H */
