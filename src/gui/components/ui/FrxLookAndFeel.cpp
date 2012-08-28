@@ -38,6 +38,8 @@
 #include <gui/components/ui/FrxConnectionUI.hpp>
 #include <gui/components/FrxConcreteIO.hpp>
 #include <gui/components/ui/FrxIOUI.hpp>
+#include <gui/components/FrxSelection.hpp>
+#include <gui/components/ui/FrxSelectionUI.hpp>
 
 
 
@@ -81,6 +83,8 @@ void FrxLookAndFeel::installComponents() {
 	registerComponentUI<fgc::FrxOutputNode, fgcu::FrxIOUI<fgc::FrxOutputNode::IOType> >();
 	registerComponentUI<fgc::FrxEntryNode, fgcu::FrxIOUI<fgc::FrxEntryNode::IOType> >();
 	registerComponentUI<fgc::FrxExitNode, fgcu::FrxIOUI<fgc::FrxExitNode::IOType> >();
+	// misc
+	registerComponentUI<fgc::FrxSelection, fgcu::FrxSelectionUI>();
 
 }
 //-----------------------------------------------------------------------------

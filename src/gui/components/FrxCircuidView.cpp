@@ -27,6 +27,8 @@ const float FrxCircuidView::Z_OnTop = 1.f;
 //-----------------------------------------------------------------------------
 const float FrxCircuidView::Z_Default = FrxCircuidView::Z_OnTop;
 //-----------------------------------------------------------------------------
+const float FrxCircuidView::Z_InteractiveStuff = Z_OnTop;
+//-----------------------------------------------------------------------------
 void FrxCircuidView::add(sdc::AComponentPtr comp, ZOrder zord) {
 	// order on insert:
 	for (size_t i = 0; i<getComponentCount(); ++i) {
@@ -45,6 +47,8 @@ void FrxCircuidView::add(sdc::AComponentPtr comp, ZOrder zord) {
 //-----------------------------------------------------------------------------
 FrxCircuidView::FrxCircuidView() {
 	setName("FrxCircuidView");
+	// selection = FrxSelection::create();
+	//add(selection, Z_InteractiveStuff); // !parent <= !!
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::remove(sdc::AComponentPtr comp) {
@@ -56,7 +60,9 @@ sdcu::AComponentUIPtr FrxCircuidView::createComponentUI(sdcu::ALookAndFeelPtr la
 	return laf->getUI<FrxCircuidView>();
 }
 //-----------------------------------------------------------------------------
-void FrxCircuidView::constructorAlt() {
+void FrxCircuidView::postConstructor() {
 	setLayout(sdc::ALayoutManagerPtr());
+	selection = FrxSelection::create();
+	add(selection, Z_InteractiveStuff);
 }
 }}} // namespace(s)

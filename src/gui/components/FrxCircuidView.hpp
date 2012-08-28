@@ -13,6 +13,7 @@
 #include <sambag/com/ArbitraryType.hpp>
 #include <boost/foreach.hpp>
 #include <string>
+#include "FrxSelection.hpp"
 
 namespace frx { namespace gui { namespace components {
 namespace sc = sambag::com;
@@ -48,11 +49,15 @@ public:
 	static const float Z_OnTop;
 	//-------------------------------------------------------------------------
 	static const float Z_Default;
+	//-------------------------------------------------------------------------
+	static const float Z_InteractiveStuff;
 protected:
+	//-------------------------------------------------------------------------
+	FrxSelection::Ptr selection;
 	//-------------------------------------------------------------------------
 	FrxCircuidView();
 	//-------------------------------------------------------------------------
-	virtual void constructorAlt();
+	virtual void postConstructor();
 private:
 public:
 	//-------------------------------------------------------------------------
@@ -62,6 +67,8 @@ public:
 	virtual void add(sdc::AComponentPtr comp, ZOrder zord = Z_Default);
 	//-------------------------------------------------------------------------
 	virtual void remove(sdc::AComponentPtr comp);
+	//-------------------------------------------------------------------------
+	FrxSelection::Ptr getSelection() const { return selection; }
 	//-------------------------------------------------------------------------
 	SAMBAG_STD_STATIC_COMPONENT_CREATOR(FrxCircuidView)
 	//-------------------------------------------------------------------------

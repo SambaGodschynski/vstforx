@@ -27,12 +27,21 @@ FrxNodeMouseListener::FrxNodeMouseListener() {
 }
 //-----------------------------------------------------------------------------
 void FrxNodeMouseListener::drag(const sdc::events::MouseEvent &ev) {
+	namespace geom = boost::geometry;
+	namespace trans = geom::strategy::transform;
+	typedef trans::translate_transformer<sd::Point2D, sd::Point2D> Transl;
 	sdc::AComponent::Ptr c = ev.getSource();
 	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
-	sd::Point2D loc = circ->getLocationOnComponent(ev.getLocationOnScreen());
-	boost::geometry::subtract_point(loc, clickLoc);
+	// cacl transl.
+	sd::Point2D distance = circ->getLocationOnComponent(ev.getLocationOnScreen());
+	boost::geometry::subtract_point(distance, clickLoc);
+	Transl transl(distance.x(), distance.y());
+	// update
+	sd::Point2D loc; 
+	geom::transform(c->getLocation(), loc, transl);
 	c->setLocation(loc);
+	clickLoc = circ->getLocationOnComponent(ev.getLocationOnScreen());
 }
 //-----------------------------------------------------------------------------
 void FrxNodeMouseListener::beginConnecting(const sdc::events::MouseEvent &ev) {
@@ -40,7 +49,7 @@ void FrxNodeMouseListener::beginConnecting(const sdc::events::MouseEvent &ev) {
 	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
 	if (!circ->containsComponent(toConnect))
-		circ->add(toConnect, FrxCircuidView::Z_OnTop);
+		circ->add(toConnect, FrxCircuidView::Z_InteractiveStuff);
 	// setline coord.
 	FrxComponent::Ptr frxC = boost::shared_dynamic_cast<FrxComponent>(c);
 	SAMBAG_ASSERT(frxC);
@@ -76,7 +85,10 @@ void FrxNodeMouseListener::endConnecting(const sdc::events::MouseEvent &ev) {
 }
 //-----------------------------------------------------------------------------
 void FrxNodeMouseListener::mousePressed(const sdc::events::MouseEvent &ev) {
-	clickLoc = ev.getLocation();
+	sdc::AComponent::Ptr c = ev.getSource();
+	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
+	SAMBAG_ASSERT(circ);
+	clickLoc = circ->getLocationOnComponent(ev.getLocationOnScreen());
 	if (ev.getButtons() == sdc::events::MouseEvent::DISCO_BTN1)
 		beginConnecting(ev);
 }

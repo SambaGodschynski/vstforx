@@ -9,6 +9,7 @@
 
 #include <gui/components/FrxComponent.hpp>
 #include <gui/components/FrxCircuidView.hpp>
+#include <gui/components/FrxSelection.hpp>
 #include <sambag/disco/svg/units/Units.hpp>
 #include <sambag/disco/Dash.hpp>
 #include <boost/assign.hpp>
@@ -57,7 +58,9 @@ void FrxCircuidMouseListener::beginSpanning(const sdc::events::MouseEvent &ev) {
 	rect.x0().y().setValue( clickLoc.y() );
 	rect.size().width().setValue(0);
 	rect.size().height().setValue(0);
+	selection->updateBounds();
 	selection->setVisible(true);
+	circ->getSelection()->clearContent();
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidMouseListener::spanning(const sdc::events::MouseEvent &ev) {
@@ -79,6 +82,10 @@ void FrxCircuidMouseListener::endSpanning(const sdc::events::MouseEvent &ev) {
 	SAMBAG_ASSERT(circ);
 	selection->setVisible(false);
 	circ->redraw();
+
+	FrxSelection::ContentContainer content;
+	circ->findComponentsInArea(content, selection->getBounds(), 2., 4.);
+	circ->getSelection()->setContent(content);
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidMouseListener::mousePressed(const sdc::events::MouseEvent &ev) {
