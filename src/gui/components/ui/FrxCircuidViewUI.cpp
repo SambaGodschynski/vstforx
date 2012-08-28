@@ -6,6 +6,7 @@
  */
 
 #include "FrxCircuidViewUI.hpp"
+#include <gui/components/FrxCircuidView.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -23,7 +24,10 @@ FrxCircuidViewUI::Ptr FrxCircuidViewUI::create() {
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidViewUI::installUI(sdc::AComponentPtr c) {
-	c->EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
+	FrxCircuidView::Ptr circ = boost::shared_dynamic_cast<FrxCircuidView>(c);
+	sdc::AContainer::Ptr cont = circ->getContentPane();
+	SAMBAG_ASSERT(cont);
+	cont->EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
 		boost::bind(&FrxCircuidMouseListener::onMouse, &mouseListener, _1, _2),
 		getPtr()
 	);

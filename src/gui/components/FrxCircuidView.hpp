@@ -10,6 +10,8 @@
 
 #include <boost/shared_ptr.hpp>
 #include <sambag/disco/components/AContainer.hpp>
+#include <sambag/disco/components/Viewport.hpp>
+#include <sambag/disco/components/Panel.hpp>
 #include <sambag/com/ArbitraryType.hpp>
 #include <boost/foreach.hpp>
 #include <string>
@@ -24,11 +26,11 @@ namespace sdcu = sdc::ui;
 /** 
   * @class FrxCircuidView.
   */
-class FrxCircuidView : public sdc::AContainer {
+class FrxCircuidView : public sdc::Viewport {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef sdc::AContainer Super;
+	typedef sdc::Viewport Super;
 	//-------------------------------------------------------------------------
 	typedef float ZOrder;
 	//-------------------------------------------------------------------------
@@ -53,6 +55,8 @@ public:
 	static const float Z_InteractiveStuff;
 protected:
 	//-------------------------------------------------------------------------
+	sdc::Panel::Ptr content;
+	//-------------------------------------------------------------------------
 	FrxSelection::Ptr selection;
 	//-------------------------------------------------------------------------
 	FrxCircuidView();
@@ -60,6 +64,10 @@ protected:
 	virtual void postConstructor();
 private:
 public:
+	//-------------------------------------------------------------------------
+	AContainer::Ptr getContentPane() const {
+		return content;
+	}
 	//-------------------------------------------------------------------------
 	/**
 	 * @note: (Z)Orders is done during insert. So avoid frequently add/remove.
@@ -101,7 +109,7 @@ public:
 template <class Container, class Filter>
 void FrxCircuidView::findComponents(Container &container, Filter &filter) 
 {
-	BOOST_FOREACH(AComponent::Ptr c, getComponents()) {
+	BOOST_FOREACH(AComponent::Ptr c, getContentPane()->getComponents()) {
 		if (filter(c) == 1) {
 			container.push_back(c);
 			continue;

@@ -38,12 +38,22 @@ FrxCircuidMouseListener::FrxCircuidMouseListener() {
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidMouseListener::drag(const sdc::events::MouseEvent &ev) {
-/*	sdc::AComponent::Ptr c = ev.getSource();
+	namespace geom = boost::geometry;
+	namespace trans = geom::strategy::transform;
+	typedef trans::translate_transformer<sd::Point2D, sd::Point2D> Transl;
+	sdc::AComponent::Ptr c = ev.getSource();
 	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
-	sd::Point2D loc = circ->getLocationOnComponent(ev.getLocationOnScreen());
-	boost::geometry::subtract_point(loc, clickLoc);
-	c->setLocation(loc);*/
+	sd::Point2D distance = ev.getLocationOnScreen();
+	boost::geometry::subtract_point(distance, clickLoc);
+	Transl transl(distance.x(), distance.y());
+
+	sd::Point2D loc; 
+	geom::transform(circ->getViewPosition(), loc, transl);
+	circ->setViewPosition(loc);
+
+	clickLoc = ev.getLocationOnScreen();
+	
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidMouseListener::beginSpanning(const sdc::events::MouseEvent &ev) {
@@ -81,7 +91,7 @@ void FrxCircuidMouseListener::endSpanning(const sdc::events::MouseEvent &ev) {
 	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
 	selection->setVisible(false);
-	circ->redraw();
+	circ->AComponent::redraw();
 
 	FrxSelection::ContentContainer content;
 	circ->findComponentsInArea(content, selection->getBounds(), 2., 4.);
@@ -89,7 +99,7 @@ void FrxCircuidMouseListener::endSpanning(const sdc::events::MouseEvent &ev) {
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidMouseListener::mousePressed(const sdc::events::MouseEvent &ev) {
-	clickLoc = ev.getLocation();
+	clickLoc = ev.getLocationOnScreen();
 	if (ev.getButtons() == sdc::events::MouseEvent::DISCO_BTN1)
 		beginSpanning(ev);
 }
