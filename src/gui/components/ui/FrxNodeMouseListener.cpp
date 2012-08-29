@@ -81,7 +81,7 @@ void FrxNodeMouseListener::endConnecting(const sdc::events::MouseEvent &ev) {
 	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
 	toConnect->setVisible(false);
-	circ->redraw();
+	circ->AComponent::redraw();
 }
 //-----------------------------------------------------------------------------
 void FrxNodeMouseListener::mousePressed(const sdc::events::MouseEvent &ev) {

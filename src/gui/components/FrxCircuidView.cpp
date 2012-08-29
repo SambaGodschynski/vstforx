@@ -7,7 +7,6 @@
 
 #include "FrxCircuidView.hpp"
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
-
 namespace frx { namespace gui { namespace components {
 //=============================================================================
 //  Class FrxCircuidView
@@ -31,28 +30,28 @@ const float FrxCircuidView::Z_InteractiveStuff = Z_OnTop;
 //-----------------------------------------------------------------------------
 void FrxCircuidView::add(sdc::AComponentPtr comp, ZOrder zord) {
 	// order on insert:
-	for (size_t i = 0; i<getComponentCount(); ++i) {
-		AComponent::Ptr c = getComponent(i);
+	for (size_t i = 0; i<content->getComponentCount(); ++i) {
+		AComponent::Ptr c = content->getComponent(i);
 		ZOrder z = FLT_MAX;
 		c->getClientProperty(PROPERTY_ZORDER, z);
 		if (zord < z ) {
 			comp->putClientProperty(PROPERTY_ZORDER, zord);
-			Super::add(comp, i);
+			content->add(comp, i);
 			return;
 		}
 	}
 	comp->putClientProperty(PROPERTY_ZORDER, zord);
-	Super::add(comp);
+	content->add(comp);
 }
 //-----------------------------------------------------------------------------
 FrxCircuidView::FrxCircuidView() {
 	setName("FrxCircuidView");
-	// selection = FrxSelection::create();
+	//selection = FrxSelection::create();
 	//add(selection, Z_InteractiveStuff); // !parent <= !!
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::remove(sdc::AComponentPtr comp) {
-	Super::remove(comp);
+	content->remove(comp);
 }
 //-----------------------------------------------------------------------------
 sdcu::AComponentUIPtr FrxCircuidView::createComponentUI(sdcu::ALookAndFeelPtr laf) const
@@ -61,7 +60,10 @@ sdcu::AComponentUIPtr FrxCircuidView::createComponentUI(sdcu::ALookAndFeelPtr la
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::postConstructor() {
-	setLayout(sdc::ALayoutManagerPtr());
+	content = sdc::Panel::create();
+	content->setSize(sd::Dimension(10000, 10000));
+	Super::add(content);
+	content->setLayout(sdc::ALayoutManagerPtr());
 	selection = FrxSelection::create();
 	add(selection, Z_InteractiveStuff);
 }
