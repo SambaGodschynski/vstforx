@@ -259,6 +259,14 @@
 					RelativePath="..\..\src\gui\components\FrxProcessorNode.hpp"
 					>
 				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxSelection.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxSelection.hpp"
+					>
+				</File>
 				<Filter
 					Name="ui"
 					>
@@ -344,6 +352,22 @@
 					</File>
 					<File
 						RelativePath="..\..\src\gui\components\ui\FrxProcessorNodeUI.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxSelectionMouseListener.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxSelectionMouseListener.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxSelectionUI.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxSelectionUI.hpp"
 						>
 					</File>
 				</Filter>
