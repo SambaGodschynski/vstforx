@@ -9,19 +9,26 @@
 #define SAMBAG_FRXPARAMETER_H
 
 #include <boost/shared_ptr.hpp>
+#include <sambag/com/Common.hpp>
 #include "FrxNode.hpp"
+#include <string>
 
 namespace frx { namespace gui { namespace components {
-namespace sdc = sambag::disco::components;
+namespace sd = sambag::disco;
+namespace sdc = sd::components;
 namespace sdcu = sdc::ui;
+
+
 //=============================================================================
 /** 
   * @class FrxParameter.
-  * TODO: subclass FrxKnob
+  * Encapsulates a parameter control element.
   */
 class FrxParameter : public FrxNode {
 //=============================================================================
 public:
+	//-------------------------------------------------------------------------
+	static const std::string PROPERTY_ENC_CTRL;
 	//-------------------------------------------------------------------------
 	typedef FrxNode Super;
 	//-------------------------------------------------------------------------
@@ -30,9 +37,22 @@ public:
 	virtual sdcu::AComponentUIPtr createComponentUI(sdcu::ALookAndFeelPtr laf) const;
 protected:
 	//-------------------------------------------------------------------------
+	sdc::AComponent::Ptr ctrl;
+	//-------------------------------------------------------------------------
 	FrxParameter();
+	//-------------------------------------------------------------------------
+	virtual void postConstructor();
 private:
 public:
+	//-------------------------------------------------------------------------
+	void setEncapsulatedCtrl(sdc::AComponent::Ptr ctrl);
+	//-------------------------------------------------------------------------
+	sdc::AComponent::Ptr getEncapsulatedCtrl() const { return ctrl; }
+	//-------------------------------------------------------------------------
+	Ptr getPtr() const {
+		return boost::shared_dynamic_cast<FrxParameter>(Super::getPtr());
+	}
+
 }; // FrxParameter
 }}} // namespace(s)
 

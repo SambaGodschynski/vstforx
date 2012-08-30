@@ -13,6 +13,7 @@
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/components/FrxConcreteProcessor.hpp>
 #include <gui/components/FrxConcreteConnections.hpp>
+#include <gui/components/FrxConcreteParameter.hpp>
 #include <gui/components/FrxConcreteIO.hpp>
 #include <gui/components/ui/FrxLookAndFeel.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
@@ -69,8 +70,11 @@ int main() {
 	
 	fgc::FrxComponent::Ptr comp = fgc::FrxEntryNode::create();
 	comp->setLocation(100, 150);
-	comp->setForeground(sd::ColorRGBA(1));
 	circ->add(comp, fgc::FrxCircuidView::Z_IO);
+
+	comp = fgc::FrxStdKnob::create();
+	comp->setLocation(200, 250);
+	circ->add(comp, fgc::FrxCircuidView::Z_Knobs);
 	
 	for (int i=0; i<NUM; ++i) {
 		fgc::FrxPluginNode::Ptr comp = fgc::FrxPluginNode::create();

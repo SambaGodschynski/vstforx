@@ -16,7 +16,7 @@ namespace components { namespace ui {
 /** 
   * @class FrxProcessorMouseListener.
   */
-class FrxProcessorMouseListener : public FrxNodeMouseListener{
+class FrxProcessorMouseListener : public FrxNodeMouseListener {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------

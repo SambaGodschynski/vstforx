@@ -45,26 +45,27 @@ protected:
 	//-------------------------------------------------------------------------
 	virtual void endConnecting(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
+	virtual void use(const sdc::events::MouseEvent &ev) {}
 public:
 	//-------------------------------------------------------------------------
 	FrxNodeMouseListener();
 	//-------------------------------------------------------------------------
 	// MouseEvents
-	virtual void mousePressed(const sdc::events::MouseEvent &ev);
+	void mousePressed(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
-	virtual void mouseReleased(const sdc::events::MouseEvent &ev);
+	void mouseReleased(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
-	virtual void mouseEntered(const sdc::events::MouseEvent &ev);
+	void mouseEntered(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
-	virtual void mouseExited(const sdc::events::MouseEvent &ev);
+	void mouseExited(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
-	virtual void mouseClicked(const sdc::events::MouseEvent &ev);
+	void mouseClicked(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
-	virtual void mouseMoved(const sdc::events::MouseEvent &ev);
+	void mouseMoved(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
-	virtual void mouseDragged(const sdc::events::MouseEvent &ev);
+	void mouseDragged(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
-	virtual void mouseWheelMoved(const sdc::events::MouseEvent &ev);
+	void mouseWheelMoved(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
 public:
 	void onMouse(void *src, const sdc::events::MouseEvent &ev);

@@ -26,6 +26,7 @@
 #include <sambag/disco/svg/HtmlColors.hpp>
 #include <sambag/disco/components/Viewport.hpp>
 #include <sambag/disco/components/ScrollPane.hpp>
+#include <sambag/disco/components/Knob.hpp>
 // Frx
 #include <gui/components/FrxComponent.hpp>
 #include <gui/components/ui/FrxComponentUI.hpp>
@@ -40,6 +41,8 @@
 #include <gui/components/ui/FrxIOUI.hpp>
 #include <gui/components/FrxSelection.hpp>
 #include <gui/components/ui/FrxSelectionUI.hpp>
+#include <gui/components/FrxConcreteParameter.hpp>
+#include <gui/components/ui/FrxParameterUI.hpp>
 
 
 
@@ -73,7 +76,9 @@ void FrxLookAndFeel::installComponents() {
 	// view
 	registerComponentUI<fgc::FrxCircuidView, fgcu::FrxCircuidViewUI>();
 	// processor nodes
-	registerComponentUI<fgc::FrxPluginNode, fgcu::FrxProcessorNodeUI<FrxPluginNode::ConcreteProcessor> >();
+	registerComponentUI<fgc::FrxPluginNode, fgcu::FrxProcessorNodeUI<FrxPluginNode::ProcessorType> >();
+	// parameter components
+	registerComponentUI<sdc::Knob, FrxParameterUI<FrxStdKnob::ControllerType> >();
 	// connections
 	registerComponentUI<fgc::IOCn, fgcu::FrxConnectionUI<fgc::IOCn::ConnectionType> >();
 	registerComponentUI<fgc::ProcessorInputCn, fgcu::FrxConnectionUI<fgc::ProcessorInputCn::ConnectionType> >();
@@ -85,6 +90,7 @@ void FrxLookAndFeel::installComponents() {
 	registerComponentUI<fgc::FrxExitNode, fgcu::FrxIOUI<fgc::FrxExitNode::IOType> >();
 	// misc
 	registerComponentUI<fgc::FrxSelection, fgcu::FrxSelectionUI>();
+	
 
 }
 //-----------------------------------------------------------------------------
@@ -109,6 +115,12 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("ScrollBar.thumb", HtmlColors::getColor("grey"));
 	m.putProperty("ScrollBar.track", HtmlColors::getColor("lightgrey"));
 	m.putProperty("ScrollBar.trackHighlight", HtmlColors::getColor("lightblue"));
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<knobs
+	m.putProperty("Knob.speedFactor", 0.5);
+	m.putProperty("Knob.knobMode", std::string("linear"));
+	//m.putProperty("Knob.knobMode",  std::string("circular"));
+	//m.putProperty("Knob.knobMode",  std::string("relativeCircular"));
+
 }
 
 }}}} // namespace(s)

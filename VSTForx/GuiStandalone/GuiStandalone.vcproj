@@ -212,6 +212,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\src\gui\components\FrxConcreteParameter.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxConcreteParameter.hpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\src\gui\components\FrxConcreteProcessor.cpp"
 					>
 				</File>
@@ -328,6 +336,14 @@
 					</File>
 					<File
 						RelativePath="..\..\src\gui\components\ui\FrxNodeUI.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxParameterMouseListener.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxParameterMouseListener.hpp"
 						>
 					</File>
 					<File

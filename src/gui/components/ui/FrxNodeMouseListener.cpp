@@ -113,9 +113,8 @@ void FrxNodeMouseListener::mouseMoved(const sdc::events::MouseEvent &ev) {
 }
 //-----------------------------------------------------------------------------
 void FrxNodeMouseListener::mouseDragged(const sdc::events::MouseEvent &ev) {
-	//drag(ev);
 	if (ev.getButtons() == sdc::events::MouseEvent::DISCO_BTN1)
-		connecting(ev);
+		use(ev);//connecting(ev);
 	else 
 		drag(ev);
 
