@@ -9,7 +9,7 @@
 #define SAMBAG_FRXLOOKANDFEEL_H
 
 #include <boost/shared_ptr.hpp>
-#include <sambag/disco/components/ui/ALookAndFeel.hpp>
+#include <sambag/disco/components/ui/basic/BasicLookAndFeel.hpp>
 namespace frx { namespace gui {
 namespace components { namespace ui { 
 //=============================================================================
@@ -19,9 +19,11 @@ namespace sdcu = sdc::ui;
 /** 
   * @class FrxLookAndFeel.
   */
-class FrxLookAndFeel : public sdcu::ALookAndFeel {
+class FrxLookAndFeel : public sdcu::basic::BasicLookAndFeel {
 //=============================================================================
 public:
+	//-------------------------------------------------------------------------
+	typedef sdcu::basic::BasicLookAndFeel Super;
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<FrxLookAndFeel> Ptr;
 protected:

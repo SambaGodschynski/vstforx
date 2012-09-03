@@ -93,14 +93,14 @@ void FrxConnectionUI<CT>::adjustBoundingRect(sd::Rectangle &r,
 	// strokewitdh values.
 	sd::IDrawContext::Ptr cn = sd::getDiscoFactory()->createContext();
 	setStyle<CT>(cn);
-	sd::Coordinate lw = cn->getStrokeWidth() * 2.5;
+	sambag::com::Number lw = cn->getStrokeWidth() * 2.5;
 	if (r.width() < lw) {
-		sd::Coordinate miss =  lw - r.width();
+		sambag::com::Number miss =  lw - r.width();
 		r.x0().x( r.x0().x() - miss/2. );
 		r.x1().x( r.x1().x() + miss/2. );
 	}
 	if (r.height() < lw) {
-		sd::Coordinate miss =  lw - r.height();
+		sambag::com::Number miss =  lw - r.height();
 		r.x0().y( r.x0().y() - miss/2. );
 		r.x1().y( r.x1().y() + miss/2. );
 	}

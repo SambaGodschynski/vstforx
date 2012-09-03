@@ -24,7 +24,11 @@ FrxComponent::createComponentUI(sdc::ui::ALookAndFeelPtr laf) const
 }
 //-----------------------------------------------------------------------------
 sd::Point2D FrxComponent::getPivot() const {
-	sd::Coordinate w = getWidth(), h = getHeight();
+	sambag::com::Number w = getWidth(), h = getHeight();
 	return sd::Point2D(w/2., h/2.);
+}
+//-----------------------------------------------------------------------------
+void FrxComponent::setBounds(const sd::Rectangle &b) {
+	Super::setBounds(b);
 }
 }}} // namespace(s)

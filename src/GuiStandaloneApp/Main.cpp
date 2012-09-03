@@ -21,8 +21,10 @@
 #include <stdlib.h>
 #include <time.h>
 
+
 #ifdef WIN32
 #include <crtdbg.h>
+//#include <vld.h>
 #define SAMBAG_WINONLY(x) x
 #else
 #define SAMBAG_WINONLY(x)

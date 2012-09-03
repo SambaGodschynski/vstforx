@@ -35,6 +35,8 @@ protected:
 private:
 public:
 	//-------------------------------------------------------------------------
+	virtual void setBounds(const sd::Rectangle &b);
+	//-------------------------------------------------------------------------
 	sd::Point2D getPivot() const; 
 }; // FrxComponent
 }}} // namespace(s)

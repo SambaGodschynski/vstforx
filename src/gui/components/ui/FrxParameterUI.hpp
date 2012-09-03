@@ -75,8 +75,11 @@ namespace {
 template <class ParameterType>
 void setParameterComponentSize(sdc::AComponentPtr c) {
 	SAMBAG_ASSERT(c->getParent());
-	c->getParent()->setSize(sd::Dimension(50, 50));
-	c->setSize(sd::Dimension(50, 50));
+	sdcu::UIManager &m = sdcu::getUIManager();
+	sd::Dimension size(50, 50);
+	m.getProperty("FrxStdKnob.size", size);
+	c->getParent()->setSize(size);
+	c->setSize(size);
 }
 } // namespace
 //-----------------------------------------------------------------------------
