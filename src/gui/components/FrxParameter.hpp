@@ -14,11 +14,10 @@
 #include <string>
 
 namespace frx { namespace gui { namespace components {
+namespace sce = sambag::com::events;
 namespace sd = sambag::disco;
 namespace sdc = sd::components;
 namespace sdcu = sdc::ui;
-
-
 //=============================================================================
 /** 
   * @class FrxParameter.
@@ -37,13 +36,24 @@ public:
 	virtual sdcu::AComponentUIPtr createComponentUI(sdcu::ALookAndFeelPtr laf) const;
 protected:
 	//-------------------------------------------------------------------------
+	void onCtrlChanged(void *src, const sce::PropertyChanged &ev);
+	//-------------------------------------------------------------------------
+	void updateCtrlLocation();
+	//-------------------------------------------------------------------------
 	sdc::AComponent::Ptr ctrl;
 	//-------------------------------------------------------------------------
 	FrxParameter();
 	//-------------------------------------------------------------------------
 	virtual void postConstructor();
 private:
+	//-------------------------------------------------------------------------
+	sce::EventSender<sce::PropertyChanged>::Connection ctrlConnection;
 public:
+	//-------------------------------------------------------------------------
+	/**
+	 * @override
+	 */
+	virtual void setBounds(const sd::Rectangle &r);
 	//-------------------------------------------------------------------------
 	void setEncapsulatedCtrl(sdc::AComponent::Ptr ctrl);
 	//-------------------------------------------------------------------------

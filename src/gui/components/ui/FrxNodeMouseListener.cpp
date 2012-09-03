@@ -17,13 +17,7 @@ namespace components { namespace ui {
 //=============================================================================
 //-----------------------------------------------------------------------------
 FrxNodeMouseListener::FrxNodeMouseListener() {
-	toConnect = Line::create();
-	sdsg::Line::Ptr line = toConnect->getObject();
-	line->getP0().x().setType(sd::svg::units::Unit::PX);
-	line->getP0().y().setType(sd::svg::units::Unit::PX);
-	line->getP1().x().setType(sd::svg::units::Unit::PX);
-	line->getP1().y().setType(sd::svg::units::Unit::PX);
-	toConnect->setForeground(sd::ColorRGBA(1));
+
 }
 //-----------------------------------------------------------------------------
 void FrxNodeMouseListener::drag(const sdc::events::MouseEvent &ev) {

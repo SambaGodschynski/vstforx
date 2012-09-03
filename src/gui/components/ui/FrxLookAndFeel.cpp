@@ -46,7 +46,7 @@ void FrxLookAndFeel::installComponents() {
 	// processor nodes
 	registerComponentUI<fgc::FrxPluginNode, fgcu::FrxProcessorNodeUI<FrxPluginNode::ProcessorType> >();
 	// parameter components
-	registerComponentUI<sdc::Knob, FrxParameterUI<FrxStdKnob::ControllerType> >();
+	registerComponentUI<fgc::FrxStdKnob, FrxParameterUI<FrxStdKnob::ControllerType> >();
 	// connections
 	registerComponentUI<fgc::IOCn, fgcu::FrxConnectionUI<fgc::IOCn::ConnectionType> >();
 	registerComponentUI<fgc::ProcessorInputCn, fgcu::FrxConnectionUI<fgc::ProcessorInputCn::ConnectionType> >();
@@ -58,8 +58,6 @@ void FrxLookAndFeel::installComponents() {
 	registerComponentUI<fgc::FrxExitNode, fgcu::FrxIOUI<fgc::FrxExitNode::IOType> >();
 	// misc
 	registerComponentUI<fgc::FrxSelection, fgcu::FrxSelectionUI>();
-	
-
 }
 //-----------------------------------------------------------------------------
 void FrxLookAndFeel::installDefaults() {
@@ -70,13 +68,29 @@ void FrxLookAndFeel::installDefaults() {
 	using namespace sambag::disco::components::ui;
 	using namespace sambag::disco::components::ui::basic;
 	UIManager &m = getUIManager();
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	static double RADIUS_SMALL = 10.;
+	static double RADIUS_MED = 15.;
+	static double RADIUS_LARGE = 20.;	
+	Dimension knobSize(40., 40);
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<global
 	m.putProperty("global.background", HtmlColors::getColor("lightblue"));
 	m.putProperty("global.foreground", HtmlColors::getColor("white"));
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<knobs
-	m.putProperty("FrxStdKnob.size", Dimension(25., 25.));
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<sizes
 	m.putProperty("Knob.mode", std::string("linear"));
-
+	m.putProperty("Knob.size", Dimension(RADIUS_MED*2., RADIUS_MED*2.));
+	m.putProperty("Processor.radius", RADIUS_LARGE);
+	m.putProperty("ProcessorInput.radius", RADIUS_SMALL);
+	m.putProperty("ProcessorOutput.radius", RADIUS_SMALL);
+	m.putProperty("Entry.radius", RADIUS_LARGE);
+	m.putProperty("Exit.radius", RADIUS_LARGE);
+	m.putProperty("StdKnob.radius", RADIUS_MED);
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<colors
+	m.putProperty("FrxNodeCorona.color",  HtmlColors::getColor("red"));
+	m.putProperty("ProcessorInput.color", HtmlColors::getColor("black"));
+	m.putProperty("ProcessorOutput.color", HtmlColors::getColor("black"));
+	m.putProperty("Entry.color", HtmlColors::getColor("black"));
+	m.putProperty("Exit.color", HtmlColors::getColor("black"));
 }
 
 }}}} // namespace(s)

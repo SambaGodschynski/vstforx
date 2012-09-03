@@ -18,6 +18,17 @@ namespace components { namespace ui {
 namespace sd = sambag::disco;
 namespace sdc = sd::components;
 namespace sdcu = sdc::ui;
+
+///////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------
+namespace {
+	template <class PrType>
+	sambag::com::Number getProcessorRadius() {
+		SAMBAG_PROPERTY_TAG(PropertyTag, "Processor.radius");
+		return sdcu::getUIPropertyCached<PropertyTag>((double)0.);
+	}
+} // namespace
+
 //=============================================================================
 /** 
   * @class FrxProcessorNodeUI.
@@ -42,6 +53,10 @@ protected:
 	FrxProcessorNodeUI();
 public:
 	//-------------------------------------------------------------------------
+	virtual sambag::com::Number getCoreRadius(sdc::AComponentPtr c) const {
+		return getProcessorRadius<ConcreteProcessor>();
+	}
+	//-------------------------------------------------------------------------
 	static Ptr create() {
 		Ptr res(new ThisClass());
 		res->postConstructor(res);
@@ -65,20 +80,6 @@ public:
 }; // FrxProcessorNodeUI
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
-namespace {
-	template <class PrType>
-	void drawPr(sd::IDrawContext::Ptr cn, FrxProcessorNode::Ptr node) {
-		cn->translate(node->getPivot());
-		cn->arc(sd::Point2D(0, 0), node->getWidth() / 2.5);
-		cn->setFillColor(node->getForeground());
-		cn->fill();
-	}
-	template <class PrType>
-	void setPrSize(sdc::AComponentPtr c) {
-		c->setSize(sd::Dimension(50, 50));
-	}
-} // namespace
-//-----------------------------------------------------------------------------
 template <class CT>
 FrxProcessorNodeUI<CT>::FrxProcessorNodeUI() {
 }
@@ -91,7 +92,7 @@ bool FrxProcessorNodeUI<CT>::contains(sdc::AComponentPtr c, const sd::Point2D &p
 //-----------------------------------------------------------------------------
 template <class CT>
 void FrxProcessorNodeUI<CT>::installUI(sdc::AComponentPtr c) {
-	setPrSize<CT>(c);
+	Super::installUI(c);
 	c->EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
 		boost::bind(&FrxProcessorMouseListener::onMouse, &mouseListener, _1, _2),
 		getPtr()
@@ -102,7 +103,10 @@ template <class CT>
 void FrxProcessorNodeUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	//Super::draw(cn, c);
 	FrxProcessorNode::Ptr node = boost::shared_dynamic_cast<FrxProcessorNode>(c);
-	drawPr<CT>(cn, node);
+	cn->translate(node->getPivot());
+	cn->arc(sd::Point2D(0, 0), getCoreRadius(node));
+	cn->setFillColor(node->getForeground());
+	cn->fill();
 }
 }}}} // namespace(s)
 

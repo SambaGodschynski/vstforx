@@ -13,7 +13,7 @@
 #include "FrxNodeUI.hpp"
 #include "FrxParameterMouseListener.hpp"
 #include <sambag/disco/components/events/MouseEvent.hpp>
-#include <sambag/disco/components/ui/basic/BasicKnobUI.hpp>
+#include <float.h>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -21,6 +21,16 @@ namespace sd = sambag::disco;
 namespace sdc = sd::components;
 namespace sdce = sdc::events;
 namespace sdcu = sdc::ui;
+
+///////////////////////////////////////////////////////////////////////////////
+namespace {
+	template <class ParameterType>
+	sambag::com::Number getParameterRadius() {
+		SAMBAG_PROPERTY_TAG(PropertyTag, "StdKnob.radius");
+		return sdcu::getUIPropertyCached<PropertyTag>((double)0.);
+	}
+} // namespace
+
 //=============================================================================
 /** 
   * @class FrxParameterUI.
@@ -30,9 +40,9 @@ class FrxParameterUI : public FrxNodeUI {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef _ParameterType ParameterType;
-	//-------------------------------------------------------------------------
 	typedef FrxNodeUI Super;
+	//-------------------------------------------------------------------------
+	typedef _ParameterType ParameterType;
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<FrxParameterUI> Ptr;
 protected:
@@ -42,14 +52,14 @@ private:
 	//-------------------------------------------------------------------------
 	typedef typename ParameterType::Model Model;
 	//-------------------------------------------------------------------------
-	typedef typename sdcu::basic::BasicKnobUI<Model> EncKnobUI;
-	//-------------------------------------------------------------------------
-	typename EncKnobUI::Ptr basicKnobUI;
-	//-------------------------------------------------------------------------
 	FrxParameterMouseListener mouseListener;
 	//-------------------------------------------------------------------------
 	typedef FrxParameterUI<ParameterType> ThisClass;
 public:
+	//-------------------------------------------------------------------------
+	virtual sambag::com::Number getCoreRadius(sdc::AComponentPtr c) const {
+		return getParameterRadius<ParameterType>();
+	}
 	//-------------------------------------------------------------------------
 	static Ptr create() {
 		Ptr res(new ThisClass());
@@ -71,28 +81,15 @@ public:
 	virtual void draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c);
 }; // FrxParameterUI
 ///////////////////////////////////////////////////////////////////////////////
-namespace {
-template <class ParameterType>
-void setParameterComponentSize(sdc::AComponentPtr c) {
-	SAMBAG_ASSERT(c->getParent());
-	sdcu::UIManager &m = sdcu::getUIManager();
-	sd::Dimension size(50, 50);
-	m.getProperty("FrxStdKnob.size", size);
-	c->getParent()->setSize(size);
-	c->setSize(size);
-}
-} // namespace
 //-----------------------------------------------------------------------------
 template <class PT>
 void FrxParameterUI<PT>::installUI(sdc::AComponentPtr c) {
-	setParameterComponentSize<PT>(c);
-	basicKnobUI = typename EncKnobUI::create();
-	basicKnobUI->installUI(c);
+	Super::installUI(c);
 }
 //-----------------------------------------------------------------------------
 template <class PT>
 void FrxParameterUI<PT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
-	basicKnobUI->draw(cn, c);
+	Super::draw(cn, c);
 }
 	
 }}}} // namespace(s)

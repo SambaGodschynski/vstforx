@@ -17,6 +17,27 @@ namespace components { namespace ui {
 namespace sd = sambag::disco;
 namespace sdc = sd::components;
 namespace sdcu = sdc::ui;
+///////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------
+namespace {
+	template <class IOType>
+	sambag::com::Number getIORadius() {
+		SAMBAG_PROPERTY_TAG(PropertyTag, "Entry.radius");
+		return sdcu::getUIPropertyCached<PropertyTag>((double)0.);
+	}
+	template <>
+	sambag::com::Number getIORadius<ioTypes::Input>() {
+		SAMBAG_PROPERTY_TAG(PropertyTag, "ProcessorInput.radius");
+		return
+			sdcu::getUIPropertyCached<PropertyTag>((double)0.);
+	}
+	template <>
+	sambag::com::Number getIORadius<ioTypes::Output>() {
+		SAMBAG_PROPERTY_TAG(PropertyTag, "ProcessorOutput.radius");
+		return
+			sdcu::getUIPropertyCached<PropertyTag>((double)0.);
+	}
+} // namespace
 //=============================================================================
 /** 
   * @class FrxIOUI.
@@ -39,6 +60,10 @@ protected:
 private:
 public:
 	//-------------------------------------------------------------------------
+	virtual sambag::com::Number getCoreRadius(sdc::AComponentPtr c) const {
+		return getIORadius<ConcreteIO>();
+	}
+	//-------------------------------------------------------------------------
 	virtual void installUI(sdc::AComponentPtr c);
 	//-------------------------------------------------------------------------
 	static Ptr create() {
@@ -50,40 +75,49 @@ public:
 	virtual void draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c);
 }; // FrxIOUI
 ///////////////////////////////////////////////////////////////////////////////
-//-----------------------------------------------------------------------------
 namespace {
 	template <class IOType>
-	void drawIO(sd::IDrawContext::Ptr cn, FrxIO::Ptr io) {
-		cn->translate(io->getPivot());
-		cn->arc(sd::Point2D(0, 0), io->getWidth() / 2.5);
-		cn->setFillColor(io->getForeground());
-		cn->fill();
-	}
-	template <class IOType>
-	void setIOSize(sdc::AComponentPtr c) {
-		c->setSize(sd::Dimension(50, 50));
+	void setIODefaults(sdc::AComponentPtr c) {}
+	template <>
+	void setIODefaults<ioTypes::Input>(sdc::AComponentPtr c) {
+		sd::ColorRGBA col;
+		sdcu::getUIManager().getProperty("ProcessorInput.color", col);
+		c->setForeground(col);
 	}
 	template <>
-	void setIOSize<ioTypes::Input>(sdc::AComponentPtr c) {
-		c->setSize(sd::Dimension(25, 25));
+	void setIODefaults<ioTypes::Output>(sdc::AComponentPtr c) {
+		sd::ColorRGBA col;
+		sdcu::getUIManager().getProperty("ProcessorOutput.color", col);
+		c->setForeground(col);
 	}
 	template <>
-	void setIOSize<ioTypes::Output>(sdc::AComponentPtr c) {
-		c->setSize(sd::Dimension(25, 25));
+	void setIODefaults<ioTypes::Entry>(sdc::AComponentPtr c) {
+		sd::ColorRGBA col;
+		sdcu::getUIManager().getProperty("Entry.color", col);
+		c->setForeground(col);
+	}
+	template <>
+	void setIODefaults<ioTypes::Exit>(sdc::AComponentPtr c) {
+		sd::ColorRGBA col;
+		sdcu::getUIManager().getProperty("Exit.color", col);
+		c->setForeground(col);
 	}
 } // namespace
 //-----------------------------------------------------------------------------
 template <class CIO>
 void FrxIOUI<CIO>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
-	//Super::draw(cn, c);
+	Super::draw(cn, c);
 	FrxIO::Ptr io = boost::shared_dynamic_cast<FrxIO>(c);
-	drawIO<CIO>(cn, io);
+	sd::Point2D loc = io->getPivot();
+	cn->arc(loc, getCoreRadius(io));
+	cn->setFillColor(io->getForeground());
+	cn->fill();
 }
 //-----------------------------------------------------------------------------
 template <class CIO>
 void FrxIOUI<CIO>::installUI(sdc::AComponentPtr c) {
-	setIOSize<CIO>(c);
 	Super::installUI(c);
+	setIODefaults<CIO>(c);
 }
 }}}} // namespace(s)
 
