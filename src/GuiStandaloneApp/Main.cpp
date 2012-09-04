@@ -74,9 +74,13 @@ int main() {
 	comp->setLocation(100, 150);
 	circ->add(comp, fgc::FrxCircuidView::Z_IO);
 
-	comp = fgc::FrxStdKnob::create();
-	comp->setLocation(200, 250);
-	circ->add(comp, fgc::FrxCircuidView::Z_Knobs);
+	for (int i=0; i<NUM; ++i) {
+		comp = fgc::FrxStdKnob::create();
+		int x = rand() % WIDTH;
+		int y = rand() % HEIGHT;
+		comp->setLocation(x, y);
+		circ->add(comp, fgc::FrxCircuidView::Z_Knobs);
+	}
 	
 	for (int i=0; i<NUM; ++i) {
 		fgc::FrxPluginNode::Ptr comp = fgc::FrxPluginNode::create();

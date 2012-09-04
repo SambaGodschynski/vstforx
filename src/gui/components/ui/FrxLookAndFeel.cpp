@@ -91,8 +91,8 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("ProcessorOutput.color", HtmlColors::getColor("black"));
 	m.putProperty("Entry.color", HtmlColors::getColor("black"));
 	m.putProperty("Exit.color", HtmlColors::getColor("black"));
-	m.putProperty("FrxStdKnobCorona02.color",  HtmlColors::getColor("red"));
-	m.putProperty("FrxStdKnobCorona01.color",  HtmlColors::getColor("yellow"));
+	m.putProperty("FrxStdKnobCorona02.color",  HtmlColors::getColor("yellow"));
+	m.putProperty("FrxStdKnobCorona01.color",  HtmlColors::getColor("red"));
 }
 
 }}}} // namespace(s)

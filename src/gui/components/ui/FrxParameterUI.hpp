@@ -84,6 +84,9 @@ public:
 		return getCoreRadius(c) + 15.;
 	}
 	//-------------------------------------------------------------------------
+	virtual int 
+		determineContext(const sdc::events::MouseEvent &ev) const;
+	//-------------------------------------------------------------------------
 	static Ptr create() {
 		Ptr res(new ThisClass());
 		res->self = res;
@@ -140,8 +143,8 @@ void FrxParameterUI<PT>::drawCorona(sd::IDrawContext::Ptr cn,
 
 	FrxComponent::Ptr node = boost::shared_dynamic_cast<FrxComponent>(c);
 	
-	sambag::com::Number sa = 0.; //90. * (M_PI / 180.);
-	sambag::com::Number ea = 180. * (M_PI / 180.);
+	sambag::com::Number sa = 90. * (M_PI / 180.);
+	sambag::com::Number ea = 270. * (M_PI / 180.);
 	sd::Point2D loc = node->getPivot();
 	cn->arc(loc, getCoronaRadius(c), sa, ea);
 	cn->setFillColor(coronaCol01);
@@ -150,6 +153,19 @@ void FrxParameterUI<PT>::drawCorona(sd::IDrawContext::Ptr cn,
 	cn->arcNegative(loc, getCoronaRadius(c), sa, ea);
 	cn->setFillColor(coronaCol02);
 	cn->fill();
+}
+//-----------------------------------------------------------------------------
+template <class PT>
+int FrxParameterUI<PT>::determineContext(const sdc::events::MouseEvent &ev) const
+{
+	if (hitsCorona(ev.getSource(), ev.getLocation())) {
+		if (ev.getLocation().x() > getCoronaRadius(ev.getSource())) {
+			return DRAG;
+		} else {
+			return CONNECT;
+		}
+	}
+	return NONE;
 }
 //-----------------------------------------------------------------------------
 template <class PT>

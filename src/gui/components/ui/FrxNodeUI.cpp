@@ -16,7 +16,7 @@ namespace components { namespace ui {
 ///////////////////////////////////////////////////////////////////////////////
 namespace {
 	const sambag::com::Number FINAL_ALPHA = 0.5f;
-	const int FADE_STEPS = 5;
+	const int FADE_STEPS = 10;
 	void onFadeTimer( void *src, const sdc::Timer::Event &ev,
 		sambag::com::Number *alpha,
 		sdc::AComponent::WPtr _c, 
