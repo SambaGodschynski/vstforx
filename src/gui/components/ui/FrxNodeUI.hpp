@@ -16,6 +16,7 @@
 #include <sambag/disco/components/events/MouseEvent.hpp>
 #include <sambag/disco/svg/graphicElements/Line.hpp>
 #include <sambag/disco/components/ComponentWrapper.hpp>
+#include <sambag/com/ArithmeticWrapper.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -41,6 +42,16 @@ public:
 	typedef boost::weak_ptr<FrxNodeUI> WPtr;
 protected:
 	//-------------------------------------------------------------------------
+	virtual void drawCorona(sd::IDrawContext::Ptr cn, sdc::AComponent::Ptr c);
+	//-------------------------------------------------------------------------
+	enum MouseContext {NONE, DRAG, CONNECT};
+	//-------------------------------------------------------------------------
+	sambag::com::ArithmeticWrapper<int> context;
+	//-------------------------------------------------------------------------
+	bool hitsCorona(sdc::AComponentPtr c, const sd::Point2D &p) const;
+	//-------------------------------------------------------------------------
+	bool hitsCore(sdc::AComponentPtr c, const sd::Point2D &p) const;
+	//-------------------------------------------------------------------------
 	FrxNodeUI(){}
 	//-------------------------------------------------------------------------
 	virtual void installUI(sdc::AComponentPtr c);
@@ -51,6 +62,9 @@ protected:
 	typedef sdc::ComponentWrapper<sdsg::Line> Line;
 	//-------------------------------------------------------------------------
 	Line::Ptr toConnect;
+	//-------------------------------------------------------------------------
+	virtual int 
+		determineContext(const sdc::events::MouseEvent &ev) const;
 	//-------------------------------------------------------------------------
 	// MouseActions on object:
 	virtual void drag(const sdc::events::MouseEvent &ev);
@@ -63,6 +77,7 @@ protected:
 	//-------------------------------------------------------------------------
 	virtual void use(const sdc::events::MouseEvent &ev) {}
 	//-------------------------------------------------------------------------
+	sambag::com::Number coronaAlpha;
 public:
 	// MouseEvents
 	void mousePressed(const sdc::events::MouseEvent &ev);
@@ -84,12 +99,23 @@ public:
 	void onMouse(void *src, const sdc::events::MouseEvent &ev);
 private:
 	//-------------------------------------------------------------------------
+	sambag::com::ArithmeticWrapper<bool> inside;
+	//-------------------------------------------------------------------------
 	bool fadeIn;
 	//-------------------------------------------------------------------------
 	sdc::Timer::Ptr fadeTimer;
-	//-------------------------------------------------------------------------
-	sd::ColorRGBA coronaCol;
 public:
+	//-------------------------------------------------------------------------
+	/**
+	 * Returns true if the specified x,y location
+	 * is contained within the look and feel's defined
+	 * shape of the specified component.
+	 * @param c
+	 * @param x
+	 * @param y
+	 * @return
+	 */
+	virtual bool contains(sdc::AComponentPtr c, const sd::Point2D &p);
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
 		return boost::shared_dynamic_cast<FrxNodeUI>(Super::getPtr());

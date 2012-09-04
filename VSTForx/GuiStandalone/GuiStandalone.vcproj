@@ -324,14 +324,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxNodeMouseListener.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\gui\components\ui\FrxNodeMouseListener.hpp"
-						>
-					</File>
-					<File
 						RelativePath="..\..\src\gui\components\ui\FrxNodeUI.cpp"
 						>
 					</File>
@@ -340,27 +332,11 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxParameterMouseListener.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\gui\components\ui\FrxParameterMouseListener.hpp"
-						>
-					</File>
-					<File
 						RelativePath="..\..\src\gui\components\ui\FrxParameterUI.cpp"
 						>
 					</File>
 					<File
 						RelativePath="..\..\src\gui\components\ui\FrxParameterUI.hpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\gui\components\ui\FrxProcessorMouseListener.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\gui\components\ui\FrxProcessorMouseListener.hpp"
 						>
 					</File>
 					<File

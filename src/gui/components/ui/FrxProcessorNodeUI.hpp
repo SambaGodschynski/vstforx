@@ -10,11 +10,10 @@
 
 #include <boost/shared_ptr.hpp>
 #include <gui/components/FrxProcessorNode.hpp>
-#include "FrxProcessorMouseListener.hpp"
 #include "FrxNodeUI.hpp"
 
 namespace frx { namespace gui {
-namespace components { namespace ui { 
+namespace components { namespace ui {
 namespace sd = sambag::disco;
 namespace sdc = sd::components;
 namespace sdcu = sdc::ui;
@@ -46,12 +45,16 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<ThisClass> Ptr;
 private:
-	//-------------------------------------------------------------------------
-	FrxProcessorMouseListener mouseListener;
 protected:
 	//-------------------------------------------------------------------------
 	FrxProcessorNodeUI();
 public:
+	//-------------------------------------------------------------------------
+	virtual void beginConnecting(const sdc::events::MouseEvent &ev) {}
+	//-------------------------------------------------------------------------
+	virtual void connecting(const sdc::events::MouseEvent &ev) {}
+	//-------------------------------------------------------------------------
+	virtual void endConnecting(const sdc::events::MouseEvent &ev) {}
 	//-------------------------------------------------------------------------
 	virtual sambag::com::Number getCoreRadius(sdc::AComponentPtr c) const {
 		return getProcessorRadius<ConcreteProcessor>();
@@ -94,14 +97,14 @@ template <class CT>
 void FrxProcessorNodeUI<CT>::installUI(sdc::AComponentPtr c) {
 	Super::installUI(c);
 	c->EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
-		boost::bind(&FrxProcessorMouseListener::onMouse, &mouseListener, _1, _2),
+		boost::bind(&Super::onMouse, this, _1, _2),
 		getPtr()
 	);
 }
 //-----------------------------------------------------------------------------
 template <class CT>
 void FrxProcessorNodeUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
-	//Super::draw(cn, c);
+	Super::draw(cn, c);
 	FrxProcessorNode::Ptr node = boost::shared_dynamic_cast<FrxProcessorNode>(c);
 	cn->translate(node->getPivot());
 	cn->arc(sd::Point2D(0, 0), getCoreRadius(node));

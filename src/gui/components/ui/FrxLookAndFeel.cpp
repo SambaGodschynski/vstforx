@@ -84,13 +84,15 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("ProcessorOutput.radius", RADIUS_SMALL);
 	m.putProperty("Entry.radius", RADIUS_LARGE);
 	m.putProperty("Exit.radius", RADIUS_LARGE);
-	m.putProperty("StdKnob.radius", RADIUS_MED);
+	m.putProperty("StdKnob.radius", RADIUS_SMALL); // affects hit range only
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<colors
-	m.putProperty("FrxNodeCorona.color",  HtmlColors::getColor("red"));
+	m.putProperty("FrxNodeCorona.color",  HtmlColors::getColor("yellow"));
 	m.putProperty("ProcessorInput.color", HtmlColors::getColor("black"));
 	m.putProperty("ProcessorOutput.color", HtmlColors::getColor("black"));
 	m.putProperty("Entry.color", HtmlColors::getColor("black"));
 	m.putProperty("Exit.color", HtmlColors::getColor("black"));
+	m.putProperty("FrxStdKnobCorona02.color",  HtmlColors::getColor("red"));
+	m.putProperty("FrxStdKnobCorona01.color",  HtmlColors::getColor("yellow"));
 }
 
 }}}} // namespace(s)

@@ -49,7 +49,7 @@ void FrxSelectionMouseListener::mousePressed(const sdc::events::MouseEvent &ev) 
 }
 //-----------------------------------------------------------------------------
 void FrxSelectionMouseListener::mouseDragged(const sdc::events::MouseEvent &ev) {
-	if (ev.getButtons() == sdc::events::MouseEvent::DISCO_BTN2)
+	if (ev.getButtons() == sdc::events::MouseEvent::DISCO_BTN1)
 		drag(ev);
 }
 //-----------------------------------------------------------------------------

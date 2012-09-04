@@ -16,38 +16,58 @@ namespace components { namespace ui {
 ///////////////////////////////////////////////////////////////////////////////
 namespace {
 	const sambag::com::Number FINAL_ALPHA = 0.5f;
-	const int FADE_IN_STEPS = 10;
-	const int FADE_OUT_STEPS = 10;
-	const sambag::com::Number FADE_IN_INCR = 
-		FINAL_ALPHA / (sambag::com::Number)FADE_IN_STEPS;
-	const sambag::com::Number FADE_OUT_DECR = 
-		FINAL_ALPHA / (sambag::com::Number)FADE_IN_STEPS;
+	const int FADE_STEPS = 5;
 	void onFadeTimer( void *src, const sdc::Timer::Event &ev,
-		sd::ColorRGBA *col,
+		sambag::com::Number *alpha,
 		sdc::AComponent::WPtr _c, 
 		const bool *fadeIn
 	) {
 	sdc::AComponent::Ptr c = _c.lock();
 		if (!c)
 			return;
-		sambag::com::Number a = col->getA();
 		if (*fadeIn) {
-			a+=FADE_IN_INCR;
-			if (a>=FINAL_ALPHA)
+			if (*alpha>=FINAL_ALPHA) {
 				ev.getSource()->stop();
+				return;
+			}
+			*alpha+=FINAL_ALPHA/FADE_STEPS;
 		}
 		else {
-			a-=FADE_OUT_DECR;
-			if (a<=0.)
+			if (*alpha<=0.) {
 				ev.getSource()->stop();
+				return;
+			}
+			*alpha-=FINAL_ALPHA/FADE_STEPS;
 		}
-		col->setA(a);
 		c->redraw();
 	}
 }
 //=============================================================================
 //  Class FrxNodeUI
 //=============================================================================
+//-----------------------------------------------------------------------------
+bool FrxNodeUI::contains(sdc::AComponentPtr c, const sd::Point2D &p) {
+	if (inside)
+		return hitsCorona(c, p);
+	else
+		return hitsCore(c, p);
+}
+//-----------------------------------------------------------------------------
+bool FrxNodeUI::hitsCorona(sdc::AComponentPtr c, const sd::Point2D &p) const {
+	FrxComponent::Ptr node = boost::shared_dynamic_cast<FrxComponent>(c);
+	sd::Coordinate x = p.x() - node->getPivot().x();
+	sd::Coordinate y = p.y() - node->getPivot().y();
+	sd::Coordinate radius = getCoronaRadius(c);
+	return x*x + y*y <= radius*radius;
+}
+//-----------------------------------------------------------------------------
+bool FrxNodeUI::hitsCore(sdc::AComponentPtr c, const sd::Point2D &p) const {
+	FrxComponent::Ptr node = boost::shared_dynamic_cast<FrxComponent>(c);
+	sd::Coordinate x = p.x() - node->getPivot().x();
+	sd::Coordinate y = p.y() - node->getPivot().y();
+	sd::Coordinate radius = getCoreRadius(c);
+	return x*x + y*y <= radius*radius;
+}
 //-----------------------------------------------------------------------------
 void FrxNodeUI::installUI(sdc::AComponentPtr c) {
 	// size
@@ -58,8 +78,7 @@ void FrxNodeUI::installUI(sdc::AComponentPtr c) {
 		boost::bind(&FrxNodeUI::onMouse, this, _1, _2),
 		getPtr()
 	);
-	sdcu::getUIManager().getProperty("FrxNodeCorona.color", coronaCol);
-	coronaCol.setA(0.0);
+	coronaAlpha = 0.;
 	// connection stuff
 	toConnect = Line::create();
 	sdsg::Line::Ptr line = toConnect->getObject();
@@ -69,26 +88,34 @@ void FrxNodeUI::installUI(sdc::AComponentPtr c) {
 	line->getP1().y().setType(sd::svg::units::Unit::PX);
 	toConnect->setForeground(sd::ColorRGBA(1));
 	// fade timer
-	fadeTimer = sdc::Timer::create(1);
+	fadeTimer = sdc::Timer::create(10);
 	fadeTimer->setNumRepetitions(-1);
 	fadeIn = true;
 	sdc::AComponent::WPtr _c = c;
 	fadeTimer->EventSender<sdc::Timer::Event>::addTrackedEventListener(
 		boost::bind(
-			&onFadeTimer, _1, _2, &coronaCol, _c, &fadeIn
+			&onFadeTimer, _1, _2, &coronaAlpha, _c, &fadeIn
 		),
 		getPtr()
 	);
 }
 //-----------------------------------------------------------------------------
-void FrxNodeUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
-	if (!usesCorona() || coronaCol.getA() == 0.)
-		return;
+void FrxNodeUI::drawCorona(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
+	SAMBAG_PROPERTY_TAG(PropertyTag, "FrxNodeCorona.color");
+	sd::ColorRGBA coronaCol = 
+		sdcu::getUIPropertyCached<PropertyTag>(sd::ColorRGBA());
+	coronaCol.setA(coronaAlpha);
 	FrxComponent::Ptr node = boost::shared_dynamic_cast<FrxComponent>(c);
 	sd::Point2D loc = node->getPivot();
 	cn->arc(loc, getCoronaRadius(c));
 	cn->setFillColor(coronaCol);
 	cn->fill();
+}
+//-----------------------------------------------------------------------------
+void FrxNodeUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
+	if (!usesCorona() || coronaAlpha == 0.)
+		return;
+	drawCorona(cn, c);
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::drag(const sdc::events::MouseEvent &ev) {
@@ -148,31 +175,51 @@ void FrxNodeUI::endConnecting(const sdc::events::MouseEvent &ev) {
 	toConnect->setVisible(false);
 	circ->AComponent::redraw();
 }
+//------------------------------------------------------------------------------
+int FrxNodeUI::determineContext(const sdc::events::MouseEvent &ev) const {
+	if (hitsCore(ev.getSource(), ev.getLocation())) {
+		return CONNECT;
+	}
+	if (hitsCorona(ev.getSource(), ev.getLocation())) {
+		return DRAG;
+	}
+	return NONE;
+}
 //-----------------------------------------------------------------------------
 void FrxNodeUI::mousePressed(const sdc::events::MouseEvent &ev) {
 	sdc::AComponent::Ptr c = ev.getSource();
 	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
 	clickLoc = circ->getLocationOnComponent(ev.getLocationOnScreen());
-	if (ev.getButtons() == sdc::events::MouseEvent::DISCO_BTN1)
+	if (ev.getButtons() != sdc::events::MouseEvent::DISCO_BTN1)
+		return;
+	context = determineContext(ev);
+	if (context == CONNECT) {
 		beginConnecting(ev);
+		return;
+	}
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::mouseReleased(const sdc::events::MouseEvent &ev)  {
-	clickLoc = ev.getLocation();
-	if (ev.getButtons() == sdc::events::MouseEvent::DISCO_BTN1)
+	if (context == CONNECT)
 		endConnecting(ev);
-
+	context = NONE;
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::mouseEntered(const sdc::events::MouseEvent &ev)  {
+	if (inside)
+		return;
 	fadeIn = true;
 	fadeTimer->start();
+	inside = true;
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::mouseExited(const sdc::events::MouseEvent &ev) {
+	if (!inside)
+		return;
 	fadeIn = false;
 	fadeTimer->start();
+	inside = false;
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::mouseClicked(const sdc::events::MouseEvent &ev) {
@@ -182,12 +229,15 @@ void FrxNodeUI::mouseMoved(const sdc::events::MouseEvent &ev) {
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::mouseDragged(const sdc::events::MouseEvent &ev) {
-	if (ev.getButtons() == sdc::events::MouseEvent::DISCO_BTN1)
-		use(ev);//connecting(ev);
-	else 
+	if (context==DRAG) {
 		drag(ev);
-
-}
+		return;
+	}
+	if (context==CONNECT) {
+		connecting(ev);
+		return;
+	}
+}	
 //-----------------------------------------------------------------------------
 void FrxNodeUI::mouseWheelMoved(const sdc::events::MouseEvent &ev) {
 }
