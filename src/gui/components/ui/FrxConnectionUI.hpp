@@ -96,13 +96,13 @@ void FrxConnectionUI<CT>::adjustBoundingRect(sd::Rectangle &r,
 	sambag::com::Number lw = cn->getStrokeWidth() * 2.5;
 	if (r.width() < lw) {
 		sambag::com::Number miss =  lw - r.width();
-		r.x0().x( r.x0().x() - miss/2. );
-		r.x1().x( r.x1().x() + miss/2. );
+		r.x( r.x() - miss/2. );
+		r.width( r.width() + miss/2. );
 	}
 	if (r.height() < lw) {
 		sambag::com::Number miss =  lw - r.height();
-		r.x0().y( r.x0().y() - miss/2. );
-		r.x1().y( r.x1().y() + miss/2. );
+		r.y( r.y() - miss/2. );
+		r.height( r.height() + miss/2. );
 	}
 }
 //-----------------------------------------------------------------------------
