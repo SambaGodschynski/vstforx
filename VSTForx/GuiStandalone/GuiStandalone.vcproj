@@ -189,6 +189,10 @@
 				Name="components"
 				>
 				<File
+					RelativePath="..\..\src\gui\components\Forward.hpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\src\gui\components\FrxCircuidView.cpp"
 					>
 				</File>
@@ -234,6 +238,22 @@
 				</File>
 				<File
 					RelativePath="..\..\src\gui\components\FrxConnection.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxControl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxControl.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxHover.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\components\FrxHover.hpp"
 					>
 				</File>
 				<File
@@ -309,6 +329,22 @@
 					</File>
 					<File
 						RelativePath="..\..\src\gui\components\ui\FrxConnectionUI.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxHoverMouseListener.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxHoverMouseListener.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxHoverUI.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ui\FrxHoverUI.hpp"
 						>
 					</File>
 					<File

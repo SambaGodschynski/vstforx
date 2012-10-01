@@ -37,10 +37,13 @@ protected:
 	//-------------------------------------------------------------------------
 	FrxSelectionUI(){}
 	//-------------------------------------------------------------------------
-	virtual void installUI(sdc::AComponentPtr c);
-private:
+	virtual void installListeners(sdc::AComponentPtr c);
 	//-------------------------------------------------------------------------
-	FrxSelectionMouseListener mouseListener;
+	virtual void installDefaults(sdc::AComponentPtr c);
+	//-------------------------------------------------------------------------
+	virtual void installUI(sdc::AComponentPtr c);
+	//-------------------------------------------------------------------------
+	FrxSelectionMouseListener::Ptr mouseListener;
 public:
 	//-------------------------------------------------------------------------
 	Ptr getPtr() {

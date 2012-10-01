@@ -17,8 +17,17 @@ namespace frx { namespace gui { namespace components {
 void FrxSelection::setContent(const FrxSelection::ContentContainer &container) 
 {
 	clearContent();
-	setVisible(true);
+	if (!container.empty())
+		setVisible(true);
 	this->content = container;
+	updateBounds();
+}
+//-----------------------------------------------------------------------------
+void FrxSelection::addElement(sdc::AComponent::Ptr c) {
+	if (!c)
+		return;
+	setVisible(true);
+	content.push_back(c);
 	updateBounds();
 }
 //-----------------------------------------------------------------------------

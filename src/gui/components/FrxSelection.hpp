@@ -41,9 +41,9 @@ protected:
 	//-------------------------------------------------------------------------
 	ContentContainer content;
 	//-------------------------------------------------------------------------
-	SAMBAG_STD_STATIC_COMPONENT_CREATOR(FrxSelection)
-	//-------------------------------------------------------------------------
 	void extendBounds(sdc::AComponent::Ptr c);
+	//-------------------------------------------------------------------------
+	SAMBAG_STD_STATIC_COMPONENT_CREATOR(FrxSelection)
 private:
 public:
 	//-------------------------------------------------------------------------
@@ -56,13 +56,26 @@ public:
 	 */
 	void setContent(const ContentContainer &container);
 	//-------------------------------------------------------------------------
+	void addElement(sdc::AComponent::Ptr c);
+	//-------------------------------------------------------------------------
+	template <class Container>
+	void addElements(const Container &c);
+	//-------------------------------------------------------------------------
 	const ContentContainer & getContent() const { return content; }
 	//-------------------------------------------------------------------------
 	sdcu::AComponentUIPtr createComponentUI(sdcu::ALookAndFeelPtr laf) const {
 		return laf->getUI<FrxSelection>();
 	}
-
 }; // FrxSelection
+///////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------
+template <class Container>
+void FrxSelection::addElements(const Container &c) {
+	typename Container::const_iterator it = c.begin();
+	for ( ; it!=c.end(); ++it ) {
+		addElement(*it);
+	}
+}
 }}} // namespace(s)
 
 #endif /* SAMBAG_FRXSELECTION_H */

@@ -20,6 +20,8 @@
 #include <gui/components/FrxConcreteIO.hpp>
 #include <gui/components/ui/FrxIOUI.hpp>
 #include <gui/components/FrxSelection.hpp>
+#include <gui/components/FrxHover.hpp>
+#include <gui/components/ui/FrxHoverUI.hpp>
 #include <gui/components/ui/FrxSelectionUI.hpp>
 #include <gui/components/FrxConcreteParameter.hpp>
 #include <gui/components/ui/FrxParameterUI.hpp>
@@ -45,6 +47,14 @@ void FrxLookAndFeel::installComponents() {
 	registerComponentUI<fgc::FrxCircuidView, fgcu::FrxCircuidViewUI>();
 	// processor nodes
 	registerComponentUI<fgc::FrxPluginNode, fgcu::FrxProcessorNodeUI<FrxPluginNode::ProcessorType> >();
+	registerComponentUI<fgc::FrxVolumeNode, fgcu::FrxProcessorNodeUI<FrxVolumeNode::ProcessorType> >();
+	registerComponentUI<fgc::FrxPanNode, fgcu::FrxProcessorNodeUI<FrxPanNode::ProcessorType> >();
+	registerComponentUI<fgc::FrxInStepNode, fgcu::FrxProcessorNodeUI<FrxInStepNode::ProcessorType> >();
+	registerComponentUI<fgc::FrxOutStepNode, fgcu::FrxProcessorNodeUI<FrxOutStepNode::ProcessorType> >();
+	registerComponentUI<fgc::FrxInSwitchNode, fgcu::FrxProcessorNodeUI<FrxInSwitchNode::ProcessorType> >();
+	registerComponentUI<fgc::FrxOutSwitchNode, fgcu::FrxProcessorNodeUI<FrxOutSwitchNode::ProcessorType> >();
+	registerComponentUI<fgc::FrxADSRNode, fgcu::FrxProcessorNodeUI<FrxADSRNode::ProcessorType> >();
+	registerComponentUI<fgc::FrxPeakTrackerNode, fgcu::FrxProcessorNodeUI<FrxPeakTrackerNode::ProcessorType> >();
 	// parameter components
 	registerComponentUI<fgc::FrxStdKnob, FrxParameterUI<FrxStdKnob::ControllerType> >();
 	// connections
@@ -58,6 +68,7 @@ void FrxLookAndFeel::installComponents() {
 	registerComponentUI<fgc::FrxExitNode, fgcu::FrxIOUI<fgc::FrxExitNode::IOType> >();
 	// misc
 	registerComponentUI<fgc::FrxSelection, fgcu::FrxSelectionUI>();
+	registerComponentUI<fgc::FrxHover, fgcu::FrxHoverUI>();
 }
 //-----------------------------------------------------------------------------
 void FrxLookAndFeel::installDefaults() {
@@ -87,12 +98,20 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("StdKnob.radius", RADIUS_SMALL); // affects hit range only
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<colors
 	m.putProperty("FrxNodeCorona.color",  HtmlColors::getColor("yellow"));
-	m.putProperty("ProcessorInput.color", HtmlColors::getColor("black"));
-	m.putProperty("ProcessorOutput.color", HtmlColors::getColor("black"));
-	m.putProperty("Entry.color", HtmlColors::getColor("black"));
-	m.putProperty("Exit.color", HtmlColors::getColor("black"));
+	m.putProperty("ProcessorInput.bgColor", HtmlColors::getColor("white"));
+	m.putProperty("ProcessorOutput.bgColor", HtmlColors::getColor("black"));
+	m.putProperty("Entry.bgColor", HtmlColors::getColor("black"));
+	m.putProperty("Exit.bgColor", HtmlColors::getColor("white"));
+	m.putProperty("ProcessorInput.fgColor", HtmlColors::getColor("black"));
+	m.putProperty("ProcessorOutput.fgColor", HtmlColors::getColor("black"));
+	m.putProperty("Entry.fgColor", HtmlColors::getColor("black"));
+	m.putProperty("Exit.fgColor", HtmlColors::getColor("black"));
+	m.putProperty("FrxSelection.bgColor", HtmlColors::getColor("purple").setA(0.25));
 	m.putProperty("FrxStdKnobCorona02.color",  HtmlColors::getColor("yellow"));
 	m.putProperty("FrxStdKnobCorona01.color",  HtmlColors::getColor("red"));
+
+	resetUIPorpertyCache();
+
 }
 
 }}}} // namespace(s)

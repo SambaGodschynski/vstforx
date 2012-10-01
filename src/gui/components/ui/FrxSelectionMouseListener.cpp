@@ -15,17 +15,18 @@ namespace components { namespace ui {
 //=============================================================================
 //  Class FrxSelectionMouseListener
 //=============================================================================
+//-------------------------------------------------------------------------
+FrxSelectionMouseListener::FrxSelectionMouseListener() : 
+	tmpPoint(NULL_POINT2D) 
+{
+}
 //-----------------------------------------------------------------------------
-void FrxSelectionMouseListener::drag(const sdc::events::MouseEvent &ev) {
+void FrxSelectionMouseListener::translateSelection(FrxSelectionPtr sel, 
+	const sd::Point2D &distance)
+{
 	namespace geom = boost::geometry;
 	namespace trans = geom::strategy::transform;
 	typedef trans::translate_transformer<sd::Point2D, sd::Point2D> Transl;
-	sdc::AComponent::Ptr c = ev.getSource();
-	FrxSelection::Ptr sel = boost::shared_dynamic_cast<FrxSelection>(c);
-	FrxCircuidView::Ptr circ = sel->getFirstContainer<FrxCircuidView>();
-	SAMBAG_ASSERT(circ);
-	sd::Point2D distance = circ->getLocationOnComponent(ev.getLocationOnScreen());
-	boost::geometry::subtract_point(distance, clickLoc);
 	Transl transl(distance.x(), distance.y());
 	BOOST_FOREACH(sdc::AComponent::WPtr _sc, sel->getContent()) {
 		sdc::AComponent::Ptr sc = _sc.lock();
@@ -37,20 +38,29 @@ void FrxSelectionMouseListener::drag(const sdc::events::MouseEvent &ev) {
 	sd::Point2D loc; 
 	geom::transform(sel->getLocation(), loc, transl);
 	sel->setLocation(loc);
-
-	clickLoc = circ->getLocationOnComponent(ev.getLocationOnScreen());
+}
+//-----------------------------------------------------------------------------
+void FrxSelectionMouseListener::moveSelection(const sdc::events::MouseEvent &ev) {
+	sdc::AComponent::Ptr c = ev.getSource();
+	FrxSelection::Ptr sel = boost::shared_dynamic_cast<FrxSelection>(c);
+	FrxCircuidView::Ptr circ = sel->getFirstContainer<FrxCircuidView>();
+	SAMBAG_ASSERT(circ);
+	sd::Point2D distance = circ->getLocationOnComponent(ev.getLocationOnScreen());
+	boost::geometry::subtract_point(distance, tmpPoint);
+	translateSelection(sel, distance);
+	tmpPoint = circ->getLocationOnComponent(ev.getLocationOnScreen());
 }
 //-----------------------------------------------------------------------------
 void FrxSelectionMouseListener::mousePressed(const sdc::events::MouseEvent &ev) {
 	sdc::AComponent::Ptr c = ev.getSource();
 	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
-	clickLoc = circ->getLocationOnComponent(ev.getLocationOnScreen());
+	tmpPoint = circ->getLocationOnComponent(ev.getLocationOnScreen());
 }
 //-----------------------------------------------------------------------------
 void FrxSelectionMouseListener::mouseDragged(const sdc::events::MouseEvent &ev) {
 	if (ev.getButtons() == sdc::events::MouseEvent::DISCO_BTN1)
-		drag(ev);
+		moveSelection(ev);
 }
 //-----------------------------------------------------------------------------
 void FrxSelectionMouseListener::onMouse(void *src, const sdc::events::MouseEvent &ev)

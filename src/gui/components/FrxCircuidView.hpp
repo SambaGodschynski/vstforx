@@ -9,6 +9,7 @@
 #define SAMBAG_FRXCIRCUIDVIEW_H
 
 #include <boost/shared_ptr.hpp>
+#include <sambag/disco/components/Forward.hpp>
 #include <sambag/disco/components/AContainer.hpp>
 #include <sambag/disco/components/Viewport.hpp>
 #include <sambag/disco/components/Panel.hpp>
@@ -62,8 +63,14 @@ protected:
 	FrxCircuidView();
 	//-------------------------------------------------------------------------
 	virtual void postConstructor();
+	//-------------------------------------------------------------------------
+	void handleMousePopup(const sdc::events::MouseEvent &ev);
+	//-------------------------------------------------------------------------
+	sdc::PopupMenuPtr currPopup;
 private:
 public:
+	//-------------------------------------------------------------------------
+	void onMouse(void *src, const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
 	AContainer::Ptr getContentPane() const {
 		return content;

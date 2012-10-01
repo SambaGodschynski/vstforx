@@ -108,7 +108,7 @@ void FrxProcessorNodeUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c
 	FrxProcessorNode::Ptr node = boost::shared_dynamic_cast<FrxProcessorNode>(c);
 	cn->translate(node->getPivot());
 	cn->arc(sd::Point2D(0, 0), getCoreRadius(node));
-	cn->setFillColor(node->getForeground());
+	cn->setFillColor(sd::ColorRGBA());
 	cn->fill();
 }
 }}}} // namespace(s)

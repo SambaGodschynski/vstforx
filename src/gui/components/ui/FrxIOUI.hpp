@@ -81,25 +81,33 @@ namespace {
 	template <>
 	void setIODefaults<ioTypes::Input>(sdc::AComponentPtr c) {
 		sd::ColorRGBA col;
-		sdcu::getUIManager().getProperty("ProcessorInput.color", col);
+		sdcu::getUIManager().getProperty("ProcessorInput.bgColor", col);
+		c->setBackground(col);
+		sdcu::getUIManager().getProperty("ProcessorInput.fgColor", col);
 		c->setForeground(col);
 	}
 	template <>
 	void setIODefaults<ioTypes::Output>(sdc::AComponentPtr c) {
 		sd::ColorRGBA col;
-		sdcu::getUIManager().getProperty("ProcessorOutput.color", col);
+		sdcu::getUIManager().getProperty("ProcessorOutput.bgColor", col);
+		c->setBackground(col);
+		sdcu::getUIManager().getProperty("ProcessorOutput.fgColor", col);
 		c->setForeground(col);
 	}
 	template <>
 	void setIODefaults<ioTypes::Entry>(sdc::AComponentPtr c) {
 		sd::ColorRGBA col;
-		sdcu::getUIManager().getProperty("Entry.color", col);
+		sdcu::getUIManager().getProperty("Entry.bgColor", col);
+		c->setBackground(col);
+		sdcu::getUIManager().getProperty("Entry.fgColor", col);
 		c->setForeground(col);
 	}
 	template <>
 	void setIODefaults<ioTypes::Exit>(sdc::AComponentPtr c) {
 		sd::ColorRGBA col;
-		sdcu::getUIManager().getProperty("Exit.color", col);
+		sdcu::getUIManager().getProperty("Exit.bgColor", col);
+		c->setBackground(col);
+		sdcu::getUIManager().getProperty("Exit.fgColor", col);
 		c->setForeground(col);
 	}
 } // namespace
@@ -109,8 +117,12 @@ void FrxIOUI<CIO>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	Super::draw(cn, c);
 	FrxIO::Ptr io = boost::shared_dynamic_cast<FrxIO>(c);
 	sd::Point2D loc = io->getPivot();
-	cn->arc(loc, getCoreRadius(io));
-	cn->setFillColor(io->getForeground());
+	sambag::com::Number r = getCoreRadius(io);
+	cn->arc(loc, r);
+	cn->setStrokeColor(io->getForeground());
+	cn->stroke();
+	cn->arc(loc, r);
+	cn->setFillColor(io->getBackground());
 	cn->fill();
 }
 //-----------------------------------------------------------------------------

@@ -9,7 +9,7 @@
 #define SAMBAG_FRXSELECTIONMOUSELISTENER_H
 
 #include <boost/shared_ptr.hpp>
-
+#include <gui/components/Forward.hpp>
 #include <sambag/disco/components/events/MouseEvent.hpp>
 #include <sambag/disco/Geometry.hpp>
 
@@ -30,22 +30,32 @@ protected:
 private:
 public:
 protected:
-private:
 	//-------------------------------------------------------------------------
-	sd::Point2D clickLoc;
+	FrxSelectionMouseListener();
+private:
 protected:
 	//-------------------------------------------------------------------------
-	void drag(const sdc::events::MouseEvent &ev);
+	sd::Point2D tmpPoint;
+	//-------------------------------------------------------------------------
+	void translateSelection(FrxSelectionPtr sel, const sd::Point2D &distance);
+	//-------------------------------------------------------------------------
+	void moveSelection(const sdc::events::MouseEvent &ev);
 public:
 	//-------------------------------------------------------------------------
 	// MouseEvents
-	void mousePressed(const sdc::events::MouseEvent &ev);
+	virtual void mousePressed(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
-	void mouseDragged(const sdc::events::MouseEvent &ev);
+	virtual void mouseDragged(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
 public:
 	//-------------------------------------------------------------------------
+	static Ptr create() {
+		return Ptr(new FrxSelectionMouseListener());
+	}
+	//-------------------------------------------------------------------------
 	void onMouse(void *src, const sdc::events::MouseEvent &ev);
+	//----------------------------------------------------------------------------
+	virtual ~FrxSelectionMouseListener(){}
 }; // FrxSelectionMouseListener
 }}}} // namespace(s)
 

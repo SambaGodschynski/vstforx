@@ -68,9 +68,25 @@ public:
 namespace processorTypes {
 	struct ProcessorTypeBase{ void init( FrxProcessorNode::Ptr ){} };
 	struct Plugin : ProcessorTypeBase{};
+	struct Volume : ProcessorTypeBase{};
+	struct Pan : ProcessorTypeBase{};
+	struct InStep : ProcessorTypeBase{};
+	struct OutStep : ProcessorTypeBase{};
+	struct InSwitch : ProcessorTypeBase{};
+	struct OutSwitch : ProcessorTypeBase{};
+	struct ADSR : ProcessorTypeBase{};
+	struct PeakTracker : ProcessorTypeBase{};
 	
 }
 typedef FrxConcreteProcessor<processorTypes::Plugin> FrxPluginNode;
+typedef FrxConcreteProcessor<processorTypes::Volume> FrxVolumeNode;
+typedef FrxConcreteProcessor<processorTypes::Pan> FrxPanNode;
+typedef FrxConcreteProcessor<processorTypes::InStep> FrxInStepNode;
+typedef FrxConcreteProcessor<processorTypes::OutStep> FrxOutStepNode;
+typedef FrxConcreteProcessor<processorTypes::InSwitch> FrxInSwitchNode;
+typedef FrxConcreteProcessor<processorTypes::OutSwitch> FrxOutSwitchNode;
+typedef FrxConcreteProcessor<processorTypes::ADSR> FrxADSRNode;
+typedef FrxConcreteProcessor<processorTypes::PeakTracker> FrxPeakTrackerNode;
 }}} // namespace(s)
 
 #endif /* SAMBAG_FRXPLUGINNODE_H */

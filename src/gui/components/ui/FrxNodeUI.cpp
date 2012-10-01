@@ -39,7 +39,7 @@ namespace {
 			}
 			*alpha-=FINAL_ALPHA/FADE_STEPS;
 		}
-		c->redraw();
+		c->getParent()->redraw();
 	}
 }
 //=============================================================================

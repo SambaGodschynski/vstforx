@@ -71,26 +71,21 @@ int main() {
 	win->getContentPane()->add(circ);
 	
 	fgc::FrxComponent::Ptr comp = fgc::FrxEntryNode::create();
-	comp->setLocation(100, 150);
+	comp->setLocation(370., 30.);
 	circ->add(comp, fgc::FrxCircuidView::Z_IO);
-
+/*
 	for (int i=0; i<NUM; ++i) {
 		comp = fgc::FrxStdKnob::create();
 		int x = rand() % WIDTH;
 		int y = rand() % HEIGHT;
 		comp->setLocation(x, y);
 		circ->add(comp, fgc::FrxCircuidView::Z_Knobs);
-	}
-	
-	for (int i=0; i<NUM; ++i) {
-		fgc::FrxPluginNode::Ptr comp = fgc::FrxPluginNode::create();
-		int x = rand() % WIDTH;
-		int y = rand() % HEIGHT;
-		comp->setLocation(x, y);
-		comp->setForeground(getRandomColor(circ->getBackground()));
-		circ->add(comp, fgc::FrxCircuidView::Z_ProcessorNodes);
-		comp->configIO(rand() % 7, rand() % 7);
-	}
+	}*/
+
+	comp = fgc::FrxExitNode::create();
+	comp->setLocation(400., 520.);
+	circ->add(comp, fgc::FrxCircuidView::Z_IO);
+
 	win->setWindowBounds(sambag::disco::Rectangle(100,100,WIDTH,HEIGHT));
 	win->setTitle("VSTForx [D.I.S.C.O.]");
 	win->validate();
