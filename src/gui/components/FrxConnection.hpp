@@ -53,9 +53,9 @@ public:
 		return boost::shared_dynamic_cast<FrxConnection>(Super::getPtr());
 	}
 	//-------------------------------------------------------------------------
-	void setComponentA(FrxComponent::Ptr a);
+	void setSrcComponent(FrxComponent::Ptr a);
 	//-------------------------------------------------------------------------
-	void setComponentB(FrxComponent::Ptr b);
+	void setDstComponent(FrxComponent::Ptr b);
 	//-------------------------------------------------------------------------
 	FrxComponent::Ptr getComponentA() const { return frxA; }
 	//-------------------------------------------------------------------------

@@ -18,6 +18,9 @@ namespace frx { namespace gui { namespace components {
 	class FrxSelection;
 	typedef boost::shared_ptr<FrxSelection> FrxSelectionPtr; 
 	typedef boost::weak_ptr<FrxSelection> FrxSelectionWPtr; 
+	class FrxNode;
+	typedef boost::shared_ptr<FrxNode> FrxNodePtr; 
+	typedef boost::weak_ptr<FrxNode> FrxNodeWPtr; 
 }}}
 
 #endif

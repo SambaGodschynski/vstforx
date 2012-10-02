@@ -83,7 +83,7 @@ int main() {
 	}*/
 
 	comp = fgc::FrxExitNode::create();
-	comp->setLocation(400., 520.);
+	comp->setLocation(370., 520.);
 	circ->add(comp, fgc::FrxCircuidView::Z_IO);
 
 	win->setWindowBounds(sambag::disco::Rectangle(100,100,WIDTH,HEIGHT));

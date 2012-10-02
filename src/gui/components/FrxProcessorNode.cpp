@@ -113,16 +113,16 @@ void FrxProcessorNode::configIO(int numInputs, int numOutputs) {
 	for (int i = 0; i<numInputs; ++i) {
 		FrxNode::Ptr in = addInputNode();
 		ProcessorInputCn::Ptr inc = ProcessorInputCn::create();
-		inc->setComponentA(in);
-		inc->setComponentB(getPtr());
+		inc->setSrcComponent(in);
+		inc->setDstComponent(getPtr());
 		circ->add(in, FrxCircuidView::Z_IO);
 		circ->add(inc, FrxCircuidView::Z_Wires);
 	}
 	for (int i = 0; i<numOutputs; ++i) {
 		FrxNode::Ptr out = addOutputNode();
 		ProcessorOutputCn::Ptr outc = ProcessorOutputCn::create();
-		outc->setComponentA(getPtr());
-		outc->setComponentB(out);
+		outc->setSrcComponent(getPtr());
+		outc->setDstComponent(out);
 		circ->add(out, FrxCircuidView::Z_IO);
 		circ->add(outc, FrxCircuidView::Z_Wires);
 	}

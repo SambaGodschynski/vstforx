@@ -15,6 +15,9 @@
 namespace frx { namespace gui { namespace components {
 namespace sdc = sambag::disco::components;
 namespace sdcu = sdc::ui;
+//-----------------------------------------------------------------------------
+template <class _ProcessorType>
+std::string getProcessorName();
 //=============================================================================
 /** 
   * @class FrxConcreteProcessor.
@@ -37,7 +40,7 @@ public:
 protected:
 	//-------------------------------------------------------------------------
 	FrxConcreteProcessor() {
-		setName("FrxConcreteProcessor");
+		setName(getProcessorName<ProcessorType>());
 	}
 	//-------------------------------------------------------------------------
 	virtual void postConstructor() {
@@ -87,6 +90,28 @@ typedef FrxConcreteProcessor<processorTypes::InSwitch> FrxInSwitchNode;
 typedef FrxConcreteProcessor<processorTypes::OutSwitch> FrxOutSwitchNode;
 typedef FrxConcreteProcessor<processorTypes::ADSR> FrxADSRNode;
 typedef FrxConcreteProcessor<processorTypes::PeakTracker> FrxPeakTrackerNode;
+///////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------
+template <class _ProcessorType>
+std::string getProcessorName() {return "unkonwn processortype";}
+template <>
+inline std::string getProcessorName<processorTypes::Plugin>() {return "FrxPlugin";}
+template <>
+inline std::string getProcessorName<processorTypes::Volume>() {return "FrxVolume";}
+template <>
+inline std::string getProcessorName<processorTypes::Pan>() {return "FrxPan";}
+template <>
+inline std::string getProcessorName<processorTypes::InStep>() {return "FrxInStep";}
+template <>
+inline std::string getProcessorName<processorTypes::OutStep>() {return "FrxOutStep";}
+template <>
+inline std::string getProcessorName<processorTypes::InSwitch>() {return "FrxInSwitch";}
+template <>
+inline std::string getProcessorName<processorTypes::OutSwitch>() {return "FrxOutSwitch";}
+template <>
+inline std::string getProcessorName<processorTypes::ADSR>() {return "FrxADSR";}
+template <>
+inline std::string getProcessorName<processorTypes::PeakTracker>() {return "FrxPeakTracker";}
 }}} // namespace(s)
 
 #endif /* SAMBAG_FRXPLUGINNODE_H */

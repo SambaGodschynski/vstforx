@@ -13,6 +13,9 @@
 namespace frx { namespace gui { namespace components {
 namespace sdc = sambag::disco::components;
 namespace sdcu = sdc::ui;
+//-----------------------------------------------------------------------------
+template <class _ConnectionType>
+std::string getConnectionName();
 //=============================================================================
 /** 
   * @class FrxConnection.
@@ -36,7 +39,7 @@ protected:
 	}
 	//-------------------------------------------------------------------------
 	FrxConcreteConnection() {
-		setName("FrxConcreteConnection");
+		setName(getConnectionName<ConnectionType>());
 	}
 private:
 public:
@@ -76,7 +79,33 @@ typedef FrxConcreteConnection<connectionTypes::ProcessorOutput> ProcessorOutputC
 typedef FrxConcreteConnection<connectionTypes::ProcessorParameter> ProcessorParameterCn;
 typedef FrxConcreteConnection<connectionTypes::Parameter> ParameterCn;
 typedef FrxConcreteConnection<connectionTypes::ParameterOP> ParameterOPCn;
-
+///////////////////////////////////////////////////////////////////////////////
+template <class _ConnectionType>
+std::string getConnectionName() { return "unkown connection type"; }
+template <>
+inline std::string getConnectionName<connectionTypes::IO>() { 
+	return "input/output connection"; 
+}
+template <>
+inline std::string getConnectionName<connectionTypes::ProcessorInput>() { 
+	return "processor/input connection"; 
+}
+template <>
+inline std::string getConnectionName<connectionTypes::ProcessorOutput>() { 
+	return "processor/output connection"; 
+}
+template <>
+inline std::string getConnectionName<connectionTypes::ProcessorParameter>() { 
+	return "processor/parameter connection"; 
+}
+template <>
+inline std::string getConnectionName<connectionTypes::Parameter>() { 
+	return "parameter/parameter connection"; 
+}
+template <>
+inline std::string getConnectionName<connectionTypes::ParameterOP>() { 
+	return "parameter/operator parameter connection"; 
+}
 }}} // namespace(s)
 
 #endif /* SAMBAG_CONCRETECONNECTIONS_H */

@@ -13,6 +13,7 @@
 #include <loki/Singleton.h>
 #include "Forward.hpp"
 #include <list>
+#include <string>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
@@ -30,28 +31,39 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::function<void()> CtrlFunc;
 	//-------------------------------------------------------------------------
-	typedef std::pair<const char*, CtrlFunc> Entry;
+	typedef std::pair<std::string, CtrlFunc> Entry;
 	//-------------------------------------------------------------------------
 	typedef std::list<Entry> Entries;
+	//-------------------------------------------------------------------------
+	typedef boost::weak_ptr<void> AnyWPtr;
 protected:
 	//-------------------------------------------------------------------------
 	/**
-	* called when menu btn action performed.
-	* @param source ptr
-	* @param event
-	* @param command to perform
-	*/
+	 * called when menu btn action performed.
+	 * @param source ptr
+	 * @param event
+	 * @param command to perform
+	 */
 	void onMenuAction(void *src, 
 			const sdc::events::ActionEvent &ev, 
 			const CtrlFunc &cmd);
 private:
 public:
 	//-------------------------------------------------------------------------
+	/**
+	 * creates Popupmenu for entries.
+	 * @param anyPtr for signal tracking
+	 * @entries
+	 */
+	sdc::PopupMenuPtr createPopupMenu(AnyWPtr anyPtr, const Entries &e);
+	//-------------------------------------------------------------------------
 	sdc::PopupMenuPtr getCircuidViewPopup(FrxCircuidViewPtr c);
+	//-------------------------------------------------------------------------
+	bool connect(FrxCircuidViewPtr, FrxNodePtr from, FrxNodePtr to);
 }; // FrxControl
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
-extern FrxControl & getFrxControl();
+extern FrxControl & getFrxControl(FrxCircuidViewPtr view);
 }}} // namespace(s)
 
 #endif /* SAMBAG_FRXCONTROL_H */

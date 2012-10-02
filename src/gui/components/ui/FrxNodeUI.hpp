@@ -11,6 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <gui/components/FrxComponent.hpp>
+#include <gui/components/Forward.hpp>
 #include "FrxComponentUI.hpp"
 #include <sambag/disco/components/Timer.hpp>
 #include <sambag/disco/components/events/MouseEvent.hpp>
@@ -41,6 +42,10 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::weak_ptr<FrxNodeUI> WPtr;
 protected:
+	//-------------------------------------------------------------------------
+	virtual void installListeners(sdc::AComponent::Ptr c);
+	//-------------------------------------------------------------------------
+	virtual void installDefaults(sdc::AComponent::Ptr c);
 	//-------------------------------------------------------------------------
 	virtual void drawCorona(sd::IDrawContext::Ptr cn, sdc::AComponent::Ptr c);
 	//-------------------------------------------------------------------------

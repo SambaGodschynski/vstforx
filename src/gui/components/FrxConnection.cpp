@@ -33,7 +33,7 @@ void FrxConnection::onPropertyChanged(void*, const sce::PropertyChanged &ev) {
 		resetBounds();
 }
 //-----------------------------------------------------------------------------
-void FrxConnection::setComponentA(FrxComponent::Ptr a) {
+void FrxConnection::setSrcComponent(FrxComponent::Ptr a) {
 	if (frxA)
 		cnA.disconnect();
 	frxA = a;
@@ -41,7 +41,7 @@ void FrxConnection::setComponentA(FrxComponent::Ptr a) {
 	cnA = connect(frxA);
 }
 //-----------------------------------------------------------------------------
-void FrxConnection::setComponentB(FrxComponent::Ptr b) {
+void FrxConnection::setDstComponent(FrxComponent::Ptr b) {
 	if (frxB)
 		cnB.disconnect();
 	frxB = b;

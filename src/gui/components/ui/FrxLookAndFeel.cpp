@@ -46,29 +46,54 @@ void FrxLookAndFeel::installComponents() {
 	// view
 	registerComponentUI<fgc::FrxCircuidView, fgcu::FrxCircuidViewUI>();
 	// processor nodes
-	registerComponentUI<fgc::FrxPluginNode, fgcu::FrxProcessorNodeUI<FrxPluginNode::ProcessorType> >();
-	registerComponentUI<fgc::FrxVolumeNode, fgcu::FrxProcessorNodeUI<FrxVolumeNode::ProcessorType> >();
-	registerComponentUI<fgc::FrxPanNode, fgcu::FrxProcessorNodeUI<FrxPanNode::ProcessorType> >();
-	registerComponentUI<fgc::FrxInStepNode, fgcu::FrxProcessorNodeUI<FrxInStepNode::ProcessorType> >();
-	registerComponentUI<fgc::FrxOutStepNode, fgcu::FrxProcessorNodeUI<FrxOutStepNode::ProcessorType> >();
-	registerComponentUI<fgc::FrxInSwitchNode, fgcu::FrxProcessorNodeUI<FrxInSwitchNode::ProcessorType> >();
-	registerComponentUI<fgc::FrxOutSwitchNode, fgcu::FrxProcessorNodeUI<FrxOutSwitchNode::ProcessorType> >();
-	registerComponentUI<fgc::FrxADSRNode, fgcu::FrxProcessorNodeUI<FrxADSRNode::ProcessorType> >();
-	registerComponentUI<fgc::FrxPeakTrackerNode, fgcu::FrxProcessorNodeUI<FrxPeakTrackerNode::ProcessorType> >();
+	registerComponentUI<fgc::FrxPluginNode, 
+		fgcu::FrxProcessorNodeUI<FrxPluginNode::ProcessorType> >();
+	registerComponentUI<fgc::FrxVolumeNode, 
+		fgcu::FrxProcessorNodeUI<FrxVolumeNode::ProcessorType> >();
+	registerComponentUI<fgc::FrxPanNode, 
+		fgcu::FrxProcessorNodeUI<FrxPanNode::ProcessorType> >();
+	registerComponentUI<fgc::FrxInStepNode, 
+		fgcu::FrxProcessorNodeUI<FrxInStepNode::ProcessorType> >();
+	registerComponentUI<fgc::FrxOutStepNode, 
+		fgcu::FrxProcessorNodeUI<FrxOutStepNode::ProcessorType> >();
+	registerComponentUI<fgc::FrxInSwitchNode, 
+		fgcu::FrxProcessorNodeUI<FrxInSwitchNode::ProcessorType> >();
+	registerComponentUI<fgc::FrxOutSwitchNode, 
+		fgcu::FrxProcessorNodeUI<FrxOutSwitchNode::ProcessorType> >();
+	registerComponentUI<fgc::FrxADSRNode, 
+		fgcu::FrxProcessorNodeUI<FrxADSRNode::ProcessorType> >();
+	registerComponentUI<fgc::FrxPeakTrackerNode, 
+		fgcu::FrxProcessorNodeUI<FrxPeakTrackerNode::ProcessorType> >();
 	// parameter components
-	registerComponentUI<fgc::FrxStdKnob, FrxParameterUI<FrxStdKnob::ControllerType> >();
+	registerComponentUI<fgc::FrxStdKnob, 
+		FrxParameterUI<FrxStdKnob::ControllerType> >();
 	// connections
-	registerComponentUI<fgc::IOCn, fgcu::FrxConnectionUI<fgc::IOCn::ConnectionType> >();
-	registerComponentUI<fgc::ProcessorInputCn, fgcu::FrxConnectionUI<fgc::ProcessorInputCn::ConnectionType> >();
-	registerComponentUI<fgc::ProcessorOutputCn, fgcu::FrxConnectionUI<fgc::ProcessorOutputCn::ConnectionType> >();
+	registerComponentUI<fgc::IOCn, 
+		fgcu::FrxConnectionUI<fgc::IOCn::ConnectionType> >();
+	registerComponentUI<fgc::ProcessorInputCn, 
+		fgcu::FrxConnectionUI<fgc::ProcessorInputCn::ConnectionType> >();
+	registerComponentUI<fgc::ProcessorOutputCn, 
+		fgcu::FrxConnectionUI<fgc::ProcessorOutputCn::ConnectionType> >();
+	registerComponentUI<fgc::ProcessorParameterCn, 
+		fgcu::FrxConnectionUI<fgc::ProcessorParameterCn::ConnectionType> >();
+	registerComponentUI<fgc::ParameterCn, 
+		fgcu::FrxConnectionUI<fgc::ParameterCn::ConnectionType> >();
+	registerComponentUI<fgc::ParameterOPCn, 
+		fgcu::FrxConnectionUI<fgc::ParameterOPCn::ConnectionType> >();
 	// io's
-	registerComponentUI<fgc::FrxInputNode, fgcu::FrxIOUI<fgc::FrxInputNode::IOType> >();
-	registerComponentUI<fgc::FrxOutputNode, fgcu::FrxIOUI<fgc::FrxOutputNode::IOType> >();
-	registerComponentUI<fgc::FrxEntryNode, fgcu::FrxIOUI<fgc::FrxEntryNode::IOType> >();
-	registerComponentUI<fgc::FrxExitNode, fgcu::FrxIOUI<fgc::FrxExitNode::IOType> >();
+	registerComponentUI<fgc::FrxInputNode, 
+		fgcu::FrxIOUI<fgc::FrxInputNode::IOType> >();
+	registerComponentUI<fgc::FrxOutputNode, 
+		fgcu::FrxIOUI<fgc::FrxOutputNode::IOType> >();
+	registerComponentUI<fgc::FrxEntryNode, 
+		fgcu::FrxIOUI<fgc::FrxEntryNode::IOType> >();
+	registerComponentUI<fgc::FrxExitNode, 
+		fgcu::FrxIOUI<fgc::FrxExitNode::IOType> >();
 	// misc
-	registerComponentUI<fgc::FrxSelection, fgcu::FrxSelectionUI>();
-	registerComponentUI<fgc::FrxHover, fgcu::FrxHoverUI>();
+	registerComponentUI<fgc::FrxSelection, 
+		fgcu::FrxSelectionUI>();
+	registerComponentUI<fgc::FrxHover, 
+		fgcu::FrxHoverUI>();
 }
 //-----------------------------------------------------------------------------
 void FrxLookAndFeel::installDefaults() {
@@ -83,7 +108,6 @@ void FrxLookAndFeel::installDefaults() {
 	static double RADIUS_SMALL = 10.;
 	static double RADIUS_MED = 15.;
 	static double RADIUS_LARGE = 20.;	
-	Dimension knobSize(40., 40);
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<global
 	m.putProperty("global.background", HtmlColors::getColor("lightblue"));
 	m.putProperty("global.foreground", HtmlColors::getColor("white"));

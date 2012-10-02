@@ -13,6 +13,9 @@
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 
 namespace frx { namespace gui { namespace components {
+//-----------------------------------------------------------------------------
+template <class _ProcessorType>
+std::string getIOName();
 //=============================================================================
 /** 
   * @class FrxConcreteIO.
@@ -34,6 +37,10 @@ protected:
 	}
 	//-------------------------------------------------------------------------
 	typedef FrxConcreteIO<IOType> ThisClassType;
+	//-------------------------------------------------------------------------
+	FrxConcreteIO() {
+		setName(getIOName<IOType>());
+	}
 private:
 public:
 	//-------------------------------------------------------------------------
@@ -58,6 +65,18 @@ typedef FrxConcreteIO<ioTypes::Input> FrxInputNode;
 typedef FrxConcreteIO<ioTypes::Output> FrxOutputNode;
 typedef FrxConcreteIO<ioTypes::Entry> FrxEntryNode;
 typedef FrxConcreteIO<ioTypes::Exit> FrxExitNode;
+///////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------
+template <class _ProcessorType>
+std::string getIOName() {return "unkonwn iotype";}
+template <>
+inline std::string getIOName<ioTypes::Input>() {return "FrxInput";}
+template <>
+inline std::string getIOName<ioTypes::Output>() {return "FrxOutput";}
+template <>
+inline std::string getIOName<ioTypes::Entry>() {return "FrxEntry";}
+template <>
+inline std::string getIOName<ioTypes::Exit>() {return "FrxExit";}
 }}} // namespace(s)
 
 #endif /* SAMBAG_FRXCONCRETEIO_H */

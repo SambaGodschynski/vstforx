@@ -110,6 +110,17 @@ public:
 		ZOrder start = FLT_MIN, 
 		ZOrder end = FLT_MAX
 	); 
+	//-------------------------------------------------------------------------
+	/**
+	 * search for component on point p.
+	 * @param point
+	 * @param z-order start (inclusive)
+	 * @param z-order end (inclusive)
+	 */
+	sdc::AComponentPtr findComponentOnPoint(const sd::Point2D &p,
+		ZOrder start = FLT_MIN, 
+		ZOrder end = FLT_MAX
+	); 
 
 }; // FrxCircuidView
 ///////////////////////////////////////////////////////////////////////////////
@@ -130,7 +141,8 @@ void FrxCircuidView::findComponents(Container &container, Filter &filter)
 //-------------------------------------------------------------------------
 template <class Container>
 void FrxCircuidView::findComponentsInArea(Container &container, 
-	const sd::Rectangle &area, ZOrder start, ZOrder end) 
+	const sd::Rectangle &area, FrxCircuidView::ZOrder _start, 
+	FrxCircuidView::ZOrder _end) 
 {
 	struct Filter {
 		const sd::Rectangle &area;
@@ -138,6 +150,8 @@ void FrxCircuidView::findComponentsInArea(Container &container,
 		Filter(const sd::Rectangle &area, ZOrder start, ZOrder end) :
 		area(area), start(start), end(end) {}
 		int operator()( sdc::AComponent::Ptr p ) {
+			if (!p)
+				return 0;
 			ZOrder z = FLT_MIN;
 			p->getClientProperty(PROPERTY_ZORDER, z);
 			if (z > end)
@@ -152,6 +166,8 @@ void FrxCircuidView::findComponentsInArea(Container &container,
 				sd::Rectangle::Base>(loc, area) ? 1 : 0;
 		}
 	};
+	ZOrder start = std::min(_start, _end);
+	ZOrder end = std::max(_start, _end);
 	findComponents(container, Filter(area, start, end));
 }
 }}} // namespace(s)

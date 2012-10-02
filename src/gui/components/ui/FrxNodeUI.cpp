@@ -10,7 +10,8 @@
 #include <sambag/disco/components/events/MouseEvent.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <gui/components/FrxCircuidView.hpp>
-
+#include <gui/components/FrxControl.hpp>
+#include <gui/components/FrxNode.hpp>
 namespace frx { namespace gui {
 namespace components { namespace ui { 
 ///////////////////////////////////////////////////////////////////////////////
@@ -68,16 +69,20 @@ bool FrxNodeUI::hitsCore(sdc::AComponentPtr c, const sd::Point2D &p) const {
 	sd::Coordinate radius = getCoreRadius(c);
 	return x*x + y*y <= radius*radius;
 }
-//-----------------------------------------------------------------------------
-void FrxNodeUI::installUI(sdc::AComponentPtr c) {
-	// size
-	sd::Coordinate r = getCoronaRadius(c) * 2. + 5.;
-	c->setSize(sd::Dimension(r, r));
+//------------------------------------------------------------------------------
+void FrxNodeUI::installListeners(sdc::AComponent::Ptr c) {
 	// listeners
 	c->EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
 		boost::bind(&FrxNodeUI::onMouse, this, _1, _2),
 		getPtr()
 	);
+}
+//------------------------------------------------------------------------------
+void FrxNodeUI::installDefaults(sdc::AComponent::Ptr c) {
+	// size
+	sd::Coordinate r = getCoronaRadius(c) * 2. + 5.;
+	c->setSize(sd::Dimension(r, r));
+
 	coronaAlpha = 0.;
 	// connection stuff
 	toConnect = Line::create();
@@ -98,6 +103,11 @@ void FrxNodeUI::installUI(sdc::AComponentPtr c) {
 		),
 		getPtr()
 	);
+}
+//-----------------------------------------------------------------------------
+void FrxNodeUI::installUI(sdc::AComponentPtr c) {
+	installDefaults(c);
+	installListeners(c);
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::drawCorona(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
@@ -173,6 +183,17 @@ void FrxNodeUI::endConnecting(const sdc::events::MouseEvent &ev) {
 	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
 	toConnect->setVisible(false);
+	FrxNodePtr from = boost::shared_dynamic_cast<FrxNode>(c);
+	sd::Point2D loc = 
+		circ->getLocationOnComponent(ev.getLocationOnScreen());
+	FrxNodePtr to = boost::shared_dynamic_cast<FrxNode>(
+		circ->findComponentOnPoint(loc, FrxCircuidView::Z_Knobs, 
+		FrxCircuidView::Z_ProcessorNodes)
+	);
+	if (!from || !to) {
+		return;
+	}
+	getFrxControl(circ).connect(circ, from, to);
 	circ->AComponent::redraw();
 }
 //------------------------------------------------------------------------------

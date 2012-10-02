@@ -10,7 +10,7 @@
 #include <sambag/disco/components/MenuSelectionManager.hpp>
 #include <sambag/disco/components/PopupMenu.hpp>
 #include "FrxControl.hpp"
-
+#include <list>
 namespace frx { namespace gui { namespace components {
 //=============================================================================
 //  Class FrxCircuidView
@@ -79,7 +79,7 @@ void FrxCircuidView::postConstructor() {
 	content->setLayout(sdc::ALayoutManagerPtr());
 	selection = FrxSelection::create();
 	add(selection, Z_InteractiveStuff);
-	setComponentPopupMenu(getFrxControl().getCircuidViewPopup(getPtr()));
+	setComponentPopupMenu(getFrxControl(getPtr()).getCircuidViewPopup(getPtr()));
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::handleMousePopup(const sdc::events::MouseEvent &ev) {
@@ -110,5 +110,42 @@ void FrxCircuidView::onMouse(void *src, const sdc::events::MouseEvent &ev) {
 	if (ev.getType() != sdc::events::MouseEvent::DISCO_MOUSE_CLICKED) 
 		return;
 	handleMousePopup(ev);
+}
+//-----------------------------------------------------------------------------
+sdc::AComponentPtr FrxCircuidView::findComponentOnPoint(const sd::Point2D &p,
+		FrxCircuidView::ZOrder _start, 
+		FrxCircuidView::ZOrder _end
+	)
+{
+	struct Filter {
+		sd::Point2D loc;
+		ZOrder start, end;
+		Filter(const sd::Point2D &loc, ZOrder start, ZOrder end) :
+		loc(loc), start(start), end(end) {}
+		int operator()( sdc::AComponent::Ptr p ) {
+			if (!p)
+				return 0;
+			if (loc==NULL_POINT2D) {
+				return -1;
+			}
+			ZOrder z = FLT_MIN;
+			p->getClientProperty(PROPERTY_ZORDER, z);
+			if (z > end)
+				return -1;
+			if (p->contains(p->getLocationOnComponent(loc))) {
+				loc=NULL_POINT2D;
+				return 1;
+			}
+			return 0;
+		}
+	};
+	ZOrder start = std::min(_start, _end);
+	ZOrder end = std::max(_start, _end);
+	std::list<sdc::AComponentPtr> res;
+	findComponents(res, Filter(p, start, end));
+	if (res.empty()){
+		return sdc::AComponentPtr();
+	}
+	return res.back();
 }
 }}} // namespace(s)
