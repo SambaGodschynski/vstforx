@@ -63,14 +63,8 @@ protected:
 	FrxCircuidView();
 	//-------------------------------------------------------------------------
 	virtual void postConstructor();
-	//-------------------------------------------------------------------------
-	void handleMousePopup(const sdc::events::MouseEvent &ev);
-	//-------------------------------------------------------------------------
-	sdc::PopupMenuPtr currPopup;
 private:
 public:
-	//-------------------------------------------------------------------------
-	void onMouse(void *src, const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
 	AContainer::Ptr getContentPane() const {
 		return content;

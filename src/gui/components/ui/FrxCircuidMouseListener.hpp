@@ -35,7 +35,6 @@ private:
 	typedef sdc::ComponentWrapper<sdsg::Rect> Rect;
 	//-------------------------------------------------------------------------
 	Rect::Ptr selection;
-	//-------------------------------------------------------------------------
 protected:
 	// MouseActions on view:
 	virtual void drag(const sdc::events::MouseEvent &ev);
@@ -45,7 +44,6 @@ protected:
 	virtual void spanning(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
 	virtual void endSpanning(const sdc::events::MouseEvent &ev);
-	//-------------------------------------------------------------------------
 public:
 	//-------------------------------------------------------------------------
 	FrxCircuidMouseListener();

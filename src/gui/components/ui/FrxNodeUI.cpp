@@ -244,6 +244,10 @@ void FrxNodeUI::mouseExited(const sdc::events::MouseEvent &ev) {
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::mouseClicked(const sdc::events::MouseEvent &ev) {
+	sdc::AComponent::Ptr c = ev.getSource();
+	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
+	SAMBAG_ASSERT(circ);
+	getFrxControl(circ).handleContextMenuPopup(ev);
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::mouseMoved(const sdc::events::MouseEvent &ev) {

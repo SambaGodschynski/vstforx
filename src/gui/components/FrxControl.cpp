@@ -17,6 +17,8 @@
 #include <boost/foreach.hpp>
 #include <sambag/com/Common.hpp>
 #include <loki/MultiMethods.h>
+#include <sambag/disco/components/PopupMenu.hpp>
+#include <sambag/disco/components/MenuSelectionManager.hpp>
 
 namespace frx { namespace gui { namespace components {
 ////////////////////////////////////////////////////////////////////////////////
@@ -210,6 +212,30 @@ bool FrxControl::connect(FrxCircuidViewPtr view, FrxNodePtr from, FrxNodePtr to)
     > Dispatcher;
 	Dispatcher disp;
 	return disp.Go(*(from.get()), *(to.get()), Connector(view));
+}
+//-----------------------------------------------------------------------------
+void FrxControl::handleContextMenuPopup(const sdc::events::MouseEvent &ev) {
+	using namespace sambag::disco::components;
+	if (ev.getButtons() != sdc::events::MouseEvent::DISCO_BTN2) {
+		if (currPopup)
+			currPopup->hidePopup();
+		return;
+	}
+	sdc::PopupMenuPtr popup = ev.getSource()->getComponentPopupMenu();
+	if (!popup)
+		return;
+	if (!popup->isPopupVisible()) {
+		MenuSelectionManager &m = MenuSelectionManager::defaultManager();
+		m.clearSelectedPath();
+		IMenuElement::MenuElements p;
+		p.push_back(popup);
+		m.setSelectedPath(p);
+		popup->setInvoker(ev.getSource());
+		popup->showPopup(
+			ev.getLocationOnScreen()
+		);
+	}
+	currPopup = popup;
 }
 //=============================================================================
 //-----------------------------------------------------------------------------

@@ -10,6 +10,7 @@
 
 #include <sambag/disco/components/Forward.hpp>
 #include <sambag/disco/components/events/ActionEvent.hpp>
+#include <sambag/disco/components/events/MouseEvent.hpp>
 #include <loki/Singleton.h>
 #include "Forward.hpp"
 #include <list>
@@ -47,7 +48,8 @@ protected:
 	void onMenuAction(void *src, 
 			const sdc::events::ActionEvent &ev, 
 			const CtrlFunc &cmd);
-private:
+	//-------------------------------------------------------------------------
+	sdc::PopupMenuPtr currPopup;
 public:
 	//-------------------------------------------------------------------------
 	/**
@@ -60,6 +62,8 @@ public:
 	sdc::PopupMenuPtr getCircuidViewPopup(FrxCircuidViewPtr c);
 	//-------------------------------------------------------------------------
 	bool connect(FrxCircuidViewPtr, FrxNodePtr from, FrxNodePtr to);
+	//-------------------------------------------------------------------------
+	void handleContextMenuPopup(const sdc::events::MouseEvent &ev);
 }; // FrxControl
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------

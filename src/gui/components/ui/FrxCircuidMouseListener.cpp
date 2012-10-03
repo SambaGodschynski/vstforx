@@ -10,6 +10,7 @@
 #include <gui/components/FrxComponent.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/components/FrxSelection.hpp>
+#include <gui/components/FrxControl.hpp>
 #include <sambag/disco/svg/units/Units.hpp>
 #include <sambag/disco/Dash.hpp>
 #include <boost/assign.hpp>
@@ -117,6 +118,10 @@ void FrxCircuidMouseListener::mouseExited(const sdc::events::MouseEvent &ev) {
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidMouseListener::mouseClicked(const sdc::events::MouseEvent &ev) {
+	sdc::AComponent::Ptr c = ev.getSource();
+	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
+	SAMBAG_ASSERT(circ);
+	getFrxControl(circ).handleContextMenuPopup(ev);
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidMouseListener::mouseMoved(const sdc::events::MouseEvent &ev) {

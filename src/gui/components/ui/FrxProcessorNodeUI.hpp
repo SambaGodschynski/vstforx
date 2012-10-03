@@ -96,10 +96,6 @@ bool FrxProcessorNodeUI<CT>::contains(sdc::AComponentPtr c, const sd::Point2D &p
 template <class CT>
 void FrxProcessorNodeUI<CT>::installUI(sdc::AComponentPtr c) {
 	Super::installUI(c);
-	c->EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
-		boost::bind(&Super::onMouse, this, _1, _2),
-		getPtr()
-	);
 }
 //-----------------------------------------------------------------------------
 template <class CT>
