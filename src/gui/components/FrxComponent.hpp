@@ -12,6 +12,7 @@
 #include <sambag/disco/components/AContainer.hpp>
 #include <sambag/disco/Geometry.hpp>
 #include <sambag/com/events/Events.hpp>
+#include <gui/ViewObject.hpp>
 #include "Forward.hpp"
 
 namespace frx { namespace gui { namespace components {
@@ -31,7 +32,7 @@ struct OnRemoving {
 /** 
   * @class FrxComponent.
   */
-class FrxComponent : public sdc::AContainer,
+class FrxComponent : public sdc::AContainer, public ViewObject,
 	public sce::EventSender<OnRemoving>
 {
 //=============================================================================

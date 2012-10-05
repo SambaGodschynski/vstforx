@@ -12,15 +12,16 @@
 #include <sambag/disco/components/events/ActionEvent.hpp>
 #include <sambag/disco/components/events/MouseEvent.hpp>
 #include <loki/Singleton.h>
-#include "Forward.hpp"
+#include "components/Forward.hpp"
 #include <list>
 #include <string>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
-namespace frx { namespace gui { namespace components {
+namespace frx { namespace gui {
 namespace sdc = sambag::disco::components;
 namespace sdcu = sdc::ui;
+namespace fgc = frx::gui::components;
 //=============================================================================
 /** 
   * @class FrxControl.
@@ -59,15 +60,15 @@ public:
 	 */
 	sdc::PopupMenuPtr createPopupMenu(AnyWPtr anyPtr, const Entries &e);
 	//-------------------------------------------------------------------------
-	sdc::PopupMenuPtr getCircuidViewPopup(FrxCircuidViewPtr c);
+	sdc::PopupMenuPtr getCircuidViewPopup(fgc::FrxCircuidViewPtr c);
 	//-------------------------------------------------------------------------
-	bool connect(FrxCircuidViewPtr, FrxNodePtr from, FrxNodePtr to);
+	bool connect(fgc::FrxCircuidViewPtr, fgc::FrxNodePtr from, fgc::FrxNodePtr to);
 	//-------------------------------------------------------------------------
 	void handleContextMenuPopup(const sdc::events::MouseEvent &ev);
 }; // FrxControl
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
-extern FrxControl & getFrxControl(FrxCircuidViewPtr view);
-}}} // namespace(s)
+extern FrxControl & getFrxControl(fgc::FrxCircuidViewPtr view);
+}} // namespace(s)
 
 #endif /* SAMBAG_FRXCONTROL_H */

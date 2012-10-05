@@ -17,6 +17,7 @@
 #include <boost/foreach.hpp>
 #include <string>
 #include "FrxSelection.hpp"
+#include <gui/IViewModelMap.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace sc = sambag::com;
@@ -67,6 +68,8 @@ protected:
 private:
 public:
 	//-------------------------------------------------------------------------
+
+	//-------------------------------------------------------------------------
 	AContainer::Ptr getContentPane() const {
 		return content;
 	}
@@ -116,6 +119,8 @@ public:
 		ZOrder start = FLT_MIN, 
 		ZOrder end = FLT_MAX
 	); 
+	//-------------------------------------------------------------------------
+	IViewModelMap::Ptr getViewModelMap() const;
 
 }; // FrxCircuidView
 ///////////////////////////////////////////////////////////////////////////////

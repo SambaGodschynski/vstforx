@@ -6,21 +6,21 @@
  */
 
 #include "FrxControl.hpp"
-#include "FrxCircuidView.hpp"
-#include "FrxConcreteProcessor.hpp"
-#include "FrxConcreteParameter.hpp"
-#include <sambag/disco/components/PopupMenu.hpp>
-#include "FrxHover.hpp"
-#include "FrxConcreteIO.hpp"
-#include "FrxConcreteParameter.hpp"
-#include "FrxConcreteConnections.hpp"
+#include "components/FrxCircuidView.hpp"
+#include "components/FrxConcreteProcessor.hpp"
+#include "components/FrxConcreteParameter.hpp"
+#include "components/FrxHover.hpp"
+#include "components/FrxConcreteIO.hpp"
+#include "components/FrxConcreteParameter.hpp"
+#include "components/FrxConcreteConnections.hpp"
 #include <boost/foreach.hpp>
 #include <sambag/com/Common.hpp>
 #include <loki/MultiMethods.h>
 #include <sambag/disco/components/PopupMenu.hpp>
 #include <sambag/disco/components/MenuSelectionManager.hpp>
 
-namespace frx { namespace gui { namespace components {
+namespace frx { namespace gui {
+using namespace components;
 ////////////////////////////////////////////////////////////////////////////////
 //  Private executives
 //-----------------------------------------------------------------------------
@@ -268,4 +268,4 @@ FrxControl & getFrxControl(FrxCircuidViewPtr view) {
 	typedef Loki::SingletonHolder<FrxControl> FactoryHolder;
 	return FactoryHolder::Instance();
 }
-}}} // namespace(s)
+}} // namespace(s)

@@ -10,7 +10,7 @@
 #include <sambag/disco/components/events/MouseEvent.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <gui/components/FrxCircuidView.hpp>
-#include <gui/components/FrxControl.hpp>
+#include <gui/FrxControl.hpp>
 #include <gui/components/FrxNode.hpp>
 namespace frx { namespace gui {
 namespace components { namespace ui { 

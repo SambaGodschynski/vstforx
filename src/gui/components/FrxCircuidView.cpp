@@ -7,7 +7,7 @@
 
 #include "FrxCircuidView.hpp"
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
-#include "FrxControl.hpp"
+#include <gui/FrxControl.hpp>
 #include "FrxComponent.hpp"
 #include <list>
 namespace frx { namespace gui { namespace components {
@@ -112,5 +112,9 @@ sdc::AComponentPtr FrxCircuidView::findComponentOnPoint(const sd::Point2D &p,
 		return sdc::AComponentPtr();
 	}
 	return res.back();
+}
+//-----------------------------------------------------------------------------
+IViewModelMap::Ptr FrxCircuidView::getViewModelMap() const {
+	return IViewModelMap::Ptr();
 }
 }}} // namespace(s)

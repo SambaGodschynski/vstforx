@@ -157,7 +157,6 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("ParameterCn.hoverStyle", createStyle("stroke-width: 8; stroke: green;stroke-dasharray: 9, 5;"));
 	m.putProperty("ParameterOPCn.style", createStyle("stroke-width: 4; stroke: green"));
 	resetUIPorpertyCache();
-
 }
 
 }}}} // namespace(s)
