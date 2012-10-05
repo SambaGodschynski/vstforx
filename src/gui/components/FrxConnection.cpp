@@ -7,7 +7,7 @@
 
 #include "FrxConnection.hpp"
 #include "ui/FrxConnectionUI.hpp"
-
+#include "FrxCircuidView.hpp"
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -33,20 +33,36 @@ void FrxConnection::onPropertyChanged(void*, const sce::PropertyChanged &ev) {
 		resetBounds();
 }
 //-----------------------------------------------------------------------------
+void FrxConnection::installComponentListeners(FrxComponent::Ptr c) {
+	c->EventSender<OnRemoving>::addTrackedEventListener(
+		boost::bind(&FrxConnection::onComponentRemoving, this, _1, _2),
+		getPtr()
+	);
+}
+//-----------------------------------------------------------------------------
+void FrxConnection::onComponentRemoving(void *src, const OnRemoving &ev) {
+	FrxConnection::Ptr saftey = getPtr(); // hold object
+	srcConnection.disconnect();
+	dstConnection.disconnect();
+	ev.view->remove(getPtr());
+}
+//-----------------------------------------------------------------------------
 void FrxConnection::setSrcComponent(FrxComponent::Ptr a) {
-	if (frxA)
-		cnA.disconnect();
-	frxA = a;
+	if (src)
+		srcConnection.disconnect();
+	src = a;
 	resetBounds();
-	cnA = connect(frxA);
+	srcConnection = connect(src);
+	installComponentListeners(src);
 }
 //-----------------------------------------------------------------------------
 void FrxConnection::setDstComponent(FrxComponent::Ptr b) {
-	if (frxB)
-		cnB.disconnect();
-	frxB = b;
+	if (dst)
+		dstConnection.disconnect();
+	dst = b;
 	resetBounds();
-	cnB = connect(frxB);
+	dstConnection = connect(dst);
+	installComponentListeners(dst);
 }
 //-----------------------------------------------------------------------------
 void FrxConnection::onComponentsPropertyChanged(void*, 
@@ -57,13 +73,13 @@ void FrxConnection::onComponentsPropertyChanged(void*,
 }
 //-----------------------------------------------------------------------------
 void FrxConnection::resetBounds() {
-	if ( !frxA || !frxB )
+	if ( !src || !dst )
 		return;
 	sd::Rectangle r = getBounds();
-	sd::Point2D aLoc = frxA->getLocation();
-	boost::geometry::add_point(aLoc, frxA->getPivot());
-	sd::Point2D bLoc = frxB->getLocation();
-	boost::geometry::add_point(bLoc, frxB->getPivot());
+	sd::Point2D aLoc = src->getLocation();
+	boost::geometry::add_point(aLoc, src->getPivot());
+	sd::Point2D bLoc = dst->getLocation();
+	boost::geometry::add_point(bLoc, dst->getPivot());
 	r = sd::Rectangle(
 		sd::minimize(aLoc, bLoc),
 		sd::maximize(aLoc, bLoc)

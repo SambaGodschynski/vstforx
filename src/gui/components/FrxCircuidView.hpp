@@ -20,6 +20,7 @@
 
 namespace frx { namespace gui { namespace components {
 namespace sc = sambag::com;
+namespace sce = sc::events;
 namespace sd = sambag::disco;
 namespace sdc = sd::components;
 namespace sdcu = sdc::ui;

@@ -12,6 +12,9 @@
 #include <boost/shared_ptr.hpp>
 
 namespace frx { namespace gui { namespace components {
+	class FrxComponent;
+	typedef boost::shared_ptr<FrxComponent> FrxComponentPtr; 
+	typedef boost::weak_ptr<FrxComponent> FrxComponentWPtr; 
 	class FrxCircuidView;
 	typedef boost::shared_ptr<FrxCircuidView> FrxCircuidViewPtr; 
 	typedef boost::weak_ptr<FrxCircuidView> FrxCircuidViewWPtr; 

@@ -8,6 +8,7 @@
 #include "FrxLookAndFeel.hpp"
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <sambag/disco/svg/HtmlColors.hpp>
+#include <sambag/disco/svg/StyleParser.hpp>
 
 #include <gui/components/FrxComponent.hpp>
 #include <gui/components/ui/FrxComponentUI.hpp>
@@ -96,6 +97,17 @@ void FrxLookAndFeel::installComponents() {
 		fgcu::FrxHoverUI>();
 }
 //-----------------------------------------------------------------------------
+namespace {
+	sd::svg::graphicElements::Style createStyle(const std::string &str) {
+		using namespace sambag::disco::svg;
+		svg::graphicElements::Style res;
+		std::stringstream ss;
+		ss<<str;
+		ss>>res;
+		return res;
+	}
+} // namespace
+//-----------------------------------------------------------------------------
 void FrxLookAndFeel::installDefaults() {
 	Super::installDefaults();
 	using namespace sambag::disco;
@@ -120,6 +132,8 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("Entry.radius", RADIUS_LARGE);
 	m.putProperty("Exit.radius", RADIUS_LARGE);
 	m.putProperty("StdKnob.radius", RADIUS_SMALL); // affects hit range only
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	m.putProperty("FrxConnection.hitDistance", Coordinate(10.));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<colors
 	m.putProperty("FrxNodeCorona.color",  HtmlColors::getColor("yellow"));
 	m.putProperty("ProcessorInput.bgColor", HtmlColors::getColor("white"));
@@ -133,7 +147,15 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("FrxSelection.bgColor", HtmlColors::getColor("purple").setA(0.25));
 	m.putProperty("FrxStdKnobCorona02.color",  HtmlColors::getColor("yellow"));
 	m.putProperty("FrxStdKnobCorona01.color",  HtmlColors::getColor("red"));
-
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<connectionstyles
+	m.putProperty("IOCn.style", createStyle("stroke-width: 4; stroke: green"));
+	m.putProperty("IOCn.hoverStyle", createStyle("stroke-width: 8; stroke: green"));
+	m.putProperty("ProcessorInputCn.style", createStyle("stroke-width: 4; stroke: green"));
+	m.putProperty("ProcessorOutputCn.style", createStyle("stroke-width: 4; stroke: green"));
+	m.putProperty("ProcessorParameterCn.style", createStyle("stroke-width: 4; stroke: green"));
+	m.putProperty("ParameterCn.style", createStyle("stroke-width: 4; stroke: green;stroke-dasharray: 9, 5;"));
+	m.putProperty("ParameterCn.hoverStyle", createStyle("stroke-width: 8; stroke: green;stroke-dasharray: 9, 5;"));
+	m.putProperty("ParameterOPCn.style", createStyle("stroke-width: 4; stroke: green"));
 	resetUIPorpertyCache();
 
 }

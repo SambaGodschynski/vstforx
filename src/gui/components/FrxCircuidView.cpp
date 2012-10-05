@@ -8,6 +8,7 @@
 #include "FrxCircuidView.hpp"
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include "FrxControl.hpp"
+#include "FrxComponent.hpp"
 #include <list>
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -53,6 +54,11 @@ FrxCircuidView::FrxCircuidView() {
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::remove(sdc::AComponentPtr comp) {
+	FrxComponent::Ptr frxC = boost::shared_dynamic_cast<FrxComponent>(comp);
+	if (frxC) { // fire removing event
+		frxC->EventSender<OnRemoving>::notifyListeners(frxC.get(), 
+			OnRemoving(getPtr()));
+	}
 	content->remove(comp);
 }
 //-----------------------------------------------------------------------------

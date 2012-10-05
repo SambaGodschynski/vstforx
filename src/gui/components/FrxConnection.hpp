@@ -30,11 +30,11 @@ public:
 	typedef boost::shared_ptr<FrxConnection> Ptr;
 private:
 	//-------------------------------------------------------------------------
-	FrxComponent::Ptr frxA, frxB;
+	FrxComponent::Ptr src, dst;
 	//-------------------------------------------------------------------------
 	typedef FrxComponent::EventSender<sce::PropertyChanged>::Connection Connection;
 	//-------------------------------------------------------------------------
-	Connection cnA, cnB;
+	Connection srcConnection, dstConnection;
 	//-------------------------------------------------------------------------
 	Connection connect(FrxComponent::Ptr c);
 protected:
@@ -46,7 +46,11 @@ protected:
 	FrxConnection();
 	//-------------------------------------------------------------------------
 	void resetBounds();
+	//-------------------------------------------------------------------------
+	void onComponentRemoving(void *src, const OnRemoving &ev);
 private:
+	//-------------------------------------------------------------------------
+	void installComponentListeners(FrxComponent::Ptr c);
 public:
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
@@ -57,9 +61,9 @@ public:
 	//-------------------------------------------------------------------------
 	void setDstComponent(FrxComponent::Ptr b);
 	//-------------------------------------------------------------------------
-	FrxComponent::Ptr getComponentA() const { return frxA; }
+	FrxComponent::Ptr getSrcComponent() const { return src; }
 	//-------------------------------------------------------------------------
-	FrxComponent::Ptr getComponentB() const { return frxB; }
+	FrxComponent::Ptr getDstComponent() const { return dst; }
 }; // FrxConnection
 }}} // namespace(s)
 

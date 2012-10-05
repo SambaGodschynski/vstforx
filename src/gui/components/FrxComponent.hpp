@@ -11,15 +11,29 @@
 #include <boost/shared_ptr.hpp>
 #include <sambag/disco/components/AContainer.hpp>
 #include <sambag/disco/Geometry.hpp>
+#include <sambag/com/events/Events.hpp>
+#include "Forward.hpp"
 
 namespace frx { namespace gui { namespace components {
 namespace sd = sambag::disco;
 namespace sdc = sd::components;
+namespace sce = sambag::com::events;
+//=============================================================================
+/** 
+  * @class OnRemoving.
+  */
+struct OnRemoving {
+//=============================================================================
+	FrxCircuidViewPtr view;
+	OnRemoving(FrxCircuidViewPtr view) : view(view) {}
+};
 //=============================================================================
 /** 
   * @class FrxComponent.
   */
-class FrxComponent : public sdc::AContainer {
+class FrxComponent : public sdc::AContainer,
+	public sce::EventSender<OnRemoving>
+{
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------

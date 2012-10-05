@@ -26,7 +26,7 @@ namespace frx { namespace gui { namespace components {
 //-----------------------------------------------------------------------------
 namespace {
 template <class ProcessorType>
-void createProcessorMenuEntries(FrxCircuidViewPtr c, 
+void addStdComponentMenuEntries(FrxCircuidViewPtr c, 
 			typename ProcessorType::Ptr obj,
 			FrxControl::Entries &out);
 //-----------------------------------------------------------------------------
@@ -62,7 +62,7 @@ void addProcessorToView(FrxCircuidViewWPtr c, int numInputs, int numOutputs) {
 	sel->addElements(res->getOutputs());
 	// create contextmenu
 	FrxControl::Entries entries;
-	createProcessorMenuEntries<ConcreteProcessor>(circ, res, entries);
+	addStdComponentMenuEntries<ConcreteProcessor>(circ, res, entries);
 	res->setComponentPopupMenu(
 		getFrxControl(circ).createPopupMenu(res, entries)
 	);
@@ -86,6 +86,24 @@ void addFreeKnobToView(FrxCircuidViewWPtr c) {
 	sel->addElement(res);
 }
 //-----------------------------------------------------------------------------
+void removeComponent(FrxCircuidViewWPtr _view, FrxComponentWPtr _c) {
+	FrxCircuidViewPtr view(_view);
+	FrxComponentPtr c(_c);
+	if (!c || !view)
+		return;
+	FrxProcessorNode::Ptr pr = boost::shared_dynamic_cast<FrxProcessorNode>(c);
+	if (pr) {
+		BOOST_FOREACH(FrxNode::Ptr io, pr->getInputs()) {
+			view->remove(io);
+		}
+		BOOST_FOREACH(FrxNode::Ptr io, pr->getOutputs()) {
+			view->remove(io);
+		}
+	}
+	view->remove(c);
+	view->AContainer::redraw();
+}
+//-----------------------------------------------------------------------------
 template <class ConnectionType>
 bool perfomConnect(FrxCircuidView::Ptr view, 
 				   FrxComponent::Ptr src, 
@@ -95,25 +113,32 @@ bool perfomConnect(FrxCircuidView::Ptr view,
 	cn->setSrcComponent(src);
 	cn->setDstComponent(dst);
 	view->add(cn, FrxCircuidView::Z_Wires);
+	// create contextmenu
+	FrxControl::Entries entries;
+	addStdComponentMenuEntries<ConnectionType>(view, cn , entries);
+	cn->setComponentPopupMenu(
+		getFrxControl(view).createPopupMenu(cn, entries)
+	);
 	return true;
 }
 ////////////////////////////////////////////////////////////////////////////////
 // Menu Entries
 //-----------------------------------------------------------------------------
-template <class ProcessorType>
-void createProcessorMenuEntries(FrxCircuidViewPtr c, 
-			typename ProcessorType::Ptr obj,
+template <class FrxComponentType>
+void addStdComponentMenuEntries(FrxCircuidViewPtr view, 
+			typename FrxComponentType::Ptr obj,
 			FrxControl::Entries &out)
 {
 	typedef FrxControl::Entry Entry;
-	FrxCircuidViewWPtr _c = c;
+	FrxCircuidViewWPtr _view = view; // always use weakptr for menus !
+	FrxComponentWPtr _obj = obj;
 	out.push_back( Entry("remove " + obj->getName(), 
-		boost::bind(&doNothing)));
+		boost::bind(&removeComponent, _view, _obj)));
 }
 //-----------------------------------------------------------------------------
 void createMainMenuEntries(FrxCircuidViewPtr c, FrxControl::Entries &out) {
 	typedef FrxControl::Entry Entry;
-	FrxCircuidViewWPtr _c = c;
+	FrxCircuidViewWPtr _c = c; // always use weakptr for menus !
 	out.push_back( Entry("add volume processor",
 		boost::bind(&addProcessorToView<FrxVolumeNode>, _c, 1, 1)));
 	out.push_back( Entry("add pan processor", 
