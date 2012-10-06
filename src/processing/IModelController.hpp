@@ -76,6 +76,12 @@ public:
 	 * @return ModelObject pointer which points on a PeakTracker object
 	 */
 	virtual IProcessor::Ptr createADSRTransformer() = 0;
+	//-------------------------------------------------------------------------
+	virtual bool connect(IOutput::Ptr out, IInput::Ptr in) = 0;
+	//-------------------------------------------------------------------------
+	virtual bool removeConnection(IOutput::Ptr out, IInput::Ptr in) = 0;
+	//-------------------------------------------------------------------------
+	virtual bool remove(ModelObject::Ptr obj) = 0;
 }; // IModelController
 ///////////////////////////////////////////////////////////////////////////////
 extern IModelController *
