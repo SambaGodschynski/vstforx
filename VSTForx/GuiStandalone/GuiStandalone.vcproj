@@ -186,219 +186,295 @@
 				>
 			</File>
 			<Filter
-				Name="components"
+				Name="processing"
 				>
 				<File
-					RelativePath="..\..\src\gui\components\Forward.hpp"
+					RelativePath="..\..\src\processing\IInput.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\gui\components\FrxCircuidView.cpp"
+					RelativePath="..\..\src\processing\IInput.hpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\gui\components\FrxCircuidView.hpp"
+					RelativePath="..\..\src\processing\IModelController.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\gui\components\FrxComponent.cpp"
+					RelativePath="..\..\src\processing\IModelController.hpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\gui\components\FrxComponent.hpp"
+					RelativePath="..\..\src\processing\IOutput.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\gui\components\FrxConcreteConnections.hpp"
+					RelativePath="..\..\src\processing\IOutput.hpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\gui\components\FrxConcreteIO.hpp"
+					RelativePath="..\..\src\processing\IParameter.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\gui\components\FrxConcreteParameter.cpp"
+					RelativePath="..\..\src\processing\IParameter.hpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\gui\components\FrxConcreteParameter.hpp"
+					RelativePath="..\..\src\processing\IProcessor.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\gui\components\FrxConcreteProcessor.cpp"
+					RelativePath="..\..\src\processing\IProcessor.hpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\gui\components\FrxConcreteProcessor.hpp"
+					RelativePath="..\..\src\processing\ModelObject.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\gui\components\FrxConnection.cpp"
+					RelativePath="..\..\src\processing\ModelObject.hpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="gui"
+				>
+				<File
+					RelativePath="..\..\src\gui\__ModelExecutors.hpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\gui\components\FrxConnection.hpp"
+					RelativePath="..\..\src\gui\FrxControl.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\gui\components\FrxControl.cpp"
+					RelativePath="..\..\src\gui\FrxControl.hpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\gui\components\FrxControl.hpp"
+					RelativePath="..\..\src\gui\IViewModelMap.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\gui\components\FrxHover.cpp"
+					RelativePath="..\..\src\gui\IViewModelMap.hpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\gui\components\FrxHover.hpp"
+					RelativePath="..\..\src\gui\ViewObject.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\gui\components\FrxIO.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxIO.hpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxNode.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxNode.hpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxParameter.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxParameter.hpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxProcessorNode.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxProcessorNode.hpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxSelection.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxSelection.hpp"
+					RelativePath="..\..\src\gui\ViewObject.hpp"
 					>
 				</File>
 				<Filter
-					Name="ui"
+					Name="components"
 					>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxCircuidMouseListener.cpp"
+						RelativePath="..\..\src\gui\components\Forward.hpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxCircuidMouseListener.hpp"
+						RelativePath="..\..\src\gui\components\FrxCircuidView.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxCircuidViewUI.cpp"
+						RelativePath="..\..\src\gui\components\FrxCircuidView.hpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxCircuidViewUI.hpp"
+						RelativePath="..\..\src\gui\components\FrxComponent.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxComponentUI.cpp"
+						RelativePath="..\..\src\gui\components\FrxComponent.hpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxComponentUI.hpp"
+						RelativePath="..\..\src\gui\components\FrxConcreteConnections.hpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxConnectionUI.cpp"
+						RelativePath="..\..\src\gui\components\FrxConcreteIO.hpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxConnectionUI.hpp"
+						RelativePath="..\..\src\gui\components\FrxConcreteParameter.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxHoverMouseListener.cpp"
+						RelativePath="..\..\src\gui\components\FrxConcreteParameter.hpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxHoverMouseListener.hpp"
+						RelativePath="..\..\src\gui\components\FrxConcreteProcessor.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxHoverUI.cpp"
+						RelativePath="..\..\src\gui\components\FrxConcreteProcessor.hpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxHoverUI.hpp"
+						RelativePath="..\..\src\gui\components\FrxConnection.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxIOUI.hpp"
+						RelativePath="..\..\src\gui\components\FrxConnection.hpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxLookAndFeel.cpp"
+						RelativePath="..\..\src\gui\components\FrxHover.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxLookAndFeel.hpp"
+						RelativePath="..\..\src\gui\components\FrxHover.hpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxNodeUI.cpp"
+						RelativePath="..\..\src\gui\components\FrxIO.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxNodeUI.hpp"
+						RelativePath="..\..\src\gui\components\FrxIO.hpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxParameterUI.cpp"
+						RelativePath="..\..\src\gui\components\FrxNode.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxParameterUI.hpp"
+						RelativePath="..\..\src\gui\components\FrxNode.hpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxProcessorNodeUI.cpp"
+						RelativePath="..\..\src\gui\components\FrxParameter.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxProcessorNodeUI.hpp"
+						RelativePath="..\..\src\gui\components\FrxParameter.hpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxSelectionMouseListener.cpp"
+						RelativePath="..\..\src\gui\components\FrxProcessorNode.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxSelectionMouseListener.hpp"
+						RelativePath="..\..\src\gui\components\FrxProcessorNode.hpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxSelectionUI.cpp"
+						RelativePath="..\..\src\gui\components\FrxSelection.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\gui\components\ui\FrxSelectionUI.hpp"
+						RelativePath="..\..\src\gui\components\FrxSelection.hpp"
 						>
 					</File>
+					<Filter
+						Name="ui"
+						>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxCircuidMouseListener.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxCircuidMouseListener.hpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxCircuidViewUI.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxCircuidViewUI.hpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxComponentUI.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxComponentUI.hpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxConnectionUI.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxConnectionUI.hpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxHoverMouseListener.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxHoverMouseListener.hpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxHoverUI.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxHoverUI.hpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxIOUI.hpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxLookAndFeel.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxLookAndFeel.hpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxNodeUI.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxNodeUI.hpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxParameterUI.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxParameterUI.hpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxProcessorNodeUI.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxProcessorNodeUI.hpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxSelectionMouseListener.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxSelectionMouseListener.hpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxSelectionUI.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\FrxSelectionUI.hpp"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 		</Filter>

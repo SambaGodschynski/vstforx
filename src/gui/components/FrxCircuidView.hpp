@@ -43,6 +43,8 @@ public:
 	//-------------------------------------------------------------------------
 	static const std::string PROPERTY_ZORDER;
 	//-------------------------------------------------------------------------
+	static const std::string PROPERTY_MODELMAP;
+	//-------------------------------------------------------------------------
 	static const float Z_ProcessorNodes;
 	//-------------------------------------------------------------------------
 	static const float Z_IO;
@@ -58,6 +60,8 @@ public:
 	static const float Z_InteractiveStuff;
 protected:
 	//-------------------------------------------------------------------------
+	IViewModelMap::Ptr modelMap;
+	//-------------------------------------------------------------------------
 	sdc::Panel::Ptr content;
 	//-------------------------------------------------------------------------
 	FrxSelection::Ptr selection;
@@ -68,7 +72,11 @@ protected:
 private:
 public:
 	//-------------------------------------------------------------------------
-
+	void message(const std::string &str);
+	//-------------------------------------------------------------------------
+	void warnMessage(const std::string &str);
+	//-------------------------------------------------------------------------
+	void errorMessage(const std::string &str);
 	//-------------------------------------------------------------------------
 	AContainer::Ptr getContentPane() const {
 		return content;
@@ -121,6 +129,8 @@ public:
 	); 
 	//-------------------------------------------------------------------------
 	IViewModelMap::Ptr getViewModelMap() const;
+	//-------------------------------------------------------------------------
+	void setViewModelMap(IViewModelMap::Ptr map);
 
 }; // FrxCircuidView
 ///////////////////////////////////////////////////////////////////////////////
@@ -144,6 +154,7 @@ void FrxCircuidView::findComponentsInArea(Container &container,
 	const sd::Rectangle &area, FrxCircuidView::ZOrder _start, 
 	FrxCircuidView::ZOrder _end) 
 {
+	// TODO: impl. ordered search (o[logN])
 	struct Filter {
 		const sd::Rectangle &area;
 		ZOrder start, end;

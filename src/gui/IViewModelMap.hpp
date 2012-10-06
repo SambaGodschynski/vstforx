@@ -23,9 +23,20 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<IViewModelMap> Ptr;
 	//-------------------------------------------------------------------------
+	/**
+	 * @param viewobject
+	 * @return related model object
+	 */
 	virtual processing::ModelObject::Ptr getModelObject(ViewObject::Ptr obj) = 0;
 	//-------------------------------------------------------------------------
+	/**
+	 * @param modelobject
+	 * @return related view object
+	 */
 	virtual ViewObject::Ptr getViewObject(frx::processing::ModelObject::Ptr obj) = 0;
+	//-------------------------------------------------------------------------
+	virtual void registerObjects(ViewObject::Ptr vobj,
+		frx::processing::ModelObject::Ptr mobj) = 0;
 }; // IViewModelMap
 }} // namespace(s)
 

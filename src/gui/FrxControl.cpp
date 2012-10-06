@@ -18,11 +18,13 @@
 #include <loki/MultiMethods.h>
 #include <sambag/disco/components/PopupMenu.hpp>
 #include <sambag/disco/components/MenuSelectionManager.hpp>
+#include <processing/IModelController.hpp>
+#include "__ModelExecutors.hpp"
 
 namespace frx { namespace gui {
 using namespace components;
 ////////////////////////////////////////////////////////////////////////////////
-//  Private executives
+//  Private executors
 //-----------------------------------------------------------------------------
 namespace {
 template <class ProcessorType>
@@ -51,6 +53,14 @@ void addProcessorToView(FrxCircuidViewWPtr c, int numInputs, int numOutputs) {
 		SAMBAG_WARN("tried to add processor with FrxCircuidViewPtr == NULL");
 		return;
 	}
+	// create model obj.
+	frx::processing::IModelController *ctrl = frx::processing::getModelController(circ);
+	if (!ctrl) {
+		SAMBAG_WARN("tried to add processor with IModelController == NULL");
+		return;
+	}
+	createProcessorOnModel<ConcreteProcessor>(ctrl, numInputs, numOutputs);
+	// create view obj.
 	circ->add(res, FrxCircuidView::Z_ProcessorNodes);
 	res->setLocation(0, 0);
 	res->configIO(numInputs, numOutputs);

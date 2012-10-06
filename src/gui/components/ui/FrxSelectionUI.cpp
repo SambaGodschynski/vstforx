@@ -24,11 +24,8 @@ void FrxSelectionUI::installListeners(sdc::AComponentPtr c) {
 }
 //-----------------------------------------------------------------------------
 void FrxSelectionUI::installDefaults(sdc::AComponentPtr c) {
-	sd::ColorRGBA col(1., .25, .5, .25);
-	sdc::ui::getUIManager().getProperty("FrxSelection.bgColor", col);
-	c->setBackground(col);
-	sdc::ui::getUIManager().getProperty("FrxSelection.fgColor", col);
-	c->setForeground(col);
+	sdc::ui::UIManager &m = sdc::ui::getUIManager();
+	m.getProperty("FrxSelection.selectedStyle", selectedStyle);
 }
 //-----------------------------------------------------------------------------
 void FrxSelectionUI::installUI(sdc::AComponentPtr c) {
@@ -37,9 +34,12 @@ void FrxSelectionUI::installUI(sdc::AComponentPtr c) {
 }
 //-----------------------------------------------------------------------------
 void FrxSelectionUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
-	cn->rect(sd::Rectangle(0,0, c->getWidth(), c->getHeight()));
-	cn->setFillColor(c->getBackground());
+	sd::Rectangle r = sd::Rectangle(0,0, c->getWidth(), c->getHeight()); 
+	selectedStyle.intoContext(cn);
+	cn->rect(r);
 	cn->fill();
+	cn->rect(r);
+	cn->stroke();
 }
 
 }}}} // namespace(s)

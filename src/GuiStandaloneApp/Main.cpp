@@ -17,6 +17,7 @@
 #include <gui/components/FrxConcreteIO.hpp>
 #include <gui/components/ui/FrxLookAndFeel.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
+#include <processing/IModelController.hpp>
 #include <sambag/disco/svg/HtmlColors.hpp>
 #include <stdlib.h>
 #include <time.h>
@@ -95,3 +96,13 @@ int main() {
 	return 0;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+namespace frx { namespace processing {
+//-----------------------------------------------------------------------------
+IModelController *
+getModelController(frx::gui::components::FrxCircuidViewPtr view)
+{
+	return NULL;
+}
+
+}} // namespaced

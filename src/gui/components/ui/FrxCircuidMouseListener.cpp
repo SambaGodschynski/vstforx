@@ -11,6 +11,7 @@
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/components/FrxSelection.hpp>
 #include <gui/FrxControl.hpp>
+#include <sambag/disco/components/ui/UIManager.hpp>
 #include <sambag/disco/svg/units/Units.hpp>
 #include <sambag/disco/Dash.hpp>
 #include <boost/assign.hpp>
@@ -29,13 +30,10 @@ FrxCircuidMouseListener::FrxCircuidMouseListener() {
 	rect.x0().y().setType(sd::svg::units::Unit::PX);
 	rect.size().width().setType(sd::svg::units::Unit::PX);
 	rect.size().height().setType(sd::svg::units::Unit::PX);
-	selection->setForeground(sd::ColorRGBA(1));
-	selection->getStyle().fillColor(sd::ColorRGBA(1,0,0,0.25));
-	selection->getStyle().strokeColor(sd::ColorRGBA(1,0,0));
-	using namespace boost::assign;
-	std::vector<float> dashes;
-	dashes+= 5., 5;
-	selection->getStyle().dash( sd::Dash::createWithValues(dashes) );
+	sdc::ui::UIManager &m = sdc::ui::getUIManager();
+	sd::svg::graphicElements::Style selectingStyle;
+	m.getProperty("FrxSelection.selectingStyle", selectingStyle);
+	selection->setStyle(selectingStyle);
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidMouseListener::drag(const sdc::events::MouseEvent &ev) {

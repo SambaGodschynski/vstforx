@@ -12,6 +12,7 @@
 #include <boost/weak_ptr.hpp>
 #include <sambag/disco/components/ui/AComponentUI.hpp>
 #include "FrxSelectionMouseListener.hpp"
+#include <sambag/disco/svg/graphicElements/Style.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -32,6 +33,11 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::weak_ptr<FrxSelectionUI> WPtr;
 protected:
+	//-------------------------------------------------------------------------
+	// to be found in FrxCircuidMouseListener's constructor:
+	// sd::svg::graphicElements::Style selectingStyle;
+	//-------------------------------------------------------------------------
+	sd::svg::graphicElements::Style selectedStyle;
 	//-------------------------------------------------------------------------
 	WPtr self;
 	//-------------------------------------------------------------------------

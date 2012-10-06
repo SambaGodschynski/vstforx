@@ -144,18 +144,29 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("ProcessorOutput.fgColor", HtmlColors::getColor("black"));
 	m.putProperty("Entry.fgColor", HtmlColors::getColor("black"));
 	m.putProperty("Exit.fgColor", HtmlColors::getColor("black"));
-	m.putProperty("FrxSelection.bgColor", HtmlColors::getColor("purple").setA(0.25));
 	m.putProperty("FrxStdKnobCorona02.color",  HtmlColors::getColor("yellow"));
 	m.putProperty("FrxStdKnobCorona01.color",  HtmlColors::getColor("red"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<connectionstyles
-	m.putProperty("IOCn.style", createStyle("stroke-width: 4; stroke: green"));
-	m.putProperty("IOCn.hoverStyle", createStyle("stroke-width: 8; stroke: green"));
-	m.putProperty("ProcessorInputCn.style", createStyle("stroke-width: 4; stroke: green"));
-	m.putProperty("ProcessorOutputCn.style", createStyle("stroke-width: 4; stroke: green"));
-	m.putProperty("ProcessorParameterCn.style", createStyle("stroke-width: 4; stroke: green"));
-	m.putProperty("ParameterCn.style", createStyle("stroke-width: 4; stroke: green;stroke-dasharray: 9, 5;"));
-	m.putProperty("ParameterCn.hoverStyle", createStyle("stroke-width: 8; stroke: green;stroke-dasharray: 9, 5;"));
-	m.putProperty("ParameterOPCn.style", createStyle("stroke-width: 4; stroke: green"));
+	m.putProperty("IOCn.style", 
+		createStyle("stroke-width: 4; stroke: grey"));
+	m.putProperty("IOCn.hoverStyle", 
+		createStyle("stroke-width: 8; stroke: grey"));
+	m.putProperty("ProcessorInputCn.style", 
+		createStyle("stroke-width: 4; stroke: grey"));
+	m.putProperty("ProcessorOutputCn.style", 
+		createStyle("stroke-width: 4; stroke: grey"));
+	m.putProperty("ProcessorParameterCn.style", 
+		createStyle("stroke-width: 4; stroke: grey"));
+	m.putProperty("ParameterCn.style", 
+		createStyle("stroke-width: 4; stroke: green;stroke-dasharray: 9, 5;"));
+	m.putProperty("ParameterCn.hoverStyle", 
+		createStyle("stroke-width: 8; stroke: green;stroke-dasharray: 9, 5;"));
+	m.putProperty("ParameterOPCn.style", 
+		createStyle("stroke-width: 4; stroke: grey"));
+	m.putProperty("FrxSelection.selectingStyle", 
+		createStyle("stroke-width: 4; stroke: grey; fill: purple;stroke-dasharray: 9, 5; fill-opacity: 0.25"));
+	m.putProperty("FrxSelection.selectedStyle", 
+		createStyle("stroke-width: 4; stroke: grey; fill: purple; fill-opacity: 0.25"));
 	resetUIPorpertyCache();
 }
 
