@@ -64,7 +64,7 @@ public:
 	 * @param sampleRate neue SampleRate
 	 * TODO: rename to setSampleRate
 	 */
-	void hostInfoChanged( float sampleRate ) {
+	void hostBaseConfigChanged( float sampleRate ) {
 		oneMsInSamples = sampleRate/1000.0f; 
 		minInSampl = oneMsInSamples * minInMs;
 	}

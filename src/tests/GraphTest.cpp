@@ -126,18 +126,17 @@ processing::Graph::Ptr GraphTest::createGraph( int blockSize, float samplerate )
 	Graph::Janitor::Ptr janitor = graph->getJanitor();
 	dummyFX->setSampleRate ( samplerate );
 	dummyFX->setBlockSize ( blockSize );
-	janitor->hostInfoChanged();
+	janitor->hostBaseConfigChanged();
 	return graph;
 }
 //=============================================================================
 GraphTest::GraphTest() {
 //=============================================================================
-	dummyFX = new processing::DummyFX ( NULL );
+	dummyFX = processing::DummyFX::create( NULL );
 }
 //=============================================================================
 GraphTest::~GraphTest() {
 //=============================================================================
-	delete dummyFX;
 }
 //=============================================================================
 void GraphTest::testConstructor() {
@@ -360,9 +359,9 @@ void GraphTest::testSignalProcessPath() {
 	Graph::Ptr graph = createGraph( 512, 44100.0f );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>create adapter
 	OutputStep::Ptr adapter[] = { 
-		OutputStep::create( graph.get(), 4 ),
-		OutputStep::create( graph.get(), 4 ),
-		OutputStep::create( graph.get(), 4 )};
+		OutputStep::create( graph->getHostInfo(), 4 ),
+		OutputStep::create( graph->getHostInfo(), 4 ),
+		OutputStep::create( graph->getHostInfo(), 4 )};
 	const size_t NUM_ADAPTER = sizeof(adapter) / sizeof(adapter[0]);
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add adapter to graph
 	Graph::Janitor::Ptr jan = graph->getJanitor();
@@ -566,7 +565,7 @@ void GraphTest::testDelayAdapter() {
 	enum { DELAY = 125 };
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>prepare graph
 	Graph::Ptr graph = createGraph( BLOCKSIZE, 44100.0f );
-	DelayAdapter<DELAY>::Ptr delay( DelayAdapter<DELAY>::create( graph.get() ) );
+	DelayAdapter<DELAY>::Ptr delay( DelayAdapter<DELAY>::create( graph->getHostInfo() ) );
 	Graph::Janitor::Ptr jan = graph->getJanitor();
 	jan->add( delay );
 	jan->connectNodes ( graph->getStartNode(), delay->getInputNode(0) );
@@ -606,8 +605,8 @@ void GraphTest::testDelayCompensationSimple() {
 	enum { DELAY = 125 };
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>prepare graph
 	Graph::Ptr graph = createGraph( BLOCKSIZE, 44100.0f );
-	DelayAdapter<DELAY>::Ptr delay( DelayAdapter<DELAY>::create( graph.get() ) );
-	Volume::Ptr noDelay( Volume::create( graph.get() ) );
+	DelayAdapter<DELAY>::Ptr delay( DelayAdapter<DELAY>::create( graph->getHostInfo() ) );
+	Volume::Ptr noDelay( Volume::create( graph->getHostInfo() ) );
 	Graph::Janitor::Ptr jan = graph->getJanitor();
 	jan->add( delay );
 	jan->connectNodes ( graph->getStartNode(), delay->getInputNode(0) );
@@ -657,9 +656,9 @@ void GraphTest::testDCWithInputSwitch() {
 	enum { FAILED=Graph::Janitor::FAILED, SUCCEED=Graph::Janitor::SUCCEED };
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>prepare graph
 	Graph::Ptr graph = createGraph( BLOCKSIZE, 44100.0f );
-	DelayAdapter<DELAY>::Ptr delay( DelayAdapter<DELAY>::create( graph.get() ) );
-	Volume::Ptr noDelay(Volume::create(graph.get()));
-	InputSwitch::Ptr sw(InputSwitch::create(graph.get()));
+	DelayAdapter<DELAY>::Ptr delay( DelayAdapter<DELAY>::create( graph->getHostInfo() ) );
+	Volume::Ptr noDelay(Volume::create(graph->getHostInfo()));
+	InputSwitch::Ptr sw(InputSwitch::create(graph->getHostInfo()));
 	Graph::Janitor::Ptr jan = graph->getJanitor();
 	jan->add( delay );
 	jan->add( noDelay );
@@ -710,10 +709,10 @@ void GraphTest::testDCWithInputSwitch02() {
 	enum { FAILED=Graph::Janitor::FAILED, SUCCEED=Graph::Janitor::SUCCEED };
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>prepare graph
 	Graph::Ptr graph = createGraph( BLOCKSIZE, 44100.0f );
-	DelayAdapter<DELAY>::Ptr delay( DelayAdapter<DELAY>::create( graph.get() ) );
-	DelayAdapter<DELAY02>::Ptr delay02( DelayAdapter<DELAY02>::create( graph.get() ) );
-	Volume::Ptr noDelay(Volume::create(graph.get()));
-	InputSwitch::Ptr sw(InputSwitch::create(graph.get()));
+	DelayAdapter<DELAY>::Ptr delay( DelayAdapter<DELAY>::create( graph->getHostInfo() ) );
+	DelayAdapter<DELAY02>::Ptr delay02( DelayAdapter<DELAY02>::create( graph->getHostInfo() ) );
+	Volume::Ptr noDelay(Volume::create(graph->getHostInfo()));
+	InputSwitch::Ptr sw(InputSwitch::create(graph->getHostInfo()));
 	sw->addInputNode();
 	Graph::Janitor::Ptr jan = graph->getJanitor();
 	jan->add( delay );
@@ -823,7 +822,7 @@ void GraphTest::testDelayCompensationComplex1() {
 	Graph::Ptr graph = createGraph( BLOCKSIZE, 44100.0f );
 	typedef CreateAdapter< DelayAdapter<D1> > AdapterD1;
 	typedef CreateAdapter< DelayAdapter<D2> > AdapterD2;
-	Volume::Ptr nd = Volume::create( graph.get(), 1.0f );
+	Volume::Ptr nd = Volume::create( graph->getHostInfo(), 1.0f );
 	Graph::Janitor::Ptr jan = graph->getJanitor();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add Adapter
 	jan->add(nd);
@@ -921,7 +920,7 @@ void GraphTest::testGraphConsistency() {
 	for ( int i=0; i<101; ++i ) {
 		// ...add
 		Graph::Janitor::Ptr janitor = graph->getJanitor();
-		OutputStep::Ptr ad = OutputStep::create( graph.get() );
+		OutputStep::Ptr ad = OutputStep::create( graph->getHostInfo() );
 		CPPUNIT_ASSERT ( janitor->add ( ad ) == SUCCEED );
 		// start-, endNode, In, Adapter, Out1, Out2 = 6
 		CPPUNIT_ASSERT_EQUAL ( (size_t)6, graph->getNumNodes() );
@@ -933,7 +932,7 @@ void GraphTest::testGraphConsistency() {
 	CPPUNIT_ASSERT_EQUAL ( (size_t)0, graph->getNumEdges() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add Adapter
 	Graph::Janitor::Ptr janitor = graph->getJanitor();
-	OutputStep::Ptr ad = OutputStep::create( graph.get() );
+	OutputStep::Ptr ad = OutputStep::create( graph->getHostInfo() );
 	CPPUNIT_ASSERT ( janitor->add ( ad ) == SUCCEED );
 	// start-, endNode, In, Adapter, Out1, Out2 = 6
 	size_t numNodes = 6; 
@@ -986,7 +985,7 @@ void GraphTest::testGraphConsistency() {
 	janitor = graph->getJanitor();
 	sampleRate/=2;
 	dummyFX->setSampleRate( sampleRate );
-	janitor->hostInfoChanged();
+	janitor->hostBaseConfigChanged();
 	janitor.reset();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>calc Graph
 	try {
@@ -998,7 +997,7 @@ void GraphTest::testGraphConsistency() {
 	janitor = graph->getJanitor();
 	blockSize/=2;
 	dummyFX->setBlockSize( blockSize );
-	janitor->hostInfoChanged();
+	janitor->hostBaseConfigChanged();
 	janitor.reset();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>calc Graph
 	try {
@@ -1012,7 +1011,7 @@ void GraphTest::testGraphConsistency() {
 	sampleRate*=8;
 	dummyFX->setBlockSize( blockSize );
 	dummyFX->setSampleRate( sampleRate );
-	janitor->hostInfoChanged();
+	janitor->hostBaseConfigChanged();
 	janitor.reset();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>calc Graph
 	try {
@@ -1029,22 +1028,22 @@ void GraphTest::testGraphConsistency() {
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>set BlockSize zero
 	janitor = graph->getJanitor();
 	dummyFX->setBlockSize( 0 );
-	CPPUNIT_ASSERT_THROW ( janitor->hostInfoChanged(), ppiError::InvalidBlockSize );
+	CPPUNIT_ASSERT_THROW ( janitor->hostBaseConfigChanged(), ppiError::InvalidBlockSize );
 	janitor.reset();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>set Samplerate zero
 	janitor = graph->getJanitor();
 	dummyFX->setSampleRate( 0 );
 	dummyFX->setBlockSize( 255 );
-	CPPUNIT_ASSERT_THROW ( janitor->hostInfoChanged(), ppiError::InvalidSampleRate );
+	CPPUNIT_ASSERT_THROW ( janitor->hostBaseConfigChanged(), ppiError::InvalidSampleRate );
 	janitor.reset();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>reset hostInfo
 	janitor = graph->getJanitor();
 	dummyFX->setSampleRate( 44100.0f );
 	dummyFX->setBlockSize( 255 );
-	janitor->hostInfoChanged();
+	janitor->hostBaseConfigChanged();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>connect with non graph object
 	janitor = graph->getJanitor();
-	OutputStep::Ptr ad2 = OutputStep::create( graph.get() );
+	OutputStep::Ptr ad2 = OutputStep::create( graph->getHostInfo() );
 	CPPUNIT_ASSERT ( 
 		janitor->connectNodes ( startNode.get(), ad2->getInputNode(0).get() ) == FAILED
 	);
@@ -1320,9 +1319,9 @@ void GraphTest::testGraphComplex3() {
 template < typename A >
 void register_types( A &ar ){
 	using namespace processing;
-	using namespace parameter;
+	using namespace processing::parameter;
 	//graph
-	ar.template register_type<parameter::Parameter>();
+	ar.template register_type<Parameter>();
 	//ar.template register_type<parameter::InverseConnection>();
 	//ar.template register_type<parameter::ExpConnection>();
 	//ar.template register_type<parameter::LogConnection>();
@@ -1401,7 +1400,7 @@ void GraphTest::testSerialization() {
 	Graph::Janitor::Ptr jan = graph->getJanitor();
 	dummyFX->setBlockSize(blockSize);
 	dummyFX->setSampleRate(sampleRate);
-	jan->hostInfoChanged();
+	jan->hostBaseConfigChanged();
 	jan.reset();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph. 
 	// volumeAdapter has fadein after de-serialize, so the first out-values grow up from zero 
@@ -1415,7 +1414,7 @@ void GraphTest::testSerialization() {
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add delayAdapter parallel
 	jan = graph->getJanitor();
 	enum { DELAY = 105 };
-	DelayAdapter<DELAY>::Ptr delay = DelayAdapter<DELAY>::create( graph.get() );
+	DelayAdapter<DELAY>::Ptr delay = DelayAdapter<DELAY>::create( graph->getHostInfo() );
 	jan->add( delay );
 	jan->connectNodes ( graph->getStartNode(), delay->getInputNode(0) );
 	jan->connectNodes ( delay->getOutputNode(0), graph->getEndNode() );
@@ -1456,7 +1455,7 @@ void GraphTest::testSerialization() {
 	jan = graph->getJanitor();
 	dummyFX->setBlockSize(blockSize);
 	dummyFX->setSampleRate(sampleRate);
-	jan->hostInfoChanged();
+	jan->hostBaseConfigChanged();
 	jan.reset();
 
 	// volumeAdapter has fadein after de-serialize, so the first out-values grow up from zero 

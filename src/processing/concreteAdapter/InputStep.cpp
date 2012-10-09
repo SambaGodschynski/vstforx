@@ -69,7 +69,7 @@ ProcessorNode::Ptr InputStep::addInputNode(){
 	return neu;
 }
 //------------------------------------------------------------------------------------------------------------
-InputStep::InputStep(IHostInfo *hostInfo, int initSteps) : 
+InputStep::InputStep(frx::processing::IHostInfo::Ptr hostInfo, int initSteps) : 
 ProcessAdapter( hostInfo, initSteps, 1 ), 
 type ( Parameter::create() ),
 inputMatrix ( InputMatrix ( initSteps, (Frames*)NULL ) ),
@@ -86,10 +86,17 @@ fixTimeValue( 10.f, hostInfo->getSampleRate() )
 }
 //------------------------------------------------------------------------------------------------------------
 void InputStep::reset(){
+	frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+	if (!hI) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+			"Hostinfo == NULL"
+		);
+	}
 	cStep->reset();
+	using namespace frx::processing;
 	// ermittle anzahl der samples bis zu naechsten 1/4 note
-	VstTimeInfo *inf = hostInfo->getVstTimeInfo( kVstPpqPosValid || kVstTempoValid );
-	double m = inf->ppqPos -  ((int)inf->ppqPos) ; //ziffern hintern komma.
+	TimeInfo *inf = hI->getHostTimeInfo( TimeInfo::FrxPpqPos || TimeInfo::FrxTempo );
+	double m = inf->ppqPos - ((int)inf->ppqPos) ; //ziffern hintern komma.
 	if ( m == 0.0 ) return;
 	if ( m < 0.5 ) { // dauer verkuerzen
 		double rest = m / 4.0; // 1.0 == in ppqPos 1/4
@@ -117,9 +124,15 @@ inline void InputStep::processFrames ( InputMatrix &fr, Processor::Int numSample
 }
 //------------------------------------------------------------------------------------------------------------
 void InputStep::processAdapter( Processor::Int numSamples ) {
+	frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+	if (!hI) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+			"Hostinfo == NULL"
+		);
+	}
 	TRY_TO_LOCK_TIMED (mutex); // gleichzeitigen zugriff von addOutputNode blocken
-	VstTimeInfo *inf = hostInfo->getVstTimeInfo(0);
-	ClockEdge::EdgeValue t = transport.in ( isFlag(inf->flags,kVstTransportPlaying) );
+	frx::processing::TimeInfo *inf = hI->getHostTimeInfo(0);
+	ClockEdge::EdgeValue t = transport.in (inf->transportIsPlaying);
 	if (t == ClockEdge::HIGH ){ // Transport: play flanke
 		reset();
 	}
@@ -161,7 +174,13 @@ void InputStep::load(com::iArchive &ar, const unsigned int version) {
 	ar >> fixTimeValue;
 	ar >> sync;
 	ar >> cStep;
-	tmpFrame.setSize ( hostInfo->getBlockSize() );
+	frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+	if (!hI) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+			"Hostinfo == NULL"
+		);
+	}
+	tmpFrame.setSize ( hI->getBlockSize() );
 	Parameter::ParameterListenerFunction f = boost::bind( 
 			&InputStep::typeChanged, this, _1, _2 
 	);

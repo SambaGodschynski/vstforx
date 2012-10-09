@@ -12,7 +12,7 @@ namespace processing{
 //PeakTracker
 //Tranformiert Signal Lautstaerke in Parameter wert.
 //============================================================================================================
-PeakTracker::PeakTracker( IHostInfo *hostInfo ) : ProcessAdapter(hostInfo,1,1) {
+PeakTracker::PeakTracker( frx::processing::IHostInfo::Ptr hostInfo ) : ProcessAdapter(hostInfo,1,1) {
 	setName ("PeakTracker");
 	inputNodes[0]->setName  ( getName() + " InputNode");
 	outputNodes[0]->setName ( getName() + " OutputNode");

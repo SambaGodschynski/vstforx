@@ -12,6 +12,8 @@
 #include "com/Serialization.h"
 #include "Switch.h"
 #include "com/One4All.h"
+#include <sambag/com/Exception.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -80,7 +82,7 @@ protected:
 	 */
 	virtual void setState ( Switch::State state ) { Switch::setState(state); }
 	//--------------------------------------------------------------------------------------------------------
-	OutputSwitch( IHostInfo *hostInfo, int initStates = 2 );
+	OutputSwitch( frx::processing::IHostInfo::Ptr hostInfo, int initStates = 2 );
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -88,7 +90,7 @@ public:
 	 * @param initStates
 	 * @return neues OutputSwitch-Objekt
 	 */
-	static Ptr create( IHostInfo *hostInfo, int initStates = 2 ) {
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo, int initStates = 2 ) {
 		Ptr neu( new OutputSwitch(hostInfo, initStates) );
 		neu->self = neu;
 		return neu;
@@ -117,8 +119,14 @@ public:
 	/**
 	 * HostInfo geandert. Beeinflusst Switch::Fader
 	 */
-	virtual void hostInfoChanged() {
-		Switch::setSampleRate( hostInfo->getSampleRate() );
+	virtual void hostBaseConfigChanged() {
+		frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+		if (!hI) {
+			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+				"Hostinfo == NULL"
+			);
+		}
+		Switch::setSampleRate( hI->getSampleRate() );
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**

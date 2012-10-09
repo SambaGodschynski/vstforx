@@ -32,7 +32,7 @@ void OutputSwitch::valueChanged ( void *src, const float &val ) {
 	Switch::setState ( mapInteger ( val, getNumStates() ) );
 }
 //------------------------------------------------------------------------------------------------------------
-OutputSwitch::OutputSwitch( IHostInfo *hostInfo, int initStates ) : 
+OutputSwitch::OutputSwitch( frx::processing::IHostInfo::Ptr hostInfo, int initStates ) : 
 ProcessAdapter( hostInfo, 1, initStates ), 
 Switch ( initStates, hostInfo->getSampleRate() ), outpMatrix( OutputMatrix(initStates, (Frames*)NULL) )
 {
@@ -107,7 +107,13 @@ void OutputSwitch::load(com::iArchive &ar, const unsigned int version) {
 	ar >> boost::serialization::base_object< Switch > ( *this );
 	ar >> parameterMap;
 	ar >> selector;
-	Switch::setSampleRate( hostInfo->getSampleRate() );
+	frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+	if (!hI) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+			"Hostinfo == NULL"
+		);
+	}
+	Switch::setSampleRate( hI->getSampleRate() );
 	outpMatrix = OutputMatrix ( getNumStates(), NULL );
 	selector->addValueChangedListener ( 
 		boost::bind(&OutputSwitch::valueChanged, this, _1, _2)

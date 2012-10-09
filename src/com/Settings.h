@@ -89,12 +89,10 @@ public:
 	void reloadConfigFile() { loadConfigFile(); }
 	//--------------------------------------------------------------------------------------------------------
 	// PPI KONSTANTEN
-	static const int UNIQUE_ID = 'forx';
-	static const int UNIQUE_ID_INSTR = 'frxi';
-	static const int GRIDSIZE = 15;
-	static const int COMMAND_WORKER_INTERVAL_MS = 1000;
-	static const int STD_KNOB_SUBPIXMAPS = 100;
-	static const int PROGRAM_PARAMETER = 512;
+	enum { UNIQUE_ID = 'forx' };
+	enum { UNIQUE_ID_INSTR = 'frxi' };
+	enum { COMMAND_WORKER_INTERVAL_MS = 1000 };
+	enum { PROGRAM_PARAMETER = 512 };
 	static const int PPI_VERSION = /*000*/ 4444; // xx.xx.xxx
 	static const char PPI_VERSION_EXTRA_CHAR = 'd';
 	static const unsigned int MIN_WINDOW_WIDTH = 800;

@@ -44,14 +44,14 @@ private:
 	Parameter::Ptr offset;
 protected:
 	//--------------------------------------------------------------------------------------------------------
-	PeakTracker ( IHostInfo *hostInfo );
+	PeakTracker ( frx::processing::IHostInfo::Ptr hostInfo );
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param hostInfo
 	 * @return neues PeakTracker-Objekt
 	 */
-	static Ptr create( IHostInfo *hostInfo ) {
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo ) {
 		Ptr neu( new PeakTracker(hostInfo ) );
 		neu->self = neu;
 		return neu;

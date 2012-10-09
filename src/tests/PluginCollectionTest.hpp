@@ -27,7 +27,7 @@ class PluginCollectionTest : public CPPUNIT_NS::TestFixture,
 	CPPUNIT_TEST( testMultipleDirectories );
 	CPPUNIT_TEST_SUITE_END();
 private:
-	processing::DummyFX *dummyFX;
+	processing::DummyFX::Ptr dummyFX;
 	processing::Graph::Ptr createGraph( int blockSize, float samplerate );
 	com::Settings::Ptr settings;
 	void eventHandler ( void *src, const com::OnLoadFile &ev );

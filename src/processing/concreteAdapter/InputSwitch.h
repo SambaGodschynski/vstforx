@@ -12,6 +12,8 @@
 #include "com/Serialization.h"
 #include "com/One4All.h"
 #include "Switch.h"
+#include <sambag/com/Exception.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -81,7 +83,7 @@ protected:
 	 */
 	virtual void setState ( size_t state ) { Switch::setState(state); }
 	//--------------------------------------------------------------------------------------------------------
-	InputSwitch( IHostInfo *hostInfo, int initStates = 2 );
+	InputSwitch( frx::processing::IHostInfo::Ptr hostInfo, int initStates = 2 );
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -89,7 +91,7 @@ public:
 	 * @param initStates
 	 * @return neues InputSwitch-Objekt
 	 */
-	static Ptr create( IHostInfo *hostInfo, int initStates = 2 ) {
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo, int initStates = 2 ) {
 		Ptr neu( new InputSwitch(hostInfo, initStates) );
 		neu->self = neu;
 		return neu;
@@ -98,9 +100,15 @@ public:
 	/**
 	 * HostInfo geandert. Beeinflusst Switch::Fader
 	 */
-	virtual void hostInfoChanged() {
-		tmpFrame.setSize( hostInfo->getBlockSize() );
-		Switch::setSampleRate( hostInfo->getSampleRate() );
+	virtual void hostBaseConfigChanged() {
+		frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+		if (!hI) {
+			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+				"Hostinfo == NULL"
+			);
+		}
+		tmpFrame.setSize( hI->getBlockSize() );
+		Switch::setSampleRate( hI->getSampleRate() );
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**

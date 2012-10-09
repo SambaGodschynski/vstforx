@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost_1_49_0&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit-1.12.1\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua-5.2.0\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\loki-0.1.7\include&quot;;&quot;$(ProjectDir)..\..\src&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VLD&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\loki\include&quot;;&quot;$(ProjectDir)..\..\src&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VLD&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;BOOST_FILESYSTEM_VERSION=3;BOOST_UBLAS_TYPE_CHECK=0;DISCO_USE_WIN32"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -63,7 +63,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="cairo-static.lib pixman-1.lib libpng.lib Winmm.lib zlib.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src\release\&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost_1_49_0\stage\lib&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VLD&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src\release\&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VLD&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -118,7 +118,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost_1_49_0&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit-1.12.1\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua-5.2.0\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\loki-0.1.7\include&quot;;&quot;$(ProjectDir)..\..\src&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\loki\include&quot;;&quot;$(ProjectDir)..\..\src&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -139,7 +139,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="cairo-static.lib pixman-1.lib libpng.lib zlib.lib Winmm.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src\release\&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost_1_49_0\stage\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src\release\&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -188,6 +188,14 @@
 			<Filter
 				Name="processing"
 				>
+				<File
+					RelativePath="..\..\src\processing\IConnection.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\IConnection.hpp"
+					>
+				</File>
 				<File
 					RelativePath="..\..\src\processing\IInput.cpp"
 					>

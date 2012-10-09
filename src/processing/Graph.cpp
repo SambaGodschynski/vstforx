@@ -74,7 +74,7 @@ const bgl::Vertex Graph::nullVertex = bgl::Vertex();
 //------------------------------------------------------------------------------------------------------------
 const bgl::Edge Graph::nullEdge = bgl::Edge();
 //------------------------------------------------------------------------------------------------------------
-Graph::Graph( IHostInfo *hostInfo ) : 
+Graph::Graph(frx::processing::IHostInfo::Ptr hostInfo) : 
 hostInfo( hostInfo ),
 _hasCycle(false)
 {
@@ -85,6 +85,10 @@ _hasCycle(false)
 	j->add ( startNode );
 	j->add ( endNode );
 	initHostParameter();
+}
+//-----------------------------------------------------------------------------------------------------------
+void Graph::setHostInfo(frx::processing::IHostInfo::Ptr hI) {
+	hostInfo = hI;
 }
 //------------------------------------------------------------------------------------------------------------
 ProcessorNode::Ptr Graph::getProcessorNode( const bgl::Vertex &vertex ) {
@@ -177,7 +181,7 @@ size_t Graph::getGraphDelay() {
 	return getEndNode()->getNodeDelay();
 }
 //------------------------------------------------------------------------------------------------------------
-Graph::Ptr Graph::create( IHostInfo *hostInfo ) {
+Graph::Ptr Graph::create( frx::processing::IHostInfo::Ptr hostInfo ) {
 	Graph::Ptr neu( new Graph( hostInfo ) );
 	neu->self = neu;
 	return neu;
@@ -195,7 +199,7 @@ void Graph::save(oArchive &ar) const {
 	ar<<hostParameter;
 }
 //------------------------------------------------------------------------------------------------------------
-Graph::Ptr Graph::load( iArchive &ar, IHostInfo *hostInfo ) {
+Graph::Ptr Graph::load( iArchive &ar, frx::processing::IHostInfo::Ptr hostInfo ) {
 	com::MethodMessage<Graph> methodMessage ( "load()");
 	Graph::Ptr graph;
 	ar >> graph; 
@@ -216,13 +220,14 @@ Graph::Ptr Graph::load( iArchive &ar, IHostInfo *hostInfo ) {
 	return graph;
 }
 //------------------------------------------------------------------------------------------------------------
+/*
 void Graph::processEvents(VstEvents * events) {
 	GraphObjectContainer::iterator it = graphObjects.begin();
 	for ( ; it!=graphObjects.end(); ++it ){
 		IVstEventProcessor *pr = dynamic_cast<IVstEventProcessor*> ( it->get() );
 		if ( pr ) pr->processEvents( events );
 	}
-}
+}*/
 //------------------------------------------------------------------------------------------------------------
 Graph::Janitor::Ptr Graph::getJanitor() {
 	Janitor::Ptr up = updater.lock();
@@ -244,11 +249,12 @@ bgl::Edge Graph::findEdge( ProcessorNode::Ptr source, ProcessorNode::Ptr target 
 	return nullEdge;
 }
 //------------------------------------------------------------------------------------------------------------
+/**
 bool Graph::ioChanged() {
 	Janitor::Ptr jan = getJanitor(); 
 	// update when janitor looses scope
 	return hostInfo->ioChanged();
-}
+}*/
 //============================================================================================================
 // Klasse Janitor
 // Ermoeglicht hinzufuegen und entfernen von PObjects und Verbindungen.
@@ -257,7 +263,7 @@ bool Graph::ioChanged() {
 //------------------------------------------------------------------------------------------------------------
 Graph::Janitor::Janitor(processing::Graph *graph) : 
 graph(graph), 
-_hostInfoChanged(false)
+_hostBaseConfigChanged(false)
 {
 	if ( !graph->self.lock() ) return;
 	graph->getProcessingLock().lock(); // sperre processing
@@ -265,17 +271,17 @@ _hostInfoChanged(false)
 //------------------------------------------------------------------------------------------------------------
 Graph::Janitor::~Janitor() {
 	if ( !graph->self.lock() ) return;
-	if ( _hostInfoChanged  ) { // samplerate oder blockisze geandert
+	if ( _hostBaseConfigChanged  ) { // samplerate oder blockisze geandert
 		GraphObjectContainer::iterator it = graph->graphObjects.begin();
 		for ( ; it!=graph->graphObjects.end(); ++it ){
-			(*it)->hostInfoChanged();
+			(*it)->hostBaseConfigChanged();
 		}
 	}
 	graph->updateGraph();
 	graph->getProcessingLock().unlock(); // entsperre processing
 }
 //------------------------------------------------------------------------------------------------------------
-void Graph::Janitor::hostInfoChanged() {
+void Graph::Janitor::hostBaseConfigChanged() {
 	if ( graph->getBlockSize() <= 0 ) 
 		throw ppiError::InvalidBlockSize
 			("Invalid blockSize: " + MyString( graph->getBlockSize() ), __FILE__, __LINE__ ); 
@@ -284,7 +290,7 @@ void Graph::Janitor::hostInfoChanged() {
 		throw ppiError::InvalidSampleRate
 			("Invalid sampleRate: " + MyString( graph->getBlockSize() ), __FILE__, __LINE__ ); 
 	
-	_hostInfoChanged = true;
+	_hostBaseConfigChanged = true;
 }
 //------------------------------------------------------------------------------------------------------------
 Graph::Janitor::State Graph::Janitor::connectNodes( ProcessorNode::Ptr parent, ProcessorNode::Ptr child ) {

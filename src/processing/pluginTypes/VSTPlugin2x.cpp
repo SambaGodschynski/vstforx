@@ -23,7 +23,7 @@ namespace processing{
 //------------------------------------------------------------------------------------------------------------
 boost::unordered_map < AEffect*, VSTPlugin* > VSTPlugin::relatedPlugNode;
 //------------------------------------------------------------------------------------------------------------
-VSTPlugin::VSTPlugin( IHostInfo *hostInfo, const string &filename ) : 
+VSTPlugin::VSTPlugin( frx::processing::IHostInfo::Ptr hostInfo, const string &filename ) : 
 OS_VSTPlugNode2x ( filename ), // initalisiert aEff
 Plugin ( hostInfo, filename, 0,  0 ),  // ProcessAdapter
 onPlugChangeParameterIndex (-1),
@@ -32,8 +32,8 @@ canReceiveVstEvents(false),
 ioChangedLock(false)
 { 
 	loadModule( HostCallBackOnInit (          // erzeugt Mutex lock bis fertig geladen
-		hostInfo->getAudioMasterCallback(), 
-		hostInfo->getAudioEffectX() ) 
+		(audioMasterCallback)(hostInfo->getMasterCallback()), 
+		(AudioEffectX*)(hostInfo->getEffectPtr()) ) 
 	);
 	
 	VstPlugCategory pluginCategory = (VstPlugCategory)
@@ -105,10 +105,15 @@ void VSTPlugin::initPlug( VSTPlugin &plug ) {
 	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	// reihenfolge wichtig! ( ueber debugger ermittelt )
 	// setze samplerate  
-
-	plug.aEff->dispatcher ( plug.aEff, effSetSampleRate, 0, 0, 0, plug.hostInfo->getSampleRate() );
+	frx::processing::IHostInfo::Ptr hI =  plug.hostInfo.lock();
+	if (!hI) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+			"Hostinfo == NULL"
+		);
+	}
+	plug.aEff->dispatcher ( plug.aEff, effSetSampleRate, 0, 0, 0, hI->getSampleRate() );
 	// setze blockSize  
-	plug.aEff->dispatcher ( plug.aEff, effSetBlockSize, 0, plug.hostInfo->getBlockSize(), 0, 0 );
+	plug.aEff->dispatcher ( plug.aEff, effSetBlockSize, 0, hI->getBlockSize(), 0, 0 );
 	// open
 	plug.aEff->dispatcher ( plug.aEff, effOpen, 0, 0, 0, 0.0 );
 
@@ -129,7 +134,13 @@ void VSTPlugin::initPlug( VSTPlugin &plug ) {
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::setupFramesbuffer() {
-	blockSize = hostInfo->getBlockSize();
+	frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+	if (!hI) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+			"Hostinfo == NULL"
+		);
+	}
+	blockSize = hI->getBlockSize();
 	// mappe von frames nach float[][]
 	for ( int i=0; i<getNumOutputNodes()*2; i+=2 ) {
 		Frames *fr = &( framebuffer[i/2] );
@@ -184,14 +195,20 @@ void VSTPlugin::setProgram(size_t index) {
 	aEff->dispatcher ( aEff, effSetProgram, 0, index, NULL, 0.0f );
 }
 //------------------------------------------------------------------------------------------------------------
-void VSTPlugin::hostInfoChanged() {
+void VSTPlugin::hostBaseConfigChanged() {
+	frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+	if (!hI) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+			"Hostinfo == NULL"
+		);
+	}
 	turnOff();
 	setupFramesbuffer();
 	// setze samplerate
 	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
-	aEff->dispatcher ( aEff, effSetSampleRate, 0, 0, 0, hostInfo->getSampleRate() );
+	aEff->dispatcher ( aEff, effSetSampleRate, 0, 0, 0, hI->getSampleRate() );
 	// setze blockSize  
-	aEff->dispatcher ( aEff, effSetBlockSize, 0, hostInfo->getBlockSize(), 0, 0 );
+	aEff->dispatcher ( aEff, effSetBlockSize, 0, hI->getBlockSize(), 0, 0 );
 	turnOn();
 }
 //------------------------------------------------------------------------------------------------------------
@@ -360,7 +377,7 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 	try {
 		// restore/update via db
 		com::PluginCollection::Ptr pC = com::PluginCollection::getPluginCollection();
-		pC->restorePluginInfo ( hostInfo, plugInfo );
+		pC->restorePluginInfo ( hostInfo.lock(), plugInfo );
 	} catch(...) {
 	}
 
@@ -369,10 +386,16 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 		throw com::ppiError::SerializationError ("incompatible plugin types", __FILE__, __LINE__);
 	setLocation ( plugInfo.location );
 	// load Plugin
+	frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+	if (!hI) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+			"Hostinfo == NULL"
+		);
+	}
 	OS_VSTPlugNode2x::setModuleLocation ( getLocation() );
 	loadModule( HostCallBackOnInit (
-		hostInfo->getAudioMasterCallback(), 
-		hostInfo->getAudioEffectX() ) 
+		(audioMasterCallback)hI->getMasterCallback(), 
+		(AudioEffectX*)hI->getEffectPtr() ) 
 	);
 	param.clear();
 	initPlug ( *this );
@@ -472,13 +495,25 @@ VstIntPtr VSTPlugin::_hostCallback ( AEffect* effect,
 			pl->onIOChanged();
 			return 0;
 	}
-
+	frx::processing::IHostInfo::Ptr hI =  pl->hostInfo.lock();
+	if (!hI) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+			"Hostinfo == NULL"
+		);
+	}
 	// no specific handling: call VSTForx's host
-	AudioMasterCallback hostCallback = pl->hostInfo->getAudioMasterCallback();
+	audioMasterCallback hostCallback = (audioMasterCallback)(hI->getMasterCallback());
 	if ( !hostCallback ) 
 		return 0;
 	// eigentlicher host callback ( VSTForx nach host )
-	return hostCallback( pl->hostInfo->getAudioEffectX()->getAeffect(), opcode, index, value, ptr, opt);
+	return hostCallback( 
+		( (AudioEffectX*)(hI->getEffectPtr()) )->getAeffect(),
+		opcode, 
+		index, 
+		value, 
+		ptr, 
+		opt
+	);
 }
 } //namespace processing
 

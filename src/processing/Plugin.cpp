@@ -37,7 +37,7 @@ void Plugin::initListener() {
 	editorOpen->addValueChangedListener(dC);
 }
 //------------------------------------------------------------------------------------------------------------
-Plugin::Plugin ( IHostInfo *hostInfo, const string &location, size_t numInputs , size_t numOutputs ) :
+Plugin::Plugin ( frx::processing::IHostInfo::Ptr hostInfo, const string &location, size_t numInputs , size_t numOutputs ) :
 ProcessAdapter ( hostInfo, numInputs, numOutputs ),
 editorPosX ( processing::parameter::Parameter::create() ),
 editorPosY ( processing::parameter::Parameter::create() ),
@@ -62,14 +62,14 @@ Plugin::~Plugin() {
 // erzeugt plugin.
 //============================================================================================================
 //--------------------------------------------------------------------------------------------------------
-Plugin::Ptr PluginFactory::createVST2xPlugNode ( IHostInfo *hostInfo, const string &filename ) {
+Plugin::Ptr PluginFactory::createVST2xPlugNode ( frx::processing::IHostInfo::Ptr hostInfo, const string &filename ) {
 	return VSTPlugin::create( hostInfo, filename );
 	
 	// ... weitere Plugs TODO: VST3.x
 
 }
 //------------------------------------------------------------------------------------------------------------
-Plugin::Ptr PluginFactory::createPlugNode (  IHostInfo *hostInfo, const string &filename ) {
+Plugin::Ptr PluginFactory::createPlugNode (  frx::processing::IHostInfo::Ptr hostInfo, const string &filename ) {
 	return createVST2xPlugNode ( hostInfo, filename ); 
 	/*
 	switch ( pI.pluginType ) {

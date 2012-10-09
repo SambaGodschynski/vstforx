@@ -26,7 +26,7 @@
 #define FAST_SCAN_TIME 12.0 //seconds
 
 // Registers the fixture into the 'registry'
-//CPPUNIT_TEST_SUITE_REGISTRATION( tests::PluginCollectionTest );
+CPPUNIT_TEST_SUITE_REGISTRATION( tests::PluginCollectionTest );
 
 
 namespace tests {
@@ -39,21 +39,19 @@ processing::Graph::Ptr PluginCollectionTest::createGraph( int blockSize, float s
 	Graph::Janitor::Ptr janitor = graph->getJanitor();
 	dummyFX->setSampleRate ( samplerate );
 	dummyFX->setBlockSize ( blockSize );
-	janitor->hostInfoChanged();
+	janitor->hostBaseConfigChanged();
 	return graph;
 }
 //=============================================================================
 PluginCollectionTest::PluginCollectionTest() : numHandlerCalled(0) {
 //=============================================================================
-	dummyFX = new processing::DummyFX ( NULL );
+	dummyFX = processing::DummyFX::create( NULL );
 	settings = com::Settings::getSettings();
 	settings->fastScan = false;
 }
 //=============================================================================
 PluginCollectionTest::~PluginCollectionTest() {
 //=============================================================================
-	delete dummyFX;
-	
 	boost::filesystem::remove( settings->getPlugCollectionDumpFilename() );
 	assert ( 
 		!boost::filesystem::exists( 
@@ -127,7 +125,7 @@ void resetPluginCollection( processing::Graph::Ptr graph )
 	Settings::PathnameSet tmp = settings->getPluginDirectoryList();
 	settings->clearVSTFolders();
 	// scan:
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	CPPUNIT_ASSERT_EQUAL ( (size_t)0, pC->getNumSucceed() );
 	CPPUNIT_ASSERT_EQUAL ( (size_t)0, pC->getNumFailed() );
 	CPPUNIT_ASSERT_EQUAL ( (size_t)0, pC->getNumNotChecked() );
@@ -201,7 +199,7 @@ void PluginCollectionTest::testScan() {
 	Graph::Ptr graph = createGraph( 512, 44100.0f );
 	pC->EventSender<com::OnLoadFile>::addEventListener( this );
 	pC->EventSender<com::ScanComplete>::addEventListener( this );
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	// compare scanned tree with ExpMap
 	ExcpectedFolderMap exp;
 	exp = map_list_of ( "root", "testVstFolder" )
@@ -220,7 +218,7 @@ void PluginCollectionTest::testScan() {
 	CPPUNIT_ASSERT ( pC->isAllScanned() );
 	//>>>>>>>>>>>>>>>>rescan, excpect fast execute because plugs already in db
 	boost::timer::cpu_timer timer;
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	CPPUNIT_ASSERT ( timer.elapsed().user < FAST_SCAN_TIME );
 }
 //=============================================================================
@@ -245,7 +243,7 @@ void PluginCollectionTest::testFastScan() {
 	settings->addVSTFolder( path.string() );
 	// start scan
 	boost::timer::cpu_timer timer; 
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	CPPUNIT_ASSERT ( timer.elapsed().user < FAST_SCAN_TIME ); 
 	settings->fastScan = false;
 	//checkTree ( pC );
@@ -292,7 +290,7 @@ void PluginCollectionTest::testFolderIntegrity1(){
 	pC->EventSender<com::ScanComplete>::addEventListener( this );
 	settings->clearVSTFolders();
 	settings->addVSTFolder( pathA.string() );
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 1, pC->getNumSucceed() );
 	//>>>>>>>>>>>>>>>>has to throw something like "given folder == sub folder"
 	sambag::com::Location pathB =  boost::filesystem::absolute("testVstFolder/A");
@@ -310,14 +308,14 @@ void PluginCollectionTest::testFolderIntegrity1(){
 	settings->clearVSTFolders();
 	settings->addVSTFolder( pathB.string() );
 	boost::timer::cpu_timer t;
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION, pC->getNumSucceed() );
 	CPPUNIT_ASSERT ( t.elapsed().user < FAST_SCAN_TIME ); 
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan testVstFolder/ instead testVstFolder
 	pathA =  boost::filesystem::absolute("testVstFolder/");
 	settings->clearVSTFolders();
 	settings->addVSTFolder( pathA.string() );
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 1, pC->getNumSucceed() );
 	CPPUNIT_ASSERT_EQUAL ( (size_t)2, pC->getNumFailed() );
 	CPPUNIT_ASSERT_EQUAL ( (size_t)0, pC->getNumNotChecked() );
@@ -337,7 +335,7 @@ void PluginCollectionTest::testFolderIntegrity1(){
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan empty folders expect 0 plugins
 	// setup folders
 	settings->clearVSTFolders();
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	CPPUNIT_ASSERT_EQUAL ( (size_t)0, pC->getNumSucceed() );
 }
 //=============================================================================
@@ -373,7 +371,7 @@ void PluginCollectionTest::testFolderIntegrity2(){
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan empty folder
 	using namespace sambag::cpsqlite;
 	using namespace com::sqlcommands;
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	DataBase::Results res;
 	DataBase::Executer::Ptr exec = pC->getDataBase()->getExecuter();
 	std::string qGetNeuFolder = "SELECT * FROM folders WHERE name='NeuFolder';";
@@ -391,7 +389,7 @@ void PluginCollectionTest::testFolderIntegrity2(){
 	copy_file ( pathA.string() + "/A/" + filename2,
 			    pathB.string() + "/" + filename2 );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	// get NeuFolder from DB 
 	res.clear();
 	exec->execute( qGetNeuFolder, res );
@@ -411,7 +409,7 @@ void PluginCollectionTest::testFolderIntegrity2(){
 	remove (  pathB.string() + "/" + filename2 );
 	copy_file ( pathA.string() + "/B/B3/keinVstPlugin" + VSTPLUG_EXT,
 			    pathB.string() + "/" + filename2 );
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	try {
 		CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 2, pC->getNumSucceed() );
 		CPPUNIT_ASSERT_EQUAL ( (size_t)2 + 1, pC->getNumFailed() );
@@ -423,7 +421,7 @@ void PluginCollectionTest::testFolderIntegrity2(){
 	////>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>remove file2
 	remove ( pathB.string() + "/" + filename2 );
 	///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	try {
 		CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 2, pC->getNumSucceed() );
 		CPPUNIT_ASSERT_EQUAL ( (size_t)2, pC->getNumFailed() );
@@ -435,7 +433,7 @@ void PluginCollectionTest::testFolderIntegrity2(){
 	////>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>remove directory
 	remove_all ( pathB );
 	///>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 1, pC->getNumSucceed() );
 	CPPUNIT_ASSERT_EQUAL ( (size_t)2, pC->getNumFailed() );
 	CPPUNIT_ASSERT_EQUAL ( (size_t)0, pC->getNumNotChecked() );
@@ -461,9 +459,9 @@ void PluginCollectionTest::testPortability() {
 	Graph::Ptr graph = createGraph( 512, 44100.0f );
 	pC->EventSender<com::OnLoadFile>::addEventListener( this );
 	pC->EventSender<com::ScanComplete>::addEventListener( this );
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>getPlugin_1 has to be found
-	Plugin::Ptr plug = pC->getPlugNode ( graph.get(), plugLocation.string() );
+	Plugin::Ptr plug = pC->getPlugNode ( graph->getHostInfo(), plugLocation.string() );
 	CPPUNIT_ASSERT ( plug );
 	PluginInfo pluginInfo = plug->getPluginInfo();
 	plugLocation = path.string() + PLUGIN_LOACTION_1;
@@ -475,9 +473,9 @@ void PluginCollectionTest::testPortability() {
     pC = PluginCollection::getPluginCollection();
 	pC->EventSender<com::OnLoadFile>::addEventListener( this );
 	pC->EventSender<com::ScanComplete>::addEventListener( this );
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>getPlugin_1 cannot found
-	plug = pC->restorePlugNode ( graph.get(), pluginInfo );
+	plug = pC->restorePlugNode ( graph->getHostInfo(), pluginInfo );
 	CPPUNIT_ASSERT ( !plug );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>re-set folders
 	pC.reset();
@@ -488,9 +486,9 @@ void PluginCollectionTest::testPortability() {
     pC = PluginCollection::getPluginCollection();
 	pC->EventSender<com::OnLoadFile>::addEventListener( this );
 	pC->EventSender<com::ScanComplete>::addEventListener( this );
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>getPlugin_1 has to be found 
-	plug = pC->restorePlugNode ( graph.get(), pluginInfo );
+	plug = pC->restorePlugNode ( graph->getHostInfo(), pluginInfo );
 	CPPUNIT_ASSERT ( plug );
 	plugLocation = path.string() + PLUGIN_LOACTION_1;
 	CPPUNIT_ASSERT_EQUAL ( plugLocation.string(), plug->getLocation() );
@@ -503,9 +501,9 @@ void PluginCollectionTest::testPortability() {
     pC = PluginCollection::getPluginCollection();
 	pC->EventSender<com::OnLoadFile>::addEventListener( this );
 	pC->EventSender<com::ScanComplete>::addEventListener( this );
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	//>>>>>>>>>>>>>>>>>>>>>>getPlugin_1 has to be found as PLUGIN_LOACTION_2 
-	plug = pC->restorePlugNode ( graph.get(), pluginInfo );
+	plug = pC->restorePlugNode ( graph->getHostInfo(), pluginInfo );
 	CPPUNIT_ASSERT ( plug );
 	plugLocation = path.string() + PLUGIN_LOACTION_2;
 	CPPUNIT_ASSERT_EQUAL ( plugLocation.string(), plug->getLocation() );
@@ -539,7 +537,7 @@ void PluginCollectionTest::testMultipleDirectories() {
 	settings->addVSTFolder( pathB2.string() );
 	CPPUNIT_ASSERT ( !pC->isAllScanned() );
 	// start scan
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION, pC->getNumSucceed() );
 	CPPUNIT_ASSERT ( pC->isAllScanned() );
 	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add B1
@@ -547,7 +545,7 @@ void PluginCollectionTest::testMultipleDirectories() {
 	CPPUNIT_ASSERT ( !pC->isAllScanned() );
 	// start scan
 	boost::timer::cpu_timer timer;
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	CPPUNIT_ASSERT ( timer.elapsed().user < FAST_SCAN_TIME ); 
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION, pC->getNumSucceed() );
 	CPPUNIT_ASSERT ( pC->isAllScanned() );
@@ -555,14 +553,14 @@ void PluginCollectionTest::testMultipleDirectories() {
 	settings->addVSTFolder( pathA.string() );
 	CPPUNIT_ASSERT ( !pC->isAllScanned() );
 	// start scan
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 2, pC->getNumSucceed() );
 	CPPUNIT_ASSERT ( pC->isAllScanned() );
 	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan empty dir
 	settings->clearVSTFolders();
 	// start scan
 	CPPUNIT_ASSERT ( !pC->isAllScanned() );
-	pC->update( graph.get() );
+	pC->update( graph->getHostInfo() );
 	CPPUNIT_ASSERT ( pC->isAllScanned() );
 }
 } // namespace tests

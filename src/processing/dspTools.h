@@ -357,7 +357,7 @@ private:
 	//----------------------------------------------------------------------------------------------------
 	void load ( iArchive& ar, const unsigned int version ); 
 	//----------------------------------------------------------------------------------------------------
-	IHostInfo *hostInfo;
+	frx::processing::IHostInfo::WPtr hostInfo;
 	//----------------------------------------------------------------------------------------------------
 	int state;
 	//----------------------------------------------------------------------------------------------------
@@ -415,14 +415,15 @@ private:
 	void release() { setState (R); }
 public:
 	//----------------------------------------------------------------------------------------------------
-	void hostInfoChanged() {
-		blockSize = hostInfo->getBlockSize();
-		sampleRate = hostInfo->getSampleRate();
+	void hostBaseConfigChanged() {
+		frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+		blockSize = hI->getBlockSize();
+		sampleRate = hI->getSampleRate();
 	}
 	//----------------------------------------------------------------------------------------------------
 	bool isModeAbsolute() const  { return *mode < 0.5f; }
 	//----------------------------------------------------------------------------------------------------
-	ADSR (IHostInfo *hostInfo, float maxDurationInSec = 1.0f );
+	ADSR (frx::processing::IHostInfo::Ptr hostInfo, float maxDurationInSec = 1.0f );
 	//----------------------------------------------------------------------------------------------------
 	virtual ~ADSR();
 	//----------------------------------------------------------------------------------------------------

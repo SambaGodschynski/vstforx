@@ -12,7 +12,7 @@ namespace processing{
 // class Pan
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-Pan::Pan ( IHostInfo *hostInfo ) : ProcessAdapter( hostInfo, 1, 1 ) {
+Pan::Pan ( frx::processing::IHostInfo::Ptr hostInfo ) : ProcessAdapter( hostInfo, 1, 1 ) {
 	setName ("Pan");
 	getOutputNode(0)->setName ("PanAdapter_Output");
 	getInputNode(0)->setName ("PanAdapter_Input");

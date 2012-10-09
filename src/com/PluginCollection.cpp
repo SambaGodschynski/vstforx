@@ -127,7 +127,7 @@ boost::weak_ptr<PluginCollection> highlander; // es darf nur einen geben
 }
 //------------------------------------------------------------------------------------------------------------
 PluginCollection::PluginCollection() : 
-	settings( SETTINGS ), tmpHostInfo(NULL), abortScan(false), scanStamp(0)
+	settings( SETTINGS ), abortScan(false), scanStamp(0)
 {
 	using namespace sambag::cpsqlite;
 	using namespace com::sqlcommands;
@@ -207,7 +207,7 @@ void PluginCollection::scanDirectory ( const ScanVisitor::Path &path, ScanVisito
 	sambag::com::dirWalker( path, vis, &abortScan );
 }
 //------------------------------------------------------------------------------------------------------------
-void PluginCollection::update(  processing::IHostInfo *hostInfo ) {
+void PluginCollection::update(  frx::processing::IHostInfo::Ptr hostInfo ) {
 	TRY_TO_LOCK_TIMED (mutex);
 	TOLOG ( "update plugin collection." );
 	processScanLogFile();
@@ -240,7 +240,7 @@ void PluginCollection::update(  processing::IHostInfo *hostInfo ) {
 		return;
 	}
 	//!!
-	tmpHostInfo = NULL;
+	tmpHostInfo = frx::processing::IHostInfo::Ptr();
 	//!!
 	try {
 		std::remove ( Settings::getPlugInitLogFilename().c_str() ); // log wieder loeschen
@@ -284,7 +284,7 @@ string PluginCollection::analyzeLog() {
 	return str;
 }
 //------------------------------------------------------------------------------------------------------------
-processing::Plugin::Ptr PluginCollection::getPlugNode ( processing::IHostInfo *hostInfo, 
+processing::Plugin::Ptr PluginCollection::getPlugNode ( frx::processing::IHostInfo::Ptr hostInfo, 
 														  const PluginCollection::PluginIdType &location ) 
 {
 	using namespace processing;
@@ -294,7 +294,7 @@ processing::Plugin::Ptr PluginCollection::getPlugNode ( processing::IHostInfo *h
 	return PluginFactory::createPlugNode ( hostInfo, pI.location ); 
 }
 //------------------------------------------------------------------------------------------------------------
-processing::PluginInfo PluginCollection::restorePluginInfo ( processing::IHostInfo *hostInfo, 
+processing::PluginInfo PluginCollection::restorePluginInfo ( frx::processing::IHostInfo::Ptr hostInfo, 
 															 processing::PluginInfo &info ) 
 {
 	using namespace processing;
@@ -305,7 +305,7 @@ processing::PluginInfo PluginCollection::restorePluginInfo ( processing::IHostIn
 	if ( !pI.isValid() ) {
 		tmpHostInfo = hostInfo;
 		bool b = searchPlugin( info );
-		tmpHostInfo = NULL;
+		tmpHostInfo = frx::processing::IHostInfo::Ptr(); // NULL
 		if ( !b ) // plugin not found
 			return processing::PluginInfo(); // NULL
 	}
@@ -313,7 +313,7 @@ processing::PluginInfo PluginCollection::restorePluginInfo ( processing::IHostIn
 	return info;
 }
 //------------------------------------------------------------------------------------------------------------
-processing::Plugin::Ptr PluginCollection::restorePlugNode ( processing::IHostInfo *hostInfo, 
+processing::Plugin::Ptr PluginCollection::restorePlugNode ( frx::processing::IHostInfo::Ptr hostInfo, 
 															 processing::PluginInfo &info ) 
 {
 	using namespace processing;
@@ -330,7 +330,7 @@ PluginCollection::Ptr PluginCollection::getPluginCollection() {
 	return pC;
 }
 //------------------------------------------------------------------------------------------------------------
-void PluginCollection::peekFile ( processing::PluginInfo &out_info, processing::IHostInfo *hostinfo )
+void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::processing::IHostInfo::Ptr hostinfo )
 {
 	using namespace processing;
 	if (!hostinfo) throw com::ppiError::NullPointer("null pointer",__FILE__,__LINE__);
@@ -677,7 +677,7 @@ processing::PluginInfo PluginCollection::insertPlug ( const PluginCollection::Fo
 	PluginInfo pi;
 	pi.location = loc.string();
 	//get pluginfo by open plugin
-	peekFile ( pi, tmpHostInfo );
+	peekFile ( pi, tmpHostInfo.lock() );
 	insertPlug ( folder, pi );
 	return pi;
 }
@@ -714,7 +714,7 @@ void PluginCollection::updatePlug ( processing::PluginInfo &pi ) {
 	if ( !pi.isValid() ) return;
 	
 	//get pluginfo by open plugin
-	peekFile ( pi, tmpHostInfo );
+	peekFile ( pi, tmpHostInfo.lock() );
 	ParameterList pL;
 	DataBase::Executer::Ptr exec = database->getExecuter(); 
 	string query = TblPlugins::updatePlugin ( pi.location, 

@@ -44,14 +44,14 @@ private:
 	ADSR *adsr;
 protected:
 	//--------------------------------------------------------------------------------------------------------
-	ADSRTrigger ( IHostInfo *hostInfo );
+	ADSRTrigger ( frx::processing::IHostInfo::Ptr hostInfo );
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param hostInfo
 	 * @return neues PeakTracker-Objekt
 	 */
-	static Ptr create( IHostInfo *hostInfo ) {
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo ) {
 		Ptr neu( new ADSRTrigger(hostInfo ) );
 		neu->self = neu;
 		return neu;
@@ -60,8 +60,8 @@ public:
 	//Lautstaerke-wert
 	Parameter::Ptr out;
 	//--------------------------------------------------------------------------------------------------------
-	virtual void hostInfoChanged() { 
-		adsr->hostInfoChanged();
+	virtual void hostBaseConfigChanged() { 
+		adsr->hostBaseConfigChanged();
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**

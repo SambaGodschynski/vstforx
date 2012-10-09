@@ -9,7 +9,7 @@
 
 #include "com/Events.h"
 #include "com/Serialization.h"
-
+#include "ModelObject.hpp"
 namespace processing {
 class Graph;
 using namespace com;
@@ -19,7 +19,9 @@ using namespace events;
  * @class PObject.
  * Oberklasse aller Process-Logik-Objekte
  */
-class PObject : public EventSender< OnDestroy<PObject> > {
+class PObject : public EventSender< OnDestroy<PObject> >, 
+	public frx::processing::ModelObject 
+{
 //============================================================================================================
 friend class boost::serialization::access;
 friend class Graph;
@@ -82,7 +84,7 @@ public:
 	/**
 	 * wird aufgerufen wenn SampleRate oder BlockSize geaendert wird
 	 */
-	virtual void hostInfoChanged(){}
+	virtual void hostBaseConfigChanged(){}
 };
 } // namespace
 #endif

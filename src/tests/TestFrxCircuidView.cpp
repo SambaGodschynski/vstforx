@@ -9,9 +9,17 @@
 #include <cppunit/config/SourcePrefix.h>
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/components/FrxConcreteProcessor.hpp>
+#include <processing/IModelController.hpp>
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::TestFrxCircuidView );
+
+namespace frx { namespace processing {
+	IModelController * 
+	getModelController(frx::gui::components::FrxCircuidView::Ptr) {
+		return NULL;
+	}
+}}
 
 namespace tests {
 //=============================================================================

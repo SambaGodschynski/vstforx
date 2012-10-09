@@ -168,7 +168,7 @@ void PPIVst::open() {
 	// Set HostInfo
 	Graph::Janitor::Ptr janitor = graph->getJanitor();
 	if ( sampleRate != 0.0 && blockSize != 0 )
-		janitor->hostInfoChanged();
+		janitor->hostBaseConfigChanged();
 	// init Host Parameter
 	initHostParameter();
 	onUpdate = false;
@@ -183,7 +183,7 @@ void PPIVst::setBlockSize ( VstInt32 blockSize ) {
 	// Set HostInfo
 	if ( !graph ) return;
 	Graph::Janitor::Ptr janitor = graph->getJanitor();
-	if ( sampleRate != 0.0 && blockSize != 0 ) janitor->hostInfoChanged();
+	if ( sampleRate != 0.0 && blockSize != 0 ) janitor->hostBaseConfigChanged();
 }
 //---------------------------------------------------------------------------------------
 void PPIVst::setSampleRate( float sampleRate ){
@@ -191,7 +191,7 @@ void PPIVst::setSampleRate( float sampleRate ){
 	// Hole HostInfo
 	if ( !graph ) return;
 	Graph::Janitor::Ptr janitor = graph->getJanitor();
-	if ( sampleRate != 0.0 && blockSize != 0 ) janitor->hostInfoChanged();
+	if ( sampleRate != 0.0 && blockSize != 0 ) janitor->hostBaseConfigChanged();
 }
 //---------------------------------------------------------------------------------------
 void PPIVst::close() {
@@ -303,7 +303,7 @@ VstInt32 PPIVst::setChunk(void *data, VstInt32 byteSize, bool isPreset) {
 		graph = Graph::load( ar, this );
 		// hostInfo
 		Graph::Janitor::Ptr janitor = graph->getJanitor();
-		if ( sampleRate != 0.0 && blockSize != 0 ) janitor->hostInfoChanged();
+		if ( sampleRate != 0.0 && blockSize != 0 ) janitor->hostBaseConfigChanged();
 		// restore view
 		ppiGui::PpiEditor *ed = ( ppiGui::PpiEditor* ) editor;
 		if (ed) ed->load ( ar, graph );
@@ -315,7 +315,7 @@ VstInt32 PPIVst::setChunk(void *data, VstInt32 byteSize, bool isPreset) {
 		graph = Graph::create( this );
 		com::MessageBox ( "Error while loading data.", "Error!", com::MSG_ALERT );
 		Graph::Janitor::Ptr janitor = graph->getJanitor();
-		if ( sampleRate != 0.0 && blockSize != 0 ) janitor->hostInfoChanged();
+		if ( sampleRate != 0.0 && blockSize != 0 ) janitor->hostBaseConfigChanged();
 		initHostParameter();
 		return 0;
 	}

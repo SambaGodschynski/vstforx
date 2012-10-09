@@ -28,7 +28,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef HMODULE Module;
 	//--------------------------------------------------------------------------------------------------------
-	typedef std::pair< AudioMasterCallback, AudioEffectX* > HostCallBackOnInit; 
+	typedef std::pair< audioMasterCallback, AudioEffectX* > HostCallBackOnInit; 
 private:
 	//--------------------------------------------------------------------------------------------------------
 	static com::Mutex onInitLock;

@@ -15,27 +15,47 @@
 
 #include "AudioEffectX.h"
 #include "processing/IHostInfo.h"
+#include <boost/shared_ptr.hpp>
 
 namespace processing {
 
-struct DummyFX : public AudioEffectX, public IHostInfo {
+struct DummyFX : public AudioEffectX, public frx::processing::IHostInfo {
+public:
+		DummyFX ( audioMasterCallback audioMaster, 
+		      const frx::processing::TimeInfo & timeInfo = frx::processing::TimeInfo() 
+			 ) : AudioEffectX ( audioMaster, 0, 0 ), timeInfo(timeInfo), blockSize(0), sampleRate(0) {}
+public:
+	typedef boost::shared_ptr<DummyFX> Ptr;
 	float sampleRate;
 	int blockSize;
-	VstTimeInfo timeInfo;
-	DummyFX ( audioMasterCallback audioMaster, 
-		      const VstTimeInfo & timeInfo = VstTimeInfo() 
-			 ) : AudioEffectX ( audioMaster, 0, 0 ), timeInfo(timeInfo), blockSize(0), sampleRate(0) {}
+	frx::processing::TimeInfo timeInfo;
 	void processReplacing( float **, float **, VstInt32 ) {}
-	virtual VstTimeInfo * getTimeInfo( int filter = 0 ) { return &timeInfo; }
+	virtual frx::processing::TimeInfo * getHostTimeInfo( int filter = 0 ) { return &timeInfo; }
 	virtual float getSampleRate() const { return sampleRate; }
 	virtual int getBlockSize() const { return blockSize; }
 	virtual void setSampleRate( float sampleRate ) { DummyFX::sampleRate = sampleRate; }
 	virtual void setBlockSize( int blockSize ) { DummyFX::blockSize = blockSize; }
-	virtual VstTimeInfo * getVstTimeInfo ( VstInt32 filter ) { return getTimeInfo(filter); }
-	virtual AudioEffectX * getAudioEffectX() { return this; }
-	virtual AudioMasterCallback getAudioMasterCallback() { return audioMaster; }
 	virtual bool ioChanged() {return true;}
+	virtual void * getEffectPtr() {
+		return this;
+	}
+	virtual void * getMasterCallback() {
+		return audioMaster;
+	}
 	virtual ~DummyFX(){}
+	virtual HostIOChangedConnection 
+	addHostChangedListener(const HostIOChangedFunction &f) {
+		return HostIOChangedConnection();
+	}
+	virtual HostIOChangedConnection 
+	addTrackedHostChangedListener(const HostIOChangedFunction &f, AnyWPtr wptr) {
+		return HostIOChangedConnection();
+	}
+	static Ptr create( audioMasterCallback audioMaster, 
+	     const frx::processing::TimeInfo & timeInfo = frx::processing::TimeInfo() )
+	{
+		return Ptr(new DummyFX(audioMaster, timeInfo));
+	}
 };
 
 } // namespace

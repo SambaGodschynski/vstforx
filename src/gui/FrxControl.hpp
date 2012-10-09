@@ -46,7 +46,7 @@ protected:
 	 * @param event
 	 * @param command to perform
 	 */
-	void onMenuAction(void *src, 
+	void onMenuAction(void *src,
 			const sdc::events::ActionEvent &ev, 
 			const CtrlFunc &cmd);
 	//-------------------------------------------------------------------------

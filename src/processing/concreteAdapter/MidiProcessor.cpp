@@ -13,7 +13,7 @@ namespace processing{
 // One MidiProcessor per channel.
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-MidiProcessor::MidiProcessor ( IHostInfo *iHost ) :
+MidiProcessor::MidiProcessor ( frx::processing::IHostInfo::Ptr iHost ) :
 		ProcessAdapter( iHost, 0, 0 ),
 		midiParameters( NUM_OUT_PARAM, Parameter::Ptr() )
 {

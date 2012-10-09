@@ -182,7 +182,7 @@ private:
 	void getShellPluginInfos(ShellPluginInfos &out);
 protected:
 	//--------------------------------------------------------------------------------------------------------
-	VSTPlugin( IHostInfo *hostInfo, const string &filename );
+	VSTPlugin( frx::processing::IHostInfo::Ptr hostInfo, const string &filename );
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -190,7 +190,7 @@ public:
 	 * @param filename
 	 * @return neues VSTPlugin-Objekt
 	 */
-	static Ptr create( IHostInfo *hostInfo, const string &filename ) {
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo, const string &filename ) {
 		Ptr neu( new VSTPlugin(hostInfo, filename) );
 		if ( !neu ) 
 			return Ptr();
@@ -305,7 +305,7 @@ public:
 	/**
 	 * Host-Info changed Handler
 	 */
-	virtual void hostInfoChanged();
+	virtual void hostBaseConfigChanged();
 	///-------------------------------------------------------------------------------------------------------
 	/**
 	 * @param flag

@@ -24,11 +24,11 @@ public:
 	typedef boost::shared_ptr<VolumeAdapterX> Ptr;
 protected:
 	//-------------------------------------------------------------------------
-	VolumeAdapterX( processing::IHostInfo * g ) : 
+	VolumeAdapterX( frx::processing::IHostInfo::Ptr g ) : 
 		 Volume( g, NUMERATOR / (float)DENOMINATOR ) {}
 public:
 	//-------------------------------------------------------------------------
-	static Ptr create(  processing::IHostInfo * g ) {
+	static Ptr create(  frx::processing::IHostInfo::Ptr g ) {
 		Ptr neu( new VolumeAdapterX(g) );
 		neu->self = neu;
 		return neu;
@@ -60,7 +60,7 @@ class GraphTest : public CPPUNIT_NS::TestFixture {
 	CPPUNIT_TEST_EXCEPTION( testJanitorLock, com::ppiError::DeadlockException );
 	CPPUNIT_TEST_SUITE_END();
 private:
-	processing::DummyFX *dummyFX;
+	processing::DummyFX::Ptr dummyFX;
 	processing::Graph::Ptr createGraph( int blockSize, float samplerate );
 public:
 	GraphTest();

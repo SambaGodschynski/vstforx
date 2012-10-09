@@ -102,7 +102,7 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	Plugin() {}
 	//--------------------------------------------------------------------------------------------------------
-	Plugin( IHostInfo *hostInfo, const string &location, size_t numInputs = 1, size_t numOutputs = 1 );
+	Plugin( frx::processing::IHostInfo::Ptr hostInfo, const string &location, size_t numInputs = 1, size_t numOutputs = 1 );
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -313,10 +313,10 @@ class PluginFactory {
 //============================================================================================================
 private:
 	//--------------------------------------------------------------------------------------------------------
-	static Plugin::Ptr createVST2xPlugNode ( IHostInfo *hostInfo, const string &filename );
+	static Plugin::Ptr createVST2xPlugNode ( frx::processing::IHostInfo::Ptr hostInfo, const string &filename );
 public:
 	//--------------------------------------------------------------------------------------------------------
-	static Plugin::Ptr createPlugNode ( IHostInfo *hostInfo, const string &filename );
+	static Plugin::Ptr createPlugNode ( frx::processing::IHostInfo::Ptr hostInfo, const string &filename );
 }; // pluginfactory
 }// namespace processing
 

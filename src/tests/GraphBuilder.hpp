@@ -191,7 +191,7 @@ CreateAdapter<Adapter>::CreateAdapter( Graph::Ptr graph,
 									   ExitNode exitNode ) 
 									   : Creator( graph ) 
 {
-	typename Adapter::Ptr neu( Adapter::create( graph.get() ) );
+	typename Adapter::Ptr neu( Adapter::create( graph->getHostInfo() ) );
 	Graph::Janitor::Ptr janitor = graph->getJanitor();
 	janitor->add ( neu );
 	janitor->connectNodes( entryNode.get(), neu->getInputNode(0).get() );

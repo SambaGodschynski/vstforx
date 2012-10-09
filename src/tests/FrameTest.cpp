@@ -81,18 +81,17 @@ processing::Graph::Ptr FrameTest::createGraph( int blockSize, float samplerate )
 	Graph::Janitor::Ptr janitor = graph->getJanitor();
 	dummyFX->setSampleRate ( samplerate );
 	dummyFX->setBlockSize ( blockSize );
-	janitor->hostInfoChanged();
+	janitor->hostBaseConfigChanged();
 	return graph;
 }
 //=============================================================================
 FrameTest::FrameTest() {
 //=============================================================================
-	dummyFX = new processing::DummyFX ( NULL );
+	dummyFX = processing::DummyFX::create( NULL );
 }
 //=============================================================================
 FrameTest::~FrameTest() {
 //=============================================================================
-	delete dummyFX;
 }
 
 #define FILL_AND_CHECK(frame, value) \

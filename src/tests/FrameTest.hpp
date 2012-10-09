@@ -18,7 +18,7 @@ class FrameTest : public CPPUNIT_NS::TestFixture {
 	CPPUNIT_TEST( testResize );
 	CPPUNIT_TEST_SUITE_END();
 private:
-	processing::DummyFX *dummyFX;
+	processing::DummyFX::Ptr dummyFX;
 	processing::Graph::Ptr createGraph( int blockSize, float samplerate );
 public:
 	FrameTest();

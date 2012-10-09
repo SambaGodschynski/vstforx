@@ -12,6 +12,8 @@
 #include <gui/components/Forward.hpp>
 #include "ModelObject.hpp"
 #include "IProcessor.hpp"
+#include "IParameter.hpp"
+#include "IConnection.hpp"
 #include <gui/ViewObject.hpp>
 #include <vector>
 namespace frx { namespace processing {
@@ -77,9 +79,9 @@ public:
 	 */
 	virtual IProcessor::Ptr createADSRTransformer() = 0;
 	//-------------------------------------------------------------------------
-	virtual bool connect(IOutput::Ptr out, IInput::Ptr in) = 0;
+	virtual IConnection::Ptr connect(IOutput::Ptr out, IInput::Ptr in) = 0;
 	//-------------------------------------------------------------------------
-	virtual bool removeConnection(IOutput::Ptr out, IInput::Ptr in) = 0;
+	virtual bool removeConnection(IConnection::Ptr cn) = 0;
 	//-------------------------------------------------------------------------
 	virtual bool remove(ModelObject::Ptr obj) = 0;
 }; // IModelController

@@ -18,7 +18,11 @@
 #include <loki/MultiMethods.h>
 #include <sambag/disco/components/PopupMenu.hpp>
 #include <sambag/disco/components/MenuSelectionManager.hpp>
+#include <sambag/com/Exception.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <processing/IModelController.hpp>
+#include "IViewModelMap.hpp"
+#include <exception>
 #include "__ModelExecutors.hpp"
 
 namespace frx { namespace gui {
@@ -44,38 +48,46 @@ createProcessor(FrxCircuidViewWPtr c)
 //-----------------------------------------------------------------------------
 template <class ConcreteProcessor>
 void addProcessorToView(FrxCircuidViewWPtr c, int numInputs, int numOutputs) {
-	typename ConcreteProcessor::Ptr res = createProcessor<ConcreteProcessor>(c);
-	if (!res) {
+	typename ConcreteProcessor::Ptr viewObj = createProcessor<ConcreteProcessor>(c);
+	if (!viewObj) {
 		return;
 	}
 	FrxCircuidViewPtr circ(c);
 	if (!circ) {
-		SAMBAG_WARN("tried to add processor with FrxCircuidViewPtr == NULL");
-		return;
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"tried to add processor with FrxCircuidViewPtr == NULL");
 	}
 	// create model obj.
 	frx::processing::IModelController *ctrl = frx::processing::getModelController(circ);
 	if (!ctrl) {
-		SAMBAG_WARN("tried to add processor with IModelController == NULL");
-		return;
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"tried to add processor with IModelController == NULL");
 	}
-	createProcessorOnModel<ConcreteProcessor>(ctrl, numInputs, numOutputs);
+	frx::processing::ModelObject::Ptr mObj = 
+		createProcessorOnModel<ConcreteProcessor>(ctrl, numInputs, numOutputs);
 	// create view obj.
-	circ->add(res, FrxCircuidView::Z_ProcessorNodes);
-	res->setLocation(0, 0);
-	res->configIO(numInputs, numOutputs);
-	// add selection
-	FrxHover::Ptr sel = FrxHover::create();
-	circ->add(sel);
-	sel->addElement(res);
-	sel->addElements(res->getInputs());
-	sel->addElements(res->getOutputs());
+	circ->add(viewObj, FrxCircuidView::Z_ProcessorNodes);
+	viewObj->setLocation(0, 0);
+	viewObj->configIO(numInputs, numOutputs);
+	// register
+	IViewModelMap::Ptr map = circ->getViewModelMap();
+	if (!map) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"tried to add processor with IViewModelMap == NULL");
+	}
+	map->registerObjects(viewObj, mObj);
 	// create contextmenu
 	FrxControl::Entries entries;
-	addStdComponentMenuEntries<ConcreteProcessor>(circ, res, entries);
-	res->setComponentPopupMenu(
-		getFrxControl(circ).createPopupMenu(res, entries)
+	addStdComponentMenuEntries<ConcreteProcessor>(circ, viewObj, entries);
+	viewObj->setComponentPopupMenu(
+		getFrxControl(circ).createPopupMenu(viewObj, entries)
 	);
+	// hover
+	FrxHover::Ptr sel = FrxHover::create();
+	circ->add(sel);
+	sel->addElement(viewObj);
+	sel->addElements(viewObj->getInputs());
+	sel->addElements(viewObj->getOutputs());
 }
 //-----------------------------------------------------------------------------
 void addFreeKnobToView(FrxCircuidViewWPtr c) {
@@ -197,11 +209,22 @@ struct Connector {
 //  Class FrxControl
 //=============================================================================
 //-----------------------------------------------------------------------------
-void FrxControl::onMenuAction(void *src, 
+void FrxControl::onMenuAction(void *src,
 				  const sdc::events::ActionEvent &ev, 
 				  const CtrlFunc &cmd)
 {
-	cmd();
+	try {
+		cmd();
+	} catch (const sambag::com::Exception &ex) {
+		// TODO:
+		// view->errorMessage(...);
+	} catch (const std::exception &ex) {
+		// TODO:
+		// view->errorMessage(...);
+	} catch (...) {
+		// TODO:
+		// view->errorMessage(...);
+	}
 }
 //-----------------------------------------------------------------------------
 sdc::PopupMenuPtr FrxControl::createPopupMenu(FrxControl::AnyWPtr anyPtr, 

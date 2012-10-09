@@ -71,7 +71,7 @@ private:
 	MidiProcessor (){} // wird nur von boost::serial. benutzt
 protected:
 	//--------------------------------------------------------------------------------------------------------
-	MidiProcessor ( IHostInfo *hostInfo );
+	MidiProcessor ( frx::processing::IHostInfo::Ptr hostInfo );
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -84,7 +84,7 @@ public:
 	 * @param hostInfo
 	 * @return neues MidiProcessor-Objekt
 	 */
-	static Ptr create( IHostInfo *hostInfo ) {
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo ) {
 		Ptr neu( new MidiProcessor(hostInfo ) );
 		neu->self = neu;
 		return neu;

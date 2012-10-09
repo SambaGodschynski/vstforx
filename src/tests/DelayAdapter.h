@@ -27,10 +27,16 @@ public:
 private:
 	//--------------------------------------------------------------------------------------------------------
 	template < typename Archive >
-	void serialize ( Archive &ar, const unsigned int version ){
+	void serialize ( Archive &ar, const unsigned int version ) {
+		frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+		if (!hI) {
+			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+				"Hostinfo == NULL"
+			);
+		}
 		ar & boost::serialization::base_object< ProcessAdapter > ( *this );
 		if ( Archive::is_loading::value ) {
-			stream = new processing::DCStream ( hostInfo->getBlockSize(), _DELAY );
+			stream = new processing::DCStream ( hI->getBlockSize(), _DELAY );
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -39,19 +45,19 @@ private:
 	DelayAdapter() : ProcessAdapter() {}
 protected:
 	//--------------------------------------------------------------------------------------------------------
-	DelayAdapter ( IHostInfo *hostInfo ) : 
+	DelayAdapter ( frx::processing::IHostInfo::Ptr hostInfo ) : 
 		ProcessAdapter( hostInfo, 1, 1 )
 	{
 		setName ("DelayAdapter");
 		stream = new processing::DCStream ( hostInfo->getBlockSize(), _DELAY );
 	}
 	//--------------------------------------------------------------------------------------------------------
-	virtual void hostInfoChanged() {
-		stream->setSize( hostInfo->getBlockSize(), _DELAY );
+	virtual void hostBaseConfigChanged() {
+		stream->setSize( hostInfo.lock()->getBlockSize(), _DELAY );
 	}
 public:
 	//--------------------------------------------------------------------------------------------------------
-	static Ptr create( IHostInfo *hostInfo ) {
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo ) {
 		Ptr neu( new DelayAdapter<_DELAY>( hostInfo ) );
 		neu->self = neu;
 		return neu;

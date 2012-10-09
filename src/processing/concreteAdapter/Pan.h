@@ -43,14 +43,14 @@ private:
 	Pan() {}
 protected:
 	//--------------------------------------------------------------------------------------------------------
-	Pan ( IHostInfo *hostInfo );
+	Pan ( frx::processing::IHostInfo::Ptr hostInfo );
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param hostInfo
 	 * @return neues Pan-Objekt
 	 */
-	static Ptr create( IHostInfo *hostInfo ) {
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo ) {
 		Ptr neu( new Pan(hostInfo) );
 		neu->self = neu;
 		return neu;

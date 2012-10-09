@@ -11,6 +11,8 @@
 #include "processing/parameter/parameter.h"
 #include "com/Serialization.h"
 #include "processing/dspTools.h"
+#include <sambag/com/Exception.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -46,12 +48,18 @@ private:
 	 * @param version
 	 */
 	template < typename Archive >
-	void serialize ( Archive &ar, const unsigned int version ){
+	void serialize ( Archive &ar, const unsigned int version ) {
+		frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+		if (!hI) {
+			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+				"Hostinfo == NULL"
+			);
+		}
 		ar & boost::serialization::base_object< ProcessAdapter > ( *this );
 		ar & volume;
 		if ( Archive::is_loading::value ) {
 			initListener();
-			fader.setDuration( getFaderDuration( hostInfo->getSampleRate() ) );  
+			fader.setDuration( getFaderDuration( hI->getSampleRate() ) );  
 			fader.setValue ( *volume );
 		}
 	}
@@ -66,7 +74,7 @@ protected:
 		return one_ms*5.0f;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	Volume ( IHostInfo *hostInfo, float initValue = 1.0 ) : 
+	Volume ( frx::processing::IHostInfo::Ptr hostInfo, float initValue = 1.0 ) : 
 		ProcessAdapter( hostInfo, 1, 1 ), fader(initValue) 
 	{
 		setName ("Volume");
@@ -88,7 +96,7 @@ public:
 	 * @param initValue
 	 * @return neues Volume-Objekt
 	 */
-	static Ptr create( IHostInfo *hostInfo, float initValue = 1.0f ) {
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo, float initValue = 1.0f ) {
 		Ptr neu( new Volume(hostInfo, initValue ) );
 		neu->self = neu;
 		neu->initListener();
@@ -105,8 +113,14 @@ public:
 	/**
 	 * HostInfo(Samplerate/Blocksize) geaendert.
 	 */
-	virtual void hostInfoChanged() {
-		fader.setDuration( getFaderDuration( hostInfo->getSampleRate() ) );  
+	virtual void hostBaseConfigChanged() {
+		frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+		if (!hI) {
+			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+				"Hostinfo == NULL"
+			);
+		}
+		fader.setDuration( getFaderDuration( hI->getSampleRate() ) );  
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**

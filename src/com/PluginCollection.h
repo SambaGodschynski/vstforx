@@ -335,7 +335,7 @@ private:
 	 */
 	time_t scanStamp;
 	//--------------------------------------------------------------------------------------------------------
-	processing::IHostInfo *tmpHostInfo;
+	frx::processing::IHostInfo::WPtr tmpHostInfo;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Scannt Verzeichnis.
@@ -386,7 +386,7 @@ private:
 	 * @param hostInfo
 	 * @throw sambag::cpsqlite::DataBaseQueryFailed
 	 */
-	void peekFile ( processing::PluginInfo &out_info, processing::IHostInfo * hostInfo);
+	void peekFile ( processing::PluginInfo &out_info, frx::processing::IHostInfo::Ptr hostInfo);
 	//--------------------------------------------------------------------------------------------------------
 	static PluginCollection * create();
 	//--------------------------------------------------------------------------------------------------------
@@ -410,7 +410,7 @@ public:
 	 * @throw sambag::cpsqlite::DataBaseQueryFailed
 	 * TODO: plugin lade Vorgang ueberdenken. (PluginFactory)
 	 */
-	processing::Plugin::Ptr getPlugNode ( processing::IHostInfo *hostInfo, const PluginIdType &location );
+	processing::Plugin::Ptr getPlugNode ( frx::processing::IHostInfo::Ptr hostInfo, const PluginIdType &location );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 *
@@ -419,7 +419,7 @@ public:
 	 * @return Plugin-Objekt zu PluginInfo-Objekt
 	 * @throw sambag::cpsqlite::DataBaseQueryFailed
 	 */
-	processing::Plugin::Ptr restorePlugNode ( processing::IHostInfo *hostInfo, processing::PluginInfo &pI );
+	processing::Plugin::Ptr restorePlugNode ( frx::processing::IHostInfo::Ptr hostInfo, processing::PluginInfo &pI );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * aktualisiert Pluginfo-Objekt
@@ -428,7 +428,7 @@ public:
 	 * @return neues aktualisertes Pluginfo-Objekt
 	 * @throw sambag::cpsqlite::DataBaseQueryFailed
 	 */
-	processing::PluginInfo restorePluginInfo ( processing::IHostInfo *hostInfo, processing::PluginInfo &pI );
+	processing::PluginInfo restorePluginInfo ( frx::processing::IHostInfo::Ptr hostInfo, processing::PluginInfo &pI );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * bricht scan ab.
@@ -451,7 +451,7 @@ public:
 	 * @throw sambag::cpsqlite::DataBaseQueryFailed
 	 * @param hostInfo
 	 */
-	void update( processing::IHostInfo * hostInfo);
+	void update( frx::processing::IHostInfo::Ptr hostInfo);
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return PluginCollection-Singleton

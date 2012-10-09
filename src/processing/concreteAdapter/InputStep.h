@@ -14,6 +14,8 @@
 #include "Step.h"
 #include "FixTimeTranslator.h"
 #include "SyncTranslator.h"
+#include <sambag/com/Exception.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -103,7 +105,7 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	virtual void setState ( size_t ignore ) {} 
 	//--------------------------------------------------------------------------------------------------------
-	InputStep( IHostInfo *hostInfo, int initSteps = 2 );
+	InputStep( frx::processing::IHostInfo::Ptr hostInfo, int initSteps = 2 );
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -111,7 +113,7 @@ public:
 	 * @param initSteps
 	 * @return neues InputStep-Objekt
 	 */
-	static Ptr create( IHostInfo *hostInfo, int initSteps = 2 ) {
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo, int initSteps = 2 ) {
 		Ptr neu( new InputStep(hostInfo, initSteps) );
 		neu->self = neu;
 		return neu;
@@ -120,11 +122,18 @@ public:
 	/**
 	 * resetet SampleRate
 	 */
-	virtual void hostInfoChanged() {
-		fixTimeValue.hostInfoChanged( hostInfo->getSampleRate() );
-		tmpFrame.setSize( hostInfo->getBlockSize() );
-		cStep->setSampleRate ( hostInfo->getSampleRate() );
-		if (sync) sync->hostInfoChanged();
+	virtual void hostBaseConfigChanged() {
+		frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+		if (!hI) {
+			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+				"Hostinfo == NULL"
+			);
+		}
+		fixTimeValue.hostBaseConfigChanged( hI->getSampleRate() );
+		tmpFrame.setSize( hI->getBlockSize() );
+		cStep->setSampleRate ( hI->getSampleRate() );
+		if (sync) 
+			sync->hostBaseConfigChanged();
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**

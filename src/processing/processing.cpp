@@ -129,7 +129,7 @@ ProcessAdapter::OutputNode::OutputNode ( const string &name, ProcessAdapter *par
 // class ProcessAdapter
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-ProcessAdapter::ProcessAdapter( IHostInfo * hostInfo, size_t numInputNodes , size_t numOutputNodes ) : 
+ProcessAdapter::ProcessAdapter( frx::processing::IHostInfo::Ptr  hostInfo, size_t numInputNodes , size_t numOutputNodes ) : 
 	hostInfo(hostInfo), 
 	inputNodes( InputNodes (numInputNodes) ), 
 	outputNodes( OutputNodes(numOutputNodes) )

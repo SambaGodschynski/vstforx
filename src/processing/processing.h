@@ -541,7 +541,7 @@ protected:
 	 */
 	boost::shared_ptr<ProcessAdapterNode> aNode;
 	//--------------------------------------------------------------------------------------------------------
-	IHostInfo * hostInfo;
+	frx::processing::IHostInfo::WPtr  hostInfo;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Signal-Verabeitungs-Verzoegerung des ProcessAdapter.
@@ -578,7 +578,7 @@ protected:
 	 */
 	void removeOutputNode(OutputNodePtr node);
 	//--------------------------------------------------------------------------------------------------------
-	ProcessAdapter( IHostInfo * hostInfo, size_t numInputNodes = 1, size_t numOutputNodes = 1 );
+	ProcessAdapter( frx::processing::IHostInfo::Ptr  hostInfo, size_t numInputNodes = 1, size_t numOutputNodes = 1 );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Wird von AdapterNode, durch AdapterNode::processNode(), aufgerufen.
@@ -605,13 +605,13 @@ public:
 	/**
 	 * @return IHostInfo-Objekt
 	 */
-	IHostInfo * getHostInfo() const { return hostInfo; } 
+	frx::processing::IHostInfo::Ptr  getHostInfo() const { return hostInfo.lock(); } 
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * setzt IHostInfo-Objekt
 	 * @param hI
 	 */
-	void setHostInfo( IHostInfo * hI ){ hostInfo = hI; } 
+	void setHostInfo( frx::processing::IHostInfo::Ptr  hI ){ hostInfo = hI; } 
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Anzahl der enthaltenden OutputNode-Objekte

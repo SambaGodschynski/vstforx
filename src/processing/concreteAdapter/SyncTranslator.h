@@ -12,6 +12,8 @@
 #include "processing/dspTools.h"
 #include "processing/IHostInfo.h"
 #include "ValueTranslator.h"
+#include <sambag/com/Exception.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -48,17 +50,23 @@ private:
 	/**
 	 * HostInfo-Objekt
 	 */
-	IHostInfo * hostInfo;
+	frx::processing::IHostInfo::WPtr  hostInfo;
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * resetet SampleRate
 	 */
-	void hostInfoChanged() {
-		oneMsInSamples = hostInfo->getSampleRate()/1000.0f; 
+	void hostBaseConfigChanged() {
+		frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+		if (!hI) {
+			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+				"Hostinfo == NULL"
+			);
+		}
+		oneMsInSamples = hI->getSampleRate()/1000.0f; 
 	}
 	//--------------------------------------------------------------------------------------------------------
-	SyncTranslator( IHostInfo * hostInfo ): 
+	SyncTranslator( frx::processing::IHostInfo::Ptr  hostInfo ): 
 	hostInfo(hostInfo), 
 	oneMsInSamples ( hostInfo->getSampleRate()/1000.0f ) {}
 	//--------------------------------------------------------------------------------------------------------
@@ -76,9 +84,16 @@ public:
 	 * @param v
 	 * @return Eingabewert als einen Musiknoten-Zeitwert in Samples
 	 */
-	virtual int translate ( float v ){
+	virtual int translate ( float v ) {
+		frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+		if (!hI) {
+			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+				"Hostinfo == NULL"
+			);
+		}
+		using namespace frx::processing;
 		int n = mapInteger ( v, musicalValues::NUM_STDNOTES );
-		VstTimeInfo *inf = hostInfo->getVstTimeInfo( kVstTempoValid );
+		TimeInfo *inf = hI->getHostTimeInfo( TimeInfo::FrxTempo );
 		return note2Sample ( musicalValues::noteLengthTable[n].val, inf->tempo, inf->sampleRate );
 	}
 };

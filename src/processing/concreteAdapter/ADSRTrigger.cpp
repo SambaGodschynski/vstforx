@@ -13,7 +13,7 @@ namespace processing{
 //============================================================================================================
 const string states[] = {"_a", "_d", "_s", "_r"};
 //------------------------------------------------------------------------------------------------------------
-ADSRTrigger::ADSRTrigger( IHostInfo *hostInfo ) : ProcessAdapter(hostInfo) {
+ADSRTrigger::ADSRTrigger( frx::processing::IHostInfo::Ptr hostInfo ) : ProcessAdapter(hostInfo) {
 	setName ( "ADSRTrigger" );
 	inputNodes[0]->setName  ( getName() + " InputNode");
 	outputNodes[0]->setName ( getName() + " OutputNode");

@@ -22,6 +22,8 @@
 #include <boost/parameter/name.hpp>
 #include <boost/parameter/keyword.hpp>
 #include <boost/parameter/preprocessor.hpp>
+#include <sambag/com/Exception.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 
 
 //============================================================================================================
@@ -67,9 +69,7 @@ struct GraphChanged : public Event {
  * (zb. Parameter)
  */
 class Graph : 
-	public EventSender<GraphChanged>, 
-	public IVstEventProcessor,
-	public IHostInfo
+	public EventSender<GraphChanged>
 //============================================================================================================
 {
 friend class boost::serialization::access;
@@ -167,11 +167,11 @@ private:
 	 */
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){
-		ar & boost::serialization::base_object<IHostInfo> ( *this );
+		ar & hostInfo;
 		ar & parameterConnections;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	Graph () : _hasCycle(false), hostInfo(NULL) { initBglGraph(); }
+	Graph () : _hasCycle(false) { initBglGraph(); }
 	//--------------------------------------------------------------------------------------------------------
 	typedef list <PObject::Ptr> GraphObjectContainer;
 	//--------------------------------------------------------------------------------------------------------
@@ -193,7 +193,7 @@ private:
 	 */
 	boost::weak_ptr<Graph> self;
 	//--------------------------------------------------------------------------------------------------------
-	Graph( IHostInfo *hostInfo );
+	Graph( frx::processing::IHostInfo::Ptr hostInfo );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * erstellt SignalProcessPath
@@ -201,7 +201,7 @@ private:
 	void updateGraph();
 protected:
 	//--------------------------------------------------------------------------------------------------------
-	IHostInfo *hostInfo;
+	frx::processing::IHostInfo::WPtr hostInfo;
 	//--------------------------------------------------------------------------------------------------------
 	//Start Knoten
 	StartNode::Ptr startNode;
@@ -210,7 +210,13 @@ protected:
 	EndNode::Ptr endNode;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	virtual bool ioChanged();
+	void setHostInfo(frx::processing::IHostInfo::Ptr hI);
+	//--------------------------------------------------------------------------------------------------------
+	frx::processing::IHostInfo::Ptr getHostInfo() const {
+		return hostInfo.lock();
+	}
+	//--------------------------------------------------------------------------------------------------------
+	void onHostInfoIOChanged();
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return SignalProcessPath
@@ -256,12 +262,28 @@ public:
 	/**
 	 * @return aktuele Samplerate
 	 */
-	float getSampleRate() const { return hostInfo->getSampleRate(); }
+	float getSampleRate() const { 
+		frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+		if (!hI) {
+			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+				"Hostinfo == NULL"
+			);
+		}
+		return hI->getSampleRate(); 
+	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return aktuelle Sampleblock groesse
 	 */
-	int getBlockSize() const { return hostInfo->getBlockSize(); }
+	int getBlockSize() const { 
+		frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+		if (!hI) {
+			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+				"Hostinfo == NULL"
+			);
+		}
+		return hI->getBlockSize(); 
+	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return true, wenn anzahl aktiver ProcessNode-Objekte in SignalProcessPath > 0
@@ -272,23 +294,12 @@ public:
 	 * @param hostInfo Objekt
 	 * @return Graph Objekt
 	 */
-	static Ptr create( IHostInfo *hostInfo );
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Processing Mutex
 	 */
 	com::Mutex & getProcessingLock() { return processingLock; }
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * @return AudioMasterCallback Funktionszeiger (kommunikation plugin->host)
-	 */
-	AudioMasterCallback getAudioMasterCallback() { return hostInfo->getAudioMasterCallback(); }
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 *
-	 * @return AudioEffectX-Objekt des Clients
-	 */
-	AudioEffectX * getAudioEffectX() { return hostInfo->getAudioEffectX(); }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param i
@@ -321,12 +332,6 @@ public:
 	size_t getNumHostParameter () { return hostParameter.size(); }
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * @param filter
-	 * @return VstTimeInfo Objekt des Hosts. (siehe VST-SDK)
-	 */
-	VstTimeInfo * getVstTimeInfo ( VstInt32 filter) { return hostInfo->getVstTimeInfo(filter); }
-	//--------------------------------------------------------------------------------------------------------
-	/**
 	 * @return Eintritts-ProcessorNode Objekt.
 	 */
 	StartNode::Ptr getStartNode();
@@ -335,12 +340,6 @@ public:
 	 * @return Austritts-ProcessorNode Objekt.
 	 */
 	EndNode::Ptr getEndNode();
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * Verarbeitet VstEvents (zb. MIDI events) (siehe VST-SDK)
-	 * @param events
-	 */
-	virtual void processEvents(VstEvents * events);
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Wurde zuvor mittels pushAndCopy() ein Frames(=Eingabe-Samplemenge) Objekt uebergeben,
@@ -382,7 +381,7 @@ public:
 	 * @param hostInfo Hostinfo Objekt
 	 * @return
 	 */
-	static Graph::Ptr load ( iArchive &ar, IHostInfo *hostInfo );
+	static Graph::Ptr load ( iArchive &ar, frx::processing::IHostInfo::Ptr hostInfo );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return gesamt Latenz des Graph in Ms.
@@ -471,7 +470,7 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	Janitor ( Graph *graph );
 	//--------------------------------------------------------------------------------------------------------
-	bool _hostInfoChanged;
+	bool _hostBaseConfigChanged;
 	//--------------------------------------------------------------------------------------------------------
 	State addProcessorNode( ProcessorNode::Ptr obj );
 	//--------------------------------------------------------------------------------------------------------
@@ -574,7 +573,7 @@ public:
 	 * Muss aufgerufen werden, nachdem im HostInfo Objekt(Client), die Samplrate oder die Sampleblockgroesse
 	 * geaendert wurde. Wirft ppiError::InvalidBlockSize bzw. ppiError::InvalidSampleRate.
 	 */
-	void hostInfoChanged();
+	void hostBaseConfigChanged();
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @deprecated

@@ -69,7 +69,7 @@ ProcessorNode::Ptr OutputStep::addOutputNode(){
 	return neu;
 }
 //------------------------------------------------------------------------------------------------------------
-OutputStep::OutputStep(IHostInfo *hostInfo, int initSteps) : 
+OutputStep::OutputStep(frx::processing::IHostInfo::Ptr hostInfo, int initSteps) : 
 ProcessAdapter( hostInfo, 1, initSteps ), 
 type ( Parameter::create() ),
 outpMatrix ( OutputMatrix ( initSteps, (Frames*)NULL ) ),
@@ -85,9 +85,16 @@ fixTimeValue( 10.f, hostInfo->getSampleRate() )
 }
 //------------------------------------------------------------------------------------------------------------
 void OutputStep::reset(){
+	frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+	if (!hI) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+			"Hostinfo == NULL"
+		);
+	}
   	cStep->reset();
+	using namespace frx::processing;
 	// ermittle anzahl der samples bis zu naechsten 1/4 note
-	VstTimeInfo *inf = hostInfo->getVstTimeInfo( kVstPpqPosValid || kVstTempoValid );
+	TimeInfo *inf = hI->getHostTimeInfo( TimeInfo::FrxPpqPos || TimeInfo::FrxTempo );
 	double m = inf->ppqPos -  ((int)inf->ppqPos) ; //ziffern hintern komma.
 	if ( m == 0.0 ) return;
 	if ( m < 0.5 ) { // dauer verkuerzen
@@ -115,9 +122,15 @@ inline void OutputStep::processFrames ( Frames *iFrame, OutputMatrix &fr, Proces
 }
 //------------------------------------------------------------------------------------------------------------
 void OutputStep::processAdapter( Processor::Int numSamples ) {
+	frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+	if (!hI) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+			"Hostinfo == NULL"
+		);
+	}
 	TRY_TO_LOCK_TIMED (mutex); // gleichzeitigen zugriff von addOutputNode blocken
-	VstTimeInfo *inf = hostInfo->getVstTimeInfo(0);
-	ClockEdge::EdgeValue t = transport.in ( isFlag(inf->flags,kVstTransportPlaying) );
+	frx::processing::TimeInfo *inf = hI->getHostTimeInfo(0);
+	ClockEdge::EdgeValue t = transport.in ( inf->transportIsPlaying );
 	if (t == ClockEdge::HIGH ){ // Transport: play flanke
 		reset();
 	}

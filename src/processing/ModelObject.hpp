@@ -20,9 +20,9 @@ class ModelObject {
 public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<ModelObject> Ptr;
-protected:
-private:
-public:
+	//-------------------------------------------------------------------------
+	virtual ~ModelObject() {}
+
 }; // ModelObject
 }} // namespace(s)
 
