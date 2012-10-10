@@ -1,56 +1,64 @@
 /*
- * IViewModelMap.hpp
+ * ModelMap.hpp
  *
- *  Created on: Fri Oct  5 13:38:18 2012
+ *  Created on: Wed Oct 10 12:06:10 2012
  *      Author: Johannes Unger
  */
 
-#ifndef SAMBAG_IVIEWMODELMAP_H
-#define SAMBAG_IVIEWMODELMAP_H
+#ifndef SAMBAG_MODELMAP_H
+#define SAMBAG_MODELMAP_H
 
 #include <boost/shared_ptr.hpp>
-#include <processing/ModelObject.hpp>
-#include "components/Forward.hpp"
-#include "ViewObject.hpp"
+#include "IViewModelMap.hpp"
+#include <boost/bimap.hpp> 
 
 namespace frx { namespace gui {
 //=============================================================================
 /** 
-  * @class IViewModelMap.
+  * @class ModelMap.
   */
-class IViewModelMap {
+class ViewModelMap : public IViewModelMap {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<IViewModelMap> Ptr;
+	typedef boost::shared_ptr<ViewModelMap> Ptr;
+protected:
+	//-------------------------------------------------------------------------
+	ViewModelMap();
+private:
+	//-------------------------------------------------------------------------
+	/**
+     * throws if closed.
+	 */
+	void checkState();
+	//-------------------------------------------------------------------------
+	bool closed;
+	//-------------------------------------------------------------------------
+	typedef boost::bimap<ViewObject::Ptr,
+		frx::processing::ModelObject::Ptr> Map;
+	//-------------------------------------------------------------------------
+	Map map;
+public:
+	//-------------------------------------------------------------------------
+	static Ptr create();
 	//-------------------------------------------------------------------------
 	/**
 	 * @param viewobject
 	 * @return related model object
-	 * @throw when map is closed
 	 */
-	virtual processing::ModelObject::Ptr 
-	getModelObject(ViewObject::Ptr obj) = 0;
+	virtual processing::ModelObject::Ptr getModelObject(ViewObject::Ptr obj);
 	//-------------------------------------------------------------------------
 	/**
 	 * @param modelobject
 	 * @return related view object
-	 * @throw when map is closed
 	 */
-	virtual ViewObject::Ptr 
-	getViewObject(frx::processing::ModelObject::Ptr obj) = 0;
+	virtual ViewObject::Ptr getViewObject(frx::processing::ModelObject::Ptr obj);
 	//-------------------------------------------------------------------------
-	/**
-	 * @throw when map is closed or one of the arguments == NULL
-	 */
 	virtual void registerObjects(ViewObject::Ptr vobj,
-		frx::processing::ModelObject::Ptr mobj) = 0;
+		frx::processing::ModelObject::Ptr mobj);
 	//-------------------------------------------------------------------------
-	/**
-	 * @throw when map is closed
-	 */
 	virtual void remove(ViewObject::Ptr vobj,
-		frx::processing::ModelObject::Ptr mobj) = 0;
+		frx::processing::ModelObject::Ptr mobj);
 	//-------------------------------------------------------------------------
 	/**
 	 * If the map closed no object releation can be read or written.
@@ -58,16 +66,13 @@ public:
 	 * are persisted and the editor is closed. 
 	 * @return true if map is closed.
 	 */
-	virtual bool isClosed() const = 0;
+	virtual bool isClosed() const;
 	//-------------------------------------------------------------------------
 	/**
 	 * @return number of registered relations
 	 */
-	virtual size_t getSize() const = 0;
-}; // IViewModelMap
-///////////////////////////////////////////////////////////////////////////////
-extern IViewModelMap::Ptr 
-getViewModelMap(components::FrxCircuidViewPtr view);
+	size_t getSize() const;
+}; // ModelMap
 }} // namespace(s)
 
-#endif /* SAMBAG_IVIEWMODELMAP_H */
+#endif /* SAMBAG_MODELMAP_H */

@@ -240,6 +240,14 @@
 				RelativePath="..\..\src\tests\TestOne4All.cpp"
 				>
 			</File>
+			<File
+				RelativePath="..\..\src\tests\TestViewModelMap.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\tests\TestViewModelMap.hpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Headerdateien"
@@ -645,6 +653,10 @@
 				</File>
 				<File
 					RelativePath="..\..\src\gui\components\FrxSelection.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\ViewModelMap.cpp"
 					>
 				</File>
 				<Filter

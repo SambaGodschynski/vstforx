@@ -11,6 +11,7 @@
 #include <sstream>
 #include <processing/Frames.h>
 #include <com/one4All.h>
+#include <boost/bimap.hpp>
 
 namespace frx { namespace processing {
 namespace {
@@ -46,6 +47,17 @@ namespace {
 			return hostInfo.getMasterCallback();
 		}	
 	};
+	//-------------------------------------------------------------------------
+	typedef boost::bimap<fgc::FrxCircuidViewPtr, VstForxPlug*>
+		PlugMap;
+	PlugMap plugMap;
+	//-------------------------------------------------------------------------
+	VstForxPlug * getPlugin(fgc::FrxCircuidViewPtr view) {
+		PlugMap::left_map::const_iterator it = plugMap.left.find(view);
+		if (it==plugMap.left.end())
+			return NULL;
+		return it->second;
+	}
 } // namespace
 //=============================================================================
 // class VstForxPlug 
@@ -56,14 +68,34 @@ effectPtr(NULL),
 masterCallback(NULL),
 blockSize(0),
 sampleRate(0.f)
-
 {
 
+}
+//-----------------------------------------------------------------------------
+void VstForxPlug::registerView(fgc::FrxCircuidViewPtr view) {
+	plugMap.insert(PlugMap::value_type(view, this));
+}
+//-----------------------------------------------------------------------------
+void VstForxPlug::unRegisterView(fgc::FrxCircuidViewPtr view) {
+	PlugMap::left_map::iterator it = plugMap.left.find(view);
+	if (it == plugMap.left.end())
+		return;
+	plugMap.left.erase(it);
+}
+//-----------------------------------------------------------------------------
+void VstForxPlug::unRegisterInstance() {
+	PlugMap::right_map::iterator it = plugMap.right.find(this);
+	if (it == plugMap.right.end())
+		return;
+	plugMap.right.erase(it);
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::open() {
 	hostInfoAdapter = IHostInfo::Ptr(new HostInfoAdapter(*this));
 	graph = ::processing::Graph::create(hostInfoAdapter);
+	ctrl = ModelController::create();
+	ctrl->setGraph(graph);
+	map = frx::gui::ViewModelMap::create();
 	updateGraphBaseConfiguration();
 }
 //-----------------------------------------------------------------------------
@@ -72,6 +104,7 @@ void VstForxPlug::close() {
 }
 //-----------------------------------------------------------------------------
 VstForxPlug::~VstForxPlug() {
+	unRegisterInstance();
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::process(float **in, float **out, int numSamples) {
@@ -157,9 +190,25 @@ void VstForxPlug::updateGraphBaseConfiguration() {
 }
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
-IModelController *
+IModelController::Ptr
 getModelController(frx::gui::components::FrxCircuidViewPtr view)
 {
-	return NULL;
+	VstForxPlug *plug = getPlugin(view);
+	if (!plug)
+		return IModelController::Ptr();
+	return plug->getModelController();
+}
+}} // namespace(s)
+
+namespace frx { namespace gui {
+//-----------------------------------------------------------------------------
+IViewModelMap::Ptr 
+getViewModelMap(components::FrxCircuidViewPtr view)
+{
+	using namespace frx::processing;
+	VstForxPlug *plug = getPlugin(view);
+	if (!plug)
+		return frx::gui::IViewModelMap::Ptr();
+	return plug->getViewModelMap();
 }
 }} // namespace(s)

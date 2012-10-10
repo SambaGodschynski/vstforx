@@ -1,43 +1,50 @@
 /*
- * IModelController.hpp
+ * ModelController.hpp
  *
- *  Created on: Fri Oct  5 13:40:06 2012
+ *  Created on: Wed Oct 10 12:06:47 2012
  *      Author: Johannes Unger
  */
 
-#ifndef SAMBAG_IMODELCONTROLLER_H
-#define SAMBAG_IMODELCONTROLLER_H
+#ifndef SAMBAG_MODELCONTROLLER_H
+#define SAMBAG_MODELCONTROLLER_H
 
 #include <boost/shared_ptr.hpp>
-#include <gui/components/Forward.hpp>
-#include "ModelObject.hpp"
-#include "IProcessor.hpp"
-#include "IParameter.hpp"
-#include "IConnection.hpp"
-#include "IEntry.hpp"
-#include "IExit.hpp"
-#include <gui/ViewObject.hpp>
-#include <vector>
+#include "IModelController.hpp"
+#include "graph.h"
+
 namespace frx { namespace processing {
 //=============================================================================
 /** 
-  * @class IModelController.
+  * @class ModelController.
   */
-class IModelController {
+class ModelController : public IModelController {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<IModelController> Ptr;
+	typedef boost::shared_ptr<ModelController> Ptr;
+protected:
+	//-------------------------------------------------------------------------
+	ModelController() {}
+private:
+	//-------------------------------------------------------------------------
+	::processing::Graph::Ptr graph;
+public:
+	//-------------------------------------------------------------------------
+	static Ptr create();
+	//-------------------------------------------------------------------------
+	void setGraph(::processing::Graph::Ptr graph);
+	//-------------------------------------------------------------------------
+	::processing::Graph::Ptr getGraph() const;
 	//-------------------------------------------------------------------------
 	/**
 	 * @return ModelObject pointer which points on a VolumeProcessor object
 	 */
-	virtual IProcessor::Ptr createVolumeProcessor() = 0;
+	virtual IProcessor::Ptr createVolumeProcessor();
 	//-------------------------------------------------------------------------
 	/**
 	 * @return ModelObject pointer which points on a PanProcessor object
 	 */
-	virtual IProcessor::Ptr createPanProcessor() = 0;
+	virtual IProcessor::Ptr createPanProcessor();
 	//-------------------------------------------------------------------------
 	/**
 	 * @param number of inputs
@@ -45,7 +52,7 @@ public:
 	 * @return ModelObject pointer which points on a InStepProcessor object
 	 */
 	virtual IProcessor::Ptr 
-	createInStepProcessor(size_t numInputs) = 0;
+	createInStepProcessor(size_t numInputs);
 	//-------------------------------------------------------------------------
 	/**
 	 * @param number of outputs
@@ -53,7 +60,7 @@ public:
 	 * @return ModelObject pointer which points on a InStepProcessor object
 	 */
 	virtual IProcessor::Ptr 
-	createOutStepProcessor(size_t numOutputs) = 0;
+	createOutStepProcessor(size_t numOutputs);
 	//-------------------------------------------------------------------------
 	/**
 	 * @param number of inputs
@@ -61,7 +68,7 @@ public:
 	 * @return ModelObject pointer which points on a InStepProcessor object
 	 */
 	virtual IProcessor::Ptr 
-	createInSwitchProcessor(size_t numInputs) = 0;
+	createInSwitchProcessor(size_t numInputs);
 	//-------------------------------------------------------------------------
 	/**
 	 * @param number of outputs
@@ -69,31 +76,28 @@ public:
 	 * @return ModelObject pointer which points on a InStepProcessor object
 	 */
 	virtual IProcessor::Ptr 
-	createOutSwitchProcessor(size_t numOutputs) = 0;
+	createOutSwitchProcessor(size_t numOutputs);
 	//-------------------------------------------------------------------------
 	/**
 	 * @return ModelObject pointer which points on a PeakTracker object
 	 */
-	virtual IProcessor::Ptr createPeakTracker() = 0;
+	virtual IProcessor::Ptr createPeakTracker();
 	//-------------------------------------------------------------------------
 	/**
 	 * @return ModelObject pointer which points on a PeakTracker object
 	 */
-	virtual IProcessor::Ptr createADSRTransformer() = 0;
+	virtual IProcessor::Ptr createADSRTransformer();
 	//-------------------------------------------------------------------------
-	virtual IConnection::Ptr connect(IOutput::Ptr out, IInput::Ptr in) = 0;
+	virtual IConnection::Ptr connect(IOutput::Ptr out, IInput::Ptr in);
 	//-------------------------------------------------------------------------
-	virtual bool removeConnection(IConnection::Ptr cn) = 0;
+	virtual bool removeConnection(IConnection::Ptr cn);
 	//-------------------------------------------------------------------------
-	virtual bool remove(ModelObject::Ptr obj) = 0;
+	virtual bool remove(ModelObject::Ptr obj);
 	//-------------------------------------------------------------------------
-	virtual IEntry::Ptr getEntry() = 0;
+	virtual IEntry::Ptr getEntry();
 	//-------------------------------------------------------------------------
-	virtual IExit::Ptr getExit() = 0;
-}; // IModelController
-///////////////////////////////////////////////////////////////////////////////
-extern IModelController::Ptr
-getModelController(frx::gui::components::FrxCircuidViewPtr view);
+	virtual IExit::Ptr getExit();
+}; // ModelController
 }} // namespace(s)
 
-#endif /* SAMBAG_IMODELCONTROLLER_H */
+#endif /* SAMBAG_MODELCONTROLLER_H */

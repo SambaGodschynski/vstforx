@@ -17,8 +17,6 @@ namespace frx { namespace gui { namespace components {
 //-----------------------------------------------------------------------------
 const std::string FrxCircuidView::PROPERTY_ZORDER = "z_order";
 //-----------------------------------------------------------------------------
-const std::string FrxCircuidView::PROPERTY_MODELMAP = "modelMap";
-//-----------------------------------------------------------------------------
 const float FrxCircuidView::Z_Wires = 5.f;
 //-----------------------------------------------------------------------------
 const float FrxCircuidView::Z_ProcessorNodes = 4.f;
@@ -114,16 +112,6 @@ sdc::AComponentPtr FrxCircuidView::findComponentOnPoint(const sd::Point2D &p,
 		return sdc::AComponentPtr();
 	}
 	return res.back();
-}
-//-----------------------------------------------------------------------------
-IViewModelMap::Ptr FrxCircuidView::getViewModelMap() const {
-	return modelMap;
-}
-//-----------------------------------------------------------------------------
-void FrxCircuidView::setViewModelMap(IViewModelMap::Ptr map) {
-	IViewModelMap::Ptr old = map;
-	modelMap = map;
-	firePropertyChanged(PROPERTY_MODELMAP, old, modelMap);
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::message(const std::string &str) {

@@ -330,6 +330,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\src\gui\ViewModelMap.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\gui\ViewModelMap.hpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\src\gui\ViewObject.cpp"
 					>
 				</File>
@@ -570,6 +578,22 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\src\processing\IEntry.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\IEntry.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\IExit.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\IExit.hpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\src\processing\IInput.cpp"
 					>
 				</File>
@@ -607,6 +631,14 @@
 				</File>
 				<File
 					RelativePath="..\..\src\processing\IProcessor.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\ModelController.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\ModelController.hpp"
 					>
 				</File>
 				<File

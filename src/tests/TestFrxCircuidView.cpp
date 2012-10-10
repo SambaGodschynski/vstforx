@@ -15,9 +15,16 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::TestFrxCircuidView );
 
 namespace frx { namespace processing {
-	IModelController * 
+	IModelController::Ptr
 	getModelController(frx::gui::components::FrxCircuidView::Ptr) {
-		return NULL;
+		return IModelController::Ptr();
+	}
+}}
+namespace frx { namespace gui {
+	IViewModelMap::Ptr 
+	getViewModelMap(components::FrxCircuidViewPtr view)
+	{
+		return IViewModelMap::Ptr();
 	}
 }}
 

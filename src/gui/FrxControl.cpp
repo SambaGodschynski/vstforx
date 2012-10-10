@@ -28,6 +28,27 @@
 namespace frx { namespace gui {
 using namespace components;
 ////////////////////////////////////////////////////////////////////////////////
+boost::tuple<
+	frx::processing::IModelController::Ptr,
+	IViewModelMap::Ptr
+>
+getControllerAndMap(FrxCircuidViewPtr circ)
+{
+	// create model obj.
+	frx::processing::IModelController::Ptr ctrl = 
+		frx::processing::getModelController(circ);
+	if (!ctrl) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"tried to add processor with IModelController == NULL");
+	}
+	IViewModelMap::Ptr map = getViewModelMap(circ);
+	if (!map) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"tried to add processor with IViewModelMap == NULL");
+	}
+	return boost::make_tuple(ctrl, map);
+}
+////////////////////////////////////////////////////////////////////////////////
 //  Private executors
 //-----------------------------------------------------------------------------
 namespace {
@@ -58,11 +79,10 @@ void addProcessorToView(FrxCircuidViewWPtr c, int numInputs, int numOutputs) {
 			"tried to add processor with FrxCircuidViewPtr == NULL");
 	}
 	// create model obj.
-	frx::processing::IModelController *ctrl = frx::processing::getModelController(circ);
-	if (!ctrl) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"tried to add processor with IModelController == NULL");
-	}
+	frx::processing::IModelController::Ptr ctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(ctrl, map) = getControllerAndMap(circ);
+
 	frx::processing::ModelObject::Ptr mObj = 
 		createProcessorOnModel<ConcreteProcessor>(ctrl, numInputs, numOutputs);
 	// create view obj.
@@ -70,11 +90,6 @@ void addProcessorToView(FrxCircuidViewWPtr c, int numInputs, int numOutputs) {
 	viewObj->setLocation(0, 0);
 	viewObj->configIO(numInputs, numOutputs);
 	// register
-	IViewModelMap::Ptr map = circ->getViewModelMap();
-	if (!map) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"tried to add processor with IViewModelMap == NULL");
-	}
 	map->registerObjects(viewObj, mObj);
 	// create contextmenu
 	FrxControl::Entries entries;
@@ -294,6 +309,28 @@ void FrxControl::handleContextMenuPopup(const sdc::events::MouseEvent &ev) {
 		);
 	}
 	currPopup = popup;
+}
+//-----------------------------------------------------------------------------
+boost::tuple<fgc::FrxNodePtr, fgc::FrxNodePtr>
+FrxControl::createEntryExtitNodes(fgc::FrxCircuidViewPtr circ)
+{
+	frx::processing::IModelController::Ptr ctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(ctrl, map) = getControllerAndMap(circ);
+	boost::tuple<fgc::FrxNodePtr, fgc::FrxNodePtr> res;
+
+	// entry node
+	boost::get<0>(res) = FrxEntryNode::create();
+	circ->add(boost::get<0>(res), FrxCircuidView::Z_IO);
+	map->registerObjects(boost::get<0>(res), ctrl->getEntry());
+	
+	//exit node
+	boost::get<1>(res) = FrxExitNode::create();
+	circ->add(boost::get<1>(res), FrxCircuidView::Z_IO);
+	map->registerObjects(boost::get<1>(res), ctrl->getExit());
+
+	return res;
+
 }
 //=============================================================================
 //-----------------------------------------------------------------------------

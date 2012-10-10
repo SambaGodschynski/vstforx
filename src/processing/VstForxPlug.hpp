@@ -13,9 +13,14 @@
 #include <sambag/dsp/DspPlugin.hpp>
 #include <processing/IHostInfo.h>
 #include <processing/graph.h>
+#include <processing/ModelController.hpp>
+#include <gui/ViewModelMap.hpp>
+#include <gui/components/Forward.hpp>
 
 namespace frx { namespace processing {
 namespace sce=sambag::com::events;
+namespace fg = frx::gui;
+namespace fgc = fg::components;
 //=============================================================================
 class VstForxPlug : public sambag::dsp::PluginProcessorBase,
 	public IHostInfo,
@@ -37,6 +42,10 @@ private:
 	IHostInfo::Ptr hostInfoAdapter;
 	//-------------------------------------------------------------------------
 	::processing::Graph::Ptr graph;
+	//-------------------------------------------------------------------------
+	ModelController::Ptr ctrl;
+	//-------------------------------------------------------------------------
+	frx::gui::ViewModelMap::Ptr map;
 protected:
 	//-------------------------------------------------------------------------
 	/**
@@ -55,7 +64,25 @@ protected:
 	void open();
 	//-------------------------------------------------------------------------
 	void close();
+	//-------------------------------------------------------------------------
+	void unRegisterInstance();
 public:
+	//-------------------------------------------------------------------------
+	void registerView(fgc::FrxCircuidViewPtr view);
+	//-------------------------------------------------------------------------
+	void unRegisterView(fgc::FrxCircuidViewPtr view);
+	//-------------------------------------------------------------------------
+	ModelController::Ptr getModelController() const {
+		return ctrl;
+	}
+	//-------------------------------------------------------------------------
+	::processing::Graph::Ptr getGraph() const {
+		return graph;
+	}
+	//-------------------------------------------------------------------------
+	frx::gui::ViewModelMap::Ptr getViewModelMap() const {
+		return map;
+	}
 	//-------------------------------------------------------------------------
 	void setEffectPtr(void *effPtr);
 	//-------------------------------------------------------------------------

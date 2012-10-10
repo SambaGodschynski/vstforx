@@ -17,14 +17,14 @@ using namespace components;
 //-----------------------------------------------------------------------------
 template <class ConcreteProcessor>
 fp::IProcessor::Ptr 
-createProcessorOnModel(fp::IModelController *ctrl, size_t numInputs, size_t numOutputs) 
+createProcessorOnModel(fp::IModelController::Ptr ctrl, size_t numInputs, size_t numOutputs) 
 {
 	return IProcessor::Ptr();
 }
 //-----------------------------------------------------------------------------
 template <>
 fp::IProcessor::Ptr 
-inline createProcessorOnModel<FrxVolumeNode>(fp::IModelController *ctrl, 
+inline createProcessorOnModel<FrxVolumeNode>(fp::IModelController::Ptr ctrl, 
 						 size_t numInputs, size_t numOutputs) 
 {
 	return ctrl->createVolumeProcessor();
@@ -32,7 +32,7 @@ inline createProcessorOnModel<FrxVolumeNode>(fp::IModelController *ctrl,
 //-----------------------------------------------------------------------------
 template <>
 fp::IProcessor::Ptr 
-inline createProcessorOnModel<FrxPanNode>(fp::IModelController *ctrl, 
+inline createProcessorOnModel<FrxPanNode>(fp::IModelController::Ptr ctrl, 
 						 size_t numInputs, size_t numOutputs) 
 {
 	return ctrl->createPanProcessor();
@@ -40,7 +40,7 @@ inline createProcessorOnModel<FrxPanNode>(fp::IModelController *ctrl,
 //-----------------------------------------------------------------------------
 template <>
 fp::IProcessor::Ptr 
-inline createProcessorOnModel<FrxInStepNode>(fp::IModelController *ctrl, 
+inline createProcessorOnModel<FrxInStepNode>(fp::IModelController::Ptr ctrl, 
 						 size_t numInputs, size_t numOutputs) 
 {
 	return ctrl->createInStepProcessor(numInputs);
@@ -48,7 +48,7 @@ inline createProcessorOnModel<FrxInStepNode>(fp::IModelController *ctrl,
 //-----------------------------------------------------------------------------
 template <>
 fp::IProcessor::Ptr 
-inline createProcessorOnModel<FrxOutStepNode>(fp::IModelController *ctrl, 
+inline createProcessorOnModel<FrxOutStepNode>(fp::IModelController::Ptr ctrl, 
 						 size_t numInputs, size_t numOutputs) 
 {
 	return ctrl->createOutStepProcessor(numOutputs);
@@ -56,7 +56,7 @@ inline createProcessorOnModel<FrxOutStepNode>(fp::IModelController *ctrl,
 //-----------------------------------------------------------------------------
 template <>
 fp::IProcessor::Ptr 
-inline createProcessorOnModel<FrxInSwitchNode>(fp::IModelController *ctrl, 
+inline createProcessorOnModel<FrxInSwitchNode>(fp::IModelController::Ptr ctrl, 
 						 size_t numInputs, size_t numOutputs) 
 {
 	return ctrl->createInSwitchProcessor(numInputs);
@@ -64,7 +64,7 @@ inline createProcessorOnModel<FrxInSwitchNode>(fp::IModelController *ctrl,
 //-----------------------------------------------------------------------------
 template <>
 fp::IProcessor::Ptr 
-inline createProcessorOnModel<FrxOutSwitchNode>(fp::IModelController *ctrl, 
+inline createProcessorOnModel<FrxOutSwitchNode>(fp::IModelController::Ptr ctrl, 
 						 size_t numInputs, size_t numOutputs) 
 {
 	return ctrl->createOutSwitchProcessor(numOutputs);
@@ -72,7 +72,7 @@ inline createProcessorOnModel<FrxOutSwitchNode>(fp::IModelController *ctrl,
 //-----------------------------------------------------------------------------
 template <>
 fp::IProcessor::Ptr 
-inline createProcessorOnModel<FrxADSRNode>(fp::IModelController *ctrl, 
+inline createProcessorOnModel<FrxADSRNode>(fp::IModelController::Ptr ctrl, 
 						 size_t numInputs, size_t numOutputs) 
 {
 	return ctrl->createADSRTransformer();
@@ -80,7 +80,7 @@ inline createProcessorOnModel<FrxADSRNode>(fp::IModelController *ctrl,
 //-----------------------------------------------------------------------------
 template <>
 fp::IProcessor::Ptr 
-inline createProcessorOnModel<FrxPeakTrackerNode>(fp::IModelController *ctrl, 
+inline createProcessorOnModel<FrxPeakTrackerNode>(fp::IModelController::Ptr ctrl, 
 						 size_t numInputs, size_t numOutputs) 
 {
 	return ctrl->createPeakTracker();

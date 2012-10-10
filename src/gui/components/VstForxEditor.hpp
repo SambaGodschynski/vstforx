@@ -40,6 +40,8 @@ private:
 	sdc::Window::Ptr createMainWindow(const sd::Rectangle &bounds);
 	//-------------------------------------------------------------------------
 	FrxCircuidViewPtr createEmptyView(sdc::Window::Ptr win);
+	//-------------------------------------------------------------------------
+	void initEntryExit(FrxCircuidViewPtr view);
 protected:
 	//-------------------------------------------------------------------------
 	virtual bool open (void *ptr);

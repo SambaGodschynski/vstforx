@@ -75,9 +75,9 @@ const bgl::Vertex Graph::nullVertex = bgl::Vertex();
 const bgl::Edge Graph::nullEdge = bgl::Edge();
 //------------------------------------------------------------------------------------------------------------
 Graph::Graph(frx::processing::IHostInfo::Ptr hostInfo) : 
-hostInfo( hostInfo ),
 _hasCycle(false)
 {
+	setHostInfo(hostInfo);
 	initBglGraph();
 	startNode = StartNode::create();
 	endNode = EndNode::create();
@@ -88,7 +88,16 @@ _hasCycle(false)
 }
 //-----------------------------------------------------------------------------------------------------------
 void Graph::setHostInfo(frx::processing::IHostInfo::Ptr hI) {
+	if (!hI)
+		return;
+	if (ioChangedCn.connected())
+		ioChangedCn.disconnect();
 	hostInfo = hI;
+	ioChangedCn = 
+		hI->addTrackedHostChangedListener(
+			boost::bind(&Graph::onHostIOChanged, this, _1, _2),
+			self.lock()
+		);
 }
 //------------------------------------------------------------------------------------------------------------
 ProcessorNode::Ptr Graph::getProcessorNode( const bgl::Vertex &vertex ) {
@@ -249,12 +258,8 @@ bgl::Edge Graph::findEdge( ProcessorNode::Ptr source, ProcessorNode::Ptr target 
 	return nullEdge;
 }
 //------------------------------------------------------------------------------------------------------------
-/**
-bool Graph::ioChanged() {
-	Janitor::Ptr jan = getJanitor(); 
-	// update when janitor looses scope
-	return hostInfo->ioChanged();
-}*/
+void Graph::onHostIOChanged(void *src, const frx::processing::HostIOChanged &ev) {
+}
 //============================================================================================================
 // Klasse Janitor
 // Ermoeglicht hinzufuegen und entfernen von PObjects und Verbindungen.

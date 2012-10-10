@@ -1,12 +1,12 @@
 /*
- * IInput.hpp
+ * IEntry.hpp
  *
- *  Created on: Sat Oct  6 13:52:36 2012
+ *  Created on: Wed Oct 10 14:11:05 2012
  *      Author: Johannes Unger
  */
 
-#ifndef SAMBAG_IINPUT_H
-#define SAMBAG_IINPUT_H
+#ifndef SAMBAG_IENTRY_H
+#define SAMBAG_IENTRY_H
 
 #include <boost/shared_ptr.hpp>
 #include "ModelObject.hpp"
@@ -14,14 +14,15 @@
 namespace frx { namespace processing {
 //=============================================================================
 /** 
-  * @class IInput.
+  * @class IEntry.
   */
-class IInput : public ModelObject {
+class IEntry : public ModelObject {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<IInput> Ptr;
-}; // IInput
+	typedef boost::shared_ptr<IEntry> Ptr;
+}; // IEntry
+
 }} // namespace(s)
 
-#endif /* SAMBAG_IINPUT_H */
+#endif /* SAMBAG_IENTRY_H */

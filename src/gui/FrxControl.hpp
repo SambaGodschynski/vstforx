@@ -17,6 +17,7 @@
 #include <string>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
+#include <boost/tuple/tuple.hpp>
 
 namespace frx { namespace gui {
 namespace sdc = sambag::disco::components;
@@ -52,6 +53,12 @@ protected:
 	//-------------------------------------------------------------------------
 	sdc::PopupMenuPtr currPopup;
 public:
+	//-------------------------------------------------------------------------
+	/**
+	 * @return tuple(entry, exit)
+	 */
+	boost::tuple<fgc::FrxNodePtr, fgc::FrxNodePtr>
+	createEntryExtitNodes(fgc::FrxCircuidViewPtr c);
 	//-------------------------------------------------------------------------
 	/**
 	 * creates Popupmenu for entries.

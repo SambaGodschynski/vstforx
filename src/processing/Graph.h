@@ -199,6 +199,8 @@ private:
 	 * erstellt SignalProcessPath
 	 */
 	void updateGraph();
+	//--------------------------------------------------------------------------------------------------------
+	frx::processing::IHostInfo::HostIOChangedConnection ioChangedCn;
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	frx::processing::IHostInfo::WPtr hostInfo;
@@ -216,7 +218,7 @@ public:
 		return hostInfo.lock();
 	}
 	//--------------------------------------------------------------------------------------------------------
-	void onHostInfoIOChanged();
+	void onHostIOChanged(void *src, const frx::processing::HostIOChanged &ev);
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return SignalProcessPath
