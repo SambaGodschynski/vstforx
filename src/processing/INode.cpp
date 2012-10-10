@@ -1,15 +1,15 @@
 /*
- * IOutput.cpp
+ * INode.cpp
  *
  *  Created on: Sat Oct  6 13:52:49 2012
  *      Author: Johannes Unger
  */
 
-#include "IOutput.hpp"
+#include "INode.hpp"
 
 namespace frx { namespace processing {
 //=============================================================================
-//  Class IOutput
+//  Class INode
 //=============================================================================
 //-----------------------------------------------------------------------------
 

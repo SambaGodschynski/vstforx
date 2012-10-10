@@ -88,15 +88,15 @@ public:
 	 */
 	virtual IProcessor::Ptr createADSRTransformer();
 	//-------------------------------------------------------------------------
-	virtual IConnection::Ptr connect(IOutput::Ptr out, IInput::Ptr in);
+	virtual IConnection::Ptr connect(INode::Ptr out, INode::Ptr in);
 	//-------------------------------------------------------------------------
 	virtual bool removeConnection(IConnection::Ptr cn);
 	//-------------------------------------------------------------------------
 	virtual bool remove(ModelObject::Ptr obj);
 	//-------------------------------------------------------------------------
-	virtual IEntry::Ptr getEntry();
+	virtual INode::Ptr getEntry();
 	//-------------------------------------------------------------------------
-	virtual IExit::Ptr getExit();
+	virtual INode::Ptr getExit();
 }; // ModelController
 }} // namespace(s)
 

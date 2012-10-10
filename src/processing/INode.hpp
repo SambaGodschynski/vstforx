@@ -1,12 +1,12 @@
 /*
- * IEntry.hpp
+ * INode.hpp
  *
- *  Created on: Wed Oct 10 14:11:05 2012
+ *  Created on: Sat Oct  6 13:52:49 2012
  *      Author: Johannes Unger
  */
 
-#ifndef SAMBAG_IENTRY_H
-#define SAMBAG_IENTRY_H
+#ifndef SAMBAG_IOUTPUT_H
+#define SAMBAG_IOUTPUT_H
 
 #include <boost/shared_ptr.hpp>
 #include "ModelObject.hpp"
@@ -14,15 +14,16 @@
 namespace frx { namespace processing {
 //=============================================================================
 /** 
-  * @class IEntry.
+  * @class INode.
   */
-class IEntry : public ModelObject {
+class INode : public ModelObject {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<IEntry> Ptr;
-}; // IEntry
-
+	typedef boost::shared_ptr<INode> Ptr;
+	//-------------------------------------------------------------------------
+	virtual ~INode() {}
+}; // INode
 }} // namespace(s)
 
-#endif /* SAMBAG_IENTRY_H */
+#endif /* SAMBAG_IOUTPUT_H */

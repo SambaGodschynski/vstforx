@@ -6,6 +6,7 @@
  */
 
 #include "ModelController.hpp"
+#include "processing.h"
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -77,7 +78,7 @@ IProcessor::Ptr ModelController::createADSRTransformer() {
 	return IProcessor::Ptr();
 }
 //-----------------------------------------------------------------------------
-IConnection::Ptr ModelController::connect(IOutput::Ptr out, IInput::Ptr in) {
+IConnection::Ptr ModelController::connect(INode::Ptr out, INode::Ptr in) {
 	if (!graph)
 		return IConnection::Ptr();
 	return IConnection::Ptr();
@@ -95,16 +96,20 @@ bool ModelController::remove(ModelObject::Ptr obj) {
 	return false;
 }
 //-----------------------------------------------------------------------------
-IEntry::Ptr ModelController::getEntry() {
+INode::Ptr ModelController::getEntry() {
 	if (!graph)
-		return IEntry::Ptr();
-	return IEntry::Ptr();
+		return INode::Ptr();
+	return boost::shared_dynamic_cast<::processing::ProcessorNode> (
+		graph->getStartNode()
+	);
 }
 //-----------------------------------------------------------------------------
-IExit::Ptr ModelController::getExit() {
+INode::Ptr ModelController::getExit() {
 	if (!graph)
-		return IExit::Ptr();
-	return IExit::Ptr();
+		return INode::Ptr();
+	return boost::shared_dynamic_cast<::processing::ProcessorNode> (
+		graph->getEndNode()
+	);
 }
 
 }} // namespace(s)

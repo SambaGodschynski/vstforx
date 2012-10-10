@@ -10,8 +10,8 @@
 
 #include <boost/shared_ptr.hpp>
 #include "ModelObject.hpp"
-#include "IInput.hpp"
-#include "IOutput.hpp"
+#include "INode.hpp"
+#include "INode.hpp"
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -28,9 +28,9 @@ public:
 	//-------------------------------------------------------------------------
 	virtual size_t getNumOutputs() const = 0;
 	//-------------------------------------------------------------------------
-	virtual IInput::Ptr getInput(size_t nr) const = 0;
+	virtual INode::Ptr getInput(size_t nr) const = 0;
 	//-------------------------------------------------------------------------
-	virtual IOutput::Ptr getOutput(size_t nr) const = 0;
+	virtual INode::Ptr getOutput(size_t nr) const = 0;
 	//-------------------------------------------------------------------------
 	/**
 	 * @return true if processor is able to add/remove input
@@ -46,13 +46,13 @@ public:
 	 * Creates output and adds to processor.
 	 * @return created output or null when failed.
 	 */
-	virtual IOutput::Ptr addOutput() = 0;
+	virtual INode::Ptr addOutput() = 0;
 	//-------------------------------------------------------------------------
 	/**
 	 * Creates input and adds to processor.
 	 * @return created input or null when failed.
 	 */
-	virtual IOutput::Ptr addInput() = 0;
+	virtual INode::Ptr addInput() = 0;
 }; // IProcessor
 }} // namespace(s)
 

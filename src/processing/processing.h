@@ -21,10 +21,14 @@
 #include "Frames.h"
 #include "com/Events.h"
 
+#include "INode.hpp"
+#include "IProcessor.hpp"
+
 //============================================================================================================
 //	Vorwaerts Deklarationen
 //============================================================================================================
 namespace processing {
+namespace fp = frx::processing;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Die Klasse Graph
@@ -65,7 +69,10 @@ public:
  * Oberklasse fuer alle Knoten die processFrames() implementieren.
  */
 //============================================================================================================
-class ProcessorNode : public Processor, public PObject {
+class ProcessorNode : public Processor,
+	public PObject, 
+	public frx::processing::INode
+{
 friend class Graph;
 friend class DFSVisitor;
 friend class boost::serialization::access;
@@ -465,7 +472,12 @@ struct IOChangedEvent : public com::events::Event {
  * Sind diese einem Graph hinzugefuegt, wird - wenn ProcessFrames() des AdapterNode
  * ausgefuehrt - an processAdapter() weitergeleitet.
  */
-class ProcessAdapter: public PObject, public com::events::EventSender<IOChangedEvent> {
+class ProcessAdapter : 
+	public PObject, 
+	public com::events::EventSender<IOChangedEvent>,
+	public frx::processing::IProcessor
+
+{
 //Klasse: ProcessAdapter.
 //    Input_Node0-O   O -  Input_Node1 ... Input_NodeN
 //                 \ /
@@ -627,7 +639,7 @@ public:
 	 * @param index
 	 * @return OutputNode-Objekt zu index. Wirft ppiError::IndexOutOfBoundException
 	 */
-	OutputNodePtr getOutputNode( size_t index ){ 
+	OutputNodePtr getOutputNode( size_t index ) const { 
 		if ( index >= getNumOutputNodes() ) 
 			throw ppiError::IndexOutOfBoundException ( "OutOfBound-OutputNodes", __FILE__, __LINE__ );
 		return outputNodes[index]; 
@@ -642,13 +654,61 @@ public:
 	 * @param index
 	 * @return InputNode-Objekt zu index. Wirft ppiError::IndexOutOfBoundException
 	 */
-	virtual InputNodePtr getInputNode( size_t index ) { 
+	virtual InputNodePtr getInputNode( size_t index ) const { 
 		if ( index >= getNumInputNodes() ) 
 			throw ppiError::IndexOutOfBoundException ( "OutOfBound-InputNodes", __FILE__, __LINE__ );
 		return inputNodes[index]; 
 	}
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~ProcessAdapter();
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// IProcessorImpl
+	//--------------------------------------------------------------------------------------------------------
+	virtual size_t getNumInputs() const {
+		return getNumInputNodes();
+	}
+	//--------------------------------------------------------------------------------------------------------
+	virtual size_t getNumOutputs() const {
+		return getNumOutputNodes();
+	}
+	//--------------------------------------------------------------------------------------------------------
+	virtual fp::INode::Ptr getInput(size_t nr) const {
+		return boost::shared_dynamic_cast<ProcessorNode>(getInputNode(nr));
+	}
+	//--------------------------------------------------------------------------------------------------------
+	virtual fp::INode::Ptr getOutput(size_t nr) const {
+		return boost::shared_dynamic_cast<ProcessorNode>(getOutputNode(nr));
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return true if processor is able to add/remove input
+	 */
+	virtual bool hasMultipleInputs() const {
+		return false;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return true if processor is able to add/remove output
+	 */
+	virtual bool hasMultipleOutputs() const {
+		return false;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Creates output and adds to processor.
+	 * @return created output or null when failed.
+	 */
+	virtual fp::INode::Ptr addOutput() {
+		return fp::INode::Ptr();
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Creates input and adds to processor.
+	 * @return created input or null when failed.
+	 */
+	virtual fp::INode::Ptr addInput() {
+		return fp::INode::Ptr();
+	}
 }; //class ProcessAdapter
 //============================================================================================================
 /**
