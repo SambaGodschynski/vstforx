@@ -10,6 +10,7 @@
 
 #include <processing/IModelController.hpp>
 #include "components/FrxConcreteProcessor.hpp"
+#include "components/FrxConcreteConnections.hpp"
 namespace frx { namespace gui {
 namespace fp = frx::processing;
 using namespace components;
@@ -84,6 +85,27 @@ inline createProcessorOnModel<FrxPeakTrackerNode>(fp::IModelController::Ptr ctrl
 						 size_t numInputs, size_t numOutputs) 
 {
 	return ctrl->createPeakTracker();
+}
+///////////////////////////////////////////////////////////////////////////////
+template <class ConnectionType>
+fp::IConnection::Ptr 
+connectModelObjects(fp::IModelController::Ptr ctrl, 
+	fp::ModelObject::Ptr src,
+	fp::ModelObject::Ptr dst) 
+{
+	return fp::IConnection::Ptr();
+}
+//-----------------------------------------------------------------------------
+template <>
+fp::IConnection::Ptr 
+connectModelObjects<IOCn>(fp::IModelController::Ptr ctrl, 
+	fp::ModelObject::Ptr src,
+	fp::ModelObject::Ptr dst) 
+{
+	fp::INode::Ptr nsrc = boost::shared_dynamic_cast<fp::INode>(src);
+	fp::INode::Ptr ndst = boost::shared_dynamic_cast<fp::INode>(dst);
+	SAMBAG_ASSERT(nsrc && ndst);
+	return ctrl->connect(nsrc, ndst);
 }
 }} // namespace(s)
 

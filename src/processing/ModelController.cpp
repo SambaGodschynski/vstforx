@@ -7,6 +7,8 @@
 
 #include "ModelController.hpp"
 #include "processing.h"
+#include "NodeConnection.hpp"
+#include <boost/bind.hpp>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -15,6 +17,7 @@ namespace frx { namespace processing {
 //-----------------------------------------------------------------------------
 ModelController::Ptr ModelController::create() {
 	Ptr res(new ModelController());
+	res->self = res;
 	return res;
 }
 //-----------------------------------------------------------------------------
@@ -81,19 +84,47 @@ IProcessor::Ptr ModelController::createADSRTransformer() {
 IConnection::Ptr ModelController::connect(INode::Ptr out, INode::Ptr in) {
 	if (!graph)
 		return IConnection::Ptr();
-	return IConnection::Ptr();
+	::processing::ProcessorNode::Ptr src =
+		boost::shared_dynamic_cast<::processing::ProcessorNode>(out);
+	::processing::ProcessorNode::Ptr dst =
+		boost::shared_dynamic_cast<::processing::ProcessorNode>(in);
+	if (!src || !dst)
+		return IConnection::Ptr();
+	typedef ::processing::Graph::Janitor Janitor; 
+	Janitor::Ptr jan = graph->getJanitor();
+	Janitor::State res = jan->connectNodes(src, dst);
+	jan.reset();
+	if (res!=Janitor::SUCCEED)
+		return IConnection::Ptr();
+	NodeConnection::Ptr cn = NodeConnection::create();
+	cn->setSource(src);
+	cn->setDestination(dst);
+	// register remove request excutor
+	cn->addRemoveRequestExecuter(
+		boost::bind(
+			&ModelController::excuteConnectionRemoveRequest,
+			this,
+			_1,
+			boost::weak_ptr<NodeConnection>(cn)
+		),
+		self
+	);
+	return cn;
 }
 //-----------------------------------------------------------------------------
 bool ModelController::removeConnection(IConnection::Ptr cn) {
 	if (!graph)
 		return false;
-	return false;
-}
-//-----------------------------------------------------------------------------
-bool ModelController::remove(ModelObject::Ptr obj) {
-	if (!graph)
-		return false;
-	return false;
+	NodeConnection::Ptr connection = 
+		boost::shared_dynamic_cast<NodeConnection>(cn);
+	SAMBAG_ASSERT(connection);
+	typedef ::processing::Graph::Janitor Janitor; 
+	Janitor::Ptr jan = graph->getJanitor();
+	Janitor::State res = 
+		jan->removeConnection(connection->getSourceNode(), 
+			connection->getDestinationNode()
+		);
+	return res == Janitor::SUCCEED;
 }
 //-----------------------------------------------------------------------------
 INode::Ptr ModelController::getEntry() {
@@ -110,6 +141,13 @@ INode::Ptr ModelController::getExit() {
 	return boost::shared_dynamic_cast<::processing::ProcessorNode> (
 		graph->getEndNode()
 	);
+}
+//-----------------------------------------------------------------------------
+bool ModelController::
+excuteConnectionRemoveRequest(ModelObject::Ptr obj, 
+	boost::weak_ptr<IConnection> cn)
+{
+	return removeConnection(cn.lock());	
 }
 
 }} // namespace(s)

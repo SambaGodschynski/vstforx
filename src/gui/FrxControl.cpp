@@ -128,6 +128,15 @@ void removeComponent(FrxCircuidViewWPtr _view, FrxComponentWPtr _c) {
 	FrxComponentPtr c(_c);
 	if (!c || !view)
 		return;
+	// create model obj.
+	frx::processing::IModelController::Ptr ctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(ctrl, map) = getControllerAndMap(view);
+	frx::processing::ModelObject::Ptr mObj = map->getModelObject(c);
+	if (!mObj)
+		return;
+	if (!mObj->requestRemove(mObj))
+		return;
 	FrxProcessorNode::Ptr pr = boost::shared_dynamic_cast<FrxProcessorNode>(c);
 	if (pr) {
 		BOOST_FOREACH(FrxNode::Ptr io, pr->getInputs()) {
@@ -146,6 +155,22 @@ bool perfomConnect(FrxCircuidView::Ptr view,
 				   FrxComponent::Ptr src, 
 				   FrxComponent::Ptr dst) 
 {
+	// model stuff
+	frx::processing::IModelController::Ptr ctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(ctrl, map) = getControllerAndMap(view);
+	frx::processing::ModelObject::Ptr msrc = map->getModelObject(src);
+	frx::processing::ModelObject::Ptr mdst = map->getModelObject(dst);
+	if (!msrc || !mdst) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"tried to connect NULL object(s)."
+		);
+	}
+	frx::processing::IConnection::Ptr mcnt = 
+		connectModelObjects<ConnectionType>(ctrl, msrc, mdst);
+	if (!mcnt)
+		return false;
+	// view stuff
 	typename ConnectionType::Ptr cn = ConnectionType::create();
 	cn->setSrcComponent(src);
 	cn->setDstComponent(dst);
@@ -156,6 +181,7 @@ bool perfomConnect(FrxCircuidView::Ptr view,
 	cn->setComponentPopupMenu(
 		getFrxControl(view).createPopupMenu(cn, entries)
 	);
+	map->registerObjects(cn, mcnt);
 	return true;
 }
 ////////////////////////////////////////////////////////////////////////////////

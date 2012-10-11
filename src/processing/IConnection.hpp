@@ -22,6 +22,11 @@ class IConnection : public ModelObject {
 public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<IConnection> Ptr;
+public:
+	//-------------------------------------------------------------------------
+	virtual ModelObject::Ptr getSource() const = 0;
+	//-------------------------------------------------------------------------
+	virtual ModelObject::Ptr getDestination() const = 0;
 }; // IConnection
 }} // namespace(s)
 

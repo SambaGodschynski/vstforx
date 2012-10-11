@@ -9,8 +9,10 @@
 #define SAMBAG_MODELCONTROLLER_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include "IModelController.hpp"
 #include "graph.h"
+#include <boost/function.hpp>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -22,7 +24,11 @@ class ModelController : public IModelController {
 public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<ModelController> Ptr;
+	//-------------------------------------------------------------------------
+	typedef boost::weak_ptr<ModelController> WPtr;
 protected:
+	//-------------------------------------------------------------------------
+	WPtr self;
 	//-------------------------------------------------------------------------
 	ModelController() {}
 private:
@@ -35,6 +41,8 @@ public:
 	void setGraph(::processing::Graph::Ptr graph);
 	//-------------------------------------------------------------------------
 	::processing::Graph::Ptr getGraph() const;
+	///////////////////////////////////////////////////////////////////////////
+	// IModelControllerImpl.
 	//-------------------------------------------------------------------------
 	/**
 	 * @return ModelObject pointer which points on a VolumeProcessor object
@@ -92,11 +100,14 @@ public:
 	//-------------------------------------------------------------------------
 	virtual bool removeConnection(IConnection::Ptr cn);
 	//-------------------------------------------------------------------------
-	virtual bool remove(ModelObject::Ptr obj);
-	//-------------------------------------------------------------------------
 	virtual INode::Ptr getEntry();
 	//-------------------------------------------------------------------------
 	virtual INode::Ptr getExit();
+	///////////////////////////////////////////////////////////////////////////
+	// specific impl.
+	//-------------------------------------------------------------------------
+	bool excuteConnectionRemoveRequest(ModelObject::Ptr obj, 
+		boost::weak_ptr<IConnection> cn);
 }; // ModelController
 }} // namespace(s)
 

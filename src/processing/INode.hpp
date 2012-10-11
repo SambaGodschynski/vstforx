@@ -5,8 +5,8 @@
  *      Author: Johannes Unger
  */
 
-#ifndef SAMBAG_IOUTPUT_H
-#define SAMBAG_IOUTPUT_H
+#ifndef SAMBAG_INODE
+#define SAMBAG_INODE
 
 #include <boost/shared_ptr.hpp>
 #include "ModelObject.hpp"
@@ -26,4 +26,4 @@ public:
 }; // INode
 }} // namespace(s)
 
-#endif /* SAMBAG_IOUTPUT_H */
+#endif /* SAMBAG_INODE */
