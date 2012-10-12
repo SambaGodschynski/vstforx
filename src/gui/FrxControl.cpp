@@ -24,6 +24,9 @@
 #include "IViewModelMap.hpp"
 #include <exception>
 #include "__ModelExecutors.hpp"
+#include <boost/archive/text_oarchive.hpp> 
+#include <boost/archive/text_iarchive.hpp>
+#include "components/FrxSerializationRegister.hpp"
 
 namespace frx { namespace gui {
 using namespace components;
@@ -153,7 +156,7 @@ void removeComponent(FrxCircuidViewWPtr _view, FrxComponentWPtr _c) {
 template <class ConnectionType>
 bool perfomConnect(FrxCircuidView::Ptr view, 
 				   FrxComponent::Ptr src, 
-				   FrxComponent::Ptr dst) 
+				   FrxComponent::Ptr dst)
 {
 	// model stuff
 	frx::processing::IModelController::Ptr ctrl;
@@ -310,7 +313,11 @@ bool FrxControl::connect(FrxCircuidViewPtr view, FrxNodePtr from, FrxNodePtr to)
         bool
     > Dispatcher;
 	Dispatcher disp;
-	return disp.Go(*(from.get()), *(to.get()), Connector(view));
+	try {
+		return disp.Go(*(from.get()), *(to.get()), Connector(view));
+	} catch (...) {
+		return false;
+	}
 }
 //-----------------------------------------------------------------------------
 void FrxControl::handleContextMenuPopup(const sdc::events::MouseEvent &ev) {
@@ -357,6 +364,23 @@ FrxControl::createEntryExtitNodes(fgc::FrxCircuidViewPtr circ)
 
 	return res;
 
+}
+//-----------------------------------------------------------------------------
+void FrxControl::serializeView(std::ostream &os, 
+	fgc::FrxCircuidViewPtr view) 
+{
+	boost::archive::text_oarchive ar(os);
+	components::register_types(ar);
+	ar<<view;
+}
+//-----------------------------------------------------------------------------
+fgc::FrxCircuidViewPtr FrxControl::deserializeView(std::istream &is)
+{
+	fgc::FrxCircuidView::Ptr view;
+	boost::archive::text_iarchive ar(is);
+	components::register_types(ar);
+	ar>>view;
+	return view;
 }
 //=============================================================================
 //-----------------------------------------------------------------------------

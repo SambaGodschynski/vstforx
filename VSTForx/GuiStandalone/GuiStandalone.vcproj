@@ -197,14 +197,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\processing\IInput.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\IInput.hpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\src\processing\IModelController.cpp"
 					>
 				</File>
@@ -213,11 +205,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\processing\IOutput.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\IOutput.hpp"
+					RelativePath="..\..\src\processing\INode.hpp"
 					>
 				</File>
 				<File

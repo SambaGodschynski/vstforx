@@ -18,6 +18,8 @@
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <istream>
+#include <ostream>
 
 namespace frx { namespace gui {
 namespace sdc = sambag::disco::components;
@@ -72,6 +74,10 @@ public:
 	bool connect(fgc::FrxCircuidViewPtr, fgc::FrxNodePtr from, fgc::FrxNodePtr to);
 	//-------------------------------------------------------------------------
 	void handleContextMenuPopup(const sdc::events::MouseEvent &ev);
+	//-------------------------------------------------------------------------
+	void serializeView(std::ostream &os, fgc::FrxCircuidViewPtr view);
+	//-------------------------------------------------------------------------
+	static fgc::FrxCircuidViewPtr deserializeView(std::istream &is);
 }; // FrxControl
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------

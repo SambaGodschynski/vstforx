@@ -18,6 +18,11 @@
 #include <string>
 #include "FrxSelection.hpp"
 #include <gui/IViewModelMap.hpp>
+#include <boost/serialization/access.hpp>
+#include <boost/serialization/list.hpp> 
+#include <boost/serialization/utility.hpp>
+#include <boost/serialization/shared_ptr.hpp>
+#include <boost/serialization/weak_ptr.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace sc = sambag::com;
@@ -39,6 +44,8 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<FrxCircuidView> Ptr;
 	//-------------------------------------------------------------------------
+	typedef boost::weak_ptr<FrxCircuidView> WPtr;
+	//-------------------------------------------------------------------------
 	virtual sdcu::AComponentUIPtr createComponentUI(sdcu::ALookAndFeelPtr laf) const;
 	//-------------------------------------------------------------------------
 	static const std::string PROPERTY_ZORDER;
@@ -56,6 +63,8 @@ public:
 	static const float Z_Default;
 	//-------------------------------------------------------------------------
 	static const float Z_InteractiveStuff;
+	//-------------------------------------------------------------------------
+	typedef std::pair<FrxComponentPtr, ZOrder> FrxComponentInfo;
 protected:
 	//-------------------------------------------------------------------------
 	sdc::Panel::Ptr content;
@@ -66,6 +75,49 @@ protected:
 	//-------------------------------------------------------------------------
 	virtual void postConstructor();
 private:
+	///////////////////////////////////////////////////////////////////////////
+	// Archive:
+	//-------------------------------------------------------------------------
+	friend class boost::serialization::access;
+	//-------------------------------------------------------------------------
+	WPtr tmpSelf;
+	//-------------------------------------------------------------------------
+	/**
+     * we can't serialize "self" directly because it is a AComponent member,
+	 * so we need this "trick".
+	 */
+	template <typename Archive> 
+	void serializeSelfPtr(Archive &ar, const unsigned int version) {
+		if (Archive::is_saving::value) {
+			tmpSelf = boost::shared_dynamic_cast<FrxCircuidView>(self.lock());
+		}
+		ar & tmpSelf;
+		if (Archive::is_loading::value) {
+			self = tmpSelf;
+			postConstructor();
+		}
+	}
+	//-------------------------------------------------------------------------
+	template <typename Archive> 
+	void serializeComponents(Archive &ar, const unsigned int version) {
+		std::list<FrxComponentInfo> l;
+		if (Archive::is_saving::value) {
+			collectFrxComponentInfo(l);
+		}
+		ar & l;
+		if (Archive::is_loading::value) {
+			BOOST_FOREACH(const FrxComponentInfo &i, l) {
+				add(i.first, i.second);
+			}
+		}
+		l.clear();
+	}
+	//-------------------------------------------------------------------------
+	template <typename Archive> 
+	void serialize(Archive &ar, const unsigned int version) {
+		serializeSelfPtr(ar, version);
+		serializeComponents(ar, version);
+	}
 public:
 	//-------------------------------------------------------------------------
 	void message(const std::string &str);
@@ -88,6 +140,12 @@ public:
 	FrxSelection::Ptr getSelection() const { return selection; }
 	//-------------------------------------------------------------------------
 	SAMBAG_STD_STATIC_COMPONENT_CREATOR(FrxCircuidView)
+	//-------------------------------------------------------------------------
+	/**
+	 * collects all FrxComponent objects with zorder info.
+	 */ 
+	template <class FrxComponentInfoContainer>
+	void collectFrxComponentInfo(FrxComponentInfoContainer &out) const;
 	//-------------------------------------------------------------------------
 	/**
 	 * fills (stl-)container with components which passes a filter.
@@ -172,6 +230,19 @@ void FrxCircuidView::findComponentsInArea(Container &container,
 	ZOrder end = std::max(_start, _end);
 	findComponents(container, Filter(area, start, end));
 }
+//-----------------------------------------------------------------------------
+template <class FrxComponentInfoContainer>
+void FrxCircuidView::collectFrxComponentInfo(FrxComponentInfoContainer &out) const 
+{
+	BOOST_FOREACH(AComponent::Ptr c, getContentPane()->getComponents()) {
+		FrxComponentPtr frxC = 
+			boost::shared_dynamic_cast<FrxComponent>(c);
+		if (!frxC)
+			continue;
+		ZOrder z = Z_Default;
+		frxC->getClientProperty(PROPERTY_ZORDER, z);
+		out.push_back(FrxComponentInfo(frxC, z));
+	}
+}
 }}} // namespace(s)
-
 #endif /* SAMBAG_FRXCIRCUIDVIEW_H */

@@ -31,6 +31,15 @@ protected:
 	//-------------------------------------------------------------------------
 	FrxNode();
 private:
+	///////////////////////////////////////////////////////////////////////////
+	// Archive:
+	//-------------------------------------------------------------------------
+	friend class boost::serialization::access;
+	//-------------------------------------------------------------------------
+	template <typename Archive> 
+	void serialize(Archive &ar, const unsigned int version) { 
+		ar & boost::serialization::base_object<Super>(*this); 
+	} 
 public:
 	//-------------------------------------------------------------------------
 	SAMBAG_STD_STATIC_COMPONENT_CREATOR(FrxNode)

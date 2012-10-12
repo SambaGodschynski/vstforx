@@ -44,6 +44,15 @@ protected:
 		ControllerType::init( getPtr() );
 	}
 private:
+	///////////////////////////////////////////////////////////////////////////
+	// Archive:
+	//-------------------------------------------------------------------------
+	friend class boost::serialization::access;
+	//-------------------------------------------------------------------------
+	template <typename Archive> 
+	void serialize(Archive &ar, const unsigned int version) { 
+		ar & boost::serialization::base_object<Super>(*this); 
+	} 
 	//-------------------------------------------------------------------------
 	typedef FrxConcreteParameter<ControllerType> ThisClass;
 public:

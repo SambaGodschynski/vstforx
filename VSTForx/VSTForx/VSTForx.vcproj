@@ -449,6 +449,14 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\src\gui\components\FrxSerializationRegister.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxSerializationRegister.hpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\gui\components\VstForxEditor.cpp"
 						>
 					</File>
@@ -623,6 +631,14 @@
 				</File>
 				<File
 					RelativePath="..\..\src\processing\ModelObject.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\NodeConnection.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\NodeConnection.hpp"
 					>
 				</File>
 				<File

@@ -37,6 +37,15 @@ private:
 	Connection srcConnection, dstConnection;
 	//-------------------------------------------------------------------------
 	Connection connect(FrxComponent::Ptr c);
+	///////////////////////////////////////////////////////////////////////////
+	// Archive:
+	//-------------------------------------------------------------------------
+	friend class boost::serialization::access;
+	//-------------------------------------------------------------------------
+	template <typename Archive> 
+	void serialize(Archive &ar, const unsigned int version) { 
+		ar & boost::serialization::base_object<Super>(*this); 
+	} 
 protected:
 	//-------------------------------------------------------------------------
 	void onComponentsPropertyChanged(void*, const sce::PropertyChanged &ev);
