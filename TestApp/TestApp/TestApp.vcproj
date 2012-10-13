@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\\vstgui.sf\vstgui&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\build-cairo-1.10.2\cairo\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\loki\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\\vstgui.sf\vstgui&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\loki\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRTDBG_MAP_ALLOC;_FORX_TESTSUITE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,9 +61,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cppunitd.lib libcairo.lib pixman-1.lib libpng.lib"
+				AdditionalDependencies="cppunitd.lib cairo-static.lib pixman-1.lib libpng.lib zlib.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\build-cairo-1.10.2\cairo\msvcProject\Release&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\build-cairo-1.10.2\libpng\projects\visualc71\Win32_LIB_Release&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\build-cairo-1.10.2\pixman\pixman\release&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\zlib\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\pixman\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\libpng\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -117,7 +117,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\\vstgui.sf\vstgui&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\build-cairo-1.10.2\cairo\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\loki\include&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\\vstgui.sf\vstgui&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\loki\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_FORX_TESTSUITE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -136,9 +136,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib cppunitd.lib libcairo.lib pixman-1.lib libpng.lib"
+				AdditionalDependencies="cppunitd.lib cairo-static.lib pixman-1.lib libpng.lib zlib.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\build-cairo-1.10.2\cairo\msvcProject\Release&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\build-cairo-1.10.2\libpng\projects\visualc71\Win32_LIB_Release&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\build-cairo-1.10.2\pixman\pixman\release&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\zlib\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\pixman\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\libpng\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
