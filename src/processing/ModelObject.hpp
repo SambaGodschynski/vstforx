@@ -12,6 +12,7 @@
 #include <boost/weak_ptr.hpp>
 #include <boost/function.hpp>
 #include <boost/signals2.hpp>
+#include <boost/serialization/access.hpp>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -52,6 +53,15 @@ public:
 protected:
 	//-------------------------------------------------------------------------
 	Signal signal;
+private:
+	///////////////////////////////////////////////////////////////////////////
+	// Archive:
+	//-------------------------------------------------------------------------
+	friend class boost::serialization::access;
+	//-------------------------------------------------------------------------
+	template <typename Archive> 
+	void serialize(Archive &ar, const unsigned int version) {
+	}
 public:
 	//-------------------------------------------------------------------------
 	virtual Connection addRemoveRequestExecuter(const RequestRemoveFunction& f)

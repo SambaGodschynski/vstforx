@@ -9,6 +9,7 @@
 #define SAMBAG_VIEWOBJECT_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/serialization/access.hpp>
 
 namespace frx { namespace gui {
 //=============================================================================
@@ -22,6 +23,14 @@ public:
 	typedef boost::shared_ptr<ViewObject> Ptr;
 protected:
 private:
+	///////////////////////////////////////////////////////////////////////////
+	// Archive:
+	//-------------------------------------------------------------------------
+	friend class boost::serialization::access;
+	//-------------------------------------------------------------------------
+	template <typename Archive> 
+	void serialize(Archive &ar, const unsigned int version) {
+	}
 public:
 	//-------------------------------------------------------------------------
 	virtual ~ViewObject() {}

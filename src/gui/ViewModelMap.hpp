@@ -11,6 +11,13 @@
 #include <boost/shared_ptr.hpp>
 #include "IViewModelMap.hpp"
 #include <boost/bimap.hpp> 
+#include <iostream>
+#include <list>
+#include <boost/serialization/list.hpp> 
+#include <boost/serialization/shared_ptr.hpp>
+#include <boost/serialization/weak_ptr.hpp>
+#include <boost/foreach.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 
 namespace frx { namespace gui {
 //=============================================================================
@@ -26,6 +33,13 @@ protected:
 	//-------------------------------------------------------------------------
 	ViewModelMap();
 private:
+	//-------------------------------------------------------------------------
+	/**
+	 * place where model objects are when map is locked.
+	 */ 
+	typedef std::list<frx::processing::ModelObject::Ptr> ModelRestroom;
+	//-------------------------------------------------------------------------
+	ModelRestroom modelRestroom;
 	//-------------------------------------------------------------------------
 	/**
      * throws if closed.
@@ -66,12 +80,53 @@ public:
 	 * are persisted and the editor is closed. 
 	 * @return true if map is closed.
 	 */
-	virtual bool isClosed() const;
+	virtual bool isLocked() const;
 	//-------------------------------------------------------------------------
 	/**
 	 * @return number of registered relations
 	 */
 	size_t getSize() const;
+	//-------------------------------------------------------------------------
+	/**
+	 * serializes ViewModels intro archive and locks map.
+	 */
+	template <class Archive>
+	void lock(Archive &ar) {
+		std::list<ViewObject::Ptr> l;
+		BOOST_FOREACH(const Map::left_map::value_type &v, map.left) {
+			l.push_back(v.first);
+			modelRestroom.push_back(v.second);
+		}
+		ar & l;
+		map.clear();
+		closed = true;
+	}
+	//-------------------------------------------------------------------------
+	/**
+	 * deserializes ViewModels from archive and unlocks map.
+	 */
+	template <class Archive>
+	void unlock(Archive &ar) {
+		typedef std::list<ViewObject::Ptr> ViewList;
+		ViewList l;
+		ar>>l;
+		if (l.size() != modelRestroom.size()) {
+			SAMBAG_THROW(
+				sambag::com::exceptions::IllegalStateException,
+				"map unlock failed."
+			);
+		}
+		ViewList::const_iterator vit = l.begin();
+		ModelRestroom::const_iterator mit = modelRestroom.begin();
+		while(vit!=l.end()) {
+			map.insert(Map::value_type(*vit, *mit));
+			++vit;
+			++mit;
+		}
+		closed = false;
+	}
+	//-------------------------------------------------------------------------
+
 }; // ModelMap
 }} // namespace(s)
 

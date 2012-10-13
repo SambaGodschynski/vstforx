@@ -58,7 +58,7 @@ public:
 	 * are persisted and the editor is closed. 
 	 * @return true if map is closed.
 	 */
-	virtual bool isClosed() const = 0;
+	virtual bool isLocked() const = 0;
 	//-------------------------------------------------------------------------
 	/**
 	 * @return number of registered relations

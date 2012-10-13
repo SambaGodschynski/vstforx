@@ -6,7 +6,6 @@
  */
 
 #include "ViewModelMap.hpp"
-#include <sambag/com/exceptions/IllegalStateException.hpp>
 
 namespace frx { namespace gui {
 //=============================================================================
@@ -21,7 +20,7 @@ ViewModelMap::ViewModelMap() : closed(false) {
 }
 //-------------------------------------------------------------------------
 void ViewModelMap::checkState() {
-	if (!isClosed())
+	if (!isLocked())
 		return;
 	SAMBAG_THROW(
 		sambag::com::exceptions::IllegalStateException,
@@ -74,11 +73,13 @@ void ViewModelMap::remove(ViewObject::Ptr vobj,
 	}
 }
 //-----------------------------------------------------------------------------
-bool ViewModelMap::isClosed() const {
+bool ViewModelMap::isLocked() const {
 	return closed;
 }
 //-----------------------------------------------------------------------------
 size_t ViewModelMap::getSize() const {
+	if (isLocked())
+		return modelRestroom.size();
 	return map.size();
 }
 }} // namespace(s)
