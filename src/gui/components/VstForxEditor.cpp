@@ -1,4 +1,5 @@
 
+#include "FrxSerializationRegister.hpp"
 #include "VstForxEditor.hpp"
 #include <sambag/disco/components/WindowToolkit.hpp>
 #include <sambag/com/ArbitraryType.hpp>
@@ -10,9 +11,12 @@
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
-#include <gui/FrxControl.hpp>
+#include <gui/IFrxControl.hpp>
 #include <OS_Specific/OS_com.h>
 #include <sstream>
+#include <com/Serialization.h>
+#include <gui/FrxControl.hpp>
+
 extern void* hInstance;
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -60,9 +64,8 @@ void VstForxEditor::initEntryExit(FrxCircuidViewPtr circ) {
 	exit->setLocation(xLoc, yLoc);
 }
 //-----------------------------------------------------------------------------
-FrxCircuidViewPtr VstForxEditor::createEmptyView(sdc::Window::Ptr win) {
+FrxCircuidViewPtr VstForxEditor::createEmptyView() {
 	FrxCircuidView::Ptr circ = FrxCircuidView::create();
-	win->getContentPane()->add(circ);
 	return circ;
 }
 //-----------------------------------------------------------------------------
@@ -81,6 +84,62 @@ sdc::Window::Ptr VstForxEditor::createMainWindow(const sd::Rectangle &bounds) {
 	return win;
 }
 //-----------------------------------------------------------------------------
+void VstForxEditor::serializeView(std::ostream &os, FrxCircuidView::Ptr view) {
+	try {
+		::com::oArchive ar(os);
+		RegisterFrxTypes::register_types(ar);
+		getPlugin()->getViewModelMap()->lock(ar);
+		FrxControl::serializeView(ar, view);
+	} catch(const std::exception &ex) {
+		SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			std::string("serialization of view failed: ") + ex.what()
+		);
+	} catch(...) {
+		SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"serialization of view failed."
+		);
+	}
+}
+//-----------------------------------------------------------------------------
+FrxCircuidView::Ptr VstForxEditor::deserializeView(std::istream &is) {
+	FrxCircuidView::Ptr view;
+	try {
+		::com::iArchive ar(is);
+		RegisterFrxTypes::register_types(ar);
+		getPlugin()->getViewModelMap()->unlock(ar);
+		view = FrxControl::deserializeView(ar);
+	} catch(const std::exception &ex) {
+		SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			std::string("deserialization of view failed: ") + ex.what()
+		);
+	} catch(...) {
+		SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"deserialization of view failed."
+		);
+	}
+	return view;
+}
+//-----------------------------------------------------------------------------
+FrxCircuidViewPtr VstForxEditor::createView(sdc::Window::Ptr win) {
+	FrxCircuidView::Ptr circ;
+	if (bedroom.str().length()==0) {
+		circ = createEmptyView();
+		win->getContentPane()->add(circ);
+		getPlugin()->registerView(circ);
+		initEntryExit(circ);
+	} else {
+		circ = deserializeView(bedroom);
+		win->getContentPane()->add(circ);
+		getPlugin()->registerView(circ);
+	}
+	
+	return circ;
+}
+//-----------------------------------------------------------------------------
 bool VstForxEditor::open( void *ptr ) {
 	using namespace sambag::com;
 	using namespace sambag::disco;
@@ -90,9 +149,7 @@ bool VstForxEditor::open( void *ptr ) {
 	);
 	window = createMainWindow(bounds);
 	try {
-		circView = createEmptyView(window);
-		getPlugin()->registerView(circView);
-		initEntryExit(circView);
+		circView = createView(window);
 	} catch (const std::exception &ex) {
 		std::stringstream ss;
 		ss<<"Could'nt create main view: "<<ex.what();
@@ -111,6 +168,17 @@ bool VstForxEditor::open( void *ptr ) {
 //-----------------------------------------------------------------------------
 void VstForxEditor::close() {
 	AEffEditor::close();
+	try {
+		serializeView(bedroom, circView);
+	} catch (const std::exception &ex) {
+		std::stringstream ss;
+		ss<<"closing main view failed: "<<ex.what();
+		::com::MessageBox("Error", ss.str(), ::com::MSG_ALERT);
+	} catch (...) {
+		std::stringstream ss;
+		ss<<"closing main view failed: unkown error.";
+		::com::MessageBox("Error", ss.str(), ::com::MSG_ALERT);
+	}
 	getPlugin()->unRegisterView(circView);
 }
 //-----------------------------------------------------------------------------
@@ -120,11 +188,8 @@ bool VstForxEditor::getRect (ERect** rect) {
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::idle() {
-/*	if (!window)
-		return;
-	window->invalidateWindow();*/
+//	if (!window)
+//		return;
+//	window->invalidateWindow();
 }
 }}} // namespace(s)
-
-
-

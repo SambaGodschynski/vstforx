@@ -22,33 +22,33 @@
 #include "FrxHover.hpp"
 
 namespace frx { namespace gui { namespace components {
-
-template <class Archive>
-void register_types( Archive &ar ){
-	ar.template register_type<IOCn>();
-	ar.template register_type<ProcessorInputCn>();
-	ar.template register_type<ProcessorOutputCn>();
-	ar.template register_type<ProcessorParameterCn>();
-	ar.template register_type<ParameterCn>();
-	ar.template register_type<ParameterOPCn>();
-	ar.template register_type<FrxPluginNode>();
-	ar.template register_type<FrxVolumeNode>();
-	ar.template register_type<FrxPanNode>();
-	ar.template register_type<FrxInStepNode>();
-	ar.template register_type<FrxOutStepNode>();
-	ar.template register_type<FrxInSwitchNode>();
-	ar.template register_type<FrxOutSwitchNode>();
-	ar.template register_type<FrxADSRNode>();
-	ar.template register_type<FrxPeakTrackerNode>();
-	ar.template register_type<FrxInputNode>();
-	ar.template register_type<FrxOutputNode>();
-	ar.template register_type<FrxEntryNode>();
-	ar.template register_type<FrxExitNode>();
-	ar.template register_type<FrxStdKnob>();
-	ar.template register_type<FrxSelection>();
-	ar.template register_type<FrxHover>();
-}
-
+struct RegisterFrxTypes {
+	template <class Archive>
+	static void register_types( Archive &ar ) {
+		ar.template register_type<IOCn>();
+		ar.template register_type<ProcessorInputCn>();
+		ar.template register_type<ProcessorOutputCn>();
+		ar.template register_type<ProcessorParameterCn>();
+		ar.template register_type<ParameterCn>();
+		ar.template register_type<ParameterOPCn>();
+		ar.template register_type<FrxPluginNode>();
+		ar.template register_type<FrxVolumeNode>();
+		ar.template register_type<FrxPanNode>();
+		ar.template register_type<FrxInStepNode>();
+		ar.template register_type<FrxOutStepNode>();
+		ar.template register_type<FrxInSwitchNode>();
+		ar.template register_type<FrxOutSwitchNode>();
+		ar.template register_type<FrxADSRNode>();
+		ar.template register_type<FrxPeakTrackerNode>();
+		ar.template register_type<FrxInputNode>();
+		ar.template register_type<FrxOutputNode>();
+		ar.template register_type<FrxEntryNode>();
+		ar.template register_type<FrxExitNode>();
+		ar.template register_type<FrxStdKnob>();
+		ar.template register_type<FrxSelection>();
+		ar.template register_type<FrxHover>();
+	}
+};
 }}} // namespace(s)
 
 #endif /* SAMBAG_FRXSERIALIZATIONREGISTER_H */

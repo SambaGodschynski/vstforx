@@ -7,7 +7,7 @@
 
 #include "FrxCircuidView.hpp"
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
-#include <gui/FrxControl.hpp>
+#include <gui/IFrxControl.hpp>
 #include "FrxComponent.hpp"
 #include <list>
 namespace frx { namespace gui { namespace components {

@@ -39,7 +39,7 @@ private:
 	 */ 
 	typedef std::list<frx::processing::ModelObject::Ptr> ModelRestroom;
 	//-------------------------------------------------------------------------
-	ModelRestroom modelRestroom;
+	ModelRestroom bedroom;
 	//-------------------------------------------------------------------------
 	/**
      * throws if closed.
@@ -95,7 +95,7 @@ public:
 		std::list<ViewObject::Ptr> l;
 		BOOST_FOREACH(const Map::left_map::value_type &v, map.left) {
 			l.push_back(v.first);
-			modelRestroom.push_back(v.second);
+			bedroom.push_back(v.second);
 		}
 		ar & l;
 		map.clear();
@@ -110,20 +110,21 @@ public:
 		typedef std::list<ViewObject::Ptr> ViewList;
 		ViewList l;
 		ar>>l;
-		if (l.size() != modelRestroom.size()) {
+		if (l.size() != bedroom.size()) {
 			SAMBAG_THROW(
 				sambag::com::exceptions::IllegalStateException,
 				"map unlock failed."
 			);
 		}
 		ViewList::const_iterator vit = l.begin();
-		ModelRestroom::const_iterator mit = modelRestroom.begin();
+		ModelRestroom::const_iterator mit = bedroom.begin();
 		while(vit!=l.end()) {
 			map.insert(Map::value_type(*vit, *mit));
 			++vit;
 			++mit;
 		}
 		closed = false;
+		bedroom.clear();
 	}
 	//-------------------------------------------------------------------------
 

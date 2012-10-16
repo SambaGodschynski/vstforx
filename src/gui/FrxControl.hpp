@@ -8,39 +8,22 @@
 #ifndef SAMBAG_FRXCONTROL_H
 #define SAMBAG_FRXCONTROL_H
 
-#include <sambag/disco/components/Forward.hpp>
-#include <sambag/disco/components/events/ActionEvent.hpp>
-#include <sambag/disco/components/events/MouseEvent.hpp>
-#include <loki/Singleton.h>
-#include "components/Forward.hpp"
-#include <list>
-#include <string>
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <istream>
-#include <ostream>
+#include "IFrxControl.hpp"
+#include "components/FrxCircuidView.hpp"
 
 namespace frx { namespace gui {
 namespace sdc = sambag::disco::components;
 namespace sdcu = sdc::ui;
 namespace fgc = frx::gui::components;
+namespace gc = gui::components;
 //=============================================================================
 /** 
   * @class FrxControl.
   */
-class FrxControl {
+class FrxControl : public IFrxControl {
 //=============================================================================
 friend struct Loki::CreateUsingNew<FrxControl>;
 public:
-	//-------------------------------------------------------------------------
-	typedef boost::function<void()> CtrlFunc;
-	//-------------------------------------------------------------------------
-	typedef std::pair<std::string, CtrlFunc> Entry;
-	//-------------------------------------------------------------------------
-	typedef std::list<Entry> Entries;
-	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<void> AnyWPtr;
 protected:
 	//-------------------------------------------------------------------------
 	/**
@@ -55,6 +38,12 @@ protected:
 	//-------------------------------------------------------------------------
 	sdc::PopupMenuPtr currPopup;
 public:
+	//-------------------------------------------------------------------------
+	template <class Archive>
+	static void serializeView(Archive &ar, gc::FrxCircuidViewPtr c);
+	//-------------------------------------------------------------------------
+	template <class Archive>
+	static gc::FrxCircuidViewPtr deserializeView(Archive &ar);
 	//-------------------------------------------------------------------------
 	/**
 	 * @return tuple(entry, exit)
@@ -75,13 +64,23 @@ public:
 	//-------------------------------------------------------------------------
 	void handleContextMenuPopup(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
-	void serializeView(std::ostream &os, fgc::FrxCircuidViewPtr view);
-	//-------------------------------------------------------------------------
-	static fgc::FrxCircuidViewPtr deserializeView(std::istream &is);
+	virtual void finalizeDeserialization(fgc::FrxComponentPtr c);
 }; // FrxControl
-///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////	
 //-----------------------------------------------------------------------------
-extern FrxControl & getFrxControl(fgc::FrxCircuidViewPtr view);
+template <class Archive>
+void FrxControl::serializeView(Archive &ar, gc::FrxCircuidViewPtr c) 
+{
+	ar & c;
+}
+//-----------------------------------------------------------------------------
+template <class Archive>
+gc::FrxCircuidViewPtr FrxControl::deserializeView(Archive &ar) 
+{
+	gc::FrxCircuidViewPtr res;
+	ar & res;
+	return res;
+}
 }} // namespace(s)
 
 #endif /* SAMBAG_FRXCONTROL_H */

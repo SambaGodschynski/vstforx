@@ -71,10 +71,14 @@ private:
 		if (Archive::is_saving::value) {
 			tmpSelf = boost::shared_dynamic_cast<FrxComponent>(self.lock());
 		}
+		ar & boost::serialization::base_object<ViewObject>(*this); 
 		ar & tmpSelf;
+		std::string name = getName();
+		ar & name;
 		if (Archive::is_loading::value) {
 			self = tmpSelf;
 			postConstructor();
+			setName(name);
 		}
 	}
 	//-------------------------------------------------------------------------

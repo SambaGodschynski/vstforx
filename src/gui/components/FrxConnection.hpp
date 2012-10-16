@@ -44,7 +44,15 @@ private:
 	//-------------------------------------------------------------------------
 	template <typename Archive> 
 	void serialize(Archive &ar, const unsigned int version) { 
-		ar & boost::serialization::base_object<Super>(*this); 
+		ar & boost::serialization::base_object<Super>(*this);
+		ar & src;
+		ar & dst;
+		if (Archive::is_loading::value) {
+			installComponentListeners(src);
+			installComponentListeners(dst);
+			connect(src);
+			connect(dst);
+		}
 	} 
 protected:
 	//-------------------------------------------------------------------------
@@ -60,6 +68,8 @@ protected:
 private:
 	//-------------------------------------------------------------------------
 	void installComponentListeners(FrxComponent::Ptr c);
+	//-------------------------------------------------------------------------
+	void installListeners();
 public:
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {

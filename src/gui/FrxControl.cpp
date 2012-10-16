@@ -366,25 +366,11 @@ FrxControl::createEntryExtitNodes(fgc::FrxCircuidViewPtr circ)
 
 }
 //-----------------------------------------------------------------------------
-void FrxControl::serializeView(std::ostream &os, 
-	fgc::FrxCircuidViewPtr view) 
-{
-	boost::archive::text_oarchive ar(os);
-	components::register_types(ar);
-	ar<<view;
-}
-//-----------------------------------------------------------------------------
-fgc::FrxCircuidViewPtr FrxControl::deserializeView(std::istream &is)
-{
-	fgc::FrxCircuidView::Ptr view;
-	boost::archive::text_iarchive ar(is);
-	components::register_types(ar);
-	ar>>view;
-	return view;
+void FrxControl::finalizeDeserialization(fgc::FrxComponentPtr c) {
 }
 //=============================================================================
 //-----------------------------------------------------------------------------
-FrxControl & getFrxControl(FrxCircuidViewPtr view) {
+IFrxControl & getFrxControl(FrxCircuidViewPtr view) {
 	typedef Loki::SingletonHolder<FrxControl> FactoryHolder;
 	return FactoryHolder::Instance();
 }

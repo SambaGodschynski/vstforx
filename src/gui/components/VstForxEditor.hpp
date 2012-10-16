@@ -7,6 +7,8 @@
 #include <processing/VstForxPlug.hpp>
 #include <sambag/disco/components/Window.hpp>
 #include "gui/components/Forward.hpp"
+#include <iostream>
+#include <sstream>
 
 namespace frx { namespace gui { namespace components {
 namespace sd = sambag::disco;
@@ -39,9 +41,14 @@ private:
 	//-------------------------------------------------------------------------
 	sdc::Window::Ptr createMainWindow(const sd::Rectangle &bounds);
 	//-------------------------------------------------------------------------
-	FrxCircuidViewPtr createEmptyView(sdc::Window::Ptr win);
+	FrxCircuidViewPtr createEmptyView();
 	//-------------------------------------------------------------------------
+	/**
+	 * assumes that view is added to window yet.
+	 */
 	void initEntryExit(FrxCircuidViewPtr view);
+	//-------------------------------------------------------------------------
+	std::stringstream bedroom;
 protected:
 	//-------------------------------------------------------------------------
 	virtual bool open (void *ptr);
@@ -49,6 +56,12 @@ protected:
 	virtual void close ();
 	//-------------------------------------------------------------------------
 	frx::processing::VstForxPlug *plug;
+	//-------------------------------------------------------------------------
+	void serializeView(std::ostream &os, FrxCircuidViewPtr view);
+	//-------------------------------------------------------------------------
+	FrxCircuidViewPtr deserializeView(std::istream &is);
+	//-------------------------------------------------------------------------
+	FrxCircuidViewPtr createView(sdc::Window::Ptr win);
 public:
 	//-------------------------------------------------------------------------
 	void setPlugin(frx::processing::VstForxPlug *aEff);

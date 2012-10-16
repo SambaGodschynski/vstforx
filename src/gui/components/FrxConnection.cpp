@@ -16,6 +16,10 @@ namespace frx { namespace gui { namespace components {
 //-----------------------------------------------------------------------------
 FrxConnection::FrxConnection() {
 	setName("FrxConnection");
+	installListeners();
+}
+//-----------------------------------------------------------------------------
+void FrxConnection::installListeners() {
 	EventSender<sce::PropertyChanged>::addEventListener(
 		boost::bind(&FrxConnection::onPropertyChanged, this, _1, _2)
 	);

@@ -16,7 +16,7 @@
 #include <sambag/disco/components/events/MouseEvent.hpp>
 #include <sambag/math/VectorNCreator.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
-#include <gui/FrxControl.hpp>
+#include <gui/IFrxControl.hpp>
 #include <sambag/disco/svg/graphicElements/Style.hpp>
 
 namespace frx { namespace gui {

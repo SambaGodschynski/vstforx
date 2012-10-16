@@ -10,7 +10,7 @@
 #include <gui/components/FrxComponent.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/components/FrxSelection.hpp>
-#include <gui/FrxControl.hpp>
+#include <gui/IFrxControl.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <sambag/disco/svg/units/Units.hpp>
 #include <sambag/disco/Dash.hpp>

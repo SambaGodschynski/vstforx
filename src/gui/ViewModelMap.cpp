@@ -79,7 +79,7 @@ bool ViewModelMap::isLocked() const {
 //-----------------------------------------------------------------------------
 size_t ViewModelMap::getSize() const {
 	if (isLocked())
-		return modelRestroom.size();
+		return bedroom.size();
 	return map.size();
 }
 }} // namespace(s)

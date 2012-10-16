@@ -23,6 +23,7 @@
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/weak_ptr.hpp>
+#include <gui/IFrxControl.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace sc = sambag::com;
@@ -100,6 +101,7 @@ private:
 	//-------------------------------------------------------------------------
 	template <typename Archive> 
 	void serializeComponents(Archive &ar, const unsigned int version) {
+		SAMBAG_ASSERT(getPtr());
 		std::list<FrxComponentInfo> l;
 		if (Archive::is_saving::value) {
 			collectFrxComponentInfo(l);
@@ -108,6 +110,7 @@ private:
 		if (Archive::is_loading::value) {
 			BOOST_FOREACH(const FrxComponentInfo &i, l) {
 				add(i.first, i.second);
+				getFrxControl(getPtr()).finalizeDeserialization(i.first);
 			}
 		}
 		l.clear();

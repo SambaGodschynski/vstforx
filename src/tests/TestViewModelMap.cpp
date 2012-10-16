@@ -100,32 +100,34 @@ void TestViewModelMap::testHibernate() {
 	CPPUNIT_ASSERT_EQUAL((size_t)4, map->getSize());
 	// serialize
 	std::stringstream ss;
-	{
-		boost::archive::text_oarchive ar(ss);
-		ar.register_type<TestViewObject>();
-		ar & v1 & v2 & v3 & v4;
-		map->lock(ar);
-		CPPUNIT_ASSERT(map->isLocked());
-		CPPUNIT_ASSERT_EQUAL((size_t)4, map->getSize());
-		v1 = v2 = v3 = v4 = TestViewObject::Ptr();
-		CPPUNIT_ASSERT(!v1 && !v2 && !v3 && !v4);
-	}
-	{
-		boost::archive::text_iarchive ar(ss);
-		ar.register_type<TestViewObject>();
-		ar & v1 & v2 & v3 & v4;
-		CPPUNIT_ASSERT(v1 && v2 && v3 && v4);
-		CPPUNIT_ASSERT((v1->id < v2->id) && (v2->id < v3->id) && (v3->id < v4->id));
-		map->unlock(ar);
-		CPPUNIT_ASSERT(!map->isLocked());
-		CPPUNIT_ASSERT(m1 == map->getModelObject(v1));
-		CPPUNIT_ASSERT(m2 == map->getModelObject(v2));
-		CPPUNIT_ASSERT(m3 == map->getModelObject(v3));
-		CPPUNIT_ASSERT(m4 == map->getModelObject(v4));
-		CPPUNIT_ASSERT(v1 == map->getViewObject(m1));
-		CPPUNIT_ASSERT(v2 == map->getViewObject(m2));
-		CPPUNIT_ASSERT(v3 == map->getViewObject(m3));
-		CPPUNIT_ASSERT(v4 == map->getViewObject(m4));
+	for (int i=0; i<3; ++i) { // bug: crash after lock/unlock twice
+		{
+			boost::archive::text_oarchive ar(ss);
+			ar.register_type<TestViewObject>();
+			ar & v1 & v2 & v3 & v4;
+			map->lock(ar);
+			CPPUNIT_ASSERT(map->isLocked());
+			CPPUNIT_ASSERT_EQUAL((size_t)4, map->getSize());
+			v1 = v2 = v3 = v4 = TestViewObject::Ptr();
+			CPPUNIT_ASSERT(!v1 && !v2 && !v3 && !v4);
+		}
+		{
+			boost::archive::text_iarchive ar(ss);
+			ar.register_type<TestViewObject>();
+			ar & v1 & v2 & v3 & v4;
+			CPPUNIT_ASSERT(v1 && v2 && v3 && v4);
+			CPPUNIT_ASSERT((v1->id < v2->id) && (v2->id < v3->id) && (v3->id < v4->id));
+			map->unlock(ar);
+			CPPUNIT_ASSERT(!map->isLocked());
+			CPPUNIT_ASSERT(m1 == map->getModelObject(v1));
+			CPPUNIT_ASSERT(m2 == map->getModelObject(v2));
+			CPPUNIT_ASSERT(m3 == map->getModelObject(v3));
+			CPPUNIT_ASSERT(m4 == map->getModelObject(v4));
+			CPPUNIT_ASSERT(v1 == map->getViewObject(m1));
+			CPPUNIT_ASSERT(v2 == map->getViewObject(m2));
+			CPPUNIT_ASSERT(v3 == map->getViewObject(m3));
+			CPPUNIT_ASSERT(v4 == map->getViewObject(m4));
+		}
 	}
 	TestViewObject::Ptr v5 = TestViewObject::create(5);
 	TestModelObject::Ptr m5 = TestModelObject::create(5);

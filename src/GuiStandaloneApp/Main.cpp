@@ -11,6 +11,7 @@
 #include <boost/timer/timer.hpp>
 #include <assert.h>
 #include <gui/components/FrxCircuidView.hpp>
+#include <com/Serialization.h>
 #include <gui/FrxControl.hpp>
 #include <gui/components/FrxConcreteProcessor.hpp>
 #include <gui/components/FrxConcreteConnections.hpp>
@@ -24,6 +25,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <fstream>
+#include <gui/components/FrxSerializationRegister.hpp>
 
 
 #ifdef WIN32
@@ -66,8 +68,10 @@ fgc::FrxCircuidView::Ptr deserializeView(const std::string &file) {
 	}
 	fgc::FrxCircuidView::Ptr view;
 	try {
-		view =
-			fg::FrxControl::deserializeView(f);
+		::com::iArchive ar(f);
+		fgc::RegisterFrxTypes::register_types(ar);
+		view = 
+			fg::FrxControl::deserializeView(ar);
 	} catch(...) {
 		std::cout<<"could'nt deserialize: "<<file<<std::endl;
 		return fgc::FrxCircuidView::Ptr();
@@ -79,7 +83,9 @@ fgc::FrxCircuidView::Ptr deserializeView(const std::string &file) {
 void serializeView(const std::string &file, fgc::FrxCircuidView::Ptr view) {
 	std::fstream f(file.c_str(), std::ios_base::out | std::ios_base::trunc);
 	SAMBAG_ASSERT(!f.fail());
-	fg::getFrxControl(view).serializeView(f, view);
+	::com::oArchive ar(f);
+	fgc::RegisterFrxTypes::register_types(ar);
+	fg::FrxControl::serializeView(ar, view);
 	f.close();
 }
 
