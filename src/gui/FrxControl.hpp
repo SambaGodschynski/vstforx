@@ -26,17 +26,13 @@ friend struct Loki::CreateUsingNew<FrxControl>;
 public:
 protected:
 	//-------------------------------------------------------------------------
-	/**
-	 * called when menu btn action performed.
-	 * @param source ptr
-	 * @param event
-	 * @param command to perform
-	 */
-	void onMenuAction(void *src,
-			const sdc::events::ActionEvent &ev, 
-			const CtrlFunc &cmd);
-	//-------------------------------------------------------------------------
 	sdc::PopupMenuPtr currPopup;
+	//-------------------------------------------------------------------------
+	void executeCtrlCommand(void *src,
+		const sdc::events::ActionEvent &ev,
+		fgc::FrxCircuidViewWPtr v, 
+		fgc::FrxComponentWPtr c, 
+		CtrlCmd cmd);
 public:
 	//-------------------------------------------------------------------------
 	template <class Archive>
@@ -51,20 +47,21 @@ public:
 	boost::tuple<fgc::FrxNodePtr, fgc::FrxNodePtr>
 	createEntryExtitNodes(fgc::FrxCircuidViewPtr c);
 	//-------------------------------------------------------------------------
-	/**
-	 * creates Popupmenu for entries.
-	 * @param anyPtr for signal tracking
-	 * @entries
-	 */
-	sdc::PopupMenuPtr createPopupMenu(AnyWPtr anyPtr, const Entries &e);
-	//-------------------------------------------------------------------------
 	sdc::PopupMenuPtr getCircuidViewPopup(fgc::FrxCircuidViewPtr c);
 	//-------------------------------------------------------------------------
 	bool connect(fgc::FrxCircuidViewPtr, fgc::FrxNodePtr from, fgc::FrxNodePtr to);
 	//-------------------------------------------------------------------------
 	void handleContextMenuPopup(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
-	virtual void finalizeDeserialization(fgc::FrxComponentPtr c);
+	virtual void removeComponent(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c);
+	//-------------------------------------------------------------------------
+	virtual sambag::com::events::EventSender<sdc::events::ActionEvent>::EventFunction
+	createCtrlCommandFunction(fgc::FrxCircuidViewPtr view,
+		fgc::FrxComponentPtr comp,
+		const CtrlCmd &cmdF
+	);
+
 }; // FrxControl
 ///////////////////////////////////////////////////////////////////////////////	
 //-----------------------------------------------------------------------------

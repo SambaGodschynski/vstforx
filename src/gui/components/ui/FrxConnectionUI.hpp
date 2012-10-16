@@ -209,6 +209,7 @@ void FrxConnectionUI<CT>::installListeners(sdc::AComponent::Ptr c) {
 //-----------------------------------------------------------------------------
 template <class CT>
 void FrxConnectionUI<CT>::installDefaults(sdc::AComponent::Ptr c) {
+	Super::installDefaults(c);
 	getStyles<CT>(lineStyle, lineHoverStyle);
 }
 //-----------------------------------------------------------------------------

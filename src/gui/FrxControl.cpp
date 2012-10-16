@@ -27,9 +27,12 @@
 #include <boost/archive/text_oarchive.hpp> 
 #include <boost/archive/text_iarchive.hpp>
 #include "components/FrxSerializationRegister.hpp"
+#include <list>
+#include <string>
 
 namespace frx { namespace gui {
 using namespace components;
+namespace {
 ////////////////////////////////////////////////////////////////////////////////
 boost::tuple<
 	frx::processing::IModelController::Ptr,
@@ -54,29 +57,22 @@ getControllerAndMap(FrxCircuidViewPtr circ)
 ////////////////////////////////////////////////////////////////////////////////
 //  Private executors
 //-----------------------------------------------------------------------------
-namespace {
-template <class ProcessorType>
-void addStdComponentMenuEntries(FrxCircuidViewPtr c, 
-			typename ProcessorType::Ptr obj,
-			FrxControl::Entries &out);
-//-----------------------------------------------------------------------------
-void doNothing(){}
-//-----------------------------------------------------------------------------
 template <class ConcreteProcessor>
 typename ConcreteProcessor::Ptr 
-createProcessor(FrxCircuidViewWPtr c) 
+createProcessor(FrxCircuidViewPtr c) 
 {
 	typename ConcreteProcessor::Ptr res = ConcreteProcessor::create();
 	return res;
 }
 //-----------------------------------------------------------------------------
 template <class ConcreteProcessor>
-void addProcessorToView(FrxCircuidViewWPtr c, int numInputs, int numOutputs) {
-	typename ConcreteProcessor::Ptr viewObj = createProcessor<ConcreteProcessor>(c);
+void addProcessorToView(FrxCircuidViewPtr circ, 
+	FrxComponentPtr alwaysNull, int numInputs, int numOutputs) 
+{
+	typename ConcreteProcessor::Ptr viewObj = createProcessor<ConcreteProcessor>(circ);
 	if (!viewObj) {
 		return;
 	}
-	FrxCircuidViewPtr circ(c);
 	if (!circ) {
 		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
 			"tried to add processor with FrxCircuidViewPtr == NULL");
@@ -94,12 +90,6 @@ void addProcessorToView(FrxCircuidViewWPtr c, int numInputs, int numOutputs) {
 	viewObj->configIO(numInputs, numOutputs);
 	// register
 	map->registerObjects(viewObj, mObj);
-	// create contextmenu
-	FrxControl::Entries entries;
-	addStdComponentMenuEntries<ConcreteProcessor>(circ, viewObj, entries);
-	viewObj->setComponentPopupMenu(
-		getFrxControl(circ).createPopupMenu(viewObj, entries)
-	);
 	// hover
 	FrxHover::Ptr sel = FrxHover::create();
 	circ->add(sel);
@@ -108,12 +98,11 @@ void addProcessorToView(FrxCircuidViewWPtr c, int numInputs, int numOutputs) {
 	sel->addElements(viewObj->getOutputs());
 }
 //-----------------------------------------------------------------------------
-void addFreeKnobToView(FrxCircuidViewWPtr c) {
+void addFreeKnobToView(FrxCircuidViewPtr circ, FrxComponentPtr alwaysNull) {
 	FrxStdKnob::Ptr res = FrxStdKnob::create();
 	if (!res) {
 		return;
 	}
-	FrxCircuidViewPtr circ(c);
 	if (!circ) {
 		SAMBAG_WARN("tried to add knob with FrxCircuidViewPtr == NULL");
 		return;
@@ -124,33 +113,6 @@ void addFreeKnobToView(FrxCircuidViewWPtr c) {
 	FrxHover::Ptr sel = FrxHover::create();
 	circ->add(sel);
 	sel->addElement(res);
-}
-//-----------------------------------------------------------------------------
-void removeComponent(FrxCircuidViewWPtr _view, FrxComponentWPtr _c) {
-	FrxCircuidViewPtr view(_view);
-	FrxComponentPtr c(_c);
-	if (!c || !view)
-		return;
-	// create model obj.
-	frx::processing::IModelController::Ptr ctrl;
-	IViewModelMap::Ptr map;
-	boost::tie(ctrl, map) = getControllerAndMap(view);
-	frx::processing::ModelObject::Ptr mObj = map->getModelObject(c);
-	if (!mObj)
-		return;
-	if (!mObj->requestRemove(mObj))
-		return;
-	FrxProcessorNode::Ptr pr = boost::shared_dynamic_cast<FrxProcessorNode>(c);
-	if (pr) {
-		BOOST_FOREACH(FrxNode::Ptr io, pr->getInputs()) {
-			view->remove(io);
-		}
-		BOOST_FOREACH(FrxNode::Ptr io, pr->getOutputs()) {
-			view->remove(io);
-		}
-	}
-	view->remove(c);
-	view->AContainer::redraw();
 }
 //-----------------------------------------------------------------------------
 template <class ConnectionType>
@@ -178,51 +140,52 @@ bool perfomConnect(FrxCircuidView::Ptr view,
 	cn->setSrcComponent(src);
 	cn->setDstComponent(dst);
 	view->add(cn, FrxCircuidView::Z_Wires);
-	// create contextmenu
-	FrxControl::Entries entries;
-	addStdComponentMenuEntries<ConnectionType>(view, cn , entries);
-	cn->setComponentPopupMenu(
-		getFrxControl(view).createPopupMenu(cn, entries)
-	);
 	map->registerObjects(cn, mcnt);
 	return true;
 }
 ////////////////////////////////////////////////////////////////////////////////
 // Menu Entries
 //-----------------------------------------------------------------------------
-template <class FrxComponentType>
-void addStdComponentMenuEntries(FrxCircuidViewPtr view, 
-			typename FrxComponentType::Ptr obj,
-			FrxControl::Entries &out)
-{
-	typedef FrxControl::Entry Entry;
-	FrxCircuidViewWPtr _view = view; // always use weakptr for menus !
-	FrxComponentWPtr _obj = obj;
-	out.push_back( Entry("remove " + obj->getName(), 
-		boost::bind(&removeComponent, _view, _obj)));
+typedef std::pair<std::string, IFrxControl::CtrlCmd> Entry;
+//-----------------------------------------------------------------------------
+typedef std::list<Entry> Entries;
+//-----------------------------------------------------------------------------
+void createMainMenuEntries(Entries &out) {
+	out.push_back( Entry("add volume processor",
+		boost::bind(&addProcessorToView<FrxVolumeNode>, _1, _2, 1, 1)));
+	out.push_back( Entry("add pan processor", 
+		boost::bind(&addProcessorToView<FrxPanNode>, _1, _2, 1, 1)));
+	out.push_back( Entry("add instep processor", 
+		boost::bind(&addProcessorToView<FrxInStepNode>, _1, _2, 2, 1)));
+	out.push_back( Entry("add outstep processor", 
+		boost::bind(&addProcessorToView<FrxOutStepNode>, _1, _2, 1, 2)));
+	out.push_back( Entry("add inswitch processor", 
+		boost::bind(&addProcessorToView<FrxInSwitchNode>, _1, _2, 2, 1)));
+	out.push_back( Entry("add outswitch processor",
+		boost::bind(&addProcessorToView<FrxOutSwitchNode>, _1, _2, 1, 2)));
+	out.push_back( Entry("add adsr transformer",
+		boost::bind(&addProcessorToView<FrxADSRNode>, _1, _2, 1, 0)));
+	out.push_back( Entry("add peak tracker", 
+		boost::bind(&addProcessorToView<FrxPeakTrackerNode>, _1, _2, 1, 0)));
+	out.push_back( Entry("add free knob",
+		boost::bind(&addFreeKnobToView, _1, _2)));
 }
 //-----------------------------------------------------------------------------
-void createMainMenuEntries(FrxCircuidViewPtr c, FrxControl::Entries &out) {
-	typedef FrxControl::Entry Entry;
-	FrxCircuidViewWPtr _c = c; // always use weakptr for menus !
-	out.push_back( Entry("add volume processor",
-		boost::bind(&addProcessorToView<FrxVolumeNode>, _c, 1, 1)));
-	out.push_back( Entry("add pan processor", 
-		boost::bind(&addProcessorToView<FrxPanNode>, _c, 1, 1)));
-	out.push_back( Entry("add instep processor", 
-		boost::bind(&addProcessorToView<FrxInStepNode>, _c, 2, 1)));
-	out.push_back( Entry("add outstep processor", 
-		boost::bind(&addProcessorToView<FrxOutStepNode>, _c, 1, 2)));
-	out.push_back( Entry("add inswitch processor", 
-		boost::bind(&addProcessorToView<FrxInSwitchNode>, _c, 2, 1)));
-	out.push_back( Entry("add outswitch processor",
-		boost::bind(&addProcessorToView<FrxOutSwitchNode>, _c, 1, 2)));
-	out.push_back( Entry("add adsr transformer",
-		boost::bind(&addProcessorToView<FrxADSRNode>, _c, 1, 0)));
-	out.push_back( Entry("add peak tracker", 
-		boost::bind(&addProcessorToView<FrxPeakTrackerNode>, _c, 1, 0)));
-	out.push_back( Entry("add free knob",
-		boost::bind(&addFreeKnobToView, _c)));
+sdc::PopupMenuPtr createPopupMenu(FrxCircuidViewPtr view, 
+	const Entries &entries) 
+{
+	using namespace sambag::disco::components;
+	PopupMenuPtr res = PopupMenu::create();
+	BOOST_FOREACH(const Entry &e, entries) {
+		MenuItem::Ptr item = MenuItem::create();
+		item->setText(e.first);
+		item->EventSender<sdc::events::ActionEvent>::addTrackedEventListener(
+			getFrxControl(view).createCtrlCommandFunction(view, fgc::FrxComponentPtr(), e.second),
+			view
+		);
+		res->add(item);
+	}
+	return res;
 }
 //=============================================================================
 // class Connector
@@ -253,44 +216,37 @@ struct Connector {
 //  Class FrxControl
 //=============================================================================
 //-----------------------------------------------------------------------------
-void FrxControl::onMenuAction(void *src,
-				  const sdc::events::ActionEvent &ev, 
-				  const CtrlFunc &cmd)
+void FrxControl::removeComponent(FrxCircuidViewPtr _view, FrxComponentPtr _c)
 {
-	try {
-		cmd();
-	} catch (const sambag::com::Exception &ex) {
-		// TODO:
-		// view->errorMessage(...);
-	} catch (const std::exception &ex) {
-		// TODO:
-		// view->errorMessage(...);
-	} catch (...) {
-		// TODO:
-		// view->errorMessage(...);
+	FrxCircuidViewPtr view(_view);
+	FrxComponentPtr c(_c);
+	if (!c || !view)
+		return;
+	// create model obj.
+	frx::processing::IModelController::Ptr ctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(ctrl, map) = getControllerAndMap(view);
+	frx::processing::ModelObject::Ptr mObj = map->getModelObject(c);
+	if (!mObj)
+		return;
+	if (!mObj->requestRemove(mObj))
+		return;
+	FrxProcessorNode::Ptr pr = boost::shared_dynamic_cast<FrxProcessorNode>(c);
+	if (pr) {
+		BOOST_FOREACH(FrxNode::Ptr io, pr->getInputs()) {
+			view->remove(io);
+		}
+		BOOST_FOREACH(FrxNode::Ptr io, pr->getOutputs()) {
+			view->remove(io);
+		}
 	}
-}
-//-----------------------------------------------------------------------------
-sdc::PopupMenuPtr FrxControl::createPopupMenu(FrxControl::AnyWPtr anyPtr, 
-	const FrxControl::Entries &entries) 
-{
-	using namespace sambag::disco::components;
-	PopupMenuPtr res = PopupMenu::create();
-	BOOST_FOREACH(const Entry &e, entries) {
-		MenuItem::Ptr item = MenuItem::create();
-		item->setText(e.first);
-		item->EventSender<sdc::events::ActionEvent>::addTrackedEventListener(
-			boost::bind(&FrxControl::onMenuAction, this, _1, _2, e.second),
-			anyPtr
-		);
-		res->add(item);
-	}
-	return res;
+	view->remove(c);
+	view->AContainer::redraw();
 }
 //-----------------------------------------------------------------------------
 sdc::PopupMenuPtr FrxControl::getCircuidViewPopup(FrxCircuidViewPtr c) {
 	Entries mainMenuEntries;
-	createMainMenuEntries(c, mainMenuEntries);
+	createMainMenuEntries(mainMenuEntries);
 	return createPopupMenu(c, mainMenuEntries);
 }
 //-----------------------------------------------------------------------------
@@ -366,7 +322,32 @@ FrxControl::createEntryExtitNodes(fgc::FrxCircuidViewPtr circ)
 
 }
 //-----------------------------------------------------------------------------
-void FrxControl::finalizeDeserialization(fgc::FrxComponentPtr c) {
+void FrxControl::executeCtrlCommand(void *src,
+		const sdc::events::ActionEvent &ev,
+		fgc::FrxCircuidViewWPtr v, 
+		fgc::FrxComponentWPtr c, 
+		CtrlCmd cmd)
+{
+	FrxCircuidViewPtr view = v.lock();
+	FrxComponentPtr comp = c.lock(); // can be null
+	cmd(view,comp);
+}
+//-----------------------------------------------------------------------------
+sambag::com::events::EventSender<sdc::events::ActionEvent>::EventFunction
+FrxControl::createCtrlCommandFunction(fgc::FrxCircuidViewPtr view,
+	fgc::FrxComponentPtr comp,
+	const IFrxControl::CtrlCmd &cmdF)
+{
+	FrxCircuidViewWPtr wView = view;
+	FrxComponentWPtr wC = comp;
+	return boost::bind(&FrxControl::executeCtrlCommand, 
+		this, 
+		_1, 
+		_2, 
+		wView, 
+		wC,
+		cmdF
+	);
 }
 //=============================================================================
 //-----------------------------------------------------------------------------

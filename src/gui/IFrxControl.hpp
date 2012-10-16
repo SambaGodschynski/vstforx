@@ -13,11 +13,10 @@
 #include <sambag/disco/components/events/MouseEvent.hpp>
 #include <loki/Singleton.h>
 #include "components/Forward.hpp"
-#include <list>
-#include <string>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <sambag/com/events/Events.hpp>
 
 namespace frx { namespace gui {
 namespace sdc = sambag::disco::components;
@@ -31,27 +30,14 @@ class IFrxControl {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::function<void()> CtrlFunc;
-	//-------------------------------------------------------------------------
-	typedef std::pair<std::string, CtrlFunc> Entry;
-	//-------------------------------------------------------------------------
-	typedef std::list<Entry> Entries;
-	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<void> AnyWPtr;
+	typedef boost::function<void(fgc::FrxCircuidViewPtr, 
+		fgc::FrxComponentPtr)> CtrlCmd;
 	//-------------------------------------------------------------------------
 	/**
 	 * @return tuple(entry, exit)
 	 */
 	virtual boost::tuple<fgc::FrxNodePtr, fgc::FrxNodePtr>
 	createEntryExtitNodes(fgc::FrxCircuidViewPtr c) = 0;
-	//-------------------------------------------------------------------------
-	/**
-	 * creates Popupmenu for entries.
-	 * @param anyPtr for signal tracking
-	 * @entries
-	 */
-	virtual sdc::PopupMenuPtr 
-	createPopupMenu(AnyWPtr anyPtr, const Entries &e) = 0;
 	//-------------------------------------------------------------------------
 	virtual sdc::PopupMenuPtr 
 	getCircuidViewPopup(fgc::FrxCircuidViewPtr c) = 0;
@@ -62,7 +48,18 @@ public:
 	virtual void 
 	handleContextMenuPopup(const sdc::events::MouseEvent &ev) = 0;
 	//-------------------------------------------------------------------------
-	virtual void finalizeDeserialization(fgc::FrxComponentPtr c) = 0;
+	virtual void removeComponent(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c) = 0;
+	//-------------------------------------------------------------------------
+	/**
+	 * @return a function object which is able to be executed by
+	 * a EventSender<ActionActionEvent> instance.
+	 */
+	virtual sambag::com::events::EventSender<sdc::events::ActionEvent>::EventFunction
+	createCtrlCommandFunction(fgc::FrxCircuidViewPtr view,
+		fgc::FrxComponentPtr comp,
+		const CtrlCmd &cmdF
+	) = 0;
 }; // IFrxControl
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------

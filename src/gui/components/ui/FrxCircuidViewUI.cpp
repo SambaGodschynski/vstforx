@@ -7,6 +7,7 @@
 
 #include "FrxCircuidViewUI.hpp"
 #include <gui/components/FrxCircuidView.hpp>
+#include <gui/IFrxControl.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -31,5 +32,6 @@ void FrxCircuidViewUI::installUI(sdc::AComponentPtr c) {
 		boost::bind(&FrxCircuidMouseListener::onMouse, &mouseListener, _1, _2),
 		getPtr()
 	);
+	circ->setComponentPopupMenu(getFrxControl(circ).getCircuidViewPopup(circ));
 }
 }}}} // namespace(s)

@@ -48,6 +48,10 @@ private:
 protected:
 	//-------------------------------------------------------------------------
 	FrxProcessorNodeUI();
+	//-------------------------------------------------------------------------
+	virtual void installDefaults(sdc::AComponentPtr c);
+	//-------------------------------------------------------------------------
+	virtual void installListener(sdc::AComponentPtr c);
 public:
 	//-------------------------------------------------------------------------
 	virtual void beginConnecting(const sdc::events::MouseEvent &ev) {}
@@ -96,6 +100,8 @@ bool FrxProcessorNodeUI<CT>::contains(sdc::AComponentPtr c, const sd::Point2D &p
 template <class CT>
 void FrxProcessorNodeUI<CT>::installUI(sdc::AComponentPtr c) {
 	Super::installUI(c);
+	installDefaults(c);
+	installListener(c);
 }
 //-----------------------------------------------------------------------------
 template <class CT>
@@ -106,6 +112,15 @@ void FrxProcessorNodeUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c
 	cn->arc(sd::Point2D(0, 0), getCoreRadius(node));
 	cn->setFillColor(sd::ColorRGBA());
 	cn->fill();
+}
+//-----------------------------------------------------------------------------
+template <class CT>
+void FrxProcessorNodeUI<CT>::installDefaults(sdc::AComponentPtr c) {
+	Super::installDefaults(c);
+}
+//-----------------------------------------------------------------------------
+template <class CT>
+void FrxProcessorNodeUI<CT>::installListener(sdc::AComponentPtr c) {
 }
 }}}} // namespace(s)
 

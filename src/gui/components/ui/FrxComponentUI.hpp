@@ -13,7 +13,7 @@
 #include <sambag/disco/components/ui/AComponentUI.hpp>
 #include <sambag/disco/components/Forward.hpp>
 #include <sambag/disco/Geometry.hpp>
-
+#include <gui/components/Forward.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -40,6 +40,17 @@ protected:
 	FrxComponentUI();
 	//-------------------------------------------------------------------------
 	WPtr self;
+	//-------------------------------------------------------------------------
+	virtual void createPopupmenuEntries(sdc::PopupMenuPtr menu, 
+		FrxCircuidViewPtr view, 
+		FrxComponentPtr c);
+	//-------------------------------------------------------------------------
+	virtual sdc::PopupMenuPtr createPopupmenu(FrxComponentPtr c, 
+		FrxCircuidViewPtr view);
+	//-------------------------------------------------------------------------
+	virtual void installDefaults(sdc::AComponentPtr c);
+	//-------------------------------------------------------------------------
+	virtual void installListener(sdc::AComponentPtr c);
 private:
 public:
 	//-------------------------------------------------------------------------

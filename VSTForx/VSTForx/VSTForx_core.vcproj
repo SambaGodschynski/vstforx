@@ -415,6 +415,14 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\src\gui\PopupMenuBuilder.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\PopupMenuBuilder.hpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\gui\components\VstForxEditor.cpp"
 						>
 					</File>

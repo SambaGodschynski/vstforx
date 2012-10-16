@@ -74,7 +74,6 @@ void FrxCircuidView::postConstructor() {
 	content->setLayout(sdc::ALayoutManagerPtr());
 	selection = FrxSelection::create();
 	add(selection, Z_InteractiveStuff);
-	setComponentPopupMenu(getFrxControl(getPtr()).getCircuidViewPopup(getPtr()));
 }
 //-----------------------------------------------------------------------------
 sdc::AComponentPtr FrxCircuidView::findComponentOnPoint(const sd::Point2D &p,

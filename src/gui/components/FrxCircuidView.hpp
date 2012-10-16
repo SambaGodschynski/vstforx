@@ -110,7 +110,6 @@ private:
 		if (Archive::is_loading::value) {
 			BOOST_FOREACH(const FrxComponentInfo &i, l) {
 				add(i.first, i.second);
-				getFrxControl(getPtr()).finalizeDeserialization(i.first);
 			}
 		}
 		l.clear();
