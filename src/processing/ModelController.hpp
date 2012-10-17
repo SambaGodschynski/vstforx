@@ -34,6 +34,8 @@ protected:
 private:
 	//-------------------------------------------------------------------------
 	::processing::Graph::Ptr graph;
+	//-------------------------------------------------------------------------
+	void installListeners(IProcessor::Ptr pr);
 public:
 	//-------------------------------------------------------------------------
 	static Ptr create();
@@ -100,6 +102,8 @@ public:
 	//-------------------------------------------------------------------------
 	virtual bool removeConnection(IConnection::Ptr cn);
 	//-------------------------------------------------------------------------
+	virtual bool removeProcessor(IProcessor::Ptr pr);
+	//-------------------------------------------------------------------------
 	virtual INode::Ptr getEntry();
 	//-------------------------------------------------------------------------
 	virtual INode::Ptr getExit();
@@ -108,6 +112,9 @@ public:
 	//-------------------------------------------------------------------------
 	bool excuteConnectionRemoveRequest(ModelObject::Ptr obj, 
 		boost::weak_ptr<IConnection> cn);
+	//-------------------------------------------------------------------------
+	bool excuteProcessorRemoveRequest(ModelObject::Ptr obj, 
+		boost::weak_ptr<IProcessor> cn);
 }; // ModelController
 }} // namespace(s)
 

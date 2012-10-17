@@ -643,6 +643,18 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="concreteAdapter"
+					>
+					<File
+						RelativePath="..\..\src\processing\concreteAdapter\Volume.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\processing\concreteAdapter\Volume.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="com"

@@ -50,7 +50,7 @@ protected:
 	//-------------------------------------------------------------------------
 	virtual void installDefaults(sdc::AComponentPtr c);
 	//-------------------------------------------------------------------------
-	virtual void installListener(sdc::AComponentPtr c);
+	virtual void installListeners(sdc::AComponentPtr c);
 private:
 public:
 	//-------------------------------------------------------------------------

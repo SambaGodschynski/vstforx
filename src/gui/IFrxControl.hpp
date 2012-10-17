@@ -48,18 +48,20 @@ public:
 	virtual void 
 	handleContextMenuPopup(const sdc::events::MouseEvent &ev) = 0;
 	//-------------------------------------------------------------------------
-	virtual void removeComponent(fgc::FrxCircuidViewPtr view, 
-		fgc::FrxComponentPtr c) = 0;
-	//-------------------------------------------------------------------------
 	/**
 	 * @return a function object which is able to be executed by
-	 * a EventSender<ActionActionEvent> instance.
+	 * a EventSender<ActionActionEvent> instance via FrxControl.
 	 */
 	virtual sambag::com::events::EventSender<sdc::events::ActionEvent>::EventFunction
 	createCtrlCommandFunction(fgc::FrxCircuidViewPtr view,
 		fgc::FrxComponentPtr comp,
 		const CtrlCmd &cmdF
 	) = 0;
+	///////////////////////////////////////////////////////////////////////////
+	// CtrlCmd's:
+	//-------------------------------------------------------------------------
+	virtual void removeComponent(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c) = 0;
 }; // IFrxControl
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------

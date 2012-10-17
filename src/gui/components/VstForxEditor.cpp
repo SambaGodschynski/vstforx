@@ -16,6 +16,7 @@
 #include <sstream>
 #include <com/Serialization.h>
 #include <gui/FrxControl.hpp>
+#include <processing/VstForxPlug.hpp>
 
 extern void* hInstance;
 namespace frx { namespace gui { namespace components {
@@ -153,13 +154,13 @@ bool VstForxEditor::open( void *ptr ) {
 	} catch (const std::exception &ex) {
 		std::stringstream ss;
 		ss<<"Could'nt create main view: "<<ex.what();
-		::com::MessageBox("Error", ss.str(), ::com::MSG_ALERT);
+		errorMessage(ss.str());
 		return false;
 	}
 	catch (...) {
 		std::stringstream ss;
 		ss<<"Could'nt create main view: unkown error.";
-		::com::MessageBox("Error", ss.str(), ::com::MSG_ALERT);
+		errorMessage(ss.str());
 		return false;
 	}
 	window->validate();
@@ -173,11 +174,11 @@ void VstForxEditor::close() {
 	} catch (const std::exception &ex) {
 		std::stringstream ss;
 		ss<<"closing main view failed: "<<ex.what();
-		::com::MessageBox("Error", ss.str(), ::com::MSG_ALERT);
+		errorMessage(ss.str());
 	} catch (...) {
 		std::stringstream ss;
 		ss<<"closing main view failed: unkown error.";
-		::com::MessageBox("Error", ss.str(), ::com::MSG_ALERT);
+		errorMessage(ss.str());
 	}
 	getPlugin()->unRegisterView(circView);
 }
@@ -185,6 +186,16 @@ void VstForxEditor::close() {
 bool VstForxEditor::getRect (ERect** rect) {
 	*rect = &size;
 	return true;
+}
+//-----------------------------------------------------------------------------
+void VstForxEditor::message(const std::string &str) {
+}
+//-----------------------------------------------------------------------------
+void VstForxEditor::warnMessage(const std::string &str) {
+}
+//-----------------------------------------------------------------------------
+void VstForxEditor::errorMessage(const std::string &str) {
+	::com::MessageBox("Error", str, ::com::MSG_ALERT);
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::idle() {

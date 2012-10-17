@@ -4,12 +4,13 @@
  *  Created on: Mon Aug 20 12:12:59 2012
  *      Author: Johannes Unger
  */
-
 #include "FrxCircuidView.hpp"
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <gui/IFrxControl.hpp>
 #include "FrxComponent.hpp"
 #include <list>
+#include <algorithm>
+
 namespace frx { namespace gui { namespace components {
 //=============================================================================
 //  Class FrxCircuidView
@@ -103,8 +104,8 @@ sdc::AComponentPtr FrxCircuidView::findComponentOnPoint(const sd::Point2D &p,
 			return 0;
 		}
 	};
-	ZOrder start = std::min(_start, _end);
-	ZOrder end = std::max(_start, _end);
+	ZOrder start = ::std::min(_start, _end);
+	ZOrder end = ::std::max(_start, _end);
 	std::list<sdc::AComponentPtr> res;
 	findComponents(res, Filter(p, start, end));
 	if (res.empty()){
@@ -114,11 +115,14 @@ sdc::AComponentPtr FrxCircuidView::findComponentOnPoint(const sd::Point2D &p,
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::message(const std::string &str) {
+	//TODO
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::warnMessage(const std::string &str) {
+	//TODO
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::errorMessage(const std::string &str) {
+	//TODO
 }
 }}} // namespace(s)

@@ -9,6 +9,7 @@
 #include "processing.h"
 #include "NodeConnection.hpp"
 #include <boost/bind.hpp>
+#include "concreteAdapter/Volume.h"
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -29,10 +30,29 @@ void ModelController::setGraph(::processing::Graph::Ptr graph) {
 	return graph;
 }
 //-----------------------------------------------------------------------------
+void ModelController::installListeners(IProcessor::Ptr pr) {
+	pr->addRemoveRequestExecuter(
+		boost::bind(
+			&ModelController::excuteProcessorRemoveRequest,
+			this,
+			_1,
+			boost::weak_ptr<IProcessor>(pr)
+		),
+		self
+	);
+}
+//-----------------------------------------------------------------------------
 IProcessor::Ptr ModelController::createVolumeProcessor() {
+	namespace pr = ::processing;
 	if (!graph)
 		return IProcessor::Ptr();
-	return IProcessor::Ptr();
+	pr::Volume::Ptr res =  
+		pr::Volume::create(graph->getHostInfo());
+	if ( graph->getJanitor()->add(res) != pr::Graph::Janitor::SUCCEED )
+		return IProcessor::Ptr();
+	// register remove request excutor
+	installListeners(res);
+	return res;
 }
 //-----------------------------------------------------------------------------
 IProcessor::Ptr ModelController::createPanProcessor() {
@@ -127,6 +147,18 @@ bool ModelController::removeConnection(IConnection::Ptr cn) {
 	return res == Janitor::SUCCEED;
 }
 //-----------------------------------------------------------------------------
+bool ModelController::removeProcessor(IProcessor::Ptr cn) {
+	if (!graph)
+		return false;
+	::processing::ProcessAdapter::Ptr pr = 
+		boost::shared_dynamic_cast<::processing::ProcessAdapter>(cn);
+	SAMBAG_ASSERT(pr);
+	typedef ::processing::Graph::Janitor Janitor; 
+	Janitor::Ptr jan = graph->getJanitor();
+	Janitor::State res = jan->remove(pr);
+	return res == Janitor::SUCCEED;
+}
+//-----------------------------------------------------------------------------
 INode::Ptr ModelController::getEntry() {
 	if (!graph)
 		return INode::Ptr();
@@ -148,6 +180,12 @@ excuteConnectionRemoveRequest(ModelObject::Ptr obj,
 	boost::weak_ptr<IConnection> cn)
 {
 	return removeConnection(cn.lock());	
+}
+//-----------------------------------------------------------------------------
+bool ModelController::excuteProcessorRemoveRequest(ModelObject::Ptr obj, 
+	boost::weak_ptr<IProcessor> cn)
+{
+	return removeProcessor(cn.lock());	
 }
 
 }} // namespace(s)

@@ -25,12 +25,14 @@ struct BooleanCombiner {
 	typedef bool result_type; 
 	template <typename It> 
 	bool operator()(It first, It last) const {
+		bool res = false;
 		for (It it=first; it!=last; ++it) {
 			if (*it == false) {
 				return false;
 			}
+			res = true;
 		}
-		return true;
+		return res;
 	} 
 };
 //=============================================================================

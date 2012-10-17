@@ -2,13 +2,17 @@
 #ifndef DISCO_VSTFORXEDITOR_H
 #define DISCO_VSTFORXEDITOR_H
 
-#include "aeffeditor.h"
 #include <sambag/disco/components/Forward.hpp>
-#include <processing/VstForxPlug.hpp>
+
 #include <sambag/disco/components/Window.hpp>
 #include "gui/components/Forward.hpp"
 #include <iostream>
 #include <sstream>
+#include "aeffeditor.h"
+
+namespace frx { namespace processing {
+	class VstForxPlug;
+}} // namespace(s)
 
 namespace frx { namespace gui { namespace components {
 namespace sd = sambag::disco;
@@ -63,6 +67,12 @@ protected:
 	//-------------------------------------------------------------------------
 	FrxCircuidViewPtr createView(sdc::Window::Ptr win);
 public:
+	//-------------------------------------------------------------------------
+	static void message(const std::string &str);
+	//-------------------------------------------------------------------------
+	static void warnMessage(const std::string &str);
+	//-------------------------------------------------------------------------
+	static void errorMessage(const std::string &str);
 	//-------------------------------------------------------------------------
 	void setPlugin(frx::processing::VstForxPlug *aEff);
 	//-------------------------------------------------------------------------

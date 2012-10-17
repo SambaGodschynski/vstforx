@@ -215,8 +215,7 @@ void FrxConnectionUI<CT>::installDefaults(sdc::AComponent::Ptr c) {
 //-----------------------------------------------------------------------------
 template <class CT>
 void FrxConnectionUI<CT>::installUI(sdc::AComponentPtr c) {
-	installDefaults(c);
-	installListeners(c);
+	Super::installUI(c);
 }
 //-----------------------------------------------------------------------------
 template <class CT>

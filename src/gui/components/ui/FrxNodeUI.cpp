@@ -79,6 +79,7 @@ void FrxNodeUI::installListeners(sdc::AComponent::Ptr c) {
 }
 //------------------------------------------------------------------------------
 void FrxNodeUI::installDefaults(sdc::AComponent::Ptr c) {
+	Super::installDefaults(c);
 	// size
 	sd::Coordinate r = getCoronaRadius(c) * 2. + 5.;
 	c->setSize(sd::Dimension(r, r));
@@ -106,8 +107,7 @@ void FrxNodeUI::installDefaults(sdc::AComponent::Ptr c) {
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::installUI(sdc::AComponentPtr c) {
-	installDefaults(c);
-	installListeners(c);
+	Super::installUI(c);
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::drawCorona(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {

@@ -51,7 +51,7 @@ protected:
 	//-------------------------------------------------------------------------
 	virtual void installDefaults(sdc::AComponentPtr c);
 	//-------------------------------------------------------------------------
-	virtual void installListener(sdc::AComponentPtr c);
+	virtual void installListeners(sdc::AComponentPtr c);
 public:
 	//-------------------------------------------------------------------------
 	virtual void beginConnecting(const sdc::events::MouseEvent &ev) {}
@@ -100,8 +100,6 @@ bool FrxProcessorNodeUI<CT>::contains(sdc::AComponentPtr c, const sd::Point2D &p
 template <class CT>
 void FrxProcessorNodeUI<CT>::installUI(sdc::AComponentPtr c) {
 	Super::installUI(c);
-	installDefaults(c);
-	installListener(c);
 }
 //-----------------------------------------------------------------------------
 template <class CT>
@@ -120,7 +118,8 @@ void FrxProcessorNodeUI<CT>::installDefaults(sdc::AComponentPtr c) {
 }
 //-----------------------------------------------------------------------------
 template <class CT>
-void FrxProcessorNodeUI<CT>::installListener(sdc::AComponentPtr c) {
+void FrxProcessorNodeUI<CT>::installListeners(sdc::AComponentPtr c) {
+	Super::installListeners(c);
 }
 }}}} // namespace(s)
 

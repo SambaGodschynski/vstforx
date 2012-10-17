@@ -27,7 +27,7 @@ void FrxComponentUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 }
 //-----------------------------------------------------------------------------
 void FrxComponentUI::installUI(sdc::AComponentPtr c) {
-	installListener(c);
+	installListeners(c);
 	installDefaults(c);
 }
 //-----------------------------------------------------------------------------
@@ -77,6 +77,6 @@ void FrxComponentUI::installDefaults(sdc::AComponentPtr c) {
 	}
 }
 //-----------------------------------------------------------------------------
-void FrxComponentUI::installListener(sdc::AComponentPtr c) {
+void FrxComponentUI::installListeners(sdc::AComponentPtr c) {
 }
 }}}}

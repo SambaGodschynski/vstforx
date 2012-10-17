@@ -65,11 +65,30 @@ createProcessor(FrxCircuidViewPtr c)
 	return res;
 }
 //-----------------------------------------------------------------------------
+void registerProcessor(IViewModelMap::Ptr map,
+					   FrxProcessorNode::Ptr v, 
+					   frx::processing::IProcessor::Ptr m) 
+{
+	map->registerObjects(v, m);
+	const FrxProcessorNode::IOContainer &ins = v->getInputs();
+	for (int i=0; i<m->getNumInputs(); ++i) {
+		frx::processing::INode::Ptr node = m->getInput(i);
+		map->registerObjects(ins[i], node);
+	}
+	const FrxProcessorNode::IOContainer &outs = v->getOutputs();
+	for (int i=0; i<m->getNumOutputs(); ++i) {
+		frx::processing::INode::Ptr node = m->getOutput(i);
+		map->registerObjects(outs[i], node);
+	}
+
+}
+//-----------------------------------------------------------------------------
 template <class ConcreteProcessor>
 void addProcessorToView(FrxCircuidViewPtr circ, 
 	FrxComponentPtr alwaysNull, int numInputs, int numOutputs) 
 {
-	typename ConcreteProcessor::Ptr viewObj = createProcessor<ConcreteProcessor>(circ);
+	typename ConcreteProcessor::Ptr viewObj =
+		createProcessor<ConcreteProcessor>(circ);
 	if (!viewObj) {
 		return;
 	}
@@ -82,14 +101,18 @@ void addProcessorToView(FrxCircuidViewPtr circ,
 	IViewModelMap::Ptr map;
 	boost::tie(ctrl, map) = getControllerAndMap(circ);
 
-	frx::processing::ModelObject::Ptr mObj = 
+	frx::processing::IProcessor::Ptr mObj = 
 		createProcessorOnModel<ConcreteProcessor>(ctrl, numInputs, numOutputs);
+	if (!mObj) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"could'nt create processor object.");
+	}
 	// create view obj.
 	circ->add(viewObj, FrxCircuidView::Z_ProcessorNodes);
 	viewObj->setLocation(0, 0);
 	viewObj->configIO(numInputs, numOutputs);
 	// register
-	map->registerObjects(viewObj, mObj);
+	registerProcessor(map, viewObj, mObj);
 	// hover
 	FrxHover::Ptr sel = FrxHover::create();
 	circ->add(sel);
@@ -195,11 +218,12 @@ struct Connector {
 	Connector(FrxCircuidView::Ptr view) : view(view) {}
 	bool OnError(FrxNode &a, FrxNode &b) {return false;}
 	bool Fire(FrxNode &a, FrxNode &b) {return false;}
+	// consider direction: out->in
 	bool Fire(FrxInputNode &a, FrxOutputNode &b) { 
-		return perfomConnect<IOCn>(view, a.getPtr(), b.getPtr());
+		return perfomConnect<IOCn>(view, b.getPtr(), a.getPtr());
 	}
 	bool Fire(FrxInputNode &a, FrxEntryNode &b) {
-		return perfomConnect<IOCn>(view, a.getPtr(), b.getPtr());
+		return perfomConnect<IOCn>(view, b.getPtr(), a.getPtr());
 	}
 	bool Fire(FrxOutputNode &a, FrxExitNode &b) {
 		return perfomConnect<IOCn>(view, a.getPtr(), b.getPtr());
@@ -227,10 +251,17 @@ void FrxControl::removeComponent(FrxCircuidViewPtr _view, FrxComponentPtr _c)
 	IViewModelMap::Ptr map;
 	boost::tie(ctrl, map) = getControllerAndMap(view);
 	frx::processing::ModelObject::Ptr mObj = map->getModelObject(c);
-	if (!mObj)
-		return;
-	if (!mObj->requestRemove(mObj))
-		return;
+	if (!mObj) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"access to model object failed while removing."
+		);
+	}
+
+	if (!mObj->requestRemove(mObj)) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"removing model object failed."
+		);
+	}
 	FrxProcessorNode::Ptr pr = boost::shared_dynamic_cast<FrxProcessorNode>(c);
 	if (pr) {
 		BOOST_FOREACH(FrxNode::Ptr io, pr->getInputs()) {
@@ -330,7 +361,14 @@ void FrxControl::executeCtrlCommand(void *src,
 {
 	FrxCircuidViewPtr view = v.lock();
 	FrxComponentPtr comp = c.lock(); // can be null
-	cmd(view,comp);
+	SAMBAG_ASSERT(view);
+	try {
+		cmd(view,comp);
+	} catch(const std::exception &ex) {
+		view->errorMessage("operation failed: " + std::string(ex.what()));
+	} catch (...) {
+		view->errorMessage("operation failed: unkown error.");
+	}
 }
 //-----------------------------------------------------------------------------
 sambag::com::events::EventSender<sdc::events::ActionEvent>::EventFunction
