@@ -804,6 +804,10 @@
 				Name="com"
 				>
 				<File
+					RelativePath="..\..\src\com\Events.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\src\com\Log.cpp"
 					>
 				</File>

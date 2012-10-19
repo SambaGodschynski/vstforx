@@ -11,6 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include "ModelObject.hpp"
 #include <string>
+#include <com/Events.h>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -64,6 +65,13 @@ public:
 	 * (i.e. "sec", "dB", "type", etc...).
 	 */
 	virtual void setLabel(const std::string &) = 0;
+	//-------------------------------------------------------------------------
+	//////////////
+	// events
+	//-------------------------------------------------------------------------
+	typedef ::com::events::ValueChangedSender<float> ParameterChanged;
+	virtual ParameterChanged & getEventSender() const = 0;
+
 }; // IParameter
 }} // namespace(s)
 

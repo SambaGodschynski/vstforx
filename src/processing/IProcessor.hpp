@@ -11,7 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include "ModelObject.hpp"
 #include "INode.hpp"
-#include "INode.hpp"
+#include "IParameter.hpp"
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -53,6 +53,10 @@ public:
 	 * @return created input or null when failed.
 	 */
 	virtual INode::Ptr addInput() = 0;
+	//-------------------------------------------------------------------------
+	virtual size_t getNumParameter() const = 0;
+	//-------------------------------------------------------------------------
+	virtual IParameter::Ptr getParameter(int nr) const = 0;
 }; // IProcessor
 }} // namespace(s)
 
