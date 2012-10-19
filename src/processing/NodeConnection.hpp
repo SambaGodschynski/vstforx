@@ -9,8 +9,9 @@
 #define SAMBAG_CONNECTION_H
 
 #include <boost/shared_ptr.hpp>
-#include "processing.h"
 #include "IConnection.hpp"
+#include "processing.h"
+#include "NodeAdapter.hpp"
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -27,9 +28,9 @@ protected:
 	NodeConnection() {}
 private:
 	//-------------------------------------------------------------------------
-	::processing::ProcessorNode::Ptr src;
+	NodeAdapter::Ptr src;
 	//-------------------------------------------------------------------------
-	::processing::ProcessorNode::Ptr dst;
+	NodeAdapter::Ptr dst;
 	//-------------------------------------------------------------------------
 public:
 	//-------------------------------------------------------------------------
@@ -46,16 +47,16 @@ public:
 	}
 	//-------------------------------------------------------------------------
 	::processing::ProcessorNode::Ptr getSourceNode() const {
-		return src;
+		return src->getAdaptee();
 	}
 	//-------------------------------------------------------------------------
 	::processing::ProcessorNode::Ptr getDestinationNode() const {
-		return dst;
+		return dst->getAdaptee();
 	}
 	//-------------------------------------------------------------------------
-	void setSource(::processing::ProcessorNode::Ptr node);
+	void setSource(NodeAdapter::Ptr node);
 	//-------------------------------------------------------------------------
-	void setDestination(::processing::ProcessorNode::Ptr node);
+	void setDestination(NodeAdapter::Ptr node);
 }; // NodeConnection
 }} // namespace(s)
 

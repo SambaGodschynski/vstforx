@@ -151,7 +151,7 @@ bool VstForxPlug::ioChanged() {
 }
 //-----------------------------------------------------------------------------
 TimeInfo * VstForxPlug::getHostTimeInfo (int filter) {
-	return NULL;
+	return getHost()->getHostTimeInfo(filter);
 }
 //-----------------------------------------------------------------------------
 VstForxPlug::HostIOChangedConnection 

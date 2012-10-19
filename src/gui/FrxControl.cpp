@@ -71,12 +71,14 @@ void registerProcessor(IViewModelMap::Ptr map,
 {
 	map->registerObjects(v, m);
 	const FrxProcessorNode::IOContainer &ins = v->getInputs();
-	for (int i=0; i<m->getNumInputs(); ++i) {
+	int num = std::min(ins.size(), m->getNumInputs());
+	for (int i=0; i<num; ++i) {
 		frx::processing::INode::Ptr node = m->getInput(i);
 		map->registerObjects(ins[i], node);
 	}
 	const FrxProcessorNode::IOContainer &outs = v->getOutputs();
-	for (int i=0; i<m->getNumOutputs(); ++i) {
+	num = std::min(outs.size(), m->getNumOutputs());
+	for (int i=0; i<num; ++i) {
 		frx::processing::INode::Ptr node = m->getOutput(i);
 		map->registerObjects(outs[i], node);
 	}

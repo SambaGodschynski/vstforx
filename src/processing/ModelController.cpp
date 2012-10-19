@@ -10,6 +10,17 @@
 #include "NodeConnection.hpp"
 #include <boost/bind.hpp>
 #include "concreteAdapter/Volume.h"
+#include "concreteAdapter/Pan.h"
+#include "concreteAdapter/InputStep.h"
+#include "concreteAdapter/OutputStep.h"
+#include "concreteAdapter/InputSwitch.h"
+#include "concreteAdapter/OutputSwitch.h"
+#include "concreteAdapter/PeakTracker.h"
+#include "concreteAdapter/ADSRTrigger.h"
+#include "IHostInfo.h"
+#include <processing/ProcessorAdapter.hpp>
+#include <processing/ParameterAdapter.hpp>
+#include <processing/NodeAdapter.hpp>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -50,69 +61,125 @@ IProcessor::Ptr ModelController::createVolumeProcessor() {
 		pr::Volume::create(graph->getHostInfo());
 	if ( graph->getJanitor()->add(res) != pr::Graph::Janitor::SUCCEED )
 		return IProcessor::Ptr();
+	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
 	// register remove request excutor
-	installListeners(res);
-	return res;
+	installListeners(ad);
+	return ad;
 }
 //-----------------------------------------------------------------------------
 IProcessor::Ptr ModelController::createPanProcessor() {
+	namespace pr = ::processing;
 	if (!graph)
 		return IProcessor::Ptr();
-	return IProcessor::Ptr();
+	pr::Pan::Ptr res =  
+		pr::Pan::create(graph->getHostInfo());
+	if ( graph->getJanitor()->add(res) != pr::Graph::Janitor::SUCCEED )
+		return IProcessor::Ptr();
+	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
+	// register remove request excutor
+	installListeners(ad);
+	return ad;
 }
 //-----------------------------------------------------------------------------
 IProcessor::Ptr 
 ModelController::createInStepProcessor(size_t numInputs) {
+	namespace pr = ::processing;
 	if (!graph)
 		return IProcessor::Ptr();
-	return IProcessor::Ptr();
+	pr::InputStep::Ptr res =  
+		pr::InputStep::create(graph->getHostInfo(), numInputs);
+	if ( graph->getJanitor()->add(res) != pr::Graph::Janitor::SUCCEED )
+		return IProcessor::Ptr();
+	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
+	// register remove request excutor
+	installListeners(ad);
+	return ad;
 }
 //-----------------------------------------------------------------------------
 IProcessor::Ptr 
 ModelController::createOutStepProcessor(size_t numOutputs) {
+	namespace pr = ::processing;
 	if (!graph)
 		return IProcessor::Ptr();
-	return IProcessor::Ptr();
+	pr::OutputStep::Ptr res =  
+		pr::OutputStep::create(graph->getHostInfo(), numOutputs);
+	if ( graph->getJanitor()->add(res) != pr::Graph::Janitor::SUCCEED )
+		return IProcessor::Ptr();
+	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
+	// register remove request excutor
+	installListeners(ad);
+	return ad;
 }
 //-----------------------------------------------------------------------------
 IProcessor::Ptr 
 ModelController::createInSwitchProcessor(size_t numInputs) {
+	namespace pr = ::processing;
 	if (!graph)
 		return IProcessor::Ptr();
-	return IProcessor::Ptr();
+	pr::InputSwitch::Ptr res =  
+		pr::InputSwitch::create(graph->getHostInfo(), numInputs);
+	if ( graph->getJanitor()->add(res) != pr::Graph::Janitor::SUCCEED )
+		return IProcessor::Ptr();
+	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
+	// register remove request excutor
+	installListeners(ad);
+	return ad;
 }
 //-----------------------------------------------------------------------------
 IProcessor::Ptr 
 ModelController::createOutSwitchProcessor(size_t numOutputs) {
+	namespace pr = ::processing;
 	if (!graph)
 		return IProcessor::Ptr();
-	return IProcessor::Ptr();
+	pr::OutputSwitch::Ptr res =  
+		pr::OutputSwitch::create(graph->getHostInfo(), numOutputs);
+	if ( graph->getJanitor()->add(res) != pr::Graph::Janitor::SUCCEED )
+		return IProcessor::Ptr();
+	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
+	// register remove request excutor
+	installListeners(ad);
+	return ad;
 }
 //-----------------------------------------------------------------------------
 IProcessor::Ptr ModelController::createPeakTracker() {
+	namespace pr = ::processing;
 	if (!graph)
 		return IProcessor::Ptr();
-	return IProcessor::Ptr();
+	pr::PeakTracker::Ptr res =  
+		pr::PeakTracker::create(graph->getHostInfo());
+	if ( graph->getJanitor()->add(res) != pr::Graph::Janitor::SUCCEED )
+		return IProcessor::Ptr();
+	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
+	// register remove request excutor
+	installListeners(ad);
+	return ad;
 }
 //-----------------------------------------------------------------------------
 IProcessor::Ptr ModelController::createADSRTransformer() {
+	namespace pr = ::processing;
 	if (!graph)
 		return IProcessor::Ptr();
-	return IProcessor::Ptr();
+	pr::ADSRTrigger::Ptr res =  
+		pr::ADSRTrigger::create(graph->getHostInfo());
+	if ( graph->getJanitor()->add(res) != pr::Graph::Janitor::SUCCEED )
+		return IProcessor::Ptr();
+	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
+	// register remove request excutor
+	installListeners(ad);
+	return ad;
 }
 //-----------------------------------------------------------------------------
 IConnection::Ptr ModelController::connect(INode::Ptr out, INode::Ptr in) {
 	if (!graph)
 		return IConnection::Ptr();
-	::processing::ProcessorNode::Ptr src =
-		boost::shared_dynamic_cast<::processing::ProcessorNode>(out);
-	::processing::ProcessorNode::Ptr dst =
-		boost::shared_dynamic_cast<::processing::ProcessorNode>(in);
+	NodeAdapter::Ptr src = boost::shared_dynamic_cast<NodeAdapter>(out);
+	NodeAdapter::Ptr dst = boost::shared_dynamic_cast<NodeAdapter>(in);
 	if (!src || !dst)
 		return IConnection::Ptr();
 	typedef ::processing::Graph::Janitor Janitor; 
 	Janitor::Ptr jan = graph->getJanitor();
-	Janitor::State res = jan->connectNodes(src, dst);
+	Janitor::State res = jan->connectNodes(src->getAdaptee(), 
+		dst->getAdaptee());
 	jan.reset();
 	if (res!=Janitor::SUCCEED)
 		return IConnection::Ptr();
@@ -150,29 +217,33 @@ bool ModelController::removeConnection(IConnection::Ptr cn) {
 bool ModelController::removeProcessor(IProcessor::Ptr cn) {
 	if (!graph)
 		return false;
-	::processing::ProcessAdapter::Ptr pr = 
-		boost::shared_dynamic_cast<::processing::ProcessAdapter>(cn);
+	ProcessorAdapter::Ptr pr = 
+		boost::shared_dynamic_cast<ProcessorAdapter>(cn);
 	SAMBAG_ASSERT(pr);
 	typedef ::processing::Graph::Janitor Janitor; 
 	Janitor::Ptr jan = graph->getJanitor();
-	Janitor::State res = jan->remove(pr);
+	Janitor::State res = jan->remove(pr->getAdaptee());
 	return res == Janitor::SUCCEED;
 }
 //-----------------------------------------------------------------------------
 INode::Ptr ModelController::getEntry() {
 	if (!graph)
 		return INode::Ptr();
-	return boost::shared_dynamic_cast<::processing::ProcessorNode> (
-		graph->getStartNode()
-	);
+	if (!entry) {
+		::processing::ProcessorNode::Ptr o = graph->getStartNode();
+		entry = NodeAdapter::create(o);
+	}
+	return entry;
 }
 //-----------------------------------------------------------------------------
 INode::Ptr ModelController::getExit() {
 	if (!graph)
 		return INode::Ptr();
-	return boost::shared_dynamic_cast<::processing::ProcessorNode> (
-		graph->getEndNode()
-	);
+	if (!exit) {
+		::processing::ProcessorNode::Ptr o = graph->getEndNode();
+		exit = NodeAdapter::create(o);
+	}
+	return exit;
 }
 //-----------------------------------------------------------------------------
 bool ModelController::

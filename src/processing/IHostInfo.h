@@ -11,6 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <sambag/com/events/Events.hpp>
+#include <sambag/dsp/HostTimeInfo.hpp>
 
 namespace frx { namespace processing {
 namespace sce = sambag::com::events;
@@ -30,16 +31,7 @@ struct HostIOChanged {
 // TimeInfo
 //=============================================================================
 //-----------------------------------------------------------------------------
-struct TimeInfo {
-	enum Filter {
-		FrxTempo = 1,
-		FrxPpqPos = 1<<1,
-	};
-	double tempo;
-	double sampleRate; // always valid
-	double ppqPos;
-	bool transportIsPlaying;
-};
+typedef sambag::dsp::HostTimeInfo TimeInfo;
 //=============================================================================
 // Schnittstelle IHostInfo
 //=============================================================================

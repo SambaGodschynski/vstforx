@@ -20,7 +20,6 @@
 #include <boost/foreach.hpp>
 #include <boost/unordered_map.hpp>
 
-
 namespace processing {
 namespace parameter {
 using namespace events;
@@ -149,7 +148,7 @@ private:
 	 * @param version
 	 */
 	template < typename Archive >
-	void serialize( Archive &ar, const unsigned int version ){
+	void serialize( Archive &ar, const unsigned int version ) {
 		ar & a;
 		ar & b;
 		ar & ops;

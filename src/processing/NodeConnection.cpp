@@ -13,7 +13,7 @@ namespace frx { namespace processing {
 //  Class NodeConnection
 //=============================================================================
 //-----------------------------------------------------------------------------
-void NodeConnection::setSource(::processing::ProcessorNode::Ptr node) {
+void NodeConnection::setSource(NodeAdapter::Ptr node) {
 	if (!node) {
 		SAMBAG_THROW(
 			sambag::com::exceptions::IllegalArgumentException,
@@ -23,7 +23,7 @@ void NodeConnection::setSource(::processing::ProcessorNode::Ptr node) {
 	src = node;
 }
 //-----------------------------------------------------------------------------
-void NodeConnection::setDestination(::processing::ProcessorNode::Ptr node) {
+void NodeConnection::setDestination(NodeAdapter::Ptr node) {
 	if (!node) {
 		SAMBAG_THROW(
 			sambag::com::exceptions::IllegalArgumentException,

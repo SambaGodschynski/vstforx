@@ -13,6 +13,7 @@
 #include "IModelController.hpp"
 #include "graph.h"
 #include <boost/function.hpp>
+#include "Forward.hpp"
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -34,6 +35,8 @@ protected:
 private:
 	//-------------------------------------------------------------------------
 	::processing::Graph::Ptr graph;
+	//-------------------------------------------------------------------------
+	NodeAdapterPtr entry, exit;
 	//-------------------------------------------------------------------------
 	void installListeners(IProcessor::Ptr pr);
 public:

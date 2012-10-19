@@ -70,8 +70,7 @@ public:
  */
 //============================================================================================================
 class ProcessorNode : public Processor,
-	public PObject, 
-	public frx::processing::INode
+	public PObject
 {
 friend class Graph;
 friend class DFSVisitor;
@@ -157,7 +156,7 @@ protected:
 	void load ( Archive &ar, const unsigned int version ) {
 		ar >> boost::serialization::base_object<PObject>(*this);
 		// ar >> parents;
-		// ar >> activeChildren; wird in DFSVisitor bzw. �ber updateGraph ermittelt
+		// ar >> activeChildren; wird in DFSVisitor bzw. ueber updateGraph ermittelt
 		size_t numChildFrames;
 		ar >> numChildFrames;
 		prepareFramesContainer( numChildFrames );
@@ -474,9 +473,7 @@ struct IOChangedEvent : public com::events::Event {
  */
 class ProcessAdapter : 
 	public PObject, 
-	public com::events::EventSender<IOChangedEvent>,
-	public frx::processing::IProcessor
-
+	public com::events::EventSender<IOChangedEvent>
 {
 //Klasse: ProcessAdapter.
 //    Input_Node0-O   O -  Input_Node1 ... Input_NodeN
@@ -661,54 +658,6 @@ public:
 	}
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~ProcessAdapter();
-	//////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// IProcessorImpl
-	//--------------------------------------------------------------------------------------------------------
-	virtual size_t getNumInputs() const {
-		return getNumInputNodes();
-	}
-	//--------------------------------------------------------------------------------------------------------
-	virtual size_t getNumOutputs() const {
-		return getNumOutputNodes();
-	}
-	//--------------------------------------------------------------------------------------------------------
-	virtual fp::INode::Ptr getInput(size_t nr) const {
-		return boost::shared_dynamic_cast<ProcessorNode>(getInputNode(nr));
-	}
-	//--------------------------------------------------------------------------------------------------------
-	virtual fp::INode::Ptr getOutput(size_t nr) const {
-		return boost::shared_dynamic_cast<ProcessorNode>(getOutputNode(nr));
-	}
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * @return true if processor is able to add/remove input
-	 */
-	virtual bool hasMultipleInputs() const {
-		return false;
-	}
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * @return true if processor is able to add/remove output
-	 */
-	virtual bool hasMultipleOutputs() const {
-		return false;
-	}
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * Creates output and adds to processor.
-	 * @return created output or null when failed.
-	 */
-	virtual fp::INode::Ptr addOutput() {
-		return fp::INode::Ptr();
-	}
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * Creates input and adds to processor.
-	 * @return created input or null when failed.
-	 */
-	virtual fp::INode::Ptr addInput() {
-		return fp::INode::Ptr();
-	}
 }; //class ProcessAdapter
 //============================================================================================================
 /**
