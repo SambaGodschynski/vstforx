@@ -9,7 +9,13 @@
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <sambag/disco/svg/HtmlColors.hpp>
 #include <sambag/disco/svg/StyleParser.hpp>
+#include <sambag/disco/components/ColumnBrowser.hpp>
+#include <sambag/disco/components/List.hpp>
+#include <sambag/disco/components/ColumnView.hpp>
+#include <sambag/disco/components/ui/basic/BasicListUI.hpp>
+#include <sambag/disco/components/ui/basic/BasicColumnViewUI.hpp>
 
+#include <gui/FrxControl.hpp>
 #include <gui/components/FrxComponent.hpp>
 #include <gui/components/ui/FrxComponentUI.hpp>
 #include <gui/components/FrxConcreteProcessor.hpp>
@@ -26,7 +32,7 @@
 #include <gui/components/ui/FrxSelectionUI.hpp>
 #include <gui/components/FrxConcreteParameter.hpp>
 #include <gui/components/ui/FrxParameterUI.hpp>
-
+#include <gui/components/FrxColumnBrowser.hpp>
 
 
 namespace frx { namespace gui {
@@ -95,6 +101,12 @@ void FrxLookAndFeel::installComponents() {
 		fgcu::FrxSelectionUI>();
 	registerComponentUI<fgc::FrxHover, 
 		fgcu::FrxHoverUI>();
+	// browser
+	using namespace sdc::ui::basic;
+	typedef FrxColumnBrowser<BrowserNode>::BrowserImpl CBrowser;
+	registerComponentUI<CBrowser::ColumnViewClass,
+		BasicColumnViewUI<CBrowser::ColumnViewClass> >();
+	registerComponentUI<CBrowser::ListType, BasicListUI<CBrowser::ListType> >();
 }
 //-----------------------------------------------------------------------------
 namespace {

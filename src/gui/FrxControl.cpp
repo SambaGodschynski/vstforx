@@ -13,6 +13,7 @@
 #include "components/FrxConcreteIO.hpp"
 #include "components/FrxConcreteParameter.hpp"
 #include "components/FrxConcreteConnections.hpp"
+#include "components/Forward.hpp"
 #include <boost/foreach.hpp>
 #include <sambag/com/Common.hpp>
 #include <loki/MultiMethods.h>
@@ -29,10 +30,18 @@
 #include "components/FrxSerializationRegister.hpp"
 #include <list>
 #include <string>
+#include <gui/components/FrxProcessorBrowser.hpp>
+#include <processing/IParameter.hpp>
+#include <processing/IProcessor.hpp>
+#include <sambag/disco/components/ui/ALookAndFeel.hpp>
 
 namespace frx { namespace gui {
 using namespace components;
 namespace {
+////////////////////////////////////////////////////////////////////////////////
+//typedef std::string BrowserNode;
+typedef FrxColumnBrowser<BrowserNode> ColumnBrowser;
+typedef FrxProcessorBrowser<BrowserNode> ProcessorBrowser;
 ////////////////////////////////////////////////////////////////////////////////
 boost::tuple<
 	frx::processing::IModelController::Ptr,
@@ -123,6 +132,24 @@ void addProcessorToView(FrxCircuidViewPtr circ,
 	sel->addElements(viewObj->getOutputs());
 }
 //-----------------------------------------------------------------------------
+void addProcesorKnobToView(FrxCircuidViewPtr circ, FrxComponentPtr processor) 
+{
+	frx::processing::IModelController::Ptr ctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(ctrl, map) = getControllerAndMap(circ);
+
+	FrxStdKnob::Ptr res = FrxStdKnob::create();
+	if (!res) {
+		return;
+	}
+	res->setLocation(0, 0);
+	circ->add(res, FrxCircuidView::Z_Knobs);
+	// add selection
+	FrxHover::Ptr sel = FrxHover::create();
+	circ->add(sel);
+	sel->addElement(res);
+}
+//-----------------------------------------------------------------------------
 void addFreeKnobToView(FrxCircuidViewPtr circ, FrxComponentPtr alwaysNull) {
 	FrxStdKnob::Ptr res = FrxStdKnob::create();
 	if (!res) {
@@ -168,6 +195,18 @@ bool perfomConnect(FrxCircuidView::Ptr view,
 	map->registerObjects(cn, mcnt);
 	return true;
 }
+//-----------------------------------------------------------------------------
+ColumnBrowser::Ptr openBrowser(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c)
+{
+	static ColumnBrowser::Ptr browser;
+	browser = FrxProcessorBrowser<BrowserNode>::create();
+	browser->validate();
+	browser->pack();
+	browser->setTitle("Browser");
+	browser->open();
+	return browser;
+}
 ////////////////////////////////////////////////////////////////////////////////
 // Menu Entries
 //-----------------------------------------------------------------------------
@@ -194,6 +233,8 @@ void createMainMenuEntries(Entries &out) {
 		boost::bind(&addProcessorToView<FrxPeakTrackerNode>, _1, _2, 1, 0)));
 	out.push_back( Entry("add free knob",
 		boost::bind(&addFreeKnobToView, _1, _2)));
+	out.push_back( Entry("open plugin browser...",
+		boost::bind(&openBrowser, _1, _2)));
 }
 //-----------------------------------------------------------------------------
 sdc::PopupMenuPtr createPopupMenu(FrxCircuidViewPtr view, 
@@ -388,6 +429,65 @@ FrxControl::createCtrlCommandFunction(fgc::FrxCircuidViewPtr view,
 		wC,
 		cmdF
 	);
+}
+//-----------------------------------------------------------------------------
+void onBrowserOk(void *src,
+	const sdc::events::ActionEvent &ev,
+	ColumnBrowser::WPtr _browser,
+	fgc::FrxCircuidViewWPtr _view, 
+	fgc::FrxComponentWPtr _c)
+{
+	// lock weak ptr
+	ColumnBrowser::Ptr browser = _browser.lock();
+	fgc::FrxCircuidViewPtr view = _view.lock();
+	fgc::FrxComponentPtr c = _c.lock();
+	SAMBAG_ASSERT(browser && view && c);
+	// get selection path
+	typedef ColumnBrowser::BrowserImpl Tree;
+	Tree::Ptr tree = browser->getBrowserImpl();
+	const Tree::Path &path = tree->getSelectionPath();
+	if (path.empty())
+		return;
+	const BrowserNode &bNode = tree->getNodeData(path.back());
+	if (!bNode.data)
+		return;
+}
+//-----------------------------------------------------------------------------
+void FrxControl::showProcessorDetails(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c)
+{
+	// get ctrl, map
+	frx::processing::IModelController::Ptr ctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(ctrl, map) = getControllerAndMap(view);
+	// create browser
+	ProcessorBrowser::Ptr browser = boost::shared_dynamic_cast<ProcessorBrowser>( 
+		openBrowser(view, c) 
+	);
+	browser->setTitle(c->getName() + " details");
+	// add btnOk listener
+	browser->getBtnOk()->EventSender<sdc::events::ActionEvent>::addEventListener(
+		boost::bind(&onBrowserOk, _1, _2, ColumnBrowser::WPtr(browser),
+		fgc::FrxCircuidViewWPtr(view), fgc::FrxComponentWPtr(c))
+	);
+	// get model obj
+	frx::processing::IProcessor::Ptr pr = 
+		boost::shared_dynamic_cast<frx::processing::IProcessor>(map->getModelObject(c));
+	if (!pr)
+		return;
+	// create browser tree
+	typedef ColumnBrowser::BrowserImpl Tree;
+	Tree::Ptr tree = browser->getBrowserImpl();
+	Tree::Node parameter = 
+		tree->addNode(tree->getRootNode(), BrowserNode(c->getName() + " parameters"));
+	for (size_t i=0; i<pr->getNumParameter(); ++i) {
+		frx::processing::IParameter::Ptr p = pr->getParameter(i);
+		tree->addNode(
+			parameter, 
+			BrowserNode(p->getName(), BrowserNode::AddParameter, sc::createObject(p))
+		);
+	}
+	tree->updateLists();
 }
 //=============================================================================
 //-----------------------------------------------------------------------------

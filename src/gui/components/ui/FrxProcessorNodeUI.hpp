@@ -11,6 +11,8 @@
 #include <boost/shared_ptr.hpp>
 #include <gui/components/FrxProcessorNode.hpp>
 #include "FrxNodeUI.hpp"
+#include <sambag/disco/components/PopupMenu.hpp>
+#include <gui/IFrxControl.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui {
@@ -52,6 +54,10 @@ protected:
 	virtual void installDefaults(sdc::AComponentPtr c);
 	//-------------------------------------------------------------------------
 	virtual void installListeners(sdc::AComponentPtr c);
+	//-------------------------------------------------------------------------
+	virtual void createPopupmenuEntries(sdc::PopupMenuPtr menu, 
+		FrxCircuidViewPtr view, 
+		FrxComponentPtr c);
 public:
 	//-------------------------------------------------------------------------
 	virtual void beginConnecting(const sdc::events::MouseEvent &ev) {}
@@ -120,6 +126,23 @@ void FrxProcessorNodeUI<CT>::installDefaults(sdc::AComponentPtr c) {
 template <class CT>
 void FrxProcessorNodeUI<CT>::installListeners(sdc::AComponentPtr c) {
 	Super::installListeners(c);
+}
+//-----------------------------------------------------------------------------
+template <class CT>
+void FrxProcessorNodeUI<CT>::createPopupmenuEntries(sdc::PopupMenuPtr menu, 
+	FrxCircuidViewPtr view, 
+	FrxComponentPtr c)
+{
+	Super::createPopupmenuEntries(menu, view, c);
+	sdc::MenuItem::Ptr m = sdc::MenuItem::create();
+	m->setText("show " + c->getName() + " details...");
+	IFrxControl &ctrl = getFrxControl(view); 
+	m->EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
+		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
+		&IFrxControl::showProcessorDetails),
+		c
+	);
+	menu->add(m);
 }
 }}}} // namespace(s)
 

@@ -36,20 +36,16 @@ bool FrxComponentUI::contains(sdc::AComponent::Ptr c,
 {
 	return Super::contains(c, p);
 }
-void ee(FrxCircuidViewPtr, FrxComponentPtr);
 //-----------------------------------------------------------------------------
 void FrxComponentUI::createPopupmenuEntries(sdc::PopupMenuPtr menu, 
 	FrxCircuidViewPtr view, 
 	FrxComponentPtr c) 
 {
+	IFrxControl &ctrl = getFrxControl(view);
 	sdc::MenuItem::Ptr item = sdc::MenuItem::create();
 	item->setText("remove " + c->getName());
 	item->EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
-		getFrxControl(view).createCtrlCommandFunction(
-			view, 
-			c,
-			boost::bind(&IFrxControl::removeComponent, &getFrxControl(view), _1, _2)
-		),
+		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl,view,c,&IFrxControl::removeComponent),
 		c
 	);
 	menu->add(item);

@@ -26,7 +26,7 @@
 #include <time.h>
 #include <fstream>
 #include <gui/components/FrxSerializationRegister.hpp>
-
+#include <gui/components/FrxColumnBrowser.hpp>
 
 #ifdef WIN32
 #include <crtdbg.h>

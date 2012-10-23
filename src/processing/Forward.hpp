@@ -21,6 +21,9 @@ namespace processing {
 }
 
 namespace frx { namespace processing {
+	class ModelObject;
+	typedef boost::shared_ptr<ModelObject> ModelObjectPtr;
+	typedef boost::weak_ptr<ModelObject> ModelObjectWPtr;
 	class ProcessorAdapter;
 	typedef boost::shared_ptr<ProcessorAdapter> ProcessorAdapterPtr;
 	typedef boost::weak_ptr<ProcessorAdapter> ProcessorAdapterWPtr;

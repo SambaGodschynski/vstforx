@@ -18,6 +18,15 @@
 #include <boost/tuple/tuple.hpp>
 #include <sambag/com/events/Events.hpp>
 
+
+#define SAMBAG_CREATE_FRXCONTROL_CMD(frxctrl, view, frxcomponent, frxcmdfunction) \
+  ((frxctrl).createCtrlCommandFunction(                                           \
+    (view),                                                                       \
+    (frxcomponent),                                                               \
+	boost::bind((frxcmdfunction), &(frxctrl), _1, _2)                                                              \
+  ))
+
+
 namespace frx { namespace gui {
 namespace sdc = sambag::disco::components;
 namespace sdcu = sdc::ui;
@@ -58,9 +67,13 @@ public:
 		const CtrlCmd &cmdF
 	) = 0;
 	///////////////////////////////////////////////////////////////////////////
-	// CtrlCmd's:
+	// CtrlCmd's: use it with createCtrlCommandFunction() to create
+	// menu ActionEvents
 	//-------------------------------------------------------------------------
 	virtual void removeComponent(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c) = 0;
+	//-------------------------------------------------------------------------
+	virtual void showProcessorDetails(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c) = 0;
 }; // IFrxControl
 ///////////////////////////////////////////////////////////////////////////////

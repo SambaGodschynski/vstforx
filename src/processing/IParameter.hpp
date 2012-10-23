@@ -9,6 +9,7 @@
 #define SAMBAG_IPARAMETER_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include "ModelObject.hpp"
 #include <string>
 #include <com/Events.h>
@@ -23,6 +24,8 @@ class IParameter : public ModelObject {
 public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<IParameter> Ptr;
+	//-------------------------------------------------------------------------
+	typedef boost::weak_ptr<IParameter> WPtr;
 	//-------------------------------------------------------------------------
 	/**
 	 * @see VST-SDK:

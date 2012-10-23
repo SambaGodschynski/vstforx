@@ -10,12 +10,51 @@
 
 #include "IFrxControl.hpp"
 #include "components/FrxCircuidView.hpp"
+#include <processing/Forward.hpp>
+#include <sambag/com/ArbitraryType.hpp>
 
 namespace frx { namespace gui {
 namespace sdc = sambag::disco::components;
+namespace sc = sambag::com;
 namespace sdcu = sdc::ui;
 namespace fgc = frx::gui::components;
 namespace gc = gui::components;
+namespace pr = frx::processing;
+//=============================================================================
+/**
+ * @class FrxBrowser content.
+ */
+struct BrowserNode {
+//=============================================================================
+	enum Type{
+		Undefined, 
+		AddParameter, 
+		AddInputNode, 
+		AddOutputNode, 
+		PerformAction
+	};
+	std::string name;
+	sc::ArbitraryType::Ptr data;
+	Type type;
+	BrowserNode(const std::string &name, 
+		Type type = Undefined,
+		sc::ArbitraryType::Ptr data = sc::ArbitraryType::Ptr()
+	) : name(name), type(type),  data(data)
+	{
+	}
+	BrowserNode(const char *name = "") : name(name), type(Undefined) 
+	{
+	}
+	bool operator==(const BrowserNode &n) const { 
+		return name==n.name && 
+			type == n.type &&
+			data == n.data;
+	}
+};
+inline std::ostream & operator <<(std::ostream &os, const BrowserNode &n) {
+	os<<n.name;
+	return os;
+}
 //=============================================================================
 /** 
   * @class FrxControl.
@@ -61,6 +100,9 @@ public:
 		fgc::FrxComponentPtr comp,
 		const CtrlCmd &cmdF
 	);
+	//-------------------------------------------------------------------------
+	virtual void showProcessorDetails(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c);
 
 }; // FrxControl
 ///////////////////////////////////////////////////////////////////////////////	
