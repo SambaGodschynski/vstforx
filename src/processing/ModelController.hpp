@@ -39,6 +39,8 @@ private:
 	NodeAdapterPtr entry, exit;
 	//-------------------------------------------------------------------------
 	void installListeners(IProcessor::Ptr pr);
+	//-------------------------------------------------------------------------
+	bool removeConnection(NodeConnectionPtr cn);
 public:
 	//-------------------------------------------------------------------------
 	static Ptr create();
@@ -102,6 +104,8 @@ public:
 	virtual IProcessor::Ptr createADSRTransformer();
 	//-------------------------------------------------------------------------
 	virtual IConnection::Ptr connect(INode::Ptr out, INode::Ptr in);
+	//-------------------------------------------------------------------------
+	virtual IConnection::Ptr connect(IParameter::Ptr a, IParameter::Ptr b);
 	//-------------------------------------------------------------------------
 	virtual bool removeConnection(IConnection::Ptr cn);
 	//-------------------------------------------------------------------------

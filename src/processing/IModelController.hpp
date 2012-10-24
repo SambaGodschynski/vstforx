@@ -82,6 +82,8 @@ public:
 	//-------------------------------------------------------------------------
 	virtual IConnection::Ptr connect(INode::Ptr out, INode::Ptr in) = 0;
 	//-------------------------------------------------------------------------
+	virtual IConnection::Ptr connect(IParameter::Ptr a, IParameter::Ptr b) = 0;
+	//-------------------------------------------------------------------------
 	virtual bool removeConnection(IConnection::Ptr cn) = 0;
 	//-------------------------------------------------------------------------
 	virtual bool removeProcessor(IProcessor::Ptr pr) = 0;

@@ -9,6 +9,7 @@
 #define SAMBAG_IPROCESSOR_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include "ModelObject.hpp"
 #include "INode.hpp"
 #include "IParameter.hpp"
@@ -22,7 +23,11 @@ class IProcessor : public ModelObject {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
+	typedef ModelObject Super;
+	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<IProcessor> Ptr;
+	//-------------------------------------------------------------------------
+	typedef boost::weak_ptr<IProcessor> WPtr;
 	//-------------------------------------------------------------------------
 	virtual size_t getNumInputs() const = 0;
 	//-------------------------------------------------------------------------

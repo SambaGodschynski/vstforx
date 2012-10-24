@@ -168,7 +168,7 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("ProcessorOutputCn.style", 
 		createStyle("stroke-width: 4; stroke: grey"));
 	m.putProperty("ProcessorParameterCn.style", 
-		createStyle("stroke-width: 4; stroke: grey"));
+		createStyle("stroke-width: 2; stroke: red; purple;stroke-dasharray: 9, 5"));
 	m.putProperty("ParameterCn.style", 
 		createStyle("stroke-width: 4; stroke: green;stroke-dasharray: 9, 5;"));
 	m.putProperty("ParameterCn.hoverStyle", 

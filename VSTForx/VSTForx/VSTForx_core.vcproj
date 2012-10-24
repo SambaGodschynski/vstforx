@@ -652,6 +652,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\src\processing\ParameterConnection.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\ParameterConnection.hpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\src\processing\PObject.h"
 					>
 				</File>

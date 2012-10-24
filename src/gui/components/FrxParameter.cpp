@@ -15,6 +15,8 @@ namespace frx { namespace gui { namespace components {
 //-----------------------------------------------------------------------------
 const std::string FrxParameter::PROPERTY_ENC_CTRL = "property_encapsulated_ctrl";
 //-----------------------------------------------------------------------------
+const std::string FrxParameter::PROPERTY_RANGE_MODEL = "property_range_model";
+//-----------------------------------------------------------------------------
 FrxParameter::FrxParameter()  {
 	setName("FrxParameter");
 }
@@ -44,6 +46,12 @@ void FrxParameter::onCtrlChanged(void *src, const sce::PropertyChanged &ev) {
 void FrxParameter::setBounds(const sd::Rectangle &r) {
 	Super::setBounds(r);
 	updateCtrlLocation();
+}
+//-----------------------------------------------------------------------------
+void FrxParameter::setRangeModel(sdc::DefaultBoundedRangeModel::Ptr model) {
+	sdc::DefaultBoundedRangeModel::Ptr old = this->rangeModel;
+	this->rangeModel = model;
+	firePropertyChanged(PROPERTY_RANGE_MODEL, old, model);
 }
 //-----------------------------------------------------------------------------
 void FrxParameter::postConstructor() {

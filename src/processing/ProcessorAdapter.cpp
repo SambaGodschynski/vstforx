@@ -9,7 +9,7 @@
 #include "NodeAdapter.hpp"
 #include "ParameterAdapter.hpp"
 #include <boost/unordered_map.hpp>
-
+#include <boost/foreach.hpp>
 namespace frx { namespace processing {
 //=============================================================================
 //  Class ProcessorAdapter
@@ -99,5 +99,19 @@ IParameter::Ptr ProcessorAdapter::getParameter(int nr) const {
 		parameters[nr] = ParameterAdapter::create(p);
 	}
 	return parameters[nr];
+}
+//-----------------------------------------------------------------------------
+bool ProcessorAdapter::requestRemove(ModelObject::Ptr obj) {
+	bool res = true;
+	BOOST_FOREACH(ModelObject::Ptr m, inputs) {
+		res &= m->requestRemove(m);
+	}
+	BOOST_FOREACH(ModelObject::Ptr m, outputs) {
+		res &= m->requestRemove(m);
+	}
+	BOOST_FOREACH(ModelObject::Ptr m, parameters) {
+		res &= m->requestRemove(m);
+	}
+	return res && Super::requestRemove(obj);
 }
 }} // namespace(s)

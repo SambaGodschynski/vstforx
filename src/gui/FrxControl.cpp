@@ -34,7 +34,7 @@
 #include <processing/IParameter.hpp>
 #include <processing/IProcessor.hpp>
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
-
+#include <sambag/disco/components/DefaultBoundedRangeModel.hpp>
 namespace frx { namespace gui {
 using namespace components;
 namespace {
@@ -66,6 +66,8 @@ getControllerAndMap(FrxCircuidViewPtr circ)
 ////////////////////////////////////////////////////////////////////////////////
 //  Private executors
 //-----------------------------------------------------------------------------
+bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj, FrxCircuidViewWPtr _view);
+//-----------------------------------------------------------------------------
 template <class ConcreteProcessor>
 typename ConcreteProcessor::Ptr 
 createProcessor(FrxCircuidViewPtr c) 
@@ -75,7 +77,8 @@ createProcessor(FrxCircuidViewPtr c)
 }
 //-----------------------------------------------------------------------------
 void registerProcessor(IViewModelMap::Ptr map,
-					   FrxProcessorNode::Ptr v, 
+					   FrxProcessorNode::Ptr v,
+					   FrxCircuidViewPtr view,
 					   frx::processing::IProcessor::Ptr m) 
 {
 	map->registerObjects(v, m);
@@ -84,12 +87,18 @@ void registerProcessor(IViewModelMap::Ptr map,
 	for (int i=0; i<num; ++i) {
 		frx::processing::INode::Ptr node = m->getInput(i);
 		map->registerObjects(ins[i], node);
+		node->addRemoveRequestExecuter(
+			boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
+		);
 	}
 	const FrxProcessorNode::IOContainer &outs = v->getOutputs();
 	num = std::min(outs.size(), m->getNumOutputs());
 	for (int i=0; i<num; ++i) {
 		frx::processing::INode::Ptr node = m->getOutput(i);
 		map->registerObjects(outs[i], node);
+		node->addRemoveRequestExecuter(
+			boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
+		);
 	}
 
 }
@@ -123,7 +132,7 @@ void addProcessorToView(FrxCircuidViewPtr circ,
 	viewObj->setLocation(0, 0);
 	viewObj->configIO(numInputs, numOutputs);
 	// register
-	registerProcessor(map, viewObj, mObj);
+	registerProcessor(map, viewObj, circ, mObj);
 	// hover
 	FrxHover::Ptr sel = FrxHover::create();
 	circ->add(sel);
@@ -132,22 +141,86 @@ void addProcessorToView(FrxCircuidViewPtr circ,
 	sel->addElements(viewObj->getOutputs());
 }
 //-----------------------------------------------------------------------------
-void addProcesorKnobToView(FrxCircuidViewPtr circ, FrxComponentPtr processor) 
+void knobChanged(void *src, 
+	const sdc::DefaultBoundedRangeModelChanged &ev,
+	frx::processing::IParameter::WPtr _par) 
 {
+	frx::processing::IParameter::Ptr par = _par.lock();
+	if (!par)
+		return;
+	par->setValue(ev.getSrc().getValue());
+}
+//-----------------------------------------------------------------------------
+void parameterChanged(void *src, float value, FrxParameter::WPtr _knob) {
+	FrxParameter::Ptr knob = _knob.lock();
+	if (!knob)
+		return;
+	knob->getRangeModel()->setValue(value);
+}
+//-----------------------------------------------------------------------------
+bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj, FrxCircuidViewWPtr _view)
+{
+	fp::ModelObject::Ptr mObj = _mObj.lock();
+	FrxCircuidViewPtr view(_view);
+	if (!view)
+		return true; // nothing to do anymore
+	// get model obj.
 	frx::processing::IModelController::Ptr ctrl;
 	IViewModelMap::Ptr map;
-	boost::tie(ctrl, map) = getControllerAndMap(circ);
+	boost::tie(ctrl, map) = getControllerAndMap(view);
+	ViewObject::Ptr obj = map->getViewObject(mObj);
+	if (!obj) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"access to view object failed while removing model obj."
+		);
+	}
+	FrxComponent::Ptr c = boost::shared_dynamic_cast<FrxComponent>(obj);
+	map->remove(c, mObj);
+	view->remove(c);
+	view->AContainer::redraw();
+	return true;
+}
+//-----------------------------------------------------------------------------
+void addProcesorKnobToView(FrxCircuidViewWPtr _view, FrxComponentWPtr _c,
+	frx::processing::IParameter::WPtr _par) 
+{
+	FrxCircuidViewPtr view = _view.lock();
+	FrxComponentPtr c = _c.lock();
+	frx::processing::IParameter::Ptr par = _par.lock();
 
-	FrxStdKnob::Ptr res = FrxStdKnob::create();
-	if (!res) {
+	frx::processing::IModelController::Ptr ctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(ctrl, map) = getControllerAndMap(view);
+	// create knob
+	FrxStdKnob::Ptr knob = FrxStdKnob::create();
+	if (!knob) {
 		return;
 	}
-	res->setLocation(0, 0);
-	circ->add(res, FrxCircuidView::Z_Knobs);
-	// add selection
+	knob->getRangeModel()->setValue(par->getValue());
+	// knob listener
+	knob->getRangeModel()->EventSender<sdc::DefaultBoundedRangeModelChanged>::
+		addTrackedEventListener ( boost::bind(&knobChanged, _1, _2, _par), _par );
+	// parameter listener
+	par->getEventSender().addTrackedValueChangedListener(
+		boost::bind(&parameterChanged, _1, _2, FrxParameter::WPtr(knob)), knob
+	);
+	// register knob
+	map->registerObjects(knob, par);
+	par->addRemoveRequestExecuter(
+		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
+	);
+	// create connection
+	ProcessorParameterCn::Ptr cn = ProcessorParameterCn::create();
+	cn->setSrcComponent(c);
+	cn->setDstComponent(knob);
+	view->add(cn, FrxCircuidView::Z_Wires);
+	// place knob
+	knob->setLocation(0, 0);
+	view->add(knob, FrxCircuidView::Z_Knobs);
+	// add hover
 	FrxHover::Ptr sel = FrxHover::create();
-	circ->add(sel);
-	sel->addElement(res);
+	view->add(sel);
+	sel->addElement(knob);
 }
 //-----------------------------------------------------------------------------
 void addFreeKnobToView(FrxCircuidViewPtr circ, FrxComponentPtr alwaysNull) {
@@ -289,7 +362,7 @@ void FrxControl::removeComponent(FrxCircuidViewPtr _view, FrxComponentPtr _c)
 	FrxComponentPtr c(_c);
 	if (!c || !view)
 		return;
-	// create model obj.
+	// get model obj.
 	frx::processing::IModelController::Ptr ctrl;
 	IViewModelMap::Ptr map;
 	boost::tie(ctrl, map) = getControllerAndMap(view);
@@ -305,15 +378,7 @@ void FrxControl::removeComponent(FrxCircuidViewPtr _view, FrxComponentPtr _c)
 			"removing model object failed."
 		);
 	}
-	FrxProcessorNode::Ptr pr = boost::shared_dynamic_cast<FrxProcessorNode>(c);
-	if (pr) {
-		BOOST_FOREACH(FrxNode::Ptr io, pr->getInputs()) {
-			view->remove(io);
-		}
-		BOOST_FOREACH(FrxNode::Ptr io, pr->getOutputs()) {
-			view->remove(io);
-		}
-	}
+	map->remove(c, mObj);
 	view->remove(c);
 	view->AContainer::redraw();
 }
@@ -433,15 +498,11 @@ FrxControl::createCtrlCommandFunction(fgc::FrxCircuidViewPtr view,
 //-----------------------------------------------------------------------------
 void onBrowserOk(void *src,
 	const sdc::events::ActionEvent &ev,
-	ColumnBrowser::WPtr _browser,
-	fgc::FrxCircuidViewWPtr _view, 
-	fgc::FrxComponentWPtr _c)
+	ColumnBrowser::WPtr _browser)
 {
 	// lock weak ptr
 	ColumnBrowser::Ptr browser = _browser.lock();
-	fgc::FrxCircuidViewPtr view = _view.lock();
-	fgc::FrxComponentPtr c = _c.lock();
-	SAMBAG_ASSERT(browser && view && c);
+	SAMBAG_ASSERT(browser);
 	// get selection path
 	typedef ColumnBrowser::BrowserImpl Tree;
 	Tree::Ptr tree = browser->getBrowserImpl();
@@ -449,8 +510,7 @@ void onBrowserOk(void *src,
 	if (path.empty())
 		return;
 	const BrowserNode &bNode = tree->getNodeData(path.back());
-	if (!bNode.data)
-		return;
+	bNode.accept();
 }
 //-----------------------------------------------------------------------------
 void FrxControl::showProcessorDetails(fgc::FrxCircuidViewPtr view, 
@@ -467,8 +527,7 @@ void FrxControl::showProcessorDetails(fgc::FrxCircuidViewPtr view,
 	browser->setTitle(c->getName() + " details");
 	// add btnOk listener
 	browser->getBtnOk()->EventSender<sdc::events::ActionEvent>::addEventListener(
-		boost::bind(&onBrowserOk, _1, _2, ColumnBrowser::WPtr(browser),
-		fgc::FrxCircuidViewWPtr(view), fgc::FrxComponentWPtr(c))
+		boost::bind(&onBrowserOk, _1, _2, ColumnBrowser::WPtr(browser))
 	);
 	// get model obj
 	frx::processing::IProcessor::Ptr pr = 
@@ -480,11 +539,18 @@ void FrxControl::showProcessorDetails(fgc::FrxCircuidViewPtr view,
 	Tree::Ptr tree = browser->getBrowserImpl();
 	Tree::Node parameter = 
 		tree->addNode(tree->getRootNode(), BrowserNode(c->getName() + " parameters"));
+	// create browser nodes
 	for (size_t i=0; i<pr->getNumParameter(); ++i) {
 		frx::processing::IParameter::Ptr p = pr->getParameter(i);
+		BrowserNode::AcceptedFunction f = 
+			boost::bind(&addProcesorKnobToView, 
+				fgc::FrxCircuidViewWPtr(view), 
+				fgc::FrxComponentWPtr(c),
+				frx::processing::IParameter::WPtr(p)
+			);
 		tree->addNode(
 			parameter, 
-			BrowserNode(p->getName(), BrowserNode::AddParameter, sc::createObject(p))
+			BrowserNode(p->getName(), f)
 		);
 	}
 	tree->updateLists();

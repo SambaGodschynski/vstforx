@@ -45,6 +45,8 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<ModelObject> Ptr;
 	//-------------------------------------------------------------------------
+	typedef boost::weak_ptr<ModelObject> WPtr;
+	//-------------------------------------------------------------------------
 	typedef boost::weak_ptr<void> AnyWPtr;
 	//-------------------------------------------------------------------------
 	typedef boost::function<bool(Ptr obj)> RequestRemoveFunction;
@@ -84,6 +86,8 @@ public:
 	 * @return true if object removed from model
 	 */
 	virtual bool requestRemove(Ptr self) {
+		if (signal.num_slots()==0)
+			return true;
 		return signal(self);
 	}
 	//-------------------------------------------------------------------------

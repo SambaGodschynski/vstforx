@@ -27,6 +27,8 @@ public:
 	typedef boost::shared_ptr<ProcessorAdapter> Ptr;
 	//-------------------------------------------------------------------------
 	typedef ::processing::ProcessAdapter Adaptee;
+	//-------------------------------------------------------------------------
+	typedef IProcessor Super;
 protected:
 	//-------------------------------------------------------------------------
 	Adaptee::Ptr processor;
@@ -83,6 +85,8 @@ public:
 	virtual size_t getNumParameter() const;
 	//-------------------------------------------------------------------------
 	virtual IParameter::Ptr getParameter(int nr) const;
+	//-------------------------------------------------------------------------
+	virtual bool requestRemove(ModelObject::Ptr obj);
 protected:
 private:
 public:

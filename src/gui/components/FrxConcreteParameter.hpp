@@ -9,6 +9,7 @@
 #define SAMBAG_FRXCONCRETEPARAMETER_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include "FrxParameter.hpp"
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <sambag/disco/components/Knob.hpp>
@@ -34,6 +35,8 @@ public:
 	typedef _ControllerType ControllerType;
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<FrxConcreteParameter> Ptr;
+	//-------------------------------------------------------------------------
+	typedef boost::weak_ptr<FrxConcreteParameter> WPtr;
 protected:
 	//-------------------------------------------------------------------------
 	FrxConcreteParameter() {
@@ -85,6 +88,7 @@ namespace contollerTypes {
 			knob->setMinimum(0.);
 			knob->setMaximum(1.);
 			obj->setEncapsulatedCtrl(knob);
+			obj->setRangeModel(knob);
 		}
 	};	
 } // namespace

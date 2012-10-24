@@ -12,6 +12,7 @@
 #include "components/FrxCircuidView.hpp"
 #include <processing/Forward.hpp>
 #include <sambag/com/ArbitraryType.hpp>
+#include <boost/function.hpp>
 
 namespace frx { namespace gui {
 namespace sdc = sambag::disco::components;
@@ -26,29 +27,27 @@ namespace pr = frx::processing;
  */
 struct BrowserNode {
 //=============================================================================
-	enum Type{
-		Undefined, 
-		AddParameter, 
-		AddInputNode, 
-		AddOutputNode, 
-		PerformAction
-	};
 	std::string name;
-	sc::ArbitraryType::Ptr data;
-	Type type;
+	/**
+	 * will be called when node is selected and (eg.) ok is pressed.
+	 */ 
+	typedef boost::function<void()> AcceptedFunction;
+	AcceptedFunction f;
 	BrowserNode(const std::string &name, 
-		Type type = Undefined,
-		sc::ArbitraryType::Ptr data = sc::ArbitraryType::Ptr()
-	) : name(name), type(type),  data(data)
+		AcceptedFunction &f = AcceptedFunction()
+	) : name(name), f(f)
 	{
 	}
-	BrowserNode(const char *name = "") : name(name), type(Undefined) 
+	BrowserNode(const char *name = "") : name(name)
 	{
 	}
 	bool operator==(const BrowserNode &n) const { 
 		return name==n.name && 
-			type == n.type &&
-			data == n.data;
+			&f == &(n.f); // boost::functions are incomparable
+	}
+	void accept() const {
+		if (f)
+			f();
 	}
 };
 inline std::ostream & operator <<(std::ostream &os, const BrowserNode &n) {

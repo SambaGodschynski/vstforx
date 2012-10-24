@@ -33,6 +33,12 @@ namespace frx { namespace processing {
 	class ParameterAdapter;
 	typedef boost::shared_ptr<ParameterAdapter> ParameterAdapterPtr;
 	typedef boost::weak_ptr<ParameterAdapter> ParameterAdapterWPtr;
+	class NodeConnection;
+	typedef boost::shared_ptr<NodeConnection> NodeConnectionPtr;
+	typedef boost::weak_ptr<NodeConnection> NodeConnectionWPtr;
+	class ParameterConnection;
+	typedef boost::shared_ptr<ParameterConnection> ParameterConnectionPtr;
+	typedef boost::weak_ptr<ParameterConnection> ParameterConnectionWPtr;
 }}
 
 #endif /* FRX_PROCESSING_FORWARD_H */

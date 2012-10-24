@@ -8,7 +8,9 @@
 #include "ModelController.hpp"
 #include "processing.h"
 #include "NodeConnection.hpp"
+#include "ParameterConnection.hpp"
 #include <boost/bind.hpp>
+#include <boost/foreach.hpp>
 #include "concreteAdapter/Volume.h"
 #include "concreteAdapter/Pan.h"
 #include "concreteAdapter/InputStep.h"
@@ -199,11 +201,12 @@ IConnection::Ptr ModelController::connect(INode::Ptr out, INode::Ptr in) {
 	return cn;
 }
 //-----------------------------------------------------------------------------
-bool ModelController::removeConnection(IConnection::Ptr cn) {
-	if (!graph)
-		return false;
-	NodeConnection::Ptr connection = 
-		boost::shared_dynamic_cast<NodeConnection>(cn);
+IConnection::Ptr ModelController::connect(IParameter::Ptr a, IParameter::Ptr b)
+{
+	return ParameterConnection::createConnection(a, b);
+}
+//-----------------------------------------------------------------------------
+bool ModelController::removeConnection(NodeConnectionPtr connection) {
 	SAMBAG_ASSERT(connection);
 	typedef ::processing::Graph::Janitor Janitor; 
 	Janitor::Ptr jan = graph->getJanitor();
@@ -212,6 +215,16 @@ bool ModelController::removeConnection(IConnection::Ptr cn) {
 			connection->getDestinationNode()
 		);
 	return res == Janitor::SUCCEED;
+}
+//-----------------------------------------------------------------------------
+bool ModelController::removeConnection(IConnection::Ptr cn) {
+	if (!graph)
+		return false;
+	NodeConnection::Ptr connection = 
+		boost::shared_dynamic_cast<NodeConnection>(cn);
+	if (connection)
+		return removeConnection(connection);
+	return false;
 }
 //-----------------------------------------------------------------------------
 bool ModelController::removeProcessor(IProcessor::Ptr cn) {

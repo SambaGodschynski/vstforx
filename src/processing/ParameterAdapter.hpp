@@ -22,6 +22,8 @@ class ParameterAdapter : public IParameter {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
+	typedef IParameter Super;
+	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<ParameterAdapter> Ptr;
 	//-------------------------------------------------------------------------
 	typedef ::processing::parameter::Parameter Adaptee;
@@ -109,6 +111,15 @@ public:
 	virtual ParameterChanged & getEventSender() const {
 		SAMBAG_ASSERT(parameter);
 		return *(parameter.get());
+	}
+	//-------------------------------------------------------------------------
+	virtual void setValue(Number value) {
+		SAMBAG_ASSERT(parameter);
+		parameter->setValue(value);
+	}
+	//-------------------------------------------------------------------------
+	virtual Number getValue() const {
+		return parameter->getValue();
 	}
 }; // ParameterAdapter
 }} // namespace(s)

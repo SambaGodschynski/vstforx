@@ -9,7 +9,9 @@
 #define SAMBAG_FRXPARAMETER_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include <sambag/com/Common.hpp>
+#include <sambag/disco/components/DefaultBoundedRangeModel.hpp>
 #include "FrxNode.hpp"
 #include <string>
 
@@ -29,12 +31,18 @@ public:
 	//-------------------------------------------------------------------------
 	static const std::string PROPERTY_ENC_CTRL;
 	//-------------------------------------------------------------------------
+	static const std::string PROPERTY_RANGE_MODEL;
+	//-------------------------------------------------------------------------
 	typedef FrxNode Super;
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<FrxParameter> Ptr;
 	//-------------------------------------------------------------------------
+	typedef boost::weak_ptr<FrxParameter> WPtr;
+	//-------------------------------------------------------------------------
 	virtual sdcu::AComponentUIPtr createComponentUI(sdcu::ALookAndFeelPtr laf) const;
 protected:
+	//-------------------------------------------------------------------------
+	sdc::DefaultBoundedRangeModel::Ptr rangeModel;
 	//-------------------------------------------------------------------------
 	void onCtrlChanged(void *src, const sce::PropertyChanged &ev);
 	//-------------------------------------------------------------------------
@@ -65,6 +73,12 @@ public:
 	virtual void setBounds(const sd::Rectangle &r);
 	//-------------------------------------------------------------------------
 	void setEncapsulatedCtrl(sdc::AComponent::Ptr ctrl);
+	//-------------------------------------------------------------------------
+	void setRangeModel(sdc::DefaultBoundedRangeModel::Ptr model);
+	//-------------------------------------------------------------------------
+	sdc::DefaultBoundedRangeModel::Ptr getRangeModel() const {
+		return rangeModel;
+	}
 	//-------------------------------------------------------------------------
 	sdc::AComponent::Ptr getEncapsulatedCtrl() const { return ctrl; }
 	//-------------------------------------------------------------------------
