@@ -73,6 +73,8 @@ protected:
 		CtrlCmd cmd);
 public:
 	//-------------------------------------------------------------------------
+	virtual ~FrxControl();
+	//-------------------------------------------------------------------------
 	template <class Archive>
 	static void serializeView(Archive &ar, gc::FrxCircuidViewPtr c);
 	//-------------------------------------------------------------------------

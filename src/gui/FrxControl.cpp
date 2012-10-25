@@ -31,10 +31,12 @@
 #include <list>
 #include <string>
 #include <gui/components/FrxProcessorBrowser.hpp>
+#include <gui/components/SetupWindow.hpp>
 #include <processing/IParameter.hpp>
 #include <processing/IProcessor.hpp>
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <sambag/disco/components/DefaultBoundedRangeModel.hpp>
+#include "components/SetupCtrl.hpp"
 namespace frx { namespace gui {
 using namespace components;
 namespace {
@@ -42,6 +44,7 @@ namespace {
 //typedef std::string BrowserNode;
 typedef FrxColumnBrowser<BrowserNode> ColumnBrowser;
 typedef FrxProcessorBrowser<BrowserNode> ProcessorBrowser;
+sdc::FramedWindow::Ptr extraWindow;
 ////////////////////////////////////////////////////////////////////////////////
 boost::tuple<
 	frx::processing::IModelController::Ptr,
@@ -272,13 +275,25 @@ bool perfomConnect(FrxCircuidView::Ptr view,
 ColumnBrowser::Ptr openBrowser(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c)
 {
-	static ColumnBrowser::Ptr browser;
-	browser = FrxProcessorBrowser<BrowserNode>::create();
+	ColumnBrowser::Ptr browser;
+	extraWindow = browser = FrxProcessorBrowser<BrowserNode>::create();
 	browser->validate();
 	browser->pack();
 	browser->setTitle("Browser");
 	browser->open();
 	return browser;
+}
+//-----------------------------------------------------------------------------
+void openSetup(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c)
+{
+	SetupWindow::Ptr setup;
+	extraWindow = setup = SetupWindow::create();
+	setup->setCtrl(SetupCtrl::create());
+	extraWindow->validate();
+	extraWindow->pack();
+	extraWindow->setTitle("VSTForx Setup");
+	extraWindow->open();
 }
 ////////////////////////////////////////////////////////////////////////////////
 // Menu Entries
@@ -308,6 +323,8 @@ void createMainMenuEntries(Entries &out) {
 		boost::bind(&addFreeKnobToView, _1, _2)));
 	out.push_back( Entry("open plugin browser...",
 		boost::bind(&openBrowser, _1, _2)));
+	out.push_back( Entry("open setup dialog...",
+		boost::bind(&openSetup, _1, _2)));
 }
 //-----------------------------------------------------------------------------
 sdc::PopupMenuPtr createPopupMenu(FrxCircuidViewPtr view, 
@@ -355,6 +372,14 @@ struct Connector {
 //=============================================================================
 //  Class FrxControl
 //=============================================================================
+//-----------------------------------------------------------------------------
+FrxControl::~FrxControl() {
+	try {
+		extraWindow.reset();
+	} catch (const std::logic_error &ex) {
+		// TODO: loki::Singleton exeception
+	}
+}
 //-----------------------------------------------------------------------------
 void FrxControl::removeComponent(FrxCircuidViewPtr _view, FrxComponentPtr _c)
 {

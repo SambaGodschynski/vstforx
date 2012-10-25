@@ -8,6 +8,7 @@
 // ONE4ALL WINDOWS
 #include "win_one4All.h"
 #include "com/one4All.h"
+#include <Shlobj.h>
 #include <sstream>
 
 extern void* hInstance;
@@ -66,5 +67,51 @@ void SysTimer::stop() {
 	if (!id) return;
 	KillTimer ( NULL, id );
 	id = NULL;
+}
+//============================================================================================================
+//	globale string: SHBrowseForFolder startpfad ueber BrowseCallbackProc
+//============================================================================================================
+std::string _startPath;
+//============================================================================================================
+//	Methode BrowseCallbackProc:
+//============================================================================================================
+int CALLBACK BrowseCallbackProc(
+    HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
+{
+    switch(uMsg) {
+		case BFFM_INITIALIZED:
+			SendMessage(hwnd, BFFM_SETSELECTION, TRUE, reinterpret_cast<LPARAM>( _startPath.c_str() ) );
+			break;
+	}
+	return 0;
+}
+//--------------------------------------------------------------------------------------------------------
+std::string osSelectDirectory ( const std::string &wndTitle, 
+						    const std::string &startPath)
+{
+	string ret;
+	BROWSEINFO bi = { 0 };
+	bi.lpfn = &BrowseCallbackProc;
+	bi.lpszTitle = ( wndTitle.c_str() );
+	bi.hwndOwner = NULL;
+    _startPath = startPath;
+	LPITEMIDLIST pidl = SHBrowseForFolder ( &bi );
+    if ( pidl != 0 )
+    {
+        // get the name of the folder
+        char path[MAX_PATH];
+        if ( SHGetPathFromIDList ( pidl, path ) ) {
+			ret = string(path);
+        }
+
+        // free memory used
+        IMalloc * imalloc = 0;
+        if ( SUCCEEDED( SHGetMalloc ( &imalloc )) ) {
+            imalloc->Free ( pidl );
+            imalloc->Release ( );
+        }
+    }
+
+	return ret;
 }
 } // namespace com

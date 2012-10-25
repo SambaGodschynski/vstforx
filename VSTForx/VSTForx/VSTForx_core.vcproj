@@ -435,6 +435,22 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\src\gui\components\SetupCtrl.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\SetupCtrl.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\SetupWindow.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\SetupWindow.hpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\gui\components\VstForxEditor.cpp"
 						>
 					</File>
