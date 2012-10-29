@@ -15,14 +15,184 @@
 #include <sambag/disco/components/Panel.hpp>
 #include <sambag/disco/components/ScrollPane.hpp>
 #include <sambag/disco/components/Button.hpp>
+#include <boost/foreach.hpp>
+#include <sambag/com/Thread.hpp>
+#include <sambag/disco/components/Timer.hpp>
 
 namespace frx { namespace gui { namespace components {
+///////////////////////////////////////////////////////////////////////////////
+//=============================================================================
+//  Class ScanningDialog
+//=============================================================================
+class ScanningDialog : public sdc::FramedWindow {
+public:
+	//-------------------------------------------------------------------------
+	typedef boost::shared_ptr<ScanningDialog> Ptr;
+	//-------------------------------------------------------------------------
+	typedef sdc::FramedWindow Super;
+protected:
+	//-------------------------------------------------------------------------
+	FrxCircuidViewPtr view;
+	//-------------------------------------------------------------------------
+	sdc::ButtonPtr btnOk, btnCancel;
+	//-------------------------------------------------------------------------
+	ScanningDialog(sdc::Window::Ptr parent=sdc::Window::Ptr()) 
+		: sdc::FramedWindow (parent)
+	{
+	}
+	//-------------------------------------------------------------------------
+	typedef void (ScanningDialog::*BtnActionFunc)
+		(void *, const sdc::events::ActionEvent&);
+	//-------------------------------------------------------------------------
+	sdc::ButtonPtr createBtn(BtnActionFunc f, const std::string &txt);
+	//-------------------------------------------------------------------------
+	virtual void postConstructor();
+	//-------------------------------------------------------------------------
+	sdc::AContainerPtr createListPane();
+	//-------------------------------------------------------------------------
+	sdc::AContainerPtr createMainBtnPane();
+	//-------------------------------------------------------------------------
+	sdc::StringList::Ptr list;
+	//-------------------------------------------------------------------------
+	sdc::ScrollPane::Ptr dirListScrollPane;
+	//-------------------------------------------------------------------------
+	SetupCtrl::Ptr ctrl;
+	//-------------------------------------------------------------------------
+	sdc::Timer::Ptr timer;
+public:
+	//-------------------------------------------------------------------------
+	static Ptr create(sdc::Window::Ptr parent = sdc::Window::Ptr()) { 																		
+		Ptr neu(new ScanningDialog(parent));								
+		neu->self = neu;  
+		neu->postConstructor();                                            
+		neu->initWindow();
+		return neu;															
+	}
+	//-------------------------------------------------------------------------
+	void startScan(SetupCtrl::Ptr ctrl);
+	//-------------------------------------------------------------------------
+	void onBtnOk(void *, const sdc::events::ActionEvent& ev);
+	//-------------------------------------------------------------------------
+	void onBtnCancel(void *, const sdc::events::ActionEvent& ev);
+	//-------------------------------------------------------------------------
+	void onFileEvent(const std::string &file, SetupCtrl::FileStatus fst);
+	//-------------------------------------------------------------------------
+	void onScanCompleted();
+	//-------------------------------------------------------------------------
+	/**
+	 * redraw timer
+	 */
+	void onRefresh(void *, const sdc::TimerEvent &ev);
+};
+//-----------------------------------------------------------------------------
+void ScanningDialog::postConstructor() {
+	Super::postConstructor();
+	sdc::ui::UIManager::instance().installLookAndFeel(getRootPane(),
+		ui::FrxLookAndFeel::create()
+	);
+	getContentPane()->add(createListPane(), sdc::BorderLayout::CENTER, APPEND);
+	getContentPane()->add(createMainBtnPane(), sdc::BorderLayout::SOUTH, APPEND);
+	setTitle("Scan results:");
+}
+//-----------------------------------------------------------------------------
+sdc::AContainerPtr ScanningDialog::createListPane() {
+	list = sdc::StringList::create();
+	dirListScrollPane = sdc::ScrollPane::create(list);
+	dirListScrollPane->setPreferredSize(sd::Dimension(450., 300.));
+	return dirListScrollPane;
+}
+//-----------------------------------------------------------------------------
+sdc::AContainerPtr ScanningDialog::createMainBtnPane() {
+	sdc::Panel::Ptr mainBtnPane = sdc::Panel::create();
+	btnOk = createBtn(&ScanningDialog::onBtnOk, "OK");
+	mainBtnPane->add(btnOk);
+	
+	btnCancel = createBtn(&ScanningDialog::onBtnCancel, "Cancel");
+	mainBtnPane->add(btnCancel);
+	return mainBtnPane;
+}
+//-----------------------------------------------------------------------------
+sdc::ButtonPtr ScanningDialog::createBtn(BtnActionFunc f, const std::string &txt) 
+{
+	sdc::Button::Ptr res = sdc::Button::create();
+	res->setText(txt);
+	res->EventSender<sdc::events::ActionEvent>::addEventListener(
+		boost::bind(f, this, _1, _2)
+	);
+	return res;
+}
+//-----------------------------------------------------------------------------
+void ScanningDialog::onBtnOk(void *, const sdc::events::ActionEvent &ev) {
+	close();
+}
+//-----------------------------------------------------------------------------
+void ScanningDialog::onBtnCancel(void *, const sdc::events::ActionEvent &ev) 
+{
+	if (ctrl) {
+		ctrl->stopScanning();
+		ctrl->joinScan();
+	}
+	close();
+}
+//-----------------------------------------------------------------------------
+void ScanningDialog::startScan(SetupCtrl::Ptr ctrl) {
+	this->ctrl = ctrl;
+	if (!ctrl)
+		return;
+	btnOk->setEnabled(false);
+	ctrl->startScan(
+		boost::bind(&ScanningDialog::onFileEvent, this, _1, _2),
+		boost::bind(&ScanningDialog::onScanCompleted, this)
+	);
+	timer = sdc::Timer::create(100);
+	timer->EventSender<sdc::TimerEvent>::addTrackedEventListener(
+		boost::bind(&ScanningDialog::onRefresh, this, _1, _2),
+		getPtr()
+	);
+	timer->setNumRepetitions(-1);
+	timer->start();
+}
+//-----------------------------------------------------------------------------
+void ScanningDialog::onFileEvent(const std::string &file, SetupCtrl::FileStatus fst) 
+{
+	if (fst!=SetupCtrl::OnOpening)
+		return;
+	SAMBAG_BEGIN_SYNCHRONIZED(list->getTreeLock())
+		/**
+		 * do not invoke any redraw inhere: concurrency prolems!
+		 */
+		list->addElement(file);
+		int i = list->DefaultListModel::getSize() - 1;
+		list->ensureIndexIsVisible(i);
+	SAMBAG_END_SYNCHRONIZED
+}
+//-----------------------------------------------------------------------------
+void ScanningDialog::onScanCompleted() {
+	btnOk->setEnabled(true);
+}
+//-----------------------------------------------------------------------------
+void ScanningDialog::onRefresh(void *, const sdc::TimerEvent &ev) {
+	list->redraw();
+}
 //=============================================================================
 //  Class SetupWindow
 //=============================================================================
 //-----------------------------------------------------------------------------
 void SetupWindow::setCtrl(SetupCtrl::Ptr ctrl) {
 	this->ctrl = ctrl;
+	updateSettings();
+}
+//-----------------------------------------------------------------------------
+void SetupWindow::updateSettings() {
+	if (!ctrl)
+		return;
+	std::list<std::string> dirs;
+	ctrl->getPluginFolders(dirs);
+	BOOST_FOREACH(const std::string &str, dirs) {
+		dirList->addElement(str);
+	}
+	revalidate();
+	redraw();
 }
 //-----------------------------------------------------------------------------
 SetupCtrl::Ptr SetupWindow::getCtrl() const {
@@ -30,12 +200,16 @@ SetupCtrl::Ptr SetupWindow::getCtrl() const {
 }
 //-----------------------------------------------------------------------------
 void SetupWindow::postConstructor() {
+
 	Super::postConstructor();
 	sdc::ui::UIManager::instance().installLookAndFeel(getRootPane(),
 		ui::FrxLookAndFeel::create()
 	);
 	getContentPane()->add(createSetupPane(), sdc::BorderLayout::CENTER, APPEND);
 	getContentPane()->add(createMainBtnPane(), sdc::BorderLayout::SOUTH, APPEND);
+}
+//-----------------------------------------------------------------------------
+SetupWindow::~SetupWindow() {
 }
 //-----------------------------------------------------------------------------
 sdc::AContainerPtr SetupWindow::createSetupPane() {
@@ -100,9 +274,39 @@ sdc::ButtonPtr SetupWindow::createBtn(BtnActionFunc f, const std::string &txt) {
 	return res;
 }
 //-----------------------------------------------------------------------------
-void SetupWindow::onBtnOkPressed(void *, const sdc::events::ActionEvent &ev) {
-	close();
+namespace {
+	ScanningDialog::Ptr scanningDlg;
+	void onScanningDlgClose(void *, const sdc::OnCloseEvent &ev) {
+		scanningDlg.reset();
+	}
 }
+//-----------------------------------------------------------------------------
+void SetupWindow::openScanningDialog() {
+	if (scanningDlg) // already open
+		return;
+	scanningDlg = ScanningDialog::create();
+	scanningDlg->validate();
+	scanningDlg->pack();
+	scanningDlg->addOnCloseEventListener(&onScanningDlgClose);
+	scanningDlg->open();
+}
+//-----------------------------------------------------------------------------
+void SetupWindow::onBtnOkPressed(void *, const sdc::events::ActionEvent &ev) {
+	try {
+		if (ctrl) {
+			ctrl->saveSettings();
+		}
+	} catch (const std::exception &ex) {
+		// TODO: handle
+		throw;
+	} catch(...) {
+		//TODO: handle
+		throw;
+	}
+	close();
+	openScanningDialog();
+	scanningDlg->startScan(ctrl);
+}	
 //-----------------------------------------------------------------------------
 void SetupWindow::onBtnCancelPressed(void *, const sdc::events::ActionEvent &ev) 
 {
@@ -114,6 +318,8 @@ void SetupWindow::onBtnAddDirPressed(void *, const sdc::events::ActionEvent &ev)
 	if (!ctrl)
 		return;
 	std::string dir = ctrl->selectDirectory();
+	if (!ctrl->addPluginFolder(dir))
+		return;
 	dirList->addElement(dir);
 	dirList->redraw();
 }
@@ -125,8 +331,12 @@ void SetupWindow::onBtnChangeDirPressed(void *, const sdc::events::ActionEvent &
 	int index = dirList->getSelectedIndex();
 	if (index<0)
 		return;
-	std::string old = dirList->get(index);
+	const std::string &old = dirList->get(index);
 	std::string dir = ctrl->selectDirectory(old);
+	if (!ctrl->removePluginFolder(old))
+		return;
+	if (!ctrl->addPluginFolder(dir))
+		return;
 	dirList->set(index, dir);
 	dirList->redraw();
 }
@@ -136,7 +346,13 @@ void SetupWindow::onBtnRemoveDirPressed(void *, const sdc::events::ActionEvent &
 	int index = dirList->getSelectedIndex();
 	if (index<0)
 		return;
+	if (!ctrl)
+		return;
+	const std::string &str = dirList->get(index);
+	if (!ctrl->removePluginFolder(str))
+		return;
 	dirList->removeElementAt(index);
+	dirList->clearSelection();
 	dirList->redraw();
 }
 }}} // namespace(s)

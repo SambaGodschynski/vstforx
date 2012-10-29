@@ -23,6 +23,7 @@
 #include "processing/Plugin.h"
 #include "boost/tuple/tuple.hpp"
 #include "boost/tuple/tuple_comparison.hpp"
+#include <loki/Singleton.h>
 
 namespace com {
 using namespace events;
@@ -158,6 +159,7 @@ class PluginCollection :
 	public EventSender<ScanInterrupted>
 {
 friend class ScanVisitor;
+friend struct Loki::CreateUsingNew<PluginCollection>;
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef std::string PluginIdType;
@@ -360,7 +362,7 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	Filenames blackList; // files to skip 
 	//--------------------------------------------------------------------------------------------------------
-	Settings::Ptr settings;
+	Settings &settings;
 	//--------------------------------------------------------------------------------------------------------
 	PluginCollection();
 	//--------------------------------------------------------------------------------------------------------
@@ -453,13 +455,10 @@ public:
 	 */
 	void update( frx::processing::IHostInfo::Ptr hostInfo);
 	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * @return PluginCollection-Singleton
-	 */
-	static Ptr getPluginCollection();
-	//--------------------------------------------------------------------------------------------------------
 	virtual ~PluginCollection();
 };
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+extern PluginCollection & getPluginCollection();
 } // namespace com
 
 #endif

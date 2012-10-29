@@ -9,49 +9,40 @@
 #define SETTINGS_H
 
 #include "PPIError.h"
-#include "boost/shared_ptr.hpp"
 #include <string>
 #include <list>
 #include <set>
-#define SETTINGS com::Settings::getSettings()
-#define HOSTINFO SETTINGS->getHostInformation()
+#include <loki/Singleton.h>
 
-std::string getHomeDirectory();
-
-class CConfigToolDlg;
-
-// TODO: forward decl. ist scheiss lösung 
-
-namespace ppiGui{ 
-	class SetupDialog; 
-	class MainCtrl;
-}
+#define SETTINGS com::getSettings()
+#define HOSTINFO SETTINGS.getHostInformation()
 
 namespace tests {
 	class PluginCollectionTest;
 }
 
 namespace com{
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+class Settings;
+//------------------------------------------------------------------------------------------------------------
+extern Settings & getSettings();
+//------------------------------------------------------------------------------------------------------------
+extern Settings & initSettings(const std::string &homeDirectory);
 //============================================================================================================
 //Enthaelt allgeimeine Einstellungs Variablen 
 //( Singleton )
 //============================================================================================================
 class Settings {
-friend class CConfigToolDlg;
-friend class ppiGui::SetupDialog;
-friend class ppiGui::MainCtrl;
 friend class tests::PluginCollectionTest;
+friend struct Loki::CreateUsingNew<Settings>;
 public:
-	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<Settings> Ptr;
 	//--------------------------------------------------------------------------------------------------------
 	typedef string Pathname;
 	//--------------------------------------------------------------------------------------------------------
 	typedef set<Pathname> PathnameSet;
 private:
 	//--------------------------------------------------------------------------------------------------------
-	// Singleton Settings Instanz
-	static Ptr settings; 
+	std::string homeDir;
 	//--------------------------------------------------------------------------------------------------------
 	// privater Konstruktor
 	Settings();
@@ -86,6 +77,14 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 public:
 	//--------------------------------------------------------------------------------------------------------
+	const std::string & getHomeDirectory() const {
+		return homeDir;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	void setHomeDirectory(const std::string &path);
+	//--------------------------------------------------------------------------------------------------------
+	void init(const std::string &homeDirectory);
+	//--------------------------------------------------------------------------------------------------------
 	void reloadConfigFile() { loadConfigFile(); }
 	//--------------------------------------------------------------------------------------------------------
 	// PPI KONSTANTEN
@@ -107,21 +106,17 @@ public:
 	static const string PLUG_LOAD_LOGFILE; 
 	static const string CONFIG_FILE;
 	//--------------------------------------------------------------------------------------------------------
-	static bool isInit() { return settings.get() == NULL; }
-	//--------------------------------------------------------------------------------------------------------
 	string getPlugCollectionDumpFilename ()  { return getHomeDirectory() + plugCollectionDumpFile; }
 	//--------------------------------------------------------------------------------------------------------
-	static string getLogFilename()  { return getHomeDirectory() + NAME + ".log"; }
+	static string getLogFilename()  { return SETTINGS.getHomeDirectory() + NAME + ".log"; }
 	//--------------------------------------------------------------------------------------------------------
-	static string getConfFilename()  { return getHomeDirectory() + CONFIG_FILE; }
+	static string getConfFilename()  { return SETTINGS.getHomeDirectory() + CONFIG_FILE; }
 	//--------------------------------------------------------------------------------------------------------
-	static string getPlugInitLogFilename()  { return getHomeDirectory() + PLUG_LOAD_LOGFILE; }
+	static string getPlugInitLogFilename()  { return SETTINGS.getHomeDirectory() + PLUG_LOAD_LOGFILE; }
 	//--------------------------------------------------------------------------------------------------------
-	void addVSTFolder ( const string &path );
+	bool addVSTFolder ( const string &path );
 	//--------------------------------------------------------------------------------------------------------
-	void removeVSTFolder ( const string &path ) {
-		pluginDirectories.erase ( path );
-	}
+	bool removeVSTFolder ( const string &path );
 	//--------------------------------------------------------------------------------------------------------
 	void clearVSTFolders () {
 		pluginDirectories.clear();
@@ -133,8 +128,6 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	void saveConfigFile ();
 	//--------------------------------------------------------------------------------------------------------
-	static Ptr getSettings();
-	//--------------------------------------------------------------------------------------------------------
 	unsigned int getWindowWidth() const { return windowWidth; }
 	//--------------------------------------------------------------------------------------------------------
 	unsigned int getWindowHeight() const { return windowHeight; }
@@ -144,9 +137,7 @@ public:
 	static string versionToString( const unsigned int version = PPI_VERSION );
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Settings(){}
-private:
 };
-
 } // namespace com
 
 #endif

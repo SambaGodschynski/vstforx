@@ -13,7 +13,9 @@
 #include <sambag/disco/components/Forward.hpp>
 #include <sambag/disco/components/List.hpp>
 #include <sambag/disco/components/events/ActionEvent.hpp>
+#include <sambag/disco/components/Forward.hpp>
 #include "SetupCtrl.hpp"
+#include "Forward.hpp"
 
 namespace frx { namespace gui { namespace components {
 namespace sd = sambag::disco;
@@ -62,7 +64,13 @@ private:
 		(void *, const sdc::events::ActionEvent&);
 	//-------------------------------------------------------------------------
 	sdc::ButtonPtr createBtn(BtnActionFunc f, const std::string &txt);
+	//-------------------------------------------------------------------------
+	void updateSettings();
+	//-------------------------------------------------------------------------
+	void openScanningDialog();
 public:
+	//-------------------------------------------------------------------------
+	virtual ~SetupWindow();
 	//-------------------------------------------------------------------------
 	void setCtrl(SetupCtrl::Ptr ctrl);
 	//-------------------------------------------------------------------------

@@ -237,10 +237,6 @@
 		</Configuration>
 	</Configurations>
 	<References>
-		<ProjectReference
-			ReferencedProjectIdentifier="{8EE5989A-5379-4923-ABDA-6CA97180A74E}"
-			RelativePathToProject="..\..\..\..\clibs\sambag\projects\msVS2008\sambag\sambag.vcproj"
-		/>
 	</References>
 	<Files>
 		<Filter
@@ -628,6 +624,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\src\processing\MidiEventProcessor.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\MidiEventProcessor.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\src\processing\ModelController.cpp"
 					>
 				</File>
@@ -673,6 +677,18 @@
 				</File>
 				<File
 					RelativePath="..\..\src\processing\ParameterConnection.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\Plugin.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\Plugin.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\PlugInfo.h"
 					>
 				</File>
 				<File
@@ -839,6 +855,26 @@
 						>
 					</File>
 				</Filter>
+				<Filter
+					Name="pluginTypes"
+					>
+					<File
+						RelativePath="..\..\src\processing\pluginTypes\NullAEffect.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\processing\pluginTypes\NullAEffect.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\processing\pluginTypes\VSTPlugin2x.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\processing\pluginTypes\VSTPlugin2x.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="com"
@@ -872,6 +908,18 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\src\com\PluginCollection.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\com\PluginCollection.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\com\PluginCollectionSQL.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\src\com\PPIError.cpp"
 					>
 				</File>
@@ -891,6 +939,14 @@
 			<Filter
 				Name="Os_Specific"
 				>
+				<File
+					RelativePath="..\..\src\OS_Specific\windows\processing\OS_VSTPlugin2x.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\OS_Specific\windows\processing\OS_VSTPlugin2x.h"
+					>
+				</File>
 				<File
 					RelativePath="..\..\src\OS_Specific\windows\com\win_one4All.cpp"
 					>

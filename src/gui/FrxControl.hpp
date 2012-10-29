@@ -13,6 +13,7 @@
 #include <processing/Forward.hpp>
 #include <sambag/com/ArbitraryType.hpp>
 #include <boost/function.hpp>
+#include <loki/Singleton.h>
 
 namespace frx { namespace gui {
 namespace sdc = sambag::disco::components;
@@ -72,6 +73,8 @@ protected:
 		fgc::FrxComponentWPtr c, 
 		CtrlCmd cmd);
 public:
+	//-------------------------------------------------------------------------
+	FrxControl();
 	//-------------------------------------------------------------------------
 	virtual ~FrxControl();
 	//-------------------------------------------------------------------------

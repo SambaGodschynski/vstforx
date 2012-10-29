@@ -197,7 +197,7 @@ Graph::Ptr Graph::create( frx::processing::IHostInfo::Ptr hostInfo ) {
 }
 //------------------------------------------------------------------------------------------------------------
 void Graph::save(oArchive &ar) const {
-	com::MethodMessage<Graph> methodMessage ( "save()");
+	/*com::MethodMessage<Graph> methodMessage ( "save()");
 	Graph::Ptr _this = self.lock();
 	ar << _this;
 	ar << startNode;
@@ -205,13 +205,13 @@ void Graph::save(oArchive &ar) const {
 	ar << g;
 	ar << graphObjects;
 	// hostParameter
-	ar<<hostParameter;
+	ar<<hostParameter;*/
 }
 //------------------------------------------------------------------------------------------------------------
 Graph::Ptr Graph::load( iArchive &ar, frx::processing::IHostInfo::Ptr hostInfo ) {
 	com::MethodMessage<Graph> methodMessage ( "load()");
 	Graph::Ptr graph;
-	ar >> graph; 
+	/*ar >> graph; 
 	graph->self = graph;
 	graph->hostInfo = hostInfo;
 	
@@ -224,7 +224,7 @@ Graph::Ptr Graph::load( iArchive &ar, frx::processing::IHostInfo::Ptr hostInfo )
 	// hostParameter
 	ar>>graph->hostParameter;
 	
-	graph->getJanitor()->updateProcessorNodeVertexRelations(); // impl. updateGraph()
+	graph->getJanitor()->updateProcessorNodeVertexRelations(); // impl. updateGraph()*/
 
 	return graph;
 }

@@ -27,6 +27,7 @@
 #include <fstream>
 #include <gui/components/FrxSerializationRegister.hpp>
 #include <gui/components/FrxColumnBrowser.hpp>
+#include <com/Settings.h>
 
 #ifdef WIN32
 #include <crtdbg.h>
@@ -104,6 +105,8 @@ fgc::FrxCircuidView::Ptr createNewView(sdc::Window::Ptr win) {
 
 int main() {
 	const std::string savefile("frxview.save");
+	// init settings
+	::com::initSettings("./");
 	srand ( (int)time(NULL) );
 	SAMBAG_WINONLY(
 		_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); //VS memory tracking

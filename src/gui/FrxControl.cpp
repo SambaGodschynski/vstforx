@@ -37,6 +37,7 @@
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <sambag/disco/components/DefaultBoundedRangeModel.hpp>
 #include "components/SetupCtrl.hpp"
+
 namespace frx { namespace gui {
 using namespace components;
 namespace {
@@ -289,7 +290,12 @@ void openSetup(fgc::FrxCircuidViewPtr view,
 {
 	SetupWindow::Ptr setup;
 	extraWindow = setup = SetupWindow::create();
-	setup->setCtrl(SetupCtrl::create());
+	SetupCtrl::Ptr ctrl = SetupCtrl::create();
+	frx::processing::IModelController::Ptr mCtrl = frx::processing::getModelController(view);
+	if (mCtrl) {
+		ctrl->setHostInfo(mCtrl->getHostInfo());
+	}
+	setup->setCtrl(ctrl);
 	extraWindow->validate();
 	extraWindow->pack();
 	extraWindow->setTitle("VSTForx Setup");
@@ -372,6 +378,9 @@ struct Connector {
 //=============================================================================
 //  Class FrxControl
 //=============================================================================
+//-----------------------------------------------------------------------------
+FrxControl::FrxControl() {
+}
 //-----------------------------------------------------------------------------
 FrxControl::~FrxControl() {
 	try {

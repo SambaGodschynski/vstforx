@@ -130,7 +130,7 @@ void OutputStep::processAdapter( Processor::Int numSamples ) {
 	}
 	TRY_TO_LOCK_TIMED (mutex); // gleichzeitigen zugriff von addOutputNode blocken
 	frx::processing::TimeInfo *inf = hI->getHostTimeInfo(0);
-	ClockEdge::EdgeValue t = transport.in ( inf->transportIsPlaying );
+	ClockEdge::EdgeValue t = transport.in ( inf->transportIsPlaying() );
 	if (t == ClockEdge::HIGH ){ // Transport: play flanke
 		reset();
 	}

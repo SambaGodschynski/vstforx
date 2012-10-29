@@ -17,6 +17,8 @@
 #include "INode.hpp"
 #include <gui/ViewObject.hpp>
 #include <vector>
+#include "IHostInfo.h"
+
 namespace frx { namespace processing {
 //=============================================================================
 /** 
@@ -91,6 +93,8 @@ public:
 	virtual INode::Ptr getEntry() = 0;
 	//-------------------------------------------------------------------------
 	virtual INode::Ptr getExit() = 0;
+	//-------------------------------------------------------------------------
+	virtual IHostInfo::Ptr getHostInfo() const = 0;
 }; // IModelController
 ///////////////////////////////////////////////////////////////////////////////
 extern IModelController::Ptr

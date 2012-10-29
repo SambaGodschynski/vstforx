@@ -122,6 +122,8 @@ public:
 	//-------------------------------------------------------------------------
 	bool excuteProcessorRemoveRequest(ModelObject::Ptr obj, 
 		boost::weak_ptr<IProcessor> cn);
+	//-------------------------------------------------------------------------
+	virtual IHostInfo::Ptr getHostInfo() const;
 }; // ModelController
 }} // namespace(s)
 

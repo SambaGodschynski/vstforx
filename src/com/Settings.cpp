@@ -42,11 +42,23 @@ static inline void parseConfigLine( ifstream &f, com::MyString &token, com::MySt
 }
 
 namespace com {
-//=======================================================================================
+//============================================================================================================
 //class Settings
-//=======================================================================================
+//============================================================================================================
+namespace {
+	typedef Loki::SingletonHolder<Settings> FactoryHolder;
+} // namespace
 //------------------------------------------------------------------------------------------------------------
-Settings::Ptr Settings::settings;
+Settings & getSettings() {
+	Settings &res = FactoryHolder::Instance();
+	return res;
+}
+//------------------------------------------------------------------------------------------------------------
+Settings & initSettings(const std::string &homeDirectory) {
+	Settings &res = FactoryHolder::Instance();
+	res.init(homeDirectory);
+	return res;
+}
 //------------------------------------------------------------------------------------------------------------
 const string Settings::NAME = "vstforx";
 const string Settings::VENDOR = "samba godschynski";
@@ -61,16 +73,25 @@ Settings::Settings() :
 windowWidth(MIN_WINDOW_WIDTH), 
 windowHeight(MIN_WINDOW_HEIGHT),
 maxLogSize( KILO * 2000 ),
-fastScan ( true ),
-outDir( getHomeDirectory() )
+fastScan ( true )
 {
+}
+//------------------------------------------------------------------------------------------------------------
+void Settings::setHomeDirectory(const std::string &path) {
+	homeDir = path;
+}
+//------------------------------------------------------------------------------------------------------------
+void Settings::init(const std::string &homeDirectory) {
 	using namespace boost::algorithm;
+	setHomeDirectory(homeDirectory);
+	outDir = getHomeDirectory();
 	loadConfigFile();
-	string name = NAME; to_lower(name);
+	string name = NAME; 
+	to_lower(name);
 	plugCollectionDumpFile = name + "_plugin_db_dump";
 }
 //------------------------------------------------------------------------------------------------------------
-void Settings::addVSTFolder ( const string &path ) {
+bool Settings::addVSTFolder ( const string &path ) {
 	
 	// testen ob path == unterverz. von schon vorhandenen pfad
 	PathnameSet::iterator it = pluginDirectories.begin();
@@ -84,10 +105,14 @@ void Settings::addVSTFolder ( const string &path ) {
 		}
 	}
 
-	pluginDirectories.insert ( path );
+	return pluginDirectories.insert(path).second;
 }
 //------------------------------------------------------------------------------------------------------------
-void Settings::loadConfigFile() {
+bool Settings::removeVSTFolder ( const string &path ) {
+	return pluginDirectories.erase(path) > 0;
+}
+//------------------------------------------------------------------------------------------------------------
+void Settings::loadConfigFile() { // TODO: use boost::Program_options
 	// !! keine PPI ausnahmen oder TOLOG oder irgendetwas was indirekt wieder settings init. !!
 	ifstream f;
 	if ( CONFIG_FILE == "" ) return;
@@ -144,7 +169,7 @@ void Settings::loadConfigFile() {
 	f.close();
 }
 //------------------------------------------------------------------------------------------------------------
-void Settings::saveConfigFile() {
+void Settings::saveConfigFile() {  // TODO: use boost::Program_options
 	ofstream f;
 	try {
 		if ( CONFIG_FILE == "" ) return;
@@ -173,11 +198,6 @@ void Settings::saveConfigFile() {
 		return;
 	}
 	f.close();
-}
-//------------------------------------------------------------------------------------------------------------
-Settings::Ptr Settings::getSettings(){
-	if (!settings) settings = Settings::Ptr ( new Settings() );
-	return settings;
 }
 //------------------------------------------------------------------------------------------------------------
 string Settings::versionToString( const unsigned int version ) {

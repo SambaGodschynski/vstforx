@@ -271,5 +271,9 @@ bool ModelController::excuteProcessorRemoveRequest(ModelObject::Ptr obj,
 {
 	return removeProcessor(cn.lock());	
 }
+//-----------------------------------------------------------------------------
+IHostInfo::Ptr ModelController::getHostInfo() const {
+	return graph->getHostInfo();
+}
 
 }} // namespace(s)

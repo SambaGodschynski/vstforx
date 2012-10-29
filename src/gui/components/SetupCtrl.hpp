@@ -9,7 +9,12 @@
 #define SAMBAG_SETUPCTRL_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/function.hpp>
 #include <string>
+#include <list>
+#include "Forward.hpp"
+#include <processing/IHostInfo.h>
+
 namespace frx { namespace gui { namespace components {
 //=============================================================================
 /** 
@@ -24,13 +29,53 @@ protected:
 	//-------------------------------------------------------------------------
 	SetupCtrl(){}
 private:
+	//-------------------------------------------------------------------------
+	::frx::processing::IHostInfo::Ptr hostInfo;
 public:
 	//-------------------------------------------------------------------------
 	static Ptr create() {
 		return Ptr(new SetupCtrl());
 	}
 	//-------------------------------------------------------------------------
+	::frx::processing::IHostInfo::Ptr getHostInfo() const {
+		return hostInfo;
+	}
+	//-------------------------------------------------------------------------
+	void setHostInfo(::frx::processing::IHostInfo::Ptr hI);
+	//-------------------------------------------------------------------------
+	enum FileStatus{OnOpening, Succeed, Failed, Skipped};
+	//-------------------------------------------------------------------------
+	typedef boost::function<void(const std::string&, FileStatus)> NotifyFileFunc;
+	typedef boost::function<void()> ScanCompletedFunc;
+	//-------------------------------------------------------------------------
+	/**
+	 * starts plugin scan (in a seperate thread so don't forget joinScan())
+	 * @param scanning event callback function.
+	 * @param scanning event callback function.
+	 * @see joinScan()
+	 */
+	void startScan( const NotifyFileFunc &fileEventF, 
+		const ScanCompletedFunc &scanCompletedF);
+	//-------------------------------------------------------------------------
+	void stopScanning();
+	//-------------------------------------------------------------------------
+	/**
+	 * joins scanning thread
+	 * @see boost::thread::join()
+	 */
+	void joinScan();
+	//-------------------------------------------------------------------------
 	std::string selectDirectory(const std::string &startDir="") const;
+	//-------------------------------------------------------------------------
+	bool addPluginFolder(const std::string &path);
+	//-------------------------------------------------------------------------
+	bool removePluginFolder(const std::string &path);
+	//-------------------------------------------------------------------------
+	size_t getNumPluginFolder() const;
+	//-------------------------------------------------------------------------
+	void getPluginFolders(std::list<std::string> &out);
+	//-------------------------------------------------------------------------
+	void saveSettings();
 }; // SetupCtrl
 }}} // namespace(s)
 

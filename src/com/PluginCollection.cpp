@@ -109,6 +109,10 @@ void ScanVisitor::file ( const ScanVisitor::Path &loc ) {
 	if ( folder == PluginCollection::NULL_FOLDER ) throw InvalidPathEx();
 	client->checkFile ( loc, folder );
 }
+PluginCollection & getPluginCollection() {
+	typedef Loki::SingletonHolder<PluginCollection> FactoryHolder;
+	return FactoryHolder::Instance();
+}
 //============================================================================================================
 // Klasse PluginCollection : <Singleton>
 // Datenbank fuer Plugin Files.
@@ -122,17 +126,13 @@ const PluginCollection::FolderID PluginCollection::ROOT_FOLDER_ID = 1;
 //------------------------------------------------------------------------------------------------------------
 const PluginCollection::Folder   PluginCollection::NULL_FOLDER = PluginCollection::Folder( "", UINT_MAX );
 //------------------------------------------------------------------------------------------------------------
-namespace {
-boost::weak_ptr<PluginCollection> highlander; // es darf nur einen geben
-}
-//------------------------------------------------------------------------------------------------------------
 PluginCollection::PluginCollection() : 
 	settings( SETTINGS ), abortScan(false), scanStamp(0)
 {
 	using namespace sambag::cpsqlite;
 	using namespace com::sqlcommands;
 	try {
-		database = DataBase::getDataBase ( settings->getPlugCollectionDumpFilename() );
+		database = DataBase::getDataBase ( settings.getPlugCollectionDumpFilename() );
 		// test access
 		checkDataBaseIntegrity(); // throws database connection failed
 		// check whether timestamp exists. throws DataBaseQueryFailed if not
@@ -145,8 +145,8 @@ PluginCollection::PluginCollection() :
 		try {
 			// remove file, try again
 			database.reset();
-			boost::filesystem::remove( settings->getPlugCollectionDumpFilename() );
-			database = DataBase::getDataBase ( settings->getPlugCollectionDumpFilename() );
+			boost::filesystem::remove( settings.getPlugCollectionDumpFilename() );
+			database = DataBase::getDataBase ( settings.getPlugCollectionDumpFilename() );
 			initDB();
 		} catch(...) { // failed again
 			ShowDatabaseConnectionFailedMSG();
@@ -183,7 +183,7 @@ void PluginCollection::scanDirectories ( const Settings::PathnameSet &pathSet ) 
 	ScanVisitor vis( this );
 
 	DataBase::Executer::Ptr exec = database->getExecuter();
-	if ( settings->isFastScan() ) // accerlate db writein if fastscan setted
+	if ( settings.isFastScan() ) // accerlate db writein if fastscan setted
 		exec->execute("BEGIN TRANSACTION;");
 	
 	Settings::PathnameSet::const_iterator it = pathSet.begin();
@@ -191,7 +191,7 @@ void PluginCollection::scanDirectories ( const Settings::PathnameSet &pathSet ) 
 		scanDirectory( ScanVisitor::Path(*it), vis );
 	}
 
-	if ( settings->isFastScan() )
+	if ( settings.isFastScan() )
 		exec->execute("COMMIT TRANSACTION;");
 
 	// scan complete now clean up db
@@ -213,7 +213,7 @@ void PluginCollection::update(  frx::processing::IHostInfo::Ptr hostInfo ) {
 	processScanLogFile();
 	appendLog ( "plugin init log:" );
 	// hole plugin verzeichnisse aus settings
-	Settings::PathnameSet const &pathSet = settings->getPluginDirectoryList();
+	Settings::PathnameSet const &pathSet = settings.getPluginDirectoryList();
 	//!!
 	tmpHostInfo = hostInfo;
 	
@@ -322,20 +322,12 @@ processing::Plugin::Ptr PluginCollection::restorePlugNode ( frx::processing::IHo
 	return PluginFactory::createPlugNode ( hostInfo, info.location ); 
 }
 //------------------------------------------------------------------------------------------------------------
-PluginCollection::Ptr PluginCollection::getPluginCollection() {
-	PluginCollection::Ptr pC = highlander.lock();
-	if (!pC) {
-		highlander = pC = Ptr ( new PluginCollection() );
-	}
-	return pC;
-}
-//------------------------------------------------------------------------------------------------------------
 void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::processing::IHostInfo::Ptr hostinfo )
 {
 	using namespace processing;
 	if (!hostinfo) throw com::ppiError::NullPointer("null pointer",__FILE__,__LINE__);
 	// is fastscan?
-	if ( settings->isFastScan() ) {
+	if ( settings.isFastScan() ) {
 		out_info.access = PluginInfo::NOT_CHECKED;
 		out_info.name = Path( out_info.location ).filename().string();
 		// set not the timestamp! because if rescan without the fast option we want to peek in plug
@@ -788,7 +780,7 @@ bool PluginCollection::isAllScanned() const {
 	using namespace sambag::cpsqlite;
 	using namespace sqlcommands;
 	using namespace processing;
-	Settings::PathnameSet const &l = settings->getPluginDirectoryList();
+	Settings::PathnameSet const &l = settings.getPluginDirectoryList();
 	ParameterList pL;
 	DataBase::Results res;
 	DataBase::Executer::Ptr exec = database->getExecuter(); 

@@ -11,7 +11,6 @@
 #include <sambag/disco/components/Forward.hpp>
 #include <sambag/disco/components/events/ActionEvent.hpp>
 #include <sambag/disco/components/events/MouseEvent.hpp>
-#include <loki/Singleton.h>
 #include "components/Forward.hpp"
 #include <boost/function.hpp>
 #include <boost/bind.hpp>

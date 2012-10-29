@@ -171,8 +171,8 @@
 	</Configurations>
 	<References>
 		<ProjectReference
-			ReferencedProjectIdentifier="{8EE5989A-5379-4923-ABDA-6CA97180A74E}"
-			RelativePathToProject="..\..\..\..\clibs\sambag\projects\msVS2008\sambag\sambag.vcproj"
+			ReferencedProjectIdentifier="{6DEBC17F-F561-42BD-BFB2-A10C07A88B78}"
+			RelativePathToProject="..\..\..\..\clibs\sambag\src\sambag.vcproj"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{01B497C7-E74C-4DDA-9F08-2502B716DF62}"
