@@ -18,6 +18,10 @@
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <sambag/disco/components/BorderLayout.hpp>
 #include <sambag/disco/components/Panel.hpp>
+#include <boost/function.hpp>
+#include <string>
+#include "IFrxColumnBrowserCtrl.hpp"
+#include "Forward.hpp"
 
 namespace frx { namespace gui { namespace components {
 namespace sce = sambag::com::events;
@@ -25,13 +29,51 @@ namespace sd = sambag::disco;
 namespace sdc = sd::components;
 namespace sdcu = sdc::ui;
 //=============================================================================
+/**
+ * @class FrxBrowser content.
+ * The elements which are contained by a browser class.
+ * Each object has the informations: - a string representation
+ *									 - a function callback initiated if object is
+ *                                     acceppted by user action (add/ok/..).
+ */
+struct BrowserNode {
+//=============================================================================
+	std::string name;
+	/**
+	 * will be called when node is selected and (eg.) ok is pressed.
+	 */ 
+	typedef boost::function<void()> AcceptedFunction;
+	AcceptedFunction f;
+	BrowserNode(const std::string &name, 
+		AcceptedFunction &f = AcceptedFunction()
+	) : name(name), f(f)
+	{
+	}
+	BrowserNode(const char *name = "") : name(name)
+	{
+	}
+	bool operator==(const BrowserNode &n) const { 
+		return name==n.name && 
+			&f == &(n.f); // boost::functions are incomparable
+	}
+	void accept() const {
+		if (f)
+			f();
+	}
+};
+inline std::ostream & operator <<(std::ostream &os, const BrowserNode &n) {
+	os<<n.name;
+	return os;
+}
+//=============================================================================
 /** 
   * @class FrxColumnBrowser.
   */
-template <class T>
 class FrxColumnBrowser : public sdc::FramedWindow {
 //=============================================================================
 public:
+	//-------------------------------------------------------------------------
+	typedef BrowserNode T;
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<FrxColumnBrowser> Ptr;
 	//-------------------------------------------------------------------------
@@ -49,41 +91,36 @@ protected:
 	FrxColumnBrowser( sdc::Window::Ptr parent=sdc::Window::Ptr() ) :
 		sdc::FramedWindow(parent) {}
 	//-------------------------------------------------------------------------
+	virtual void installListeners() {}
+	//-------------------------------------------------------------------------
+	virtual void createMainBtns() {}
+	//-------------------------------------------------------------------------
+	IFrxColumnBrowserCtrl::Ptr ctrl;
 private:
 	//-------------------------------------------------------------------------
 	sdc::AContainerPtr buttonPane;
 	//-------------------------------------------------------------------------
-	typename BrowserImpl::Ptr browser;
+	BrowserImpl::Ptr browser;
 public:
+	//-------------------------------------------------------------------------
+	Ptr getPtr() {
+		return boost::shared_dynamic_cast<FrxColumnBrowser>(AComponent::getPtr());
+	}
 	//-------------------------------------------------------------------------
 	sdc::AContainerPtr getButtonPane() const {
 		return buttonPane;
 	}
 	//-------------------------------------------------------------------------
-	typename BrowserImpl::Ptr getBrowserImpl() const {
+	BrowserImpl::Ptr getBrowserImpl() const {
 		return browser;
 	}
+	//-------------------------------------------------------------------------
+	virtual void setCtrl(IFrxColumnBrowserCtrl::Ptr ctrl);
+	//-------------------------------------------------------------------------
+	virtual IFrxColumnBrowserCtrl::Ptr getCtrl() const;
+	//-------------------------------------------------------------------------
+	virtual void initTree(FrxCircuidViewPtr view);
 }; // FrxColumnBrowser
-///////////////////////////////////////////////////////////////////////////////
-//-----------------------------------------------------------------------------
-template <class T>
-sdcu::AComponentUIPtr 
-FrxColumnBrowser<T>::createComponentUI(sdcu::ALookAndFeelPtr laf) const
-{
-	return laf->getUI<FrxColumnBrowser>();
-}
-//-----------------------------------------------------------------------------
-template <class T>
-void FrxColumnBrowser<T>::postConstructor() {
-	Super::postConstructor();
-	sdc::ui::UIManager::instance().installLookAndFeel(getRootPane(),
-		ui::FrxLookAndFeel::create()
-	);
-	browser = typename BrowserImpl::create();
-	getContentPane()->add(browser);
-	buttonPane = sdc::Panel::create();
-	getContentPane()->add(buttonPane, sdc::BorderLayout::SOUTH, -1);
-}
 }}} // namespace(s)
 
 #endif /* SAMBAG_FRXCOLUMNBROWSER_H */

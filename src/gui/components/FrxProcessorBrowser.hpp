@@ -18,8 +18,7 @@ namespace frx { namespace gui { namespace components {
 /** 
   * @class FrxProcessorBrowser.
   */
-template <class T>
-class FrxProcessorBrowser : public FrxColumnBrowser<T> {
+class FrxProcessorBrowser : public FrxColumnBrowser {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
@@ -30,69 +29,34 @@ public:
 	typedef FrxColumnBrowser Super;
 protected:
 	//-------------------------------------------------------------------------
-	virtual void onCancel(void *src, const sdc::events::ActionEvent &ev);
+	virtual void onClose(void *src, const sdc::events::ActionEvent &ev);
 	//-------------------------------------------------------------------------
-	virtual void onOk(void *src, const sdc::events::ActionEvent &ev);
+	virtual void onAdd(void *src, const sdc::events::ActionEvent &ev);
 	//-------------------------------------------------------------------------
 	FrxProcessorBrowser(sdc::Window::Ptr parent=sdc::Window::Ptr()) :
 		 FrxColumnBrowser(parent) {}
 	//-------------------------------------------------------------------------
 	virtual void postConstructor();
 	//-------------------------------------------------------------------------
-	sdc::ButtonPtr btnOk, btnCancel;
+	sdc::ButtonPtr btnAdd, btnClose;
+	//-------------------------------------------------------------------------
+	virtual void installListeners();
+	//-------------------------------------------------------------------------
+	virtual void createMainBtns();
 public:
 	//-------------------------------------------------------------------------
-	sdc::ButtonPtr getBtnOk() const {
-		return btnOk;
+	virtual sdc::ButtonPtr getBtnAdd() const {
+		return btnAdd;
 	}
 	//-------------------------------------------------------------------------
-	sdc::ButtonPtr getBtnCancel() const {
-		return btnCancel;
+	virtual sdc::ButtonPtr getBtnClose() const {
+		return btnClose;
 	}
 	//-------------------------------------------------------------------------
-	static Ptr create( sdc::Window::Ptr parent=sdc::Window::Ptr() ) {
-		Ptr res( new FrxProcessorBrowser(parent) );
-		res->self = res;
-		res->postConstructor();
-		res->initWindow();
-		return res;
-	}
+	static Ptr create( sdc::Window::Ptr parent=sdc::Window::Ptr() );
 private:
 public:
 }; // FrxProcessorBrowser
-///////////////////////////////////////////////////////////////////////////////
-//-----------------------------------------------------------------------------
-template <class T>
-void FrxProcessorBrowser<T>::onCancel(void *src, const sdc::events::ActionEvent &ev)
-{
-	close();
-}
-//-----------------------------------------------------------------------------
-template <class T>
-void FrxProcessorBrowser<T>::onOk(void *src, const sdc::events::ActionEvent &ev)
-{
-	close();
-}
-//-----------------------------------------------------------------------------
-template <class T>
-void FrxProcessorBrowser<T>::postConstructor() {
-	Super::postConstructor();
-	btnOk = sdc::Button::create();
-	btnOk->setText("ok");
-	btnOk->EventSender<sdc::events::ActionEvent>::addTrackedEventListener(
-		boost::bind(&FrxProcessorBrowser::onOk, this, _1, _2),
-		getPtr()
-	);
-	getButtonPane()->add(btnOk);
-	
-	btnCancel = sdc::Button::create();
-	btnCancel->setText("cancel");
-	btnCancel->EventSender<sdc::events::ActionEvent>::addTrackedEventListener(
-		boost::bind(&FrxProcessorBrowser::onCancel, this, _1, _2),
-		getPtr()
-	);
-	getButtonPane()->add(btnCancel);
-}
 }}} // namespace(s)
 
 #endif /* SAMBAG_FRXPROCESSORBROWSER_H */

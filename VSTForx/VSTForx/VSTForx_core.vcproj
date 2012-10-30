@@ -399,11 +399,35 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\src\gui\components\FrxPluginBrowser.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxPluginBrowser.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxPluginBrowserCtrl.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxPluginBrowserCtrl.hpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\gui\components\FrxProcessorBrowser.cpp"
 						>
 					</File>
 					<File
 						RelativePath="..\..\src\gui\components\FrxProcessorBrowser.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxProcessorBrowserCtrl.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxProcessorBrowserCtrl.hpp"
 						>
 					</File>
 					<File
@@ -428,6 +452,10 @@
 					</File>
 					<File
 						RelativePath="..\..\src\gui\components\FrxSerializationRegister.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\IFrxColumnBrowserCtrl.hpp"
 						>
 					</File>
 					<File

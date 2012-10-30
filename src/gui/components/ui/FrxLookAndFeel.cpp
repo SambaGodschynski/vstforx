@@ -103,7 +103,7 @@ void FrxLookAndFeel::installComponents() {
 		fgcu::FrxHoverUI>();
 	// browser
 	using namespace sdc::ui::basic;
-	typedef FrxColumnBrowser<BrowserNode>::BrowserImpl CBrowser;
+	typedef FrxColumnBrowser::BrowserImpl CBrowser;
 	registerComponentUI<CBrowser::ColumnViewClass,
 		BasicColumnViewUI<CBrowser::ColumnViewClass> >();
 	registerComponentUI<CBrowser::ListType, BasicListUI<CBrowser::ListType> >();

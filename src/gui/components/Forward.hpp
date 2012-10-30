@@ -24,6 +24,9 @@ namespace frx { namespace gui { namespace components {
 	class FrxNode;
 	typedef boost::shared_ptr<FrxNode> FrxNodePtr; 
 	typedef boost::weak_ptr<FrxNode> FrxNodeWPtr; 
+	class FrxColumnBrowser;
+	typedef boost::shared_ptr<FrxColumnBrowser> FrxColumnBrowserPtr; 
+	typedef boost::weak_ptr<FrxColumnBrowser> FrxColumnBrowserWPtr; 
 }}}
 
 #endif

@@ -10,10 +10,14 @@
 
 #include "IFrxControl.hpp"
 #include "components/FrxCircuidView.hpp"
+#include "components/Forward.hpp"
 #include <processing/Forward.hpp>
 #include <sambag/com/ArbitraryType.hpp>
 #include <boost/function.hpp>
+#include <boost/tuple/tuple.hpp>
 #include <loki/Singleton.h>
+#include <processing/IParameter.hpp>
+#include <processing/IModelController.hpp>
 
 namespace frx { namespace gui {
 namespace sdc = sambag::disco::components;
@@ -22,39 +26,6 @@ namespace sdcu = sdc::ui;
 namespace fgc = frx::gui::components;
 namespace gc = gui::components;
 namespace pr = frx::processing;
-//=============================================================================
-/**
- * @class FrxBrowser content.
- */
-struct BrowserNode {
-//=============================================================================
-	std::string name;
-	/**
-	 * will be called when node is selected and (eg.) ok is pressed.
-	 */ 
-	typedef boost::function<void()> AcceptedFunction;
-	AcceptedFunction f;
-	BrowserNode(const std::string &name, 
-		AcceptedFunction &f = AcceptedFunction()
-	) : name(name), f(f)
-	{
-	}
-	BrowserNode(const char *name = "") : name(name)
-	{
-	}
-	bool operator==(const BrowserNode &n) const { 
-		return name==n.name && 
-			&f == &(n.f); // boost::functions are incomparable
-	}
-	void accept() const {
-		if (f)
-			f();
-	}
-};
-inline std::ostream & operator <<(std::ostream &os, const BrowserNode &n) {
-	os<<n.name;
-	return os;
-}
 //=============================================================================
 /** 
   * @class FrxControl.
@@ -107,8 +78,16 @@ public:
 	//-------------------------------------------------------------------------
 	virtual void showProcessorDetails(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c);
+	//-------------------------------------------------------------------------
+	void addProcesorKnobToView(gc::FrxCircuidViewPtr view, gc::FrxComponentPtr c,
+	frx::processing::IParameter::Ptr par); 
 
 }; // FrxControl
+extern boost::tuple<
+	frx::processing::IModelController::Ptr,
+	IViewModelMap::Ptr
+>
+getControllerAndMap(gc::FrxCircuidViewPtr circ);
 ///////////////////////////////////////////////////////////////////////////////	
 //-----------------------------------------------------------------------------
 template <class Archive>
