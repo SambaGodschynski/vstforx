@@ -18,7 +18,9 @@
 #include <boost/foreach.hpp>
 #include <sambag/com/Thread.hpp>
 #include <sambag/disco/components/Timer.hpp>
-
+#include <queue>
+#include <boost/unordered_map.hpp>
+#include <sambag/com/Thread.hpp>
 namespace frx { namespace gui { namespace components {
 ///////////////////////////////////////////////////////////////////////////////
 //=============================================================================
@@ -31,6 +33,19 @@ public:
 	//-------------------------------------------------------------------------
 	typedef sdc::FramedWindow Super;
 protected:
+	//-------------------------------------------------------------------------
+	sambag::com::RecursiveMutex mutex;
+	//-------------------------------------------------------------------------
+	// for future impl. with own listcell renderer:
+	// use SetupCtrl FileSatus instead of a pain string and prepare 
+	// each element with it.
+	typedef std::pair<std::string, std::string> FileAndStatus;
+	//-------------------------------------------------------------------------
+	std::queue<FileAndStatus> tmpEntries;
+	//-------------------------------------------------------------------------
+	typedef boost::unordered_map<std::string, size_t> File2Listindex;
+	//-------------------------------------------------------------------------
+	File2Listindex file2listindex;
 	//-------------------------------------------------------------------------
 	FrxCircuidViewPtr view;
 	//-------------------------------------------------------------------------
@@ -155,23 +170,53 @@ void ScanningDialog::startScan(SetupCtrl::Ptr ctrl) {
 //-----------------------------------------------------------------------------
 void ScanningDialog::onFileEvent(const std::string &file, SetupCtrl::FileStatus fst) 
 {
-	if (fst!=SetupCtrl::OnOpening)
-		return;
-	SAMBAG_BEGIN_SYNCHRONIZED(list->getTreeLock())
+	SAMBAG_BEGIN_SYNCHRONIZED(mutex)
 		/**
-		 * do not invoke any redraw inhere: concurrency prolems!
+		 * do not invoke any redrawing stuff inhere: concurrency prolems!
 		 */
-		list->addElement(file);
-		int i = list->DefaultListModel::getSize() - 1;
-		list->ensureIndexIsVisible(i);
+		std::string stStr;
+		switch (fst) {
+			case SetupCtrl::Succeed:
+				stStr = "SUCCEED"; break;
+			case SetupCtrl::Failed:
+				stStr = "FAILED"; break;
+			case SetupCtrl::Skipped:
+				stStr = "SKIPPED"; break;
+			default:
+				break;
+		}
+		tmpEntries.push(FileAndStatus(file, stStr));
 	SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 void ScanningDialog::onScanCompleted() {
+	timer->stop();
 	btnOk->setEnabled(true);
 }
 //-----------------------------------------------------------------------------
 void ScanningDialog::onRefresh(void *, const sdc::TimerEvent &ev) {
+	if (tmpEntries.empty()) {
+		return;
+	}
+	SAMBAG_BEGIN_SYNCHRONIZED(mutex)
+		while(!tmpEntries.empty()) {
+			const std::string &file = tmpEntries.front().first;
+			const std::string &status = tmpEntries.front().second;
+			File2Listindex::const_iterator it =
+				file2listindex.find(file);
+			if (it == file2listindex.end()) {
+				list->addElement(file);
+				file2listindex[file] = list->DefaultListModel::getSize() - 1;
+			} else {
+				list->set(it->second, file + "->" + status);
+			}
+			tmpEntries.pop();
+		}
+	SAMBAG_END_SYNCHRONIZED
+	dirListScrollPane->revalidate();
+	int i = list->DefaultListModel::getSize() - 1;
+	list->ensureIndexIsVisible(i);
+	list->revalidate();
 	list->redraw();
 }
 //=============================================================================
