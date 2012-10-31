@@ -25,6 +25,8 @@ protected:
 private:
 public:
 	//-------------------------------------------------------------------------
+	virtual void initListeners(FrxColumnBrowserPtr brws) = 0;
+	//-------------------------------------------------------------------------
 	virtual void initTree(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws) = 0;
 	//-------------------------------------------------------------------------
 	virtual ~IFrxColumnBrowserCtrl(){}

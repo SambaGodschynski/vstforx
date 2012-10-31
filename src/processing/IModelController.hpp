@@ -14,10 +14,12 @@
 #include "IProcessor.hpp"
 #include "IParameter.hpp"
 #include "IConnection.hpp"
+#include "IPluginAdapter.hpp"
 #include "INode.hpp"
 #include <gui/ViewObject.hpp>
 #include <vector>
 #include "IHostInfo.h"
+#include "PlugInfo.h"
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -39,6 +41,8 @@ public:
 	 * @return ModelObject pointer which points on a PanProcessor object
 	 */
 	virtual IProcessor::Ptr createPanProcessor() = 0;
+	//-------------------------------------------------------------------------
+	virtual IProcessor::Ptr createPlugin(const ::processing::PluginInfo &pI) = 0;
 	//-------------------------------------------------------------------------
 	/**
 	 * @param number of inputs

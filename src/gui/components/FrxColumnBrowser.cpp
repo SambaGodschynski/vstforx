@@ -31,6 +31,9 @@ void FrxColumnBrowser::postConstructor() {
 //-----------------------------------------------------------------------------
 void FrxColumnBrowser::setCtrl(IFrxColumnBrowserCtrl::Ptr ctrl) {
 	this->ctrl = ctrl;
+	if (!ctrl)
+		return;
+	ctrl->initListeners(getPtr());
 }
 //-----------------------------------------------------------------------------
 IFrxColumnBrowserCtrl::Ptr FrxColumnBrowser::getCtrl() const {

@@ -48,9 +48,9 @@ public:
 		return res;
 	}
 	//-------------------------------------------------------------------------
-	void setAdaptee(Adaptee::Ptr p);
+	virtual void setAdaptee(Adaptee::Ptr p);
 	//-------------------------------------------------------------------------
-	Adaptee::Ptr getAdaptee() const;
+	virtual Adaptee::Ptr getAdaptee() const;
 	//-------------------------------------------------------------------------
 	virtual size_t getNumInputs() const;
 	//-------------------------------------------------------------------------

@@ -299,6 +299,7 @@ public:
 	 * @throw sambag::cpsqlite::DataBaseQueryFailed
 	 */
 	void getPlugInfoList( const Folder &folder, PluginInfoList &out_l, bool showAll = false ) const;
+	void getPlugInfoList( const FolderID &folderID, PluginInfoList &out_l, bool showAll = false ) const;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param location

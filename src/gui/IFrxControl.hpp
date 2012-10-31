@@ -16,7 +16,8 @@
 #include <boost/bind.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <sambag/com/events/Events.hpp>
-
+#include <processing/IParameter.hpp>
+#include <processing/PlugInfo.h>
 
 #define SAMBAG_CREATE_FRXCONTROL_CMD(frxctrl, view, frxcomponent, frxcmdfunction) \
   ((frxctrl).createCtrlCommandFunction(                                           \
@@ -55,6 +56,12 @@ public:
 	//-------------------------------------------------------------------------
 	virtual void 
 	handleContextMenuPopup(const sdc::events::MouseEvent &ev) = 0;
+	//-------------------------------------------------------------------------
+	virtual void addPlugin(fgc::FrxCircuidViewPtr view, 
+		::processing::PluginInfo &pI) = 0;
+	//-------------------------------------------------------------------------
+	virtual void addProcesorKnobToView(fgc::FrxCircuidViewWPtr view, 
+		fgc::FrxComponentWPtr c, frx::processing::IParameter::WPtr par) = 0; 
 	//-------------------------------------------------------------------------
 	/**
 	 * @return a function object which is able to be executed by

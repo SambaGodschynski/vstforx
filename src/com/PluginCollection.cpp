@@ -340,7 +340,7 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 	try {
 		n = PluginFactory::createPlugNode ( hostinfo, out_info.location );
 	} catch(const VSTPlugin::ShellPluginException &ex) {
-		// TODO: insert as folder with concrete hell ids as content
+		// TODO: insert as folder with concrete shell ids as content
 		out_info.access = PluginInfo::SUCCEED;
 		out_info.name = VSTPlugin::extractNameFromFilename(out_info.location);
 		out_info.timestamp = last_write_time(out_info.location);
@@ -745,13 +745,20 @@ void PluginCollection::getPlugInfoList( const Folder &folder,
 									    PluginCollection::PluginInfoList &l,
 									    bool showAll ) const
 {
+	getPlugInfoList(GET_FOLDER_ID(folder), l, showAll);
+}
+//------------------------------------------------------------------------------------------------------------
+void PluginCollection::getPlugInfoList( const FolderID &folderID, 
+									    PluginCollection::PluginInfoList &l,
+									    bool showAll ) const
+{
 	using namespace sambag::cpsqlite;
 	DataBase::Executer::Ptr exec = database->getExecuter(); 
 	DataBase::Results res;
 	
 	DB_QUERY (
 		exec->execute( 
-		sqlcommands::TblPlugins::getPluginsByFolder( GET_FOLDER_ID(folder), showAll ),
+		sqlcommands::TblPlugins::getPluginsByFolder( folderID, showAll ),
 		res 
 		);
 	)

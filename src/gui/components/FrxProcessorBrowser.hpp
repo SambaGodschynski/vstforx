@@ -9,16 +9,14 @@
 #define SAMBAG_FRXPROCESSORBROWSER_H
 
 #include <boost/shared_ptr.hpp>
-#include "FrxColumnBrowser.hpp"
-#include <sambag/disco/components/events/ActionEvent.hpp>
-#include <sambag/disco/components/Button.hpp>
-#include <sambag/disco/components/Forward.hpp>
+#include "FrxMainBrowser.hpp"
+
 namespace frx { namespace gui { namespace components {
 //=============================================================================
 /** 
   * @class FrxProcessorBrowser.
   */
-class FrxProcessorBrowser : public FrxColumnBrowser {
+class FrxProcessorBrowser : public FrxMainBrowser {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
@@ -26,32 +24,14 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::weak_ptr<FrxProcessorBrowser> WPtr;
 	//-------------------------------------------------------------------------
-	typedef FrxColumnBrowser Super;
+	typedef FrxMainBrowser Super;
 protected:
 	//-------------------------------------------------------------------------
-	virtual void onClose(void *src, const sdc::events::ActionEvent &ev);
-	//-------------------------------------------------------------------------
-	virtual void onAdd(void *src, const sdc::events::ActionEvent &ev);
-	//-------------------------------------------------------------------------
 	FrxProcessorBrowser(sdc::Window::Ptr parent=sdc::Window::Ptr()) :
-		 FrxColumnBrowser(parent) {}
+		 FrxMainBrowser(parent) {}
 	//-------------------------------------------------------------------------
 	virtual void postConstructor();
-	//-------------------------------------------------------------------------
-	sdc::ButtonPtr btnAdd, btnClose;
-	//-------------------------------------------------------------------------
-	virtual void installListeners();
-	//-------------------------------------------------------------------------
-	virtual void createMainBtns();
 public:
-	//-------------------------------------------------------------------------
-	virtual sdc::ButtonPtr getBtnAdd() const {
-		return btnAdd;
-	}
-	//-------------------------------------------------------------------------
-	virtual sdc::ButtonPtr getBtnClose() const {
-		return btnClose;
-	}
 	//-------------------------------------------------------------------------
 	static Ptr create( sdc::Window::Ptr parent=sdc::Window::Ptr() );
 private:

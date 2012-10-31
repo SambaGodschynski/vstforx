@@ -44,16 +44,17 @@ struct BrowserNode {
 	 */ 
 	typedef boost::function<void()> AcceptedFunction;
 	AcceptedFunction f;
-	BrowserNode(const std::string &name, 
+	bool isFolder;
+	BrowserNode(const std::string &name, bool isFolder = false,
 		AcceptedFunction &f = AcceptedFunction()
-	) : name(name), f(f)
+	) : name(name), f(f), isFolder(isFolder)
 	{
 	}
-	BrowserNode(const char *name = "") : name(name)
+	BrowserNode(const char *name = "") : name(name), isFolder(false)
 	{
 	}
 	bool operator==(const BrowserNode &n) const { 
-		return name==n.name && 
+		return name==n.name && isFolder==n.isFolder
 			&f == &(n.f); // boost::functions are incomparable
 	}
 	void accept() const {

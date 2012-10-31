@@ -16,7 +16,6 @@
 #include <boost/function.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <loki/Singleton.h>
-#include <processing/IParameter.hpp>
 #include <processing/IModelController.hpp>
 
 namespace frx { namespace gui {
@@ -67,6 +66,9 @@ public:
 	//-------------------------------------------------------------------------
 	void handleContextMenuPopup(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
+	virtual void addPlugin(fgc::FrxCircuidViewPtr view, 
+		::processing::PluginInfo &pI);
+	//-------------------------------------------------------------------------
 	virtual void removeComponent(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c);
 	//-------------------------------------------------------------------------
@@ -79,8 +81,8 @@ public:
 	virtual void showProcessorDetails(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c);
 	//-------------------------------------------------------------------------
-	void addProcesorKnobToView(gc::FrxCircuidViewPtr view, gc::FrxComponentPtr c,
-	frx::processing::IParameter::Ptr par); 
+	void addProcesorKnobToView(gc::FrxCircuidViewWPtr view, gc::FrxComponentWPtr c,
+	frx::processing::IParameter::WPtr par); 
 
 }; // FrxControl
 extern boost::tuple<

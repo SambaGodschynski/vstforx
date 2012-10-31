@@ -9,23 +9,31 @@
 #define SAMBAG_FRXPROCESSORBROWSERCTRL_H
 
 #include <boost/shared_ptr.hpp>
-#include "IFrxColumnBrowserCtrl.hpp"
+#include "FrxMainBrowserCtrl.hpp"
+#include "Forward.hpp"
+
 namespace frx { namespace gui { namespace components {
 //=============================================================================
 /** 
   * @class FrxProcessorBrowserCtrl.
   */
-class FrxProcessorBrowserCtrl : public IFrxColumnBrowserCtrl {
+class FrxProcessorBrowserCtrl : public FrxMainBrowserCtrl {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<FrxProcessorBrowserCtrl> Ptr;
 	//-------------------------------------------------------------------------
-	typedef IFrxColumnBrowserCtrl Super;
+	typedef FrxMainBrowserCtrl Super;
 protected:
 	//-------------------------------------------------------------------------
 	FrxProcessorBrowserCtrl(){}
+	//-------------------------------------------------------------------------
+	FrxComponentPtr component;
 public:
+	//-------------------------------------------------------------------------
+	void setComponent(FrxComponentPtr c);
+	//-------------------------------------------------------------------------
+	FrxComponentPtr getComponent() const;
 	//-------------------------------------------------------------------------
 	static Ptr create() {
 		return Ptr(new FrxProcessorBrowserCtrl());

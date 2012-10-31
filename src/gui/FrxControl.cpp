@@ -30,16 +30,18 @@
 #include "components/FrxSerializationRegister.hpp"
 #include <list>
 #include <string>
-#include <gui/components/FrxProcessorBrowser.hpp>
-#include <gui/components/FrxPluginBrowser.hpp>
 #include <gui/components/SetupWindow.hpp>
 #include <processing/IParameter.hpp>
 #include <processing/IProcessor.hpp>
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <sambag/disco/components/DefaultBoundedRangeModel.hpp>
 #include "components/SetupCtrl.hpp"
+#include <gui/components/FrxProcessorBrowser.hpp>
+#include <gui/components/FrxPluginBrowser.hpp>
+#include <gui/components/FrxMainBrowser.hpp>
 #include "components/FrxProcessorBrowserCtrl.hpp"
 #include "components/FrxPluginBrowserCtrl.hpp"
+#include "components/FrxMainBrowserCtrl.hpp"
 
 namespace frx { namespace gui {
 using namespace components;
@@ -244,21 +246,22 @@ FrxColumnBrowser::Ptr openProcessorBrowser(fgc::FrxCircuidViewPtr view,
 	return browser;
 }
 //-----------------------------------------------------------------------------
-FrxColumnBrowser::Ptr openPluginBrowser(fgc::FrxCircuidViewPtr view, 
+FrxColumnBrowser::Ptr openMainBrowser(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c)
 {
-	FrxPluginBrowser::Ptr browser;
-	extraWindow = browser = FrxPluginBrowser::create();
+	FrxMainBrowser::Ptr browser;
+	extraWindow = browser = FrxMainBrowser::create();
 	browser->validate();
 	browser->pack();
-	FrxPluginBrowserCtrl::Ptr ctrl = FrxPluginBrowserCtrl::create();
+	FrxMainBrowserCtrl::Ptr ctrl = FrxMainBrowserCtrl::create();
 	frx::processing::IModelController::Ptr mCtrl = frx::processing::getModelController(view);
 	if (mCtrl) {
 		ctrl->setHostInfo(mCtrl->getHostInfo());
 	}
 	browser->setCtrl(ctrl);
-	browser->setTitle("Plugin-Browser:");
+	browser->setTitle("Main-Browser:");
 	browser->open();
+	browser->initTree(view);
 	return browser;
 }
 //-----------------------------------------------------------------------------
@@ -304,8 +307,8 @@ void createMainMenuEntries(Entries &out) {
 		boost::bind(&addProcessorToView<FrxPeakTrackerNode>, _1, _2, 1, 0)));
 	out.push_back( Entry("add free knob",
 		boost::bind(&addFreeKnobToView, _1, _2)));
-	out.push_back( Entry("open plugin browser...",
-		boost::bind(&openPluginBrowser, _1, _2)));
+	out.push_back( Entry("open main browser...",
+		boost::bind(&openMainBrowser, _1, _2)));
 	out.push_back( Entry("open setup dialog...",
 		boost::bind(&openSetup, _1, _2)));
 }
@@ -356,10 +359,14 @@ struct Connector {
 //  Class FrxControl
 //=============================================================================
 //-----------------------------------------------------------------------------
-void FrxControl::addProcesorKnobToView(FrxCircuidViewPtr view, 
-	FrxComponentPtr c, frx::processing::IParameter::Ptr par) 
+void FrxControl::addProcesorKnobToView(FrxCircuidViewWPtr _view, 
+	FrxComponentWPtr _c, frx::processing::IParameter::WPtr _par) 
 {
-	frx::processing::IParameter::WPtr _par(par);
+	FrxCircuidViewPtr view = _view.lock();
+	FrxComponentPtr c = _c.lock();
+	frx::processing::IParameter::Ptr par = _par.lock();
+	SAMBAG_ASSERT(view && c && par);
+
 	frx::processing::IModelController::Ptr ctrl;
 	IViewModelMap::Ptr map;
 	boost::tie(ctrl, map) = getControllerAndMap(view);
@@ -431,6 +438,42 @@ void FrxControl::removeComponent(FrxCircuidViewPtr _view, FrxComponentPtr _c)
 	map->remove(c, mObj);
 	view->remove(c);
 	view->AContainer::redraw();
+}
+//-------------------------------------------------------------------------
+void FrxControl::addPlugin(fgc::FrxCircuidViewPtr circ, 
+		::processing::PluginInfo &pI)
+{
+	FrxPluginNode::Ptr viewObj =
+		createProcessor<FrxPluginNode>(circ);
+	if (!viewObj) {
+		return;
+	}
+	if (!circ) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"tried to add processor with FrxCircuidViewPtr == NULL");
+	}
+	// create model obj.
+	frx::processing::IModelController::Ptr ctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(ctrl, map) = getControllerAndMap(circ);
+
+	frx::processing::IProcessor::Ptr mObj = ctrl->createPlugin(pI);
+	if (!mObj) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"could'nt create processor object.");
+	}
+	// create view obj.
+	circ->add(viewObj, FrxCircuidView::Z_ProcessorNodes);
+	viewObj->setLocation(0, 0);
+	viewObj->configIO(mObj->getNumInputs(), mObj->getNumOutputs());
+	// register
+	registerProcessor(map, viewObj, circ, mObj);
+	// hover
+	FrxHover::Ptr sel = FrxHover::create();
+	circ->add(sel);
+	sel->addElement(viewObj);
+	sel->addElements(viewObj->getInputs());
+	sel->addElements(viewObj->getOutputs());
 }
 //-----------------------------------------------------------------------------
 sdc::PopupMenuPtr FrxControl::getCircuidViewPopup(FrxCircuidViewPtr c) {
@@ -556,6 +599,7 @@ void FrxControl::showProcessorDetails(fgc::FrxCircuidViewPtr view,
 	);
 	browser->setTitle(c->getName() + " details");
 	FrxProcessorBrowserCtrl::Ptr ctrl = FrxProcessorBrowserCtrl::create();
+	ctrl->setComponent(c);
 	browser->setCtrl(ctrl);
 	browser->initTree(view);
 }

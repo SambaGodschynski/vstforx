@@ -23,6 +23,10 @@
 #include <processing/ProcessorAdapter.hpp>
 #include <processing/ParameterAdapter.hpp>
 #include <processing/NodeAdapter.hpp>
+#include <com/PluginCollection.h>
+#include <processing/Plugin.h>
+#include <processing/pluginTypes/VSTPlugin2x.h>
+#include "PluginAdapter.hpp"
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -275,5 +279,28 @@ bool ModelController::excuteProcessorRemoveRequest(ModelObject::Ptr obj,
 IHostInfo::Ptr ModelController::getHostInfo() const {
 	return graph->getHostInfo();
 }
-
+//-----------------------------------------------------------------------------
+IProcessor::Ptr ModelController::createPlugin(const ::processing::PluginInfo &pI)
+{
+	
+	::processing::Plugin::Ptr plugin;
+	::com::PluginCollection &pC = ::com::getPluginCollection();
+	::processing::PluginInfo pluginInfo = pI;
+	try {
+		plugin = pC.restorePlugNode( getHostInfo(), pluginInfo ); 
+	} catch(const ::processing::VSTPlugin::ShellPluginException &ex) {
+		// TODO:
+		return IProcessor::Ptr();
+	} catch(...) {
+		return IProcessor::Ptr(); 
+	}
+		
+	if ( graph->getJanitor()->add(plugin) != ::processing::Graph::Janitor::SUCCEED )
+		return IProcessor::Ptr();
+	PluginAdapter::Ptr adapter = PluginAdapter::create();
+	adapter->setAdaptee(plugin);
+	// register remove request excutor
+	installListeners(adapter);
+	return adapter;
+}
 }} // namespace(s)

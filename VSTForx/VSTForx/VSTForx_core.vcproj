@@ -383,6 +383,22 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\src\gui\components\FrxMainBrowser.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxMainBrowser.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxMainBrowserCtrl.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxMainBrowserCtrl.hpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\gui\components\FrxNode.cpp"
 						>
 					</File>
@@ -644,6 +660,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\src\processing\IPluginAdapter.hpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\src\processing\IProcessor.cpp"
 					>
 				</File>
@@ -713,6 +733,14 @@
 				</File>
 				<File
 					RelativePath="..\..\src\processing\Plugin.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\PluginAdapter.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\PluginAdapter.hpp"
 					>
 				</File>
 				<File
