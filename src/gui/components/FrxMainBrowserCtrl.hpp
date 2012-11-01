@@ -45,6 +45,8 @@ protected:
 	void initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws);
 	//-------------------------------------------------------------------------
 	Tree::Node plugins, processors, knobs;
+	//-------------------------------------------------------------------------
+	void addProcessors(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws);
 public:
 	//-------------------------------------------------------------------------
 	virtual void initListeners(FrxColumnBrowserPtr brws);

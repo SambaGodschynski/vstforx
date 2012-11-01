@@ -335,6 +335,14 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\src\gui\components\FrxComponentFactory.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxComponentFactory.hpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\gui\components\FrxConcreteConnections.hpp"
 						>
 					</File>
@@ -472,6 +480,10 @@
 					</File>
 					<File
 						RelativePath="..\..\src\gui\components\IFrxColumnBrowserCtrl.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\IFrxComponentFactory.hpp"
 						>
 					</File>
 					<File

@@ -39,6 +39,9 @@ class IFrxControl {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
+	virtual void addProcessorToView(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxProcessorNodePtr pr) = 0;
+	//-------------------------------------------------------------------------
 	typedef boost::function<void(fgc::FrxCircuidViewPtr, 
 		fgc::FrxComponentPtr)> CtrlCmd;
 	//-------------------------------------------------------------------------
@@ -56,9 +59,6 @@ public:
 	//-------------------------------------------------------------------------
 	virtual void 
 	handleContextMenuPopup(const sdc::events::MouseEvent &ev) = 0;
-	//-------------------------------------------------------------------------
-	virtual void addPlugin(fgc::FrxCircuidViewPtr view, 
-		::processing::PluginInfo &pI) = 0;
 	//-------------------------------------------------------------------------
 	virtual void addProcesorKnobToView(fgc::FrxCircuidViewWPtr view, 
 		fgc::FrxComponentWPtr c, frx::processing::IParameter::WPtr par) = 0; 

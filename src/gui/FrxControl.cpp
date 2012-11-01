@@ -71,81 +71,41 @@ namespace {
 sdc::FramedWindow::Ptr extraWindow;
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-//  Private executors
+//  Private 
 //-----------------------------------------------------------------------------
 bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj, FrxCircuidViewWPtr _view);
 //-----------------------------------------------------------------------------
-template <class ConcreteProcessor>
-typename ConcreteProcessor::Ptr 
-createProcessor(FrxCircuidViewPtr c) 
+void registerProcessorOnView(FrxCircuidViewPtr view, FrxProcessorNode::Ptr viewObj) 
 {
-	typename ConcreteProcessor::Ptr res = ConcreteProcessor::create();
-	return res;
-}
-//-----------------------------------------------------------------------------
-void registerProcessor(IViewModelMap::Ptr map,
-					   FrxProcessorNode::Ptr v,
-					   FrxCircuidViewPtr view,
-					   frx::processing::IProcessor::Ptr m) 
-{
-	map->registerObjects(v, m);
-	const FrxProcessorNode::IOContainer &ins = v->getInputs();
-	int num = std::min(ins.size(), m->getNumInputs());
+	IViewModelMap::Ptr map = getViewModelMap(view);
+	if (!map) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"tried to add processor with IViewModelMap == NULL");
+	}
+	frx::processing::IProcessor::Ptr modelObj = 
+		boost::shared_dynamic_cast<frx::processing::IProcessor>(
+			map->getModelObject(viewObj)
+	);
+	if (!modelObj) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"tried register view object with related model == NULL");
+	}
+	const FrxProcessorNode::IOContainer &ins = viewObj->getInputs();
+	int num = std::min(ins.size(), modelObj->getNumInputs());
 	for (int i=0; i<num; ++i) {
-		frx::processing::INode::Ptr node = m->getInput(i);
-		map->registerObjects(ins[i], node);
+		frx::processing::INode::Ptr node = modelObj->getInput(i);
 		node->addRemoveRequestExecuter(
 			boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
 		);
 	}
-	const FrxProcessorNode::IOContainer &outs = v->getOutputs();
-	num = std::min(outs.size(), m->getNumOutputs());
+	const FrxProcessorNode::IOContainer &outs = viewObj->getOutputs();
+	num = std::min(outs.size(), modelObj->getNumOutputs());
 	for (int i=0; i<num; ++i) {
-		frx::processing::INode::Ptr node = m->getOutput(i);
-		map->registerObjects(outs[i], node);
+		frx::processing::INode::Ptr node = modelObj->getOutput(i);
 		node->addRemoveRequestExecuter(
 			boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
 		);
 	}
-
-}
-//-----------------------------------------------------------------------------
-template <class ConcreteProcessor>
-void addProcessorToView(FrxCircuidViewPtr circ, 
-	FrxComponentPtr alwaysNull, int numInputs, int numOutputs) 
-{
-	typename ConcreteProcessor::Ptr viewObj =
-		createProcessor<ConcreteProcessor>(circ);
-	if (!viewObj) {
-		return;
-	}
-	if (!circ) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"tried to add processor with FrxCircuidViewPtr == NULL");
-	}
-	// create model obj.
-	frx::processing::IModelController::Ptr ctrl;
-	IViewModelMap::Ptr map;
-	boost::tie(ctrl, map) = getControllerAndMap(circ);
-
-	frx::processing::IProcessor::Ptr mObj = 
-		createProcessorOnModel<ConcreteProcessor>(ctrl, numInputs, numOutputs);
-	if (!mObj) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"could'nt create processor object.");
-	}
-	// create view obj.
-	circ->add(viewObj, FrxCircuidView::Z_ProcessorNodes);
-	viewObj->setLocation(0, 0);
-	viewObj->configIO(numInputs, numOutputs);
-	// register
-	registerProcessor(map, viewObj, circ, mObj);
-	// hover
-	FrxHover::Ptr sel = FrxHover::create();
-	circ->add(sel);
-	sel->addElement(viewObj);
-	sel->addElements(viewObj->getInputs());
-	sel->addElements(viewObj->getOutputs());
 }
 //-----------------------------------------------------------------------------
 void knobChanged(void *src, 
@@ -289,24 +249,6 @@ typedef std::pair<std::string, IFrxControl::CtrlCmd> Entry;
 typedef std::list<Entry> Entries;
 //-----------------------------------------------------------------------------
 void createMainMenuEntries(Entries &out) {
-	out.push_back( Entry("add volume processor",
-		boost::bind(&addProcessorToView<FrxVolumeNode>, _1, _2, 1, 1)));
-	out.push_back( Entry("add pan processor", 
-		boost::bind(&addProcessorToView<FrxPanNode>, _1, _2, 1, 1)));
-	out.push_back( Entry("add instep processor", 
-		boost::bind(&addProcessorToView<FrxInStepNode>, _1, _2, 2, 1)));
-	out.push_back( Entry("add outstep processor", 
-		boost::bind(&addProcessorToView<FrxOutStepNode>, _1, _2, 1, 2)));
-	out.push_back( Entry("add inswitch processor", 
-		boost::bind(&addProcessorToView<FrxInSwitchNode>, _1, _2, 2, 1)));
-	out.push_back( Entry("add outswitch processor",
-		boost::bind(&addProcessorToView<FrxOutSwitchNode>, _1, _2, 1, 2)));
-	out.push_back( Entry("add adsr transformer",
-		boost::bind(&addProcessorToView<FrxADSRNode>, _1, _2, 1, 0)));
-	out.push_back( Entry("add peak tracker", 
-		boost::bind(&addProcessorToView<FrxPeakTrackerNode>, _1, _2, 1, 0)));
-	out.push_back( Entry("add free knob",
-		boost::bind(&addFreeKnobToView, _1, _2)));
 	out.push_back( Entry("open main browser...",
 		boost::bind(&openMainBrowser, _1, _2)));
 	out.push_back( Entry("open setup dialog...",
@@ -401,6 +343,23 @@ void FrxControl::addProcesorKnobToView(FrxCircuidViewWPtr _view,
 	view->add(sel);
 	sel->addElement(knob);
 }
+//-------------------------------------------------------------------------
+void FrxControl::addProcessorToView(fgc::FrxCircuidViewPtr view, 
+		FrxProcessorNodePtr pr)
+{
+	// add to view
+	view->add(pr);
+	pr->setLocation(0,0);
+	pr->resetIOLocation();
+	// register
+	registerProcessorOnView(view, pr);
+	// hover
+	FrxHover::Ptr sel = FrxHover::create();
+	view->add(sel);
+	sel->addElement(pr);
+	sel->addElements(pr->getInputs());
+	sel->addElements(pr->getOutputs());
+}
 //-----------------------------------------------------------------------------
 FrxControl::FrxControl() {
 }
@@ -438,42 +397,6 @@ void FrxControl::removeComponent(FrxCircuidViewPtr _view, FrxComponentPtr _c)
 	map->remove(c, mObj);
 	view->remove(c);
 	view->AContainer::redraw();
-}
-//-------------------------------------------------------------------------
-void FrxControl::addPlugin(fgc::FrxCircuidViewPtr circ, 
-		::processing::PluginInfo &pI)
-{
-	FrxPluginNode::Ptr viewObj =
-		createProcessor<FrxPluginNode>(circ);
-	if (!viewObj) {
-		return;
-	}
-	if (!circ) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"tried to add processor with FrxCircuidViewPtr == NULL");
-	}
-	// create model obj.
-	frx::processing::IModelController::Ptr ctrl;
-	IViewModelMap::Ptr map;
-	boost::tie(ctrl, map) = getControllerAndMap(circ);
-
-	frx::processing::IProcessor::Ptr mObj = ctrl->createPlugin(pI);
-	if (!mObj) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"could'nt create processor object.");
-	}
-	// create view obj.
-	circ->add(viewObj, FrxCircuidView::Z_ProcessorNodes);
-	viewObj->setLocation(0, 0);
-	viewObj->configIO(mObj->getNumInputs(), mObj->getNumOutputs());
-	// register
-	registerProcessor(map, viewObj, circ, mObj);
-	// hover
-	FrxHover::Ptr sel = FrxHover::create();
-	circ->add(sel);
-	sel->addElement(viewObj);
-	sel->addElements(viewObj->getInputs());
-	sel->addElements(viewObj->getOutputs());
 }
 //-----------------------------------------------------------------------------
 sdc::PopupMenuPtr FrxControl::getCircuidViewPopup(FrxCircuidViewPtr c) {

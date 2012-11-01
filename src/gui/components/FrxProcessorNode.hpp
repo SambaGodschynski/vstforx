@@ -39,6 +39,10 @@ protected:
 	FrxNode::Ptr addInputNode();
 	//-------------------------------------------------------------------------
 	FrxNode::Ptr addOutputNode();
+	//-------------------------------------------------------------------------
+	void addInputNodeToView(FrxCircuidViewPtr view, FrxNode::Ptr);
+	//-------------------------------------------------------------------------
+	void addOutputNodeToView(FrxCircuidViewPtr view, FrxNode::Ptr);
 private:
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
@@ -57,12 +61,8 @@ public:
 	//-------------------------------------------------------------------------
 	const IOContainer & getOutputs() const { return outputs; }
 	//-------------------------------------------------------------------------
-	void resetIOLocation() const;
+	void resetIOLocation();
 	//-------------------------------------------------------------------------
-	/**
-	 * adds and places io-nodes. Assumes that processor already added on 
-	 * FrxCircuidView.
-	 */
 	void configIO(int numInputs, int numOutputs);
 }; // FrxProcessorNode
 }}} // namespace(s)

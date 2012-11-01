@@ -9,6 +9,12 @@
 #include "FrxMainBrowser.hpp"
 #include <com/PluginCollection.h>
 #include <gui/FrxControl.hpp>
+#include "IFrxComponentFactory.hpp"
+#include <boost/foreach.hpp>
+#include <list>
+#include <string>
+#include <sambag/com/Exception.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace {
@@ -21,9 +27,28 @@ typedef FrxMainBrowserCtrl::Tree::Node TreeNode;
 //-----------------------------------------------------------------------------
 void addPlugin(FrxCircuidViewWPtr _view, ::processing::PluginInfo pI) {
 	FrxCircuidViewPtr view = _view.lock();
-	SAMBAG_ASSERT(view);
-	IFrxControl &ctrl = getFrxControl(view);
-	ctrl.addPlugin(view, pI);
+	if (!view) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"tried to add plugin with FrxCircuidViewPtr == NULL");
+	}
+	IFrxComponentFactory &fac = getComponentFactory(view);
+	FrxProcessorNodePtr pr = fac.getPluginCreator()(view, pI);
+	if (!pr)
+		return;
+	getFrxControl(view).addProcessorToView(view, pr);
+}
+//-----------------------------------------------------------------------------
+void addProcessor(FrxCircuidViewWPtr _view, IFrxComponentFactory::ProcessorCreator f) 
+{
+	FrxCircuidViewPtr view = _view.lock();
+	if (!view) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"tried to add processor with FrxCircuidViewPtr == NULL");
+	}
+	FrxProcessorNodePtr pr = f(view);
+	if (!pr)
+		return;
+	getFrxControl(view).addProcessorToView(view, pr);
 }
 //-----------------------------------------------------------------------------
 void onBrowserOk(void *src,
@@ -137,6 +162,20 @@ void FrxMainBrowserCtrl::setHostInfo(IHostInfo::Ptr hostInfo) {
 	this->hostInfo = hostInfo;
 }
 //-----------------------------------------------------------------------------
+void FrxMainBrowserCtrl::addProcessors(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws) 
+{
+	Tree::Ptr tree = brws->getBrowserImpl();
+	IFrxComponentFactory &fac = getComponentFactory(view);
+	std::list<std::string> processorNames;
+	fac.getProcessorNames(processorNames);
+	BOOST_FOREACH(const std::string &name, processorNames) {
+		IFrxComponentFactory::ProcessorCreator f = fac.getProcessorCreator(name);
+		BrowserNode node(name, false);
+		node.f = boost::bind(&addProcessor, FrxCircuidViewWPtr(view), f);
+		tree->addNode(processors, node);
+	}
+}
+//-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws)
 {
 	Tree::Ptr tree = brws->getBrowserImpl();
@@ -157,6 +196,7 @@ void FrxMainBrowserCtrl::initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr br
 	// processors
 	processors = 
 		tree->addNode(tree->getRootNode(), BrowserNode("Processors", true));
+	addProcessors(view, brws);
 	
 	// knobs
 	knobs = 

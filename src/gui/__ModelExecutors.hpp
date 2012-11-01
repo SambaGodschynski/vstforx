@@ -98,7 +98,7 @@ connectModelObjects(fp::IModelController::Ptr ctrl,
 //-----------------------------------------------------------------------------
 template <>
 fp::IConnection::Ptr 
-connectModelObjects<IOCn>(fp::IModelController::Ptr ctrl, 
+inline connectModelObjects<IOCn>(fp::IModelController::Ptr ctrl, 
 	fp::ModelObject::Ptr src,
 	fp::ModelObject::Ptr dst) 
 {
@@ -110,7 +110,7 @@ connectModelObjects<IOCn>(fp::IModelController::Ptr ctrl,
 //-----------------------------------------------------------------------------
 template <>
 fp::IConnection::Ptr 
-connectModelObjects<ParameterCn>(fp::IModelController::Ptr ctrl, 
+inline connectModelObjects<ParameterCn>(fp::IModelController::Ptr ctrl, 
 	fp::ModelObject::Ptr src,
 	fp::ModelObject::Ptr dst) 
 {

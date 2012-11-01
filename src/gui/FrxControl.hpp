@@ -66,8 +66,8 @@ public:
 	//-------------------------------------------------------------------------
 	void handleContextMenuPopup(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
-	virtual void addPlugin(fgc::FrxCircuidViewPtr view, 
-		::processing::PluginInfo &pI);
+	virtual void addProcessorToView(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxProcessorNodePtr pr);
 	//-------------------------------------------------------------------------
 	virtual void removeComponent(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c);
