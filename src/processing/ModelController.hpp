@@ -40,6 +40,8 @@ private:
 	//-------------------------------------------------------------------------
 	void installListeners(IProcessor::Ptr pr);
 	//-------------------------------------------------------------------------
+	void installListeners(IParameter::Ptr pr);
+	//-------------------------------------------------------------------------
 	bool removeConnection(NodeConnectionPtr cn);
 public:
 	//-------------------------------------------------------------------------
@@ -116,6 +118,16 @@ public:
 	virtual INode::Ptr getExit();
 	//-------------------------------------------------------------------------
 	virtual IProcessor::Ptr createPlugin(const ::processing::PluginInfo &pI);
+	//-------------------------------------------------------------------------
+	virtual IParameter::Ptr createFreeParameter();
+	//-------------------------------------------------------------------------
+	virtual IParameter::Ptr getHostParameter(int id);
+	//-------------------------------------------------------------------------
+	virtual bool removeFreeParameter(IParameter::Ptr p);
+	//-------------------------------------------------------------------------
+	virtual int getNumHostParameter();
+	//-------------------------------------------------------------------------
+	virtual IHostInfo::Ptr getHostInfo() const;
 	///////////////////////////////////////////////////////////////////////////
 	// specific impl.
 	//-------------------------------------------------------------------------
@@ -125,7 +137,8 @@ public:
 	bool excuteProcessorRemoveRequest(ModelObject::Ptr obj, 
 		boost::weak_ptr<IProcessor> cn);
 	//-------------------------------------------------------------------------
-	virtual IHostInfo::Ptr getHostInfo() const;
+	bool excuteParameterRemoveRequest(ModelObject::Ptr obj, 
+		boost::weak_ptr<IParameter> cn);
 }; // ModelController
 }} // namespace(s)
 

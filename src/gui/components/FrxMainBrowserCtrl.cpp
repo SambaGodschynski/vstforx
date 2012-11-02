@@ -51,6 +51,20 @@ void addProcessor(FrxCircuidViewWPtr _view, IFrxComponentFactory::ProcessorCreat
 	getFrxControl(view).addProcessorToView(view, pr);
 }
 //-----------------------------------------------------------------------------
+void addFreeKnob(FrxCircuidViewWPtr _view, 
+	IFrxComponentFactory::FreeParameterCreator f) 
+{
+	FrxCircuidViewPtr view = _view.lock();
+	if (!view) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"tried to add knob with FrxCircuidViewPtr == NULL");
+	}
+	FrxParameterPtr pr = f(view);
+	if (!pr)
+		return;
+	getFrxControl(view).addParameterToView(view, pr);
+}
+//-----------------------------------------------------------------------------
 void onBrowserOk(void *src,
 	const sdc::events::ActionEvent &ev,
 	FrxColumnBrowser::WPtr _browser)
@@ -176,6 +190,16 @@ void FrxMainBrowserCtrl::addProcessors(FrxCircuidViewPtr view, FrxColumnBrowserP
 	}
 }
 //-----------------------------------------------------------------------------
+void FrxMainBrowserCtrl::addKnobs(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws) 
+{
+	Tree::Ptr tree = brws->getBrowserImpl();
+	IFrxComponentFactory &fac = getComponentFactory(view);
+	BrowserNode node("free knob", false);
+	IFrxComponentFactory::FreeParameterCreator f = fac.getFreeParameterCreator();
+	node.f = boost::bind(&addFreeKnob, FrxCircuidViewWPtr(view), f);
+	tree->addNode(knobs, node);
+}
+//-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws)
 {
 	Tree::Ptr tree = brws->getBrowserImpl();
@@ -201,6 +225,7 @@ void FrxMainBrowserCtrl::initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr br
 	// knobs
 	knobs = 
 		tree->addNode(tree->getRootNode(), BrowserNode("Knobs", true));
+	addKnobs(view, brws);
 }
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::initTree(FrxCircuidViewPtr view, 

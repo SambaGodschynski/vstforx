@@ -47,6 +47,10 @@ public:
 	 * @return number of processor creators.
 	 */
 	virtual void getProcessorNames(std::list<std::string> &out) const;
+	//-------------------------------------------------------------------------
+	virtual FreeParameterCreator getFreeParameterCreator() const;
+	//-------------------------------------------------------------------------
+	virtual HostParameterCreator getHostParameterCreator() const;
 }; // FrxComponentFactory
 }}} // namespace(s)
 

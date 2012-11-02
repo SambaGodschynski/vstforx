@@ -9,6 +9,7 @@
 #include <gui/FrxControl.hpp>
 #include "FrxCircuidView.hpp"
 #include "FrxConcreteProcessor.hpp"
+#include "FrxConcreteParameter.hpp"
 #include <gui/__ModelExecutors.hpp>
 #include <boost/assign/list_of.hpp>
 #include <boost/bind.hpp>
@@ -16,6 +17,7 @@
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <boost/foreach.hpp>
 #include <processing/IModelController.hpp>
+
 
 namespace frx { namespace gui { namespace components {
 namespace {
@@ -44,7 +46,7 @@ FrxProcessorNodePtr createProcessor(FrxCircuidViewPtr circ, int numInputs, int n
 {
 	if (!circ) {
 		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"tried to add processor with FrxCircuidViewPtr == NULL");
+			"tried to create processor with FrxCircuidViewPtr == NULL");
 	}
 	// create view obj
 	typename ConcreteProcessor::Ptr viewObj = ConcreteProcessor::create();
@@ -72,7 +74,7 @@ FrxProcessorNodePtr createPlugin(FrxCircuidViewPtr circ, ::processing::PluginInf
 {
 	if (!circ) {
 		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"tried to add processor with FrxCircuidViewPtr == NULL");
+			"tried to create processor with FrxCircuidViewPtr == NULL");
 	}
 	// create model obj.
 	frx::processing::IModelController::Ptr ctrl;
@@ -93,6 +95,31 @@ FrxProcessorNodePtr createPlugin(FrxCircuidViewPtr circ, ::processing::PluginInf
 	registerProcessor(map, viewObj, mObj);
 	return viewObj;
 }
+//-----------------------------------------------------------------------------
+FrxParameterPtr createFreeParameter(FrxCircuidViewPtr circ) {
+	if (!circ) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"tried to create parameter with FrxCircuidViewPtr == NULL");
+	}
+	// create model obj.
+	frx::processing::IModelController::Ptr ctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(ctrl, map) = getControllerAndMap(circ);
+
+	frx::processing::IParameter::Ptr mObj = ctrl->createFreeParameter();
+	if (!mObj) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"could'nt create parameter object.");
+	}
+	// create view obj.
+	FrxStdKnob::Ptr viewObj = FrxStdKnob::create();
+	if (!viewObj) {
+		return FrxParameterPtr();
+	} 
+	map->registerObjects(viewObj, mObj);
+	return viewObj;
+}
+//-----------------------------------------------------------------------------
 template <class ConcreteProcessor>
 FrxComponentFactory::ProcessorCreator getCreator(int numIns, int numOuts) 
 {
@@ -141,6 +168,18 @@ void FrxComponentFactory::getProcessorNames(std::list<std::string> &out) const
 	BOOST_FOREACH(const ProcessorMap::value_type &v, processorMap) {
 		out.push_back(v.first);
 	}
+}	
+//-----------------------------------------------------------------------------
+FrxComponentFactory::FreeParameterCreator 
+FrxComponentFactory::getFreeParameterCreator() const 
+{
+	return FreeParameterCreator(&createFreeParameter);
+}
+//-----------------------------------------------------------------------------
+FrxComponentFactory::HostParameterCreator 
+FrxComponentFactory::getHostParameterCreator() const 
+{
+	return HostParameterCreator();
 }
 ///////////////////////////////////////////////////////////////////////////////
 IFrxComponentFactory & getComponentFactory(FrxCircuidViewPtr view) {

@@ -30,6 +30,9 @@ namespace frx { namespace gui { namespace components {
 	class FrxProcessorNode;
 	typedef boost::shared_ptr<FrxProcessorNode> FrxProcessorNodePtr; 
 	typedef boost::weak_ptr<FrxProcessorNode> FrxProcessorNodeWPtr;
+	class FrxParameter;
+	typedef boost::shared_ptr<FrxParameter> FrxParameterPtr; 
+	typedef boost::weak_ptr<FrxParameter> FrxParameterWPtr;
 }}}
 
 #endif

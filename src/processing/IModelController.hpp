@@ -99,6 +99,14 @@ public:
 	virtual INode::Ptr getExit() = 0;
 	//-------------------------------------------------------------------------
 	virtual IHostInfo::Ptr getHostInfo() const = 0;
+	//-------------------------------------------------------------------------
+	virtual IParameter::Ptr createFreeParameter() = 0;
+	//-------------------------------------------------------------------------
+	virtual bool removeFreeParameter(IParameter::Ptr p) = 0;
+	//-------------------------------------------------------------------------
+	virtual IParameter::Ptr getHostParameter(int id) = 0;
+	//-------------------------------------------------------------------------
+	virtual int getNumHostParameter() = 0;
 }; // IModelController
 ///////////////////////////////////////////////////////////////////////////////
 extern IModelController::Ptr

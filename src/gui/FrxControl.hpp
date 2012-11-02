@@ -69,6 +69,9 @@ public:
 	virtual void addProcessorToView(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxProcessorNodePtr pr);
 	//-------------------------------------------------------------------------
+	virtual void addParameterToView(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxParameterPtr pr);
+	//-------------------------------------------------------------------------
 	virtual void removeComponent(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c);
 	//-------------------------------------------------------------------------

@@ -42,6 +42,9 @@ public:
 	virtual void addProcessorToView(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxProcessorNodePtr pr) = 0;
 	//-------------------------------------------------------------------------
+	virtual void addParameterToView(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxParameterPtr pr) = 0;
+	//-------------------------------------------------------------------------
 	typedef boost::function<void(fgc::FrxCircuidViewPtr, 
 		fgc::FrxComponentPtr)> CtrlCmd;
 	//-------------------------------------------------------------------------

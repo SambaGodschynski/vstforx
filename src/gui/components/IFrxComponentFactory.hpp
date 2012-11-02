@@ -31,6 +31,14 @@ public:
 		FrxProcessorNodePtr(FrxCircuidViewPtr, ::processing::PluginInfo)
 	> PluginCreator;
 	//-------------------------------------------------------------------------
+	typedef boost::function<
+		FrxParameterPtr(FrxCircuidViewPtr)
+	> FreeParameterCreator;
+	//-------------------------------------------------------------------------
+	typedef boost::function<
+		FrxParameterPtr(FrxCircuidViewPtr, int)
+	> HostParameterCreator;
+	//-------------------------------------------------------------------------
 	virtual PluginCreator getPluginCreator() const = 0;
 	//-------------------------------------------------------------------------
 	/**
@@ -44,6 +52,11 @@ public:
 	 * @return number of processor creators.
 	 */
 	virtual void getProcessorNames(std::list<std::string> &out) const = 0;
+	//-------------------------------------------------------------------------
+	virtual FreeParameterCreator getFreeParameterCreator() const = 0;
+	//-------------------------------------------------------------------------
+	virtual HostParameterCreator getHostParameterCreator() const = 0;
+
 }; // IFrxComponentFactory
 ///////////////////////////////////////////////////////////////////////////////
 extern IFrxComponentFactory & getComponentFactory(FrxCircuidViewPtr view);

@@ -59,6 +59,18 @@ void ModelController::installListeners(IProcessor::Ptr pr) {
 	);
 }
 //-----------------------------------------------------------------------------
+void ModelController::installListeners(IParameter::Ptr pr)  {
+	pr->addRemoveRequestExecuter(
+		boost::bind(
+			&ModelController::excuteParameterRemoveRequest,
+			this,
+			_1,
+			boost::weak_ptr<IParameter>(pr)
+		),
+		self
+	);
+}
+//-----------------------------------------------------------------------------
 IProcessor::Ptr ModelController::createVolumeProcessor() {
 	namespace pr = ::processing;
 	if (!graph)
@@ -276,6 +288,12 @@ bool ModelController::excuteProcessorRemoveRequest(ModelObject::Ptr obj,
 	return removeProcessor(cn.lock());	
 }
 //-----------------------------------------------------------------------------
+bool ModelController::excuteParameterRemoveRequest(ModelObject::Ptr obj, 
+	boost::weak_ptr<IParameter> cn)
+{
+	return removeFreeParameter(cn.lock());	
+}
+//-----------------------------------------------------------------------------
 IHostInfo::Ptr ModelController::getHostInfo() const {
 	return graph->getHostInfo();
 }
@@ -302,5 +320,34 @@ IProcessor::Ptr ModelController::createPlugin(const ::processing::PluginInfo &pI
 	// register remove request excutor
 	installListeners(adapter);
 	return adapter;
+}
+//-----------------------------------------------------------------------------
+IParameter::Ptr ModelController::createFreeParameter() {
+	using ::processing::parameter::Parameter;
+	ParameterAdapter::Ptr res = ParameterAdapter::create();
+	Parameter::Ptr p = Parameter::create();
+	if ( graph->getJanitor()->add(p) != ::processing::Graph::Janitor::SUCCEED )
+		return IParameter::Ptr();
+	res->setAdaptee(p);
+	installListeners(res);
+	return res;
+}
+//-----------------------------------------------------------------------------
+bool ModelController::removeFreeParameter(IParameter::Ptr p) {
+	ParameterAdapter::Ptr ada = boost::shared_dynamic_cast<ParameterAdapter>(p);
+	SAMBAG_ASSERT(ada);
+	return 
+		graph->getJanitor()->remove(ada->getAdaptee()) 
+			== ::processing::Graph::Janitor::SUCCEED;
+}
+//-----------------------------------------------------------------------------
+IParameter::Ptr ModelController::getHostParameter(int id) {
+	ParameterAdapter::Ptr res = ParameterAdapter::create();
+	res->setAdaptee( graph->getHostParameter((size_t)id) );
+	return res;
+}
+//-----------------------------------------------------------------------------
+int ModelController::getNumHostParameter() {
+	return (int)graph->getNumHostParameter();
 }
 }} // namespace(s)
