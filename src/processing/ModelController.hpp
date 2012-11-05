@@ -14,6 +14,7 @@
 #include "graph.h"
 #include <boost/function.hpp>
 #include "Forward.hpp"
+#include <vector>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -43,6 +44,10 @@ private:
 	void installListeners(IParameter::Ptr pr);
 	//-------------------------------------------------------------------------
 	bool removeConnection(NodeConnectionPtr cn);
+	//-------------------------------------------------------------------------
+	typedef std::vector<IParameter::Ptr> TmpHostParameter;
+	//-------------------------------------------------------------------------
+	TmpHostParameter tmpHostParameter;
 public:
 	//-------------------------------------------------------------------------
 	static Ptr create();

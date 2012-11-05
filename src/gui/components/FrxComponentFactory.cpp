@@ -120,6 +120,30 @@ FrxParameterPtr createFreeParameter(FrxCircuidViewPtr circ) {
 	return viewObj;
 }
 //-----------------------------------------------------------------------------
+FrxParameterPtr createHostParameter(FrxCircuidViewPtr circ, int id) {
+	if (!circ) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"tried to create parameter with FrxCircuidViewPtr == NULL");
+	}
+	// create model obj.
+	frx::processing::IModelController::Ptr ctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(ctrl, map) = getControllerAndMap(circ);
+
+	frx::processing::IParameter::Ptr mObj = ctrl->getHostParameter(id);
+	if (!mObj) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"could'nt create parameter object.");
+	}
+	// create view obj.
+	FrxStdKnob::Ptr viewObj = FrxStdKnob::create();
+	if (!viewObj) {
+		return FrxParameterPtr();
+	} 
+	map->registerObjects(viewObj, mObj);
+	return viewObj;
+}
+//-----------------------------------------------------------------------------
 template <class ConcreteProcessor>
 FrxComponentFactory::ProcessorCreator getCreator(int numIns, int numOuts) 
 {
@@ -179,7 +203,7 @@ FrxComponentFactory::getFreeParameterCreator() const
 FrxComponentFactory::HostParameterCreator 
 FrxComponentFactory::getHostParameterCreator() const 
 {
-	return HostParameterCreator();
+	return HostParameterCreator(&createHostParameter);
 }
 ///////////////////////////////////////////////////////////////////////////////
 IFrxComponentFactory & getComponentFactory(FrxCircuidViewPtr view) {

@@ -10,6 +10,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <sambag/com/events/Events.hpp>
+#include <sambag/com/ArithmeticWrapper.hpp>
 #include <sambag/dsp/DspPlugin.hpp>
 #include <processing/IHostInfo.h>
 #include <processing/graph.h>
@@ -46,6 +47,8 @@ private:
 	ModelController::Ptr ctrl;
 	//-------------------------------------------------------------------------
 	frx::gui::ViewModelMap::Ptr map;
+	//-------------------------------------------------------------------------
+	sambag::com::ArithmeticWrapper<bool> onHostParameterUpdate;
 protected:
 	//-------------------------------------------------------------------------
 	/**
@@ -66,7 +69,11 @@ protected:
 	void close();
 	//-------------------------------------------------------------------------
 	void unRegisterInstance();
+	//-------------------------------------------------------------------------
+	void initHostParameter();
 public:
+	//-------------------------------------------------------------------------
+	void hostParameterChanged(void *src, float value, int index);
 	//-------------------------------------------------------------------------
 	void registerView(fgc::FrxCircuidViewPtr view);
 	//-------------------------------------------------------------------------

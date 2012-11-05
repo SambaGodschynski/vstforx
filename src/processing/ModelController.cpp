@@ -41,6 +41,10 @@ ModelController::Ptr ModelController::create() {
 //-----------------------------------------------------------------------------
 void ModelController::setGraph(::processing::Graph::Ptr graph) {
 	this->graph = graph;
+	if (!graph)
+		return;
+	tmpHostParameter.clear();
+	tmpHostParameter.resize(graph->getNumHostParameter(), IParameter::Ptr());
 }
 //-----------------------------------------------------------------------------
 ::processing::Graph::Ptr ModelController::getGraph() const {
@@ -342,9 +346,14 @@ bool ModelController::removeFreeParameter(IParameter::Ptr p) {
 }
 //-----------------------------------------------------------------------------
 IParameter::Ptr ModelController::getHostParameter(int id) {
-	ParameterAdapter::Ptr res = ParameterAdapter::create();
-	res->setAdaptee( graph->getHostParameter((size_t)id) );
-	return res;
+	if (id>(int)tmpHostParameter.size())
+		return IParameter::Ptr();
+	if (!tmpHostParameter[id]) {
+		ParameterAdapter::Ptr res = ParameterAdapter::create();
+		res->setAdaptee( graph->getHostParameter((size_t)id) );
+		tmpHostParameter[id] = res;
+	}
+	return tmpHostParameter[id];
 }
 //-----------------------------------------------------------------------------
 int ModelController::getNumHostParameter() {

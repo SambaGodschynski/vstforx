@@ -65,6 +65,20 @@ void addFreeKnob(FrxCircuidViewWPtr _view,
 	getFrxControl(view).addParameterToView(view, pr);
 }
 //-----------------------------------------------------------------------------
+void addHostKnob(FrxCircuidViewWPtr _view, 
+	IFrxComponentFactory::HostParameterCreator f, int id) 
+{
+	FrxCircuidViewPtr view = _view.lock();
+	if (!view) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"tried to add knob with FrxCircuidViewPtr == NULL");
+	}
+	FrxParameterPtr pr = f(view, id);
+	if (!pr)
+		return;
+	getFrxControl(view).addParameterToView(view, pr);
+}
+//-----------------------------------------------------------------------------
 void onBrowserOk(void *src,
 	const sdc::events::ActionEvent &ev,
 	FrxColumnBrowser::WPtr _browser)
@@ -198,6 +212,17 @@ void FrxMainBrowserCtrl::addKnobs(FrxCircuidViewPtr view, FrxColumnBrowserPtr br
 	IFrxComponentFactory::FreeParameterCreator f = fac.getFreeParameterCreator();
 	node.f = boost::bind(&addFreeKnob, FrxCircuidViewWPtr(view), f);
 	tree->addNode(knobs, node);
+	// host knobs:
+	frx::processing::IModelController::Ptr ctrl
+		= frx::processing::getModelController(view);
+	Tree::Node hostKnobs = tree->addNode(knobs, BrowserNode ("host knobs", true));
+	int nbKnobs = ctrl->getNumHostParameter();
+	IFrxComponentFactory::HostParameterCreator hPcreator = fac.getHostParameterCreator();
+	for (int i=0; i<nbKnobs; ++i) {
+		BrowserNode node("host knob: " + sambag::com::toString(i), false);
+		node.f = boost::bind(&addHostKnob, FrxCircuidViewWPtr(view), hPcreator, i);
+		tree->addNode(hostKnobs, node);
+	}
 }
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws)

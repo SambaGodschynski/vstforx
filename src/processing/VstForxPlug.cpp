@@ -10,6 +10,7 @@
 #include <stdlib.h>
 #include <sstream>
 #include <processing/Frames.h>
+#include <processing/parameter/parameter.h>
 #include <com/one4All.h>
 #include <boost/bimap.hpp>
 
@@ -97,6 +98,16 @@ void VstForxPlug::open() {
 	ctrl->setGraph(graph);
 	map = frx::gui::ViewModelMap::create();
 	updateGraphBaseConfiguration();
+	initHostParameter();
+}	
+//-----------------------------------------------------------------------------
+void VstForxPlug::initHostParameter() {
+	// init hostParameter	
+	for ( int i=0; i<graph->getNumHostParameter(); ++i ){
+		graph->getHostParameter(i)->addValueChangedListener ( 
+			boost::bind(&VstForxPlug::hostParameterChanged, this, _1, _2, i)
+		);
+	}
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::close() {
@@ -132,9 +143,25 @@ void VstForxPlug::setSampleRate(float sampleRate)  {
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::setParameterValue(int index, float value) {
+	if ( !graph ) 
+		return;
+	if (!onHostParameterUpdate) {
+		*(graph->getHostParameter(index)) = value;
+	}
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::getParameterValue(int index, float &outValue) {
+	if ( !graph ) 
+		outValue = 0.0;
+	outValue = *(graph->getHostParameter(index));
+}
+//-----------------------------------------------------------------------------
+void VstForxPlug::hostParameterChanged(void *src, float value, int index) {
+	using ::processing::parameter::Parameter;
+	Parameter *p = (Parameter*) src;
+	onHostParameterUpdate = true;
+	getHost()->parameterChanged(index);
+	onHostParameterUpdate = false;
 }
 //-----------------------------------------------------------------------------
 float VstForxPlug::getSampleRate() const  {
