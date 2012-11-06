@@ -25,7 +25,7 @@
 namespace com {
 //------------------------------------------------------------------------------------------------------------
 void ShowDatabaseConnectionFailedMSG() {
-	MessageBox ( "Error.", 
+	::com::osMessageBox ( "Error.", 
 			"Could not create/access the databasefile in your VSTForx folder"
 			". Please check write protection or try to run host as administrator.", 
 		MSG_ALERT 
@@ -166,7 +166,7 @@ void PluginCollection::processScanLogFile() {
 		Filename f = Filename ( analyzeLog () );
 		if (exists (f)) {
 			MessageBoxReturn ret = 
-				com::MessageBox ( "Attention!", "The last try to access on " + f.string() + 
+				com::osMessageBox ( "Attention!", "The last try to access on " + f.string() + 
 								  " failed!\n Do you want to skip this file?", com::MSG_QUESTION );
 			if ( ret == com::MSG_RET_YES ) {
 				appendLog ( "?" + f.string() ); 

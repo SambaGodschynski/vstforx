@@ -12,7 +12,7 @@
 #include <float.h>
 #include <boost/foreach.hpp>
 #include <limits>
-
+#include <OS_Specific/OS_com.h>
 
 #define MAX_BFF_STR 2048
 
@@ -410,7 +410,7 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 		aEff->numOutputs  != numOutputs ||
 		aEff->numParams != param.size() ) 
 	{
-		com::MessageBox(getPlugName(), getPlugName() + " I/O configuration has changed."
+		com::osMessageBox(getPlugName(), getPlugName() + " I/O configuration has changed."
 			" Plugin output ist stopped until reload!", com::MSG_ALERT);
 		ioChangedLock = true;
 		// do not return, because it breaks the restore mechanism
@@ -439,6 +439,29 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::onPlugRequestWindowResize (size_t w, size_t h) {
 	EventSender<ResizeEditorEvent>::notifyEventListeners( this, ResizeEditorEvent(w,h) );
+}
+//------------------------------------------------------------------------------------------------------------
+void VSTPlugin::openEditor(void *window) {
+	if (!window)
+		return;
+	ERect *size = NULL;
+	// get editor size
+	aEff->dispatcher ( aEff, effEditGetRect, 0, 0, &size, 0);
+	// set size
+	if ( size ) {
+		onPlugRequestWindowResize(size->right, size->bottom);
+	}
+	aEff->dispatcher ( aEff, effEditOpen, 0, 0, window, 0);
+}
+//------------------------------------------------------------------------------------------------------------
+void VSTPlugin::closeEditor(void *window) {
+	if (!window)
+		return;
+	aEff->dispatcher ( aEff, effEditClose, 0, 0, window, 0);
+}
+//--------------------------------------------------------------------------------------------------------
+void VSTPlugin::onEditorIdle() {
+	aEff->dispatcher ( aEff, effEditIdle, 0, 0, 0, 0);
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::getShellPluginInfos(VSTPlugin::ShellPluginInfos &out) {

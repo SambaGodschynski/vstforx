@@ -23,7 +23,21 @@
   ((frxctrl).createCtrlCommandFunction(                                           \
     (view),                                                                       \
     (frxcomponent),                                                               \
-	boost::bind((frxcmdfunction), &(frxctrl), _1, _2)                                                              \
+	boost::bind((frxcmdfunction), &(frxctrl), _1, _2)                             \
+  ))
+
+#define SAMBAG_CREATE_FRXCONTROL_CMD1(frxctrl, view, frxcomponent, frxcmdfunction, arg1) \
+  ((frxctrl).createCtrlCommandFunction(                                           \
+    (view),                                                                       \
+    (frxcomponent),                                                               \
+	boost::bind((frxcmdfunction), &(frxctrl), _1, _2, (arg1))                     \
+  ))
+
+#define SAMBAG_CREATE_FRXCONTROL_CMD2(frxctrl, view, frxcomponent, frxcmdfunction, arg1, arg2) \
+  ((frxctrl).createCtrlCommandFunction(                                           \
+    (view),                                                                       \
+    (frxcomponent),                                                               \
+	boost::bind((frxcmdfunction), &(frxctrl), _1, _2, (arg1), (arg2))             \
   ))
 
 
@@ -83,6 +97,9 @@ public:
 		fgc::FrxComponentPtr c) = 0;
 	//-------------------------------------------------------------------------
 	virtual void showProcessorDetails(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c) = 0;
+	//-------------------------------------------------------------------------
+	virtual void openPluginEditor(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c) = 0;
 }; // IFrxControl
 ///////////////////////////////////////////////////////////////////////////////

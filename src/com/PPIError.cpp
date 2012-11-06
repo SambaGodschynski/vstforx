@@ -27,7 +27,7 @@ string PPIError::src2String() const {
 }
 //------------------------------------------------------------------------------------------------------------
 void PPIError::showMessage() {
-	com::MessageBox ( "Error!", error, MSG_ALERT ); 
+	com::osMessageBox ( "Error!", error, MSG_ALERT ); 
 };
 } //namespace ppiError
 } //namespace com

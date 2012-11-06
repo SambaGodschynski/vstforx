@@ -10,6 +10,7 @@
 #include "FrxComponent.hpp"
 #include <list>
 #include <algorithm>
+#include <OS_Specific/OS_com.h>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -115,14 +116,14 @@ sdc::AComponentPtr FrxCircuidView::findComponentOnPoint(const sd::Point2D &p,
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::message(const std::string &str) {
-	//TODO
+	::com::osMessageBox("Message:", str, ::com::MSG_HINT);
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::warnMessage(const std::string &str) {
-	//TODO
+	::com::osMessageBox("Warning:", str, ::com::MSG_ALERT);
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::errorMessage(const std::string &str) {
-	//TODO
+	::com::osMessageBox("Error:", str, ::com::MSG_ALERT);
 }
 }}} // namespace(s)

@@ -195,7 +195,7 @@ void VstForxEditor::warnMessage(const std::string &str) {
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::errorMessage(const std::string &str) {
-	::com::MessageBox("Error", str, ::com::MSG_ALERT);
+	::com::osMessageBox("Error", str, ::com::MSG_ALERT);
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::idle() {

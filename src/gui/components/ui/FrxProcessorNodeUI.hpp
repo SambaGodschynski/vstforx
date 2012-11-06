@@ -10,6 +10,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <gui/components/FrxProcessorNode.hpp>
+#include <gui/components/FrxConcreteProcessor.hpp>
 #include "FrxNodeUI.hpp"
 #include <sambag/disco/components/PopupMenu.hpp>
 #include <gui/IFrxControl.hpp>
@@ -128,6 +129,28 @@ void FrxProcessorNodeUI<CT>::installListeners(sdc::AComponentPtr c) {
 	Super::installListeners(c);
 }
 //-----------------------------------------------------------------------------
+namespace {
+template <class CT>
+void createSpecificEntries(sdc::PopupMenuPtr menu, FrxCircuidViewPtr view, 
+	FrxComponentPtr c)
+{
+}
+template <>
+inline void createSpecificEntries<FrxPluginNode::ProcessorType>(sdc::PopupMenuPtr menu, 
+	FrxCircuidViewPtr view, FrxComponentPtr c)
+{
+	sdc::MenuItem::Ptr m = sdc::MenuItem::create();
+	m->setText("open " + c->getName() + " editor...");
+	IFrxControl &ctrl = getFrxControl(view); 
+	m->EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
+		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
+		&IFrxControl::openPluginEditor),
+		c
+	);
+	menu->add(m);
+}
+} // namespace(s)
+//-----------------------------------------------------------------------------
 template <class CT>
 void FrxProcessorNodeUI<CT>::createPopupmenuEntries(sdc::PopupMenuPtr menu, 
 	FrxCircuidViewPtr view, 
@@ -143,6 +166,7 @@ void FrxProcessorNodeUI<CT>::createPopupmenuEntries(sdc::PopupMenuPtr menu,
 		c
 	);
 	menu->add(m);
+	createSpecificEntries<CT>(menu, view, c);
 }
 }}}} // namespace(s)
 

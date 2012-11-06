@@ -439,6 +439,22 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\src\gui\components\FrxPluginEditor.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxPluginEditor.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxPluginEditorCtrl.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxPluginEditorCtrl.hpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\gui\components\FrxProcessorBrowser.cpp"
 						>
 					</File>
@@ -452,6 +468,14 @@
 					</File>
 					<File
 						RelativePath="..\..\src\gui\components\FrxProcessorBrowserCtrl.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxProcessorEditor.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxProcessorEditor.hpp"
 						>
 					</File>
 					<File
@@ -484,6 +508,10 @@
 					</File>
 					<File
 						RelativePath="..\..\src\gui\components\IFrxComponentFactory.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\IFrxProcessorEditorCtrl.hpp"
 						>
 					</File>
 					<File

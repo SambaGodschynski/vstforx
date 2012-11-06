@@ -14,7 +14,7 @@
 #include "audioEffectX.h"
 #include "com/one4All.h"
 #include "processing/processing.h"
-
+#include <windows.h>
 using namespace std;
 
 namespace processing {

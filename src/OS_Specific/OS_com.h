@@ -27,7 +27,5 @@ namespace com {
 extern bool isPlugFilename ( const string &filename );
 //--------------------------------------------------------------------------------------------------------
 extern bool isDirectory ( const string &path );
-//--------------------------------------------------------------------------------------------------------
-class SysTimer;
 } //namespace
 #endif 

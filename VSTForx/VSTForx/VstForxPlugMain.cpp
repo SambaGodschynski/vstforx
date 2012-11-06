@@ -5,7 +5,7 @@
 #include <string>
 #include <audioeffectx.h>
 #include <com/Settings.h>
-
+#include <windows.h>
 std::string getHomeDirectory();
 
 //-----------------------------------------------------------------------------

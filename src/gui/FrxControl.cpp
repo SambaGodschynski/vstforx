@@ -33,6 +33,7 @@
 #include <gui/components/SetupWindow.hpp>
 #include <processing/IParameter.hpp>
 #include <processing/IProcessor.hpp>
+#include <processing/IPluginAdapter.hpp>
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <sambag/disco/components/DefaultBoundedRangeModel.hpp>
 #include "components/SetupCtrl.hpp"
@@ -42,6 +43,8 @@
 #include "components/FrxProcessorBrowserCtrl.hpp"
 #include "components/FrxPluginBrowserCtrl.hpp"
 #include "components/FrxMainBrowserCtrl.hpp"
+#include "components/FrxPluginEditor.hpp"
+#include "components/FrxPluginEditorCtrl.hpp"
 
 namespace frx { namespace gui {
 using namespace components;
@@ -204,6 +207,15 @@ FrxColumnBrowser::Ptr openProcessorBrowser(fgc::FrxCircuidViewPtr view,
 	browser->setTitle(c->getName() + ":");
 	browser->open();
 	return browser;
+}
+//-----------------------------------------------------------------------------
+FrxPluginEditor::Ptr createPluginEditor(fgc::FrxCircuidViewPtr view, 
+	fgc::FrxComponentPtr c)
+{
+	FrxPluginEditor::Ptr ed;
+	extraWindow = ed = FrxPluginEditor::create();
+	ed->setTitle(c->getName() + " editor");
+	return ed;
 }
 //-----------------------------------------------------------------------------
 FrxColumnBrowser::Ptr openMainBrowser(fgc::FrxCircuidViewPtr view, 
@@ -380,7 +392,7 @@ void FrxControl::addProcessorToView(fgc::FrxCircuidViewPtr view,
 		FrxProcessorNodePtr pr)
 {
 	// add to view
-	view->add(pr);
+	view->add(pr, FrxCircuidView::Z_ProcessorNodes);
 	pr->setLocation(0,0);
 	pr->resetIOLocation();
 	// register
@@ -544,7 +556,6 @@ FrxControl::createCtrlCommandFunction(fgc::FrxCircuidViewPtr view,
 	);
 }
 //-----------------------------------------------------------------------------
-// TODO: extract to FrxProcessorBrowserCtrl
 void FrxControl::showProcessorDetails(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c)
 {
@@ -557,6 +568,26 @@ void FrxControl::showProcessorDetails(fgc::FrxCircuidViewPtr view,
 	ctrl->setComponent(c);
 	browser->setCtrl(ctrl);
 	browser->initTree(view);
+}
+//-----------------------------------------------------------------------------
+void FrxControl::openPluginEditor(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c)
+{
+	frx::processing::IModelController::Ptr ctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(ctrl, map) = getControllerAndMap(view);
+	typedef frx::processing::IPluginAdapter Plugin;
+	Plugin::Ptr plugin = boost::shared_dynamic_cast<Plugin>(
+		map->getModelObject(c)
+	);
+	if (!plugin)
+		return;
+	// create editor
+	FrxPluginEditor::Ptr ed = createPluginEditor(view, c);
+	FrxPluginEditorCtrl::Ptr pluginCtrl = FrxPluginEditorCtrl::create();
+	pluginCtrl->setPlugin(plugin);
+	ed->setControl(pluginCtrl);
+	ed->open();
 }
 //=============================================================================
 //-----------------------------------------------------------------------------

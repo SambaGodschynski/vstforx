@@ -121,7 +121,7 @@ void Settings::loadConfigFile() { // TODO: use boost::Program_options
 	// wenn zugriff verw. aber datei existent
 	if ( f.fail() )  {
 		if (  boost::filesystem::exists(conFile) ) {
-			MessageBox ( "Error.", 
+			osMessageBox ( "Error.", 
 						 string("could not access: " + conFile ).c_str(), 
 						 MSG_ALERT );
 		}
@@ -175,7 +175,7 @@ void Settings::saveConfigFile() {  // TODO: use boost::Program_options
 		if ( CONFIG_FILE == "" ) return;
 		f.open ( getConfFilename().c_str(), ios::trunc );
 		if ( f.fail() ) {
-			MessageBox ( "Error.", 
+			osMessageBox ( "Error.", 
 						string("could not write (check write protection): " 
 							   + getConfFilename() ).c_str(), MSG_ALERT );
 			return;

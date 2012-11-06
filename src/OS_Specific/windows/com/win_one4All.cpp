@@ -10,6 +10,7 @@
 #include "com/one4All.h"
 #include <Shlobj.h>
 #include <sstream>
+#include <windows.h>
 
 extern void* hInstance;
 
@@ -24,7 +25,7 @@ bool isDirectory ( const string &filename ) {
 	return is_directory (s);
 } 
 //------------------------------------------------------------------------------------------------------------
-MessageBoxReturn MessageBox ( const string &title, const string &text, const MessageBoxType &type ) {
+MessageBoxReturn osMessageBox ( const string &title, const string &text, const MessageBoxType &type ) {
 	int ret = 0;
 	UINT flags = MB_SYSTEMMODAL;
 	switch ( type ){ 
@@ -43,30 +44,6 @@ MessageBoxReturn MessageBox ( const string &title, const string &text, const Mes
 			return MSG_RET_NONE;
 	}
 	return MSG_RET_NONE;
-}
-//========================================================================================================
-// Klasse SysTimerCallback.
-//========================================================================================================
-VOID CALLBACK TimerProc( HWND hwnd, UINT uMsg, UINT_PTR idEvent, DWORD dwTime ) {
-	SysTimer::ID2Timer::iterator it = SysTimer::id2Timer.find( idEvent );
-	if ( it == SysTimer::id2Timer.end() ) return;
-	it->second->callBack();
-}
-//========================================================================================================
-// Klasse SysTimer.
-//========================================================================================================
-//--------------------------------------------------------------------------------------------------------
-SysTimer::ID2Timer SysTimer::id2Timer;
-//--------------------------------------------------------------------------------------------------------
-void SysTimer::start() {
-	id = SetTimer( NULL, NULL, callTimeMS, &TimerProc );
-	id2Timer.insert ( pair<UINT_PTR, SysTimer*> ( id, this ) );
-}
-//--------------------------------------------------------------------------------------------------------
-void SysTimer::stop() {
-	if (!id) return;
-	KillTimer ( NULL, id );
-	id = NULL;
 }
 //============================================================================================================
 //	globale string: SHBrowseForFolder startpfad ueber BrowseCallbackProc

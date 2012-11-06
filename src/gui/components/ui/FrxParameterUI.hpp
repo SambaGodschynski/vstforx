@@ -195,6 +195,7 @@ void FrxParameterUI<PT>::mouseExited(const sdc::events::MouseEvent &ev) {
 //-----------------------------------------------------------------------------
 template <class PT>
 void FrxParameterUI<PT>::mouseClicked(const sdc::events::MouseEvent &ev) {
+	Super::mouseClicked(ev);
 }
 //-----------------------------------------------------------------------------
 template <class PT>

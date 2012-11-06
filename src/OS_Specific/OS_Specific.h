@@ -9,7 +9,7 @@
 #define OS_SPECIFIC_H
 
 
-#if _WIN32
+#if WIN32
 #define OS_WINDOWS
 
 #elif TARGET_API_MAC_CARBON

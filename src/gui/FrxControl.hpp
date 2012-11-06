@@ -84,6 +84,9 @@ public:
 	virtual void showProcessorDetails(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c);
 	//-------------------------------------------------------------------------
+	virtual void openPluginEditor(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c);
+	//-------------------------------------------------------------------------
 	void addProcesorKnobToView(gc::FrxCircuidViewWPtr view, gc::FrxComponentWPtr c,
 	frx::processing::IParameter::WPtr par); 
 

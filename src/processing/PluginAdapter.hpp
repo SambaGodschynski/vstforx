@@ -24,7 +24,13 @@ class PluginAdapter : public ProcessorAdapter, public IPluginAdapter {
 public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<PluginAdapter> Ptr;
+	//-------------------------------------------------------------------------
+	typedef ::processing::Plugin Adaptee;
 protected:
+	//-------------------------------------------------------------------------
+	Adaptee::Ptr getPlugin() const {
+		return boost::shared_dynamic_cast<Adaptee>(getAdaptee());
+	}
 private:
 public:
 	//-------------------------------------------------------------------------
@@ -33,6 +39,12 @@ public:
 		res->setAdaptee(a);
 		return res;
 	}
+	//-------------------------------------------------------------------------
+	virtual void openEditor(sdc::WindowPtr win);
+	//-------------------------------------------------------------------------
+	virtual void closeEditor(sdc::WindowPtr win);
+	//-------------------------------------------------------------------------
+	virtual void onEditorIdle();
 }; // PluginAdapter
 }} // namespace(s)
 
