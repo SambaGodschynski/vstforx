@@ -33,7 +33,9 @@
 #include <gui/components/FrxConcreteParameter.hpp>
 #include <gui/components/ui/FrxParameterUI.hpp>
 #include <gui/components/FrxColumnBrowser.hpp>
-
+#include <sambag/disco/FileResourceManager.hpp>
+#include <sambag/disco/IPattern.hpp>
+#include <sambag/math/Matrix.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -179,7 +181,18 @@ void FrxLookAndFeel::installDefaults() {
 		createStyle("stroke-width: 4; stroke: grey; fill: purple;stroke-dasharray: 9, 5; fill-opacity: 0.25"));
 	m.putProperty("FrxSelection.selectedStyle", 
 		createStyle("stroke-width: 4; stroke: grey; fill: purple; fill-opacity: 0.25"));
-	resetUIPorpertyCache();
-}
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<images
+	FileResourceManager &rManager = FileResourceManager::instance();
+	rManager.registerImage("FrxCircuidView.image", "disco-floor.png");
+	m.putProperty("FrxCircuidView.bgTransfomation", sambag::math::rotate2D(45.));
+	m.putProperty("FrxCircuidView.bgExtend", sd::IPattern::DISCO_EXTEND_REPEAT);
+	//rManager.registerImage("FrxPluginNode.image", "w3c.svg");
+	//rManager.registerImage("ProcessorInput.image", "w3c.svg");
+	//rManager.registerImage("ProcessorOutput.image", "w3c.svg");
+	rManager.registerImage("Entry.image", "entry.svg");
+	rManager.registerImage("Exit.image", "exit.svg");
+
+
+}	
 
 }}}} // namespace(s)

@@ -53,6 +53,13 @@ class IFrxControl {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
+	/**
+	 * holds window pointer until window is closed.
+	 * @param the window
+	 * @param the windowClassName, if setted only one ptr per class will be stored
+	 */
+	virtual void addWindow(sdc::WindowPtr win, const std::string &wndClass="") = 0;
+	//-------------------------------------------------------------------------
 	virtual void addProcessorToView(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxProcessorNodePtr pr) = 0;
 	//-------------------------------------------------------------------------

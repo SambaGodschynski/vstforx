@@ -61,9 +61,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cairo-static.lib pixman-1.lib libpng.lib Winmm.lib zlib.lib"
+				AdditionalDependencies="cairo-static.lib pixman-1.lib libpng.lib Winmm.lib zlib.lib ticppd.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\zlib\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\pixman\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\libpng\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VLD&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\zlib\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\pixman\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\libpng\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VLD&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -137,9 +137,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cairo-static.lib pixman-1.lib libpng.lib Winmm.lib zlib.lib"
+				AdditionalDependencies="cairo-static.lib pixman-1.lib libpng.lib Winmm.lib zlib.lib ticpp.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\zlib\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\pixman\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\libpng\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VLD&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\zlib\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\pixman\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\libpng\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VLD&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -171,7 +171,7 @@
 	</Configurations>
 	<References>
 		<ProjectReference
-			ReferencedProjectIdentifier="{6DEBC17F-F561-42BD-BFB2-A10C07A88B78}"
+			ReferencedProjectIdentifier="{39CD99C6-EB8B-4C73-B2E8-34326F05B070}"
 			RelativePathToProject="..\..\..\..\clibs\sambag\src\sambag.vcproj"
 		/>
 		<ProjectReference

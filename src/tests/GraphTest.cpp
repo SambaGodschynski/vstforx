@@ -1104,10 +1104,10 @@ void GraphTest::testGraphSeries() {
 	Frames outFrame( blockSize );
 	fillFrame ( &inFrame, 0.5f, -0.5f );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph. expect frame num copied = 0
-	Frames::num_copyintos = 0; // reset copy_counter
+	//Frames::num_copyintos = 0; // reset copy_counter
 	graph->pushAndCopy ( &inFrame, blockSize );
 	graph->processGraph( outFrame.getData(), blockSize  );
-	CPPUNIT_ASSERT_EQUAL ( (size_t) 0, Frames::num_copyintos );
+	//CPPUNIT_ASSERT_EQUAL ( (size_t) 0, Frames::num_copyintos );
 	CPPUNIT_ASSERT_EQUAL ( (float) 0.5f, isFilledWith<float>( outFrame[0], outFrame.getSize(), 0.5  ) );
 	CPPUNIT_ASSERT_EQUAL ( (float)-0.5f, isFilledWith<float>( outFrame[1], outFrame.getSize(), -0.5 ) );
 }	
@@ -1136,10 +1136,10 @@ void GraphTest::testGraphParallel() {
 	Frames outFrame( blockSize );
 	fillFrame ( &inFrame, 0.5f, -0.5f );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph. expect frame num copied = GRAPH_DEPTH - 1
-	Frames::num_copyintos = 0; // reset copy_counter
+	//Frames::num_copyintos = 0; // reset copy_counter
 	graph->pushAndCopy ( &inFrame, blockSize );
 	graph->processGraph( outFrame.getData(), blockSize  );
-	CPPUNIT_ASSERT_EQUAL ( (size_t)GRAPH_DEPTH - 1, Frames::num_copyintos );
+	//CPPUNIT_ASSERT_EQUAL ( (size_t)GRAPH_DEPTH - 1, Frames::num_copyintos );
 	CPPUNIT_ASSERT_EQUAL ( (float) 0.5f * GRAPH_DEPTH, isFilledWith<float>( outFrame[0], outFrame.getSize(), 0.5 * GRAPH_DEPTH ) );
 	CPPUNIT_ASSERT_EQUAL ( (float)-0.5f * GRAPH_DEPTH, isFilledWith<float>( outFrame[1], outFrame.getSize(), -0.5 * GRAPH_DEPTH ) );
 }	
@@ -1169,10 +1169,10 @@ void testCreatorGraph(
 	Frames outFrame( BSIZE );
 	fillFrame (&inFrame, inValue,  -inValue);
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph. expect frame num copied
-	Frames::num_copyintos = 0; // reset copy_counter
+	//Frames::num_copyintos = 0; // reset copy_counter
 	graph->pushAndCopy ( &inFrame, BSIZE );
 	graph->processGraph( outFrame.getData(), BSIZE  );
-	CPPUNIT_ASSERT_EQUAL ( expectedNbCopyIntos, Frames::num_copyintos );
+	//CPPUNIT_ASSERT_EQUAL ( expectedNbCopyIntos, Frames::num_copyintos );
 	assertFloatEqual( expectedOutValue, 
 		isFilledWith<float>( outFrame[0], outFrame.getSize(), expectedOutValue ) 
 	);

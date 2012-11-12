@@ -14,7 +14,8 @@
 #include <list>
 
 namespace frx { namespace gui { namespace components {
-namespace sdc = sambag::disco::components;
+namespace sd = sambag::disco;
+namespace sdc = sd::components;
 namespace sdcu = sdc::ui;
 class FrxCircuidView;
 //=============================================================================
@@ -38,6 +39,8 @@ protected:
 		setName("FrxSelection");
 		setVisible(false); 
 	}
+	//-------------------------------------------------------------------------
+	virtual void postConstructor();
 	//-------------------------------------------------------------------------
 	ContentContainer content;
 	//-------------------------------------------------------------------------

@@ -15,6 +15,7 @@
 #include "com/One4All.h"
 #include "OS_Specific/OS_com.h"
 #include "com/PPIError.h"
+#include <sambag/disco/FileResourceManager.hpp>
 
 static const string SEPARATOR = "=";
 static const string IN_DIR = "in_dir";
@@ -57,6 +58,7 @@ Settings & getSettings() {
 Settings & initSettings(const std::string &homeDirectory) {
 	Settings &res = FactoryHolder::Instance();
 	res.init(homeDirectory);
+	sambag::disco::FileResourceManager::init(homeDirectory+"/images");
 	return res;
 }
 //------------------------------------------------------------------------------------------------------------

@@ -11,8 +11,55 @@
 #include <list>
 #include <algorithm>
 #include <OS_Specific/OS_com.h>
+#include <sambag/disco/IPattern.hpp>
+#include <sambag/disco/IDiscoFactory.hpp>
+#include <sambag/disco/IResourceManager.hpp>
+#include <sambag/disco/components/ui/UIManager.hpp>
+#include <sambag/math/Matrix.hpp>
 
 namespace frx { namespace gui { namespace components {
+namespace {
+class BgPane : public sdc::Panel {
+public:
+	typedef boost::shared_ptr<BgPane> Ptr;
+	typedef sdc::Panel Super;
+protected:
+	BgPane(){}
+	sd::IPattern::Ptr pat;
+	virtual void postConstructor();
+public:
+	SAMBAG_STD_STATIC_COMPONENT_CREATOR(BgPane)
+	virtual void drawComponent(sd::IDrawContext::Ptr cn);
+};
+///////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------
+void BgPane::drawComponent(sd::IDrawContext::Ptr cn) {
+	if (!pat) {
+		Super::drawComponent(cn);
+		return;
+	}
+	cn->setFillPattern(pat);
+	cn->rect(sd::Rectangle(0, 0, getWidth(), getHeight()));
+	cn->fill();
+}
+//-----------------------------------------------------------------------------
+void BgPane::postConstructor() {
+	sd::ISurface::Ptr fillImg = 
+		sd::getResourceManager().getImage("FrxCircuidView.image");
+	if (!fillImg)
+		return;
+	pat = sd::getDiscoFactory()->createSurfacePattern(fillImg);
+	if (!pat)
+		return;
+	sdc::ui::UIManager &ui = sdc::ui::getUIManager();
+	sambag::math::Matrix m = IDENTITY_MATRIX;
+	ui.getProperty("FrxCircuidView.bgTransfomation", m);
+	sd::IPattern::Extend e = sd::IPattern::DISCO_EXTEND_REPEAT;
+	ui.getProperty("FrxCircuidView.bgExtend", e);
+	pat->setMatrix(m);
+	pat->setExtendType(e);
+}
+}// namespace(s)
 //=============================================================================
 //  Class FrxCircuidView
 //=============================================================================
@@ -70,7 +117,7 @@ sdcu::AComponentUIPtr FrxCircuidView::createComponentUI(sdcu::ALookAndFeelPtr la
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::postConstructor() {
-	content = sdc::Panel::create();
+	content = BgPane::create();
 	content->setSize(sd::Dimension(10000, 10000));
 	Super::add(content);
 	content->setLayout(sdc::ALayoutManagerPtr());

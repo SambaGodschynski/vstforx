@@ -106,7 +106,7 @@ fgc::FrxCircuidView::Ptr createNewView(sdc::Window::Ptr win) {
 int main() {
 	const std::string savefile("frxview.save");
 	// init settings
-	::com::initSettings("./");
+	::com::initSettings(".");
 	srand ( (int)time(NULL) );
 	SAMBAG_WINONLY(
 		_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); //VS memory tracking
@@ -116,9 +116,14 @@ int main() {
 	namespace fgc = frx::gui::components;
 	std::cout<<"hello dave."<<std::endl;
 	FramedWindow::Ptr win = FramedWindow::create();
-	ui::UIManager::instance().installLookAndFeel(win->getRootPane(),
-		frx::gui::components::ui::FrxLookAndFeel::create()
-	);
+	try {
+		ui::UIManager::instance().installLookAndFeel(win->getRootPane(),
+			frx::gui::components::ui::FrxLookAndFeel::create()
+		);
+	} catch (const std::exception &ex) {
+		std::cout<<ex.what()<<std::endl;
+		return 0;
+	}
 
 
 	fgc::FrxCircuidView::Ptr circ = deserializeView(savefile);

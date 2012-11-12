@@ -89,6 +89,8 @@ public:
 	//-------------------------------------------------------------------------
 	void addProcesorKnobToView(gc::FrxCircuidViewWPtr view, gc::FrxComponentWPtr c,
 	frx::processing::IParameter::WPtr par); 
+	//-------------------------------------------------------------------------
+	virtual void addWindow(sdc::WindowPtr win, const std::string &wndClass="");
 
 }; // FrxControl
 extern boost::tuple<

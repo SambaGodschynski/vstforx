@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\\vstgui.sf\vstgui&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\loki\include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRTDBG_MAP_ALLOC;_FORX_TESTSUITE"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRTDBG_MAP_ALLOC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -61,9 +61,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cppunitd.lib cairo-static.lib pixman-1.lib libpng.lib zlib.lib"
+				AdditionalDependencies="cppunitd.lib cairo-static.lib pixman-1.lib libpng.lib zlib.lib ticppd.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\zlib\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\pixman\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\libpng\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\zlib\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\pixman\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\libpng\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -118,7 +118,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\\vstgui.sf\vstgui&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\loki\include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_FORX_TESTSUITE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -136,9 +136,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cppunitd.lib cairo-static.lib pixman-1.lib libpng.lib zlib.lib"
+				AdditionalDependencies="cppunitd.lib cairo-static.lib pixman-1.lib libpng.lib zlib.lib ticpp.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\zlib\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\pixman\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\libpng\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\zlib\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\pixman\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\libpng\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
@@ -170,8 +170,12 @@
 	</Configurations>
 	<References>
 		<ProjectReference
-			ReferencedProjectIdentifier="{8EE5989A-5379-4923-ABDA-6CA97180A74E}"
-			RelativePathToProject="..\..\..\..\clibs\sambag\projects\msVS2008\sambag\sambag.vcproj"
+			ReferencedProjectIdentifier="{39CD99C6-EB8B-4C73-B2E8-34326F05B070}"
+			RelativePathToProject="..\..\..\..\clibs\sambag\src\sambag.vcproj"
+		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{01B497C7-E74C-4DDA-9F08-2502B716DF62}"
+			RelativePathToProject=".\VSTForx\VSTForx_core.vcproj"
 		/>
 	</References>
 	<Files>
@@ -313,246 +317,6 @@
 			Name="EXT"
 			>
 			<Filter
-				Name="com"
-				>
-				<File
-					RelativePath="..\..\src\com\Events.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\com\Log.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\com\MyString.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\com\one4All.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\com\PluginCollection.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\com\PluginCollection.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\com\PluginCollectionSQL.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\com\PPIError.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\com\Settings.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="processing"
-				>
-				<File
-					RelativePath="..\..\src\processing\BglGraph.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\ConcreteProcessAdapter.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\ConcreteProcessAdapter.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\parameter\ConnectionOperators.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\dspTools.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\dspTools.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\Frames.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\Frames.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\Graph.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\Graph.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\MidiEventProcessor.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\pluginTypes\NullAEffect.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\parameter\parameter.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\parameter\parameter.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\Plugin.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\PObject.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\processing.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\processing.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\processing\pluginTypes\VSTPlugin2x.cpp"
-					>
-				</File>
-				<Filter
-					Name="concreteAdapter"
-					>
-					<File
-						RelativePath="..\..\src\processing\concreteAdapter\ADSRTrigger.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\processing\concreteAdapter\ADSRTrigger.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\processing\concreteAdapter\MidiProcessor.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\processing\concreteAdapter\MidiProcessor.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\processing\concreteAdapter\Pan.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\processing\concreteAdapter\Pan.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\processing\concreteAdapter\PeakTracker.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\processing\concreteAdapter\PeakTracker.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\processing\concreteAdapter\Volume.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\processing\concreteAdapter\Volume.h"
-						>
-					</File>
-					<Filter
-						Name="switches"
-						>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\FixTimeTranslator.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\FixTimeTranslator.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\InputStep.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\InputStep.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\InputSwitch.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\InputSwitch.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\OutputStep.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\OutputStep.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\OutputSwitch.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\OutputSwitch.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\Step.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\Step.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\Switch.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\Switch.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\SyncTranslator.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\SyncTranslator.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\ValueTranslator.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\..\src\processing\concreteAdapter\ValueTranslator.h"
-							>
-						</File>
-					</Filter>
-				</Filter>
-			</Filter>
-			<Filter
 				Name="OS"
 				>
 				<File
@@ -563,10 +327,6 @@
 					RelativePath="..\..\src\OS_Specific\windows\com\win_one4All.cpp"
 					>
 				</File>
-			</Filter>
-			<Filter
-				Name="VSTGUI"
-				>
 			</Filter>
 			<Filter
 				Name="VSTSDK"
@@ -587,82 +347,6 @@
 			<Filter
 				Name="lua"
 				>
-			</Filter>
-			<Filter
-				Name="gui"
-				>
-				<File
-					RelativePath="..\..\src\gui\components\FrxCircuidView.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxCircuidView.hpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxComponent.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxComponent.hpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxConcreteProcessor.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxConcreteProcessor.hpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxConnection.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxConnection.hpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\FrxControl.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxNode.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxNode.hpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxParameter.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxParameter.hpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxProcessorNode.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxProcessorNode.hpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\components\FrxSelection.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\gui\ViewModelMap.cpp"
-					>
-				</File>
-				<Filter
-					Name="ui"
-					>
-				</Filter>
 			</Filter>
 		</Filter>
 	</Files>

@@ -29,7 +29,7 @@ class PluginCollectionTest : public CPPUNIT_NS::TestFixture,
 private:
 	processing::DummyFX::Ptr dummyFX;
 	processing::Graph::Ptr createGraph( int blockSize, float samplerate );
-	com::Settings::Ptr settings;
+	com::Settings *settings;
 	void eventHandler ( void *src, const com::OnLoadFile &ev );
 	void eventHandler ( void *src, const com::ScanComplete &ev );
 	int numHandlerCalled;

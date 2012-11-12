@@ -12,4 +12,7 @@ namespace frx { namespace gui { namespace components {
 //  Class FrxHover
 //=============================================================================
 //-----------------------------------------------------------------------------
+void FrxHover::setFormatter(IFormatter::Ptr fomatter) {
+	this->formatter = formatter;
+}
 }}} // namespace(s)

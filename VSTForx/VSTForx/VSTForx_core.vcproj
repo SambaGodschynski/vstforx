@@ -237,6 +237,10 @@
 		</Configuration>
 	</Configurations>
 	<References>
+		<ProjectReference
+			ReferencedProjectIdentifier="{39CD99C6-EB8B-4C73-B2E8-34326F05B070}"
+			RelativePathToProject="..\..\..\..\clibs\sambag\src\sambag.vcproj"
+		/>
 	</References>
 	<Files>
 		<Filter
@@ -503,6 +507,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\src\gui\components\IFormatter.hpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\gui\components\IFrxColumnBrowserCtrl.hpp"
 						>
 					</File>
@@ -528,6 +536,14 @@
 					</File>
 					<File
 						RelativePath="..\..\src\gui\components\SetupWindow.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\VerticalFormatter.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\VerticalFormatter.hpp"
 						>
 					</File>
 					<File

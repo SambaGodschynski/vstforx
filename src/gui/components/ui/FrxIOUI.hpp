@@ -11,6 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include <gui/components/FrxConcreteIO.hpp>
 #include "FrxNodeUI.hpp"
+#include <sambag/disco/IResourceManager.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -54,6 +55,10 @@ public:
 	typedef _ConcreteIO ConcreteIO;
 protected:
 	//-------------------------------------------------------------------------
+	sd::ISurface::Ptr image;
+	//-------------------------------------------------------------------------
+	sd::Point2D imageOffset;
+	//-------------------------------------------------------------------------
 	typedef FrxIOUI<ConcreteIO> ThisClassType;
 	//-------------------------------------------------------------------------
 	FrxIOUI(){}
@@ -61,7 +66,9 @@ private:
 public:
 	//-------------------------------------------------------------------------
 	virtual sambag::com::Number getCoreRadius(sdc::AComponentPtr c) const {
-		return getIORadius<ConcreteIO>();
+		if (!image)
+			return getIORadius<ConcreteIO>();
+		return image->getSize().width()/2.;
 	}
 	//-------------------------------------------------------------------------
 	virtual void installUI(sdc::AComponentPtr c);
@@ -77,44 +84,55 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 namespace {
 	template <class IOType>
-	void setIODefaults(sdc::AComponentPtr c) {}
+	sd::ISurface::Ptr _ioDef(sdc::AComponentPtr c) {
+		return sd::ISurface::Ptr();
+	}
 	template <>
-	void setIODefaults<ioTypes::Input>(sdc::AComponentPtr c) {
+	sd::ISurface::Ptr _ioDef<ioTypes::Input>(sdc::AComponentPtr c) {
 		sd::ColorRGBA col;
 		sdcu::getUIManager().getProperty("ProcessorInput.bgColor", col);
 		c->setBackground(col);
 		sdcu::getUIManager().getProperty("ProcessorInput.fgColor", col);
 		c->setForeground(col);
+		return sd::getResourceManager().getImage("ProcessorInput.image");
 	}
 	template <>
-	void setIODefaults<ioTypes::Output>(sdc::AComponentPtr c) {
+	sd::ISurface::Ptr _ioDef<ioTypes::Output>(sdc::AComponentPtr c) {
 		sd::ColorRGBA col;
 		sdcu::getUIManager().getProperty("ProcessorOutput.bgColor", col);
 		c->setBackground(col);
 		sdcu::getUIManager().getProperty("ProcessorOutput.fgColor", col);
 		c->setForeground(col);
+		return sd::getResourceManager().getImage("ProcessorOutput.image");
 	}
 	template <>
-	void setIODefaults<ioTypes::Entry>(sdc::AComponentPtr c) {
+	sd::ISurface::Ptr _ioDef<ioTypes::Entry>(sdc::AComponentPtr c) {
 		sd::ColorRGBA col;
 		sdcu::getUIManager().getProperty("Entry.bgColor", col);
 		c->setBackground(col);
 		sdcu::getUIManager().getProperty("Entry.fgColor", col);
 		c->setForeground(col);
+		return sd::getResourceManager().getImage("Entry.image");
 	}
 	template <>
-	void setIODefaults<ioTypes::Exit>(sdc::AComponentPtr c) {
+	sd::ISurface::Ptr _ioDef<ioTypes::Exit>(sdc::AComponentPtr c) {
 		sd::ColorRGBA col;
 		sdcu::getUIManager().getProperty("Exit.bgColor", col);
 		c->setBackground(col);
 		sdcu::getUIManager().getProperty("Exit.fgColor", col);
 		c->setForeground(col);
+		return sd::getResourceManager().getImage("Exit.image");
 	}
 } // namespace
 //-----------------------------------------------------------------------------
 template <class CIO>
 void FrxIOUI<CIO>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	Super::draw(cn, c);
+	if (image) {
+		cn->translate(imageOffset);
+		cn->drawSurface(image);
+		return;
+	}
 	FrxIO::Ptr io = boost::shared_dynamic_cast<FrxIO>(c);
 	sd::Point2D loc = io->getPivot();
 	sambag::com::Number r = getCoreRadius(io);
@@ -128,8 +146,15 @@ void FrxIOUI<CIO>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 //-----------------------------------------------------------------------------
 template <class CIO>
 void FrxIOUI<CIO>::installUI(sdc::AComponentPtr c) {
+	image = _ioDef<CIO>(c);
 	Super::installUI(c);
-	setIODefaults<CIO>(c);
+	if (image) {
+		FrxIO::Ptr io = boost::shared_dynamic_cast<FrxIO>(c);
+		sd::Rectangle r = image->getSize();
+		imageOffset = io->getPivot();
+		boost::geometry::subtract_point(imageOffset, 
+			sd::Point2D(r.width()/2., r.height()/2.));
+	}
 }
 }}}} // namespace(s)
 

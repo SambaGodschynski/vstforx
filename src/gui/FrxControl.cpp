@@ -29,6 +29,7 @@
 #include <boost/archive/text_iarchive.hpp>
 #include "components/FrxSerializationRegister.hpp"
 #include <list>
+#include <map>
 #include <string>
 #include <gui/components/SetupWindow.hpp>
 #include <processing/IParameter.hpp>
@@ -71,7 +72,8 @@ getControllerAndMap(FrxCircuidViewPtr circ)
 }
 namespace {
 ////////////////////////////////////////////////////////////////////////////////
-sdc::FramedWindow::Ptr extraWindow;
+typedef std::map<std::string, sdc::Window::Ptr> ExtraWindows;
+ExtraWindows extraWindows;
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 //  Private 
@@ -201,7 +203,7 @@ FrxColumnBrowser::Ptr openProcessorBrowser(fgc::FrxCircuidViewPtr view,
 		fgc::FrxComponentPtr c)
 {
 	FrxColumnBrowser::Ptr browser;
-	extraWindow = browser = FrxProcessorBrowser::create();
+	browser = FrxProcessorBrowser::create();
 	browser->validate();
 	browser->pack();
 	browser->setTitle(c->getName() + ":");
@@ -213,7 +215,7 @@ FrxPluginEditor::Ptr createPluginEditor(fgc::FrxCircuidViewPtr view,
 	fgc::FrxComponentPtr c)
 {
 	FrxPluginEditor::Ptr ed;
-	extraWindow = ed = FrxPluginEditor::create();
+	ed = FrxPluginEditor::create();
 	ed->setTitle(c->getName() + " editor");
 	return ed;
 }
@@ -222,7 +224,8 @@ FrxColumnBrowser::Ptr openMainBrowser(fgc::FrxCircuidViewPtr view,
 		fgc::FrxComponentPtr c)
 {
 	FrxMainBrowser::Ptr browser;
-	extraWindow = browser = FrxMainBrowser::create();
+	browser = FrxMainBrowser::create();
+	getFrxControl(view).addWindow(browser, "FrxControl.extraWindow");
 	browser->validate();
 	browser->pack();
 	FrxMainBrowserCtrl::Ptr ctrl = FrxMainBrowserCtrl::create();
@@ -241,17 +244,18 @@ void openSetup(fgc::FrxCircuidViewPtr view,
 		fgc::FrxComponentPtr c)
 {
 	SetupWindow::Ptr setup;
-	extraWindow = setup = SetupWindow::create();
+	setup = SetupWindow::create();
+	getFrxControl(view).addWindow(setup, "FrxControl.extraWindow");
 	SetupCtrl::Ptr ctrl = SetupCtrl::create();
 	frx::processing::IModelController::Ptr mCtrl = frx::processing::getModelController(view);
 	if (mCtrl) {
 		ctrl->setHostInfo(mCtrl->getHostInfo());
 	}
 	setup->setCtrl(ctrl);
-	extraWindow->validate();
-	extraWindow->pack();
-	extraWindow->setTitle("VSTForx Setup");
-	extraWindow->open();
+	setup->validate();
+	setup->pack();
+	setup->setTitle("VSTForx Setup");
+	setup->open();
 }
 ////////////////////////////////////////////////////////////////////////////////
 // Menu Entries
@@ -409,11 +413,6 @@ FrxControl::FrxControl() {
 }
 //-----------------------------------------------------------------------------
 FrxControl::~FrxControl() {
-	try {
-		extraWindow.reset();
-	} catch (const std::logic_error &ex) {
-		// TODO: loki::Singleton exeception
-	}
 }
 //-----------------------------------------------------------------------------
 void FrxControl::removeComponent(FrxCircuidViewPtr _view, FrxComponentPtr _c)
@@ -563,6 +562,7 @@ void FrxControl::showProcessorDetails(fgc::FrxCircuidViewPtr view,
 	FrxProcessorBrowser::Ptr browser = boost::shared_dynamic_cast<FrxProcessorBrowser>( 
 		openProcessorBrowser(view, c) 
 	);
+	addWindow(browser);
 	browser->setTitle(c->getName() + " details");
 	FrxProcessorBrowserCtrl::Ptr ctrl = FrxProcessorBrowserCtrl::create();
 	ctrl->setComponent(c);
@@ -584,10 +584,28 @@ void FrxControl::openPluginEditor(fgc::FrxCircuidViewPtr view,
 		return;
 	// create editor
 	FrxPluginEditor::Ptr ed = createPluginEditor(view, c);
+	addWindow(ed);
 	FrxPluginEditorCtrl::Ptr pluginCtrl = FrxPluginEditorCtrl::create();
 	pluginCtrl->setPlugin(plugin);
 	ed->setControl(pluginCtrl);
 	ed->open();
+}
+//-----------------------------------------------------------------------------
+namespace {
+	void onWindowClose(void *src, const sdc::OnCloseEvent &ev, std::string key)
+	{
+		extraWindows.erase(key);
+	}
+} // namespace(s)
+void FrxControl::addWindow(sdc::WindowPtr win, const std::string &wndClass) {
+	std::string key=wndClass;
+	if (key=="") {
+		key = sambag::com::toString((long)win.get());
+	}
+	extraWindows[key] = win;
+	win->addOnCloseEventListener(
+		boost::bind(&onWindowClose, _1, _2, key)
+	);
 }
 //=============================================================================
 //-----------------------------------------------------------------------------

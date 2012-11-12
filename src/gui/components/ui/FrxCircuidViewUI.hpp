@@ -50,7 +50,6 @@ public:
 	virtual void installUI(sdc::AComponentPtr c);
 	//-------------------------------------------------------------------------
 	static Ptr create();
-
 }; // FrxCircuidViewUI
 }}}} // namespace(s)
 

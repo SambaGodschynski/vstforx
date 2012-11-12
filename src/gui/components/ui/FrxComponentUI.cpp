@@ -4,9 +4,12 @@
 #include <gui/components/FrxComponent.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/IFrxControl.hpp>
-
+#include <map>
 namespace frx { namespace gui {
-namespace components { namespace ui { 
+namespace components { namespace ui {
+namespace {
+
+}
 //=============================================================================
 // class FrxComponentUI
 //=============================================================================

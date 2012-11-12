@@ -13,7 +13,10 @@
 #include <gui/components/FrxConcreteProcessor.hpp>
 #include "FrxNodeUI.hpp"
 #include <sambag/disco/components/PopupMenu.hpp>
+#include <sambag/disco/IResourceManager.hpp>
 #include <gui/IFrxControl.hpp>
+#include <map>
+#include <boost/assign.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui {
@@ -24,11 +27,26 @@ namespace sdcu = sdc::ui;
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 namespace {
-	template <class PrType>
-	sambag::com::Number getProcessorRadius() {
-		SAMBAG_PROPERTY_TAG(PropertyTag, "Processor.radius");
-		return sdcu::getUIPropertyCached<PropertyTag>((double)0.);
-	}
+template <class PrType>
+sambag::com::Number getProcessorRadius() {
+	SAMBAG_PROPERTY_TAG(PropertyTag, "Processor.radius");
+	return sdcu::getUIPropertyCached<PropertyTag>((double)0.);
+}
+typedef std::map<std::string, std::string> ProcessorImageMap;
+ProcessorImageMap processorImageMap;
+void initProcessorImageMap() {
+	using namespace boost::assign;
+	processorImageMap = map_list_of
+		(getProcessorName<FrxPluginNode::ProcessorType>(), "FrxPluginNode.image");
+}
+template<class PrType>
+std::string getImageName() {
+	ProcessorImageMap::const_iterator it = 
+		processorImageMap.find(getProcessorName<PrType>());
+	if (it==processorImageMap.end())
+		return "ProcessorImageMap unknown request.";
+	return it->second;
+}
 } // namespace
 
 //=============================================================================
@@ -50,6 +68,8 @@ public:
 private:
 protected:
 	//-------------------------------------------------------------------------
+	sd::ISurface::Ptr image;
+	//-------------------------------------------------------------------------
 	FrxProcessorNodeUI();
 	//-------------------------------------------------------------------------
 	virtual void installDefaults(sdc::AComponentPtr c);
@@ -68,7 +88,10 @@ public:
 	virtual void endConnecting(const sdc::events::MouseEvent &ev) {}
 	//-------------------------------------------------------------------------
 	virtual sambag::com::Number getCoreRadius(sdc::AComponentPtr c) const {
-		return getProcessorRadius<ConcreteProcessor>();
+		if (!image)
+			return getProcessorRadius<ConcreteProcessor>();
+		sd::Rectangle r = image->getSize();
+		return r.width() / 2.;
 	}
 	//-------------------------------------------------------------------------
 	static Ptr create() {
@@ -112,6 +135,10 @@ void FrxProcessorNodeUI<CT>::installUI(sdc::AComponentPtr c) {
 template <class CT>
 void FrxProcessorNodeUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	Super::draw(cn, c);
+	if (image) {
+		cn->drawSurface(image);
+		return;
+	}
 	FrxProcessorNode::Ptr node = boost::shared_dynamic_cast<FrxProcessorNode>(c);
 	cn->translate(node->getPivot());
 	cn->arc(sd::Point2D(0, 0), getCoreRadius(node));
@@ -122,6 +149,10 @@ void FrxProcessorNodeUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c
 template <class CT>
 void FrxProcessorNodeUI<CT>::installDefaults(sdc::AComponentPtr c) {
 	Super::installDefaults(c);
+	if (processorImageMap.empty()) {
+		initProcessorImageMap();
+	}
+	image = sambag::disco::getResourceManager().getImage( getImageName<CT>() );
 }
 //-----------------------------------------------------------------------------
 template <class CT>

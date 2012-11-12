@@ -9,7 +9,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestApp", "..\TestApp\TestA
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VSTForx_core", "VSTForx\VSTForx_core.vcproj", "{01B497C7-E74C-4DDA-9F08-2502B716DF62}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sambag", "..\..\..\..\clibs\sambag\src\sambag.vcproj", "{6DEBC17F-F561-42BD-BFB2-A10C07A88B78}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sambag", "..\..\..\..\clibs\sambag\src\sambag.vcproj", "{39CD99C6-EB8B-4C73-B2E8-34326F05B070}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -66,18 +66,18 @@ Global
 		{01B497C7-E74C-4DDA-9F08-2502B716DF62}.Release|Win32.Build.0 = Release|Win32
 		{01B497C7-E74C-4DDA-9F08-2502B716DF62}.RelWithDebInfo|Win32.ActiveCfg = Release|Win32
 		{01B497C7-E74C-4DDA-9F08-2502B716DF62}.RelWithDebInfo|Win32.Build.0 = Release|Win32
-		{6DEBC17F-F561-42BD-BFB2-A10C07A88B78}.Debug|Win32.ActiveCfg = Debug|Win32
-		{6DEBC17F-F561-42BD-BFB2-A10C07A88B78}.Debug|Win32.Build.0 = Debug|Win32
-		{6DEBC17F-F561-42BD-BFB2-A10C07A88B78}.iRelease|Win32.ActiveCfg = Release|Win32
-		{6DEBC17F-F561-42BD-BFB2-A10C07A88B78}.iRelease|Win32.Build.0 = Release|Win32
-		{6DEBC17F-F561-42BD-BFB2-A10C07A88B78}.Library|Win32.ActiveCfg = RelWithDebInfo|Win32
-		{6DEBC17F-F561-42BD-BFB2-A10C07A88B78}.Library|Win32.Build.0 = RelWithDebInfo|Win32
-		{6DEBC17F-F561-42BD-BFB2-A10C07A88B78}.MinSizeRel|Win32.ActiveCfg = MinSizeRel|Win32
-		{6DEBC17F-F561-42BD-BFB2-A10C07A88B78}.MinSizeRel|Win32.Build.0 = MinSizeRel|Win32
-		{6DEBC17F-F561-42BD-BFB2-A10C07A88B78}.Release|Win32.ActiveCfg = Release|Win32
-		{6DEBC17F-F561-42BD-BFB2-A10C07A88B78}.Release|Win32.Build.0 = Release|Win32
-		{6DEBC17F-F561-42BD-BFB2-A10C07A88B78}.RelWithDebInfo|Win32.ActiveCfg = RelWithDebInfo|Win32
-		{6DEBC17F-F561-42BD-BFB2-A10C07A88B78}.RelWithDebInfo|Win32.Build.0 = RelWithDebInfo|Win32
+		{39CD99C6-EB8B-4C73-B2E8-34326F05B070}.Debug|Win32.ActiveCfg = Debug|Win32
+		{39CD99C6-EB8B-4C73-B2E8-34326F05B070}.Debug|Win32.Build.0 = Debug|Win32
+		{39CD99C6-EB8B-4C73-B2E8-34326F05B070}.iRelease|Win32.ActiveCfg = Release|Win32
+		{39CD99C6-EB8B-4C73-B2E8-34326F05B070}.iRelease|Win32.Build.0 = Release|Win32
+		{39CD99C6-EB8B-4C73-B2E8-34326F05B070}.Library|Win32.ActiveCfg = RelWithDebInfo|Win32
+		{39CD99C6-EB8B-4C73-B2E8-34326F05B070}.Library|Win32.Build.0 = RelWithDebInfo|Win32
+		{39CD99C6-EB8B-4C73-B2E8-34326F05B070}.MinSizeRel|Win32.ActiveCfg = MinSizeRel|Win32
+		{39CD99C6-EB8B-4C73-B2E8-34326F05B070}.MinSizeRel|Win32.Build.0 = MinSizeRel|Win32
+		{39CD99C6-EB8B-4C73-B2E8-34326F05B070}.Release|Win32.ActiveCfg = Release|Win32
+		{39CD99C6-EB8B-4C73-B2E8-34326F05B070}.Release|Win32.Build.0 = Release|Win32
+		{39CD99C6-EB8B-4C73-B2E8-34326F05B070}.RelWithDebInfo|Win32.ActiveCfg = RelWithDebInfo|Win32
+		{39CD99C6-EB8B-4C73-B2E8-34326F05B070}.RelWithDebInfo|Win32.Build.0 = RelWithDebInfo|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

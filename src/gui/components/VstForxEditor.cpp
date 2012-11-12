@@ -76,8 +76,7 @@ sdc::Window::Ptr VstForxEditor::createMainWindow(const sd::Rectangle &bounds) {
 	ArbitraryType::Ptr pData = createObject(
 		std::make_pair(systemWindow, hInstance)
 	);
-	sdc::Window::Ptr win = 
-		getWindowToolkit()->createNestedWindow(pData, bounds);
+	sdc::Window::Ptr win = getWindowToolkit()->createNestedWindow(pData, bounds);
 	SAMBAG_ASSERT(win);
 	sdc::ui::UIManager::instance().installLookAndFeel(win->getRootPane(),
 		ui::FrxLookAndFeel::create()
@@ -148,8 +147,8 @@ bool VstForxEditor::open( void *ptr ) {
 	sambag::disco::Rectangle bounds(Point2D(size.left, size.top), 
 		Point2D(size.right, size.bottom)
 	);
-	window = createMainWindow(bounds);
 	try {
+		window = createMainWindow(bounds);
 		circView = createView(window);
 	} catch (const std::exception &ex) {
 		std::stringstream ss;
@@ -181,6 +180,7 @@ void VstForxEditor::close() {
 		errorMessage(ss.str());
 	}
 	getPlugin()->unRegisterView(circView);
+	window.reset();
 }
 //-----------------------------------------------------------------------------
 bool VstForxEditor::getRect (ERect** rect) {

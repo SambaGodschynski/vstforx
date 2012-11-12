@@ -8,11 +8,16 @@
 #include "FrxSelection.hpp"
 #include <sambag/disco/Geometry.hpp>
 #include <boost/foreach.hpp>
+#include "VerticalFormatter.hpp"
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
 //  Class FrxSelection
 //=============================================================================
+//-----------------------------------------------------------------------------
+void FrxSelection::postConstructor() {
+	Super::postConstructor();
+}
 //-----------------------------------------------------------------------------
 void FrxSelection::setContent(const FrxSelection::ContentContainer &container) 
 {
