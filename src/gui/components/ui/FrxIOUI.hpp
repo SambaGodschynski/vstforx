@@ -11,7 +11,6 @@
 #include <boost/shared_ptr.hpp>
 #include <gui/components/FrxConcreteIO.hpp>
 #include "FrxNodeUI.hpp"
-#include <sambag/disco/IResourceManager.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -55,10 +54,6 @@ public:
 	typedef _ConcreteIO ConcreteIO;
 protected:
 	//-------------------------------------------------------------------------
-	sd::ISurface::Ptr image;
-	//-------------------------------------------------------------------------
-	sd::Point2D imageOffset;
-	//-------------------------------------------------------------------------
 	typedef FrxIOUI<ConcreteIO> ThisClassType;
 	//-------------------------------------------------------------------------
 	FrxIOUI(){}
@@ -66,9 +61,9 @@ private:
 public:
 	//-------------------------------------------------------------------------
 	virtual sambag::com::Number getCoreRadius(sdc::AComponentPtr c) const {
-		if (!image)
+		if (!hasImage())
 			return getIORadius<ConcreteIO>();
-		return image->getSize().width()/2.;
+		return getImage()->getSize().width()/2.;
 	}
 	//-------------------------------------------------------------------------
 	virtual void installUI(sdc::AComponentPtr c);
@@ -128,9 +123,8 @@ namespace {
 template <class CIO>
 void FrxIOUI<CIO>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	Super::draw(cn, c);
-	if (image) {
-		cn->translate(imageOffset);
-		cn->drawSurface(image);
+	if (hasImage()) {
+		drawImage(cn, c);
 		return;
 	}
 	FrxIO::Ptr io = boost::shared_dynamic_cast<FrxIO>(c);
@@ -146,15 +140,8 @@ void FrxIOUI<CIO>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 //-----------------------------------------------------------------------------
 template <class CIO>
 void FrxIOUI<CIO>::installUI(sdc::AComponentPtr c) {
-	image = _ioDef<CIO>(c);
+	setImage(_ioDef<CIO>(c));
 	Super::installUI(c);
-	if (image) {
-		FrxIO::Ptr io = boost::shared_dynamic_cast<FrxIO>(c);
-		sd::Rectangle r = image->getSize();
-		imageOffset = io->getPivot();
-		boost::geometry::subtract_point(imageOffset, 
-			sd::Point2D(r.width()/2., r.height()/2.));
-	}
 }
 }}}} // namespace(s)
 

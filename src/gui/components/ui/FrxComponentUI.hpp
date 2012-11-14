@@ -14,6 +14,7 @@
 #include <sambag/disco/components/Forward.hpp>
 #include <sambag/disco/Geometry.hpp>
 #include <gui/components/Forward.hpp>
+#include <sambag/disco/IResourceManager.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -52,7 +53,21 @@ protected:
 	//-------------------------------------------------------------------------
 	virtual void installListeners(sdc::AComponentPtr c);
 private:
+	//-------------------------------------------------------------------------
+	sd::ISurface::Ptr image;
 public:
+	//-------------------------------------------------------------------------
+	void setImage(sd::ISurface::Ptr);
+	//-------------------------------------------------------------------------
+	sd::ISurface::Ptr getImage() const {
+		return image;
+	}
+	//-------------------------------------------------------------------------
+	bool hasImage() const {
+		return image.get() != NULL;
+	}
+	//-------------------------------------------------------------------------
+	virtual void drawImage(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c);
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
 		return self.lock();

@@ -115,7 +115,7 @@ void onSelectionPathChanged(void *src,
 	if (path.empty())
 		return;
 	const BrowserNode &bNode = tree->getNodeData(path.back());
-	if (!bNode.isFolder)
+	if (!bNode.isFolder())
 		return;
 	bNode.accept();
 }

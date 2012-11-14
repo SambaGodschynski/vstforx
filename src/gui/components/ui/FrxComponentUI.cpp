@@ -78,4 +78,22 @@ void FrxComponentUI::installDefaults(sdc::AComponentPtr c) {
 //-----------------------------------------------------------------------------
 void FrxComponentUI::installListeners(sdc::AComponentPtr c) {
 }
+//-----------------------------------------------------------------------------
+void FrxComponentUI::setImage(sd::ISurface::Ptr img) {
+	image = img;
+}
+//-----------------------------------------------------------------------------
+void FrxComponentUI::drawImage(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
+	if (!image || !c)
+		return;
+	// calc. offset
+	// TODO: handle context transf.
+	sd::Rectangle r = image->getSize(); 
+	sd::Point2D imageOffset(
+		(c->getWidth() - r.width()) / 2.,
+		(c->getHeight() - r.height()) / 2.
+	); 
+	cn->translate(imageOffset);
+	cn->drawSurface(image);
+}
 }}}}

@@ -594,7 +594,7 @@ void FrxControl::openPluginEditor(fgc::FrxCircuidViewPtr view,
 namespace {
 	void onWindowClose(void *src, const sdc::OnCloseEvent &ev, std::string key)
 	{
-		extraWindows.erase(key);
+		//extraWindows.erase(key);
 	}
 } // namespace(s)
 void FrxControl::addWindow(sdc::WindowPtr win, const std::string &wndClass) {

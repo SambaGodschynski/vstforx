@@ -68,8 +68,6 @@ public:
 private:
 protected:
 	//-------------------------------------------------------------------------
-	sd::ISurface::Ptr image;
-	//-------------------------------------------------------------------------
 	FrxProcessorNodeUI();
 	//-------------------------------------------------------------------------
 	virtual void installDefaults(sdc::AComponentPtr c);
@@ -88,9 +86,9 @@ public:
 	virtual void endConnecting(const sdc::events::MouseEvent &ev) {}
 	//-------------------------------------------------------------------------
 	virtual sambag::com::Number getCoreRadius(sdc::AComponentPtr c) const {
-		if (!image)
+		if (!hasImage())
 			return getProcessorRadius<ConcreteProcessor>();
-		sd::Rectangle r = image->getSize();
+		sd::Rectangle r = getImage()->getSize();
 		return r.width() / 2.;
 	}
 	//-------------------------------------------------------------------------
@@ -135,8 +133,8 @@ void FrxProcessorNodeUI<CT>::installUI(sdc::AComponentPtr c) {
 template <class CT>
 void FrxProcessorNodeUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	Super::draw(cn, c);
-	if (image) {
-		cn->drawSurface(image);
+	if (hasImage()) {
+		drawImage(cn, c);
 		return;
 	}
 	FrxProcessorNode::Ptr node = boost::shared_dynamic_cast<FrxProcessorNode>(c);
@@ -152,7 +150,9 @@ void FrxProcessorNodeUI<CT>::installDefaults(sdc::AComponentPtr c) {
 	if (processorImageMap.empty()) {
 		initProcessorImageMap();
 	}
-	image = sambag::disco::getResourceManager().getImage( getImageName<CT>() );
+	setImage(
+		sambag::disco::getResourceManager().getImage( getImageName<CT>() )
+	);
 }
 //-----------------------------------------------------------------------------
 template <class CT>

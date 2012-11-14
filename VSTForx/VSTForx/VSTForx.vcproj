@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cairo-static.lib pixman-1.lib libpng.lib zlib.lib Winmm.lib ticppd.lib"
+				AdditionalDependencies="cairo-staticd.lib pixman-1d.lib libpng.lib zlib.lib Winmm.lib ticppd.lib"
 				OutputFile="$(OutDir)\$(ProjectName)_d.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\pixman\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\libpng\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\zlib\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VLD&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml\lib&quot;"

@@ -29,6 +29,14 @@ namespace sd = sambag::disco;
 namespace sdc = sd::components;
 namespace sdcu = sdc::ui;
 //=============================================================================
+// @class BrowserConstants
+struct BrowserConstants {
+//=============================================================================
+	static const std::string FRX_BROWSER_FOLDER; 
+	static const std::string FRX_BROWSER_DEFAULT; 
+	static sd::ISurface::Ptr getIcon(const std::string &type);
+};
+//=============================================================================
 /**
  * @class FrxBrowser content.
  * The elements which are contained by a browser class.
@@ -36,7 +44,7 @@ namespace sdcu = sdc::ui;
  *									 - a function callback initiated if object is
  *                                     acceppted by user action (add/ok/..).
  */
-struct BrowserNode {
+struct BrowserNode : public BrowserConstants {
 //=============================================================================
 	std::string name;
 	/**
@@ -44,28 +52,84 @@ struct BrowserNode {
 	 */ 
 	typedef boost::function<void()> AcceptedFunction;
 	AcceptedFunction f;
-	bool isFolder;
+	std::string type; // specify node type for rendering 
 	BrowserNode(const std::string &name, bool isFolder = false,
 		AcceptedFunction &f = AcceptedFunction()
-	) : name(name), f(f), isFolder(isFolder)
+	) : name(name), f(f)
+	{
+		type = isFolder ? FRX_BROWSER_FOLDER : FRX_BROWSER_DEFAULT;
+	}
+	BrowserNode(const std::string &name, const std::string &type,
+		AcceptedFunction &f = AcceptedFunction()
+	) : name(name), f(f), type(type)
 	{
 	}
-	BrowserNode(const char *name = "") : name(name), isFolder(false)
+	BrowserNode(const char *name = "") : name(name), 
+		type(FRX_BROWSER_DEFAULT)
 	{
 	}
 	bool operator==(const BrowserNode &n) const { 
-		return name==n.name && isFolder==n.isFolder
+		return name==n.name && type==n.type
 			&f == &(n.f); // boost::functions are incomparable
 	}
 	void accept() const {
 		if (f)
 			f();
 	}
+	bool isFolder() const {
+		return type == FRX_BROWSER_FOLDER;
+	}
 };
 inline std::ostream & operator <<(std::ostream &os, const BrowserNode &n) {
 	os<<n.name;
 	return os;
 }
+//=============================================================================
+// @class BrowserCellRenderer
+//=============================================================================
+template <class T>
+struct FrxBrowserCellRenderer :
+	public sdc::DefaultListCellRenderer<T>
+{
+public:
+	//-------------------------------------------------------------------------
+	typedef sdc::DefaultListCellRenderer<T> Super;
+	//-------------------------------------------------------------------------
+	typedef FrxBrowserCellRenderer<T> Class;
+	//-------------------------------------------------------------------------
+	typedef boost::shared_ptr<Class> Ptr;
+	//-------------------------------------------------------------------------
+	SAMBAG_STD_STATIC_COMPONENT_CREATOR(Class)
+	//-------------------------------------------------------------------------
+	template <class ListType>
+	sdc::AComponentPtr getListCellRendererComponent(
+			boost::shared_ptr<ListType> list, // the list
+			const T &value, // value to display
+			int index, // cell index
+			bool isSelected, // is the cell selected
+			bool cellHasFocus // does the cell have focus
+	)
+	{
+		if (isSelected) {
+			Super::setBackground(list->getSelectionBackground());
+			Super::setForeground(list->getSelectionForeground());
+		} else {
+			Super::setBackground(list->getBackground());
+			Super::setForeground(list->getForeground());
+		}
+		
+		setText(sambag::com::toString(value.data));
+		sd::ISurface::Ptr icon = 
+			BrowserConstants::getIcon(value.data.type);
+		if (icon)
+			Super::setIcon(icon);
+		
+		Super::setEnabled(list->isEnabled());
+		Super::setFont(list->getFont());
+
+		return getPtr();
+	}
+};
 //=============================================================================
 /** 
   * @class FrxColumnBrowser.
@@ -82,7 +146,10 @@ public:
 	//-------------------------------------------------------------------------
 	sdcu::AComponentUIPtr createComponentUI(sdcu::ALookAndFeelPtr laf) const;
 	//-------------------------------------------------------------------------
-	typedef sdc::ColumnBrowser<T> BrowserImpl;
+	typedef sdc::AColumnBrowser<
+		sdc::DefaultTreeModel<T>,
+		FrxBrowserCellRenderer
+	> BrowserImpl;
 	//-------------------------------------------------------------------------
 	typedef sdc::FramedWindow Super;
 protected:

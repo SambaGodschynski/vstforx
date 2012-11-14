@@ -191,8 +191,8 @@ void FrxLookAndFeel::installDefaults() {
 	//rManager.registerImage("ProcessorOutput.image", "w3c.svg");
 	rManager.registerImage("Entry.image", "entry.svg");
 	rManager.registerImage("Exit.image", "exit.svg");
-
-
+	rManager.registerImage("FrxBrowser.folder.image", "disco-floor.png");
+	rManager.registerImage("FrxBrowser.default.image", "disco-floor.png");
 }	
 
 }}}} // namespace(s)

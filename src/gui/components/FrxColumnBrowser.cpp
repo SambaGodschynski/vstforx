@@ -6,8 +6,26 @@
  */
 
 #include "FrxColumnBrowser.hpp"
+#include <sambag/disco/IResourceManager.hpp>
 
 namespace frx { namespace gui { namespace components { 
+//=============================================================================
+// class BrowserConstants
+//=============================================================================
+//-----------------------------------------------------------------------------
+const std::string BrowserConstants::FRX_BROWSER_FOLDER = "folder";
+const std::string BrowserConstants::FRX_BROWSER_DEFAULT = "default";
+//-----------------------------------------------------------------------------
+sd::ISurface::Ptr BrowserConstants::getIcon(const std::string &type) {
+	sd::IResourceManager &m = sd::getResourceManager();
+	if (type==BrowserConstants::FRX_BROWSER_FOLDER) {
+		return m.getImage("FrxBrowser.folder.image");
+	}
+	if (type==BrowserConstants::FRX_BROWSER_DEFAULT) {
+		return m.getImage("FrxBrowser.default.image");
+	}
+	return sd::ISurface::Ptr();
+}
 //=============================================================================
 //  Class FrxColumnBrowser
 //=============================================================================
