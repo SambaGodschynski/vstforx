@@ -58,9 +58,12 @@ void FrxProcessorBrowserCtrl::initTree(FrxCircuidViewPtr view,
 				fgc::FrxComponentWPtr(c),
 				frx::processing::IParameter::WPtr(p)
 			);
+		BrowserNode par;
+		createParameterNode(par, p->getName());
+		par.f = f;
 		tree->addNode(
 			parameter, 
-			BrowserNode(p->getName(), false, f)
+			par
 		);
 	}
 	tree->updateLists();

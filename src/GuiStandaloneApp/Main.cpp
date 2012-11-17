@@ -28,7 +28,12 @@
 #include <gui/components/FrxSerializationRegister.hpp>
 #include <gui/components/FrxColumnBrowser.hpp>
 #include <com/Settings.h>
-
+#include <processing/IHostInfo.h>
+#include <processing/graph.h>
+#include <processing/ModelController.hpp>
+#include <gui/ViewModelMap.hpp>
+#include <sambag/disco/components/Timer.hpp>
+#include <math.h>
 #ifdef WIN32
 #include <crtdbg.h>
 //#include <vld.h>
@@ -103,10 +108,38 @@ fgc::FrxCircuidView::Ptr createNewView(sdc::Window::Ptr win) {
 	return circ;
 }
 
+sdc::Timer::Ptr ptimer;
+
+
+void onTimer(void *src, const sdc::TimerEvent &ev) {
+	static float t = 0.f;
+	static const float maxt = 100000.f;
+	frx::processing::IModelController::Ptr ctrl = 
+		frx::processing::getModelController(fgc::FrxCircuidViewPtr());
+	int numP = ctrl->getNumHostParameter();
+	for (int i=0; i<numP; ++i) {
+		//float value = (float)(rand() % RAND_MAX) / (float)RAND_MAX;
+		float value = 
+			abs(sin(t) + (float)i/(float)numP);
+		ctrl->getHostParameter(i)->setValue(value);
+	}
+	t+=0.1;
+	if (t>maxt)
+		t = t-maxt;
+}
+
+void initParameterTimer() {
+	ptimer = sdc::Timer::create(10);
+	ptimer->setNumRepetitions(-1);
+	ptimer->EventSender<sdc::TimerEvent>::addEventListener(&onTimer);
+	ptimer->start();
+}
+
 int main() {
 	const std::string savefile("frxview.save");
 	// init settings
 	::com::initSettings(".");
+	initParameterTimer();
 	srand ( (int)time(NULL) );
 	SAMBAG_WINONLY(
 		_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); //VS memory tracking
@@ -138,6 +171,7 @@ int main() {
 	win->open();
 	
 	sdc::Window::startMainLoop();
+	ptimer->stop();
 
 	serializeView(savefile, circ);
 	std::cout<<"bye dave."<<std::endl;
@@ -150,13 +184,31 @@ namespace frx { namespace processing {
 IModelController::Ptr
 getModelController(frx::gui::components::FrxCircuidViewPtr view)
 {
-	return IModelController::Ptr();
+	static ::processing::Graph::Ptr graph;
+	static ModelController::Ptr ctrl;
+	if (!ctrl) {
+		//hostInfoAdapter = IHostInfo::Ptr(new HostInfoAdapter(*this));
+		graph = ::processing::Graph::create(IHostInfo::Ptr());
+		ctrl = ModelController::create();
+		ctrl->setGraph(graph);
+		int num = graph->getNumHostParameter();
+		for (int i=0; i<num; ++i) {
+			graph->getHostParameter(i)->setValue((float)(i)/(float)num);
+		}
+	}
+	return ctrl;
 }
-}} // namespaces
+}} // namespace(s)
+
 namespace frx { namespace gui {
 //-----------------------------------------------------------------------------
 IViewModelMap::Ptr 
-getViewModelMap(components::FrxCircuidViewPtr view) {
-	return IViewModelMap::Ptr();
+getViewModelMap(components::FrxCircuidViewPtr view)
+{
+	static frx::gui::ViewModelMap::Ptr _map;
+	if (!_map) {
+		_map = frx::gui::ViewModelMap::create();
+	}
+	return _map;
 }
 }} // namespaces

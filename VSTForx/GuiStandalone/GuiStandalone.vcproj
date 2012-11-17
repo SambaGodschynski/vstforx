@@ -21,7 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			CharacterSet="1"
+			CharacterSet="2"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\loki\include&quot;;&quot;$(ProjectDir)..\..\src&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VLD&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\loki\include&quot;;&quot;$(ProjectDir)..\..\src&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VLD&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VST\vstsdk2.4\pluginterfaces\vst2.x&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;BOOST_FILESYSTEM_VERSION=3;BOOST_UBLAS_TYPE_CHECK=0;DISCO_USE_WIN32"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,12 +61,14 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cairo-staticd.lib pixman-1d.lib libpng.lib Winmm.lib zlib.lib ticppd.lib"
-				LinkIncremental="2"
+				LinkLibraryDependencies="true"
+				AdditionalDependencies="cairo.lib Winmm.lib ticppd.lib &quot;C:\Eigene Dateien\Eigene Progs\clibs\sambag\src\Debug\sambag.lib&quot;"
+				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\zlib\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\pixman\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\libpng\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VLD&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml\lib&quot;"
+				GenerateManifest="true"
 				GenerateDebugInformation="true"
 				SubSystem="1"
-				TargetMachine="1"
+				TargetMachine="0"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -118,7 +120,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\loki\include&quot;;&quot;$(ProjectDir)..\..\src&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VLD&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\loki\include&quot;;&quot;$(ProjectDir)..\..\src&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VLD&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VST\vstsdk2.4\pluginterfaces\vst2.x&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;DISCO_USE_WIN32"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -137,7 +139,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cairo-static.lib pixman-1.lib libpng.lib Winmm.lib zlib.lib ticpp.lib"
+				AdditionalDependencies="cairo.lib Winmm.lib ticpp.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\zlib\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\pixman\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\libpng\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VLD&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml\lib&quot;"
 				GenerateDebugInformation="true"
@@ -170,10 +172,6 @@
 		</Configuration>
 	</Configurations>
 	<References>
-		<ProjectReference
-			ReferencedProjectIdentifier="{39CD99C6-EB8B-4C73-B2E8-34326F05B070}"
-			RelativePathToProject="..\..\..\..\clibs\sambag\src\sambag.vcproj"
-		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{01B497C7-E74C-4DDA-9F08-2502B716DF62}"
 			RelativePathToProject=".\VSTForx\VSTForx_core.vcproj"

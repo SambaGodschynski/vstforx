@@ -15,6 +15,8 @@
 #include <string>
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <gui/components/FrxParameterLabel.hpp>
+#include <gui/components/ui/FrxBrowserListUI.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace {
@@ -127,6 +129,9 @@ void fillPluginFolder(FrxColumnBrowserWPtr _brws, FrxCircuidViewWPtr _view,
 	FrxColumnBrowserPtr brws = _brws.lock();
 	FrxCircuidViewPtr view = _view.lock();
 	SAMBAG_ASSERT(brws && view);
+	FrxMainBrowserCtrl::Ptr ctrl = 
+		boost::shared_dynamic_cast<FrxMainBrowserCtrl>(brws->getCtrl());
+	SAMBAG_ASSERT(ctrl);
 	Tree::Ptr tree = brws->getBrowserImpl();
 	if (tree->getNumChildren(parent) > 0)
 		return;
@@ -135,7 +140,7 @@ void fillPluginFolder(FrxColumnBrowserWPtr _brws, FrxCircuidViewWPtr _view,
 	::com::PluginCollection::Folders folders;
 	db.getSubFolders(dbFolderId, folders);
 	
-	BOOST_FOREACH(const DBFolderType &dbF, folders) {
+	BOOST_FOREACH(const DBFolderType &dbF, folders) { // subfolder
 		TreeNode treeFolder = 
 			tree->addNode(parent);
 
@@ -154,17 +159,19 @@ void fillPluginFolder(FrxColumnBrowserWPtr _brws, FrxCircuidViewWPtr _view,
 
 	::com::PluginCollection::PluginInfoList plugs;
 	db.getPlugInfoList(dbFolderId, plugs);
-	BOOST_FOREACH(const ::processing::PluginInfo &pI, plugs) {
+	BOOST_FOREACH(const ::processing::PluginInfo &pI, plugs) { // plugins
 		TreeNode plug = 
 			tree->addNode(parent);
 
 		const std::string &name = pI.name;
-		BrowserNode node(name, false);
+		BrowserNode node;
+		ctrl->createPluginNode(node, name);
 		node.f = 
 			boost::bind(&addPlugin, 
 			_view,		 // view	
 			pI			 // plugin info
 		);
+		node.type = BrowserConstants::FRX_BROWSER_PLUGIN;
 		tree->setNodeData(plug, node);
 	}
 
@@ -198,18 +205,83 @@ void FrxMainBrowserCtrl::addProcessors(FrxCircuidViewPtr view, FrxColumnBrowserP
 	fac.getProcessorNames(processorNames);
 	BOOST_FOREACH(const std::string &name, processorNames) {
 		IFrxComponentFactory::ProcessorCreator f = fac.getProcessorCreator(name);
-		BrowserNode node(name, false);
+		BrowserNode node;
+		createProcessorNode(node, name);
 		node.f = boost::bind(&addProcessor, FrxCircuidViewWPtr(view), f);
+		node.type = BrowserConstants::FRX_BROWSER_PROCESSOR;
 		tree->addNode(processors, node);
 	}
+}
+//-----------------------------------------------------------------------------
+void FrxMainBrowserCtrl::parameterChanged(void *src, 
+		float value, const BrowserNode &node)
+{
+	FrxColumnBrowserPtr brws = browser.lock();
+	if (!brws)
+		return;
+	// TODO: update specific list or better specific entry
+	brws->getBrowserImpl()->redraw();
+}
+//-----------------------------------------------------------------------------
+void FrxMainBrowserCtrl::parameterLabelUpdate( sdc::AComponentPtr c,
+	processing::IParameter::WPtr _p,
+	const BrowserNode &node)
+{
+	processing::IParameter::Ptr p = _p.lock();
+	FrxParameterLabel::Ptr label = 
+		boost::shared_dynamic_cast<FrxParameterLabel>(c);
+	if (!label)
+		return;
+	label->setValue(p->getValue());
+}
+//-----------------------------------------------------------------------------
+void 
+FrxMainBrowserCtrl::createParameterNode(BrowserNode &out,
+	const std::string &name,
+	processing::IParameter::Ptr obj)
+{
+	out.name = name;
+	out.type = BrowserConstants::FRX_BROWSER_PARAMETER;
+	if (!obj)
+		return;
+	processing::IParameter::WPtr wObj = obj;
+	// install parameter listener:
+	obj->getEventSender().addTrackedValueChangedListener(
+		boost::bind(&FrxMainBrowserCtrl::parameterChanged, this,
+		_1, _2, boost::cref(out)),
+		browser
+	);
+	out.drawCallback = 
+		boost::bind(&FrxMainBrowserCtrl::parameterLabelUpdate, this, _1, 
+		wObj, boost::cref(out));
+}
+//-----------------------------------------------------------------------------
+void 
+FrxMainBrowserCtrl::createProcessorNode(BrowserNode &out, 
+	const std::string &name,
+	processing::IProcessor::Ptr obj)
+{
+	out.name = name;
+	out.type = BrowserConstants::FRX_BROWSER_PROCESSOR;
+}
+//-----------------------------------------------------------------------------
+void 
+FrxMainBrowserCtrl::createPluginNode(BrowserNode &out, 
+	const std::string &name,
+	processing::IProcessor::Ptr obj)
+{
+	out.name = name;
+	out.type = BrowserConstants::FRX_BROWSER_PLUGIN;
 }
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::addKnobs(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws) 
 {
 	Tree::Ptr tree = brws->getBrowserImpl();
 	IFrxComponentFactory &fac = getComponentFactory(view);
-	BrowserNode node("free knob", false);
+	BrowserNode node;
+	createParameterNode(node, "free knob");
 	IFrxComponentFactory::FreeParameterCreator f = fac.getFreeParameterCreator();
+	node.type = BrowserConstants::FRX_BROWSER_PARAMETER;
 	node.f = boost::bind(&addFreeKnob, FrxCircuidViewWPtr(view), f);
 	tree->addNode(knobs, node);
 	// host knobs:
@@ -219,7 +291,10 @@ void FrxMainBrowserCtrl::addKnobs(FrxCircuidViewPtr view, FrxColumnBrowserPtr br
 	int nbKnobs = ctrl->getNumHostParameter();
 	IFrxComponentFactory::HostParameterCreator hPcreator = fac.getHostParameterCreator();
 	for (int i=0; i<nbKnobs; ++i) {
-		BrowserNode node("host knob: " + sambag::com::toString(i), false);
+		BrowserNode node;
+		processing::IParameter::Ptr par = 
+			ctrl->getHostParameter(i);
+		createParameterNode(node, "host knob: " + sambag::com::toString(i), par);
 		node.f = boost::bind(&addHostKnob, FrxCircuidViewWPtr(view), hPcreator, i);
 		tree->addNode(hostKnobs, node);
 	}
@@ -256,6 +331,7 @@ void FrxMainBrowserCtrl::initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr br
 void FrxMainBrowserCtrl::initTree(FrxCircuidViewPtr view, 
 	FrxColumnBrowserPtr brws)
 {
+	browser = brws;
 	
 	// create browser tree
 	typedef FrxColumnBrowser::BrowserImpl Tree;

@@ -13,6 +13,8 @@
 #include "IFrxColumnBrowserCtrl.hpp"
 #include <processing/IHostInfo.h>
 #include "FrxColumnBrowser.hpp"
+#include <processing/IParameter.hpp>
+#include <processing/IProcessor.hpp>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -36,6 +38,15 @@ public:
 	typedef FrxColumnBrowser::BrowserImpl Tree;
 protected:
 	//-------------------------------------------------------------------------
+	void parameterChanged(void *src, 
+		float value, const BrowserNode &node);
+	//-------------------------------------------------------------------------
+	void parameterLabelUpdate(sdc::AComponentPtr c, 
+		processing::IParameter::WPtr _p,
+		const BrowserNode &node);
+	//-------------------------------------------------------------------------
+	FrxColumnBrowserWPtr browser;
+	//-------------------------------------------------------------------------
 	WPtr self;
 	//-------------------------------------------------------------------------
 	FrxMainBrowserCtrl() {}
@@ -50,6 +61,18 @@ protected:
 	//-------------------------------------------------------------------------
 	void addKnobs(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws);
 public:
+	//-------------------------------------------------------------------------
+	void createParameterNode(BrowserNode &out, 
+		const std::string &name,
+		processing::IParameter::Ptr obj = processing::IParameter::Ptr());
+	//-------------------------------------------------------------------------
+	void createProcessorNode(BrowserNode &out, 
+		const std::string &name,
+		processing::IProcessor::Ptr obj = processing::IProcessor::Ptr());
+	//-------------------------------------------------------------------------
+	void createPluginNode(BrowserNode &out,
+		const std::string &name,
+		processing::IProcessor::Ptr obj = processing::IProcessor::Ptr());
 	//-------------------------------------------------------------------------
 	virtual void initListeners(FrxColumnBrowserPtr brws);
 	//-------------------------------------------------------------------------

@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cppunitd.lib cairo-static.lib pixman-1.lib libpng.lib zlib.lib ticppd.lib"
+				AdditionalDependencies="cppunitd.lib cairo.lib ticppd.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\zlib\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\pixman\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\libpng\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml\lib&quot;"
 				GenerateDebugInformation="true"
@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cppunitd.lib cairo-static.lib pixman-1.lib libpng.lib zlib.lib ticpp.lib"
+				AdditionalDependencies="cppunitd.lib cairo.lib ticpp.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\zlib\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\pixman\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\libpng\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml\lib&quot;"
 				GenerateDebugInformation="true"
@@ -170,7 +170,7 @@
 	</Configurations>
 	<References>
 		<ProjectReference
-			ReferencedProjectIdentifier="{39CD99C6-EB8B-4C73-B2E8-34326F05B070}"
+			ReferencedProjectIdentifier="{48136BC3-532F-48A7-BE2E-84D9152BF7A7}"
 			RelativePathToProject="..\..\..\..\clibs\sambag\src\sambag.vcproj"
 		/>
 		<ProjectReference

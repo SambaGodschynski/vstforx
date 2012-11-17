@@ -12,7 +12,6 @@
 #include <sambag/disco/components/ColumnBrowser.hpp>
 #include <sambag/disco/components/List.hpp>
 #include <sambag/disco/components/ColumnView.hpp>
-#include <sambag/disco/components/ui/basic/BasicListUI.hpp>
 #include <sambag/disco/components/ui/basic/BasicColumnViewUI.hpp>
 
 #include <gui/FrxControl.hpp>
@@ -33,6 +32,10 @@
 #include <gui/components/FrxConcreteParameter.hpp>
 #include <gui/components/ui/FrxParameterUI.hpp>
 #include <gui/components/FrxColumnBrowser.hpp>
+#include <gui/components/FrxParameterLabel.hpp>
+#include <gui/components/ui/FrxParameterLabelUI.hpp>
+#include <gui/components/ui/FrxBrowserListUI.hpp>
+
 #include <sambag/disco/FileResourceManager.hpp>
 #include <sambag/disco/IPattern.hpp>
 #include <sambag/math/Matrix.hpp>
@@ -108,19 +111,9 @@ void FrxLookAndFeel::installComponents() {
 	typedef FrxColumnBrowser::BrowserImpl CBrowser;
 	registerComponentUI<CBrowser::ColumnViewClass,
 		BasicColumnViewUI<CBrowser::ColumnViewClass> >();
-	registerComponentUI<CBrowser::ListType, BasicListUI<CBrowser::ListType> >();
+	registerComponentUI<CBrowser::ListType, FrxBrowserListUI >();
+	registerComponentUI<FrxParameterLabel, FrxParameterLabelUI>();
 }
-//-----------------------------------------------------------------------------
-namespace {
-	sd::svg::graphicElements::Style createStyle(const std::string &str) {
-		using namespace sambag::disco::svg;
-		svg::graphicElements::Style res;
-		std::stringstream ss;
-		ss<<str;
-		ss>>res;
-		return res;
-	}
-} // namespace
 //-----------------------------------------------------------------------------
 void FrxLookAndFeel::installDefaults() {
 	Super::installDefaults();
@@ -137,6 +130,7 @@ void FrxLookAndFeel::installDefaults() {
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<global
 	m.putProperty("global.background", HtmlColors::getColor("lightblue"));
 	m.putProperty("global.foreground", HtmlColors::getColor("white"));
+	m.putProperty("ColumnBrowser.fontStyle", createStyle("font-size: 17; font-family: arial"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<sizes
 	m.putProperty("Knob.mode", std::string("linear"));
 	m.putProperty("Knob.size", Dimension(RADIUS_MED*2., RADIUS_MED*2.));
@@ -191,8 +185,11 @@ void FrxLookAndFeel::installDefaults() {
 	//rManager.registerImage("ProcessorOutput.image", "w3c.svg");
 	rManager.registerImage("Entry.image", "entry.svg");
 	rManager.registerImage("Exit.image", "exit.svg");
-	rManager.registerImage("FrxBrowser.folder.image", "disco-floor.png");
+	rManager.registerImage("FrxBrowser.folder.image", "Blank-icon.png");
 	rManager.registerImage("FrxBrowser.default.image", "disco-floor.png");
+	rManager.registerImage("FrxBrowser.plugin.image", "vst-big-icon.png");
+	rManager.registerImage("FrxBrowser.processor.image", "disco-floor.png");
+	rManager.registerImage("FrxBrowser.parameter.image", "knob.png");
 }	
 
 }}}} // namespace(s)

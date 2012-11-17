@@ -22,6 +22,7 @@
 #include <string>
 #include "IFrxColumnBrowserCtrl.hpp"
 #include "Forward.hpp"
+#include <gui/components/FrxParameterLabel.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace sce = sambag::com::events;
@@ -33,7 +34,10 @@ namespace sdcu = sdc::ui;
 struct BrowserConstants {
 //=============================================================================
 	static const std::string FRX_BROWSER_FOLDER; 
-	static const std::string FRX_BROWSER_DEFAULT; 
+	static const std::string FRX_BROWSER_DEFAULT;
+	static const std::string FRX_BROWSER_PLUGIN;
+	static const std::string FRX_BROWSER_PROCESSOR;
+	static const std::string FRX_BROWSER_PARAMETER; 
 	static sd::ISurface::Ptr getIcon(const std::string &type);
 };
 //=============================================================================
@@ -47,6 +51,13 @@ struct BrowserConstants {
 struct BrowserNode : public BrowserConstants {
 //=============================================================================
 	std::string name;
+	/**
+	 * specific draw callback: will be called with renderer 
+	 * component before rendering.
+	 */
+	typedef boost::function<void(sdc::AComponentPtr)> 
+		DrawCallback;
+	DrawCallback drawCallback;
 	/**
 	 * will be called when node is selected and (eg.) ok is pressed.
 	 */ 
@@ -70,7 +81,7 @@ struct BrowserNode : public BrowserConstants {
 	}
 	bool operator==(const BrowserNode &n) const { 
 		return name==n.name && type==n.type
-			&f == &(n.f); // boost::functions are incomparable
+			&& &f == &(n.f); // boost::functions are incomparable
 	}
 	void accept() const {
 		if (f)
@@ -89,11 +100,10 @@ inline std::ostream & operator <<(std::ostream &os, const BrowserNode &n) {
 //=============================================================================
 template <class T>
 struct FrxBrowserCellRenderer :
-	public sdc::DefaultListCellRenderer<T>
+	public FrxParameterLabel
 {
-public:
 	//-------------------------------------------------------------------------
-	typedef sdc::DefaultListCellRenderer<T> Super;
+	typedef FrxParameterLabel Super;
 	//-------------------------------------------------------------------------
 	typedef FrxBrowserCellRenderer<T> Class;
 	//-------------------------------------------------------------------------
@@ -108,28 +118,53 @@ public:
 			int index, // cell index
 			bool isSelected, // is the cell selected
 			bool cellHasFocus // does the cell have focus
-	)
-	{
-		if (isSelected) {
-			Super::setBackground(list->getSelectionBackground());
-			Super::setForeground(list->getSelectionForeground());
-		} else {
-			Super::setBackground(list->getBackground());
-			Super::setForeground(list->getForeground());
-		}
-		
-		setText(sambag::com::toString(value.data));
-		sd::ISurface::Ptr icon = 
-			BrowserConstants::getIcon(value.data.type);
-		if (icon)
-			Super::setIcon(icon);
-		
-		Super::setEnabled(list->isEnabled());
-		Super::setFont(list->getFont());
-
-		return getPtr();
+	);
+	//-------------------------------------------------------------------------
+	virtual ~FrxBrowserCellRenderer() {
+	}
+	//-------------------------------------------------------------------------
+	virtual void installLookAndFeel(sdc::ui::ALookAndFeelPtr laf) {
+		Super::installLookAndFeel(laf);
 	}
 };
+///////////////////////////////////////////////////////////////////////////////
+// ListCellRenderer impl.
+//-----------------------------------------------------------------------------
+template <class T>
+template <class ListType>
+sdc::AComponentPtr FrxBrowserCellRenderer<T>::getListCellRendererComponent(
+	boost::shared_ptr<ListType> list, // the list
+	const T &value, // value to display
+	int index, // cell index
+	bool isSelected, // is the cell selected
+	bool cellHasFocus // does the cell have focus
+)
+{
+
+	if (isSelected) {
+		setBackground(list->getSelectionBackground());
+		setForeground(list->getSelectionForeground());
+	} else {
+		setBackground(list->getBackground());
+		setForeground(list->getForeground());
+	}
+	
+	setText(sambag::com::toString(value.data));
+	sd::ISurface::Ptr icon = 
+		BrowserConstants::getIcon(value.data.type);
+	if (icon)
+		setIcon(icon);
+		
+	setEnabled(list->isEnabled());
+	setFont(list->getFont());
+	
+	// specific callback
+	if (value.data.drawCallback) {
+		value.data.drawCallback(getPtr());
+	}
+	
+	return getPtr();
+}
 //=============================================================================
 /** 
   * @class FrxColumnBrowser.
