@@ -154,7 +154,7 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("Exit.fgColor", HtmlColors::getColor("black"));
 	m.putProperty("FrxStdKnobCorona02.color",  HtmlColors::getColor("yellow"));
 	m.putProperty("FrxStdKnobCorona01.color",  HtmlColors::getColor("red"));
-	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<connectionstyles
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<styles
 	m.putProperty("IOCn.style", 
 		createStyle("stroke-width: 4; stroke: grey"));
 	m.putProperty("IOCn.hoverStyle", 
@@ -175,6 +175,10 @@ void FrxLookAndFeel::installDefaults() {
 		createStyle("stroke-width: 4; stroke: grey; fill: purple;stroke-dasharray: 9, 5; fill-opacity: 0.25"));
 	m.putProperty("FrxSelection.selectedStyle", 
 		createStyle("stroke-width: 4; stroke: grey; fill: purple; fill-opacity: 0.25"));
+	m.putProperty("FrxParameterLabel.style", 
+		createStyle("stroke-width: 1; stroke: red; fill: grey; fill-opacity: 0.25"));
+	m.putProperty("FrxBrowserList.selectedEntryStyle", 
+		createStyle("stroke: white; fill: lightblue;"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<images
 	FileResourceManager &rManager = FileResourceManager::instance();
 	rManager.registerImage("FrxCircuidView.image", "disco-floor.png");

@@ -223,7 +223,17 @@ void FrxMainBrowserCtrl::parameterChanged(void *src,
 	brws->getBrowserImpl()->redraw();
 }
 //-----------------------------------------------------------------------------
-void FrxMainBrowserCtrl::parameterLabelUpdate( sdc::AComponentPtr c,
+void FrxMainBrowserCtrl::parameterLabelChanged(float value, 
+	processing::IParameter::WPtr _p)
+{
+	FrxColumnBrowserPtr brws = browser.lock();
+	processing::IParameter::Ptr p = _p.lock();
+	if (!brws || !p)
+		return;
+	p->setValue(value);
+}
+//-----------------------------------------------------------------------------
+void FrxMainBrowserCtrl::parameterLabelRedraw( sdc::AComponentPtr c,
 	processing::IParameter::WPtr _p,
 	const BrowserNode &node)
 {
@@ -232,6 +242,7 @@ void FrxMainBrowserCtrl::parameterLabelUpdate( sdc::AComponentPtr c,
 		boost::shared_dynamic_cast<FrxParameterLabel>(c);
 	if (!label)
 		return;
+	label->setText(label->getText() + ":" + p->getDisplay());
 	label->setValue(p->getValue());
 }
 //-----------------------------------------------------------------------------
@@ -252,8 +263,10 @@ FrxMainBrowserCtrl::createParameterNode(BrowserNode &out,
 		browser
 	);
 	out.drawCallback = 
-		boost::bind(&FrxMainBrowserCtrl::parameterLabelUpdate, this, _1, 
+		boost::bind(&FrxMainBrowserCtrl::parameterLabelRedraw, this, _1, 
 		wObj, boost::cref(out));
+	out.valueChanged =
+		boost::bind(&FrxMainBrowserCtrl::parameterLabelChanged, this, _1, wObj);
 }
 //-----------------------------------------------------------------------------
 void 

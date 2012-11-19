@@ -5,6 +5,8 @@
  *      Author: samba
  */
 
+#pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.VC90.CRT' version='9.0.21022.8' processorArchitecture='X86' publicKeyToken='1fc8b3b9a1e18e3b' language='*'\"")
+
 #include <sambag/disco/components/FramedWindow.hpp>
 #include <boost/foreach.hpp>
 #include <boost/shared_ptr.hpp>
@@ -116,11 +118,11 @@ void onTimer(void *src, const sdc::TimerEvent &ev) {
 	static const float maxt = 100000.f;
 	frx::processing::IModelController::Ptr ctrl = 
 		frx::processing::getModelController(fgc::FrxCircuidViewPtr());
-	int numP = ctrl->getNumHostParameter();
+	int numP = 10;//ctrl->getNumHostParameter();
 	for (int i=0; i<numP; ++i) {
 		//float value = (float)(rand() % RAND_MAX) / (float)RAND_MAX;
 		float value = 
-			abs(sin(t) + (float)i/(float)numP);
+			abs(sin( t + (float)i/(float)numP));
 		ctrl->getHostParameter(i)->setValue(value);
 	}
 	t+=0.1;

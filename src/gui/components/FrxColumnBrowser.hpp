@@ -47,6 +47,11 @@ struct BrowserConstants {
  * Each object has the informations: - a string representation
  *									 - a function callback initiated if object is
  *                                     acceppted by user action (add/ok/..).
+ *                                   - some callback functions to support
+ *                                     parameter value changing in browser,
+ *                                     because the default list impl. (rubber
+ *                                     stamp rendering) dosent support component
+ *                                     mouse event processing.
  */
 struct BrowserNode : public BrowserConstants {
 //=============================================================================
@@ -58,6 +63,12 @@ struct BrowserNode : public BrowserConstants {
 	typedef boost::function<void(sdc::AComponentPtr)> 
 		DrawCallback;
 	DrawCallback drawCallback;
+	/**
+	 * value changed callback.
+	 * called by FrxBrowserListUI when parameter changed in browser.
+	 */
+	typedef boost::function<void(float)> ValueChanged;
+	ValueChanged valueChanged;
 	/**
 	 * will be called when node is selected and (eg.) ok is pressed.
 	 */ 

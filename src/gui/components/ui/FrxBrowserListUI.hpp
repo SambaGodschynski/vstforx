@@ -12,9 +12,12 @@
 #include <boost/weak_ptr.hpp>
 #include <sambag/disco/components/ui/basic/BasicListUI.hpp>
 #include <gui/components/FrxColumnBrowser.hpp>
+#include <sambag/disco/svg/graphicElements/Style.hpp>
 namespace frx { namespace gui { 
 namespace components { namespace ui {
 namespace sd = sambag::disco;
+namespace sds = sd::svg;
+namespace sdsg = sds::graphicElements;
 namespace sdc = sd::components;
 namespace sdcu = sdc::ui;
 //=============================================================================
@@ -31,14 +34,28 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxColumnBrowser::BrowserImpl::ListType ListType;
 	//-------------------------------------------------------------------------
+	typedef sdcu::basic::BasicListUI<ListType> Super;
+	//-------------------------------------------------------------------------
 	typedef FrxBrowserListUI Class;
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<Class> Ptr;
 	//-------------------------------------------------------------------------
 	typedef boost::weak_ptr<Class> WPtr;
 protected:
+	//-------------------------------------------------------------------------
+	void installDefaults(sdc::AComponentPtr c);
+	//-------------------------------------------------------------------------
+	void installListeners(sdc::AComponentPtr c);
 private:
+	//-------------------------------------------------------------------------
+	sdsg::Style selectedStyle;
 public:
+	//-------------------------------------------------------------------------
+	void mouseDragged(const sdc::events::MouseEvent &ev);
+	//-------------------------------------------------------------------------
+	void onMouse(void *src, const sdc::events::MouseEvent &ev);
+	//-------------------------------------------------------------------------
+	virtual void installUI(sdc::AComponentPtr c);
 	//-------------------------------------------------------------------------
 	static Ptr create() {
 		Ptr res(new Class());

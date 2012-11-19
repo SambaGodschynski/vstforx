@@ -18,7 +18,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -43,17 +43,11 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
-    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
-    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\src;$(ProjectDir)..\..\..\..\..\cppunit-1.12.1\include;$(ProjectDir)..\..\..\..\..\boost_1_42_0;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x;$(ProjectDir)..\..\..\..\vstsdk2.4\;$(ProjectDir)..\..\..\..\vstsdk2.4\\vstgui.sf\vstgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\src;$(ProjectDir)..\..\..\..\..\clibs\cppunit\include;$(ProjectDir)..\..\..\..\..\clibs\boost;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x;$(ProjectDir)..\..\..\..\..\clibs\sqlite\src;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x;$(ProjectDir)..\..\..\..\vstsdk2.4\;$(ProjectDir)..\..\..\..\vstsdk2.4\\vstgui.sf\vstgui;$(ProjectDir)..\..\..\..\..\clibs\sambag\src;$(ProjectDir)..\..\..\..\..\clibs\sqlite;$(ProjectDir)..\..\..\..\..\clibs\lua\src;$(ProjectDir)..\..\..\..\..\clibs\cairo\src;$(ProjectDir)..\..\..\..\..\clibs\loki\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRTDBG_MAP_ALLOC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -64,32 +58,29 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>cppunitd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\..\boost_1_42_0\stage\lib;$(ProjectDir)..\..\..\..\..\cppunit-1.12.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cppunitd.lib;cairo.lib;ticppd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib;$(ProjectDir)..\..\..\..\..\clibs\cppunit\lib;$(ProjectDir)..\..\..\..\..\clibs\cairo\lib;$(ProjectDir)..\..\..\..\..\clibs\zlib\lib;$(ProjectDir)..\..\..\..\..\clibs\pixman\lib;$(ProjectDir)..\..\..\..\..\clibs\libpng\lib;$(ProjectDir)..\..\..\..\..\clibs\tinyxml\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
-    <ProjectReference>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(ProjectDir)..\..\src;$(ProjectDir)..\..\..\..\..\cppunit-1.12.1\include;$(ProjectDir)..\..\..\..\..\boost_1_42_0;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x;$(ProjectDir)..\..\..\..\vstsdk2.4\;$(ProjectDir)..\..\..\..\vstsdk2.4\\vstgui.sf\vstgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\src;$(ProjectDir)..\..\..\..\..\clibs\cppunit\include;$(ProjectDir)..\..\..\..\..\clibs\boost;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x;$(ProjectDir)..\..\..\..\..\clibs\sqlite\src;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x;$(ProjectDir)..\..\..\..\vstsdk2.4\;$(ProjectDir)..\..\..\..\vstsdk2.4\\vstgui.sf\vstgui;$(ProjectDir)..\..\..\..\..\clibs\sambag\src;$(ProjectDir)..\..\..\..\..\clibs\sqlite;$(ProjectDir)..\..\..\..\..\clibs\lua\src;$(ProjectDir)..\..\..\..\..\clibs\cairo\src;$(ProjectDir)..\..\..\..\..\clibs\loki\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>Level2</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>odbc32.lib;odbccp32.lib;cppunitd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\..\boost_1_42_0\stage\lib;$(ProjectDir)..\..\..\..\..\cppunit-1.12.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>cppunitd.lib;cairo.lib;ticpp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib;$(ProjectDir)..\..\..\..\..\clibs\cppunit\lib;$(ProjectDir)..\..\..\..\..\clibs\cairo\lib;$(ProjectDir)..\..\..\..\..\clibs\zlib\lib;$(ProjectDir)..\..\..\..\..\clibs\pixman\lib;$(ProjectDir)..\..\..\..\..\clibs\libpng\lib;$(ProjectDir)..\..\..\..\..\clibs\tinyxml\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -98,41 +89,53 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\clibs\sambag\src\sambag.vcxproj">
+      <Project>{48136bc3-532f-48a7-be2e-84d9152bf7a7}</Project>
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\VSTForx\VSTForx\VSTForx_core.vcxproj">
+      <Project>{01b497c7-e74c-4dda-9f08-2502b716df62}</Project>
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\tests\DummyFX.cpp" />
+    <ClCompile Include="..\..\src\tests\FrameTest.cpp" />
     <ClCompile Include="..\..\src\tests\GraphTest.cpp" />
     <ClCompile Include="..\..\src\tests\MyStringTest.cpp" />
     <ClCompile Include="..\..\src\tests\ParameterTest.cpp" />
+    <ClCompile Include="..\..\src\tests\PluginCollectionTest.cpp" />
     <ClCompile Include="startTest.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$ProjectDir\..\..\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$ProjectDir\..\..\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
-    <ClCompile Include="..\..\src\com\Command.cpp" />
-    <ClCompile Include="..\..\src\com\dspTools.cpp" />
-    <ClCompile Include="..\..\src\com\Events.cpp" />
-    <ClCompile Include="..\..\src\com\Frame.cpp" />
-    <ClCompile Include="..\..\src\com\Log.cpp" />
-    <ClCompile Include="..\..\src\com\MyString.cpp" />
-    <ClCompile Include="..\..\src\processing\plugNodes\NullAEffect.cpp" />
-    <ClCompile Include="..\..\src\processing\PlugNode.cpp" />
-    <ClCompile Include="..\..\src\com\PPIError.cpp" />
-    <ClCompile Include="..\..\src\com\Settings.cpp" />
-    <ClCompile Include="..\..\src\processing\plugNodes\VSTPlugNode2x.cpp" />
-    <ClCompile Include="..\..\src\processing\ConcreteProcessAdapter.cpp" />
-    <ClCompile Include="..\..\src\processing\parameter\ConnectionOperators.cpp" />
-    <ClCompile Include="..\..\src\processing\parameter\parameter.cpp" />
-    <ClCompile Include="..\..\src\processing\processing.cpp" />
-    <ClCompile Include="..\..\src\OS_Specific\windows\processing\OS_VSTPlugNode2x.cpp" />
+    <ClCompile Include="..\..\src\tests\TestDSPTools.cpp" />
+    <ClCompile Include="..\..\src\tests\TestFrxCircuidView.cpp" />
+    <ClCompile Include="..\..\src\tests\TestOne4All.cpp" />
+    <ClCompile Include="..\..\src\tests\TestViewModelMap.cpp" />
+    <ClCompile Include="..\..\src\OS_Specific\windows\processing\OS_VSTPlugin2x.cpp" />
     <ClCompile Include="..\..\src\OS_Specific\windows\com\win_one4All.cpp" />
-    <ClCompile Include="..\..\..\..\vstsdk2.4\vstgui.sf\vstgui\cfileselector.cpp" />
     <ClCompile Include="..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x\audioeffect.cpp" />
     <ClCompile Include="..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x\audioeffectx.cpp" />
     <ClCompile Include="..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x\vstplugmain.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\src\tests\TestFrxCircuidView.hpp" />
+    <ClInclude Include="..\..\src\tests\TestViewModelMap.hpp" />
+    <ClInclude Include="..\..\src\tests\DelayAdapter.h" />
+    <ClInclude Include="..\..\src\tests\DummyFX.h" />
+    <ClInclude Include="..\..\src\tests\FrameTest.hpp" />
+    <ClInclude Include="..\..\src\tests\GraphBuilder.hpp" />
     <ClInclude Include="..\..\src\tests\GraphTest.hpp" />
     <ClInclude Include="..\..\src\tests\MyStringTest.hpp" />
     <ClInclude Include="..\..\src\tests\ParameterTest.hpp" />
+    <ClInclude Include="..\..\src\tests\PluginCollectionTest.hpp" />
     <ClInclude Include="startTest.hpp" />
-    <ClInclude Include="..\..\src\processing\IHostInfo.h" />
+    <ClInclude Include="TestConfig.hpp" />
+    <ClInclude Include="..\..\src\tests\TestDSPTools.h" />
+    <ClInclude Include="..\..\src\tests\TestOne4All.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

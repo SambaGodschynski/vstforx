@@ -10,9 +10,12 @@
 
 #include <boost/shared_ptr.hpp>
 #include <sambag/disco/components/ui/basic/BasicLabelUI.hpp>
+#include <sambag/disco/svg/graphicElements/Style.hpp>
 namespace frx { namespace gui {
 namespace components { namespace ui { 
 namespace sd = sambag::disco;
+namespace sds = sd::svg;
+namespace sdsg = sds::graphicElements;
 namespace sdc = sd::components;
 namespace sdcu = sdc::ui;
 //=============================================================================
@@ -27,7 +30,13 @@ public:
 	//-------------------------------------------------------------------------
 	typedef sdcu::basic::BasicLabelUI Super;
 protected:
+	//-------------------------------------------------------------------------
+	void installDefaults(sdc::AComponentPtr c);
+	//-------------------------------------------------------------------------
+	void installListeners(sdc::AComponentPtr c);
 private:
+	//-------------------------------------------------------------------------
+	sdsg::Style style;
 public:
 	//-------------------------------------------------------------------------
 	virtual void installUI(sdc::AComponentPtr c);

@@ -38,10 +38,12 @@ public:
 	typedef FrxColumnBrowser::BrowserImpl Tree;
 protected:
 	//-------------------------------------------------------------------------
+	void parameterLabelChanged(float value, processing::IParameter::WPtr _p);
+	//-------------------------------------------------------------------------
 	void parameterChanged(void *src, 
 		float value, const BrowserNode &node);
 	//-------------------------------------------------------------------------
-	void parameterLabelUpdate(sdc::AComponentPtr c, 
+	void parameterLabelRedraw(sdc::AComponentPtr c, 
 		processing::IParameter::WPtr _p,
 		const BrowserNode &node);
 	//-------------------------------------------------------------------------

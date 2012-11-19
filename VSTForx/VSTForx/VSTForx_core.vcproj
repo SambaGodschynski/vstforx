@@ -222,10 +222,6 @@
 		</Configuration>
 	</Configurations>
 	<References>
-		<ProjectReference
-			ReferencedProjectIdentifier="{48136BC3-532F-48A7-BE2E-84D9152BF7A7}"
-			RelativePathToProject="..\..\..\..\clibs\sambag\src\sambag.vcproj"
-		/>
 	</References>
 	<Files>
 		<Filter

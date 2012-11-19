@@ -176,6 +176,10 @@
 			ReferencedProjectIdentifier="{01B497C7-E74C-4DDA-9F08-2502B716DF62}"
 			RelativePathToProject=".\VSTForx\VSTForx_core.vcproj"
 		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{D8E6ECCC-452F-4806-A44B-46A9CBFDF17B}"
+			RelativePathToProject="..\..\..\..\clibs\sambag\src\sambag.vcproj"
+		/>
 	</References>
 	<Files>
 		<Filter

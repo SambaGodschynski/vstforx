@@ -7,13 +7,25 @@
 
 #include "FrxParameterLabelUI.hpp"
 #include <gui/components/FrxParameterLabel.hpp>
+#include <sambag/disco/components/ui/UIManager.hpp>
+
 namespace frx { namespace gui {
 namespace components { namespace ui { 
 //=============================================================================
 //  Class FrxParameterLabelUI
 //=============================================================================
 //-----------------------------------------------------------------------------
+void FrxParameterLabelUI::installDefaults(sdc::AComponentPtr c) {
+	sdc::ui::UIManager &m = sdc::ui::getUIManager();
+	m.getProperty("FrxParameterLabel.style", style);
+}
+//-----------------------------------------------------------------------------
+void FrxParameterLabelUI::installListeners(sdc::AComponentPtr c) {
+}
+//-----------------------------------------------------------------------------
 void FrxParameterLabelUI::installUI(sdc::AComponentPtr c) {
+	installDefaults(c);
+	installListeners(c);
 }
 //-----------------------------------------------------------------------------
 void FrxParameterLabelUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
@@ -23,9 +35,14 @@ void FrxParameterLabelUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	sambag::com::Number value = label->getValue();
 	Super::draw(cn, c);
 	// draw bar:
+	if (value==0.0)
+		return;
 	sd::Rectangle r = c->getBounds();
-	cn->setFillColor(sd::ColorRGBA(0,0,0,0.3));
-	cn->rect(sd::Rectangle(0,0, r.width() * value, r.height()));
+	sd::Coordinate w = r.width() * value;
+	style.intoContext(cn);
+	cn->rect(sd::Rectangle(0,0, w, r.height()));
 	cn->fill();
+	cn->rect(sd::Rectangle(0,0, w, r.height()));
+	cn->stroke();
 }
 }}}} // namespace(s)
