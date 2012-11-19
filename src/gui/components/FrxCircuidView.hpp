@@ -24,6 +24,7 @@
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/weak_ptr.hpp>
 #include <gui/IFrxControl.hpp>
+#include "FrxHover.hpp"
 
 namespace frx { namespace gui { namespace components {
 namespace sc = sambag::com;
@@ -71,6 +72,8 @@ protected:
 	sdc::Panel::Ptr content;
 	//-------------------------------------------------------------------------
 	FrxSelection::Ptr selection;
+	//-------------------------------------------------------------------------
+	FrxHover::Ptr hoverSelection;
 	//-------------------------------------------------------------------------
 	FrxCircuidView();
 	//-------------------------------------------------------------------------
@@ -140,6 +143,8 @@ public:
 	virtual void remove(sdc::AComponentPtr comp);
 	//-------------------------------------------------------------------------
 	FrxSelection::Ptr getSelection() const { return selection; }
+	//-------------------------------------------------------------------------
+	FrxHover::Ptr getHoverSelection() const { return hoverSelection; }
 	//-------------------------------------------------------------------------
 	SAMBAG_STD_STATIC_COMPONENT_CREATOR(FrxCircuidView)
 	//-------------------------------------------------------------------------

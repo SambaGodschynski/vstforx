@@ -31,6 +31,7 @@ FrxComponentPtr FrxProcessorBrowserCtrl::getComponent() const
 void FrxProcessorBrowserCtrl::initTree(FrxCircuidViewPtr view, 
 	FrxColumnBrowserPtr brws)
 {
+	browser = brws;
 	// get ctrl, map
 	frx::processing::IModelController::Ptr ctrl;
 	IViewModelMap::Ptr map;
@@ -59,7 +60,7 @@ void FrxProcessorBrowserCtrl::initTree(FrxCircuidViewPtr view,
 				frx::processing::IParameter::WPtr(p)
 			);
 		BrowserNode par;
-		createParameterNode(par, p->getName());
+		createParameterNode(par, p->getName(), p);
 		par.f = f;
 		tree->addNode(
 			parameter, 

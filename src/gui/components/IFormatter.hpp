@@ -26,7 +26,16 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<IFormatter> Ptr;
 	//-------------------------------------------------------------------------
+	/**
+	 * handles the next num elements as one object (with a common bounding box)
+	 */
+	virtual void setCompoundCounter(size_t num) = 0;
+	//-------------------------------------------------------------------------
+	virtual size_t getCompoundCounter() const = 0;
+	//-------------------------------------------------------------------------
 	virtual void addElement(sdc::AComponentPtr c) = 0;
+	//-------------------------------------------------------------------------
+	virtual void reset() = 0;
 }; // IFormatter
 }}} // namespace(s)
 

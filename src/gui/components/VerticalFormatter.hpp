@@ -10,6 +10,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <sambag/disco/Geometry.hpp>
+#include <sambag/com/ArithmeticWrapper.hpp>
 #include "IFormatter.hpp"
 
 namespace frx { namespace gui { namespace components {
@@ -31,13 +32,28 @@ protected:
 	sd::Point2D lastPos;
 	//-------------------------------------------------------------------------
 	sd::Coordinate gap;
+	//-------------------------------------------------------------------------
+	sambag::com::ArithmeticWrapper<size_t> ccounter; 
 public:
+	//-------------------------------------------------------------------------
+	/**
+	 * handles the next num elements as one object (with a common bounding box)
+	 */
+	virtual void setCompoundCounter(size_t num);
+	//-------------------------------------------------------------------------
+	virtual size_t getCompoundCounter() const {
+		return ccounter;
+	}
 	//-------------------------------------------------------------------------
 	virtual ~VerticalFormatter() {
 		
 	}
 	//-------------------------------------------------------------------------
 	void resetOrigin(const sd::Point2D &p = sd::Point2D(0,0));
+	//-------------------------------------------------------------------------
+	virtual void reset() {
+		resetOrigin();
+	}
 	//-------------------------------------------------------------------------
 	const sd::Coordinate & getGap() const {
 		return gap;

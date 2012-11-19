@@ -31,6 +31,8 @@ public:
 	typedef boost::shared_ptr<FrxHover> Ptr;
 protected:
 	//-------------------------------------------------------------------------
+	virtual void postConstructor();
+	//-------------------------------------------------------------------------
 	FrxHover(){ 
 		setName("FrxHover");
 		setVisible(false); 
@@ -48,6 +50,10 @@ private:
 		ar & boost::serialization::base_object<Super>(*this); 
 	} 
 public:
+	//-------------------------------------------------------------------------
+	virtual void clearContent();
+	//-------------------------------------------------------------------------
+	virtual void addElement(sdc::AComponent::Ptr c);
 	//-------------------------------------------------------------------------
 	IFormatter::Ptr getFormatter() const {
 		return formatter;

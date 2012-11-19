@@ -356,9 +356,9 @@ void FrxControl::addProcesorKnobToView(FrxCircuidViewWPtr _view,
 	knob->setLocation(0, 0);
 	view->add(knob, FrxCircuidView::Z_Knobs);
 	// add hover
-	FrxHover::Ptr sel = FrxHover::create();
-	view->add(sel);
+	FrxHover::Ptr sel = view->getHoverSelection();
 	sel->addElement(knob);
+	sel->setVisible(true);
 }
 //-----------------------------------------------------------------------------
 void FrxControl::addParameterToView(fgc::FrxCircuidViewPtr view, 
@@ -387,9 +387,9 @@ void FrxControl::addParameterToView(fgc::FrxCircuidViewPtr view,
 	knob->setLocation(0, 0);
 	view->add(knob, FrxCircuidView::Z_Knobs);
 	// add hover
-	FrxHover::Ptr sel = FrxHover::create();
-	view->add(sel);
+	FrxHover::Ptr sel = view->getHoverSelection();
 	sel->addElement(knob);
+	sel->setVisible(true);
 }
 //-----------------------------------------------------------------------------
 void FrxControl::addProcessorToView(fgc::FrxCircuidViewPtr view, 
@@ -402,8 +402,12 @@ void FrxControl::addProcessorToView(fgc::FrxCircuidViewPtr view,
 	// register
 	registerProcessorOnView(view, pr);
 	// hover
-	FrxHover::Ptr sel = FrxHover::create();
-	view->add(sel);
+	FrxHover::Ptr sel = view->getHoverSelection();
+	size_t numEl = 1 + pr->getInputs().size() + pr->getOutputs().size();
+	IFormatter::Ptr form = sel->getFormatter();
+	if (form)
+		form->setCompoundCounter(numEl);
+	sel->setVisible(true);
 	sel->addElement(pr);
 	sel->addElements(pr->getInputs());
 	sel->addElements(pr->getOutputs());

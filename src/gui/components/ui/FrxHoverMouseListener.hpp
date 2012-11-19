@@ -10,6 +10,8 @@
 #include <sambag/disco/components/Forward.hpp>
 #include <boost/shared_ptr.hpp>
 #include "FrxSelectionMouseListener.hpp"
+#include <gui/components/FrxHover.hpp>
+
 namespace frx { namespace gui {
 namespace components { namespace ui { 
 namespace sd = sambag::disco;
@@ -29,10 +31,10 @@ protected:
 	//-------------------------------------------------------------------------
 	FrxHoverMouseListener();
 	//-------------------------------------------------------------------------
-	sdc::AComponentPtr hover;
+	FrxHover::Ptr hover;
 public:
 	//-------------------------------------------------------------------------
-	void setHover(sdc::AComponentPtr hover) {
+	void setHover(FrxHover::Ptr hover) {
 		this->hover = hover;
 	}
 	//-------------------------------------------------------------------------

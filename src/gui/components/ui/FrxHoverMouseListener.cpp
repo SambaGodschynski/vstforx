@@ -20,10 +20,8 @@ FrxHoverMouseListener::FrxHoverMouseListener() {
 }
 //-----------------------------------------------------------------------------
 void FrxHoverMouseListener::mouseClicked(const sdc::events::MouseEvent &ev) {
-	FrxCircuidView::Ptr circ = hover->getFirstContainer<FrxCircuidView>();
-	SAMBAG_ASSERT(circ);
-	circ->remove(hover);
-	hover.reset();
+	hover->clearContent();
+	hover->setVisible(false);
 }
 //-----------------------------------------------------------------------------
 void FrxHoverMouseListener::mouseMoved(const sdc::events::MouseEvent &ev) {
@@ -36,6 +34,8 @@ void FrxHoverMouseListener::mouseMoved(const sdc::events::MouseEvent &ev) {
 //-----------------------------------------------------------------------------
 void FrxHoverMouseListener::onMouse(void *src, const sdc::events::MouseEvent &ev)
 {
+	if (!hover->isVisible())
+		return;
 	using namespace sdc::events;
 	enum { Filter = 
 		MouseEvent::DISCO_MOUSE_CLICKED |

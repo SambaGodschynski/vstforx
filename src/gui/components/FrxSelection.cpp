@@ -8,7 +8,6 @@
 #include "FrxSelection.hpp"
 #include <sambag/disco/Geometry.hpp>
 #include <boost/foreach.hpp>
-#include "VerticalFormatter.hpp"
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================

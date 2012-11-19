@@ -58,16 +58,16 @@ private:
 	} 
 public:
 	//-------------------------------------------------------------------------
-	void updateBounds();
+	virtual void updateBounds();
 	//-------------------------------------------------------------------------
-	void clearContent();
+	virtual void clearContent();
 	//-------------------------------------------------------------------------
 	/**
 	 * set selection content.
 	 */
-	void setContent(const ContentContainer &container);
+	virtual void setContent(const ContentContainer &container);
 	//-------------------------------------------------------------------------
-	void addElement(sdc::AComponent::Ptr c);
+	virtual void addElement(sdc::AComponent::Ptr c);
 	//-------------------------------------------------------------------------
 	template <class Container>
 	void addElements(const Container &c);

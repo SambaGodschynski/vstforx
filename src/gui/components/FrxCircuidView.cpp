@@ -123,6 +123,10 @@ void FrxCircuidView::postConstructor() {
 	content->setLayout(sdc::ALayoutManagerPtr());
 	selection = FrxSelection::create();
 	add(selection, Z_InteractiveStuff);
+	selection->setVisible(false);
+	hoverSelection = FrxHover::create();
+	add(hoverSelection, Z_InteractiveStuff);
+	hoverSelection->setVisible(false);
 }
 //-----------------------------------------------------------------------------
 sdc::AComponentPtr FrxCircuidView::findComponentOnPoint(const sd::Point2D &p,
