@@ -36,6 +36,10 @@ public:
 	virtual void addElement(sdc::AComponentPtr c) = 0;
 	//-------------------------------------------------------------------------
 	virtual void reset() = 0;
+	//-------------------------------------------------------------------------
+	virtual sd::Point2D getCursor() const = 0;
+	//-------------------------------------------------------------------------
+	virtual void setCursor(const sd::Point2D &p) = 0;
 }; // IFormatter
 }}} // namespace(s)
 

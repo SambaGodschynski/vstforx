@@ -33,7 +33,13 @@ protected:
 	//-------------------------------------------------------------------------
 	sd::Coordinate gap;
 	//-------------------------------------------------------------------------
-	sambag::com::ArithmeticWrapper<size_t> ccounter; 
+	sambag::com::ArithmeticWrapper<int> numCompound;
+	//-------------------------------------------------------------------------
+	std::vector<sdc::AComponentPtr> tmp;
+	//-------------------------------------------------------------------------
+	void translateComponent(sdc::AComponentPtr c);
+	//-------------------------------------------------------------------------
+	void translateCompound();
 public:
 	//-------------------------------------------------------------------------
 	/**
@@ -42,7 +48,7 @@ public:
 	virtual void setCompoundCounter(size_t num);
 	//-------------------------------------------------------------------------
 	virtual size_t getCompoundCounter() const {
-		return ccounter;
+		return numCompound;
 	}
 	//-------------------------------------------------------------------------
 	virtual ~VerticalFormatter() {
@@ -54,6 +60,12 @@ public:
 	virtual void reset() {
 		resetOrigin();
 	}
+	//-------------------------------------------------------------------------
+	virtual sd::Point2D getCursor() const {
+		return lastPos;
+	}
+	//-------------------------------------------------------------------------
+	virtual void setCursor(const sd::Point2D &p);
 	//-------------------------------------------------------------------------
 	const sd::Coordinate & getGap() const {
 		return gap;

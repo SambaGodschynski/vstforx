@@ -11,7 +11,10 @@
 #include <boost/shared_ptr.hpp>
 #include <sambag/disco/components/AContainer.hpp>
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
+#include <sambag/com/ArithmeticWrapper.hpp>
+#include "IFormatter.hpp"
 #include <list>
+
 
 namespace frx { namespace gui { namespace components {
 namespace sd = sambag::disco;
@@ -47,6 +50,13 @@ protected:
 	void extendBounds(sdc::AComponent::Ptr c);
 	//-------------------------------------------------------------------------
 	SAMBAG_STD_STATIC_COMPONENT_CREATOR(FrxSelection)
+	//-------------------------------------------------------------------------
+	/**
+	 * we need to distinguish whether content was selected or
+	 * added by browser.
+	 */
+	IFormatter::Ptr formatter;
+	sambag::com::ArithmeticWrapper<bool> contentViaSelection;
 private:
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
@@ -58,17 +68,30 @@ private:
 	} 
 public:
 	//-------------------------------------------------------------------------
+	IFormatter::Ptr getFormatter() const {
+		return formatter;
+	}
+	//-------------------------------------------------------------------------
+	void setFormatter(IFormatter::Ptr fomatter);
+	//-------------------------------------------------------------------------
 	virtual void updateBounds();
 	//-------------------------------------------------------------------------
 	virtual void clearContent();
 	//-------------------------------------------------------------------------
 	/**
-	 * set selection content.
+	 * set selection content. without using formater.
+	 * @note: clears previous setted elements.
 	 */
 	virtual void setContent(const ContentContainer &container);
 	//-------------------------------------------------------------------------
+	/**
+	 * add append element using formatter.
+	 */
 	virtual void addElement(sdc::AComponent::Ptr c);
 	//-------------------------------------------------------------------------
+	/**
+	 * add bunch of elements using formatter.
+	 */
 	template <class Container>
 	void addElements(const Container &c);
 	//-------------------------------------------------------------------------
@@ -82,6 +105,8 @@ public:
 //-----------------------------------------------------------------------------
 template <class Container>
 void FrxSelection::addElements(const Container &c) {
+	if (formatter) // the next numEl elements are compound:
+		formatter->setCompoundCounter(c.size());
 	typename Container::const_iterator it = c.begin();
 	for ( ; it!=c.end(); ++it ) {
 		addElement(*it);

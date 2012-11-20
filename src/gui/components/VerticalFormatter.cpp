@@ -7,6 +7,8 @@
 
 #include "VerticalFormatter.hpp"
 #include <sambag/disco/components/AComponent.hpp>
+#include <boost/geometry.hpp>
+#include <boost/geometry/multi/geometries/multi_point.hpp>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -17,16 +19,62 @@ void VerticalFormatter::setGap(const sd::Coordinate &val) {
 	gap = val;
 }
 //-----------------------------------------------------------------------------
-void VerticalFormatter::addElement(sdc::AComponentPtr c) {
+void VerticalFormatter::translateComponent(sdc::AComponentPtr c) {
 	c->setLocation(lastPos);
-	if (ccounter <= 1 ) {
-		if (ccounter==1)
-			ccounter=0;
-		lastPos = sd::Point2D(lastPos.x() + c->getWidth() + gap, 0);
-	} else {
-		ccounter-=1;	
-	}
+	lastPos = sd::Point2D(lastPos.x() + c->getWidth() + gap, lastPos.y());
 	c->redraw();
+}
+//-----------------------------------------------------------------------------
+void VerticalFormatter::setCursor(const sd::Point2D &p) {
+	lastPos = p;
+}
+//-----------------------------------------------------------------------------
+void VerticalFormatter::translateCompound() {
+	namespace trans = boost::geometry::strategy::transform;
+	std::vector<sd::Point2D> _points;
+	_points.resize(tmp.size() * 2);
+	size_t index = 0;
+	BOOST_FOREACH(sdc::AComponentPtr c, tmp) {
+		_points[index] = c->getLocation();
+		// to get an correct bounding box we need a
+		// second point.
+		_points[_points.size() - index - 1] = 
+			sd::Point2D(c->getX() + c->getWidth(),
+			c->getY() + c->getHeight());
+		++index;
+	}
+	// point container
+	typedef boost::geometry::model::multi_point<sd::Point2D> Points;
+	Points points(_points.begin(), _points.end());
+	// calc. bounding box
+	sd::Rectangle env;
+	boost::geometry::envelope(points, env);
+	// translate bunch of points
+	trans::translate_transformer<sd::Point2D, sd::Point2D> 
+		translate(lastPos.x(), lastPos.y());
+	Points res;
+	boost::geometry::transform(points, res, translate);
+	lastPos = sd::Point2D(lastPos.x() + env.width() + gap, lastPos.y());
+	index = 0;
+	// reassign points
+	BOOST_FOREACH(sdc::AComponentPtr c, tmp) {
+		c->setLocation(res[index++]);
+		c->redraw();
+	}
+	// reset
+	numCompound = 0;
+	tmp.clear();
+}
+//-----------------------------------------------------------------------------
+void VerticalFormatter::addElement(sdc::AComponentPtr c) {
+	if (tmp.size() < numCompound) {
+		tmp.push_back(c);
+		if (tmp.size() == numCompound) {
+			translateCompound();
+		}
+		return;
+	}
+	translateComponent(c);
 }
 //-----------------------------------------------------------------------------
 void VerticalFormatter::resetOrigin(const sd::Point2D &p) {
@@ -34,6 +82,7 @@ void VerticalFormatter::resetOrigin(const sd::Point2D &p) {
 }
 //-----------------------------------------------------------------------------
 void VerticalFormatter::setCompoundCounter(size_t num) {
-	ccounter = num;
+	numCompound = num;
+	tmp.reserve(num);
 }
 }}} // namespace(s)

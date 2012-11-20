@@ -10,7 +10,6 @@
 
 #include <boost/shared_ptr.hpp>
 #include "FrxSelection.hpp"
-#include "IFormatter.hpp"
 
 namespace frx { namespace gui { namespace components {
 namespace sdc = sambag::disco::components;
@@ -37,8 +36,6 @@ protected:
 		setName("FrxHover");
 		setVisible(false); 
 	}
-	//-------------------------------------------------------------------------
-	IFormatter::Ptr formatter;
 private:
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
@@ -50,16 +47,6 @@ private:
 		ar & boost::serialization::base_object<Super>(*this); 
 	} 
 public:
-	//-------------------------------------------------------------------------
-	virtual void clearContent();
-	//-------------------------------------------------------------------------
-	virtual void addElement(sdc::AComponent::Ptr c);
-	//-------------------------------------------------------------------------
-	IFormatter::Ptr getFormatter() const {
-		return formatter;
-	}
-	//-------------------------------------------------------------------------
-	void setFormatter(IFormatter::Ptr fomatter);
 	//-------------------------------------------------------------------------
 	SAMBAG_STD_STATIC_COMPONENT_CREATOR(FrxHover)
 	//-------------------------------------------------------------------------

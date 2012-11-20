@@ -356,7 +356,7 @@ void FrxControl::addProcesorKnobToView(FrxCircuidViewWPtr _view,
 	knob->setLocation(0, 0);
 	view->add(knob, FrxCircuidView::Z_Knobs);
 	// add hover
-	FrxHover::Ptr sel = view->getHoverSelection();
+	FrxSelection::Ptr sel = view->getSelection();
 	sel->addElement(knob);
 	sel->setVisible(true);
 }
@@ -387,7 +387,7 @@ void FrxControl::addParameterToView(fgc::FrxCircuidViewPtr view,
 	knob->setLocation(0, 0);
 	view->add(knob, FrxCircuidView::Z_Knobs);
 	// add hover
-	FrxHover::Ptr sel = view->getHoverSelection();
+	FrxSelection::Ptr sel = view->getSelection();
 	sel->addElement(knob);
 	sel->setVisible(true);
 }
@@ -402,15 +402,13 @@ void FrxControl::addProcessorToView(fgc::FrxCircuidViewPtr view,
 	// register
 	registerProcessorOnView(view, pr);
 	// hover
-	FrxHover::Ptr sel = view->getHoverSelection();
-	size_t numEl = 1 + pr->getInputs().size() + pr->getOutputs().size();
-	IFormatter::Ptr form = sel->getFormatter();
-	if (form)
-		form->setCompoundCounter(numEl);
+	FrxSelection::Ptr sel = view->getSelection();
 	sel->setVisible(true);
-	sel->addElement(pr);
-	sel->addElements(pr->getInputs());
-	sel->addElements(pr->getOutputs());
+	std::list<sdc::AComponentPtr> toAdd;
+	toAdd.push_back(pr);
+	toAdd.insert(toAdd.end(), pr->getInputs().begin(), pr->getInputs().end());
+	toAdd.insert(toAdd.end(), pr->getOutputs().begin(), pr->getOutputs().end());
+	sel->addElements(toAdd);
 }
 //-----------------------------------------------------------------------------
 FrxControl::FrxControl() {

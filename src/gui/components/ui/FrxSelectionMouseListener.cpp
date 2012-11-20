@@ -38,6 +38,12 @@ void FrxSelectionMouseListener::translateSelection(FrxSelectionPtr sel,
 	sd::Point2D loc; 
 	geom::transform(sel->getLocation(), loc, transl);
 	sel->setLocation(loc);
+	// update sel. formatter:
+	IFormatter::Ptr form = sel->getFormatter();
+	if (!form)
+		return;
+	geom::transform(form->getCursor(), loc, transl);
+	form->setCursor(loc);
 }
 //-----------------------------------------------------------------------------
 void FrxSelectionMouseListener::moveSelection(const sdc::events::MouseEvent &ev) {

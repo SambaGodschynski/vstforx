@@ -8,6 +8,7 @@
 #include "FrxSelection.hpp"
 #include <sambag/disco/Geometry.hpp>
 #include <boost/foreach.hpp>
+#include "VerticalFormatter.hpp"
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -16,10 +17,12 @@ namespace frx { namespace gui { namespace components {
 //-----------------------------------------------------------------------------
 void FrxSelection::postConstructor() {
 	Super::postConstructor();
+	formatter = VerticalFormatter::create();
 }
 //-----------------------------------------------------------------------------
 void FrxSelection::setContent(const FrxSelection::ContentContainer &container) 
 {
+	contentViaSelection = true;
 	clearContent();
 	if (!container.empty())
 		setVisible(true);
@@ -27,11 +30,21 @@ void FrxSelection::setContent(const FrxSelection::ContentContainer &container)
 	updateBounds();
 }
 //-----------------------------------------------------------------------------
+void FrxSelection::setFormatter(IFormatter::Ptr fomatter) {
+	this->formatter = formatter;
+}
+//-----------------------------------------------------------------------------
 void FrxSelection::addElement(sdc::AComponent::Ptr c) {
+	if (contentViaSelection) { // clear previous selected content
+		clearContent();
+		contentViaSelection = false;
+	}
 	if (!c)
 		return;
 	setVisible(true);
 	content.push_back(c);
+	if (formatter)
+		formatter->addElement(c);
 	updateBounds();
 }
 //-----------------------------------------------------------------------------
@@ -49,6 +62,8 @@ void FrxSelection::updateBounds() {
 void FrxSelection::clearContent() {
 	content.clear();
 	setVisible(false);
+	if (formatter)
+		formatter->reset();
 }
 //-----------------------------------------------------------------------------
 void FrxSelection::extendBounds(sdc::AComponent::Ptr c) {
