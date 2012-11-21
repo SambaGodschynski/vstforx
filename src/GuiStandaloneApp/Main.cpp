@@ -169,7 +169,7 @@ int main() {
 	win->getContentPane()->add(circ);
 	win->setWindowBounds(sambag::disco::Rectangle(100,100,WIDTH,HEIGHT));
 	win->setTitle("VSTForx [D.I.S.C.O.]");
-	win->validate();
+	//win->validate();
 	win->open();
 	
 	sdc::Window::startMainLoop();

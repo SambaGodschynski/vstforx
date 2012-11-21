@@ -106,7 +106,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\loki\include&quot;;&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;$(NOINHERIT)"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;VSTFORX_EXPORTS;BOOST_FILESYSTEM_VERSION=3;BOOST_UBLAS_TYPE_CHECK=0;DISCO_USE_WIN32"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;VSTFORX_EXPORTS;BOOST_FILESYSTEM_VERSION=3;BOOST_UBLAS_TYPE_CHECK=0;DISCO_USE_WIN32;CAIRO_WIN32_STATIC_BUILD"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"

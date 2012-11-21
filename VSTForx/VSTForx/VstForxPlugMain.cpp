@@ -8,7 +8,31 @@
 #include <windows.h>
 std::string getHomeDirectory();
 
+struct Console {
+	Console();
+	~Console();
+};
+Console::Console() {
+	/*
+		A process can be attached to at most one console:
+		http://msdn.microsoft.com/en-us/library/windows/desktop/ms683150%28v=vs.85%29.aspx
+	*/
+	AllocConsole();
+	freopen("conin$","r",stdin);
+	freopen("conout$","w",stdout);
+	freopen("conout$","w",stderr);
+	HWND consoleHandle = GetConsoleWindow();
+	MoveWindow(consoleHandle,1,1,680,480,1);
+	std::cout<<"VSTForx console initalized."<<std::endl;
+}
+Console::~Console() {
+	FreeConsole();
+}
+
+#ifdef _DEBUG 
+Console console;
 #pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.VC90.CRT' version='9.0.21022.8' processorArchitecture='X86' publicKeyToken='1fc8b3b9a1e18e3b' language='*'\"")
+#endif
 
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
@@ -26,7 +50,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 		'frxr', // uid
 		sambag::dsp::StdPluginTraits<
 			2,2,false,::com::Settings::PROGRAM_PARAMETER
-		>, 
+		>,
 		frx::gui::components::CreateVstForxEditor
 	> Plugin;
 	// create plugin
@@ -39,6 +63,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 	} catch(...) {
 		return NULL;
 	}
+	return NULL;
 }
 //-----------------------------------------------------------------------------
 extern void *hInstance; // @see vstsdk2.4::vstplugmain.cpp
@@ -54,4 +79,5 @@ std::string getHomeDirectory() {
 		res = f.string();
 	}
 	return res + "/";
+	return "";
 }

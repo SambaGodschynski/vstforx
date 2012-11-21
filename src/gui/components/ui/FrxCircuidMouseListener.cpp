@@ -123,6 +123,7 @@ void FrxCircuidMouseListener::mouseClicked(const sdc::events::MouseEvent &ev) {
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidMouseListener::mouseMoved(const sdc::events::MouseEvent &ev) {
+	std::cout<<ev.getLocation()<<std::endl;
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidMouseListener::mouseDragged(const sdc::events::MouseEvent &ev) {

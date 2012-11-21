@@ -120,7 +120,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\loki\include&quot;;&quot;$(ProjectDir)..\..\src&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\public.sdk\source\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\pluginterfaces\vst2.x&quot;;&quot;$(ProjectDir)..\..\..\..\vstsdk2.4\&quot;;$(NOINHERIT)"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;VSTFORX_EXPORTS;BOOST_FILESYSTEM_VERSION=3;BOOST_UBLAS_TYPE_CHECK=0;DISCO_USE_WIN32"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;VSTFORX_EXPORTS;BOOST_FILESYSTEM_VERSION=3;BOOST_UBLAS_TYPE_CHECK=0;DISCO_USE_WIN32;CAIRO_WIN32_STATIC_BUILD"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -138,7 +138,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="cairo.lib Winmm.lib ticpp.lib"
+				AdditionalDependencies="&quot;C:\Eigene Dateien\Eigene Progs\clibs\libpng\lib\libpng.lib&quot; &quot;C:\Eigene Dateien\Eigene Progs\clibs\zlib\lib\zlib.lib&quot; &quot;C:\Eigene Dateien\Eigene Progs\clibs\cairo\lib\cairo-static.lib&quot; &quot;C:\Eigene Dateien\Eigene Progs\clibs\pixman\lib\pixman-1.lib&quot; Winmm.lib ticpp.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\pixman\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\libpng\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\zlib\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\lib&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost\stage\lib&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VLD&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml\lib&quot;"
 				ModuleDefinitionFile="vstplug.def"
