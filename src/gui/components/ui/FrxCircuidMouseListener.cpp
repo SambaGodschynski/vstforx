@@ -16,7 +16,6 @@
 #include <sambag/disco/Dash.hpp>
 #include <boost/assign.hpp>
 #include <vector>
-
 namespace frx { namespace gui {
 namespace components { namespace ui { 
 //=============================================================================
@@ -49,8 +48,13 @@ void FrxCircuidMouseListener::drag(const sdc::events::MouseEvent &ev) {
 
 	sd::Point2D loc; 
 	geom::transform(circ->getViewPosition(), loc, transl);
+	const sd::Rectangle &viewbounds = circ->getView()->getBounds(); 
+	const sd::Rectangle &bounds = circ->getBounds();
+	sd::Coordinate maxXPos = viewbounds.width() - bounds.width();
+	sd::Coordinate maxYPos = viewbounds.height() - bounds.height();
+	loc.x(std::min(maxXPos, std::max(sd::Coordinate(0.), loc.x())));
+	loc.y(std::min(maxYPos, std::max(sd::Coordinate(0.), loc.y())));
 	circ->setViewPosition(loc);
-
 	clickLocScreen = ev.getLocationOnScreen();
 	
 }

@@ -17,8 +17,11 @@
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <sambag/math/Matrix.hpp>
 
+
+
 namespace frx { namespace gui { namespace components {
 namespace {
+const float FRX_MAX_VIEW = 10000.;
 class BgPane : public sdc::Panel {
 public:
 	typedef boost::shared_ptr<BgPane> Ptr;
@@ -80,7 +83,13 @@ const float FrxCircuidView::Z_Default = FrxCircuidView::Z_OnTop;
 //-----------------------------------------------------------------------------
 const float FrxCircuidView::Z_InteractiveStuff = Z_OnTop;
 //-----------------------------------------------------------------------------
-void FrxCircuidView::add(sdc::AComponentPtr comp, ZOrder zord) {
+void FrxCircuidView::add(sdc::AComponentPtr comp, ZOrder zord, bool normalize) 
+{
+	if (normalize) {
+		sd::Point2D loc = comp->getLocation();
+		boost::geometry::add_point(loc, getViewPosition());
+		comp->setLocation(loc);
+	}
 	// order on insert:
 	for (size_t i = 0; i<content->getComponentCount(); ++i) {
 		AComponent::Ptr c = content->getComponent(i);
@@ -118,12 +127,13 @@ sdcu::AComponentUIPtr FrxCircuidView::createComponentUI(sdcu::ALookAndFeelPtr la
 //-----------------------------------------------------------------------------
 void FrxCircuidView::postConstructor() {
 	content = BgPane::create();
-	content->setSize(sd::Dimension(10000, 10000));
+	content->setSize(sd::Dimension(FRX_MAX_VIEW, FRX_MAX_VIEW));
 	Super::add(content);
 	content->setLayout(sdc::ALayoutManagerPtr());
 	selection = FrxSelection::create();
 	add(selection, Z_InteractiveStuff);
 	selection->setVisible(false);
+	setViewPosition(sd::Point2D(FRX_MAX_VIEW/2., FRX_MAX_VIEW/2.));
 }
 //-----------------------------------------------------------------------------
 namespace {

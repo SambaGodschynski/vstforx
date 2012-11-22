@@ -110,7 +110,7 @@ private:
 		ar & l;
 		if (Archive::is_loading::value) {
 			BOOST_FOREACH(const FrxComponentInfo &i, l) {
-				add(i.first, i.second);
+				add(i.first, i.second, false);
 			}
 		}
 		l.clear();
@@ -135,8 +135,14 @@ public:
 	//-------------------------------------------------------------------------
 	/**
 	 * @note: (Z)Orders is done during insert. So avoid frequently add/remove.
+	 * @param the component
+	 * @param the z-order value
+	 * @param set whether normalize components location to content pane translation
+	 *        values
 	 */
-	virtual void add(sdc::AComponentPtr comp, ZOrder zord = Z_Default);
+	virtual void add(sdc::AComponentPtr comp, 
+		ZOrder zord = Z_Default, 
+		bool normalizeLocation = false);
 	//-------------------------------------------------------------------------
 	virtual void remove(sdc::AComponentPtr comp);
 	//-------------------------------------------------------------------------

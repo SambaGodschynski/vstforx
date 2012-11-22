@@ -102,11 +102,11 @@ fgc::FrxCircuidView::Ptr createNewView(sdc::Window::Ptr win) {
 	fgc::FrxCircuidView::Ptr circ = fgc::FrxCircuidView::create();
 	fgc::FrxComponent::Ptr comp = fgc::FrxEntryNode::create();
 	comp->setLocation(370., 30.);
-	circ->add(comp, fgc::FrxCircuidView::Z_IO);
+	circ->add(comp, fgc::FrxCircuidView::Z_IO, true);
 
 	comp = fgc::FrxExitNode::create();
 	comp->setLocation(370., 520.);
-	circ->add(comp, fgc::FrxCircuidView::Z_IO);
+	circ->add(comp, fgc::FrxCircuidView::Z_IO, true);
 	return circ;
 }
 
