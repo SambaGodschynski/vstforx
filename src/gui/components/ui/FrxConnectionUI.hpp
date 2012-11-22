@@ -290,8 +290,9 @@ bool FrxConnectionUI<CT>::contains(sdc::AComponentPtr c, const sd::Point2D &p) {
 		getroffen wenn len<toleraz
 */	
 	using namespace sambag::com;
-	sd::Point2D _q = c->getLocationOnScreen(p);
+	sd::Point2D _q = p;
 	const sd::Rectangle &bounds = c->getBounds();
+	boost::geometry::add_point(_q, bounds.x0());
 	if (!bounds.contains(_q)) {
 		return false;
 	}

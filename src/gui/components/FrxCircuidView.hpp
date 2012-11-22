@@ -190,11 +190,12 @@ template <class Container, class Filter>
 void FrxCircuidView::findComponents(Container &container, Filter &filter) 
 {
 	BOOST_FOREACH(AComponent::Ptr c, getContentPane()->getComponents()) {
-		if (filter(c) == 1) {
+		int res = filter(c);
+		if (res == 1) {
 			container.push_back(c);
 			continue;
 		}
-		if (filter(c) == 0)
+		if (res == 0)
 			continue;
 		// else
 		break;

@@ -6,6 +6,7 @@
  */
 
 #include "FrxSelection.hpp"
+#include "FrxCircuidView.hpp"
 #include <sambag/disco/Geometry.hpp>
 #include <boost/foreach.hpp>
 #include "VerticalFormatter.hpp"
@@ -41,11 +42,19 @@ void FrxSelection::addElement(sdc::AComponent::Ptr c) {
 	}
 	if (!c)
 		return;
-	setVisible(true);
-	content.push_back(c);
-	if (formatter)
+	if (formatter) {
+		if (content.empty()) { // first element
+			FrxCircuidView::Ptr view = getFirstContainer<FrxCircuidView>();
+			SAMBAG_ASSERT(view);
+			// place view
+			sd::Point2D loc = view->getViewPosition(); 
+			formatter->setCursor(loc);
+		}
 		formatter->addElement(c);
+	}
+	content.push_back(c);
 	updateBounds();
+	setVisible(true);
 }
 //-----------------------------------------------------------------------------
 void FrxSelection::updateBounds() {

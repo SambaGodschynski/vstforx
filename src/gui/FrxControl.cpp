@@ -352,8 +352,6 @@ void FrxControl::addProcesorKnobToView(FrxCircuidViewWPtr _view,
 	cn->setSrcComponent(c);
 	cn->setDstComponent(knob);
 	view->add(cn, FrxCircuidView::Z_Wires);
-	// place knob
-	knob->setLocation(0, 0);
 	view->add(knob, FrxCircuidView::Z_Knobs);
 	// add hover
 	FrxSelection::Ptr sel = view->getSelection();
@@ -383,8 +381,6 @@ void FrxControl::addParameterToView(fgc::FrxCircuidViewPtr view,
 	par->getEventSender().addTrackedValueChangedListener(
 		boost::bind(&parameterChanged, _1, _2, FrxParameter::WPtr(knob)), knob
 	);
-	// place knob
-	knob->setLocation(0, 0);
 	view->add(knob, FrxCircuidView::Z_Knobs);
 	// add hover
 	FrxSelection::Ptr sel = view->getSelection();
@@ -397,7 +393,6 @@ void FrxControl::addProcessorToView(fgc::FrxCircuidViewPtr view,
 {
 	// add to view
 	view->add(pr, FrxCircuidView::Z_ProcessorNodes);
-	pr->setLocation(0,0);
 	pr->resetIOLocation();
 	// register
 	registerProcessorOnView(view, pr);
