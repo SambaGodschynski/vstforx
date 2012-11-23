@@ -35,6 +35,7 @@
 #include <processing/ModelController.hpp>
 #include <gui/ViewModelMap.hpp>
 #include <sambag/disco/components/Timer.hpp>
+#include <sambag/disco/components/WindowToolkit.hpp>
 #include <math.h>
 #ifdef WIN32
 #include <crtdbg.h>

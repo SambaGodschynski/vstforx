@@ -5,7 +5,10 @@
 #include <string>
 #include <audioeffectx.h>
 #include <com/Settings.h>
+#include <sambag/disco/components/WindowToolkit.hpp>
 #include <windows.h>
+
+extern void *hInstance; // @see vstsdk2.4::vstplugmain.cpp
 std::string getHomeDirectory();
 
 struct Console {
@@ -42,6 +45,10 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 
 	// init settings
 	::com::initSettings(getHomeDirectory());
+	sambag::disco::components::setGlobalUserData(
+		"win32.hinstance",
+		sambag::com::createObject((HINSTANCE)hInstance)
+	);
 	// load plugin
 	using namespace sambag::dsp::vst;
 	// settingup plugin
@@ -66,7 +73,6 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 	return NULL;
 }
 //-----------------------------------------------------------------------------
-extern void *hInstance; // @see vstsdk2.4::vstplugmain.cpp
 std::string getHomeDirectory() {
 	const size_t N = 2048; 
 	char _d[N];

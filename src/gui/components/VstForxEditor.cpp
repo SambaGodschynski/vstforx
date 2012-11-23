@@ -74,9 +74,7 @@ FrxCircuidViewPtr VstForxEditor::createEmptyView() {
 sdc::Window::Ptr VstForxEditor::createMainWindow(const sd::Rectangle &bounds) {
 	using namespace sambag::com;
 	using namespace sambag::disco::components;
-	ArbitraryType::Ptr pData = createObject(
-		std::make_pair(systemWindow, hInstance)
-	);
+	ArbitraryType::Ptr pData = createObject(systemWindow);
 	sdc::Window::Ptr win = getWindowToolkit()->createNestedWindow(pData, bounds);
 	SAMBAG_ASSERT(win);
 	sdc::ui::UIManager::instance().installLookAndFeel(win->getRootPane(),
