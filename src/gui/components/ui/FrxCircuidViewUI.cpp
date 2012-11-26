@@ -8,6 +8,7 @@
 #include "FrxCircuidViewUI.hpp"
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/IFrxControl.hpp>
+#include "TooltipTexts.hpp"
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -33,5 +34,8 @@ void FrxCircuidViewUI::installUI(sdc::AComponentPtr c) {
 		getPtr()
 	);
 	circ->setComponentPopupMenu(getFrxControl(circ).getCircuidViewPopup(circ));
+	circ->getContentPane()->setTooltipText(
+		TooltipTexts::getText(*(c.get()))
+	);
 }
 }}}} // namespace(s)

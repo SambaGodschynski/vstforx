@@ -670,6 +670,14 @@
 							RelativePath="..\..\src\gui\components\ui\FrxSelectionUI.hpp"
 							>
 						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\TooltipTexts.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\src\gui\components\ui\TooltipTexts.hpp"
+							>
+						</File>
 					</Filter>
 				</Filter>
 			</Filter>

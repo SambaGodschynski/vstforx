@@ -138,8 +138,8 @@ void FrxLookAndFeel::installDefaults() {
 	static double RADIUS_MED = 15.;
 	static double RADIUS_LARGE = 20.;	
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<global
-	m.putProperty("global.background", HtmlColors::getColor("lightblue"));
-	m.putProperty("global.foreground", HtmlColors::getColor("white"));
+	m.putProperty("global.background", HtmlColors::getColor("lightgrey"));
+	m.putProperty("global.foreground", HtmlColors::getColor("black"));
 	m.putProperty("ColumnBrowser.fontStyle", createStyle("font-size: 17; font-family: arial"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<sizes
 	m.putProperty("Knob.mode", std::string("linear"));
@@ -189,11 +189,15 @@ void FrxLookAndFeel::installDefaults() {
 		createStyle("stroke-width: 1; stroke: red; fill: grey; fill-opacity: 0.25"));
 	m.putProperty("FrxBrowserList.selectedEntryStyle", 
 		createStyle("stroke: white; fill: lightblue;"));
+	m.putProperty("StatusMessage.fontStyle", createStyle("font-size: 13; font-family: arial"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<images
 	FileResourceManager &rManager = FileResourceManager::instance();
 	rManager.registerImage("FrxCircuidView.image", "disco-floor.png");
 	m.putProperty("FrxCircuidView.bgTransfomation", sambag::math::rotate2D(45.));
 	m.putProperty("FrxCircuidView.bgExtend", sd::IPattern::DISCO_EXTEND_REPEAT);
+	rManager.registerImage("StatusMessage.icon.default", "inf_icon.png");
+	rManager.registerImage("StatusMessage.icon.hint", "inf_icon.png");
+	rManager.registerImage("StatusMessage.icon.warning", "warning_icon.png");
 	//rManager.registerImage("FrxPluginNode.image", "w3c.svg");
 	//rManager.registerImage("ProcessorInput.image", "w3c.svg");
 	//rManager.registerImage("ProcessorOutput.image", "w3c.svg");

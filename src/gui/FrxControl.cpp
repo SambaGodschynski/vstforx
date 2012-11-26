@@ -9,9 +9,7 @@
 #include "components/FrxCircuidView.hpp"
 #include "components/FrxConcreteProcessor.hpp"
 #include "components/FrxConcreteParameter.hpp"
-#include "components/FrxHover.hpp"
 #include "components/FrxConcreteIO.hpp"
-#include "components/FrxConcreteParameter.hpp"
 #include "components/FrxConcreteConnections.hpp"
 #include "components/Forward.hpp"
 #include <boost/foreach.hpp>

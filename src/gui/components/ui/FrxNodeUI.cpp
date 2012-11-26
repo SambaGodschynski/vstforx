@@ -6,12 +6,17 @@
  */
 
 #include "FrxNodeUI.hpp"
+#include <gui/components/FrxConcreteProcessor.hpp>
+#include <gui/components/FrxConcreteParameter.hpp>
+#include <gui/components/FrxConcreteIO.hpp>
 #include <sambag/disco/components/AComponent.hpp>
 #include <sambag/disco/components/events/MouseEvent.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/IFrxControl.hpp>
 #include <gui/components/FrxNode.hpp>
+#include <loki/MultiMethods.h>
+
 namespace frx { namespace gui {
 namespace components { namespace ui { 
 ///////////////////////////////////////////////////////////////////////////////
@@ -166,13 +171,91 @@ void FrxNodeUI::beginConnecting(const sdc::events::MouseEvent &ev) {
 	toConnect->setVisible(true);
 }
 //-----------------------------------------------------------------------------
+namespace {
+	struct CanConnect {
+		bool OnError(FrxNode &a, FrxNode &b) {return false;}
+		bool Fire(FrxNode &a, FrxNode &b) {return false;}
+		bool Fire(FrxInputNode &a, FrxOutputNode &b) { 
+			return true;
+		}
+		bool Fire(FrxInputNode &a, FrxEntryNode &b) {
+			return true;
+		}
+		bool Fire(FrxOutputNode &a, FrxExitNode &b) {
+			return true;
+		}
+		bool Fire(FrxEntryNode &a, FrxExitNode &b) {
+			return true;
+		}
+		bool Fire(FrxStdKnob &a, FrxStdKnob &b) {
+			return true;
+		}
+	};
+	bool canConnect(FrxNodePtr from, FrxNodePtr to) {
+		typedef LOKI_TYPELIST_5(
+			FrxInputNode,
+			FrxOutputNode, 
+			FrxEntryNode, 
+			FrxExitNode,
+			FrxStdKnob
+		) Types;
+		typedef Loki::StaticDispatcher  <
+			CanConnect,
+			FrxNode, 
+			Types,
+			true,
+			FrxNode,
+			Types,
+			bool
+		> Dispatcher;
+		Dispatcher disp;
+		return disp.Go(*(from.get()), *(to.get()), CanConnect());
+	}
+} // namespace(s)
+//-----------------------------------------------------------------------------
+FrxNodeUI::ConnectingComponents
+FrxNodeUI::getConnectingComponents(const sdc::events::MouseEvent &ev) 
+{
+	ConnectingComponents res;
+	sdc::AComponent::Ptr c = ev.getSource();
+	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
+	if (!circ)
+		return res;
+	// uset usr message
+	boost::get<0>(res) = boost::shared_dynamic_cast<FrxNode>(c);
+	const sd::Point2D &loc = 
+		circ->getViewport()->getView()->getLocationOnComponent(ev.getLocationOnScreen());
+	
+	boost::get<1>(res) = boost::shared_dynamic_cast<FrxNode>(
+		circ->findComponentOnPoint(loc, FrxCircuidView::Z_Knobs, 
+		FrxCircuidView::Z_ProcessorNodes)
+	);
+	boost::get<2>(res) = loc;
+	return res;
+}
+//-----------------------------------------------------------------------------
 void FrxNodeUI::connecting(const sdc::events::MouseEvent &ev) {
 	sdc::AComponent::Ptr c = ev.getSource();
 	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
+	
+	FrxNodePtr from, to;
+	sd::Point2D loc;
+	boost::tie(from, to, loc) = getConnectingComponents(ev);
+	std::stringstream ss;
+	std::string type("default");
+	if (to) {
+		if (!canConnect(from, to)) {
+			ss<<"unable to ";
+			type = "warning";
+		}
+	}
+	ss<<"connecting to...";
+	if (to) {
+		ss<<to->getName();
+	}
+	circ->setUserMessage(ss.str(), type);
 	// setline coord.
-	const sd::Point2D &loc = 
-		circ->getViewport()->getView()->getLocationOnComponent(ev.getLocationOnScreen());
 	sdsg::Line::Ptr line = toConnect->getObject();
 	line->getP1().x().setValue(loc.x());
 	line->getP1().y().setValue(loc.y());
@@ -184,14 +267,15 @@ void FrxNodeUI::endConnecting(const sdc::events::MouseEvent &ev) {
 	sdc::AComponent::Ptr c = ev.getSource();
 	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
+	// uset usr message
+	circ->setUserMessage("");
+
 	toConnect->setVisible(false);
-	FrxNodePtr from = boost::shared_dynamic_cast<FrxNode>(c);
-	sd::Point2D loc = 
-		circ->getViewport()->getView()->getLocationOnComponent(ev.getLocationOnScreen());
-	FrxNodePtr to = boost::shared_dynamic_cast<FrxNode>(
-		circ->findComponentOnPoint(loc, FrxCircuidView::Z_Knobs, 
-		FrxCircuidView::Z_ProcessorNodes)
-	);
+	
+	FrxNodePtr from, to;
+	sd::Point2D loc;
+	boost::tie(from, to, loc) = getConnectingComponents(ev);
+
 	if (!from || !to) {
 		return;
 	}

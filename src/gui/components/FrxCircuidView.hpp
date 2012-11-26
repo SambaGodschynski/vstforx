@@ -78,7 +78,11 @@ protected:
 	FrxCircuidView();
 	//-------------------------------------------------------------------------
 	virtual void postConstructor();
+	//-------------------------------------------------------------------------
+	void setStatusMessage(const std::string &txt, const std::string &iconname);
 private:
+	//-------------------------------------------------------------------------
+	std::string usrMsg;
 	//-------------------------------------------------------------------------
 	sdc::Viewport::Ptr viewPort;
 	//-------------------------------------------------------------------------
@@ -129,6 +133,17 @@ private:
 	}
 public:
 	//-------------------------------------------------------------------------
+	/**
+	 * hint messages will be ignored until unset with:
+	 *		setUserMessage("").
+	 */
+	void setUserMessage(const std::string &txt, 
+		const std::string &icon = "default");
+	//-------------------------------------------------------------------------
+	const std::string & getUserMessage() const {
+		return usrMsg;
+	}
+	//-------------------------------------------------------------------------
 	sdc::Viewport::Ptr getViewport() {
 		return viewPort;
 	}
@@ -143,12 +158,17 @@ public:
 	std::string getStatusMessage() const;
 	//-------------------------------------------------------------------------
 	/**
+	 * will show text as status bar hint message
+	 */
+	void hintMessage(const std::string &str);
+	//-------------------------------------------------------------------------
+	/**
 	 * will show text as status bar message
 	 */
 	void message(const std::string &str);
 	//-------------------------------------------------------------------------
 	/**
-	 * will show warning as status bar message
+	 * will show warning as status bar warning
 	 */
 	void warnMessage(const std::string &str);
 	//-------------------------------------------------------------------------

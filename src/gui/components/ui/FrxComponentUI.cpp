@@ -5,6 +5,7 @@
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/IFrxControl.hpp>
 #include <map>
+#include "TooltipTexts.hpp"
 namespace frx { namespace gui {
 namespace components { namespace ui {
 namespace {
@@ -35,7 +36,9 @@ void FrxComponentUI::installUI(sdc::AComponentPtr c) {
 }
 //-----------------------------------------------------------------------------
 void FrxComponentUI::setTooltipText(sdc::AComponentPtr c) {
-	c->setTooltipText("dummy");
+	c->setTooltipText(
+		TooltipTexts::getText(*(c.get()))
+	);
 }
 //-----------------------------------------------------------------------------
 bool FrxComponentUI::contains(sdc::AComponent::Ptr c,

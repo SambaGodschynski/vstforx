@@ -18,6 +18,7 @@
 #include <sambag/disco/svg/graphicElements/Line.hpp>
 #include <sambag/disco/components/ComponentWrapper.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
+#include <boost/tuple/tuple.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -83,7 +84,12 @@ protected:
 	virtual void use(const sdc::events::MouseEvent &ev) {}
 	//-------------------------------------------------------------------------
 	sambag::com::Number coronaAlpha;
+	//-------------------------------------------------------------------------
+	typedef boost::tuple<FrxNodePtr, FrxNodePtr, sd::Point2D> ConnectingComponents;
+	//-------------------------------------------------------------------------
+	ConnectingComponents getConnectingComponents(const sdc::events::MouseEvent &ev);
 public:
+	//-------------------------------------------------------------------------
 	// MouseEvents
 	void mousePressed(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
