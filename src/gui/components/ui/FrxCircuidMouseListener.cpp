@@ -47,14 +47,15 @@ void FrxCircuidMouseListener::drag(const sdc::events::MouseEvent &ev) {
 	Transl transl(distance.x(), distance.y());
 
 	sd::Point2D loc; 
-	geom::transform(circ->getViewPosition(), loc, transl);
-	const sd::Rectangle &viewbounds = circ->getView()->getBounds(); 
+	sdc::Viewport::Ptr viewPort = circ->getViewport();
+	geom::transform(viewPort->getViewPosition(), loc, transl);
+	const sd::Rectangle &viewbounds = viewPort->getView()->getBounds(); 
 	const sd::Rectangle &bounds = circ->getBounds();
 	sd::Coordinate maxXPos = viewbounds.width() - bounds.width();
 	sd::Coordinate maxYPos = viewbounds.height() - bounds.height();
 	loc.x(std::min(maxXPos, std::max(sd::Coordinate(0.), loc.x())));
 	loc.y(std::min(maxYPos, std::max(sd::Coordinate(0.), loc.y())));
-	circ->setViewPosition(loc);
+	viewPort->setViewPosition(loc);
 	clickLocScreen = ev.getLocationOnScreen();
 	
 }

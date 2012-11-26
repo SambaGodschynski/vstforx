@@ -34,6 +34,10 @@ void FrxComponentUI::installUI(sdc::AComponentPtr c) {
 	installDefaults(c);
 }
 //-----------------------------------------------------------------------------
+void FrxComponentUI::setTooltipText(sdc::AComponentPtr c) {
+	c->setTooltipText("dummy");
+}
+//-----------------------------------------------------------------------------
 bool FrxComponentUI::contains(sdc::AComponent::Ptr c,
 	const sd::Point2D &p)
 {
@@ -74,6 +78,8 @@ void FrxComponentUI::installDefaults(sdc::AComponentPtr c) {
 	if (menu) {
 		frxC->setComponentPopupMenu(menu);
 	}
+	// tooltip
+	setTooltipText(c);
 }
 //-----------------------------------------------------------------------------
 void FrxComponentUI::installListeners(sdc::AComponentPtr c) {

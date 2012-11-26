@@ -47,7 +47,7 @@ void FrxSelection::addElement(sdc::AComponent::Ptr c) {
 			FrxCircuidView::Ptr view = getFirstContainer<FrxCircuidView>();
 			SAMBAG_ASSERT(view);
 			// place view
-			sd::Point2D loc = view->getViewPosition(); 
+			sd::Point2D loc = view->getViewport()->getViewPosition(); 
 			formatter->setCursor(loc);
 		}
 		formatter->addElement(c);

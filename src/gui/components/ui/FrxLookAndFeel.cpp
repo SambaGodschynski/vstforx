@@ -35,6 +35,7 @@
 #include <gui/components/FrxParameterLabel.hpp>
 #include <gui/components/ui/FrxParameterLabelUI.hpp>
 #include <gui/components/ui/FrxBrowserListUI.hpp>
+#include <gui/components/FrxTooltipManager.hpp>
 
 #include <sambag/disco/FileResourceManager.hpp>
 #include <sambag/disco/IPattern.hpp>
@@ -49,6 +50,15 @@ namespace components { namespace ui {
 FrxLookAndFeel::FrxLookAndFeel() {
 	installDefaults(); // <= always before installComponents
 	installComponents();
+	installTooltipManager();
+}
+//-----------------------------------------------------------------------------
+void FrxLookAndFeel::installTooltipManager() {
+	if (!sambag::disco::components::getTooltipManagerCreator()) {
+		sambag::disco::components::registerTooltipManager(
+			&FrxTooltipManager::instance
+		);
+	}
 }
 //-----------------------------------------------------------------------------
 void FrxLookAndFeel::installComponents() {

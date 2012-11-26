@@ -36,11 +36,11 @@ namespace sdcu = sdc::ui;
 /** 
   * @class FrxCircuidView.
   */
-class FrxCircuidView : public sdc::Viewport {
+class FrxCircuidView : public sdc::AContainer {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef sdc::Viewport Super;
+	typedef sdc::AContainer Super;
 	//-------------------------------------------------------------------------
 	typedef float ZOrder;
 	//-------------------------------------------------------------------------
@@ -69,6 +69,8 @@ public:
 	typedef std::pair<FrxComponentPtr, ZOrder> FrxComponentInfo;
 protected:
 	//-------------------------------------------------------------------------
+	void initStatusBar();
+	//-------------------------------------------------------------------------
 	sdc::Panel::Ptr content;
 	//-------------------------------------------------------------------------
 	FrxSelection::Ptr selection;
@@ -77,6 +79,10 @@ protected:
 	//-------------------------------------------------------------------------
 	virtual void postConstructor();
 private:
+	//-------------------------------------------------------------------------
+	sdc::Viewport::Ptr viewPort;
+	//-------------------------------------------------------------------------
+	sdc::LabelPtr statusMessage;
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
 	//-------------------------------------------------------------------------
@@ -123,10 +129,32 @@ private:
 	}
 public:
 	//-------------------------------------------------------------------------
+	sdc::Viewport::Ptr getViewport() {
+		return viewPort;
+	}
+	//-------------------------------------------------------------------------
+	sdc::LabelPtr getStatusMessageLabel() const {
+		return statusMessage;
+	}
+	//-------------------------------------------------------------------------
+	/**
+	 * @return current status bar message
+	 */ 
+	std::string getStatusMessage() const;
+	//-------------------------------------------------------------------------
+	/**
+	 * will show text as status bar message
+	 */
 	void message(const std::string &str);
 	//-------------------------------------------------------------------------
+	/**
+	 * will show warning as status bar message
+	 */
 	void warnMessage(const std::string &str);
 	//-------------------------------------------------------------------------
+	/**
+	 * will show error as message box
+	 */
 	void errorMessage(const std::string &str);
 	//-------------------------------------------------------------------------
 	AContainer::Ptr getContentPane() const {

@@ -15,8 +15,10 @@
 #include <sambag/disco/IDiscoFactory.hpp>
 #include <sambag/disco/IResourceManager.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
+#include <sambag/disco/components/Label.hpp>
+#include <sambag/disco/components/Window.hpp>
+#include <sambag/disco/components/BorderLayout.hpp>
 #include <sambag/math/Matrix.hpp>
-
 
 
 namespace frx { namespace gui { namespace components {
@@ -87,7 +89,7 @@ void FrxCircuidView::add(sdc::AComponentPtr comp, ZOrder zord, bool normalize)
 {
 	if (normalize) {
 		sd::Point2D loc = comp->getLocation();
-		boost::geometry::add_point(loc, getViewPosition());
+		boost::geometry::add_point(loc, viewPort->getViewPosition());
 		comp->setLocation(loc);
 	}
 	// order on insert:
@@ -120,20 +122,32 @@ void FrxCircuidView::remove(sdc::AComponentPtr comp) {
 	content->remove(comp);
 }
 //-----------------------------------------------------------------------------
-sdcu::AComponentUIPtr FrxCircuidView::createComponentUI(sdcu::ALookAndFeelPtr laf) const
+sdcu::AComponentUIPtr 
+FrxCircuidView::createComponentUI(sdcu::ALookAndFeelPtr laf) const
 {
 	return laf->getUI<FrxCircuidView>();
 }
 //-----------------------------------------------------------------------------
+void FrxCircuidView::initStatusBar() {
+	statusMessage = sdc::Label::create();
+}
+//-----------------------------------------------------------------------------
 void FrxCircuidView::postConstructor() {
+	Super::setLayout(sdc::BorderLayout::create());
+	// init mainview
+	viewPort = sdc::Viewport::create();
+	// init contentpane
 	content = BgPane::create();
 	content->setSize(sd::Dimension(FRX_MAX_VIEW, FRX_MAX_VIEW));
-	Super::add(content);
+	viewPort->add(content);
+	Super::add(viewPort);
 	content->setLayout(sdc::ALayoutManagerPtr());
+	// init selection
 	selection = FrxSelection::create();
 	add(selection, Z_InteractiveStuff);
 	selection->setVisible(false);
-	setViewPosition(sd::Point2D(FRX_MAX_VIEW/2., FRX_MAX_VIEW/2.));
+	viewPort->setViewPosition(sd::Point2D(FRX_MAX_VIEW/2., FRX_MAX_VIEW/2.));
+	initStatusBar();
 }
 //-----------------------------------------------------------------------------
 namespace {
@@ -179,6 +193,10 @@ sdc::AComponentPtr FrxCircuidView::findComponentOnPoint(const sd::Point2D &p,
 		return sdc::AComponentPtr();
 	}
 	return res.back();
+}
+//-----------------------------------------------------------------------------
+std::string FrxCircuidView::getStatusMessage() const {
+	return statusMessage->getText();
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::message(const std::string &str) {

@@ -496,6 +496,14 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\src\gui\components\FrxTooltipManager.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxTooltipManager.hpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\gui\components\IFormatter.hpp"
 						>
 					</File>

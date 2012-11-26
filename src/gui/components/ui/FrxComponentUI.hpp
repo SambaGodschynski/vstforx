@@ -52,6 +52,8 @@ protected:
 	virtual void installDefaults(sdc::AComponentPtr c);
 	//-------------------------------------------------------------------------
 	virtual void installListeners(sdc::AComponentPtr c);
+	//-------------------------------------------------------------------------
+	void setTooltipText(sdc::AComponentPtr c);
 private:
 	//-------------------------------------------------------------------------
 	sd::ISurface::Ptr image;
