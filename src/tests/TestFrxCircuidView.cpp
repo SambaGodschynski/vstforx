@@ -37,23 +37,19 @@ void TestFrxCircuidView::testZOrder() {
 	using namespace frx::gui::components;
 	using namespace sambag::disco::components;
 	FrxCircuidView::Ptr circ = FrxCircuidView::create();
+	const AContainer::Components &comps = circ->getContentPane()->getComponents();
 	FrxPluginNode::Ptr p01 = FrxPluginNode::create();
 	FrxPluginNode::Ptr p02 = FrxPluginNode::create();
+	FrxPluginNode::Ptr p025 = FrxPluginNode::create();
 	FrxPluginNode::Ptr p03 = FrxPluginNode::create();
 	FrxPluginNode::Ptr p04 = FrxPluginNode::create();
 	circ->add(p01, 4.f);
 	circ->add(p02, 3.f);
+	circ->add(p025, 3.5f);
 	circ->add(p03, 1.f);
 	circ->add(p04, 2.f);
-	const AContainer::Components &comps = circ->getComponents();
-	CPPUNIT_ASSERT(comps[0]);
-	CPPUNIT_ASSERT(comps[0] == p03);
-	CPPUNIT_ASSERT(comps[1]);
-	CPPUNIT_ASSERT(comps[1] == p04);
-	CPPUNIT_ASSERT(comps[2]);
-	CPPUNIT_ASSERT(comps[2] == p02);
-	CPPUNIT_ASSERT(comps[3]);
-	CPPUNIT_ASSERT(comps[3] == p01);
+	std::string expStr("{FrxSelection[1], FrxPlugin[1], FrxPlugin[2], FrxPlugin[3], FrxPlugin[3.5], FrxPlugin[4]}");
+	CPPUNIT_ASSERT_EQUAL(expStr, circ->componentsToString());
 }
 namespace {
 	int filterFunc( sambag::disco::components::AComponent::Ptr c ) {
@@ -71,14 +67,14 @@ void TestFrxCircuidView::testFindComponentsFiltered() {
 	FrxPluginNode::Ptr p04 = FrxPluginNode::create();
 	circ->add(p01, 4.f);
 	circ->add(p02, 3.f);
-	circ->add(p03, 1.f);
-	circ->add(p04, 2.f);
+	circ->add(p03, 99.f);
+	circ->add(p04, 100.f);
 
 	struct Filter {
 		int operator()( AComponent::Ptr c ) {
 			float z = 0;
 			c->getClientProperty(FrxCircuidView::PROPERTY_ZORDER, z);
-			if (z<3.f)
+			if (z>=99.f)
 				return 1;
 			return 0;
 		}
@@ -93,7 +89,7 @@ void TestFrxCircuidView::testFindComponentsFiltered() {
 	CPPUNIT_ASSERT(res[1] == p04);
 	res.clear();
 	circ->findComponents(res, filterFunc);
-	CPPUNIT_ASSERT_EQUAL((size_t)4, res.size());
+	CPPUNIT_ASSERT_EQUAL((size_t)4 + 1, res.size());
 
 	res.clear();
 	Filter f;
@@ -136,7 +132,43 @@ void TestFrxCircuidView::testFindComponentsInArea() {
 	CPPUNIT_ASSERT_EQUAL((size_t)2, res.size());
 	CPPUNIT_ASSERT(res[0] == p03);
 	CPPUNIT_ASSERT(res[1] == p04);
-
-
+}
+//-----------------------------------------------------------------------------
+void TestFrxCircuidView::testGetIndexOf() {
+	using namespace frx::gui::components;
+	using namespace sambag::disco::components;
+	FrxCircuidView::Ptr circ = FrxCircuidView::create();
+	const AContainer::Components &comps = circ->getContentPane()->getComponents();
+	FrxPluginNode::Ptr p01 = FrxPluginNode::create();
+	FrxPluginNode::Ptr p02 = FrxPluginNode::create();
+	FrxPluginNode::Ptr p025 = FrxPluginNode::create();
+	FrxPluginNode::Ptr p03 = FrxPluginNode::create();
+	FrxPluginNode::Ptr p04 = FrxPluginNode::create();
+	FrxPluginNode::Ptr p05 = FrxPluginNode::create();
+	FrxPluginNode::Ptr p06 = FrxPluginNode::create();
+	FrxPluginNode::Ptr p07 = FrxPluginNode::create();
+	circ->add(p01, 0.f);
+	circ->add(p02, 3.f);
+	circ->add(p025, 3.5f);
+	circ->add(p03, 1.f);
+	circ->add(p04, 2.f);
+	circ->add(p05, 5.f);
+	circ->add(p06, 6.f);
+	circ->add(p07, 7.f);
+	//std::fstream f("outp.txt", std::fstream::out);
+	//f<<circ->componentsToString();
+	//f.close();
+	std::string ist("{FrxPlugin[0], FrxSelection[1], FrxPlugin[1], FrxPlugin[2], FrxPlugin[3], FrxPlugin[3.5], FrxPlugin[5], FrxPlugin[6], FrxPlugin[7]}");
+	CPPUNIT_ASSERT_EQUAL(ist, circ->componentsToString());
+	CPPUNIT_ASSERT_EQUAL((int)0, circ->getIndexOf(0.));
+	CPPUNIT_ASSERT_EQUAL((int)1, circ->getIndexOf(0.5));
+	CPPUNIT_ASSERT_EQUAL((int)1, circ->getIndexOf(1.));
+	CPPUNIT_ASSERT_EQUAL((int)3, circ->getIndexOf(2.));
+	CPPUNIT_ASSERT_EQUAL((int)4, circ->getIndexOf(3.));
+	CPPUNIT_ASSERT_EQUAL((int)5, circ->getIndexOf(3.5));
+	CPPUNIT_ASSERT_EQUAL((int)6, circ->getIndexOf(5.));
+	CPPUNIT_ASSERT_EQUAL((int)8, circ->getIndexOf(7.));
+	CPPUNIT_ASSERT_EQUAL((int)-1, circ->getIndexOf(8.));
+	CPPUNIT_ASSERT_EQUAL((int)0, circ->getIndexOf(-1.));
 }
 } //namespace

@@ -19,11 +19,13 @@ private:
 	CPPUNIT_TEST( testZOrder );
 	CPPUNIT_TEST( testFindComponentsFiltered );
 	CPPUNIT_TEST( testFindComponentsInArea );
+	CPPUNIT_TEST( testGetIndexOf );
 	CPPUNIT_TEST_SUITE_END();
 public:
 	void testZOrder();
 	void testFindComponentsFiltered();
 	void testFindComponentsInArea();
+	void testGetIndexOf();
 };
 
 } // namespace

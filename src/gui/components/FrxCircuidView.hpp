@@ -134,6 +134,13 @@ private:
 public:
 	//-------------------------------------------------------------------------
 	/**
+	 * @return index of order or -1 if not found.
+	 */
+	int getIndexOf(ZOrder order) const;
+	//-------------------------------------------------------------------------
+	std::string componentsToString() const;
+	//-------------------------------------------------------------------------
+	/**
 	 * hint messages will be ignored until unset with:
 	 *		setUserMessage("").
 	 */
@@ -213,7 +220,8 @@ public:
 	 * any other: cancel searching
 	 */
 	template <class Container, class Filter>
-	void findComponents(Container &container, Filter &f); 
+	void findComponents(Container &container, Filter &f, 
+		int startIndex = 0, int endIndex = -1) const; 
 	//-------------------------------------------------------------------------
 	/**
 	 * search for components that are in given area. The components center has 
@@ -241,9 +249,15 @@ public:
 }; // FrxCircuidView
 ///////////////////////////////////////////////////////////////////////////////
 template <class Container, class Filter>
-void FrxCircuidView::findComponents(Container &container, Filter &filter) 
+void FrxCircuidView::findComponents(Container &container, Filter &filter, 
+	int startIndex, int endIndex) const
 {
-	BOOST_FOREACH(AComponent::Ptr c, getContentPane()->getComponents()) {
+	sdc::AContainer::Ptr cnt = getContentPane(); 
+	endIndex = endIndex < 0 ? cnt->getComponentCount() : endIndex;
+	startIndex = std::max(0, startIndex);
+	endIndex = std::min(cnt->getComponentCount(), (size_t)endIndex);
+	for (int i=startIndex; i<endIndex; ++i) {
+		sdc::AComponentPtr c = cnt->getComponent(i);
 		int res = filter(c);
 		if (res == 1) {
 			container.push_back(c);
@@ -261,21 +275,18 @@ void FrxCircuidView::findComponentsInArea(Container &container,
 	const sd::Rectangle &area, FrxCircuidView::ZOrder _start, 
 	FrxCircuidView::ZOrder _end) 
 {
-	// TODO: impl. ordered search (o[logN])
 	struct Filter {
 		const sd::Rectangle &area;
-		ZOrder start, end;
-		Filter(const sd::Rectangle &area, ZOrder start, ZOrder end) :
-		area(area), start(start), end(end) {}
+		ZOrder end;
+		Filter(const sd::Rectangle &area, ZOrder end) :
+		area(area), end(end) {}
 		int operator()( sdc::AComponent::Ptr p ) {
 			if (!p)
 				return 0;
 			ZOrder z = FLT_MIN;
 			p->getClientProperty(PROPERTY_ZORDER, z);
 			if (z > end)
-				return -1;
-			if (z < start)
-				return 0;
+				return -1; // stop searching
 			sd::Point2D loc = p->getLocation();
 			boost::geometry::add_point(loc, 
 				sd::Point2D(p->getWidth()/2., p->getHeight()/2.)
@@ -286,7 +297,11 @@ void FrxCircuidView::findComponentsInArea(Container &container,
 	};
 	ZOrder start = std::min(_start, _end);
 	ZOrder end = std::max(_start, _end);
-	findComponents(container, Filter(area, start, end));
+	int startIndex = getIndexOf(start);
+	Filter filter(area, end);
+	findComponents(container, filter, startIndex); // set the endindex isn't really
+	                                         // useful because we have to iterate
+	                                         // through the elements anyway
 }
 //-----------------------------------------------------------------------------
 template <class FrxComponentInfoContainer>

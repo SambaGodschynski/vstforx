@@ -94,7 +94,7 @@ const float FrxCircuidView::Z_Wires = 5.f;
 //-----------------------------------------------------------------------------
 const float FrxCircuidView::Z_ProcessorNodes = 4.f;
 //-----------------------------------------------------------------------------
-const float FrxCircuidView::Z_IO = 4.f;
+const float FrxCircuidView::Z_IO = 4.5f;
 //-----------------------------------------------------------------------------
 const float FrxCircuidView::Z_Knobs = 3.f;
 //-----------------------------------------------------------------------------
@@ -196,13 +196,50 @@ void FrxCircuidView::postConstructor() {
 	initStatusBar();
 }
 //-----------------------------------------------------------------------------
+int FrxCircuidView::getIndexOf(ZOrder order) const {
+	std::cout<<componentsToString();
+	sdc::AContainer::Ptr cnt = getContentPane(); 
+	int startIndex = 0;
+	int endIndex = cnt->getComponentCount();
+	// TODO: impl. O(log(n))
+	for (int i=0; i<endIndex; ++i) {
+		sdc::AComponentPtr c = cnt->getComponent(i);
+		ZOrder z = FLT_MIN;
+		c->getClientProperty(FrxCircuidView::PROPERTY_ZORDER, z);
+		if (z>=order) {
+			std::cout<<"->"<<order<<":"<<i<<std::endl;
+			return i;
+		}
+	}
+	std::cout<<"->"<<(-1)<<std::endl;
+	return -1;
+}
+//-----------------------------------------------------------------------------
+std::string FrxCircuidView::componentsToString() const {
+	std::stringstream ss;
+	sdc::AContainer::Ptr cnt = getContentPane(); 
+	int endIndex = cnt->getComponentCount();
+	ss<<"{";
+	for (int i=0; i<endIndex; ++i) {
+		sdc::AComponentPtr c = cnt->getComponent(i);
+		ZOrder z = FLT_MIN;
+		c->getClientProperty(FrxCircuidView::PROPERTY_ZORDER, z);
+		ss<<c->getName()<<"["<<z<<"]";
+		if (i<endIndex-1) {
+			ss<<", ";
+		}
+	}
+	ss<<"}";
+	return ss.str();
+}
+//-----------------------------------------------------------------------------
 namespace {
 	typedef FrxCircuidView::ZOrder ZOrder;
 	struct Filter {
 		sd::Point2D loc;
-		ZOrder start, end;
-		Filter(const sd::Point2D &loc, ZOrder start, ZOrder end) :
-		loc(loc), start(start), end(end) {}
+		ZOrder end;
+		Filter(const sd::Point2D &loc, ZOrder end) :
+		loc(loc), end(end) {}
 		int operator()( sdc::AComponent::Ptr p ) {
 			if (!p)
 				return 0;
@@ -211,8 +248,6 @@ namespace {
 			}
 			ZOrder z = FLT_MIN;
 			p->getClientProperty(FrxCircuidView::PROPERTY_ZORDER, z);
-			if (z < start)
-				return 0; // continue searching
 			if (z > end)
 				return -1;  // stop searching
 			sd::Point2D componentLoc = loc;
@@ -233,8 +268,11 @@ sdc::AComponentPtr FrxCircuidView::findComponentOnPoint(const sd::Point2D &p,
 	ZOrder start = ::std::min(_start, _end);
 	ZOrder end = ::std::max(_start, _end);
 	std::list<sdc::AComponentPtr> res;
-	Filter filter(p, start, end);
-	findComponents(res, filter);
+	Filter filter(p, end);
+	int startIndex = getIndexOf(start);
+	findComponents(res, filter, startIndex); // set the endindex isn't really
+	                                         // useful because we have to iterate
+	                                         // through the elements anyway
 	if (res.empty()){
 		return sdc::AComponentPtr();
 	}

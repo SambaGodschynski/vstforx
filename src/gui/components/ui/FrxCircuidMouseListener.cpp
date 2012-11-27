@@ -64,7 +64,7 @@ void FrxCircuidMouseListener::beginSpanning(const sdc::events::MouseEvent &ev) {
 	sdc::AComponent::Ptr c = ev.getSource();
 	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
-	if (!circ->containsComponent(selection))
+	if (!circ->getContentPane()->containsComponent(selection))
 		circ->add(selection, FrxCircuidView::Z_OnTop);
 	// set rect coord.
 	sd::svg::units::Rectangle & rect = selection->getObject()->getRectangle();
@@ -98,7 +98,7 @@ void FrxCircuidMouseListener::endSpanning(const sdc::events::MouseEvent &ev) {
 	circ->AComponent::redraw();
 
 	FrxSelection::ContentContainer content;
-	circ->findComponentsInArea(content, selection->getBounds(), 2., 4.);
+	circ->findComponentsInArea(content, selection->getBounds(), 2., 4.5);
 	circ->getSelection()->setContent(content);
 }
 //-----------------------------------------------------------------------------
