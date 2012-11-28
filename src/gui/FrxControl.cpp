@@ -315,14 +315,9 @@ struct Connector {
 //  Class FrxControl
 //=============================================================================
 //-----------------------------------------------------------------------------
-void FrxControl::addProcesorKnobToView(FrxCircuidViewWPtr _view, 
-	FrxComponentWPtr _c, frx::processing::IParameter::WPtr _par) 
+void FrxControl::addProcesorKnobToView(FrxCircuidViewPtr view, 
+	FrxComponentPtr c, frx::processing::IParameter::Ptr par) 
 {
-	FrxCircuidViewPtr view = _view.lock();
-	FrxComponentPtr c = _c.lock();
-	frx::processing::IParameter::Ptr par = _par.lock();
-	SAMBAG_ASSERT(view && c && par);
-
 	frx::processing::IModelController::Ptr ctrl;
 	IViewModelMap::Ptr map;
 	boost::tie(ctrl, map) = getControllerAndMap(view);

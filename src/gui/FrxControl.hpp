@@ -87,8 +87,8 @@ public:
 	virtual void openPluginEditor(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c);
 	//-------------------------------------------------------------------------
-	void addProcesorKnobToView(gc::FrxCircuidViewWPtr view, gc::FrxComponentWPtr c,
-	frx::processing::IParameter::WPtr par); 
+	void addProcesorKnobToView(gc::FrxCircuidViewPtr view, gc::FrxComponentPtr c,
+	frx::processing::IParameter::Ptr par); 
 	//-------------------------------------------------------------------------
 	virtual void addWindow(sdc::WindowPtr win, const std::string &wndClass="");
 

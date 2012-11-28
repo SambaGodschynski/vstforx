@@ -90,7 +90,12 @@ FrxProcessorNodePtr createPlugin(FrxCircuidViewPtr circ, ::processing::PluginInf
 	FrxPluginNode::Ptr viewObj = FrxPluginNode::create();
 	if (!viewObj) {
 		return FrxProcessorNodePtr();
-	} 
+	}
+	frx::processing::IPluginAdapter::Ptr plAd = 
+		boost::shared_dynamic_cast<frx::processing::IPluginAdapter>(mObj);
+	if (plAd) {
+		viewObj->setName(plAd->getName());
+	}
 	viewObj->configIO(mObj->getNumInputs(), mObj->getNumOutputs());
 	registerProcessor(map, viewObj, mObj);
 	return viewObj;

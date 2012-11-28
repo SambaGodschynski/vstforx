@@ -15,6 +15,10 @@
 #include "FrxColumnBrowser.hpp"
 #include <processing/IParameter.hpp>
 #include <processing/IProcessor.hpp>
+#include <com/PluginCollection.h>
+#include "IFrxComponentFactory.hpp"
+#include <loki/LokiTypeinfo.h>
+#include <sambag/com/ArithmeticWrapper.hpp>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -22,6 +26,7 @@ namespace frx { namespace gui { namespace components {
   * @class FrxMainBrowserCtrl.
   * @note: for performance reasons the plugin tree will be created
   *        dynamically
+  * TODO: cleanup functions view and brw are class members now.
   */
 class FrxMainBrowserCtrl : public IFrxColumnBrowserCtrl {
 //=============================================================================
@@ -36,7 +41,13 @@ public:
 	typedef IFrxColumnBrowserCtrl Super;
 	//-------------------------------------------------------------------------
 	typedef FrxColumnBrowser::BrowserImpl Tree;
+	//-------------------------------------------------------------------------
+	typedef Tree::Node TreeNode;
+	//-------------------------------------------------------------------------
+	typedef ::com::PluginCollection::FolderID DBFolderID;
 protected:
+	//-------------------------------------------------------------------------
+	void onBrowserOk(void *src, const sdc::events::ActionEvent &ev);
 	//-------------------------------------------------------------------------
 	void parameterLabelChanged(float value, processing::IParameter::WPtr _p);
 	//-------------------------------------------------------------------------
@@ -49,6 +60,8 @@ protected:
 	//-------------------------------------------------------------------------
 	FrxColumnBrowserWPtr browser;
 	//-------------------------------------------------------------------------
+	FrxCircuidViewWPtr wView;
+	//-------------------------------------------------------------------------
 	WPtr self;
 	//-------------------------------------------------------------------------
 	FrxMainBrowserCtrl() {}
@@ -57,11 +70,54 @@ protected:
 	//-------------------------------------------------------------------------
 	void initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws);
 	//-------------------------------------------------------------------------
-	Tree::Node plugins, processors, knobs;
+	Tree::Node add, add_plugins, add_processors, add_knobs, scene, scene_processors,
+		scene_plugins, scene_parameter, scene_connections;
 	//-------------------------------------------------------------------------
-	void addProcessors(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws);
+	void addProcessorParameterNodes(FrxCircuidViewPtr view, FrxComponentPtr c,
+		const Tree::Node &parent);
 	//-------------------------------------------------------------------------
-	void addKnobs(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws);
+	void addMainProcessors(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws);
+	//-------------------------------------------------------------------------
+	void addMainKnobs(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws);
+	//-------------------------------------------------------------------------
+	BrowserNode::ResultPtr createSceneTree(FrxCircuidViewWPtr view, const Tree::Node &parent);
+	//-------------------------------------------------------------------------
+	BrowserNode::ResultPtr addPlugin(FrxCircuidViewWPtr _view, ::processing::PluginInfo pI);
+	//-------------------------------------------------------------------------
+	BrowserNode::ResultPtr addProcessor(FrxCircuidViewWPtr _view, 
+		IFrxComponentFactory::ProcessorCreator f);
+	//-------------------------------------------------------------------------
+	BrowserNode::ResultPtr addFreeKnob(FrxCircuidViewWPtr _view, 
+		IFrxComponentFactory::FreeParameterCreator f);
+	//-------------------------------------------------------------------------
+	BrowserNode::ResultPtr addHostKnob(FrxCircuidViewWPtr _view, 
+		IFrxComponentFactory::HostParameterCreator f, int id);
+	//-------------------------------------------------------------------------
+	BrowserNode::ResultPtr addProcesorKnobToView(FrxCircuidViewWPtr _view, 
+	FrxComponentWPtr _c, frx::processing::IParameter::WPtr _par);
+	//-------------------------------------------------------------------------
+	BrowserNode::ResultPtr fillPluginFolder(FrxCircuidViewWPtr _view,
+		TreeNode parent, DBFolderID dbFolderId);
+	//-------------------------------------------------------------------------
+	void addToSceneTree(FrxCircuidViewPtr view, FrxComponentPtr c);
+private:
+	//-------------------------------------------------------------------------
+	sambag::com::ArithmeticWrapper<bool> sceneTreeInit;
+	//-------------------------------------------------------------------------
+	typedef boost::function<void(FrxCircuidViewPtr, FrxComponentPtr)> 
+		SceneTreeAdder;
+	typedef std::map<Loki::TypeInfo, SceneTreeAdder> AdderMap;
+	AdderMap adderMap;
+	//-------------------------------------------------------------------------
+	void initAdderMap();
+	//-------------------------------------------------------------------------
+	void addPluginToSceneTree(FrxCircuidViewPtr view, FrxComponentPtr c);
+	//-------------------------------------------------------------------------
+	void addProcessorToSceneTree(FrxCircuidViewPtr view, FrxComponentPtr c);
+	//-------------------------------------------------------------------------
+	void addParameterToSceneTree(FrxCircuidViewPtr view, FrxComponentPtr c);
+	//-------------------------------------------------------------------------
+	void addConnectionToSceneTree(FrxCircuidViewPtr view, FrxComponentPtr c);
 public:
 	//-------------------------------------------------------------------------
 	void createParameterNode(BrowserNode &out, 

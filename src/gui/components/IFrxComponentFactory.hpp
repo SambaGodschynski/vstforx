@@ -18,7 +18,8 @@ namespace frx { namespace gui { namespace components {
 //=============================================================================
 /** 
   * @class IFrxComponentFactory <Singleton>.
-  * Serves a list of component names and its creator functions.
+  * Serves a list of component names and its creator functions which
+  * creates a specific model object and the related view object.
   */
 class IFrxComponentFactory {
 //=============================================================================

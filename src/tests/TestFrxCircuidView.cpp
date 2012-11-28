@@ -126,12 +126,57 @@ void TestFrxCircuidView::testFindComponentsInArea() {
 	circ->findComponentsInArea(res, Rectangle(50,50,100,100), 1.f, 3.f);
 	CPPUNIT_ASSERT_EQUAL((size_t)1, res.size());
 	CPPUNIT_ASSERT(res[0] == p03);
-
 	res.clear();
+
+	circ->findComponentsInArea(res, Rectangle(50,50,100,100), 4.f, 4.f);
+	CPPUNIT_ASSERT_EQUAL((size_t)1, res.size());
+	CPPUNIT_ASSERT(res[0] == p04);
+	res.clear();
+
 	circ->findComponentsInArea(res, Rectangle(50,50,100,100));
 	CPPUNIT_ASSERT_EQUAL((size_t)2, res.size());
 	CPPUNIT_ASSERT(res[0] == p03);
 	CPPUNIT_ASSERT(res[1] == p04);
+}
+//-----------------------------------------------------------------------------
+void TestFrxCircuidView::testFindAllComponents() {
+	using namespace frx::gui::components;
+	using namespace sambag::disco;
+	using namespace sambag::disco::components;
+	FrxCircuidView::Ptr circ = FrxCircuidView::create();
+	FrxPluginNode::Ptr p01 = FrxPluginNode::create();
+	FrxPluginNode::Ptr p02 = FrxPluginNode::create();
+	FrxPluginNode::Ptr p03 = FrxPluginNode::create();
+	FrxPluginNode::Ptr p04 = FrxPluginNode::create();
+	circ->add(p01, 1.f);
+	p01->setSize(Dimension(15,15));
+	p01->setLocation(0,0);
+
+	circ->add(p02, 2.f);
+	p02->setSize(Dimension(15,15));
+	p02->setLocation(40,40);
+
+	circ->add(p03, 3.f);
+	p03->setSize(Dimension(15,15));
+	p03->setLocation(45,45);
+
+	circ->add(p04, 4.f);
+	p04->setSize(Dimension(15,15));
+	p04->setLocation(45,45);
+
+	std::vector<AComponent::Ptr> res;
+	circ->findAllComponents(res, 3.f, 4.f);
+	CPPUNIT_ASSERT_EQUAL((size_t)2, res.size());
+	CPPUNIT_ASSERT(res[0] == p03);
+	CPPUNIT_ASSERT(res[1] == p04);
+	res.clear();
+
+	circ->findAllComponents(res, 4.f, 4.f);
+	CPPUNIT_ASSERT_EQUAL((size_t)1, res.size());
+	CPPUNIT_ASSERT(res[0] == p04);
+	res.clear();
+
+
 }
 //-----------------------------------------------------------------------------
 void TestFrxCircuidView::testGetIndexOf() {

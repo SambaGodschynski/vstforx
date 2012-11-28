@@ -227,8 +227,9 @@ FrxNodeUI::getConnectingComponents(const sdc::events::MouseEvent &ev)
 		circ->getViewport()->getView()->getLocationOnComponent(ev.getLocationOnScreen());
 	
 	boost::get<1>(res) = boost::shared_dynamic_cast<FrxNode>(
-		circ->findComponentOnPoint(loc, FrxCircuidView::Z_Knobs, 
-		FrxCircuidView::Z_ProcessorNodes)
+		circ->findComponentOnPoint(loc, 
+		FrxCircuidView::ZArea_BeginNodes, 
+		FrxCircuidView::ZArea_EndNodes)
 	);
 	boost::get<2>(res) = loc;
 	return res;
@@ -246,7 +247,7 @@ void FrxNodeUI::connecting(const sdc::events::MouseEvent &ev) {
 	std::string type("default");
 	if (to) {
 		if (!canConnect(from, to)) {
-			ss<<"unable to ";
+			ss<<"unable ";
 			type = "warning";
 		}
 	}

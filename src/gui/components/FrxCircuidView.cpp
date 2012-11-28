@@ -104,6 +104,10 @@ const float FrxCircuidView::Z_Default = FrxCircuidView::Z_OnTop;
 //-----------------------------------------------------------------------------
 const float FrxCircuidView::Z_InteractiveStuff = Z_OnTop;
 //-----------------------------------------------------------------------------
+const float FrxCircuidView::ZArea_BeginNodes = Z_Knobs;
+//-----------------------------------------------------------------------------
+const float FrxCircuidView::ZArea_EndNodes = Z_IO;
+//-----------------------------------------------------------------------------
 void FrxCircuidView::add(sdc::AComponentPtr comp, ZOrder zord, bool normalize) 
 {
 	if (normalize) {
@@ -197,7 +201,6 @@ void FrxCircuidView::postConstructor() {
 }
 //-----------------------------------------------------------------------------
 int FrxCircuidView::getIndexOf(ZOrder order) const {
-	std::cout<<componentsToString();
 	sdc::AContainer::Ptr cnt = getContentPane(); 
 	int startIndex = 0;
 	int endIndex = cnt->getComponentCount();
@@ -207,11 +210,9 @@ int FrxCircuidView::getIndexOf(ZOrder order) const {
 		ZOrder z = FLT_MIN;
 		c->getClientProperty(FrxCircuidView::PROPERTY_ZORDER, z);
 		if (z>=order) {
-			std::cout<<"->"<<order<<":"<<i<<std::endl;
 			return i;
 		}
 	}
-	std::cout<<"->"<<(-1)<<std::endl;
 	return -1;
 }
 //-----------------------------------------------------------------------------

@@ -23,6 +23,7 @@
 #include "IFrxColumnBrowserCtrl.hpp"
 #include "Forward.hpp"
 #include <gui/components/FrxParameterLabel.hpp>
+#include <sambag/com/ArbitraryType.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace sce = sambag::com::events;
@@ -72,7 +73,9 @@ struct BrowserNode : public BrowserConstants {
 	/**
 	 * will be called when node is selected and (eg.) ok is pressed.
 	 */ 
-	typedef boost::function<void()> AcceptedFunction;
+	typedef sambag::com::ArbitraryType Result;
+	typedef Result::Ptr ResultPtr;
+	typedef boost::function<ResultPtr()> AcceptedFunction;
 	AcceptedFunction f;
 	std::string type; // specify node type for rendering 
 	BrowserNode(const std::string &name, bool isFolder = false,
@@ -94,9 +97,10 @@ struct BrowserNode : public BrowserConstants {
 		return name==n.name && type==n.type
 			&& &f == &(n.f); // boost::functions are incomparable
 	}
-	void accept() const {
+	ResultPtr accept() const {
 		if (f)
-			f();
+			return f();
+		return ResultPtr();
 	}
 	bool isFolder() const {
 		return type == FRX_BROWSER_FOLDER;

@@ -82,4 +82,9 @@ void PluginAdapter::onEditorIdle() {
 		return;
 	plug->onEditorIdle();
 }
+//-----------------------------------------------------------------------------
+std::string PluginAdapter::getName() const {
+	Adaptee::Ptr plug = getPlugin();
+	return plug->getPlugName();
+}
 }} // namespace(s)

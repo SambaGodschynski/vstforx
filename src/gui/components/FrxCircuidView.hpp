@@ -64,6 +64,10 @@ public:
 	//-------------------------------------------------------------------------
 	static const float Z_Default;
 	//-------------------------------------------------------------------------
+	static const float ZArea_BeginNodes;
+	//-------------------------------------------------------------------------
+	static const float ZArea_EndNodes;
+	//-------------------------------------------------------------------------
 	static const float Z_InteractiveStuff;
 	//-------------------------------------------------------------------------
 	typedef std::pair<FrxComponentPtr, ZOrder> FrxComponentInfo;
@@ -223,6 +227,10 @@ public:
 	void findComponents(Container &container, Filter &f, 
 		int startIndex = 0, int endIndex = -1) const; 
 	//-------------------------------------------------------------------------
+	template <class Container>
+	void findAllComponents(Container &container, ZOrder start, 
+		ZOrder end) const; 
+	//-------------------------------------------------------------------------
 	/**
 	 * search for components that are in given area. The components center has 
 	 * to be inside of the area.
@@ -267,6 +275,23 @@ void FrxCircuidView::findComponents(Container &container, Filter &filter,
 			continue;
 		// else
 		break;
+	}
+}
+//-----------------------------------------------------------------------------
+template <class Container>
+void FrxCircuidView::findAllComponents(Container &container, ZOrder start = FLT_MIN, 
+	ZOrder end = FLT_MAX) const
+{
+	int startIndex = getIndexOf(start);
+	sdc::AContainer::Ptr cnt = getContentPane(); 
+	startIndex = std::max(0, startIndex);
+	for (int i=startIndex; i<cnt->getComponentCount(); ++i) {
+		sdc::AComponentPtr c = cnt->getComponent(i);
+		ZOrder z = FLT_MIN;
+		c->getClientProperty(PROPERTY_ZORDER, z);
+		if (z > end)
+			return; // stop searching
+		container.push_back(c);
 	}
 }
 //-------------------------------------------------------------------------

@@ -29,6 +29,8 @@ public:
 	virtual void closeEditor(sdc::WindowPtr win) = 0;
 	//-------------------------------------------------------------------------
 	virtual void onEditorIdle() = 0;
+	//-------------------------------------------------------------------------
+	virtual std::string getName() const = 0;
 }; // IPluginAdapter
 }} // namespace(s)
 

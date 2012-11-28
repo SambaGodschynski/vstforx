@@ -45,6 +45,8 @@ public:
 	virtual void closeEditor(sdc::WindowPtr win);
 	//-------------------------------------------------------------------------
 	virtual void onEditorIdle();
+	//-------------------------------------------------------------------------
+	virtual std::string getName() const;
 }; // PluginAdapter
 }} // namespace(s)
 

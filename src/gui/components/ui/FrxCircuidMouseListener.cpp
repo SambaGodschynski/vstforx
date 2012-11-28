@@ -98,7 +98,10 @@ void FrxCircuidMouseListener::endSpanning(const sdc::events::MouseEvent &ev) {
 	circ->AComponent::redraw();
 
 	FrxSelection::ContentContainer content;
-	circ->findComponentsInArea(content, selection->getBounds(), 2., 4.5);
+	circ->findComponentsInArea(content, selection->getBounds(),  
+		FrxCircuidView::ZArea_BeginNodes, 
+		FrxCircuidView::ZArea_EndNodes
+	);
 	circ->getSelection()->setContent(content);
 }
 //-----------------------------------------------------------------------------
