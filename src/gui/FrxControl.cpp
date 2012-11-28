@@ -59,12 +59,12 @@ getControllerAndMap(FrxCircuidViewPtr circ)
 		frx::processing::getModelController(circ);
 	if (!ctrl) {
 		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"tried to add processor with IModelController == NULL");
+			"IModelController == NULL");
 	}
 	IViewModelMap::Ptr map = getViewModelMap(circ);
 	if (!map) {
 		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"tried to add processor with IViewModelMap == NULL");
+			"IViewModelMap == NULL");
 	}
 	return boost::make_tuple(ctrl, map);
 }

@@ -249,10 +249,6 @@
 				Name="gui"
 				>
 				<File
-					RelativePath="..\..\src\gui\__ModelExecutors.hpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\src\gui\FrxControl.cpp"
 					>
 				</File>
@@ -291,6 +287,10 @@
 				<Filter
 					Name="components"
 					>
+					<File
+						RelativePath="..\..\src\gui\__ModelExecutors.hpp"
+						>
+					</File>
 					<File
 						RelativePath="..\..\src\gui\components\Forward.hpp"
 						>

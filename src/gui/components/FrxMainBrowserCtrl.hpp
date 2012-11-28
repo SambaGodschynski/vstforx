@@ -19,6 +19,7 @@
 #include "IFrxComponentFactory.hpp"
 #include <loki/LokiTypeinfo.h>
 #include <sambag/com/ArithmeticWrapper.hpp>
+#include "FrxComponent.hpp"
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -26,7 +27,6 @@ namespace frx { namespace gui { namespace components {
   * @class FrxMainBrowserCtrl.
   * @note: for performance reasons the plugin tree will be created
   *        dynamically
-  * TODO: cleanup functions view and brw are class members now.
   */
 class FrxMainBrowserCtrl : public IFrxColumnBrowserCtrl {
 //=============================================================================
@@ -46,6 +46,8 @@ public:
 	//-------------------------------------------------------------------------
 	typedef ::com::PluginCollection::FolderID DBFolderID;
 protected:
+	//-------------------------------------------------------------------------
+	void onRemovingFromScene(void*, const OnRemoving &ev, Tree::Node node);
 	//-------------------------------------------------------------------------
 	void onBrowserOk(void *src, const sdc::events::ActionEvent &ev);
 	//-------------------------------------------------------------------------
@@ -73,51 +75,56 @@ protected:
 	Tree::Node add, add_plugins, add_processors, add_knobs, scene, scene_processors,
 		scene_plugins, scene_parameter, scene_connections;
 	//-------------------------------------------------------------------------
-	void addProcessorParameterNodes(FrxCircuidViewPtr view, FrxComponentPtr c,
+	void addProcessorParameterNodes(FrxComponentPtr c,
 		const Tree::Node &parent);
 	//-------------------------------------------------------------------------
-	void addMainProcessors(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws);
+	// wrapper for BrowserNode Accepted function
+	BrowserNode::ResultPtr _addProcessorParameterNodes(FrxComponentWPtr c,
+		Tree::Node parent);
 	//-------------------------------------------------------------------------
-	void addMainKnobs(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws);
+	void addMainProcessors();
 	//-------------------------------------------------------------------------
-	BrowserNode::ResultPtr createSceneTree(FrxCircuidViewWPtr view, const Tree::Node &parent);
+	void addMainKnobs();
 	//-------------------------------------------------------------------------
-	BrowserNode::ResultPtr addPlugin(FrxCircuidViewWPtr _view, ::processing::PluginInfo pI);
+	BrowserNode::ResultPtr createSceneTree(const Tree::Node &parent);
 	//-------------------------------------------------------------------------
-	BrowserNode::ResultPtr addProcessor(FrxCircuidViewWPtr _view, 
-		IFrxComponentFactory::ProcessorCreator f);
+	BrowserNode::ResultPtr addPlugin(::processing::PluginInfo pI);
 	//-------------------------------------------------------------------------
-	BrowserNode::ResultPtr addFreeKnob(FrxCircuidViewWPtr _view, 
-		IFrxComponentFactory::FreeParameterCreator f);
+	BrowserNode::ResultPtr 
+	addProcessor(IFrxComponentFactory::ProcessorCreator f);
 	//-------------------------------------------------------------------------
-	BrowserNode::ResultPtr addHostKnob(FrxCircuidViewWPtr _view, 
-		IFrxComponentFactory::HostParameterCreator f, int id);
+	BrowserNode::ResultPtr 
+	addFreeKnob(IFrxComponentFactory::FreeParameterCreator f);
 	//-------------------------------------------------------------------------
-	BrowserNode::ResultPtr addProcesorKnobToView(FrxCircuidViewWPtr _view, 
-	FrxComponentWPtr _c, frx::processing::IParameter::WPtr _par);
+	BrowserNode::ResultPtr 
+	addHostKnob(IFrxComponentFactory::HostParameterCreator f, int id);
 	//-------------------------------------------------------------------------
-	BrowserNode::ResultPtr fillPluginFolder(FrxCircuidViewWPtr _view,
-		TreeNode parent, DBFolderID dbFolderId);
+	BrowserNode::ResultPtr 
+	addProcesorKnobToView(FrxComponentWPtr _c, frx::processing::IParameter::WPtr _par);
 	//-------------------------------------------------------------------------
-	void addToSceneTree(FrxCircuidViewPtr view, FrxComponentPtr c);
+	BrowserNode::ResultPtr 
+	fillPluginFolder(TreeNode parent, DBFolderID dbFolderId);
+	//-------------------------------------------------------------------------
+	void addToSceneTree(FrxComponentPtr c);
 private:
 	//-------------------------------------------------------------------------
 	sambag::com::ArithmeticWrapper<bool> sceneTreeInit;
 	//-------------------------------------------------------------------------
-	typedef boost::function<void(FrxCircuidViewPtr, FrxComponentPtr)> 
+	typedef boost::function<Tree::Node(FrxComponentPtr)> 
 		SceneTreeAdder;
 	typedef std::map<Loki::TypeInfo, SceneTreeAdder> AdderMap;
 	AdderMap adderMap;
 	//-------------------------------------------------------------------------
 	void initAdderMap();
 	//-------------------------------------------------------------------------
-	void addPluginToSceneTree(FrxCircuidViewPtr view, FrxComponentPtr c);
+	Tree::Node addPluginToSceneTree(FrxComponentPtr c);
 	//-------------------------------------------------------------------------
-	void addProcessorToSceneTree(FrxCircuidViewPtr view, FrxComponentPtr c);
+	Tree::Node addProcessorToSceneTree(FrxComponentPtr c);
 	//-------------------------------------------------------------------------
-	void addParameterToSceneTree(FrxCircuidViewPtr view, FrxComponentPtr c);
+	Tree::Node addParameterToSceneTree(FrxComponentPtr c);
 	//-------------------------------------------------------------------------
-	void addConnectionToSceneTree(FrxCircuidViewPtr view, FrxComponentPtr c);
+	Tree::Node addConnectionToSceneTree(FrxComponentPtr c);
+	//-------------------------------------------------------------------------
 public:
 	//-------------------------------------------------------------------------
 	void createParameterNode(BrowserNode &out, 
