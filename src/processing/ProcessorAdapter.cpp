@@ -60,19 +60,51 @@ INode::Ptr ProcessorAdapter::getOutput(size_t nr) const {
 }
 //-----------------------------------------------------------------------------
 bool ProcessorAdapter::hasMultipleInputs() const {
-	return false;
+	::processing::VariableInputAdapter *va =
+		dynamic_cast<::processing::VariableInputAdapter*>(getAdaptee().get());
+	if (!va)
+		return false;
+	return true;
 }
 //-----------------------------------------------------------------------------
 bool ProcessorAdapter::hasMultipleOutputs() const {
-	return false;
+	::processing::VariableOutputAdapter *va =
+		dynamic_cast<::processing::VariableOutputAdapter*>(getAdaptee().get());
+	if (!va)
+		return false;
+	return true;
 }
 //-----------------------------------------------------------------------------
 INode::Ptr ProcessorAdapter::addOutput() {
-	return INode::Ptr();
+	::processing::VariableOutputAdapter *va =
+		dynamic_cast<::processing::VariableOutputAdapter*>(getAdaptee().get());
+	if (!va)
+		return INode::Ptr();
+	::processing::ProcessorNode::Ptr n = va->addOutputNode();
+	if (!n)
+		return INode::Ptr();
+	NodeAdapter::Ptr res = NodeAdapter::create(n);
+	outputs.push_back(res);
+	// send event
+	IOChangedEventSender::notifyListeners(this, IOChangedEvent(getPtr()));
+	// return result
+	return res;
 }
 //-----------------------------------------------------------------------------
 INode::Ptr ProcessorAdapter::addInput() {
-	return INode::Ptr();
+	::processing::VariableInputAdapter *va =
+		dynamic_cast<::processing::VariableInputAdapter*>(getAdaptee().get());
+	if (!va)
+		return INode::Ptr();
+	::processing::ProcessorNode::Ptr n = va->addInputNode();
+	if (!n)
+		return INode::Ptr();
+	NodeAdapter::Ptr res = NodeAdapter::create(n);
+	inputs.push_back(res);
+	// send event
+	IOChangedEventSender::notifyListeners(this, IOChangedEvent(getPtr()));
+	// return result
+	return res;
 }
 //-----------------------------------------------------------------------------
 size_t ProcessorAdapter::getNumParameter() const {
@@ -113,5 +145,18 @@ bool ProcessorAdapter::requestRemove(ModelObject::Ptr obj) {
 		res &= m->requestRemove(m);
 	}
 	return res && Super::requestRemove(obj);
+}
+//-----------------------------------------------------------------------------
+ProcessorAdapter::IOChangedEventSender::Connection ProcessorAdapter::
+addIOChangedListener(const IOChangedEventSender::EventFunction &f)
+{
+	return IOChangedEventSender::addEventListener(f);
+}
+//-----------------------------------------------------------------------------
+ProcessorAdapter::IOChangedEventSender::Connection ProcessorAdapter::
+addTrackedIOChangedListener(const IOChangedEventSender::EventFunction &f, 
+		AnyWPtr holder)
+{
+	return IOChangedEventSender::addTrackedEventListener(f, holder);
 }
 }} // namespace(s)

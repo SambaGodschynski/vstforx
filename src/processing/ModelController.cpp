@@ -359,4 +359,46 @@ IParameter::Ptr ModelController::getHostParameter(int id) {
 int ModelController::getNumHostParameter() {
 	return (int)graph->getNumHostParameter();
 }
+//-----------------------------------------------------------------------------
+INode::Ptr ModelController::addInputTo(IProcessor::Ptr pr) {
+	// add i/o to processor
+	INode::Ptr res = pr->addInput();
+	NodeAdapter::Ptr src =
+		boost::shared_dynamic_cast<NodeAdapter>(res);
+	if (!src)
+		return INode::Ptr();
+	
+	// get concrete node (adaptee)
+	typedef ::processing::Graph::Janitor Janitor; 
+	::processing::ProcessAdapter::InputNode::Ptr atom = 
+		boost::shared_dynamic_cast< ::processing::ProcessAdapter::InputNode >(
+			src->getAdaptee()
+		);
+	// add concrete node to graph
+	if (graph->getJanitor()->add(atom)!=Janitor::SUCCEED) {
+		return INode::Ptr();
+	}
+	return res;
+}
+//-----------------------------------------------------------------------------
+INode::Ptr ModelController::addOutputTo(IProcessor::Ptr pr) {
+	// add i/o to processor
+	INode::Ptr res = pr->addOutput();
+	NodeAdapter::Ptr src =
+		boost::shared_dynamic_cast<NodeAdapter>(res);
+	if (!src)
+		return INode::Ptr();
+	
+	// get concrete node (adaptee)
+	typedef ::processing::Graph::Janitor Janitor; 
+	::processing::ProcessAdapter::OutputNode::Ptr atom = 
+		boost::shared_dynamic_cast< ::processing::ProcessAdapter::OutputNode >(
+			src->getAdaptee()
+		);
+	// add concrete node to graph
+	if (graph->getJanitor()->add(atom)!=Janitor::SUCCEED) {
+		return INode::Ptr();
+	}
+	return res;
+}
 }} // namespace(s)

@@ -9,6 +9,7 @@
 #define SAMBAG_PROCESSORADAPTER_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include "IProcessor.hpp"
 #include <sambag/com/Exception.hpp>
 #include <vector>
@@ -20,16 +21,23 @@ namespace frx { namespace processing {
 /** 
   * @class ProcessorAdapter.
   */
-class ProcessorAdapter : public IProcessor {
+class ProcessorAdapter : 
+	public IProcessor,
+	public IProcessor::IOChangedEventSender
+{
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<ProcessorAdapter> Ptr;
 	//-------------------------------------------------------------------------
+	typedef boost::weak_ptr<ProcessorAdapter> WPtr;
+	//-------------------------------------------------------------------------
 	typedef ::processing::ProcessAdapter Adaptee;
 	//-------------------------------------------------------------------------
 	typedef IProcessor Super;
 protected:
+	//-------------------------------------------------------------------------
+	WPtr self;
 	//-------------------------------------------------------------------------
 	Adaptee::Ptr processor;
 	//-------------------------------------------------------------------------
@@ -42,9 +50,14 @@ protected:
 	mutable std::vector<ParameterAdapterPtr> parameters; 
 public:
 	//-------------------------------------------------------------------------
+	virtual IProcessor::Ptr getPtr() const {
+		return self.lock();
+	}
+	//-------------------------------------------------------------------------
 	static Ptr create(Adaptee::Ptr a = Adaptee::Ptr()) {
 		Ptr res(new ProcessorAdapter());
 		res->setAdaptee(a);
+		res->self = res;
 		return res;
 	}
 	//-------------------------------------------------------------------------
@@ -87,6 +100,15 @@ public:
 	virtual IParameter::Ptr getParameter(int nr) const;
 	//-------------------------------------------------------------------------
 	virtual bool requestRemove(ModelObject::Ptr obj);
+	///////////////////////////////////////////////////////////////////////////
+	// Events
+	//-------------------------------------------------------------------------
+	virtual IOChangedEventSender::Connection 
+	addIOChangedListener(const IOChangedEventSender::EventFunction &);
+	//-------------------------------------------------------------------------
+	virtual IOChangedEventSender::Connection 
+	addTrackedIOChangedListener(const IOChangedEventSender::EventFunction &, 
+		AnyWPtr holder);
 protected:
 private:
 public:

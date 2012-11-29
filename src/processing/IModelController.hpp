@@ -107,6 +107,10 @@ public:
 	virtual IParameter::Ptr getHostParameter(int id) = 0;
 	//-------------------------------------------------------------------------
 	virtual int getNumHostParameter() = 0;
+	//-------------------------------------------------------------------------
+	virtual INode::Ptr addInputTo(IProcessor::Ptr pr) = 0;
+	//-------------------------------------------------------------------------
+	virtual INode::Ptr addOutputTo(IProcessor::Ptr pr) = 0;
 }; // IModelController
 ///////////////////////////////////////////////////////////////////////////////
 extern IModelController::Ptr

@@ -7,6 +7,7 @@
 #include <com/Settings.h>
 #include <sambag/disco/components/WindowToolkit.hpp>
 #include <windows.h>
+#include <exception>
 
 extern void *hInstance; // @see vstsdk2.4::vstplugmain.cpp
 std::string getHomeDirectory();

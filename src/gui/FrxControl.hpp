@@ -87,11 +87,16 @@ public:
 	virtual void openPluginEditor(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c);
 	//-------------------------------------------------------------------------
-	void addProcesorKnobToView(gc::FrxCircuidViewPtr view, gc::FrxComponentPtr c,
+	fgc::FrxComponentPtr addProcesorKnobToView(gc::FrxCircuidViewPtr view, gc::FrxComponentPtr c,
 	frx::processing::IParameter::Ptr par); 
 	//-------------------------------------------------------------------------
 	virtual void addWindow(sdc::WindowPtr win, const std::string &wndClass="");
-
+	//-------------------------------------------------------------------------
+	virtual fgc::FrxComponentPtr addProcessorInput(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c); 
+	//-------------------------------------------------------------------------
+	virtual fgc::FrxComponentPtr addProcessorOutput(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c); 
 }; // FrxControl
 extern boost::tuple<
 	frx::processing::IModelController::Ptr,

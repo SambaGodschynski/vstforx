@@ -315,7 +315,7 @@ struct Connector {
 //  Class FrxControl
 //=============================================================================
 //-----------------------------------------------------------------------------
-void FrxControl::addProcesorKnobToView(FrxCircuidViewPtr view, 
+fgc::FrxComponentPtr FrxControl::addProcesorKnobToView(FrxCircuidViewPtr view, 
 	FrxComponentPtr c, frx::processing::IParameter::Ptr par) 
 {
 	frx::processing::IModelController::Ptr ctrl;
@@ -324,7 +324,7 @@ void FrxControl::addProcesorKnobToView(FrxCircuidViewPtr view,
 	// create knob
 	FrxStdKnob::Ptr knob = FrxStdKnob::create();
 	if (!knob) {
-		return;
+		return FrxComponentPtr();
 	}
 	knob->getRangeModel()->setValue(par->getValue());
 	// knob listener
@@ -350,6 +350,81 @@ void FrxControl::addProcesorKnobToView(FrxCircuidViewPtr view,
 	FrxSelection::Ptr sel = view->getSelection();
 	sel->addElement(knob);
 	sel->setVisible(true);
+	return knob;
+}
+//-----------------------------------------------------------------------------
+FrxComponentPtr FrxControl::addProcessorInput(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c)
+{
+	// get model object
+	frx::processing::IModelController::Ptr ctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(ctrl, map) = getControllerAndMap(view);
+	frx::processing::IProcessor::Ptr proM =
+		boost::shared_dynamic_cast<frx::processing::IProcessor> (
+			map->getModelObject(c)
+		);
+	if (!proM)
+		return FrxComponentPtr();
+	frx::processing::INode::Ptr io = ctrl->addInputTo(proM);
+	if (!io)
+		return FrxComponentPtr();
+	// create view object
+	FrxInputNode::Ptr viewIo = FrxInputNode::create();
+	// create connection
+	ProcessorInputCn::Ptr cn = ProcessorInputCn::create();
+	cn->setSrcComponent(c);
+	cn->setDstComponent(viewIo);
+	view->add(viewIo, FrxCircuidView::Z_IO, true);
+	view->add(cn, FrxCircuidView::Z_Wires);
+	map->registerObjects(viewIo, io);
+	// add hover
+	FrxHover::Ptr sel = FrxHover::create();
+	view->add(sel);
+	sel->addElement(viewIo);
+	sel->setVisible(true);
+	// removing request
+	io->addRemoveRequestExecuter(
+		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
+	);
+	return viewIo;
+}
+//-----------------------------------------------------------------------------
+FrxComponentPtr FrxControl::addProcessorOutput(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c)
+{
+	// get model object
+	frx::processing::IModelController::Ptr ctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(ctrl, map) = getControllerAndMap(view);
+	frx::processing::IProcessor::Ptr proM =
+		boost::shared_dynamic_cast<frx::processing::IProcessor> (
+			map->getModelObject(c)
+		);
+	if (!proM)
+		return FrxComponentPtr();
+	frx::processing::INode::Ptr io = ctrl->addOutputTo(proM);
+	if (!io)
+		return FrxComponentPtr();
+	// create view object
+	FrxOutputNode::Ptr viewIo = FrxOutputNode::create();
+	// create connection
+	ProcessorOutputCn::Ptr cn = ProcessorOutputCn::create();
+	cn->setSrcComponent(c);
+	cn->setDstComponent(viewIo);
+	view->add(viewIo, FrxCircuidView::Z_IO, true);
+	view->add(cn, FrxCircuidView::Z_Wires);
+	map->registerObjects(viewIo, io);
+	// add hover
+	FrxHover::Ptr sel = FrxHover::create();
+	view->add(sel);
+	sel->addElement(viewIo);
+	sel->setVisible(true);
+	// removing request
+	io->addRemoveRequestExecuter(
+		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
+	);
+	return viewIo;
 }
 //-----------------------------------------------------------------------------
 void FrxControl::addParameterToView(fgc::FrxCircuidViewPtr view, 

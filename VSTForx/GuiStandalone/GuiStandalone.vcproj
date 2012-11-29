@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;$(ProjectDir)..\..\..\..\..\clibs\tinyxml&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cairo\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\boost&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\cppunit\include&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sqlite&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\sambag\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\lua\src&quot;;&quot;$(ProjectDir)..\..\..\..\..\clibs\loki\include&quot;;&quot;$(ProjectDir)..\..\src&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VLD&quot;;&quot;C:\Eigene Dateien\Eigene Progs\VST\vstsdk2.4\pluginterfaces\vst2.x&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;BOOST_FILESYSTEM_VERSION=3;BOOST_UBLAS_TYPE_CHECK=0;DISCO_USE_WIN32"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;BOOST_FILESYSTEM_VERSION=3;BOOST_UBLAS_TYPE_CHECK=0;DISCO_USE_WIN32;BOOST_ENABLE_ASSERT_HANDLER"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"

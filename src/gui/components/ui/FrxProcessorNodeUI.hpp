@@ -66,6 +66,12 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<ThisClass> Ptr;
 private:
+	//-------------------------------------------------------------------------
+	void addHasMultipleInputEntry(sdc::PopupMenuPtr menu, FrxCircuidViewPtr view, 
+		FrxComponentPtr c);
+	//-------------------------------------------------------------------------
+	void addHasMultipleOutputEntry(sdc::PopupMenuPtr menu, FrxCircuidViewPtr view, 
+		FrxComponentPtr c);
 protected:
 	//-------------------------------------------------------------------------
 	FrxProcessorNodeUI();
@@ -183,11 +189,58 @@ inline void createSpecificEntries<FrxPluginNode::ProcessorType>(sdc::PopupMenuPt
 } // namespace(s)
 //-----------------------------------------------------------------------------
 template <class CT>
+void FrxProcessorNodeUI<CT>::addHasMultipleInputEntry(sdc::PopupMenuPtr menu,
+	FrxCircuidViewPtr view, FrxComponentPtr c)
+{
+	sdc::MenuItem::Ptr m = sdc::MenuItem::create();
+	m->setText("add input");
+	IFrxControl &ctrl = getFrxControl(view); 
+	m->EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
+		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
+		&IFrxControl::addProcessorInput),
+		c
+	);
+	menu->add(m);
+}
+//-----------------------------------------------------------------------------
+template <class CT>
+void FrxProcessorNodeUI<CT>::addHasMultipleOutputEntry(sdc::PopupMenuPtr menu, 
+	FrxCircuidViewPtr view, FrxComponentPtr c)
+{
+	sdc::MenuItem::Ptr m = sdc::MenuItem::create();
+	m->setText("add output");
+	IFrxControl &ctrl = getFrxControl(view); 
+	m->EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
+		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
+		&IFrxControl::addProcessorOutput),
+		c
+	);
+	menu->add(m); 
+}
+//-----------------------------------------------------------------------------
+template <class CT>
 void FrxProcessorNodeUI<CT>::createPopupmenuEntries(sdc::PopupMenuPtr menu, 
 	FrxCircuidViewPtr view, 
 	FrxComponentPtr c)
 {
 	Super::createPopupmenuEntries(menu, view, c);
+	// io
+	frx::processing::IModelController::Ptr mCtrl;
+	IViewModelMap::Ptr map;
+	boost::tie(mCtrl, map) = getControllerAndMap(view);
+	frx::processing::IProcessor::Ptr processor =
+		boost::shared_dynamic_cast<frx::processing::IProcessor>(
+			map->getModelObject(c)
+		);
+	if (!processor)
+		return;
+	if (processor->hasMultipleInputs()) {
+		addHasMultipleInputEntry(menu, view, c);
+	}
+	if (processor->hasMultipleOutputs()) {
+		addHasMultipleOutputEntry(menu, view, c);
+	}
+	// browser
 	sdc::MenuItem::Ptr m = sdc::MenuItem::create();
 	m->setText("show " + c->getName() + " details...");
 	IFrxControl &ctrl = getFrxControl(view); 

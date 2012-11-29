@@ -47,6 +47,10 @@ public:
 	typedef ::com::PluginCollection::FolderID DBFolderID;
 protected:
 	//-------------------------------------------------------------------------
+	void onSceneIOChanged(void*, 
+		const frx::processing::IProcessor::IOChangedEvent &ev, 
+		Tree::Node node);
+	//-------------------------------------------------------------------------
 	void onRemovingFromScene(void*, const OnRemoving &ev, Tree::Node node);
 	//-------------------------------------------------------------------------
 	void onBrowserOk(void *src, const sdc::events::ActionEvent &ev);

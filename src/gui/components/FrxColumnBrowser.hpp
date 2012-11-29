@@ -172,12 +172,12 @@ sdc::AComponentPtr FrxBrowserCellRenderer<T>::getListCellRendererComponent(
 		
 	setEnabled(list->isEnabled());
 	setFont(list->getFont());
-	
+	setValue(0.0);
+
 	// specific callback
 	if (value.data.drawCallback) {
 		value.data.drawCallback(getPtr());
 	}
-	
 	return getPtr();
 }
 //=============================================================================

@@ -20,13 +20,18 @@ FrxHoverMouseListener::FrxHoverMouseListener() {
 }
 //-----------------------------------------------------------------------------
 void FrxHoverMouseListener::mouseClicked(const sdc::events::MouseEvent &ev) {
-	hover->clearContent();
-	hover->setVisible(false);
+	FrxCircuidView::Ptr circ = hover->getFirstContainer<FrxCircuidView>();
+	SAMBAG_ASSERT(circ);
+	circ->remove(hover);
+	hover.reset();
 }
 //-----------------------------------------------------------------------------
 void FrxHoverMouseListener::mouseMoved(const sdc::events::MouseEvent &ev) {
+	FrxCircuidView::Ptr circ = hover->getFirstContainer<FrxCircuidView>();
+	SAMBAG_ASSERT(circ);
 	sd::Point2D distance = ev.getLocation();
 	boost::geometry::subtract_point(distance, hover->getLocation());
+	boost::geometry::add_point(distance, circ->getViewport()->getViewPosition());
 	boost::geometry::subtract_point(distance, sd::Point2D(hover->getWidth()/2., 
 		hover->getHeight()/2.));
 	translateSelection(boost::shared_dynamic_cast<FrxHover>(hover), distance);
@@ -34,8 +39,6 @@ void FrxHoverMouseListener::mouseMoved(const sdc::events::MouseEvent &ev) {
 //-----------------------------------------------------------------------------
 void FrxHoverMouseListener::onMouse(void *src, const sdc::events::MouseEvent &ev)
 {
-	if (!hover->isVisible())
-		return;
 	using namespace sdc::events;
 	enum { Filter = 
 		MouseEvent::DISCO_MOUSE_CLICKED |

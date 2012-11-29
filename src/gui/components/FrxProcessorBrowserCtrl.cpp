@@ -42,7 +42,6 @@ void FrxProcessorBrowserCtrl::initTree(FrxCircuidViewPtr view,
 		tree->addNode(tree->getRootNode(), BrowserNode(c->getName() + " parameters"));
 	
 	addProcessorParameterNodes(c, parameter);
-	
 	tree->updateLists();
 }
 }}} // namespace(s)

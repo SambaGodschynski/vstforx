@@ -13,6 +13,7 @@
 #include "ModelObject.hpp"
 #include "INode.hpp"
 #include "IParameter.hpp"
+#include <sambag/com/events/Events.hpp>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -28,6 +29,8 @@ public:
 	typedef boost::shared_ptr<IProcessor> Ptr;
 	//-------------------------------------------------------------------------
 	typedef boost::weak_ptr<IProcessor> WPtr;
+	//-------------------------------------------------------------------------
+	virtual Ptr getPtr() const = 0;
 	//-------------------------------------------------------------------------
 	virtual size_t getNumInputs() const = 0;
 	//-------------------------------------------------------------------------
@@ -62,6 +65,21 @@ public:
 	virtual size_t getNumParameter() const = 0;
 	//-------------------------------------------------------------------------
 	virtual IParameter::Ptr getParameter(int nr) const = 0;
+	///////////////////////////////////////////////////////////////////////////
+	// Events
+	struct IOChangedEvent{
+		Ptr src;
+		IOChangedEvent(Ptr src) : src(src) {}
+	};
+	typedef boost::weak_ptr<void> AnyWPtr;
+	typedef sambag::com::events::EventSender<IOChangedEvent> IOChangedEventSender;
+	//-------------------------------------------------------------------------
+	virtual IOChangedEventSender::Connection 
+	addIOChangedListener(const IOChangedEventSender::EventFunction &) = 0;
+	//-------------------------------------------------------------------------
+	virtual IOChangedEventSender::Connection 
+	addTrackedIOChangedListener(const IOChangedEventSender::EventFunction &, 
+		AnyWPtr holder) = 0;
 }; // IProcessor
 }} // namespace(s)
 

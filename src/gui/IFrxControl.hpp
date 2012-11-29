@@ -84,8 +84,23 @@ public:
 	virtual void 
 	handleContextMenuPopup(const sdc::events::MouseEvent &ev) = 0;
 	//-------------------------------------------------------------------------
-	virtual void addProcesorKnobToView(fgc::FrxCircuidViewPtr view, 
+	/**
+	 * @return new created knob
+	 */
+	virtual fgc::FrxComponentPtr addProcesorKnobToView(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c, frx::processing::IParameter::Ptr par) = 0; 
+	//-------------------------------------------------------------------------
+	/**
+	 * @return new created input node
+	 */
+	virtual fgc::FrxComponentPtr addProcessorInput(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c) = 0; 
+	//-------------------------------------------------------------------------
+	/**
+	 * @return new created output node
+	 */
+	virtual fgc::FrxComponentPtr addProcessorOutput(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c) = 0; 
 	//-------------------------------------------------------------------------
 	/**
 	 * @return a function object which is able to be executed by
