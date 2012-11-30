@@ -78,7 +78,7 @@ public:
 	 * Verarbeitet MidiEvent
 	 * @param events
 	 */
-	virtual void processMidiEvents( VstEvents * events );
+	virtual void processMidiEvents( sambag::dsp::IMidiEvents * events );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param hostInfo

@@ -26,10 +26,10 @@ MidiEventProcessor::MidiEventProcessor() : midiChannel( parameter::Parameter::cr
 	midiChannel->setName ("midi channel"); 
 }
 //------------------------------------------------------------------------------------------------------------
-void MidiEventProcessor::processEvents( VstEvents *ev ) {
-	typedef unsigned char Byte;
+void MidiEventProcessor::processEvents( sambag::dsp::IMidiEvents *ev ) {
+	/*typedef unsigned char Byte;
 	Byte *rawData = NULL;
-	VstEvents *tmpEvents = NULL;
+	sambag::dsp::IMidiEvents *tmpEvents = NULL;
 	if ( ev->numEvents <= (size_t)EVENTS_OVERHEAD ) { // overhead sufficient
 		tmpEvents = (VstEvents*) &staticEvent; // use static event
 	}
@@ -42,11 +42,11 @@ void MidiEventProcessor::processEvents( VstEvents *ev ) {
 	processMidiEvents ( tmpEvents );
 	// free rawData if used
 	if (rawData) 
-		delete rawData;
+		delete rawData;*/
 }
 //------------------------------------------------------------------------------------------------------------
-inline void MidiEventProcessor::filterEvents( VstEvents * src, VstEvents * dst ) {
-	using namespace parameter;
+inline void MidiEventProcessor::filterEvents( sambag::dsp::IMidiEvents * src, sambag::dsp::IMidiEvents * dst ) {
+/*	using namespace parameter;
 	int n = mapInteger ( midiChannel->getValue(), 17 ); // 16 midi channels + all channels
 
 	dst->numEvents = 0;
@@ -60,7 +60,7 @@ inline void MidiEventProcessor::filterEvents( VstEvents * src, VstEvents * dst )
 		VstInt32 channel = midiData[0] & 0xf;	
 		if ( channel != n && n!=(size_t)ALL_CHANNEL ) continue;
 		dst->events[dst->numEvents++] = src->events[i];
-	}
+	}*/
 }
 //------------------------------------------------------------------------------------------------------------
 void MidiEventProcessor::midiChannelChanged ( void *src, const float &val ) {

@@ -10,7 +10,7 @@
 
 #include "processing/parameter/Parameter.h"
 #include "boost/shared_ptr.hpp"
-#include "IVstEventProcessor.h"
+#include "IMidiEventProcessor.h"
 #include "processing/processing.h"
 #include <vector>
 
@@ -21,21 +21,13 @@ namespace processing {
  *  verarbeitet midi events. channel filterbar.
  *  TODO: seperate midiEvent / vstMidiEvent
  */
-class MidiEventProcessor : public IVstEventProcessor {
+class MidiEventProcessor : public IMidiEventProcessor {
 //============================================================================================================
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<MidiEventProcessor> Ptr;
 private:
-	//--------------------------------------------------------------------------------------------------------
-	enum { EVENTS_OVERHEAD = 1024 };
-	//--------------------------------------------------------------------------------------------------------
-	struct {
-		VstInt32 numEvents;		
-		VstIntPtr reserved;		
-		VstEvent *events[EVENTS_OVERHEAD];
-	} staticEvent;
 	//--------------------------------------------------------------------------------------------------------
 	parameter::Parameter::Ptr midiChannel;
 	//--------------------------------------------------------------------------------------------------------
@@ -56,12 +48,12 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	MidiEventProcessor();
 	//--------------------------------------------------------------------------------------------------------
-	// copys vstevents considers midi channel.
-	inline void filterEvents( VstEvents * scr, VstEvents * dst );
+	// copys events considers midi channel.
+	inline void filterEvents( sambag::dsp::IMidiEvents * scr, sambag::dsp::IMidiEvents * dst );
 	//--------------------------------------------------------------------------------------------------------
-	virtual void processEvents( VstEvents * events );
+	virtual void processEvents( sambag::dsp::IMidiEvents * events );
 	//--------------------------------------------------------------------------------------------------------
-	virtual void processMidiEvents( VstEvents * events ) = 0;
+	virtual void processMidiEvents( sambag::dsp::IMidiEvents * events ) = 0;
 	//--------------------------------------------------------------------------------------------------------
 	parameter::Parameter::Ptr getMidiChannelParameter() { return midiChannel; }
 };

@@ -14,7 +14,7 @@ namespace processing{
 //------------------------------------------------------------------------------------------------------------
 void Volume::processAdapter( Processor::Int numSamples ) { 
 	Frames *fr = getInputNode(0)->popFrame();
-	VstInt32 i = numSamples;
+	int i = numSamples;
 	VstNumber *r = (*fr)[0];
 	VstNumber *l = (*fr)[1];
 	while ( --i >= 0 ){

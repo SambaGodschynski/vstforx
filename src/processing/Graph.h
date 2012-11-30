@@ -17,7 +17,7 @@
 #include "PObject.h"
 #include "parameter/Parameter.h"
 #include "processing.h"
-#include "IVstEventProcessor.h"
+#include "IMidiEventProcessor.h"
 #include "BglGraph.h"
 #include <boost/parameter/name.hpp>
 #include <boost/parameter/keyword.hpp>
@@ -211,6 +211,8 @@ protected:
 	//End Knoten
 	EndNode::Ptr endNode;
 public:
+	//--------------------------------------------------------------------------------------------------------
+	void processEvents(sambag::dsp::IMidiEvents * events);
 	//--------------------------------------------------------------------------------------------------------
 	void setHostInfo(frx::processing::IHostInfo::Ptr hI);
 	//--------------------------------------------------------------------------------------------------------

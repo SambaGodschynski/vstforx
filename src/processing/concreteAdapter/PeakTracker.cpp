@@ -26,7 +26,7 @@ PeakTracker::PeakTracker( frx::processing::IHostInfo::Ptr hostInfo ) : ProcessAd
 //------------------------------------------------------------------------------------------------------------
 void PeakTracker::processAdapter( Processor::Int numSamples ) {
 	Frames *frame = getInputNode(0)->popFrame();
-	VstInt32 i = numSamples;
+	int i = numSamples;
 	VstNumber *r = (*frame)[0];
 	VstNumber *l = (*frame)[1];
 	VstNumber average = 0.0f;

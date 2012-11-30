@@ -229,14 +229,13 @@ Graph::Ptr Graph::load( iArchive &ar, frx::processing::IHostInfo::Ptr hostInfo )
 	return graph;
 }
 //------------------------------------------------------------------------------------------------------------
-/*
-void Graph::processEvents(VstEvents * events) {
-	GraphObjectContainer::iterator it = graphObjects.begin();
+void Graph::processEvents(sambag::dsp::IMidiEvents * events) {
+	/*GraphObjectContainer::iterator it = graphObjects.begin();
 	for ( ; it!=graphObjects.end(); ++it ){
-		IVstEventProcessor *pr = dynamic_cast<IVstEventProcessor*> ( it->get() );
+		IMidiEventProcessor *pr = dynamic_cast<IMidiEventProcessor*> ( it->get() );
 		if ( pr ) pr->processEvents( events );
-	}
-}*/
+	}*/
+}
 //------------------------------------------------------------------------------------------------------------
 Graph::Janitor::Ptr Graph::getJanitor() {
 	Janitor::Ptr up = updater.lock();

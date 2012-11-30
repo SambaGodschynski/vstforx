@@ -70,7 +70,7 @@ MyString VSTPlugin::extractNameFromFilename( const string &fileName ){
 	return MyString ( p.stem().string() );
 }
 //------------------------------------------------------------------------------------------------------------
-void VSTPlugin::processMidiEvents( VstEvents * events ) {
+void VSTPlugin::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
 	if ( canHandleMidiEvent() )
 		aEff->dispatcher ( aEff, effProcessEvents, 0, NULL, (void*)events, NULL );
 }

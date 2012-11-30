@@ -254,7 +254,7 @@ public:
 	 * Verarbeitet Midi-Events (@see VST-SDK VstEvents)
 	 * @param events
 	 */
-	virtual void processMidiEvents( VstEvents * events ) = 0;
+	virtual void processMidiEvents( sambag::dsp::IMidiEvents * events ) = 0;
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Plugin();
 	//--------------------------------------------------------------------------------------------------------

@@ -16,7 +16,7 @@
 #include "com/Serialization.h"
 #include "IHostInfo.h"
 #include "PObject.h"
-#include "IVstEventProcessor.h"
+#include "IMidiEventProcessor.h"
 #include "BglGraph.h"
 #include "Frames.h"
 #include "com/Events.h"

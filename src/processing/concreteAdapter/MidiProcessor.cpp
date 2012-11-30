@@ -27,23 +27,23 @@ MidiProcessor::MidiProcessor ( frx::processing::IHostInfo::Ptr iHost ) :
 	TOLOG ( "+" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
-void MidiProcessor::processMidiEvents ( VstEvents *ev ) {
-	for ( size_t i=0; i<ev->numEvents; ++i ) {
+void MidiProcessor::processMidiEvents ( sambag::dsp::IMidiEvents *ev ) {
+	/*for ( size_t i=0; i<ev->numEvents; ++i ) {
 		VstMidiEvent *midiEv = (VstMidiEvent*)ev->events[i];
 		Byte status = ( midiEv->midiData[0] & 0xf0 ) >> 4;
 		size_t gv=0, cc=0;
 		switch ( status ) {
-			case 0xE /*pitchbend*/ :
+			case 0xE : // pitchbend
 				gv = ( midiEv->midiData[2] << 7 ) | midiEv->midiData[1];
 				midiParameters[PITCH_BEND]->setValue( gv / 16383.0f );
 				break;
-			case 0xB /*cc*/        :
+			case 0xB // cc        :
 				cc = midiEv->midiData[1];
 				if ( cc >= (size_t)NUM_CC ) continue;
 				gv = midiEv->midiData[2];
 				midiParameters[ cc + (size_t)NUM_NO_CC_PARAMETER  ]->setValue( gv/127.0f );
 				break;
 		}
-	}
+	}*/
 }
 }// namespace processing
