@@ -28,7 +28,7 @@ namespace {
 		sdc::AComponent::WPtr _c, 
 		const bool *fadeIn
 	) {
-	sdc::AComponent::Ptr c = _c.lock();
+		sdc::AComponent::Ptr c = _c.lock();
 		if (!c)
 			return;
 		if (*fadeIn) {
@@ -45,8 +45,11 @@ namespace {
 			}
 			*alpha-=FINAL_ALPHA/FADE_STEPS;
 		}
-		c->getParent()->redraw();
-	}
+		sdc::AComponent::Ptr parent = c->getParent();
+		if (parent) {
+			parent->redraw();
+		}
+	} // onFadeTimer
 }
 //=============================================================================
 //  Class FrxNodeUI

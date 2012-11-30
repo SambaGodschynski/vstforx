@@ -301,13 +301,13 @@ void FrxMainBrowserCtrl::parameterLabelRedraw( sdc::AComponentPtr c,
 	processing::IParameter::WPtr _p,
 	const BrowserNode &node)
 {
-	/*processing::IParameter::Ptr p = _p.lock();
+	processing::IParameter::Ptr p = _p.lock();
 	FrxParameterLabel::Ptr label = 
 		boost::shared_dynamic_cast<FrxParameterLabel>(c);
 	if (!label)
 		return;
 	label->setText(label->getText() + ":" + p->getDisplay());
-	label->setValue(p->getValue());*/
+	label->setValue(p->getValue());
 }
 //-----------------------------------------------------------------------------
 void 
