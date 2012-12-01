@@ -74,9 +74,14 @@ void VSTPlugin::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
 	if ( !canHandleMidiEvent() ) {
 		return;
 	}
-	tmpMidiData = VstMidiEventAdapterPtr(
-		new sambag::dsp::VstMidiEventAdapter(events)
-	);
+	if (!tmpMidiData) {
+		tmpMidiData = VstMidiEventAdapterPtr(
+			new sambag::dsp::VstMidiEventAdapter(events)
+		);
+		aEff->dispatcher( aEff, effProcessEvents, 0, NULL, (void*)tmpMidiData->events, NULL );
+		return;
+	}
+	tmpMidiData->set(events);
 	aEff->dispatcher( aEff, effProcessEvents, 0, NULL, (void*)tmpMidiData->events, NULL );
 }
 //------------------------------------------------------------------------------------------------------------
