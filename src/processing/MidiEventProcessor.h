@@ -12,6 +12,7 @@
 #include "boost/shared_ptr.hpp"
 #include "IMidiEventProcessor.h"
 #include "processing/processing.h"
+#include <sambag/dsp/DefaultMidiEvents.hpp>
 #include <vector>
 
 namespace processing {
@@ -48,8 +49,8 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	MidiEventProcessor();
 	//--------------------------------------------------------------------------------------------------------
-	// copys events considers midi channel.
-	inline void filterEvents( sambag::dsp::IMidiEvents * scr, sambag::dsp::IMidiEvents * dst );
+	inline void filterEvents( sambag::dsp::IMidiEvents * scr, 
+		sambag::dsp::DefaultMidiEvents * dst, int channel);
 	//--------------------------------------------------------------------------------------------------------
 	virtual void processEvents( sambag::dsp::IMidiEvents * events );
 	//--------------------------------------------------------------------------------------------------------

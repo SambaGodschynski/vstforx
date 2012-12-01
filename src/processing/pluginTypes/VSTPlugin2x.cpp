@@ -71,8 +71,13 @@ MyString VSTPlugin::extractNameFromFilename( const string &fileName ){
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
-	if ( canHandleMidiEvent() )
-		aEff->dispatcher ( aEff, effProcessEvents, 0, NULL, (void*)events, NULL );
+	if ( !canHandleMidiEvent() ) {
+		return;
+	}
+	tmpMidiData = VstMidiEventAdapterPtr(
+		new sambag::dsp::VstMidiEventAdapter(events)
+	);
+	aEff->dispatcher( aEff, effProcessEvents, 0, NULL, (void*)tmpMidiData->events, NULL );
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::initPlug( VSTPlugin &plug ) {

@@ -73,6 +73,8 @@ protected:
 	void initHostParameter();
 public:
 	//-------------------------------------------------------------------------
+	void processEvents(sambag::dsp::IMidiEvents *ev);
+	//-------------------------------------------------------------------------
 	void hostParameterChanged(void *src, float value, int index);
 	//-------------------------------------------------------------------------
 	void registerView(fgc::FrxCircuidViewPtr view);

@@ -27,40 +27,39 @@ MidiEventProcessor::MidiEventProcessor() : midiChannel( parameter::Parameter::cr
 }
 //------------------------------------------------------------------------------------------------------------
 void MidiEventProcessor::processEvents( sambag::dsp::IMidiEvents *ev ) {
-	/*typedef unsigned char Byte;
-	Byte *rawData = NULL;
-	sambag::dsp::IMidiEvents *tmpEvents = NULL;
-	if ( ev->numEvents <= (size_t)EVENTS_OVERHEAD ) { // overhead sufficient
-		tmpEvents = (VstEvents*) &staticEvent; // use static event
+	
+	int channel = mapInteger ( midiChannel->getValue(), 17 ); // 16 midi channels + all channels
+
+	if (channel!=ALL_CHANNEL) {
+		sambag::dsp::DefaultMidiEvents filtered;
+		filterEvents (ev, &filtered, channel); 	
+		processMidiEvents(&filtered);
+		return;
 	}
-	else { // numEvents > overhead => create dynamic event 
-		size_t size = sizeof(VstEvents) + (ev->numEvents) * sizeof(VstEvent*);
-		rawData = new Byte[size];
-		tmpEvents = (VstEvents*)rawData;
-	}
-	filterEvents ( ev, tmpEvents ); 
-	processMidiEvents ( tmpEvents );
-	// free rawData if used
-	if (rawData) 
-		delete rawData;*/
+	processMidiEvents(ev);
 }
 //------------------------------------------------------------------------------------------------------------
-inline void MidiEventProcessor::filterEvents( sambag::dsp::IMidiEvents * src, sambag::dsp::IMidiEvents * dst ) {
-/*	using namespace parameter;
-	int n = mapInteger ( midiChannel->getValue(), 17 ); // 16 midi channels + all channels
+inline void MidiEventProcessor::filterEvents( sambag::dsp::IMidiEvents * src, 
+	sambag::dsp::DefaultMidiEvents * dst, int channel) 
+{
+	using namespace parameter;
+	typedef sambag::dsp::IMidiEvents::MidiEvent MidiEvent;
+	typedef sambag::dsp::IMidiEvents::DataPtr DataPtr;
+	typedef sambag::dsp::IMidiEvents::Int MidiInt;
 
-	dst->numEvents = 0;
+	MidiInt num = src->getNumEvents();
 
 	// copy all events assigned to midi channel to eventBuffer
-	for ( int i=0; i<src->numEvents; ++i ) {
-		if ( (src->events[i])->type != kVstMidiType ) continue; // is no midi ev
-		VstMidiEvent* _event = (VstMidiEvent*)src->events[i];
+	dst->reserve(num);
+	for (MidiInt i=0; i<num; ++i) {
+		MidiEvent _event = src->getMidiEvent(i);
 		// get channel
-		char* midiData = _event->midiData;
-		VstInt32 channel = midiData[0] & 0xf;	
-		if ( channel != n && n!=(size_t)ALL_CHANNEL ) continue;
-		dst->events[dst->numEvents++] = src->events[i];
-	}*/
+		DataPtr midiData = boost::get<2>(_event);
+		int n = midiData[0] & 0xf;	
+		if (n != channel) 
+			continue;
+		dst->insertFlat(_event);
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 void MidiEventProcessor::midiChannelChanged ( void *src, const float &val ) {

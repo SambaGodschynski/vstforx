@@ -132,6 +132,12 @@ void VstForxPlug::process(float **in, float **out, int numSamples) {
 	graph->processGraph( out, numSamples  );
 }
 //-----------------------------------------------------------------------------
+void VstForxPlug::processEvents(sambag::dsp::IMidiEvents *ev) {
+	if ( !graph ) 
+		return;
+	graph->processEvents(ev);
+}
+//-----------------------------------------------------------------------------
 void VstForxPlug::setBlockSize(int blockSize) {
 	this->blockSize = blockSize; 
 	updateGraphBaseConfiguration();

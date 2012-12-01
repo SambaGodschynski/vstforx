@@ -10,6 +10,7 @@
 #include "ParameterAdapter.hpp"
 #include <boost/unordered_map.hpp>
 #include <boost/foreach.hpp>
+#include "MidiEventProcessor.h"
 namespace frx { namespace processing {
 //=============================================================================
 //  Class ProcessorAdapter
@@ -158,5 +159,25 @@ addTrackedIOChangedListener(const IOChangedEventSender::EventFunction &f,
 		AnyWPtr holder)
 {
 	return IOChangedEventSender::addTrackedEventListener(f, holder);
+}
+//-----------------------------------------------------------------------------
+bool ProcessorAdapter::isMidiProcessor() const {
+	using namespace ::processing;
+	return 
+		dynamic_cast<MidiEventProcessor*>(processor.get()) != NULL;
+	
+}
+//-----------------------------------------------------------------------------
+IParameter::Ptr ProcessorAdapter::getMidiChannelParameter() const {
+	using namespace ::processing;
+	MidiEventProcessor* mevp = 
+		dynamic_cast<MidiEventProcessor*>(processor.get());
+	if (!mevp)
+		return IParameter::Ptr();
+	parameter::Parameter::Ptr p = 
+		mevp->getMidiChannelParameter();
+	ParameterAdapter::Ptr res = ParameterAdapter::create(p);
+	parameters.push_back(res);
+	return res;
 }
 }} // namespace(s)

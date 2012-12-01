@@ -666,9 +666,33 @@ addProcessorParameterNodes(FrxComponentPtr c,
 
 	// get frxctrl
 	IFrxControl & frxctrl = getFrxControl(view);
+	// midi config
+	frx::processing::IParameter::Ptr midiChannelPar;
+	if (pr->isMidiProcessor()) {
+		Tree::Node midi = 
+			tree->addNode(parent, BrowserNode("midi config", true));
+		midiChannelPar = pr->getMidiChannelParameter();
+		BrowserNode::AcceptedFunction f = 
+			boost::bind(&FrxMainBrowserCtrl::addProcesorKnobToView,
+				this,
+				fgc::FrxComponentWPtr(c),
+				frx::processing::IParameter::WPtr(midiChannelPar)
+			);
+		BrowserNode node;
+		createParameterNode(node, midiChannelPar->getName(), midiChannelPar);
+		node.f = f;
+		tree->addNode(
+			midi, 
+			node
+		);
+	}
 	// create browser nodes
 	for (size_t i=0; i<pr->getNumParameter(); ++i) {
 		frx::processing::IParameter::Ptr p = pr->getParameter(i);
+		// TODO: remove workaround use parameter mapping see isse#
+		if (p == midiChannelPar) {
+			continue;
+		}
 		BrowserNode::AcceptedFunction f = 
 			boost::bind(&FrxMainBrowserCtrl::addProcesorKnobToView,
 				this,

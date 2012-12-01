@@ -18,6 +18,7 @@
 #include <vector>
 #include <list>
 #include <stack>
+#include <sambag/dsp/VstMidiEventAdapter.hpp>
 
 
 namespace ppiGui {
@@ -71,6 +72,9 @@ public:
 	 */
 	static MyString extractNameFromFilename ( const string &fileName );
 private:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::shared_ptr<sambag::dsp::VstMidiEventAdapter> VstMidiEventAdapterPtr;
+	VstMidiEventAdapterPtr tmpMidiData;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * plugin calls ioChanged.

@@ -230,11 +230,13 @@ Graph::Ptr Graph::load( iArchive &ar, frx::processing::IHostInfo::Ptr hostInfo )
 }
 //------------------------------------------------------------------------------------------------------------
 void Graph::processEvents(sambag::dsp::IMidiEvents * events) {
-	/*GraphObjectContainer::iterator it = graphObjects.begin();
+	GraphObjectContainer::iterator it = graphObjects.begin();
 	for ( ; it!=graphObjects.end(); ++it ){
-		IMidiEventProcessor *pr = dynamic_cast<IMidiEventProcessor*> ( it->get() );
-		if ( pr ) pr->processEvents( events );
-	}*/
+		IMidiEventProcessor *pr = 
+			dynamic_cast<IMidiEventProcessor*> ( it->get() );
+		if ( pr ) 
+			pr->processEvents( events );
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 Graph::Janitor::Ptr Graph::getJanitor() {

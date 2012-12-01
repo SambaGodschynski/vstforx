@@ -80,6 +80,14 @@ public:
 	virtual IOChangedEventSender::Connection 
 	addTrackedIOChangedListener(const IOChangedEventSender::EventFunction &, 
 		AnyWPtr holder) = 0;
+	//-------------------------------------------------------------------------
+	virtual bool isMidiProcessor() const = 0;
+	//-------------------------------------------------------------------------
+	// TODO: replace extra parameter approach using mapping such as:
+	// getParameters(outContainer, "midi");
+	// getParameters(outContainer, "extraStuff.catgeory1");
+	// getParametersGroupKeys();
+	virtual IParameter::Ptr getMidiChannelParameter() const = 0;
 }; // IProcessor
 }} // namespace(s)
 
