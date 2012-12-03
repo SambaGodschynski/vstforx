@@ -137,6 +137,36 @@ public:
 	static string versionToString( const unsigned int version = PPI_VERSION );
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Settings(){}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @throw IllegalStateException if key not found
+	 */ 
+	bool getBooleanValue(const std::string &key) const;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @throw IllegalStateException if key not found
+	 */ 
+	void setBooleanValue(const std::string &key, bool val);
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @throw IllegalStateException if not found
+	 */ 
+	std::string getStringValue(const std::string &key) const;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @throw IllegalStateException if key not found
+	 */ 
+	void setStringValue(const std::string &key, const std::string &val);
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @throw IllegalStateException if not found
+	 */ 
+	int getIntegerValue(const std::string &key) const;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @throw IllegalStateException if key not found
+	 */ 
+	void setIntegerValue(const std::string &key, int val);
 };
 } // namespace com
 

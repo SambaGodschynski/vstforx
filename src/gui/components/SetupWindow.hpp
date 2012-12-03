@@ -14,6 +14,7 @@
 #include <sambag/disco/components/List.hpp>
 #include <sambag/disco/components/events/ActionEvent.hpp>
 #include <sambag/disco/components/Forward.hpp>
+#include <sambag/disco/components/CheckBox.hpp>
 #include "SetupCtrl.hpp"
 #include "Forward.hpp"
 
@@ -50,6 +51,9 @@ protected:
 	//-------------------------------------------------------------------------
 	virtual sdc::ScrollPanePtr createDirListScrollPane();
 	//-------------------------------------------------------------------------
+	sdc::AContainerPtr createMiscPane();
+	//-------------------------------------------------------------------------
+	sdc::AContainerPtr createWindowSizePane();
 private:
 	//-------------------------------------------------------------------------
 	SetupCtrl::Ptr ctrl;
@@ -60,12 +64,16 @@ private:
 	//-------------------------------------------------------------------------
 	sdc::ScrollPanePtr dirListScrollPane;
 	//-------------------------------------------------------------------------
+	sdc::CheckBox::Ptr chkbxFS;
+	//-------------------------------------------------------------------------
 	typedef void (SetupWindow::*BtnActionFunc)
 		(void *, const sdc::events::ActionEvent&);
 	//-------------------------------------------------------------------------
 	sdc::ButtonPtr createBtn(BtnActionFunc f, const std::string &txt);
 	//-------------------------------------------------------------------------
 	void updateSettings();
+	//-------------------------------------------------------------------------
+	void saveSettings();
 	//-------------------------------------------------------------------------
 	void openScanningDialog();
 public:
@@ -75,6 +83,10 @@ public:
 	void setCtrl(SetupCtrl::Ptr ctrl);
 	//-------------------------------------------------------------------------
 	SetupCtrl::Ptr getCtrl() const;
+	//-------------------------------------------------------------------------
+	void onFastScanSelected(void *, const sdc::events::ActionEvent &ev);
+	//-------------------------------------------------------------------------
+	void onBtnEditorSize(void *, const sdc::events::ActionEvent &ev, int key);
 	//-------------------------------------------------------------------------
 	void onBtnOkPressed(void *, const sdc::events::ActionEvent &ev);
 	//-------------------------------------------------------------------------

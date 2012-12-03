@@ -46,7 +46,7 @@ public:
 	enum FileStatus{OnOpening, Succeed, Failed, Skipped};
 	//-------------------------------------------------------------------------
 	typedef boost::function<void(const std::string&, FileStatus)> NotifyFileFunc;
-	typedef boost::function<void()> ScanCompletedFunc;
+	typedef boost::function<void(int, int, int)> ScanCompletedFunc;
 	//-------------------------------------------------------------------------
 	/**
 	 * starts plugin scan (in a seperate thread so don't forget joinScan())
@@ -76,6 +76,18 @@ public:
 	void getPluginFolders(std::list<std::string> &out);
 	//-------------------------------------------------------------------------
 	void saveSettings();
+	//-------------------------------------------------------------------------
+	bool getBooleanValue(const std::string &key) const;
+	//-------------------------------------------------------------------------
+	void setBooleanValue(const std::string &key, bool val);
+	//-------------------------------------------------------------------------
+	std::string getStringValue(const std::string &key) const;
+	//-------------------------------------------------------------------------
+	void setStringValue(const std::string &key, const std::string &val);
+	//-------------------------------------------------------------------------
+	int getIntegerValue(const std::string &key) const;
+	//-------------------------------------------------------------------------
+	void setIntegerValue(const std::string &key, int val);
 }; // SetupCtrl
 }}} // namespace(s)
 

@@ -15,12 +15,15 @@
 #include <sambag/disco/components/Panel.hpp>
 #include <sambag/disco/components/ScrollPane.hpp>
 #include <sambag/disco/components/Button.hpp>
+#include <sambag/disco/components/TitledBorder.hpp>
+#include <sambag/disco/components/SolidBorder.hpp>
 #include <boost/foreach.hpp>
 #include <sambag/com/Thread.hpp>
 #include <sambag/disco/components/Timer.hpp>
 #include <queue>
 #include <boost/unordered_map.hpp>
 #include <sambag/com/Thread.hpp>
+
 namespace frx { namespace gui { namespace components {
 ///////////////////////////////////////////////////////////////////////////////
 //=============================================================================
@@ -92,7 +95,7 @@ public:
 	//-------------------------------------------------------------------------
 	void onFileEvent(const std::string &file, SetupCtrl::FileStatus fst);
 	//-------------------------------------------------------------------------
-	void onScanCompleted();
+	void onScanCompleted(int succeed, int failed, int skipped);
 	//-------------------------------------------------------------------------
 	/**
 	 * redraw timer
@@ -157,7 +160,7 @@ void ScanningDialog::startScan(SetupCtrl::Ptr ctrl) {
 	btnOk->setEnabled(false);
 	ctrl->startScan(
 		boost::bind(&ScanningDialog::onFileEvent, this, _1, _2),
-		boost::bind(&ScanningDialog::onScanCompleted, this)
+		boost::bind(&ScanningDialog::onScanCompleted, this, _1, _2, _3)
 	);
 	timer = sdc::Timer::create(100);
 	timer->EventSender<sdc::TimerEvent>::addTrackedEventListener(
@@ -189,9 +192,22 @@ void ScanningDialog::onFileEvent(const std::string &file, SetupCtrl::FileStatus 
 	SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
-void ScanningDialog::onScanCompleted() {
+void ScanningDialog::onScanCompleted(int succeed, int failed, int skipped) {
 	timer->stop();
 	btnOk->setEnabled(true);
+	list->addElement("=====================================================");
+	list->addElement("Scan complete.");
+	list->addElement("Succeed: " + sambag::com::toString(succeed) + ".");
+	list->addElement("Failed: " + sambag::com::toString(failed) + ".");
+	list->addElement("Skipped: " + sambag::com::toString(skipped) + ".");
+	list->addElement("Don't forget to rescan when folder content changed!");
+	list->addElement("=====================================================");
+
+	dirListScrollPane->revalidate();
+	int i = list->DefaultListModel::getSize() - 1;
+	list->ensureIndexIsVisible(i);
+	list->revalidate();
+	list->redraw();
 }
 //-----------------------------------------------------------------------------
 void ScanningDialog::onRefresh(void *, const sdc::TimerEvent &ev) {
@@ -236,8 +252,17 @@ void SetupWindow::updateSettings() {
 	BOOST_FOREACH(const std::string &str, dirs) {
 		dirList->addElement(str);
 	}
+	chkbxFS->setButtonSelected(ctrl->getBooleanValue("fastScan"));
 	revalidate();
 	redraw();
+}
+//-----------------------------------------------------------------------------
+void SetupWindow::saveSettings() {
+	if (!ctrl)
+		return;
+	// directories already at place
+	ctrl->setBooleanValue("fastScan", chkbxFS->isButtonSelected());
+	ctrl->saveSettings();
 }
 //-----------------------------------------------------------------------------
 SetupCtrl::Ptr SetupWindow::getCtrl() const {
@@ -252,6 +277,7 @@ void SetupWindow::postConstructor() {
 	);
 	getContentPane()->add(createSetupPane(), sdc::BorderLayout::CENTER, APPEND);
 	getContentPane()->add(createMainBtnPane(), sdc::BorderLayout::SOUTH, APPEND);
+	setWindowSize(sd::Dimension(623., 452.));
 }
 //-----------------------------------------------------------------------------
 SetupWindow::~SetupWindow() {
@@ -259,15 +285,78 @@ SetupWindow::~SetupWindow() {
 //-----------------------------------------------------------------------------
 sdc::AContainerPtr SetupWindow::createSetupPane() {
 	sdc::Panel::Ptr pane = sdc::Panel::create();
-	//pane->setLayout(sdc::GridLayout::create(0, 2));
 	pane->add(createDirListPane());
 	pane->add(createDirListBtnPane());
+	pane->add(createMiscPane());
 	return pane;
 }
 //-----------------------------------------------------------------------------
 sdc::AContainerPtr SetupWindow::createDirListPane() {
 	dirListPane = createDirListScrollPane();
-	return dirListPane;
+	sdc::Panel::Ptr pane = sdc::Panel::create();
+	pane->add(dirListPane);
+	pane->setBorder(sdc::SolidBorder::create());
+	return pane;
+}	
+//-----------------------------------------------------------------------------
+void SetupWindow::onFastScanSelected(void *, const sdc::events::ActionEvent &ev)
+{
+}
+//-----------------------------------------------------------------------------
+void SetupWindow::onBtnEditorSize(void *, 
+	const sdc::events::ActionEvent &ev, int key) 
+{
+}
+//-----------------------------------------------------------------------------
+sdc::AContainerPtr SetupWindow::createMiscPane() {
+	sdc::Panel::Ptr pane = sdc::Panel::create();
+	pane->add( createWindowSizePane() );
+	chkbxFS = sdc::CheckBox::create();
+	chkbxFS->setText("Fastscan");
+	chkbxFS->EventSender<sdc::events::ActionEvent>::addEventListener(
+		boost::bind(&SetupWindow::onFastScanSelected, this, _1, _2)
+	);
+	pane->add(chkbxFS);
+	return pane;
+}
+//-----------------------------------------------------------------------------
+sdc::AContainerPtr SetupWindow::createWindowSizePane() {
+	sdc::Panel::Ptr pane = sdc::Panel::create();
+	sdc::Panel::Ptr labelpane = sdc::Panel::create();
+	sdc::Panel::Ptr btnpane = sdc::Panel::create();
+
+	sdc::TitledBorder::Ptr border = sdc::TitledBorder::create();
+	pane->setName("Window Size:");
+	pane->setBorder(border);
+
+	btnpane->setLayout(sdc::GridLayout::create(0,2));
+	sdc::Button::Ptr btn = sdc::Button::create();
+	btn->setText("-");
+	btnpane->add(btn);
+
+	btn = sdc::Button::create();
+	btn->setText("+");
+	btnpane->add(btn);
+
+	btn = sdc::Button::create();
+	btn->setText("-");
+	btnpane->add(btn);
+
+	btn = sdc::Button::create();
+	btn->setText("+");
+	btnpane->add(btn);
+	
+	sdc::Label::Ptr label = sdc::Label::create();
+	labelpane->setLayout(sdc::GridLayout::create(2,0));
+	label->setText("Window Width");
+	labelpane->add(label);
+	label = sdc::Label::create();
+	label->setText("Window Height");
+	labelpane->add(label);
+
+	pane->add(btnpane);
+	pane->add(labelpane);
+	return pane;
 }
 //-----------------------------------------------------------------------------
 sdc::AContainerPtr SetupWindow::createDirListBtnPane() {
@@ -338,9 +427,7 @@ void SetupWindow::openScanningDialog() {
 //-----------------------------------------------------------------------------
 void SetupWindow::onBtnOkPressed(void *, const sdc::events::ActionEvent &ev) {
 	try {
-		if (ctrl) {
-			ctrl->saveSettings();
-		}
+		saveSettings();
 	} catch (const std::exception &ex) {
 		// TODO: handle
 		throw;
@@ -355,6 +442,9 @@ void SetupWindow::onBtnOkPressed(void *, const sdc::events::ActionEvent &ev) {
 //-----------------------------------------------------------------------------
 void SetupWindow::onBtnCancelPressed(void *, const sdc::events::ActionEvent &ev) 
 {
+	sdc::WindowPtr win = getLastContainer<sdc::Window>();
+	if (win)
+		std::cout<<win->getWindowSize()<<std::endl;
 	close();
 }
 //-----------------------------------------------------------------------------

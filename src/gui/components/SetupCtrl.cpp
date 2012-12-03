@@ -96,7 +96,7 @@ void startScanImpl(const FileEvF &f,
 	// disconnect
 	loadCn.disconnect();
 	loadedCn.disconnect();
-	sccF();
+	sccF(db.getNumSucceed(), db.getNumFailed(), db.getNumNotChecked());
 }
 } // namespace(s)
 //-----------------------------------------------------------------------------
@@ -119,5 +119,29 @@ void SetupCtrl::joinScan() {
 void SetupCtrl::stopScanning() {
 	::com::PluginCollection &db = ::com::getPluginCollection();
 	db.stopScanning();
+}
+//-----------------------------------------------------------------------------
+bool SetupCtrl::getBooleanValue(const std::string &key) const {
+	return ::com::getSettings().getBooleanValue(key);
+}
+//-----------------------------------------------------------------------------
+void SetupCtrl::setBooleanValue(const std::string &key, bool val) {
+	return ::com::getSettings().setBooleanValue(key, val);
+}
+//-----------------------------------------------------------------------------
+std::string SetupCtrl::getStringValue(const std::string &key) const {
+	return ::com::getSettings().getStringValue(key);
+}
+//-----------------------------------------------------------------------------
+void SetupCtrl::setStringValue(const std::string &key, const std::string &val){
+	return ::com::getSettings().setStringValue(key, val);
+}
+//-----------------------------------------------------------------------------
+int SetupCtrl::getIntegerValue(const std::string &key) const {
+	return ::com::getSettings().getIntegerValue(key);
+}
+//-----------------------------------------------------------------------------
+void SetupCtrl::setIntegerValue(const std::string &key, int val) {
+	return ::com::getSettings().setIntegerValue(key, val);
 }
 }}} // namespace(s)

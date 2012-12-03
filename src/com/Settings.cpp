@@ -16,6 +16,7 @@
 #include "OS_Specific/OS_com.h"
 #include "com/PPIError.h"
 #include <sambag/disco/FileResourceManager.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 
 static const string SEPARATOR = "=";
 static const string IN_DIR = "in_dir";
@@ -215,7 +216,60 @@ string Settings::versionToString( const unsigned int version ) {
 	ss<<tmp[0]<<tmp[1]<<"."<<tmp[2]<<tmp[3]<<"."<<tmp[4]<<tmp[5]<<tmp[6];
 	return ss.str();
 }
-
+//--------------------------------------------------------------------------------------------------------
+bool Settings::getBooleanValue(const std::string &key) const {
+	if (key == "fastScan") {
+		return fastScan;
+	}
+	SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+		"Key: " + key + " not found.");
+	return false; 
+}
+//--------------------------------------------------------------------------------------------------------
+void Settings::setBooleanValue(const std::string &key, bool val) {
+	if (key == "fastScan") {
+		fastScan = val;
+		return;
+	}
+	SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+		"Key: " + key + " not found.");
+}
+//--------------------------------------------------------------------------------------------------------
+std::string Settings::getStringValue(const std::string &key) const {
+	SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+		"Key: " + key + " not found.");
+	return "";
+}
+//--------------------------------------------------------------------------------------------------------
+void Settings::setStringValue(const std::string &key, const std::string &val) {
+	SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+		"Key: " + key + " not found.");
+}
+//--------------------------------------------------------------------------------------------------------
+int Settings::getIntegerValue(const std::string &key) const {
+	if (key == "editorWidth") {
+		return windowWidth;
+	}
+	if (key == "editorHeight") {
+		return windowHeight;
+	}
+	SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+		"Key: " + key + " not found.");
+	return 0;
+}
+//--------------------------------------------------------------------------------------------------------
+void Settings::setIntegerValue(const std::string &key, int val) {
+	if (key == "editorWidth") {
+		windowWidth = val;
+		return;
+	}
+	if (key == "editorHeight") {
+		windowHeight = val;
+		return;
+	}
+	SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+		"Key: " + key + " not found.");
+}
 }// namespace com
 
 
