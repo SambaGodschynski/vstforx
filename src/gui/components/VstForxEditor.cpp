@@ -15,6 +15,7 @@
 #include <OS_Specific/OS_com.h>
 #include <sstream>
 #include <com/Serialization.h>
+#include <com/Settings.h>
 #include <gui/FrxControl.hpp>
 #include <processing/VstForxPlug.hpp>
 
@@ -28,10 +29,11 @@ VstForxEditor::VstForxEditor (AudioEffect *aEff) :
 AEffEditor(aEff),
 plug(NULL)
 {
+	::com::Settings &set = com::getSettings(); 
 	size.left = 0;
 	size.top = 0;
-	size.right = 800;
-	size.bottom = 600;
+	size.right = set.getWindowWidth();
+	size.bottom = set.getWindowHeight();
 }
 //-----------------------------------------------------------------------------
 VstForxEditor::~VstForxEditor () {
@@ -135,7 +137,10 @@ FrxCircuidViewPtr VstForxEditor::createView(sdc::Window::Ptr win) {
 		win->getContentPane()->add(circ);
 		getPlugin()->registerView(circ);
 	}
-	
+	using namespace frx::processing;
+	circ->setEditorResizeHandler(
+		boost::bind(&VstForxPlug::requestEditorResize, getPlugin(), _1, _2)
+	);
 	return circ;
 }
 //-----------------------------------------------------------------------------

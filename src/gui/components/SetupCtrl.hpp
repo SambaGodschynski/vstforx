@@ -14,6 +14,7 @@
 #include <list>
 #include "Forward.hpp"
 #include <processing/IHostInfo.h>
+#include <sambag/disco/Geometry.hpp>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -31,6 +32,8 @@ protected:
 private:
 	//-------------------------------------------------------------------------
 	::frx::processing::IHostInfo::Ptr hostInfo;
+	//-------------------------------------------------------------------------
+	FrxCircuidViewPtr view;
 public:
 	//-------------------------------------------------------------------------
 	static Ptr create() {
@@ -41,7 +44,18 @@ public:
 		return hostInfo;
 	}
 	//-------------------------------------------------------------------------
+	/**
+	 * initiates editor resize request.
+	 * @param the new size
+	 * @note dosen't save permanent in config.
+	 */
+	void setEditorSize(const sambag::disco::Dimension &size);
+	//-------------------------------------------------------------------------
+	sambag::disco::Dimension getEditorSize() const;
+	//-------------------------------------------------------------------------
 	void setHostInfo(::frx::processing::IHostInfo::Ptr hI);
+	//-------------------------------------------------------------------------
+	void setView(FrxCircuidViewPtr view);
 	//-------------------------------------------------------------------------
 	enum FileStatus{OnOpening, Succeed, Failed, Skipped};
 	//-------------------------------------------------------------------------

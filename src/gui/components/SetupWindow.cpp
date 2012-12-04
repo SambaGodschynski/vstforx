@@ -17,9 +17,9 @@
 #include <sambag/disco/components/Button.hpp>
 #include <sambag/disco/components/TitledBorder.hpp>
 #include <sambag/disco/components/SolidBorder.hpp>
+#include <sambag/disco/components/Timer.hpp>
 #include <boost/foreach.hpp>
 #include <sambag/com/Thread.hpp>
-#include <sambag/disco/components/Timer.hpp>
 #include <queue>
 #include <boost/unordered_map.hpp>
 #include <sambag/com/Thread.hpp>
@@ -111,6 +111,7 @@ void ScanningDialog::postConstructor() {
 	getContentPane()->add(createListPane(), sdc::BorderLayout::CENTER, APPEND);
 	getContentPane()->add(createMainBtnPane(), sdc::BorderLayout::SOUTH, APPEND);
 	setTitle("Scan results:");
+	windowImpl->setFlag(sdc::WindowFlags::WND_NO_SYSTEM_MENU, true);
 }
 //-----------------------------------------------------------------------------
 sdc::AContainerPtr ScanningDialog::createListPane() {
@@ -195,6 +196,7 @@ void ScanningDialog::onFileEvent(const std::string &file, SetupCtrl::FileStatus 
 void ScanningDialog::onScanCompleted(int succeed, int failed, int skipped) {
 	timer->stop();
 	btnOk->setEnabled(true);
+	btnCancel->setEnabled(false);
 	list->addElement("=====================================================");
 	list->addElement("Scan complete.");
 	list->addElement("Succeed: " + sambag::com::toString(succeed) + ".");
@@ -236,6 +238,104 @@ void ScanningDialog::onRefresh(void *, const sdc::TimerEvent &ev) {
 	list->redraw();
 }
 //=============================================================================
+// SetupWindow::ResizeBtnHandler
+//=============================================================================
+namespace {
+	enum ResizeDirection{EdPlusW, EdMinusW, EdPlusH, EdMinusH};
+}
+struct SetupWindow::ResizeBtnHandler {
+	typedef boost::shared_ptr<ResizeBtnHandler> Ptr;
+	static Ptr create(SetupWindow *host);
+	void registerBtn(sdc::AComponentPtr c, ResizeDirection dir);
+	void onMouse(void *src, const sdc::events::MouseEvent &ev, ResizeDirection dir);
+	void mousePressed(const sdc::events::MouseEvent &ev);
+	void mouseReleased(const sdc::events::MouseEvent &ev);
+	void onTimer(void *src, const sdc::TimerEvent &ev);
+	void performResize(ResizeDirection dir, int ammount);
+	ResizeDirection currDir;
+	SetupWindow *host;
+	sdc::Timer::Ptr timer;
+};
+///////////////////////////////////////////////////////////////////////////////
+SetupWindow::ResizeBtnHandler::Ptr 
+SetupWindow::ResizeBtnHandler::create(SetupWindow *host) 
+{
+	Ptr res(new ResizeBtnHandler());
+	res->host = host;
+	res->timer = sdc::Timer::create(100);
+	res->timer->setInitialDelay(1000);
+	res->timer->EventSender<sdc::TimerEvent>::addTrackedEventListener(
+		boost::bind(&ResizeBtnHandler::onTimer, res.get(), _1, _2),
+		res
+	);
+	res->timer->setNumRepetitions(-1);
+	return res;
+}
+//-----------------------------------------------------------------------------
+void SetupWindow::ResizeBtnHandler::
+registerBtn(sdc::AComponentPtr c, ResizeDirection dir)
+{
+	c->EventSender<sdc::events::MouseEvent>::addEventListener(
+		boost::bind(&ResizeBtnHandler::onMouse, this, _1, _2, dir)
+	);
+}
+//-----------------------------------------------------------------------------
+void SetupWindow::ResizeBtnHandler::
+onMouse(void *src, const sdc::events::MouseEvent &ev, ResizeDirection dir)
+{
+	using namespace sdc::events;
+	currDir = dir;
+	enum { Filter = MouseEvent::DISCO_MOUSE_PRESSED | 
+		MouseEvent::DISCO_MOUSE_RELEASED 
+	};
+	MouseEventSwitch<Filter>::delegate(ev, *this);
+}
+//-----------------------------------------------------------------------------
+void SetupWindow::ResizeBtnHandler::
+mousePressed(const sdc::events::MouseEvent &ev)
+{
+	performResize(currDir, 5);
+	timer->start();
+}
+//-----------------------------------------------------------------------------
+void SetupWindow::ResizeBtnHandler::
+mouseReleased(const sdc::events::MouseEvent &ev)
+{
+	timer->stop();
+}
+//-----------------------------------------------------------------------------
+void SetupWindow::ResizeBtnHandler::
+onTimer(void *src, const sdc::TimerEvent &ev)
+{
+	performResize(currDir, 5);
+}
+//-----------------------------------------------------------------------------
+void SetupWindow::ResizeBtnHandler::performResize(ResizeDirection dir, int ammount) 
+{
+	SetupCtrl::Ptr ctrl = host->getCtrl();
+	if (!ctrl)
+		return;
+	sambag::disco::Dimension size = ctrl->getEditorSize();
+	if (size==NULL_DIMENSION) {
+		return;
+	}
+	switch (dir) {
+		case EdPlusW:
+			size.width( size.width() + ammount);
+			break;
+		case EdMinusW:
+			size.width( size.width() - ammount);
+			break;
+		case EdPlusH:
+			size.height( size.height() + ammount);
+			break;
+		case EdMinusH:
+			size.height( size.height() - ammount);
+			break;
+	}
+	ctrl->setEditorSize(size);
+}
+//=============================================================================
 //  Class SetupWindow
 //=============================================================================
 //-----------------------------------------------------------------------------
@@ -262,7 +362,25 @@ void SetupWindow::saveSettings() {
 		return;
 	// directories already at place
 	ctrl->setBooleanValue("fastScan", chkbxFS->isButtonSelected());
+	// window size
+	sambag::disco::Dimension size = ctrl->getEditorSize();
+	if (size!=NULL_DIMENSION) {
+		ctrl->setIntegerValue("editorWidth", (int)size.width());
+		ctrl->setIntegerValue("editorHeight", (int)size.height());
+	}
 	ctrl->saveSettings();
+}
+//-----------------------------------------------------------------------------
+void SetupWindow::cancelSettings() {
+	if (!ctrl)
+		return;
+	using namespace sambag::disco;
+	// window size
+	Dimension size;
+	size.width( (Coordinate)ctrl->getIntegerValue("editorWidth") );
+	size.height( (Coordinate)ctrl->getIntegerValue("editorHeight") );
+	ctrl->setEditorSize(size);
+	
 }
 //-----------------------------------------------------------------------------
 SetupCtrl::Ptr SetupWindow::getCtrl() const {
@@ -278,6 +396,7 @@ void SetupWindow::postConstructor() {
 	getContentPane()->add(createSetupPane(), sdc::BorderLayout::CENTER, APPEND);
 	getContentPane()->add(createMainBtnPane(), sdc::BorderLayout::SOUTH, APPEND);
 	setWindowSize(sd::Dimension(623., 452.));
+	windowImpl->setFlag(sdc::WindowFlags::WND_RESIZEABLE, false);
 }
 //-----------------------------------------------------------------------------
 SetupWindow::~SetupWindow() {
@@ -303,11 +422,6 @@ void SetupWindow::onFastScanSelected(void *, const sdc::events::ActionEvent &ev)
 {
 }
 //-----------------------------------------------------------------------------
-void SetupWindow::onBtnEditorSize(void *, 
-	const sdc::events::ActionEvent &ev, int key) 
-{
-}
-//-----------------------------------------------------------------------------
 sdc::AContainerPtr SetupWindow::createMiscPane() {
 	sdc::Panel::Ptr pane = sdc::Panel::create();
 	pane->add( createWindowSizePane() );
@@ -324,28 +438,37 @@ sdc::AContainerPtr SetupWindow::createWindowSizePane() {
 	sdc::Panel::Ptr pane = sdc::Panel::create();
 	sdc::Panel::Ptr labelpane = sdc::Panel::create();
 	sdc::Panel::Ptr btnpane = sdc::Panel::create();
+	rszBtnHandler = ResizeBtnHandler::create(this);
 
 	sdc::TitledBorder::Ptr border = sdc::TitledBorder::create();
 	pane->setName("Window Size:");
 	pane->setBorder(border);
 
 	btnpane->setLayout(sdc::GridLayout::create(0,2));
+	// ed-w
 	sdc::Button::Ptr btn = sdc::Button::create();
+	rszBtnHandler->registerBtn(btn, EdMinusW);
 	btn->setText("-");
 	btnpane->add(btn);
 
+	// ed+w
 	btn = sdc::Button::create();
 	btn->setText("+");
-	btnpane->add(btn);
-
-	btn = sdc::Button::create();
-	btn->setText("-");
-	btnpane->add(btn);
-
-	btn = sdc::Button::create();
-	btn->setText("+");
+	rszBtnHandler->registerBtn(btn, EdPlusW);
 	btnpane->add(btn);
 	
+	// ed-h
+	btn = sdc::Button::create();
+	btn->setText("-");
+	rszBtnHandler->registerBtn(btn, EdMinusH);
+	btnpane->add(btn);
+
+	// ed+h
+	btn = sdc::Button::create();
+	btn->setText("+");
+	rszBtnHandler->registerBtn(btn, EdPlusH);
+	btnpane->add(btn);
+	// label
 	sdc::Label::Ptr label = sdc::Label::create();
 	labelpane->setLayout(sdc::GridLayout::create(2,0));
 	label->setText("Window Width");
@@ -442,9 +565,7 @@ void SetupWindow::onBtnOkPressed(void *, const sdc::events::ActionEvent &ev) {
 //-----------------------------------------------------------------------------
 void SetupWindow::onBtnCancelPressed(void *, const sdc::events::ActionEvent &ev) 
 {
-	sdc::WindowPtr win = getLastContainer<sdc::Window>();
-	if (win)
-		std::cout<<win->getWindowSize()<<std::endl;
+	cancelSettings();
 	close();
 }
 //-----------------------------------------------------------------------------

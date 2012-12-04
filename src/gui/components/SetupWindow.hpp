@@ -21,6 +21,7 @@
 namespace frx { namespace gui { namespace components {
 namespace sd = sambag::disco;
 namespace sdc = sd::components;
+
 //=============================================================================
 /** 
   * @class SetupWindow.
@@ -56,6 +57,10 @@ protected:
 	sdc::AContainerPtr createWindowSizePane();
 private:
 	//-------------------------------------------------------------------------
+	struct ResizeBtnHandler;
+	//-------------------------------------------------------------------------
+	boost::shared_ptr<ResizeBtnHandler> rszBtnHandler;
+	//-------------------------------------------------------------------------
 	SetupCtrl::Ptr ctrl;
 	//-------------------------------------------------------------------------
 	sdc::AContainerPtr dirListPane, dirListBtnPane, mainBtnPane;
@@ -75,6 +80,8 @@ private:
 	//-------------------------------------------------------------------------
 	void saveSettings();
 	//-------------------------------------------------------------------------
+	void cancelSettings();
+	//-------------------------------------------------------------------------
 	void openScanningDialog();
 public:
 	//-------------------------------------------------------------------------
@@ -85,8 +92,6 @@ public:
 	SetupCtrl::Ptr getCtrl() const;
 	//-------------------------------------------------------------------------
 	void onFastScanSelected(void *, const sdc::events::ActionEvent &ev);
-	//-------------------------------------------------------------------------
-	void onBtnEditorSize(void *, const sdc::events::ActionEvent &ev, int key);
 	//-------------------------------------------------------------------------
 	void onBtnOkPressed(void *, const sdc::events::ActionEvent &ev);
 	//-------------------------------------------------------------------------

@@ -75,6 +75,7 @@ sampleRate(0.f)
 //-----------------------------------------------------------------------------
 void VstForxPlug::registerView(fgc::FrxCircuidViewPtr view) {
 	plugMap.insert(PlugMap::value_type(view, this));
+
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::unRegisterView(fgc::FrxCircuidViewPtr view) {
@@ -220,6 +221,10 @@ void VstForxPlug::updateGraphBaseConfiguration() {
 	if (sampleRate==0. || blockSize == 0)
 		return;
 	graph->getJanitor()->hostBaseConfigChanged();
+}
+//-----------------------------------------------------------------------------
+void VstForxPlug::requestEditorResize(int width, int height) {
+	getHost()->requestEditorResize(width, height);
 }
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------

@@ -71,6 +71,8 @@ public:
 	static const float Z_InteractiveStuff;
 	//-------------------------------------------------------------------------
 	typedef std::pair<FrxComponentPtr, ZOrder> FrxComponentInfo;
+	//-------------------------------------------------------------------------
+	typedef boost::function<void(int width, int height)> EditorResizeHandler;
 protected:
 	//-------------------------------------------------------------------------
 	void initStatusBar();
@@ -85,6 +87,8 @@ protected:
 	//-------------------------------------------------------------------------
 	void setStatusMessage(const std::string &txt, const std::string &iconname);
 private:
+	//-------------------------------------------------------------------------
+	EditorResizeHandler rszHandler;
 	//-------------------------------------------------------------------------
 	std::string usrMsg;
 	//-------------------------------------------------------------------------
@@ -136,6 +140,14 @@ private:
 		serializeComponents(ar, version);
 	}
 public:
+	//-------------------------------------------------------------------------
+	void setEditorResizeHandler(const EditorResizeHandler &f);
+	//-------------------------------------------------------------------------
+	const EditorResizeHandler & getEditorResizeHandler() const {
+		return rszHandler;
+	}
+	//-------------------------------------------------------------------------
+	void requestEditorResize(const sd::Dimension &size);
 	//-------------------------------------------------------------------------
 	/**
 	 * @return index of order or -1 if not found.

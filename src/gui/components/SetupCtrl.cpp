@@ -11,6 +11,8 @@
 #include <com/PluginCollection.h>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <boost/thread.hpp>
+#include <gui/components/FrxCircuidView.hpp>
+#include <sambag/disco/components/Window.hpp>
 
 namespace com {
 extern std::string osSelectDirectory(const std::string &wndTitle, 
@@ -32,6 +34,10 @@ std::string SetupCtrl::selectDirectory(const std::string &startDir) const {
 //-----------------------------------------------------------------------------
 bool SetupCtrl::addPluginFolder(const std::string &path) {
 	return ::com::getSettings().addVSTFolder(path);
+}
+//-----------------------------------------------------------------------------
+void SetupCtrl::setView(FrxCircuidViewPtr view) {
+	this->view = view;
 }
 //-----------------------------------------------------------------------------
 bool SetupCtrl::removePluginFolder(const std::string &path) {
@@ -143,5 +149,20 @@ int SetupCtrl::getIntegerValue(const std::string &key) const {
 //-----------------------------------------------------------------------------
 void SetupCtrl::setIntegerValue(const std::string &key, int val) {
 	return ::com::getSettings().setIntegerValue(key, val);
+}
+//-----------------------------------------------------------------------------
+sambag::disco::Dimension SetupCtrl::getEditorSize() const {
+	using namespace sambag::disco::components;
+	if (!view)
+		return NULL_DIMENSION;
+	Window::Ptr win = view->getFirstContainer<Window>();
+	if (!win)
+		return NULL_DIMENSION;
+	return win->getWindowSize();
+}
+//-----------------------------------------------------------------------------
+void SetupCtrl::setEditorSize(const sambag::disco::Dimension &size)
+{
+	view->requestEditorResize(size);
 }
 }}} // namespace(s)

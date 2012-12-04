@@ -248,6 +248,7 @@ void openSetup(fgc::FrxCircuidViewPtr view,
 	frx::processing::IModelController::Ptr mCtrl = frx::processing::getModelController(view);
 	if (mCtrl) {
 		ctrl->setHostInfo(mCtrl->getHostInfo());
+		ctrl->setView(view);
 	}
 	setup->setCtrl(ctrl);
 	setup->validate();

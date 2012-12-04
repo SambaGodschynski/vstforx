@@ -22,7 +22,8 @@
 #include <sambag/disco/components/FlowLayout.hpp>
 #include <sambag/math/Matrix.hpp>
 #include <sambag/disco/svg/graphicElements/Style.hpp>
-
+#include <sambag/disco/components/Window.hpp>
+#include <sambag/disco/components/SolidBorder.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace {
@@ -171,6 +172,7 @@ void FrxCircuidView::setStatusMessage(const std::string &txt,
 //-----------------------------------------------------------------------------
 void FrxCircuidView::initStatusBar() {
 	sdc::Panel::Ptr panel = sdc::Panel::create();
+	//panel->setBorder(sdc::SolidBorder::create());
 	panel->setLayout(sdc::FlowLayout::create(sdc::FlowLayout::LEFT, 0, 0));
 	statusMessage = StatusLabel::create();
 	sd::svg::graphicElements::Style style;
@@ -306,5 +308,22 @@ void FrxCircuidView::setUserMessage(const std::string &txt,
 		const std::string &icon) 
 {
 	setStatusMessage(txt, icon);
+}
+//-----------------------------------------------------------------------------
+void FrxCircuidView::requestEditorResize(const sd::Dimension &size) {
+	if (!rszHandler) {
+		return;
+	}
+	rszHandler((int)size.width(), (int)size.height());
+	using namespace sambag::disco::components;
+	Window::Ptr win = getFirstContainer<Window>();
+	if (!win) {
+		return;
+	}
+	win->setWindowSize(size);
+}
+//-----------------------------------------------------------------------------
+void FrxCircuidView::setEditorResizeHandler(const EditorResizeHandler &f) {
+	rszHandler = f;
 }
 }}} // namespace(s)
