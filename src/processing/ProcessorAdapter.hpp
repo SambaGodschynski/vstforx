@@ -13,6 +13,7 @@
 #include "IProcessor.hpp"
 #include <sambag/com/Exception.hpp>
 #include <vector>
+#include <map>
 #include "processing.h"
 #include "Forward.hpp"
 
@@ -47,7 +48,11 @@ protected:
 	//-------------------------------------------------------------------------
 	mutable std::vector<NodeAdapterPtr> outputs; 
 	//-------------------------------------------------------------------------
-	mutable std::vector<ParameterAdapterPtr> parameters; 
+	typedef std::multimap<ParameterGroupKey, ParameterAdapterPtr> ParameterGroupMap;
+	ParameterGroupMap parameters; 
+	//-------------------------------------------------------------------------
+	void initParameter();
+	//-------------------------------------------------------------------------
 public:
 	//-------------------------------------------------------------------------
 	virtual IProcessor::Ptr getPtr() const {
@@ -95,15 +100,16 @@ public:
 	 */
 	virtual INode::Ptr addInput();
 	//-------------------------------------------------------------------------
-	virtual size_t getNumParameter() const;
+	virtual void getParameterGroupKeys(ParameterGroupKeys &out) const;
 	//-------------------------------------------------------------------------
-	virtual IParameter::Ptr getParameter(int nr) const;
+	/**
+	 * @return parameter by group key. if key == "*" all parameter
+	 * will be returned.
+	 */
+	virtual void 
+	getParameters(const ParameterGroupKey &key, Parameters &out) const;
 	//-------------------------------------------------------------------------
 	virtual bool requestRemove(ModelObject::Ptr obj);
-	//-------------------------------------------------------------------------
-	virtual bool isMidiProcessor() const;
-	//-------------------------------------------------------------------------
-	virtual IParameter::Ptr getMidiChannelParameter() const;
 	///////////////////////////////////////////////////////////////////////////
 	// Events
 	//-------------------------------------------------------------------------

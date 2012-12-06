@@ -277,8 +277,6 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	SerializationError(string err="SerializationsError", string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
 };
-
-
 } //namespace ppiError
 } //namespace com
 

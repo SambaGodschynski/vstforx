@@ -48,7 +48,7 @@ ioChangedLock(false)
 		// on because we have to specify which plugin we want.
 		if (!infos.empty())
 			throw 
-				ShellPluginException(infos);
+				ShellPluginException(filename, infos);
 	}
 
 	// init i/o 
@@ -474,7 +474,7 @@ void VSTPlugin::onEditorIdle() {
 	aEff->dispatcher ( aEff, effEditIdle, 0, 0, 0, 0);
 }
 //------------------------------------------------------------------------------------------------------------
-void VSTPlugin::getShellPluginInfos(VSTPlugin::ShellPluginInfos &out) {
+void VSTPlugin::getShellPluginInfos(ShellPluginInfos &out) {
 	// scan shell for subplugins
 	char tempName[256] = {0}; 
 	VstInt32 plugUniqueID = 0;

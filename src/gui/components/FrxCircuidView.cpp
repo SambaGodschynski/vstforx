@@ -24,7 +24,8 @@
 #include <sambag/disco/svg/graphicElements/Style.hpp>
 #include <sambag/disco/components/Window.hpp>
 #include <sambag/disco/components/SolidBorder.hpp>
-
+#include <sambag/disco/svg/StyleParser.hpp>
+#include <sambag/disco/components/ui/UIManager.hpp>
 namespace frx { namespace gui { namespace components {
 namespace {
 //-----------------------------------------------------------------------------
@@ -47,7 +48,9 @@ public:
 	typedef boost::shared_ptr<StatusLabel> Ptr;
 	typedef sdc::Label Super;
 protected:
-	StatusLabel(){}
+	StatusLabel(){
+		setOpaque(false);
+	}
 public:
 	SAMBAG_STD_STATIC_COMPONENT_CREATOR(StatusLabel)
 	virtual sd::Dimension getPreferredSize() {
@@ -164,24 +167,30 @@ void FrxCircuidView::setStatusMessage(const std::string &txt,
 		sd::getResourceManager().getImage("StatusMessage.icon." + iconname);
 	statusMessage->setIcon(icon);
 
-	if (!statusMessage->getParent())
+	sdc::AComponentPtr stc = statusMessage->getParent();
+	if (!stc)
 		return;
-	statusMessage->getParent()->revalidate();
-	statusMessage->redraw();
+	stc->revalidate();
+	stc->redraw();
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::initStatusBar() {
+	using sd::svg::graphicElements::Style;
 	sdc::Panel::Ptr panel = sdc::Panel::create();
-	//panel->setBorder(sdc::SolidBorder::create());
+	// border
+	sdc::SolidBorder::Ptr border = sdc::SolidBorder::create();
+	Style statusStyle = 
+		createStyle("stroke-width: 1; stroke: black;font-size: 13; font-family: arial");
+	sdc::ui::getUIManager().getProperty("StatusMessage.style", statusStyle);
+	border->setStyle(statusStyle);
+	panel->setBorder(border);
+	// layout
 	panel->setLayout(sdc::FlowLayout::create(sdc::FlowLayout::LEFT, 0, 0));
 	statusMessage = StatusLabel::create();
-	sd::svg::graphicElements::Style style;
-	sdc::ui::UIManager &m = sdc::ui::getUIManager();
-	m.getProperty("StatusMessage.fontStyle", style);
-	statusMessage->setFont( style.font());
+	statusMessage->setFont( statusStyle.font());
 	panel->add(statusMessage);
 	Super::add(panel, sdc::BorderLayout::SOUTH, -1);
-	setStatusMessage("Use the contextmenu0123456789", "hint");
+	setStatusMessage("Ready", "hint");
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::postConstructor() {

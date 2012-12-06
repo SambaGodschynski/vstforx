@@ -121,6 +121,10 @@ public:
 	virtual Number getValue() const {
 		return parameter->getValue();
 	}
+	//-------------------------------------------------------------------------
+	virtual bool isReadOnly() const {
+		return parameter->isReadOnly();
+	}
 }; // ParameterAdapter
 }} // namespace(s)
 

@@ -536,6 +536,14 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\src\gui\components\ShellPluginSelection.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\ShellPluginSelection.hpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\gui\components\VerticalFormatter.cpp"
 						>
 					</File>
@@ -1009,6 +1017,10 @@
 					</File>
 					<File
 						RelativePath="..\..\src\processing\pluginTypes\VSTPlugin2x.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\processing\pluginTypes\VstShellPlugin.hpp"
 						>
 					</File>
 				</Filter>

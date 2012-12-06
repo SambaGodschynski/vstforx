@@ -14,6 +14,8 @@
 #include "INode.hpp"
 #include "IParameter.hpp"
 #include <sambag/com/events/Events.hpp>
+#include <vector>
+#include <set>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -62,9 +64,19 @@ public:
 	 */
 	virtual INode::Ptr addInput() = 0;
 	//-------------------------------------------------------------------------
-	virtual size_t getNumParameter() const = 0;
+	///////////////////////////////////////////////////////////////////////////
+	// Parameter
+	typedef std::string ParameterGroupKey;
+	typedef std::vector<IParameter::Ptr> Parameters;
+	typedef std::set<ParameterGroupKey> ParameterGroupKeys;
 	//-------------------------------------------------------------------------
-	virtual IParameter::Ptr getParameter(int nr) const = 0;
+	virtual void getParameterGroupKeys(ParameterGroupKeys &out) const = 0;
+	//-------------------------------------------------------------------------
+	/**
+	 * @return parameter by group key. if key == "*" all parameter
+	 * will be returned.
+	 */
+	virtual void getParameters(const ParameterGroupKey &key, Parameters &out) const = 0;
 	///////////////////////////////////////////////////////////////////////////
 	// Events
 	struct IOChangedEvent{
@@ -80,14 +92,6 @@ public:
 	virtual IOChangedEventSender::Connection 
 	addTrackedIOChangedListener(const IOChangedEventSender::EventFunction &, 
 		AnyWPtr holder) = 0;
-	//-------------------------------------------------------------------------
-	virtual bool isMidiProcessor() const = 0;
-	//-------------------------------------------------------------------------
-	// TODO: replace extra parameter approach using mapping such as:
-	// getParameters(outContainer, "midi");
-	// getParameters(outContainer, "extraStuff.catgeory1");
-	// getParametersGroupKeys();
-	virtual IParameter::Ptr getMidiChannelParameter() const = 0;
 }; // IProcessor
 }} // namespace(s)
 

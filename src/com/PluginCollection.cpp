@@ -13,7 +13,7 @@
 #include <boost/filesystem.hpp>
 #include "OS_Specific/OS_com.h"
 #include "processing/pluginTypes/VSTPlugin2x.h"
-
+#include "processing/pluginTypes/VstShellPlugin.hpp"
 
 #define DB_QUERY(x)											\
 	try {x}													\
@@ -339,7 +339,7 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 	Plugin::Ptr n;
 	try {
 		n = PluginFactory::createPlugNode ( hostinfo, out_info.location );
-	} catch(const VSTPlugin::ShellPluginException &ex) {
+	} catch(const ShellPluginException &ex) {
 		// TODO: insert as folder with concrete shell ids as content
 		out_info.access = PluginInfo::SUCCEED;
 		out_info.name = VSTPlugin::extractNameFromFilename(out_info.location);

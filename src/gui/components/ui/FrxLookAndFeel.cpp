@@ -48,8 +48,6 @@ namespace components { namespace ui {
 //=============================================================================
 //-----------------------------------------------------------------------------
 FrxLookAndFeel::FrxLookAndFeel() {
-	installDefaults(); // <= always before installComponents
-	installComponents();
 	installTooltipManager();
 }
 //-----------------------------------------------------------------------------
@@ -189,7 +187,8 @@ void FrxLookAndFeel::installDefaults() {
 		createStyle("stroke-width: 1; stroke: red; fill: grey; fill-opacity: 0.25"));
 	m.putProperty("FrxBrowserList.selectedEntryStyle", 
 		createStyle("stroke: white; fill: lightblue;"));
-	m.putProperty("StatusMessage.fontStyle", createStyle("font-size: 13; font-family: arial"));
+	m.putProperty("StatusMessage.style", 
+		createStyle("stroke-width: 1; stroke: darkgrey;font-size: 13; font-family: arial"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<images
 	FileResourceManager &rManager = FileResourceManager::instance();
 	rManager.registerImage("FrxCircuidView.image", "disco-floor.png");

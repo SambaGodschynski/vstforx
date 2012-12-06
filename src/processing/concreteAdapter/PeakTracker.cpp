@@ -17,6 +17,7 @@ PeakTracker::PeakTracker( frx::processing::IHostInfo::Ptr hostInfo ) : ProcessAd
 	inputNodes[0]->setName  ( getName() + " InputNode");
 	outputNodes[0]->setName ( getName() + " OutputNode");
 	out = Parameter::create();
+	out->setReadOnly(true);
 	*out = 0.0f;
 	out->setName ("peak tracker output");
 	offset = Parameter::create();

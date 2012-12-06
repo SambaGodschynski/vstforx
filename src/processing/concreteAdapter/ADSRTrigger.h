@@ -19,7 +19,10 @@ using namespace parameter;
  * @class ADSRTRigger
  * Triggert Eingangs-Signal als Gate fuer ADSR-Verlauf
  */
-class ADSRTrigger : public ProcessAdapter, public HasParameter, public Serializable {
+class ADSRTrigger : public ProcessAdapter, 
+	public HasParameter,
+	public HasOutParameter,
+	public Serializable {
 //============================================================================================================
 friend class boost::serialization::access;
 public:
@@ -85,9 +88,14 @@ public:
 	virtual size_t getNumParameter () const { return adsr->getNumParameter(); }
 	//--------------------------------------------------------------------------------------------------------
 	/**
+	 * @return Anzahl aller ADSRTrigger-Parameter
+	 */
+	virtual size_t getNumOutParameter () const { return 1; }
+	//--------------------------------------------------------------------------------------------------------
+	/**
 	 * @return Ausgabe-Parameter
 	 */
-	Parameter::Ptr getOutParameter() { return out; }
+	Parameter::Ptr getOutParameter(size_t index = 0) const { return out; }
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~ADSRTrigger (){ 
 		delete adsr; 

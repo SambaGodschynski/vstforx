@@ -39,7 +39,9 @@ private:
 public:
 	//-------------------------------------------------------------------------
 	static Ptr create() {
-		return Ptr(new FrxLookAndFeel());
+		Ptr res(new FrxLookAndFeel());
+		res->installLookAndFeel();
+		return res;
 	}
 }; // FrxLookAndFeel
 }}}} // namespace(s)

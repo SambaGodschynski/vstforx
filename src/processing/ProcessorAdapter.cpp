@@ -18,6 +18,7 @@ namespace frx { namespace processing {
 //-----------------------------------------------------------------------------
 void ProcessorAdapter::setAdaptee(ProcessorAdapter::Adaptee::Ptr p) {
 	processor = p;	
+	initParameter();
 }
 //-----------------------------------------------------------------------------
 ProcessorAdapter::Adaptee::Ptr ProcessorAdapter::getAdaptee() const {
@@ -108,30 +109,70 @@ INode::Ptr ProcessorAdapter::addInput() {
 	return res;
 }
 //-----------------------------------------------------------------------------
-size_t ProcessorAdapter::getNumParameter() const {
+void ProcessorAdapter::initParameter() {
+	// default parameter
+	using ::processing::parameter::Parameter;
 	using ::processing::parameter::HasParameter;
+	using ::processing::MidiEventProcessor;
 	HasParameter::Ptr hp =
 		boost::shared_dynamic_cast<HasParameter>(processor);
-	if (!hp)
-		return 0;
-	return hp->getNumParameter();
+	if (hp) {
+		size_t num = hp->getNumParameter();
+		for (size_t i=0; i<num; ++i) {
+			::processing::parameter::Parameter::Ptr p;
+			p = hp->getParameter(i);
+			parameters.insert(std::make_pair(".", ParameterAdapter::create(p)));
+		}
+	}
+	// out parameter
+	using ::processing::parameter::Parameter;
+	using ::processing::parameter::HasParameter;
+	using ::processing::parameter::HasOutParameter;
+	using ::processing::MidiEventProcessor;
+	HasOutParameter::Ptr hpo =
+		boost::shared_dynamic_cast<HasOutParameter>(processor);
+	if (hpo) {
+		size_t num = hpo->getNumOutParameter();
+		for (size_t i=0; i<num; ++i) {
+			::processing::parameter::Parameter::Ptr p;
+			p = hpo->getOutParameter(i);
+			parameters.insert(std::make_pair("output parameter", ParameterAdapter::create(p)));
+		}
+	}
+	// midi config parameter
+	MidiEventProcessor* mevp = 
+		dynamic_cast<MidiEventProcessor*>(processor.get());
+	if (mevp) {
+		Parameter::Ptr p = mevp->getMidiChannelParameter();
+		parameters.insert(std::make_pair("midi config", ParameterAdapter::create(p)));
+	}
 }
 //-----------------------------------------------------------------------------
-IParameter::Ptr ProcessorAdapter::getParameter(int nr) const {
-	using ::processing::parameter::HasParameter;
-	HasParameter::Ptr hp =
-		boost::shared_dynamic_cast<HasParameter>(processor);
-	if (!hp)
-		return IParameter::Ptr();
-	size_t num = hp->getNumParameter();
-	if (parameters.size() != num) {
-		parameters.resize(num);
+void ProcessorAdapter::getParameterGroupKeys(ParameterGroupKeys &out) const {
+	ParameterGroupMap::const_iterator it = parameters.begin();
+	while (it!=parameters.end()) {
+		const ParameterGroupKey &key = it->first;
+		out.insert(key);
+		it = parameters.upper_bound(key); // next key
 	}
-	if (!parameters[nr]) {
-		::processing::parameter::Parameter::Ptr p = hp->getParameter(nr);
-		parameters[nr] = ParameterAdapter::create(p);
+}
+//-----------------------------------------------------------------------------
+void ProcessorAdapter::
+getParameters(const ParameterGroupKey &key, Parameters &out) const 
+{
+	if (key=="*") { // all parameter
+		out.reserve(parameters.size());
+		BOOST_FOREACH(const ParameterGroupMap::value_type &v, parameters) {
+			out.push_back(v.second);
+		}
+		return;
 	}
-	return parameters[nr];
+	ParameterGroupMap::const_iterator it, end;
+	boost::tie(it, end) = parameters.equal_range(key);
+	out.reserve(parameters.count(key));
+	for (; it!=end; ++it) {
+		out.push_back(it->second);
+	}
 }
 //-----------------------------------------------------------------------------
 bool ProcessorAdapter::requestRemove(ModelObject::Ptr obj) {
@@ -142,8 +183,8 @@ bool ProcessorAdapter::requestRemove(ModelObject::Ptr obj) {
 	BOOST_FOREACH(ModelObject::Ptr m, outputs) {
 		res &= m->requestRemove(m);
 	}
-	BOOST_FOREACH(ModelObject::Ptr m, parameters) {
-		res &= m->requestRemove(m);
+	BOOST_FOREACH(const ParameterGroupMap::value_type &v, parameters) {
+		res &= v.second->requestRemove(v.second);
 	}
 	return res && Super::requestRemove(obj);
 }
@@ -159,25 +200,5 @@ addTrackedIOChangedListener(const IOChangedEventSender::EventFunction &f,
 		AnyWPtr holder)
 {
 	return IOChangedEventSender::addTrackedEventListener(f, holder);
-}
-//-----------------------------------------------------------------------------
-bool ProcessorAdapter::isMidiProcessor() const {
-	using namespace ::processing;
-	return 
-		dynamic_cast<MidiEventProcessor*>(processor.get()) != NULL;
-	
-}
-//-----------------------------------------------------------------------------
-IParameter::Ptr ProcessorAdapter::getMidiChannelParameter() const {
-	using namespace ::processing;
-	MidiEventProcessor* mevp = 
-		dynamic_cast<MidiEventProcessor*>(processor.get());
-	if (!mevp)
-		return IParameter::Ptr();
-	parameter::Parameter::Ptr p = 
-		mevp->getMidiChannelParameter();
-	ParameterAdapter::Ptr res = ParameterAdapter::create(p);
-	parameters.push_back(res);
-	return res;
 }
 }} // namespace(s)

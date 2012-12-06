@@ -85,7 +85,8 @@ void ParameterConnection::onChangedB(void *src, const VstNumber &newValue) {
 Parameter::Parameter( int index ):
 updateLock(false), 
 _min(0.0f),
-_max(1.0f)
+_max(1.0f),
+readOnly(false)
 {
 	nr = instances++;
 	Parameter::index = index;
@@ -96,6 +97,10 @@ _max(1.0f)
 //------------------------------------------------------------------------------------------------------------
 Parameter::~Parameter() {
 	instances--;
+}
+//------------------------------------------------------------------------------------------------------------
+void Parameter::setReadOnly(bool val) {
+	readOnly = val;
 }
 
 //------------------------------------------------------------------------------------------------------------

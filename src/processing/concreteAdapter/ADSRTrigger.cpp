@@ -18,6 +18,7 @@ ADSRTrigger::ADSRTrigger( frx::processing::IHostInfo::Ptr hostInfo ) : ProcessAd
 	inputNodes[0]->setName  ( getName() + " InputNode");
 	outputNodes[0]->setName ( getName() + " OutputNode");
 	out = Parameter::create();
+	out->setReadOnly(true);
 	*out = 0.0f;
 	out->setName ("ADSR Output");
 	adsr = new ADSR (hostInfo, 5.0f);

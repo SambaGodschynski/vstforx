@@ -62,6 +62,27 @@ public:
 };
 //============================================================================================================
 /**
+ *  @interface: HasOutParameter.
+ */
+class HasOutParameter{
+//============================================================================================================
+public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::shared_ptr<HasOutParameter> Ptr;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param index
+	 * @return Parameter zu index.
+	 */
+	virtual ParameterPtr getOutParameter ( size_t nr = 0 ) const = 0;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return Anzahl aller Parameter.
+	 */
+	virtual size_t getNumOutParameter () const = 0;
+};
+//============================================================================================================
+/**
  * @class ConnectionOperator.
  * Oberklasse fuer Parameter-Verbindungs-Operator.
  */
@@ -447,6 +468,8 @@ private:
 	 */
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version );
+	//--------------------------------------------------------------------------------------------------------
+	bool readOnly;
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -531,6 +554,9 @@ public:
 	 * @param v
 	 */
 	virtual void setValue( VstNumber v ){
+		if (readOnly) {
+			return;
+		}
 		if ( updateLock ) return;
 		// avoid NaN. problems with serialize and deserialize
 		// see: issue #113
@@ -582,6 +608,12 @@ public:
 	 * @return Parameter-Maximum
 	 */
 	virtual VstNumber getMax() { return _max; }
+	//--------------------------------------------------------------------------------------------------------
+	bool isReadOnly() const {
+		return readOnly;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	void setReadOnly(bool val);
 };
 //============================================================================================================
 // Klasse: Parameter.
@@ -599,6 +631,7 @@ void Parameter::serialize( Archiv &ar, const unsigned int version) {
 	ar & value;
 	ar & nr;
 	ar & index;
+	ar & readOnly;
 }
 } // namespace parameter
 } // namespace processing

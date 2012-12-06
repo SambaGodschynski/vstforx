@@ -19,7 +19,11 @@ using namespace parameter;
  * @class PeakTracker
  * Tranformiert Signal in Parameter wert.
  */
-class PeakTracker : public ProcessAdapter, public HasParameter, public Serializable {
+class PeakTracker : 
+	public ProcessAdapter,
+	public HasParameter, 
+	public HasOutParameter,
+	public Serializable {
 //============================================================================================================
 friend class boost::serialization::access;
 public:
@@ -75,9 +79,15 @@ public:
 	virtual Parameter::Ptr getParameter ( size_t index = 0 ) const { return offset; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
+	 * @return Anzahl aller ADSRTrigger-Parameter
+	 */
+	virtual size_t getNumOutParameter () const { return 1; }
+	//--------------------------------------------------------------------------------------------------------
+
+	/**
 	 * @return  Ausgabe-Parameter
 	 */
-	Parameter::Ptr getOutParameter() { return out; }
+	Parameter::Ptr getOutParameter(size_t i=0) const { return out; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Anzahl aller PeakTracker-Parameter

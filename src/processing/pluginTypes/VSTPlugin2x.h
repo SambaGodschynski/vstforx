@@ -19,7 +19,7 @@
 #include <list>
 #include <stack>
 #include <sambag/dsp/VstMidiEventAdapter.hpp>
-
+#include "VstShellPlugin.hpp"
 
 namespace ppiGui {
 	class GPluginController;
@@ -47,23 +47,6 @@ BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<VSTPlugin> Ptr;
-	//--------------------------------------------------------------------------------------------------------
-	struct ShellPluginInfo {
-		std::string name;
-		VstInt32 id;
-		ShellPluginInfo(const std::string &name="", VstInt32 id=0) : name(name), id(id) {}
-	};
-	//--------------------------------------------------------------------------------------------------------
-	typedef std::list<ShellPluginInfo> ShellPluginInfos;
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * @class ShellPluginException
-	 * Plugin is a Shellplugin.
-	 */
-	struct ShellPluginException {
-		ShellPluginInfos content;
-		ShellPluginException(const ShellPluginInfos &content) : content(content) {}
-	};
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param fileName

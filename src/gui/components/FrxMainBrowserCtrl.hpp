@@ -20,6 +20,8 @@
 #include <loki/LokiTypeinfo.h>
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include "FrxComponent.hpp"
+#include <processing/pluginTypes/VstShellPlugin.hpp>
+#include <sambag/disco/components/events/ActionEvent.hpp>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -110,6 +112,11 @@ protected:
 	fillPluginFolder(TreeNode parent, DBFolderID dbFolderId);
 	//-------------------------------------------------------------------------
 	void addToSceneTree(FrxComponentPtr c);
+	//-------------------------------------------------------------------------
+	void showShellSelection(const ::processing::PluginInfo &plugin, 
+		const ::processing::ShellPluginInfos &infos);
+	//-------------------------------------------------------------------------
+	void onShellPluginSelected(void*, const sdc::events::ActionEvent &ev);
 private:
 	//-------------------------------------------------------------------------
 	sambag::com::ArithmeticWrapper<bool> sceneTreeInit;
@@ -128,6 +135,8 @@ private:
 	Tree::Node addParameterToSceneTree(FrxComponentPtr c);
 	//-------------------------------------------------------------------------
 	Tree::Node addConnectionToSceneTree(FrxComponentPtr c);
+	//-------------------------------------------------------------------------
+	void handleBrowserNodeResult(BrowserNode::ResultPtr res);
 	//-------------------------------------------------------------------------
 public:
 	//-------------------------------------------------------------------------

@@ -19,6 +19,7 @@
 #include <boost/assign.hpp>
 #include "FrxConcreteProcessor.hpp"
 #include "FrxConcreteParameter.hpp"
+#include <gui/components/ShellPluginSelection.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace {
@@ -90,16 +91,57 @@ void FrxMainBrowserCtrl::onBrowserOk(void *src,
 	const BrowserNode &bNode = tree->getNodeData(path.back());
 	try {
 		BrowserNode::ResultPtr res = bNode.accept();
-		FrxComponentPtr c;
-		sambag::com::get(res, c);
-		if (c) {
-			// update scene tree
-			addToSceneTree(c);
-		}
+		handleBrowserNodeResult(res);
 	} catch(const std::exception &ex) {
 	} catch (...) {
 		// TODO
 	}
+}
+//-----------------------------------------------------------------------------
+void FrxMainBrowserCtrl::handleBrowserNodeResult(BrowserNode::ResultPtr res) {
+	FrxComponentPtr c;
+	sambag::com::get(res, c);
+	if (c) {
+		// update scene tree
+		addToSceneTree(c);
+	}
+}
+//-----------------------------------------------------------------------------
+void FrxMainBrowserCtrl::
+showShellSelection(const ::processing::PluginInfo &pI, 
+	const ::processing::ShellPluginInfos &infos) 
+{
+	ShellPluginSelection::Ptr shlsl;
+	shlsl = ShellPluginSelection::create();
+	FrxCircuidViewPtr view = wView.lock();
+	getFrxControl(view).addWindow(shlsl);
+	BOOST_FOREACH(const ::processing::ShellPluginInfo &inf, infos) {
+		shlsl->addShellInfo(inf);
+	}
+	shlsl->EventSender<ShellPluginSelection::ActionEvent>::addTrackedEventListener
+	(
+		boost::bind(&FrxMainBrowserCtrl::onShellPluginSelected, this, _1, _2),
+		self
+	);
+	shlsl->setShellPlugin(pI);
+	shlsl->pack();
+	shlsl->open();
+}
+//-----------------------------------------------------------------------------
+void FrxMainBrowserCtrl::
+onShellPluginSelected(void*, const sdc::events::ActionEvent &ev)
+{
+	ShellPluginSelection::Ptr shlsl =
+		boost::shared_dynamic_cast<ShellPluginSelection>(ev.getSource());
+	if (!shlsl)
+		return;
+	const ::processing::PluginInfo &pI
+		= shlsl->getCurrentSelection();
+	if (pI.location == "") {
+		return;
+	}
+	BrowserNode::ResultPtr res = addPlugin(pI);
+	handleBrowserNodeResult(res);
 }
 //-----------------------------------------------------------------------------
 BrowserNode::ResultPtr 
@@ -166,7 +208,13 @@ BrowserNode::ResultPtr FrxMainBrowserCtrl::addPlugin(::processing::PluginInfo pI
 			"tried to add plugin with FrxCircuidViewPtr == NULL");
 	}
 	IFrxComponentFactory &fac = getComponentFactory(view);
-	FrxProcessorNodePtr pr = fac.getPluginCreator()(view, pI);
+	FrxProcessorNodePtr pr;
+	try {
+		pr = fac.getPluginCreator()(view, pI);
+	} catch(const ::processing::ShellPluginException &ex) {
+		showShellSelection(pI, ex.content);
+		return BrowserNode::ResultPtr();
+	}
 	if (!pr)
 		return BrowserNode::ResultPtr();
 	getFrxControl(view).addProcessorToView(view, pr);
@@ -666,46 +714,36 @@ addProcessorParameterNodes(FrxComponentPtr c,
 
 	// get frxctrl
 	IFrxControl & frxctrl = getFrxControl(view);
-	// midi config
-	frx::processing::IParameter::Ptr midiChannelPar;
-	if (pr->isMidiProcessor()) {
-		Tree::Node midi = 
-			tree->addNode(parent, BrowserNode("midi config", true));
-		midiChannelPar = pr->getMidiChannelParameter();
-		BrowserNode::AcceptedFunction f = 
-			boost::bind(&FrxMainBrowserCtrl::addProcesorKnobToView,
-				this,
-				fgc::FrxComponentWPtr(c),
-				frx::processing::IParameter::WPtr(midiChannelPar)
-			);
-		BrowserNode node;
-		createParameterNode(node, midiChannelPar->getName(), midiChannelPar);
-		node.f = f;
-		tree->addNode(
-			midi, 
-			node
-		);
-	}
+	using frx::processing::IProcessor;
+	using frx::processing::IParameter;
+	IProcessor::ParameterGroupKeys keys;
+	pr->getParameterGroupKeys(keys);
 	// create browser nodes
-	for (size_t i=0; i<pr->getNumParameter(); ++i) {
-		frx::processing::IParameter::Ptr p = pr->getParameter(i);
-		// TODO: remove workaround use parameter mapping see isse#
-		if (p == midiChannelPar) {
-			continue;
+	BOOST_FOREACH(const IProcessor::ParameterGroupKey &key, keys) {
+		Tree::Node parameterParent;
+		if (key==".") {
+			parameterParent = parent;
+		} else {
+			parameterParent = tree->addNode(parent, BrowserNode(key, true));
 		}
-		BrowserNode::AcceptedFunction f = 
-			boost::bind(&FrxMainBrowserCtrl::addProcesorKnobToView,
+
+		IProcessor::Parameters parameters;
+		pr->getParameters(key, parameters);
+		BOOST_FOREACH(IParameter::Ptr p, parameters) {
+			BrowserNode::AcceptedFunction f = 
+				boost::bind(&FrxMainBrowserCtrl::addProcesorKnobToView,
 				this,
 				fgc::FrxComponentWPtr(c),
 				frx::processing::IParameter::WPtr(p)
 			);
-		BrowserNode node;
-		createParameterNode(node, p->getName(), p);
-		node.f = f;
-		tree->addNode(
-			parent, 
-			node
-		);
+			BrowserNode node;
+			createParameterNode(node, p->getName(), p);
+			node.f = f;
+			tree->addNode(
+				parameterParent, 
+				node
+			);
+		}
 	}
 }
 }}} // namespace(s)
