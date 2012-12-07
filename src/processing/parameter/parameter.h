@@ -114,7 +114,7 @@ public:
 	/**
 	 * @return Operatorname
 	 */
-	const string getName() const { return name; }
+	const string & getName() const { return name; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * setzt Operatorname

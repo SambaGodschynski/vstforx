@@ -137,6 +137,10 @@ public:
 	virtual INode::Ptr addInputTo(IProcessor::Ptr pr);
 	//-------------------------------------------------------------------------
 	virtual INode::Ptr addOutputTo(IProcessor::Ptr pr);
+	//-------------------------------------------------------------------------
+	virtual void getParameterCnOpTypeIds(ParameterCnOpTypeIds &out) const;
+	//-------------------------------------------------------------------------
+	virtual void addParameterCnOp(IConnection::Ptr cn, const ParameterCnOpTypeId &opId);
 	///////////////////////////////////////////////////////////////////////////
 	// specific impl.
 	//-------------------------------------------------------------------------

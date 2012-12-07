@@ -275,7 +275,7 @@ addHostKnob( IFrxComponentFactory::HostParameterCreator f, int id)
 }
 //-----------------------------------------------------------------------------
 BrowserNode::ResultPtr FrxMainBrowserCtrl::
-addProcesorKnobToView(FrxComponentWPtr _c, processing::IParameter::WPtr _par)
+addRelatedKnobToView(FrxComponentWPtr _c, processing::IParameter::WPtr _par)
 {
 	fgc::FrxCircuidViewPtr view = wView.lock();
 	fgc::FrxComponentPtr c = _c.lock();
@@ -283,7 +283,7 @@ addProcesorKnobToView(FrxComponentWPtr _c, processing::IParameter::WPtr _par)
 	if (!view || !c || !par)
 		return BrowserNode::ResultPtr();
 	FrxComponentPtr knob = 
-		getFrxControl(view).addProcesorKnobToView(view, c, par);
+		getFrxControl(view).addRelatedKnobToView(view, c, par);
 	
 	return BrowserNode::ResultPtr(
 		sambag::com::createObject(FrxComponentPtr(knob))
@@ -506,7 +506,7 @@ void FrxMainBrowserCtrl::onSceneIOChanged(void*,
 		tree->removeNode(i);
 	}
 	// add new entries
-	addProcessorParameterNodes(c, node);
+	addModelObjectParameter(c, node);
 	tree->updateLists();
 }
 //-----------------------------------------------------------------------------
@@ -527,7 +527,7 @@ addPluginToSceneTree(FrxComponentPtr c)
 
 	BrowserNode browserNode(c->getName(), true);
 	browserNode.f = // dynamic parameter insert
-		boost::bind(&FrxMainBrowserCtrl::_addProcessorParameterNodes,
+		boost::bind(&FrxMainBrowserCtrl::_addModelObjectParameter,
 		this,
 		FrxComponentWPtr(c),
 		plugin
@@ -549,7 +549,7 @@ Tree::Node FrxMainBrowserCtrl::addProcessorToSceneTree(FrxComponentPtr c) {
 	Tree::Node newNode = tree->addNode(scene_processors);
 
 	BrowserNode browserNode(c->getName(), true);
-	addProcessorParameterNodes(pr, newNode);
+	addModelObjectParameter(pr, newNode);
 	tree->setNodeData(newNode, browserNode);
 	// install io changed event sender
 	IViewModelMap::Ptr map = getViewModelMap(view);
@@ -661,7 +661,7 @@ void FrxMainBrowserCtrl::initTree(FrxCircuidViewPtr view,
 	initRoot(view, brws);
 	
 	/*BrowserNode::AcceptedFunction f = 
-		boost::bind(&IFrxControl::addProcesorKnobToView, 
+		boost::bind(&IFrxControl::addRelatedKnobToView, 
 			&frxctrl,
 			fgc::FrxCircuidViewWPtr(view), 
 			fgc::FrxComponentWPtr(c),
@@ -680,19 +680,19 @@ void FrxMainBrowserCtrl::initTree(FrxCircuidViewPtr view,
 }
 //-----------------------------------------------------------------------------
 BrowserNode::ResultPtr FrxMainBrowserCtrl::
-_addProcessorParameterNodes(FrxComponentWPtr c, Tree::Node parent)
+_addModelObjectParameter(FrxComponentWPtr c, Tree::Node parent)
 {
 	typedef FrxColumnBrowser::BrowserImpl Tree;
 	Tree::Ptr tree = browser.lock()->getBrowserImpl();
 	if (tree->getNumChildren(parent) > 0)
 		return BrowserNode::ResultPtr();
 	
-	addProcessorParameterNodes(c.lock(), parent);
+	addModelObjectParameter(c.lock(), parent);
 	return BrowserNode::ResultPtr();
 }
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::
-addProcessorParameterNodes(FrxComponentPtr c,
+addModelObjectParameter(FrxComponentPtr c,
 		const Tree::Node &parent)
 {
 	FrxCircuidViewPtr view = wView.lock();
@@ -707,8 +707,7 @@ addProcessorParameterNodes(FrxComponentPtr c,
 	typedef FrxColumnBrowser::BrowserImpl Tree;
 	Tree::Ptr tree = browser->getBrowserImpl();
 
-	frx::processing::IProcessor::Ptr pr = 
-		boost::shared_dynamic_cast<frx::processing::IProcessor>(map->getModelObject(c));
+	frx::processing::ModelObject::Ptr pr = map->getModelObject(c);
 	if (!pr)
 		return;
 
@@ -731,7 +730,7 @@ addProcessorParameterNodes(FrxComponentPtr c,
 		pr->getParameters(key, parameters);
 		BOOST_FOREACH(IParameter::Ptr p, parameters) {
 			BrowserNode::AcceptedFunction f = 
-				boost::bind(&FrxMainBrowserCtrl::addProcesorKnobToView,
+				boost::bind(&FrxMainBrowserCtrl::addRelatedKnobToView,
 				this,
 				fgc::FrxComponentWPtr(c),
 				frx::processing::IParameter::WPtr(p)

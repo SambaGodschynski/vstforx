@@ -9,7 +9,7 @@
 #define SAMBAG_CONNECTION_H
 
 #include <boost/shared_ptr.hpp>
-#include "IConnection.hpp"
+#include "INodeConnection.hpp"
 #include "processing.h"
 #include "NodeAdapter.hpp"
 
@@ -18,9 +18,11 @@ namespace frx { namespace processing {
 /** 
   * @class NodeConnection.
   */
-class NodeConnection : public IConnection {
+class NodeConnection : public INodeConnection {
 //=============================================================================
 public:
+	//-------------------------------------------------------------------------
+	typedef INodeConnection Super;
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<NodeConnection> Ptr;
 	//-------------------------------------------------------------------------

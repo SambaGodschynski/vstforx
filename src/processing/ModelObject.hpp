@@ -13,8 +13,13 @@
 #include <boost/function.hpp>
 #include <boost/signals2.hpp>
 #include <boost/serialization/access.hpp>
+#include <string>
+#include <vector>
+#include <set>
 
 namespace frx { namespace processing {
+class IParameter;
+typedef boost::shared_ptr<IParameter> IParameterPtr;
 //=============================================================================
 /** 
   * @class BooleanCombiner.
@@ -92,6 +97,19 @@ public:
 	}
 	//-------------------------------------------------------------------------
 	virtual ~ModelObject() {}
+	///////////////////////////////////////////////////////////////////////////
+	// Parameter
+	typedef std::string ParameterGroupKey;
+	typedef std::vector<IParameterPtr> Parameters;
+	typedef std::set<ParameterGroupKey> ParameterGroupKeys;
+	//-------------------------------------------------------------------------
+	virtual void getParameterGroupKeys(ParameterGroupKeys &out) const {};
+	//-------------------------------------------------------------------------
+	/**
+	 * @return parameter by group key. if key == "*" all parameter
+	 * will be returned.
+	 */
+	virtual void getParameters(const ParameterGroupKey &key, Parameters &out) const {};
 
 }; // ModelObject
 }} // namespace(s)

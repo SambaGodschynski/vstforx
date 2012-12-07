@@ -15,6 +15,9 @@
 #include <com/Events.h>
 
 namespace frx { namespace processing {
+//-----------------------------------------------------------------------------
+typedef std::string ParameterCnOpTypeId;
+typedef std::vector<ParameterCnOpTypeId> ParameterCnOpTypeIds;
 //=============================================================================
 /** 
   * @class IParameter.

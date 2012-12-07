@@ -178,7 +178,7 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("ParameterCn.hoverStyle", 
 		createStyle("stroke-width: 8; stroke: green;stroke-dasharray: 9, 5;"));
 	m.putProperty("ParameterOPCn.style", 
-		createStyle("stroke-width: 4; stroke: grey"));
+		createStyle("stroke-width: 4; stroke: grey;stroke-dasharray: 9, 5;"));
 	m.putProperty("FrxSelection.selectingStyle", 
 		createStyle("stroke-width: 4; stroke: grey; fill: purple;stroke-dasharray: 9, 5; fill-opacity: 0.25"));
 	m.putProperty("FrxSelection.selectedStyle", 

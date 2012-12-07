@@ -85,9 +85,13 @@ public:
 	handleContextMenuPopup(const sdc::events::MouseEvent &ev) = 0;
 	//-------------------------------------------------------------------------
 	/**
+	 * creates and adds a knob which is related to another view object to view.
 	 * @return new created knob
+	 * @param the view
+	 * @param the related view object
+	 * @param the knob model object
 	 */
-	virtual fgc::FrxComponentPtr addProcesorKnobToView(fgc::FrxCircuidViewPtr view, 
+	virtual fgc::FrxComponentPtr addRelatedKnobToView(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c, frx::processing::IParameter::Ptr par) = 0; 
 	//-------------------------------------------------------------------------
 	/**
@@ -111,6 +115,14 @@ public:
 		fgc::FrxComponentPtr comp,
 		const CtrlCmd &cmdF
 	) = 0;
+	//-------------------------------------------------------------------------
+	typedef frx::processing::ParameterCnOpTypeId ParameterCnOpTypeId;
+	//-------------------------------------------------------------------------
+	typedef frx::processing::ParameterCnOpTypeIds ParameterCnOpTypeIds;
+	//-------------------------------------------------------------------------
+	virtual void getParameterCnOpTypeIds(fgc::FrxCircuidViewPtr view, 
+		ParameterCnOpTypeIds &out) const = 0;
+	//-------------------------------------------------------------------------
 	///////////////////////////////////////////////////////////////////////////
 	// CtrlCmd's: use it with createCtrlCommandFunction() to create
 	// menu ActionEvents
@@ -121,8 +133,14 @@ public:
 	virtual void showProcessorDetails(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c) = 0;
 	//-------------------------------------------------------------------------
+	virtual void showConnectionDetails(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c) = 0;
+	//-------------------------------------------------------------------------
 	virtual void openPluginEditor(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c) = 0;
+	//-------------------------------------------------------------------------
+	virtual void addParamterCnOp(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c, const ParameterCnOpTypeId &id) = 0;
 }; // IFrxControl
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------

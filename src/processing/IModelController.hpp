@@ -111,6 +111,11 @@ public:
 	virtual INode::Ptr addInputTo(IProcessor::Ptr pr) = 0;
 	//-------------------------------------------------------------------------
 	virtual INode::Ptr addOutputTo(IProcessor::Ptr pr) = 0;
+	//-------------------------------------------------------------------------
+	virtual void getParameterCnOpTypeIds(ParameterCnOpTypeIds &out) const = 0;
+	//-------------------------------------------------------------------------
+	virtual void 
+		addParameterCnOp(IConnection::Ptr cn, const ParameterCnOpTypeId &opId) = 0;
 }; // IModelController
 ///////////////////////////////////////////////////////////////////////////////
 extern IModelController::Ptr

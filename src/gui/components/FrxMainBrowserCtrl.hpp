@@ -81,11 +81,11 @@ protected:
 	Tree::Node add, add_plugins, add_processors, add_knobs, scene, scene_processors,
 		scene_plugins, scene_parameter, scene_connections;
 	//-------------------------------------------------------------------------
-	void addProcessorParameterNodes(FrxComponentPtr c,
+	void addModelObjectParameter(FrxComponentPtr c,
 		const Tree::Node &parent);
 	//-------------------------------------------------------------------------
 	// wrapper for BrowserNode Accepted function
-	BrowserNode::ResultPtr _addProcessorParameterNodes(FrxComponentWPtr c,
+	BrowserNode::ResultPtr _addModelObjectParameter(FrxComponentWPtr c,
 		Tree::Node parent);
 	//-------------------------------------------------------------------------
 	void addMainProcessors();
@@ -106,7 +106,7 @@ protected:
 	addHostKnob(IFrxComponentFactory::HostParameterCreator f, int id);
 	//-------------------------------------------------------------------------
 	BrowserNode::ResultPtr 
-	addProcesorKnobToView(FrxComponentWPtr _c, frx::processing::IParameter::WPtr _par);
+	addRelatedKnobToView(FrxComponentWPtr _c, frx::processing::IParameter::WPtr _par);
 	//-------------------------------------------------------------------------
 	BrowserNode::ResultPtr 
 	fillPluginFolder(TreeNode parent, DBFolderID dbFolderId);

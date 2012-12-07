@@ -14,6 +14,8 @@
 #include "FrxComponentUI.hpp"
 #include <sambag/disco/Geometry.hpp>
 #include <sambag/disco/components/events/MouseEvent.hpp>
+#include <sambag/disco/components/Menu.hpp>
+#include <sambag/disco/components/PopupMenu.hpp>
 #include <sambag/math/VectorNCreator.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <gui/IFrxControl.hpp>
@@ -80,6 +82,10 @@ protected:
 	virtual void installListeners(sdc::AComponent::Ptr c);
 	//-------------------------------------------------------------------------
 	virtual void installDefaults(sdc::AComponent::Ptr c);
+	//-------------------------------------------------------------------------
+	virtual void createPopupmenuEntries(sdc::PopupMenuPtr menu, 
+		FrxCircuidViewPtr view, 
+		FrxComponentPtr c);
 private:
 	//-------------------------------------------------------------------------
 	bool _mouseEntered;
@@ -185,6 +191,46 @@ inline void getStyles<connectionTypes::ParameterOP>(sdsg::Style &normal,
 	sdc::ui::getUIManager().getProperty("ParameterOPCn.style", normal);
 	sdc::ui::getUIManager().getProperty("ParameterOPCn.hoverStyle", hover);
 }
+//-----------------------------------------------------------------------------
+template <class CT>
+void _createPopupmenuEntries(sdc::PopupMenuPtr menu, 
+	FrxCircuidViewPtr view, FrxComponentPtr c)
+{
+}
+template <>
+inline void _createPopupmenuEntries<connectionTypes::Parameter>(
+	sdc::PopupMenuPtr menu, FrxCircuidViewPtr view, FrxComponentPtr c)
+{
+	// connection op's
+	IFrxControl &ctrl = getFrxControl(view);
+	// details
+	sdc::MenuItem::Ptr item = sdc::MenuItem::create();
+	item->setText("show " + c->getName() + " details...");
+	item->EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
+		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
+		&IFrxControl::showConnectionDetails),
+		c
+	);
+	menu->add(item);
+	// op's
+	sdc::Menu::Ptr smenu = sdc::Menu::create();
+	smenu->setText("add operator for " + c->getName());
+	menu->add(smenu);
+	
+	// get connection op's
+	IFrxControl::ParameterCnOpTypeIds opIds;
+	ctrl.getParameterCnOpTypeIds(view, opIds);
+	BOOST_FOREACH(const IFrxControl::ParameterCnOpTypeId &id, opIds) {
+		sdc::MenuItem::Ptr item = sdc::MenuItem::create();
+		item->setText(sambag::com::toString(id));
+		item->EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
+			SAMBAG_CREATE_FRXCONTROL_CMD1(ctrl,view,c,&IFrxControl::addParamterCnOp, id),
+			c
+		);
+		smenu->add(item);
+	}
+}
+
 } // namespace
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
@@ -353,6 +399,14 @@ void FrxConnectionUI<CT>::onMouse(void *src, const sdce::MouseEvent &ev) {
 		sdce::MouseEvent::DISCO_MOUSE_CLICKED
 	};
 	sdce::MouseEventSwitch<Filter>::delegate(ev, *this);
+}
+//-----------------------------------------------------------------------------
+template <class CT>
+void FrxConnectionUI<CT>::createPopupmenuEntries(sdc::PopupMenuPtr menu,
+    FrxCircuidViewPtr view, FrxComponentPtr c)
+{
+	Super::createPopupmenuEntries(menu, view, c);
+	_createPopupmenuEntries<CT>(menu, view, c);
 }
 }}}} // namespace(s)
 

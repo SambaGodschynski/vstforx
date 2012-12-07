@@ -9,20 +9,24 @@
 #define SAMBAG_PARAMETERCONNECTION_H
 
 #include <boost/shared_ptr.hpp>
-#include "IConnection.hpp"
+#include "IParameterConnection.hpp"
 #include "ParameterAdapter.hpp"
 #include "parameter/parameter.h"
+
 namespace frx { namespace processing {
 //=============================================================================
 /** 
   * @class ParameterConnection.
   */
-class ParameterConnection : public IConnection {
+class ParameterConnection : public IParameterConnection {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
+	typedef IParameterConnection Super;
+	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<ParameterConnection> Ptr;
 	//-------------------------------------------------------------------------
+	typedef ::processing::parameter::ConnectionOperator ConnectionOperator;
 protected:
 	ParameterConnection() {}
 private:
@@ -32,6 +36,9 @@ private:
 	ParameterAdapter::Ptr dst;
 	//-------------------------------------------------------------------------
 	::processing::parameter::ParameterConnection::Ptr cn;
+	//-------------------------------------------------------------------------
+	typedef std::multimap<ParameterGroupKey, ParameterAdapter::Ptr> ParameterGroupMap;
+	ParameterGroupMap parameters;
 public:
 	//-------------------------------------------------------------------------
 	virtual ~ParameterConnection() {
@@ -65,6 +72,22 @@ public:
 	}
 	//-------------------------------------------------------------------------
 	static Ptr createConnection(IParameter::Ptr a, IParameter::Ptr b);
+	//-------------------------------------------------------------------------
+	static void getParameterCnOpTypeIds(ParameterCnOpTypeIds &out);
+	//-------------------------------------------------------------------------
+	virtual void addParameterCnOp(const ParameterCnOpTypeId &opId);
+	//-------------------------------------------------------------------------
+	virtual void getParameterGroupKeys(ParameterGroupKeys &out) const;
+	//-------------------------------------------------------------------------
+	/**
+	 * @return parameter by group key. if key == "*" all parameter
+	 * will be returned.
+	 */
+	virtual void getParameters(const ParameterGroupKey &key, Parameters &out) const;
+	//-------------------------------------------------------------------------
+	virtual void getConnectionOps(ParameterCnOpTypeIds &out);
+	//-------------------------------------------------------------------------
+	virtual bool requestRemove(ModelObject::Ptr obj);
 }; // ParameterConnection
 }} // namespace(s)
 

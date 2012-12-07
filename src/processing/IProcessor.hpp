@@ -65,19 +65,6 @@ public:
 	virtual INode::Ptr addInput() = 0;
 	//-------------------------------------------------------------------------
 	///////////////////////////////////////////////////////////////////////////
-	// Parameter
-	typedef std::string ParameterGroupKey;
-	typedef std::vector<IParameter::Ptr> Parameters;
-	typedef std::set<ParameterGroupKey> ParameterGroupKeys;
-	//-------------------------------------------------------------------------
-	virtual void getParameterGroupKeys(ParameterGroupKeys &out) const = 0;
-	//-------------------------------------------------------------------------
-	/**
-	 * @return parameter by group key. if key == "*" all parameter
-	 * will be returned.
-	 */
-	virtual void getParameters(const ParameterGroupKey &key, Parameters &out) const = 0;
-	///////////////////////////////////////////////////////////////////////////
 	// Events
 	struct IOChangedEvent{
 		Ptr src;

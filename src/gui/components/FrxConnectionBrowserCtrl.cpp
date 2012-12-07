@@ -1,34 +1,28 @@
 /*
- * FrxProcessorBrowserCtrl.cpp
+ * FrxConnectionBrowserCtrl.cpp
  *
- *  Created on: Tue Oct 30 21:04:22 2012
+ *  Created on: Fri Dec  7 14:45:52 2012
  *      Author: Johannes Unger
  */
 
-#include "FrxProcessorBrowserCtrl.hpp"
-#include <gui/FrxControl.hpp>
-#include <gui/IViewModelMap.hpp>
-#include "FrxProcessorBrowser.hpp"
-#include <processing/IProcessor.hpp>
-#include "FrxComponent.hpp"
-#include <gui/FrxControl.hpp>
+#include "FrxConnectionBrowserCtrl.hpp"
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
-//  Class FrxProcessorBrowserCtrl
+//  Class FrxConnectionBrowserCtrl
 //=============================================================================
 //-----------------------------------------------------------------------------
-void FrxProcessorBrowserCtrl::setComponent(FrxComponentPtr c)
+void FrxConnectionBrowserCtrl::setComponent(FrxComponentPtr c)
 {
 	component = c;
 }
 //-----------------------------------------------------------------------------
-FrxComponentPtr FrxProcessorBrowserCtrl::getComponent() const
+FrxComponentPtr FrxConnectionBrowserCtrl::getComponent() const
 {
 	return component;
 }
 //-----------------------------------------------------------------------------
-void FrxProcessorBrowserCtrl::initTree(FrxCircuidViewPtr view, 
+void FrxConnectionBrowserCtrl::initTree(FrxCircuidViewPtr view, 
 	FrxColumnBrowserPtr brws)
 {
 	browser = brws;

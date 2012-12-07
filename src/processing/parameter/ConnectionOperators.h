@@ -56,9 +56,13 @@ private:
 	}
 	//--------------------------------------------------------------------------------------------------------
 	InverseConnection () : ConnectionOperator () {
-		setName ("Inverse Operator");
+		setName (name());
 	}
 public:
+	//--------------------------------------------------------------------------------------------------------
+	inline static std::string name() {
+		return "Inverse Operator";
+	};
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * implementiert Operation
@@ -113,12 +117,16 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	OffsetConnection () : ConnectionOperator ()
 	 {
-		setName ("Offset Operator");
+		setName (name());
 		offset = Parameter::create();
 		offset->setName ("offset");
 		*offset = 0.5f;
 	}
 public:
+	//--------------------------------------------------------------------------------------------------------
+	inline static std::string name() {
+		return "Offset Operator";
+	};
 	//--------------------------------------------------------------------------------------------------------
 	static Ptr create() {
 		return Ptr(new OffsetConnection());
@@ -210,7 +218,7 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	ExpConnection () : ConnectionOperator ( )
 	 {
-		setName ("EXP Operator");
+		setName (name());
 		slope = Parameter::create();
 		*slope = STD_SLOPE;
 		slope->setMin(0.0001f);
@@ -224,6 +232,10 @@ private:
 		a = -log( value );
 	}
 public:
+	//--------------------------------------------------------------------------------------------------------
+	inline static std::string name() {
+		return "EXP Operator";
+	};
 	//--------------------------------------------------------------------------------------------------------
 	static Ptr create() {
 		return Ptr(new ExpConnection());
@@ -313,7 +325,7 @@ private:
 	}
 	//--------------------------------------------------------------------------------------------------------
 	LogConnection () : ConnectionOperator () {	
-		setName ("LOG Operator");
+		setName (name());
 		slope = Parameter::create();
 		*slope = STD_SLOPE;
 		slope->setMin(0.0001f);
@@ -334,6 +346,10 @@ private:
 		a = log( value );
 	}
 public:
+	//--------------------------------------------------------------------------------------------------------
+	inline static std::string name() {
+		return "LOG Operator";
+	};
 	//--------------------------------------------------------------------------------------------------------
 	static Ptr create() {
 		return Ptr(new LogConnection());

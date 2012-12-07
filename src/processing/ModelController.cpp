@@ -400,4 +400,19 @@ INode::Ptr ModelController::addOutputTo(IProcessor::Ptr pr) {
 	}
 	return res;
 }
+//-------------------------------------------------------------------------
+void ModelController::getParameterCnOpTypeIds(ParameterCnOpTypeIds &out) const {
+	ParameterConnection::getParameterCnOpTypeIds(out);
+}
+//-------------------------------------------------------------------------
+void ModelController::
+addParameterCnOp(IConnection::Ptr cn, const ParameterCnOpTypeId &opId) 
+{
+	ParameterConnection::Ptr pcn =
+		boost::shared_dynamic_cast<ParameterConnection>(cn);
+	if (!pcn) {
+		return;
+	}
+	pcn->addParameterCnOp(opId);
+}
 }} // namespace(s)

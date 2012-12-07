@@ -40,6 +40,8 @@
 #include <gui/components/FrxPluginBrowser.hpp>
 #include <gui/components/FrxMainBrowser.hpp>
 #include "components/FrxProcessorBrowserCtrl.hpp"
+#include "components/FrxConnectionBrowser.hpp"
+#include "components/FrxConnectionBrowserCtrl.hpp"
 #include "components/FrxPluginBrowserCtrl.hpp"
 #include "components/FrxMainBrowserCtrl.hpp"
 #include "components/FrxPluginEditor.hpp"
@@ -197,14 +199,14 @@ bool perfomConnect(FrxCircuidView::Ptr view,
 	return true;
 }
 //-----------------------------------------------------------------------------
-FrxColumnBrowser::Ptr openProcessorBrowser(fgc::FrxCircuidViewPtr view, 
+template <class Browser>
+typename Browser::Ptr openBrowser(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c)
 {
-	FrxColumnBrowser::Ptr browser;
-	browser = FrxProcessorBrowser::create();
+	typename Browser::Ptr browser;
+	browser = Browser::create();
 	browser->validate();
 	browser->pack();
-	browser->setTitle(c->getName() + ":");
 	browser->open();
 	return browser;
 }
@@ -314,8 +316,20 @@ struct Connector {
 //=============================================================================
 //  Class FrxControl
 //=============================================================================
+namespace {
+	FrxConnection::Ptr createConnectionForKnobAnd(FrxComponentPtr c) {
+		// (this approach is ok for a few types only)
+		if ( dynamic_cast<FrxProcessorNode*>(c.get()) ) {
+			return ProcessorParameterCn::create();
+		}
+		if ( dynamic_cast<FrxConnection*>(c.get()) ) {
+			return ParameterOPCn::create();
+		}
+		return FrxConnection::Ptr();
+	}
+}
 //-----------------------------------------------------------------------------
-fgc::FrxComponentPtr FrxControl::addProcesorKnobToView(FrxCircuidViewPtr view, 
+fgc::FrxComponentPtr FrxControl::addRelatedKnobToView(FrxCircuidViewPtr view, 
 	FrxComponentPtr c, frx::processing::IParameter::Ptr par) 
 {
 	frx::processing::IModelController::Ptr ctrl;
@@ -336,12 +350,15 @@ fgc::FrxComponentPtr FrxControl::addProcesorKnobToView(FrxCircuidViewPtr view,
 	);
 	// register knob
 	map->registerObjects(knob, par);
-	par->addRemoveRequestExecuter( // make sure that parameter will be removed
-								   // when related processor does.
+	par->addRemoveRequestExecuter( // make sure that knob will be removed
+								   // when related model object does.
 		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
 	);
 	// create connection
-	ProcessorParameterCn::Ptr cn = ProcessorParameterCn::create();
+	FrxConnection::Ptr cn = createConnectionForKnobAnd(c);
+	if (!cn) {
+		return fgc::FrxComponentPtr();
+	}
 	cn->setSrcComponent(c);
 	cn->setDstComponent(knob);
 	view->add(cn, FrxCircuidView::Z_Wires);
@@ -624,12 +641,26 @@ void FrxControl::showProcessorDetails(fgc::FrxCircuidViewPtr view,
 		fgc::FrxComponentPtr c)
 {
 	// create browser
-	FrxProcessorBrowser::Ptr browser = boost::shared_dynamic_cast<FrxProcessorBrowser>( 
-		openProcessorBrowser(view, c) 
-	);
+	FrxProcessorBrowser::Ptr browser = 
+		openBrowser<FrxProcessorBrowser>(view, c);
+	
 	addWindow(browser);
 	browser->setTitle(c->getName() + " details");
 	FrxProcessorBrowserCtrl::Ptr ctrl = FrxProcessorBrowserCtrl::create();
+	ctrl->setComponent(c);
+	browser->setCtrl(ctrl);
+	browser->initTree(view);
+}
+//-----------------------------------------------------------------------------
+void FrxControl::showConnectionDetails(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c)
+{
+	// create browser
+	FrxConnectionBrowser::Ptr browser = 
+		openBrowser<FrxConnectionBrowser>(view, c);
+	addWindow(browser);
+	browser->setTitle(c->getName() + " details");
+	FrxConnectionBrowserCtrl::Ptr ctrl = FrxConnectionBrowserCtrl::create();
 	ctrl->setComponent(c);
 	browser->setCtrl(ctrl);
 	browser->initTree(view);
@@ -654,6 +685,31 @@ void FrxControl::openPluginEditor(fgc::FrxCircuidViewPtr view,
 	pluginCtrl->setPlugin(plugin);
 	ed->setControl(pluginCtrl);
 	ed->open();
+}
+//-----------------------------------------------------------------------------
+void FrxControl::addParamterCnOp(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c, const ParameterCnOpTypeId &id)
+{
+	frx::processing::IModelController::Ptr mctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(mctrl, map) = getControllerAndMap(view);
+	using frx::processing::IConnection;
+	IConnection::Ptr cn =
+		boost::shared_dynamic_cast<IConnection> (map->getModelObject(c));
+	if (!cn)
+		return;
+	mctrl->addParameterCnOp(cn, id);
+}
+//-----------------------------------------------------------------------------
+void FrxControl::
+getParameterCnOpTypeIds(fgc::FrxCircuidViewPtr view, ParameterCnOpTypeIds &out) const 
+{
+	frx::processing::IModelController::Ptr mCtrl =
+		frx::processing::getModelController(view);
+	if (!mCtrl) {
+		return;
+	}
+	mCtrl->getParameterCnOpTypeIds(out);
 }
 //-----------------------------------------------------------------------------
 namespace {

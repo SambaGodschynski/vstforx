@@ -360,6 +360,22 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\src\gui\components\FrxConnectionBrowser.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxConnectionBrowser.hpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxConnectionBrowserCtrl.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\src\gui\components\FrxConnectionBrowserCtrl.hpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\gui\components\FrxHover.cpp"
 						>
 					</File>
@@ -741,11 +757,19 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\src\processing\INodeConnection.hpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\src\processing\IParameter.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\..\src\processing\IParameter.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\processing\IParameterConnection.hpp"
 					>
 				</File>
 				<File
