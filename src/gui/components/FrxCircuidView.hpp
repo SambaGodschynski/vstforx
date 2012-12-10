@@ -32,11 +32,23 @@ namespace sce = sc::events;
 namespace sd = sambag::disco;
 namespace sdc = sd::components;
 namespace sdcu = sdc::ui;
+struct FrxCircuidViewEvent {
+	enum Type{ComponentAdded, ComponentRemoved};
+	Type type;
+	FrxComponentPtr component;
+	FrxCircuidViewEvent(Type type, FrxComponentPtr component) :
+		type(type),
+		component(component)
+	{
+	}
+};
 //=============================================================================
 /** 
   * @class FrxCircuidView.
   */
-class FrxCircuidView : public sdc::AContainer {
+class FrxCircuidView : public sdc::AContainer,
+	public sce::EventSender<FrxCircuidViewEvent>
+{
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
@@ -119,6 +131,12 @@ private:
 	}
 	//-------------------------------------------------------------------------
 	template <typename Archive> 
+	void serialize(Archive &ar, const unsigned int version) {
+		serializeSelfPtr(ar, version);
+	}
+public:
+	//-------------------------------------------------------------------------
+	template <typename Archive> 
 	void serializeComponents(Archive &ar, const unsigned int version) {
 		SAMBAG_ASSERT(getPtr());
 		std::list<FrxComponentInfo> l;
@@ -126,20 +144,16 @@ private:
 			collectFrxComponentInfo(l);
 		}
 		ar & l;
+		IFrxControl &ctrl = getFrxControl(getPtr());
+		FrxCircuidViewPtr slf = getPtr();
 		if (Archive::is_loading::value) {
 			BOOST_FOREACH(const FrxComponentInfo &i, l) {
 				add(i.first, i.second, false);
+				ctrl.registerComponent(slf, i.first);
 			}
 		}
 		l.clear();
 	}
-	//-------------------------------------------------------------------------
-	template <typename Archive> 
-	void serialize(Archive &ar, const unsigned int version) {
-		serializeSelfPtr(ar, version);
-		serializeComponents(ar, version);
-	}
-public:
 	//-------------------------------------------------------------------------
 	void setEditorResizeHandler(const EditorResizeHandler &f);
 	//-------------------------------------------------------------------------
@@ -266,6 +280,8 @@ public:
 		ZOrder start = FLT_MIN, 
 		ZOrder end = FLT_MAX
 	); 
+	//-------------------------------------------------------------------------
+	virtual ~FrxCircuidView();
 }; // FrxCircuidView
 ///////////////////////////////////////////////////////////////////////////////
 template <class Container, class Filter>

@@ -226,6 +226,14 @@ void VstForxPlug::updateGraphBaseConfiguration() {
 void VstForxPlug::requestEditorResize(int width, int height) {
 	getHost()->requestEditorResize(width, height);
 }
+//-----------------------------------------------------------------------------
+int VstForxPlug::getChunk(void **data) {
+	return 0;
+}
+//-----------------------------------------------------------------------------
+int VstForxPlug::setChunk(void *data, int byteSize) {
+	return 0;
+}
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 IModelController::Ptr

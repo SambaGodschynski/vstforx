@@ -44,6 +44,8 @@ protected:
 		CtrlCmd cmd);
 public:
 	//-------------------------------------------------------------------------
+	void registerComponent(fgc::FrxCircuidViewPtr view, fgc::FrxComponentPtr c);
+	//-------------------------------------------------------------------------
 	FrxControl();
 	//-------------------------------------------------------------------------
 	virtual ~FrxControl();
@@ -53,6 +55,9 @@ public:
 	//-------------------------------------------------------------------------
 	template <class Archive>
 	static gc::FrxCircuidViewPtr deserializeView(Archive &ar);
+	//-------------------------------------------------------------------------
+	template <class Archive>
+	static void serializeViewComponents(Archive &ar, gc::FrxCircuidViewPtr c);
 	//-------------------------------------------------------------------------
 	/**
 	 * @return tuple(entry, exit)
@@ -126,6 +131,12 @@ gc::FrxCircuidViewPtr FrxControl::deserializeView(Archive &ar)
 	gc::FrxCircuidViewPtr res;
 	ar & res;
 	return res;
+}
+//-----------------------------------------------------------------------------
+template <class Archive>
+void FrxControl::serializeViewComponents(Archive &ar, gc::FrxCircuidViewPtr c) 
+{
+	c->serializeComponents(ar, ar.get_library_version());
 }
 }} // namespace(s)
 

@@ -91,6 +91,7 @@ void VstForxEditor::serializeView(std::ostream &os, FrxCircuidView::Ptr view) {
 		RegisterFrxTypes::register_types(ar);
 		getPlugin()->getViewModelMap()->lock(ar);
 		FrxControl::serializeView(ar, view);
+		FrxControl::serializeViewComponents(ar, view);
 	} catch(const std::exception &ex) {
 		SAMBAG_THROW(
 			sambag::com::exceptions::IllegalStateException,
@@ -111,6 +112,8 @@ FrxCircuidView::Ptr VstForxEditor::deserializeView(std::istream &is) {
 		RegisterFrxTypes::register_types(ar);
 		getPlugin()->getViewModelMap()->unlock(ar);
 		view = FrxControl::deserializeView(ar);
+		getPlugin()->registerView(view);
+		FrxControl::serializeViewComponents(ar, view);
 	} catch(const std::exception &ex) {
 		SAMBAG_THROW(
 			sambag::com::exceptions::IllegalStateException,
@@ -135,7 +138,6 @@ FrxCircuidViewPtr VstForxEditor::createView(sdc::Window::Ptr win) {
 	} else {
 		circ = deserializeView(bedroom);
 		win->getContentPane()->add(circ);
-		getPlugin()->registerView(circ);
 	}
 	using namespace frx::processing;
 	circ->setEditorResizeHandler(
@@ -185,6 +187,7 @@ void VstForxEditor::close() {
 	}
 	getPlugin()->unRegisterView(circView);
 	window.reset();
+	circView.reset();
 }
 //-----------------------------------------------------------------------------
 bool VstForxEditor::getRect (ERect** rect) {

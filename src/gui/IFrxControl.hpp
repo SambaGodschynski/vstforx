@@ -53,6 +53,8 @@ class IFrxControl {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
+	virtual void registerComponent(fgc::FrxCircuidViewPtr view, fgc::FrxComponentPtr c) = 0;
+	//-------------------------------------------------------------------------
 	/**
 	 * holds window pointer until window is closed.
 	 * @param the window

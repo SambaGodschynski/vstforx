@@ -19,7 +19,9 @@
 #include <boost/assign.hpp>
 #include "FrxConcreteProcessor.hpp"
 #include "FrxConcreteParameter.hpp"
+#include "FrxConcreteConnections.hpp"
 #include <gui/components/ShellPluginSelection.hpp>
+#include "FrxCircuidView.hpp"
 
 namespace frx { namespace gui { namespace components {
 namespace {
@@ -69,7 +71,8 @@ void FrxMainBrowserCtrl::initAdderMap() {
 	(_type<FrxOutSwitchNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1))
 	(_type<FrxADSRNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1))
 	(_type<FrxPeakTrackerNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1))
-	(_type<FrxStdKnob>(), boost::bind(&FrxMainBrowserCtrl::addParameterToSceneTree, this, _1));
+	(_type<FrxStdKnob>(), boost::bind(&FrxMainBrowserCtrl::addParameterToSceneTree, this, _1))
+	(_type<ParameterCn>(), boost::bind(&FrxMainBrowserCtrl::addConnectionToSceneTree, this, _1));
 	
 }
 //-----------------------------------------------------------------------------
@@ -98,13 +101,18 @@ void FrxMainBrowserCtrl::onBrowserOk(void *src,
 	}
 }
 //-----------------------------------------------------------------------------
-void FrxMainBrowserCtrl::handleBrowserNodeResult(BrowserNode::ResultPtr res) {
-	FrxComponentPtr c;
-	sambag::com::get(res, c);
-	if (c) {
-		// update scene tree
-		addToSceneTree(c);
+void FrxMainBrowserCtrl::onFrxViewChanged(void *, const FrxCircuidViewEvent &ev) 
+{
+	if (ev.type == FrxCircuidViewEvent::ComponentAdded) {
+		addToSceneTree(ev.component);
 	}
+	// removing listeners will be installend while adding component
+	// to scenetree(because we have the concerning tree nodes there. 
+	// So no further ComponentRemoved handling in here.
+}
+//-----------------------------------------------------------------------------
+void FrxMainBrowserCtrl::handleBrowserNodeResult(BrowserNode::ResultPtr res) {
+
 }
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::
@@ -218,9 +226,7 @@ BrowserNode::ResultPtr FrxMainBrowserCtrl::addPlugin(::processing::PluginInfo pI
 	if (!pr)
 		return BrowserNode::ResultPtr();
 	getFrxControl(view).addProcessorToView(view, pr);
-	return BrowserNode::ResultPtr(
-		sambag::com::createObject(FrxComponentPtr(pr))
-	);
+	return BrowserNode::ResultPtr();
 }
 //-----------------------------------------------------------------------------
 BrowserNode::ResultPtr FrxMainBrowserCtrl::
@@ -235,9 +241,7 @@ addProcessor(IFrxComponentFactory::ProcessorCreator f)
 	if (!pr)
 		return BrowserNode::ResultPtr();
 	getFrxControl(view).addProcessorToView(view, pr);
-	return BrowserNode::ResultPtr(
-		sambag::com::createObject(FrxComponentPtr(pr))
-	);
+	return BrowserNode::ResultPtr();
 }
 //-----------------------------------------------------------------------------
 BrowserNode::ResultPtr FrxMainBrowserCtrl::
@@ -252,9 +256,7 @@ addFreeKnob(IFrxComponentFactory::FreeParameterCreator f)
 	if (!pr)
 		return BrowserNode::ResultPtr();
 	getFrxControl(view).addParameterToView(view, pr);
-	return BrowserNode::ResultPtr(
-		sambag::com::createObject(FrxComponentPtr(pr))
-	);
+	return BrowserNode::ResultPtr();
 }
 //-----------------------------------------------------------------------------
 BrowserNode::ResultPtr FrxMainBrowserCtrl::
@@ -269,9 +271,7 @@ addHostKnob( IFrxComponentFactory::HostParameterCreator f, int id)
 	if (!pr)
 		return BrowserNode::ResultPtr();
 	getFrxControl(view).addParameterToView(view, pr);
-	return BrowserNode::ResultPtr(
-		sambag::com::createObject(FrxComponentPtr(pr))
-	);
+	return BrowserNode::ResultPtr();
 }
 //-----------------------------------------------------------------------------
 BrowserNode::ResultPtr FrxMainBrowserCtrl::
@@ -285,9 +285,7 @@ addRelatedKnobToView(FrxComponentWPtr _c, processing::IParameter::WPtr _par)
 	FrxComponentPtr knob = 
 		getFrxControl(view).addRelatedKnobToView(view, c, par);
 	
-	return BrowserNode::ResultPtr(
-		sambag::com::createObject(FrxComponentPtr(knob))
-	);
+	return BrowserNode::ResultPtr();
 }
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::initListeners(FrxColumnBrowserPtr brws) {
@@ -469,7 +467,7 @@ void FrxMainBrowserCtrl::initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr br
 	scene_plugins = tree->addNode(scene, BrowserNode("plugins", true));
 	scene_processors = tree->addNode(scene, BrowserNode("processors", true));
 	scene_parameter = tree->addNode(scene, BrowserNode("parameter", true));
-	//scene_connections = tree->addNode(scene, BrowserNode("connections", true));
+	scene_connections = tree->addNode(scene, BrowserNode("connections", true));
 
 }
 //-----------------------------------------------------------------------------
@@ -592,7 +590,21 @@ Tree::Node FrxMainBrowserCtrl::addParameterToSceneTree(FrxComponentPtr c) {
 }
 //-----------------------------------------------------------------------------
 Tree::Node FrxMainBrowserCtrl::addConnectionToSceneTree(FrxComponentPtr c) {
-	return Tree::NULL_NODE;
+	FrxCircuidViewPtr view = wView.lock();
+	FrxConnection::Ptr pr = 
+		boost::shared_dynamic_cast<FrxConnection>(c);
+	FrxColumnBrowserPtr browser = this->browser.lock();
+	if (!pr || !browser) {
+		return Tree::NULL_NODE;
+	}
+	Tree::Ptr tree = browser->getBrowserImpl();
+	Tree::Node newNode = tree->addNode(scene_connections);
+
+	BrowserNode browserNode(c->getName(), true);
+	addModelObjectParameter(pr, newNode);
+	tree->setNodeData(newNode, browserNode);
+	// return result
+	return newNode;
 }
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::addToSceneTree(FrxComponentPtr c) {
@@ -634,7 +646,7 @@ BrowserNode::ResultPtr FrxMainBrowserCtrl::createSceneTree(const Tree::Node &par
 	std::list<sdc::AComponentPtr> components;
 	view->findAllComponents( components,
 		FrxCircuidView::Z_Knobs,
-		FrxCircuidView::Z_ProcessorNodes
+		FrxCircuidView::Z_Wires
 	);
 	// collect components
 	BOOST_FOREACH(sdc::AComponentPtr c, components) {
@@ -655,22 +667,15 @@ void FrxMainBrowserCtrl::initTree(FrxCircuidViewPtr view,
 {
 	browser = brws;
 	wView = view; 
+	view->EventSender<FrxCircuidViewEvent>::addTrackedEventListener(
+		boost::bind(&FrxMainBrowserCtrl::onFrxViewChanged, this, _1, _2),
+		self.lock()
+	);
 	// create browser tree
 	typedef FrxColumnBrowser::BrowserImpl Tree;
 	Tree::Ptr tree = brws->getBrowserImpl();
 	initRoot(view, brws);
 	
-	/*BrowserNode::AcceptedFunction f = 
-		boost::bind(&IFrxControl::addRelatedKnobToView, 
-			&frxctrl,
-			fgc::FrxCircuidViewWPtr(view), 
-			fgc::FrxComponentWPtr(c),
-			frx::processing::IParameter::WPtr(p)
-	);
-	tree->addNode(
-		parameter, 
-		BrowserNode(p->getName(), f)
-	);*/
 	// extra from installListeners() because not all browser need this:
 	tree->EventSender<sdc::SelectionPathChanged>::addTrackedEventListener(
 		boost::bind(&onSelectionPathChanged, _1, _2, FrxColumnBrowser::WPtr(brws)),

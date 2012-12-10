@@ -15,6 +15,7 @@
 #include <boost/foreach.hpp>
 #include <sambag/com/Common.hpp>
 #include <loki/MultiMethods.h>
+#include <loki/TypeList.h>
 #include <sambag/disco/components/PopupMenu.hpp>
 #include <sambag/disco/components/MenuSelectionManager.hpp>
 #include <sambag/com/Exception.hpp>
@@ -80,39 +81,6 @@ ExtraWindows extraWindows;
 //-----------------------------------------------------------------------------
 bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj, FrxCircuidViewWPtr _view);
 //-----------------------------------------------------------------------------
-void registerProcessorOnView(FrxCircuidViewPtr view, FrxProcessorNode::Ptr viewObj) 
-{
-	IViewModelMap::Ptr map = getViewModelMap(view);
-	if (!map) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"tried to add processor with IViewModelMap == NULL");
-	}
-	frx::processing::IProcessor::Ptr modelObj = 
-		boost::shared_dynamic_cast<frx::processing::IProcessor>(
-			map->getModelObject(viewObj)
-	);
-	if (!modelObj) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"tried register view object with related model == NULL");
-	}
-	const FrxProcessorNode::IOContainer &ins = viewObj->getInputs();
-	int num = std::min(ins.size(), modelObj->getNumInputs());
-	for (int i=0; i<num; ++i) {
-		frx::processing::INode::Ptr node = modelObj->getInput(i);
-		node->addRemoveRequestExecuter(
-			boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
-		);
-	}
-	const FrxProcessorNode::IOContainer &outs = viewObj->getOutputs();
-	num = std::min(outs.size(), modelObj->getNumOutputs());
-	for (int i=0; i<num; ++i) {
-		frx::processing::INode::Ptr node = modelObj->getOutput(i);
-		node->addRemoveRequestExecuter(
-			boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
-		);
-	}
-}
-//-----------------------------------------------------------------------------
 void knobChanged(void *src, 
 	const sdc::DefaultBoundedRangeModelChanged &ev,
 	frx::processing::IParameter::WPtr _par) 
@@ -152,22 +120,85 @@ bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj, FrxCircuidViewWPtr _view)
 	view->AContainer::redraw();
 	return true;
 }
+namespace {
+	template <class ModelType>
+	typename ModelType::Ptr getModelObject(FrxCircuidViewPtr view, FrxComponent::Ptr c) 
+	{
+		IViewModelMap::Ptr map = getViewModelMap(view);
+		if (!map) {
+			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+				"tried to add processor with IViewModelMap == NULL");
+		}
+		typename ModelType::Ptr modelObj = 
+			boost::shared_dynamic_cast<ModelType>(
+				map->getModelObject(c)
+		);
+		if (!modelObj) {
+			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+				"tried register view object with related model == NULL");
+		}
+		return modelObj;
+	}
+} // namespace
 //-----------------------------------------------------------------------------
-void addFreeKnobToView(FrxCircuidViewPtr circ, FrxComponentPtr alwaysNull) {
-	FrxStdKnob::Ptr res = FrxStdKnob::create();
-	if (!res) {
-		return;
+void registerOnView(FrxCircuidViewPtr view, FrxProcessorNode::Ptr viewObj) 
+{
+
+	frx::processing::IProcessor::Ptr modelObj = 
+		getModelObject<frx::processing::IProcessor>(view, viewObj);
+
+	const FrxProcessorNode::IOContainer &ins = viewObj->getInputs();
+	int num = std::min(ins.size(), modelObj->getNumInputs());
+	for (int i=0; i<num; ++i) {
+		frx::processing::INode::Ptr node = modelObj->getInput(i);
+		node->addRemoveRequestExecuter(
+			boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
+		);
 	}
-	if (!circ) {
-		SAMBAG_WARN("tried to add knob with FrxCircuidViewPtr == NULL");
-		return;
+	const FrxProcessorNode::IOContainer &outs = viewObj->getOutputs();
+	num = std::min(outs.size(), modelObj->getNumOutputs());
+	for (int i=0; i<num; ++i) {
+		frx::processing::INode::Ptr node = modelObj->getOutput(i);
+		node->addRemoveRequestExecuter(
+			boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
+		);
 	}
-	res->setLocation(0, 0);
-	circ->add(res, FrxCircuidView::Z_Knobs);
-	// add selection
-	FrxHover::Ptr sel = FrxHover::create();
-	circ->add(sel);
-	sel->addElement(res);
+}
+//-----------------------------------------------------------------------------
+void registerOnView(FrxCircuidViewPtr view, FrxInputNode::Ptr obj) {
+	frx::processing::INode::Ptr io = 
+		getModelObject<frx::processing::INode>(view, obj);
+	// removing request
+	io->addRemoveRequestExecuter(
+		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
+	);
+}
+//-----------------------------------------------------------------------------
+void registerOnView(FrxCircuidViewPtr view, FrxOutputNode::Ptr obj) {
+	frx::processing::INode::Ptr io = 
+		getModelObject<frx::processing::INode>(view, obj);
+	// removing request
+	io->addRemoveRequestExecuter(
+		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
+	);
+}
+//-----------------------------------------------------------------------------
+void registerOnView(FrxCircuidViewPtr view, FrxParameter::Ptr knob) {
+	frx::processing::IParameter::Ptr par = 
+		getModelObject<frx::processing::IParameter>(view, knob);
+
+	knob->getRangeModel()->setValue(par->getValue());
+	// knob listener
+	knob->getRangeModel()->EventSender<sdc::DefaultBoundedRangeModelChanged>::
+		addTrackedEventListener ( boost::bind(&knobChanged, _1, _2, par), par );
+	// parameter listener
+	par->getEventSender().addTrackedValueChangedListener(
+		boost::bind(&parameterChanged, _1, _2, FrxParameter::WPtr(knob)), knob
+	);
+	par->addRemoveRequestExecuter( // make sure that knob will be removed
+								   // when related model object does.
+		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
+	);
 }
 //-----------------------------------------------------------------------------
 template <class ConnectionType>
@@ -327,6 +358,29 @@ namespace {
 		}
 		return FrxConnection::Ptr();
 	}
+	template<class TypeList>
+	void _castSwitch(fgc::FrxCircuidViewPtr view, FrxComponentPtr c) {	
+		typedef TypeList::Head T;
+		typename T::Ptr ptr = 
+			boost::shared_dynamic_cast<T>(c);
+		if (ptr) {
+			registerOnView(view, ptr);
+		}
+		_castSwitch<TypeList::Tail>(view, c);
+	}
+	template<>
+	void _castSwitch<Loki::NullType>(fgc::FrxCircuidViewPtr view, FrxComponentPtr c) 
+	{	
+	}
+}
+//-----------------------------------------------------------------------------
+void FrxControl::registerComponent(fgc::FrxCircuidViewPtr view, FrxComponentPtr c)
+{
+	typedef LOKI_TYPELIST_4(FrxInputNode, 
+		FrxOutputNode, 
+		FrxParameter,
+		FrxProcessorNode) Types;
+	_castSwitch<Types>(view, c);
 }
 //-----------------------------------------------------------------------------
 fgc::FrxComponentPtr FrxControl::addRelatedKnobToView(FrxCircuidViewPtr view, 
@@ -340,20 +394,9 @@ fgc::FrxComponentPtr FrxControl::addRelatedKnobToView(FrxCircuidViewPtr view,
 	if (!knob) {
 		return FrxComponentPtr();
 	}
-	knob->getRangeModel()->setValue(par->getValue());
-	// knob listener
-	knob->getRangeModel()->EventSender<sdc::DefaultBoundedRangeModelChanged>::
-		addTrackedEventListener ( boost::bind(&knobChanged, _1, _2, par), par );
-	// parameter listener
-	par->getEventSender().addTrackedValueChangedListener(
-		boost::bind(&parameterChanged, _1, _2, FrxParameter::WPtr(knob)), knob
-	);
 	// register knob
 	map->registerObjects(knob, par);
-	par->addRemoveRequestExecuter( // make sure that knob will be removed
-								   // when related model object does.
-		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
-	);
+	registerComponent(view, knob);
 	// create connection
 	FrxConnection::Ptr cn = createConnectionForKnobAnd(c);
 	if (!cn) {
@@ -395,15 +438,12 @@ FrxComponentPtr FrxControl::addProcessorInput(fgc::FrxCircuidViewPtr view,
 	view->add(viewIo, FrxCircuidView::Z_IO, true);
 	view->add(cn, FrxCircuidView::Z_Wires);
 	map->registerObjects(viewIo, io);
+	registerComponent(view, viewIo);
 	// add hover
 	FrxHover::Ptr sel = FrxHover::create();
 	view->add(sel);
 	sel->addElement(viewIo);
 	sel->setVisible(true);
-	// removing request
-	io->addRemoveRequestExecuter(
-		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
-	);
 	return viewIo;
 }
 //-----------------------------------------------------------------------------
@@ -432,40 +472,20 @@ FrxComponentPtr FrxControl::addProcessorOutput(fgc::FrxCircuidViewPtr view,
 	view->add(viewIo, FrxCircuidView::Z_IO, true);
 	view->add(cn, FrxCircuidView::Z_Wires);
 	map->registerObjects(viewIo, io);
+	registerComponent(view, viewIo);
 	// add hover
 	FrxHover::Ptr sel = FrxHover::create();
 	view->add(sel);
 	sel->addElement(viewIo);
 	sel->setVisible(true);
-	// removing request
-	io->addRemoveRequestExecuter(
-		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
-	);
 	return viewIo;
 }
 //-----------------------------------------------------------------------------
 void FrxControl::addParameterToView(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxParameterPtr knob)
 {
-	frx::processing::IModelController::Ptr ctrl;
-	IViewModelMap::Ptr map;
-	boost::tie(ctrl, map) = getControllerAndMap(view);
 
-	frx::processing::IParameter::Ptr par = 
-		boost::shared_dynamic_cast<frx::processing::IParameter> (
-			map->getModelObject(knob)
-		);
-	if (!par)
-		return;
-
-	knob->getRangeModel()->setValue(par->getValue());
-	// knob listener
-	knob->getRangeModel()->EventSender<sdc::DefaultBoundedRangeModelChanged>::
-		addTrackedEventListener ( boost::bind(&knobChanged, _1, _2, par), par );
-	// parameter listener
-	par->getEventSender().addTrackedValueChangedListener(
-		boost::bind(&parameterChanged, _1, _2, FrxParameter::WPtr(knob)), knob
-	);
+	registerComponent(view, knob);
 	view->add(knob, FrxCircuidView::Z_Knobs);
 	// add hover
 	FrxSelection::Ptr sel = view->getSelection();
@@ -480,7 +500,7 @@ void FrxControl::addProcessorToView(fgc::FrxCircuidViewPtr view,
 	view->add(pr, FrxCircuidView::Z_ProcessorNodes);
 	pr->resetIOLocation();
 	// register
-	registerProcessorOnView(view, pr);
+	registerComponent(view, pr);
 	// hover
 	FrxSelection::Ptr sel = view->getSelection();
 	sel->setVisible(true);

@@ -24,6 +24,7 @@
 #include <sambag/disco/components/events/ActionEvent.hpp>
 
 namespace frx { namespace gui { namespace components {
+struct FrxCircuidViewEvent;
 //=============================================================================
 /** 
   * @class FrxMainBrowserCtrl.
@@ -61,6 +62,8 @@ protected:
 	//-------------------------------------------------------------------------
 	void parameterChanged(void *src, 
 		float value, const BrowserNode &node);
+	//-------------------------------------------------------------------------
+	void onFrxViewChanged(void *, const FrxCircuidViewEvent &ev);
 	//-------------------------------------------------------------------------
 	void parameterLabelRedraw(sdc::AComponentPtr c, 
 		processing::IParameter::WPtr _p,

@@ -119,6 +119,7 @@ void FrxCircuidView::add(sdc::AComponentPtr comp, ZOrder zord, bool normalize)
 		boost::geometry::add_point(loc, viewPort->getViewPosition());
 		comp->setLocation(loc);
 	}
+	bool inserted = false;
 	// order on insert:
 	for (size_t i = 0; i<content->getComponentCount(); ++i) {
 		AComponent::Ptr c = content->getComponent(i);
@@ -127,17 +128,32 @@ void FrxCircuidView::add(sdc::AComponentPtr comp, ZOrder zord, bool normalize)
 		if (zord < z ) {
 			comp->putClientProperty(PROPERTY_ZORDER, zord);
 			content->add(comp, i);
-			return;
+			inserted = true;
+			break;
 		}
 	}
-	comp->putClientProperty(PROPERTY_ZORDER, zord);
-	content->add(comp);
+	if (!inserted) {
+		comp->putClientProperty(PROPERTY_ZORDER, zord);
+		content->add(comp);
+	}
+	FrxComponent::Ptr frxC =
+		boost::shared_dynamic_cast<FrxComponent>(comp);
+	if (!frxC)
+		return;
+
+	EventSender<FrxCircuidViewEvent>::notifyListeners( this, 
+		FrxCircuidViewEvent(FrxCircuidViewEvent::ComponentAdded, frxC)
+	);
 }
 //-----------------------------------------------------------------------------
 FrxCircuidView::FrxCircuidView() {
 	setName("FrxCircuidView");
 	//selection = FrxSelection::create();
 	//add(selection, Z_InteractiveStuff); // !parent <= !!
+}
+//-----------------------------------------------------------------------------
+FrxCircuidView::~FrxCircuidView() {
+
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::remove(sdc::AComponentPtr comp) {
@@ -147,6 +163,11 @@ void FrxCircuidView::remove(sdc::AComponentPtr comp) {
 			OnRemoving(getPtr()));
 	}
 	content->remove(comp);
+	if (frxC) {
+		EventSender<FrxCircuidViewEvent>::notifyListeners( this, 
+			FrxCircuidViewEvent(FrxCircuidViewEvent::ComponentRemoved, frxC)
+		);
+	}
 }
 //-----------------------------------------------------------------------------
 sdcu::AComponentUIPtr 
