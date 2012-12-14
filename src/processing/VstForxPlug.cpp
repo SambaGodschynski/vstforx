@@ -13,40 +13,49 @@
 #include <processing/parameter/parameter.h>
 #include <com/one4All.h>
 #include <boost/bimap.hpp>
+#include <processing/SerializationRegister.hpp>
+#include <OS_Specific/OS_com.h>
+#include <gui/components/VstForxEditor.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <gui/components/FrxSerializationRegister.hpp>
 
 namespace frx { namespace processing {
 namespace {
 	struct HostInfoAdapter : public IHostInfo {
-		IHostInfo &hostInfo;
-		HostInfoAdapter(IHostInfo &hostInfo) : hostInfo(hostInfo) {}
+		template< typename Archive >
+		void serialize ( Archive &ar, const unsigned int version ) {
+			ar & boost::serialization::base_object<IHostInfo> ( *this );
+		} 
+		IHostInfo *hostInfo;
+		HostInfoAdapter(IHostInfo *hostInfo=NULL) : hostInfo(hostInfo) {}
 		virtual float getSampleRate() const {
-			return hostInfo.getSampleRate();
+			return hostInfo->getSampleRate();
 		}
 		virtual int getBlockSize() const {
-			return hostInfo.getBlockSize();
+			return hostInfo->getBlockSize();
 		}
 		virtual bool ioChanged() {
-			return hostInfo.ioChanged();
+			return hostInfo->ioChanged();
 		}
 		virtual TimeInfo * getHostTimeInfo (int filter) {
-			return hostInfo.getHostTimeInfo(filter);
+			return hostInfo->getHostTimeInfo(filter);
 		}
 		virtual HostIOChangedConnection 
 			addHostChangedListener(const HostIOChangedFunction &f) 
 		{
-			return hostInfo.addHostChangedListener(f);
+			return hostInfo->addHostChangedListener(f);
 		}
 		virtual HostIOChangedConnection 
 		addTrackedHostChangedListener(const HostIOChangedFunction &f, AnyWPtr wptr)
 		{
-			return hostInfo.addTrackedHostChangedListener(f, wptr);
+			return hostInfo->addTrackedHostChangedListener(f, wptr);
 		}
 		virtual void * getEffectPtr() {
-			return hostInfo.getEffectPtr();
+			return hostInfo->getEffectPtr();
 		}
 		virtual void * getMasterCallback() {
-			return hostInfo.getMasterCallback();
-		}	
+			return hostInfo->getMasterCallback();
+		}
 	};
 	//-------------------------------------------------------------------------
 	typedef boost::bimap<fgc::FrxCircuidViewPtr, VstForxPlug*>
@@ -67,6 +76,7 @@ namespace {
 VstForxPlug::VstForxPlug() : 
 effectPtr(NULL), 
 masterCallback(NULL),
+chunkData(NULL),
 blockSize(0),
 sampleRate(0.f)
 {
@@ -74,8 +84,11 @@ sampleRate(0.f)
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::registerView(fgc::FrxCircuidViewPtr view) {
+	PlugMap::right_map::iterator it = plugMap.right.find(this);
+	if (it!=plugMap.right.end()) {
+		plugMap.right.erase(it);
+	}
 	plugMap.insert(PlugMap::value_type(view, this));
-
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::unRegisterView(fgc::FrxCircuidViewPtr view) {
@@ -93,7 +106,7 @@ void VstForxPlug::unRegisterInstance() {
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::open() {
-	hostInfoAdapter = IHostInfo::Ptr(new HostInfoAdapter(*this));
+	hostInfoAdapter = IHostInfo::Ptr(new HostInfoAdapter(this));
 	graph = ::processing::Graph::create(hostInfoAdapter);
 	ctrl = ModelController::create();
 	ctrl->setGraph(graph);
@@ -117,6 +130,10 @@ void VstForxPlug::close() {
 //-----------------------------------------------------------------------------
 VstForxPlug::~VstForxPlug() {
 	unRegisterInstance();
+	if (chunkData) {
+		delete chunkData;
+		chunkData = NULL;
+	}
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::process(float **in, float **out, int numSamples) {
@@ -228,11 +245,154 @@ void VstForxPlug::requestEditorResize(int width, int height) {
 }
 //-----------------------------------------------------------------------------
 int VstForxPlug::getChunk(void **data) {
-	return 0;
+	try {
+		std::stringstream ss;
+		save(ss);
+		const std::string &datastr = ss.str();
+		size_t datasize = datastr.size();
+		if (datasize==0) {
+			// some hosts have problems with
+			// 0 as result so we do a dummy save op.:
+			return Super::getChunk(data);
+		}
+		if (chunkData) {
+			delete chunkData;
+			chunkData = NULL;
+		}
+		chunkData = new char[datasize];
+		memcpy(chunkData, datastr.c_str(), datasize);
+		*data = (void*)chunkData;
+		std::cout<<datasize<<" bytes saved."<<std::endl;
+		return datasize;
+	} catch(const std::exception &ex) {
+		std::stringstream ss;
+		ss<<"serialization failed: "<<ex.what();
+		::com::osMessageBox("Error", ss.str(), ::com::MSG_ALERT);
+		return 0;
+	} catch(...) {
+		std::stringstream ss;
+		ss<<"serialization failed: unkown reason.";
+		::com::osMessageBox("Error", ss.str(), ::com::MSG_ALERT);
+		return 0;
+	}
 }
 //-----------------------------------------------------------------------------
 int VstForxPlug::setChunk(void *data, int byteSize) {
-	return 0;
+	if (byteSize==0) {
+		return 0;
+	}
+	try {
+		std::stringstream ss;
+		std::string dataStr((char*)data, byteSize);
+		ss<<dataStr;
+		load(ss);
+		std::cout<<byteSize<<" bytes loaded."<<std::endl;
+		return byteSize;
+	} catch(const std::exception &ex) {
+		std::stringstream ss;
+		ss<<"serialization failed: "<<ex.what();
+		::com::osMessageBox("Error", ss.str(), ::com::MSG_ALERT);
+		return 0;
+	} catch(...) {
+		std::stringstream ss;
+		ss<<"serialization failed: unkown reason.";
+		::com::osMessageBox("Error", ss.str(), ::com::MSG_ALERT);
+		return 0;
+	}
+}
+//-----------------------------------------------------------------------------
+void VstForxPlug::saveEditor(::com::oArchive &ar) {
+	using frx::gui::components::VstForxEditor;
+	VstForxEditor * editor = dynamic_cast<VstForxEditor*>(
+		host->getEditor()
+	);
+	if (!editor) {
+		SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"editor == NULL"
+		);
+	}
+	std::string serializedViewStream;
+	std::stringstream tmpss;
+	if (editor->isOpen()) {
+		//void serializeViewTemp(::com::oArchive &ar, FrxCircuidViewPtr view);
+		::com::oArchive tmp(tmpss);
+		frx::gui::components::RegisterFrxTypes::register_types(tmp);
+		editor->serializeViewTemp(tmp, editor->getCircuidView()); // as of now map is locked;
+		serializedViewStream = tmpss.str();
+	} else {
+		serializedViewStream = editor->hiChamber.str();
+	}
+	frx::gui::components::RegisterFrxTypes::register_types(ar);
+	ar.register_type<frx::gui::ViewModelMap>();
+	ar & serializedViewStream; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<1.
+	ar & map;				   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<2.
+	
+	if (tmpss.str().length() > 0) {
+		::com::iArchive tmp(tmpss);
+		frx::gui::components::RegisterFrxTypes::register_types(tmp);
+		getViewModelMap()->unlock(tmp);
+	}
+}
+//-----------------------------------------------------------------------------
+void VstForxPlug::loadEditor(::com::iArchive &ar) {
+	using frx::gui::components::VstForxEditor;
+	VstForxEditor * editor = dynamic_cast<VstForxEditor*>(
+		host->getEditor()
+	);
+	if (!editor) {
+		SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"editor == NULL"
+		);
+	}
+	frx::gui::components::RegisterFrxTypes::register_types(ar);
+	ar.register_type<frx::gui::ViewModelMap>();
+	std::string serializedViewStream;
+	ar & serializedViewStream; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<1.
+	ar & map;				   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<2.
+	if (editor->isOpen()) {
+		std::stringstream tmpss;
+		tmpss<<serializedViewStream;
+		::com::iArchive tmp(tmpss);
+		frx::gui::components::RegisterFrxTypes::register_types(tmp);
+		frx::gui::components::FrxCircuidViewPtr view =
+			editor->deserializeViewTemp(tmp);
+		editor->setCircuidView(view);
+		return;
+	}
+	editor->hiChamber.str("");
+	editor->hiChamber.clear();
+	editor->hiChamber << serializedViewStream;
+}
+//-----------------------------------------------------------------------------
+void VstForxPlug::save(std::ostream &os) {
+	::com::oArchive ar(os);
+	ar.register_type<HostInfoAdapter>();
+	RegisterProcessingTypes::register_types(ar);
+	ar & hostInfoAdapter;
+	ar & graph;
+	saveEditor(ar);
+}
+//-----------------------------------------------------------------------------
+void VstForxPlug::load(std::istream &is) {
+	
+	::processing::Graph::Ptr alt = graph; // hold old until loosing scope
+	::com::iArchive ar(is);
+	ar.register_type<HostInfoAdapter>();
+	RegisterProcessingTypes::register_types(ar);
+	ar & hostInfoAdapter;
+	dynamic_cast<HostInfoAdapter*>
+		(hostInfoAdapter.get())->hostInfo = this;
+	ar & graph;
+	ctrl->setGraph(graph);
+	loadEditor(ar);
+	// reinit graph
+	::processing::Graph::Janitor::Ptr janitor = graph->getJanitor();
+	if ( sampleRate != 0.0 && blockSize != 0 ) {
+		janitor->hostBaseConfigChanged();
+	}
+	initHostParameter();
 }
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------

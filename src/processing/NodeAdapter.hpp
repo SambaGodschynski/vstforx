@@ -31,6 +31,17 @@ protected:
 	NodeAdapter(){}
 	//-------------------------------------------------------------------------
 	Adaptee::Ptr node;
+private:
+	///////////////////////////////////////////////////////////////////////////
+	// Archive:
+	//-------------------------------------------------------------------------
+	friend class boost::serialization::access;
+	//-------------------------------------------------------------------------
+	template <typename Archive> 
+	void serialize(Archive &ar, const unsigned int version) {
+		ar & boost::serialization::base_object<INode> ( *this );
+		ar & node;
+	}
 public:
 	//-------------------------------------------------------------------------
 	static Ptr create(Adaptee::Ptr a = Adaptee::Ptr()) {

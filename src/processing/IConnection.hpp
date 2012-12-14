@@ -22,6 +22,16 @@ class IConnection : public ModelObject {
 public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<IConnection> Ptr;
+private:
+	///////////////////////////////////////////////////////////////////////////
+	// Archive:
+	//-------------------------------------------------------------------------
+	friend class boost::serialization::access;
+	//-------------------------------------------------------------------------
+	template <typename Archive> 
+	void serialize(Archive &ar, const unsigned int version) {
+		ar & boost::serialization::base_object<ModelObject> ( *this );
+	}
 public:
 	//-------------------------------------------------------------------------
 	virtual ModelObject::Ptr getSource() const = 0;

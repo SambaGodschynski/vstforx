@@ -135,4 +135,51 @@ void TestViewModelMap::testHibernate() {
 	CPPUNIT_ASSERT(m5 == map->getModelObject(v5));
 	CPPUNIT_ASSERT(v5 == map->getViewObject(m5));
 }
+//-----------------------------------------------------------------------------
+void TestViewModelMap::testSerializing() {
+	std::stringstream ss;
+	using namespace frx::processing;
+	using namespace frx::gui;
+	typedef TestClass<ViewObject> TestViewObject;
+	typedef TestClass<ModelObject> TestModelObject;
+	{
+		ViewModelMap::Ptr map = ViewModelMap::create();
+		TestViewObject::Ptr v1 = TestViewObject::create(1);
+		TestViewObject::Ptr v2 = TestViewObject::create(2);
+		TestViewObject::Ptr v3 = TestViewObject::create(3);
+		TestViewObject::Ptr v4 = TestViewObject::create(4);
+		TestModelObject::Ptr m1 = TestModelObject::create(1);
+		TestModelObject::Ptr m2 = TestModelObject::create(2);
+		TestModelObject::Ptr m3 = TestModelObject::create(3);
+		TestModelObject::Ptr m4 = TestModelObject::create(4);
+		map->registerObjects(v1, m1);
+		map->registerObjects(v2, m2);
+		map->registerObjects(v3, m3);
+		map->registerObjects(v4, m4);
+		CPPUNIT_ASSERT_EQUAL((size_t)4, map->getSize());
+		// serialize
+		boost::archive::text_oarchive ar(ss);
+		ar.register_type<ViewModelMap>();
+		ar.register_type<TestViewObject>();
+		ar.register_type<TestModelObject>();
+		ar << map;
+	}
+	ViewModelMap::Ptr map;
+	{
+		// deserialize
+		boost::archive::text_iarchive ar(ss);
+		ar.register_type<ViewModelMap>();
+		ar.register_type<TestViewObject>();
+		ar.register_type<TestModelObject>();
+		ar >> map;
+		CPPUNIT_ASSERT_EQUAL((size_t)4, map->getSize());
+	}
+	{
+		boost::archive::text_oarchive ar(ss);
+		ar.register_type<TestViewObject>();
+		map->lock(ar);
+		CPPUNIT_ASSERT_THROW( (ar & map),
+			sambag::com::exceptions::IllegalStateException);
+	}
+}
 } //namespace

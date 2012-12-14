@@ -18,6 +18,7 @@
 #include <boost/serialization/weak_ptr.hpp>
 #include <boost/foreach.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <boost/serialization/access.hpp>
 
 namespace frx { namespace gui {
 //=============================================================================
@@ -33,13 +34,25 @@ protected:
 	//-------------------------------------------------------------------------
 	ViewModelMap();
 private:
+	///////////////////////////////////////////////////////////////////////////
+	// Archive:
+	//-------------------------------------------------------------------------
+	friend class boost::serialization::access;
+	//-------------------------------------------------------------------------
+	template <typename Archive> 
+	void serialize(Archive &ar, const unsigned int version) {
+		ar & boost::serialization::base_object<IViewModelMap> ( *this );
+		ar & bedroom;
+		ar & closed;
+	}
+	///////////////////////////////////////////////////////////////////////////
 	//-------------------------------------------------------------------------
 	/**
 	 * place where model objects are when map is locked.
 	 */ 
-	typedef std::list<frx::processing::ModelObject::Ptr> ModelRestroom;
+	typedef std::list<frx::processing::ModelObject::Ptr> ModelBedroom;
 	//-------------------------------------------------------------------------
-	ModelRestroom bedroom;
+	ModelBedroom bedroom;
 	//-------------------------------------------------------------------------
 	/**
      * throws if closed.
@@ -87,6 +100,8 @@ public:
 	 */
 	size_t getSize() const;
 	//-------------------------------------------------------------------------
+	std::string toString() const;
+	//-------------------------------------------------------------------------
 	/**
 	 * serializes ViewModels intro archive and locks map.
 	 */
@@ -117,7 +132,7 @@ public:
 			);
 		}
 		ViewList::const_iterator vit = l.begin();
-		ModelRestroom::const_iterator mit = bedroom.begin();
+		ModelBedroom::const_iterator mit = bedroom.begin();
 		while(vit!=l.end()) {
 			map.insert(Map::value_type(*vit, *mit));
 			++vit;

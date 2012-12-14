@@ -9,6 +9,9 @@
 #include "GraphTest.hpp"
 #include "com/MyString.h"
 #include "processing/processing.h"
+#include "processing/IHostInfo.h"
+#include "processing/parameter/parameter.h"
+#include "processing/parameter/ConnectionOperators.h"
 #include "processing/ConcreteProcessAdapter.h"
 #include "com/one4All.h"
 #include "GraphBuilder.hpp"
@@ -1313,18 +1316,16 @@ void GraphTest::testGraphComplex3() {
 	performComplex3<4,2,3>(createGraph( 512, 44100.0f ), 103.0);
 	performComplex3<7,1,3>(createGraph( 512, 44100.0f ), 104.0);
 }	
-
-
 //=============================================================================
 template < typename A >
 void register_types( A &ar ){
 	using namespace processing;
-	using namespace processing::parameter;
+	namespace pp = processing::parameter;
 	//graph
 	ar.template register_type<Parameter>();
-	//ar.template register_type<parameter::InverseConnection>();
-	//ar.template register_type<parameter::ExpConnection>();
-	//ar.template register_type<parameter::LogConnection>();
+	ar.template register_type<pp::InverseConnection>();
+	ar.template register_type<pp::ExpConnection>();
+	ar.template register_type<pp::LogConnection>();
 	ar.template register_type<NOPNode>();
 	ar.template register_type<ProcessAdapter::OutputNode>();
 	ar.template register_type<ProcessAdapter::InputNode>();
@@ -1341,6 +1342,7 @@ void register_types( A &ar ){
 	ar.template register_type<PeakTracker>();
 	ar.template register_type<ADSRTrigger>();
 	ar.template register_type <FadeValue>();
+	ar.template register_type <DummyFX>();
 	//                 * 
 	// test klassen
 	ar.template register_type <HelperNode>();
@@ -1378,14 +1380,19 @@ void GraphTest::testSerialization() {
 		stringstream ss;
 		oArchive oar(ss);
 		register_types<oArchive>( oar );
-		graph->save(oar);
+		oar<<dummyFX;
+		oar<<graph;
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> clear graph
+		dummyFX.reset();
 		graph.reset();
 		outFrame.setZero( blockSize );
+		CPPUNIT_ASSERT ( graph.get() == NULL );
+		CPPUNIT_ASSERT ( dummyFX.get() == NULL );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> de-serialize
 		iArchive iar(ss);
 		register_types<iArchive>( iar );
-		graph = Graph::load( iar, dummyFX );
+		iar >> dummyFX;
+		iar >> graph;
 		CPPUNIT_ASSERT ( graph );
 		CPPUNIT_ASSERT_EQUAL ( (size_t)(4 * GRAPH_DEPTH + 2), graph->getNumNodes() );
 		CPPUNIT_ASSERT ( graph->isActive() );
@@ -1438,15 +1445,18 @@ void GraphTest::testSerialization() {
 		oArchive oar(ss);
 		register_types<oArchive>( oar );
 		oar.register_type< DelayAdapter<DELAY> >();
-		graph->save(oar);
+		oar << dummyFX;
+		oar << graph;
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> clear graph
+		dummyFX.reset();
 		graph.reset();
 		outFrame.setZero( blockSize );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> de-serialize
 		iArchive iar(ss);
 		register_types<iArchive>( iar );
 		iar.register_type< DelayAdapter<DELAY> >();
-		graph = Graph::load( iar, dummyFX );
+		iar >> dummyFX;
+		iar >> graph;
 		CPPUNIT_ASSERT ( graph );
 		CPPUNIT_ASSERT_EQUAL ( (size_t)newNumNodes, graph->getNumNodes() );
 		CPPUNIT_ASSERT ( graph->isActive() );

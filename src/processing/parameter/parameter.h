@@ -385,7 +385,7 @@ private:
 		BOOST_FOREACH(const Base::value_type &obj, *this) {
 			l.push_back(obj.second);
 		}
-		ar << l;
+		ar & l;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -400,7 +400,7 @@ private:
 		//'serialize': Ist kein Element von 'boost::unordered_set<T,H,P>'
 		//ar & boost::serialization::base_object<Base> (*this);
 		list<ParameterConnection::Ptr>  l;
-		ar >> l;
+		ar & l;
 		BOOST_FOREACH(ParameterConnection::Ptr cn, l) {
 			insert(std::make_pair(createKey(cn), cn));
 		}

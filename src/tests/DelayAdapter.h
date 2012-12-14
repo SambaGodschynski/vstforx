@@ -28,14 +28,14 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ) {
-		frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
-		if (!hI) {
-			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
-				"Hostinfo == NULL"
-			);
-		}
 		ar & boost::serialization::base_object< ProcessAdapter > ( *this );
 		if ( Archive::is_loading::value ) {
+			frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+			if (!hI) {
+				SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+					"Hostinfo == NULL"
+				);
+			}
 			stream = new processing::DCStream ( hI->getBlockSize(), _DELAY );
 		}
 	}

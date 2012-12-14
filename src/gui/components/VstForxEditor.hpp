@@ -9,6 +9,9 @@
 #include <iostream>
 #include <sstream>
 #include "aeffeditor.h"
+#include <sambag/dsp/IEditor.hpp>
+#include <com/Serialization.h>
+#include <sambag/com/Thread.hpp>
 
 namespace frx { namespace processing {
 	class VstForxPlug;
@@ -32,8 +35,12 @@ struct CreateVstForxEditor {
 	}
 };
 //=============================================================================
-class VstForxEditor : public AEffEditor {
+class VstForxEditor : 
+	public AEffEditor,
+	public sambag::dsp::IEditor
+{
 //=============================================================================
+friend class frx::processing::VstForxPlug;
 public:
 private:
 	//-------------------------------------------------------------------------
@@ -52,7 +59,9 @@ private:
 	 */
 	void initEntryExit(FrxCircuidViewPtr view);
 	//-------------------------------------------------------------------------
-	std::stringstream bedroom;
+	std::stringstream hiChamber;
+	//-------------------------------------------------------------------------
+	sambag::com::RecursiveMutex mutex;
 protected:
 	//-------------------------------------------------------------------------
 	virtual bool open (void *ptr);
@@ -61,12 +70,25 @@ protected:
 	//-------------------------------------------------------------------------
 	frx::processing::VstForxPlug *plug;
 	//-------------------------------------------------------------------------
-	void serializeView(std::ostream &os, FrxCircuidViewPtr view);
+	/**
+	 * serializes view in the case that
+	 * editor will be closed and plug(the model) still exists.
+	 */
+	void serializeViewTemp(::com::oArchive &ar, FrxCircuidViewPtr view);
 	//-------------------------------------------------------------------------
-	FrxCircuidViewPtr deserializeView(std::istream &is);
+	/**
+	 * deserializes the view wich was serializeViewTemp.
+	 */
+	FrxCircuidViewPtr deserializeViewTemp(::com::iArchive &ar);
 	//-------------------------------------------------------------------------
 	FrxCircuidViewPtr createView(sdc::Window::Ptr win);
+	//-------------------------------------------------------------------------
+	void setCircuidView(FrxCircuidViewPtr view);
 public:
+	//-------------------------------------------------------------------------
+	FrxCircuidViewPtr getCircuidView() const {
+		return circView;
+	}
 	//-------------------------------------------------------------------------
 	static void message(const std::string &str);
 	//-------------------------------------------------------------------------

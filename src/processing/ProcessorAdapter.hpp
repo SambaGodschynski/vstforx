@@ -27,6 +27,20 @@ class ProcessorAdapter :
 	public IProcessor::IOChangedEventSender
 {
 //=============================================================================
+private:
+	///////////////////////////////////////////////////////////////////////////
+	// Archive:
+	//-------------------------------------------------------------------------
+	friend class boost::serialization::access;
+	//-------------------------------------------------------------------------
+	template <typename Archive> 
+	void serialize(Archive &ar, const unsigned int version) {
+		ar & boost::serialization::base_object<IProcessor> ( *this );
+		ar & processor;
+		if (Archive::is_loading::value == true) {
+			initParameter();
+		}
+	}
 public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<ProcessorAdapter> Ptr;

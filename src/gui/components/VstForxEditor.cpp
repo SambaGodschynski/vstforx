@@ -8,13 +8,13 @@
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/components/FrxConcreteIO.hpp>
 #include <gui/components/ui/FrxLookAndFeel.hpp>
+#include <sambag/disco/components/BorderLayout.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <gui/IFrxControl.hpp>
 #include <OS_Specific/OS_com.h>
 #include <sstream>
-#include <com/Serialization.h>
 #include <com/Settings.h>
 #include <gui/FrxControl.hpp>
 #include <processing/VstForxPlug.hpp>
@@ -44,7 +44,8 @@ void VstForxEditor::setPlugin(frx::processing::VstForxPlug *plug) {
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::initEntryExit(FrxCircuidViewPtr circ) {
-	const sd::Dimension &winSize = circ->getParent()->getSize();
+	::com::Settings &set = com::getSettings();
+	sd::Dimension winSize(set.getWindowWidth(), set.getWindowHeight());
 	
 	FrxNodePtr entry, exit;
 	boost::tie(entry, exit) = getFrxControl(circ).createEntryExtitNodes(circ);
@@ -85,9 +86,8 @@ sdc::Window::Ptr VstForxEditor::createMainWindow(const sd::Rectangle &bounds) {
 	return win;
 }
 //-----------------------------------------------------------------------------
-void VstForxEditor::serializeView(std::ostream &os, FrxCircuidView::Ptr view) {
+void VstForxEditor::serializeViewTemp(::com::oArchive &ar, FrxCircuidView::Ptr view) {
 	try {
-		::com::oArchive ar(os);
 		RegisterFrxTypes::register_types(ar);
 		getPlugin()->getViewModelMap()->lock(ar);
 		FrxControl::serializeView(ar, view);
@@ -105,10 +105,9 @@ void VstForxEditor::serializeView(std::ostream &os, FrxCircuidView::Ptr view) {
 	}
 }
 //-----------------------------------------------------------------------------
-FrxCircuidView::Ptr VstForxEditor::deserializeView(std::istream &is) {
+FrxCircuidView::Ptr VstForxEditor::deserializeViewTemp(::com::iArchive &ar) {
 	FrxCircuidView::Ptr view;
 	try {
-		::com::iArchive ar(is);
 		RegisterFrxTypes::register_types(ar);
 		getPlugin()->getViewModelMap()->unlock(ar);
 		view = FrxControl::deserializeView(ar);
@@ -128,22 +127,44 @@ FrxCircuidView::Ptr VstForxEditor::deserializeView(std::istream &is) {
 	return view;
 }
 //-----------------------------------------------------------------------------
+void VstForxEditor::setCircuidView(FrxCircuidViewPtr view) {
+	if (view == circView) {
+		return;
+	}
+	FrxCircuidViewPtr old = circView;
+	circView = view;
+
+	if (window) {
+		if (old) { // remove old view
+			window->getContentPane()->remove(old);
+		}
+		window->getContentPane()->add(circView, sdc::BorderLayout::CENTER, -1);
+		window->getContentPane()->validate();
+		window->getContentPane()->redraw();
+	}
+}
+//-----------------------------------------------------------------------------
 FrxCircuidViewPtr VstForxEditor::createView(sdc::Window::Ptr win) {
-	FrxCircuidView::Ptr circ;
-	if (bedroom.str().length()==0) {
-		circ = createEmptyView();
-		win->getContentPane()->add(circ);
-		getPlugin()->registerView(circ);
-		initEntryExit(circ);
+	if (circView) { // happens when view is deserialized while editor closed
+		return circView;
+	}
+
+	FrxCircuidView::Ptr res;
+	if (hiChamber.str().length()==0) {
+		res = createEmptyView();
+		getPlugin()->registerView(res);
+		initEntryExit(res);
 	} else {
-		circ = deserializeView(bedroom);
-		win->getContentPane()->add(circ);
+		::com::iArchive ar(hiChamber);
+		res = deserializeViewTemp(ar);
+		hiChamber.str();
+		hiChamber.clear();
 	}
 	using namespace frx::processing;
-	circ->setEditorResizeHandler(
+	res->setEditorResizeHandler(
 		boost::bind(&VstForxPlug::requestEditorResize, getPlugin(), _1, _2)
 	);
-	return circ;
+	return res;
 }
 //-----------------------------------------------------------------------------
 bool VstForxEditor::open( void *ptr ) {
@@ -154,8 +175,11 @@ bool VstForxEditor::open( void *ptr ) {
 		Point2D(size.right, size.bottom)
 	);
 	try {
-		window = createMainWindow(bounds);
-		circView = createView(window);
+		SAMBAG_BEGIN_SYNCHRONIZED(mutex)
+			window = createMainWindow(bounds);
+			FrxCircuidViewPtr view = createView(window);
+			setCircuidView(view);
+		SAMBAG_END_SYNCHRONIZED
 	} catch (const std::exception &ex) {
 		std::stringstream ss;
 		ss<<"Could'nt create main view: "<<ex.what();
@@ -175,7 +199,10 @@ bool VstForxEditor::open( void *ptr ) {
 void VstForxEditor::close() {
 	AEffEditor::close();
 	try {
-		serializeView(bedroom, circView);
+		SAMBAG_BEGIN_SYNCHRONIZED(mutex)
+		::com::oArchive ar(hiChamber);
+		serializeViewTemp(ar, circView);
+		SAMBAG_END_SYNCHRONIZED
 	} catch (const std::exception &ex) {
 		std::stringstream ss;
 		ss<<"closing main view failed: "<<ex.what();

@@ -17,6 +17,8 @@
 #include <processing/ModelController.hpp>
 #include <gui/ViewModelMap.hpp>
 #include <gui/components/Forward.hpp>
+#include <iostream>
+#include <com/Serialization.h>
 
 namespace frx { namespace processing {
 namespace sce=sambag::com::events;
@@ -28,6 +30,9 @@ class VstForxPlug : public sambag::dsp::PluginProcessorBase,
 	public sce::EventSender<HostIOChanged>
 {
 //=============================================================================
+public:
+	//-------------------------------------------------------------------------
+	typedef sambag::dsp::PluginProcessorBase Super;
 private:
 	//-------------------------------------------------------------------------
 	void *effectPtr;
@@ -51,6 +56,14 @@ private:
 	frx::gui::ViewModelMap::Ptr map;
 	//-------------------------------------------------------------------------
 	sambag::com::ArithmeticWrapper<bool> onHostParameterUpdate;
+	//-------------------------------------------------------------------------
+	void save(std::ostream &os);
+	//-------------------------------------------------------------------------
+	void load(std::istream &is);
+	//-------------------------------------------------------------------------
+	void saveEditor(::com::oArchive &ar);
+	//-------------------------------------------------------------------------
+	void loadEditor(::com::iArchive &ar);
 protected:
 	//-------------------------------------------------------------------------
 	/**

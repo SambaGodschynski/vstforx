@@ -39,6 +39,19 @@ private:
 	//-------------------------------------------------------------------------
 	typedef std::multimap<ParameterGroupKey, ParameterAdapter::Ptr> ParameterGroupMap;
 	ParameterGroupMap parameters;
+	///////////////////////////////////////////////////////////////////////////
+	// Archive:
+	//-------------------------------------------------------------------------
+	friend class boost::serialization::access;
+	//-------------------------------------------------------------------------
+	template <typename Archive> 
+	void serialize(Archive &ar, const unsigned int version) {
+		ar & boost::serialization::base_object<IParameterConnection> ( *this );
+		ar & src;
+		ar & dst;
+		ar & parameters;
+		ar & cn;
+	}
 public:
 	//-------------------------------------------------------------------------
 	virtual ~ParameterConnection() {

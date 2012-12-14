@@ -196,39 +196,6 @@ Graph::Ptr Graph::create( frx::processing::IHostInfo::Ptr hostInfo ) {
 	return neu;
 }
 //------------------------------------------------------------------------------------------------------------
-void Graph::save(oArchive &ar) const {
-	/*com::MethodMessage<Graph> methodMessage ( "save()");
-	Graph::Ptr _this = self.lock();
-	ar << _this;
-	ar << startNode;
-	ar << endNode;
-	ar << g;
-	ar << graphObjects;
-	// hostParameter
-	ar<<hostParameter;*/
-}
-//------------------------------------------------------------------------------------------------------------
-Graph::Ptr Graph::load( iArchive &ar, frx::processing::IHostInfo::Ptr hostInfo ) {
-	com::MethodMessage<Graph> methodMessage ( "load()");
-	Graph::Ptr graph;
-	/*ar >> graph; 
-	graph->self = graph;
-	graph->hostInfo = hostInfo;
-	
-	ar >> graph->startNode;      
-	ar >> graph->endNode;
-	
-	ar >> graph->g;
-	ar >> graph->graphObjects;
-	
-	// hostParameter
-	ar>>graph->hostParameter;
-	
-	graph->getJanitor()->updateProcessorNodeVertexRelations(); // impl. updateGraph()*/
-
-	return graph;
-}
-//------------------------------------------------------------------------------------------------------------
 void Graph::processEvents(sambag::dsp::IMidiEvents * events) {
 	GraphObjectContainer::iterator it = graphObjects.begin();
 	for ( ; it!=graphObjects.end(); ++it ){
@@ -241,7 +208,9 @@ void Graph::processEvents(sambag::dsp::IMidiEvents * events) {
 //------------------------------------------------------------------------------------------------------------
 Graph::Janitor::Ptr Graph::getJanitor() {
 	Janitor::Ptr up = updater.lock();
-	if (up) return up;
+	if (up) {
+		return up;
+	}
 	up = Janitor::Ptr ( new Janitor( this ) );
 	updater = up;
 	return up;

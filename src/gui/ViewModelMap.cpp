@@ -18,7 +18,19 @@ ViewModelMap::Ptr ViewModelMap::create() {
 //-----------------------------------------------------------------------------
 ViewModelMap::ViewModelMap() : closed(false) {
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+std::string ViewModelMap::toString() const {
+	std::stringstream ss;
+	if (isLocked()) {
+		ss<<"locked"<<std::endl;
+		return ss.str();
+	}
+	BOOST_FOREACH(const Map::left_map::value_type &v, map.left) {
+		ss<<typeid(*(v.first.get())).name()<<" : "<<typeid(*(v.second.get())).name()<<std::endl;
+	}
+	return ss.str();
+}
+//-----------------------------------------------------------------------------
 void ViewModelMap::checkState() {
 	if (!isLocked())
 		return;

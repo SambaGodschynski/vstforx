@@ -20,6 +20,14 @@ namespace frx { namespace gui {
   */
 class IViewModelMap {
 //=============================================================================
+private:
+	///////////////////////////////////////////////////////////////////////////
+	// Archive:
+	//-------------------------------------------------------------------------
+	friend class boost::serialization::access;
+	//-------------------------------------------------------------------------
+	template <typename Archive> 
+	void serialize(Archive &ar, const unsigned int version) {}
 public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<IViewModelMap> Ptr;

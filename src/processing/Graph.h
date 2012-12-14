@@ -167,8 +167,18 @@ private:
 	 */
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ){
+		ar & self;
 		ar & hostInfo;
+		ar & startNode;
+		ar & endNode;
+		ar & graphObjects;
+		ar & hostParameter;
 		ar & parameterConnections;
+		ar & g;
+		if ( Archive::is_loading::value ) {
+			Ptr graph = self.lock();
+			graph->getJanitor()->updateProcessorNodeVertexRelations();
+		}
 	}
 	//--------------------------------------------------------------------------------------------------------
 	Graph () : _hasCycle(false) { initBglGraph(); }
@@ -372,20 +382,6 @@ public:
 	 * @return Anzahl aller BGL-Vertices
  	 */
 	size_t getNumNodes() { return boost::num_vertices(g); }
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * Persitiert Graph
-	 * @param ar
-	 */
-	void save ( oArchive &ar ) const;
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * Rekonstruiert Graph-Objekt aus Boost::Archive Strom
-	 * @param ar Boost::Archive Objekt
-	 * @param hostInfo Hostinfo Objekt
-	 * @return
-	 */
-	static Graph::Ptr load ( iArchive &ar, frx::processing::IHostInfo::Ptr hostInfo );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return gesamt Latenz des Graph in Ms.

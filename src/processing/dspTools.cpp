@@ -151,19 +151,18 @@ void ADSR::save ( oArchive &ar, const unsigned int version ) const {
 void ADSR::load ( iArchive &ar, const unsigned int version ) {
 	using namespace processing;
 	using namespace processing::parameter;
-	frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
-	if (!hI) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
-			"Hostinfo == NULL"
-		);
-	}
-
 	Parameter::ParameterListenerFunction lC=boost::bind( &ADSR::levelChanged, this, _1, _2 );
 	Parameter::ParameterListenerFunction dC=boost::bind( &ADSR::durationChanged, this, _1, _2 );
 	Parameter::ParameterListenerFunction cT=boost::bind( &ADSR::curveTypeChanged, this, _1, _2 );
 	Parameter::ParameterListenerFunction hC=boost::bind( &ADSR::holdChanged, this, _1, _2 );
 	Parameter::ParameterListenerFunction mC=boost::bind( &ADSR::modeChanged, this, _1, _2 );
 	ar >> hostInfo;
+	frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+	if (!hI) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+			"Hostinfo == NULL"
+		);
+	}
 	blockSize = hI->getBlockSize();
 	ar >> state;
 	for ( int i=0; i<NUM_STATES; ++i ){

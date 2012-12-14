@@ -19,6 +19,16 @@ namespace frx { namespace processing {
   */
 class IParameterConnection : public IConnection {
 //=============================================================================
+private:
+	///////////////////////////////////////////////////////////////////////////
+	// Archive:
+	//-------------------------------------------------------------------------
+	friend class boost::serialization::access;
+	//-------------------------------------------------------------------------
+	template <typename Archive> 
+	void serialize(Archive &ar, const unsigned int version) {
+		ar & boost::serialization::base_object<IConnection> ( *this );
+	}
 public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<IParameterConnection> Ptr;

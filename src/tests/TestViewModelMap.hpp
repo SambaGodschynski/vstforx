@@ -19,12 +19,14 @@ private:
 	CPPUNIT_TEST( testCreating );
 	CPPUNIT_TEST( testRegistering );
 	CPPUNIT_TEST( testHibernate );
+	CPPUNIT_TEST( testSerializing );
 	CPPUNIT_TEST_SUITE_END();
 public:
 	void testCreating();
 	void testRegistering();
 	// test serializing, closing, deserializing
 	void testHibernate();
+	void testSerializing();
 };
 
 } // namespace

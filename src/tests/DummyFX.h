@@ -21,9 +21,10 @@ namespace processing {
 
 struct DummyFX : public AudioEffectX, public frx::processing::IHostInfo {
 public:
-		DummyFX ( audioMasterCallback audioMaster, 
+	DummyFX() : AudioEffectX ( NULL, 0, 0 ) {}
+	DummyFX ( audioMasterCallback audioMaster, 
 		      const frx::processing::TimeInfo & timeInfo = frx::processing::TimeInfo() 
-			 ) : AudioEffectX ( audioMaster, 0, 0 ), timeInfo(timeInfo), blockSize(0), sampleRate(0) {}
+	) : AudioEffectX ( audioMaster, 0, 0 ), timeInfo(timeInfo), blockSize(0), sampleRate(0) {}
 public:
 	typedef boost::shared_ptr<DummyFX> Ptr;
 	float sampleRate;
@@ -56,6 +57,12 @@ public:
 	{
 		return Ptr(new DummyFX(audioMaster, timeInfo));
 	}
+	template< typename Archive >
+	void serialize ( Archive &ar, const unsigned int version ) {
+		ar & boost::serialization::base_object<frx::processing::IHostInfo> ( *this );
+		ar & sampleRate;
+		ar & blockSize;
+	} 
 };
 
 } // namespace
