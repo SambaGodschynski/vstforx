@@ -17,8 +17,8 @@ add_executable(unit_tests ${SAMBAG_TESTSOURCES})
 target_link_libraries (unit_tests frx_core ${FRX_CLIBS})
 
 SET (PlugSources ${PlugSources}
-    ../VSTForx/VSTForx/VstForxPlugMain.cpp
-    ../VSTForx/VSTForx/vstplug.def
+    PluginApps/VSTForx/VstForxPlugMain.cpp
+    PluginApps/VSTForx/vstplug.def
 )
 
 add_library(vstforx SHARED ${PlugSources})
@@ -30,6 +30,7 @@ ignoreDirs = (
     "CMakeFiles",
     #".*test.*",
     ".*GuiStandaloneApp",
+     ".*PluginApps",
     ".*mac.*"
 )
 ignoreFiles = (

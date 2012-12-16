@@ -142,6 +142,13 @@ void VstForxEditor::setCircuidView(FrxCircuidViewPtr view) {
 		window->getContentPane()->validate();
 		window->getContentPane()->redraw();
 	}
+	if (!view) {
+		return;
+	}
+	using namespace frx::processing;
+	circView->setEditorResizeHandler(
+		boost::bind(&VstForxPlug::requestEditorResize, getPlugin(), _1, _2)
+	);
 }
 //-----------------------------------------------------------------------------
 FrxCircuidViewPtr VstForxEditor::createView(sdc::Window::Ptr win) {
@@ -160,10 +167,6 @@ FrxCircuidViewPtr VstForxEditor::createView(sdc::Window::Ptr win) {
 		hiChamber.str();
 		hiChamber.clear();
 	}
-	using namespace frx::processing;
-	res->setEditorResizeHandler(
-		boost::bind(&VstForxPlug::requestEditorResize, getPlugin(), _1, _2)
-	);
 	return res;
 }
 //-----------------------------------------------------------------------------
