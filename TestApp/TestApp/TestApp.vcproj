@@ -210,6 +210,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\tests\ScriptedTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\tests\ScriptedTests.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\startTest.cpp"
 				>
 				<FileConfiguration

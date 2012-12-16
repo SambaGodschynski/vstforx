@@ -80,7 +80,6 @@ chunkData(NULL),
 blockSize(0),
 sampleRate(0.f)
 {
-
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::registerView(fgc::FrxCircuidViewPtr view) {
@@ -396,7 +395,7 @@ void VstForxPlug::load(std::istream &is) {
 }
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
-IModelController::Ptr
+extern IModelController::Ptr
 getModelController(frx::gui::components::FrxCircuidViewPtr view)
 {
 	VstForxPlug *plug = getPlugin(view);
@@ -408,7 +407,7 @@ getModelController(frx::gui::components::FrxCircuidViewPtr view)
 
 namespace frx { namespace gui {
 //-----------------------------------------------------------------------------
-IViewModelMap::Ptr 
+extern IViewModelMap::Ptr 
 getViewModelMap(components::FrxCircuidViewPtr view)
 {
 	using namespace frx::processing;
