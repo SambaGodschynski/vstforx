@@ -78,7 +78,7 @@ fgc::FrxCircuidView::Ptr deserializeView(const std::string &file) {
 	fgc::FrxCircuidView::Ptr view;
 	try {
 		::com::iArchive ar(f);
-		fgc::RegisterFrxTypes::register_types(ar);
+		fgc::register_types(ar);
 		view = 
 			fg::FrxControl::deserializeView(ar);
 	} catch(...) {
@@ -93,7 +93,7 @@ void serializeView(const std::string &file, fgc::FrxCircuidView::Ptr view) {
 	std::fstream f(file.c_str(), std::ios_base::out | std::ios_base::trunc);
 	SAMBAG_ASSERT(!f.fail());
 	::com::oArchive ar(f);
-	fgc::RegisterFrxTypes::register_types(ar);
+	fgc::register_types(ar);
 	fg::FrxControl::serializeView(ar, view);
 	f.close();
 }

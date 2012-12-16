@@ -6,7 +6,6 @@
  */
 
 #include "VstForxPlug.hpp"
-#include <processing/IModelController.hpp>
 #include <stdlib.h>
 #include <sstream>
 #include <processing/Frames.h>
@@ -316,20 +315,20 @@ void VstForxPlug::saveEditor(::com::oArchive &ar) {
 	if (editor->isOpen()) {
 		//void serializeViewTemp(::com::oArchive &ar, FrxCircuidViewPtr view);
 		::com::oArchive tmp(tmpss);
-		frx::gui::components::RegisterFrxTypes::register_types(tmp);
+		frx::gui::components::register_types(tmp);
 		editor->serializeViewTemp(tmp, editor->getCircuidView()); // as of now map is locked;
 		serializedViewStream = tmpss.str();
 	} else {
 		serializedViewStream = editor->hiChamber.str();
 	}
-	frx::gui::components::RegisterFrxTypes::register_types(ar);
+	frx::gui::components::register_types(ar);
 	ar.register_type<frx::gui::ViewModelMap>();
 	ar & serializedViewStream; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<1.
 	ar & map;				   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<2.
 	
 	if (tmpss.str().length() > 0) {
 		::com::iArchive tmp(tmpss);
-		frx::gui::components::RegisterFrxTypes::register_types(tmp);
+		frx::gui::components::register_types(tmp);
 		getViewModelMap()->unlock(tmp);
 	}
 }
@@ -345,7 +344,7 @@ void VstForxPlug::loadEditor(::com::iArchive &ar) {
 			"editor == NULL"
 		);
 	}
-	frx::gui::components::RegisterFrxTypes::register_types(ar);
+	frx::gui::components::register_types(ar);
 	ar.register_type<frx::gui::ViewModelMap>();
 	std::string serializedViewStream;
 	ar & serializedViewStream; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<1.
@@ -354,7 +353,7 @@ void VstForxPlug::loadEditor(::com::iArchive &ar) {
 		std::stringstream tmpss;
 		tmpss<<serializedViewStream;
 		::com::iArchive tmp(tmpss);
-		frx::gui::components::RegisterFrxTypes::register_types(tmp);
+		frx::gui::components::register_types(tmp);
 		frx::gui::components::FrxCircuidViewPtr view =
 			editor->deserializeViewTemp(tmp);
 		editor->setCircuidView(view);
@@ -368,7 +367,7 @@ void VstForxPlug::loadEditor(::com::iArchive &ar) {
 void VstForxPlug::save(std::ostream &os) {
 	::com::oArchive ar(os);
 	ar.register_type<HostInfoAdapter>();
-	RegisterProcessingTypes::register_types(ar);
+	register_types(ar);
 	ar & hostInfoAdapter;
 	ar & graph;
 	saveEditor(ar);
@@ -379,7 +378,7 @@ void VstForxPlug::load(std::istream &is) {
 	::processing::Graph::Ptr alt = graph; // hold old until loosing scope
 	::com::iArchive ar(is);
 	ar.register_type<HostInfoAdapter>();
-	RegisterProcessingTypes::register_types(ar);
+	register_types(ar);
 	ar & hostInfoAdapter;
 	dynamic_cast<HostInfoAdapter*>
 		(hostInfoAdapter.get())->hostInfo = this;

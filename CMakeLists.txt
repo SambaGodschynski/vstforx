@@ -72,11 +72,6 @@ ELSEIF(UNIX)
 		${X11_LIBRARIES}
 	)
 ELSEIF(WIN32)
-        set (FRX_CLIBS ${FRX_CLIBS}
-		${LIBPNG_LIBRARY_DIRS}/${LIBPNG}
-		${LIBZLIB_LIBRARY_DIRS}/${LIBZLIB}
-		${LIBPIXMAN_LIBRARY_DIRS}/${LIBPIXMAN}
-	)
 ENDIF(APPLE)
 
 
@@ -86,8 +81,13 @@ set (FRX_CLIBS ${FRX_CLIBS}
 	${CAIRO_LIBRARIES}
 	${TINYXML_LIBRARIES}
 	${LUA52_LIBRARIES}
-	${SQLITE3_LIBRARIES}
 	${SAMBAG_LIBRARIES}
+)
+
+set (VSTSDKSOURCE ${VSTSDKSOURCE}
+      ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/audioeffect.cpp
+      ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/audioeffectx.cpp
+      ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp
 )
 
 add_subdirectory(src)

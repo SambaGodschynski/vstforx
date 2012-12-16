@@ -15,6 +15,14 @@ target_link_libraries (standalone frx_core ${FRX_CLIBS})
 
 add_executable(unit_tests ${SAMBAG_TESTSOURCES})
 target_link_libraries (unit_tests frx_core ${FRX_CLIBS})
+
+SET (PlugSources ${PlugSources}
+    ../VSTForx/VSTForx/VstForxPlugMain.cpp
+    ../VSTForx/VSTForx/vstplug.def
+)
+
+add_library(vstforx SHARED ${PlugSources})
+target_link_libraries (vstforx frx_core ${FRX_CLIBS})
 """
 
 ignoreDirs = (
@@ -44,7 +52,7 @@ class Walker():
         self.fHandler = self.createCmakeFile()
         self.writeList("FRX_SOURCES", self.source)
         self.writeList("SAMBAG_TESTSOURCES",self.testSource)
-        self.writeLine("add_library(frx_core ${FRX_SOURCES})")
+        self.writeLine("add_library(frx_core ${FRX_SOURCES} ${VSTSDKSOURCE})")
         self.writeLine(add)
         self.fHandler.close()
 

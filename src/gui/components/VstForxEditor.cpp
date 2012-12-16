@@ -88,7 +88,7 @@ sdc::Window::Ptr VstForxEditor::createMainWindow(const sd::Rectangle &bounds) {
 //-----------------------------------------------------------------------------
 void VstForxEditor::serializeViewTemp(::com::oArchive &ar, FrxCircuidView::Ptr view) {
 	try {
-		RegisterFrxTypes::register_types(ar);
+		register_types(ar);
 		getPlugin()->getViewModelMap()->lock(ar);
 		FrxControl::serializeView(ar, view);
 		FrxControl::serializeViewComponents(ar, view);
@@ -108,7 +108,7 @@ void VstForxEditor::serializeViewTemp(::com::oArchive &ar, FrxCircuidView::Ptr v
 FrxCircuidView::Ptr VstForxEditor::deserializeViewTemp(::com::iArchive &ar) {
 	FrxCircuidView::Ptr view;
 	try {
-		RegisterFrxTypes::register_types(ar);
+		register_types(ar);
 		getPlugin()->getViewModelMap()->unlock(ar);
 		view = FrxControl::deserializeView(ar);
 		getPlugin()->registerView(view);
