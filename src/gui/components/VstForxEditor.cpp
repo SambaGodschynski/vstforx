@@ -7,6 +7,7 @@
 #include <sambag/disco/Geometry.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/components/FrxConcreteIO.hpp>
+#include <sambag/disco/components/FramedWindow.hpp>
 #include <gui/components/ui/FrxLookAndFeel.hpp>
 #include <sambag/disco/components/BorderLayout.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
@@ -170,6 +171,27 @@ FrxCircuidViewPtr VstForxEditor::createView(sdc::Window::Ptr win) {
 	return res;
 }
 //-----------------------------------------------------------------------------
+void VstForxEditor::onHostWindowOpen(void *src, const sdc::OnOpenEvent &ev)
+{
+	open( parentWindow->getWindowImpl()->getSystemHandle() );
+}
+//-----------------------------------------------------------------------------
+void VstForxEditor::open() {
+	if (!parentWindow) {
+		parentWindow = sdc::FramedWindow::create();
+		parentWindow->getContentPane()->setOpaque(false);
+		parentWindow->getWindowImpl()->setFlag(sdc::WindowFlags::WND_RAW, true);
+		parentWindow->addOnOpenEventListener(
+			boost::bind(&VstForxEditor::onHostWindowOpen, this, _1, _2)
+		);
+	}
+	parentWindow->setWindowBounds(
+		sd::Rectangle(0,0,::com::getSettings().getWindowWidth(), 
+		::com::getSettings().getWindowHeight())
+	);
+	parentWindow->open();
+}
+//-----------------------------------------------------------------------------
 bool VstForxEditor::open( void *ptr ) {
 	using namespace sambag::com;
 	using namespace sambag::disco;
@@ -218,6 +240,10 @@ void VstForxEditor::close() {
 	getPlugin()->unRegisterView(circView);
 	window.reset();
 	circView.reset();
+	if (parentWindow) {
+		parentWindow->close();
+		//parentWindow.reset();
+	}
 }
 //-----------------------------------------------------------------------------
 bool VstForxEditor::getRect (ERect** rect) {

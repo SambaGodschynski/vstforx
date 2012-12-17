@@ -44,6 +44,14 @@ friend class frx::processing::VstForxPlug;
 public:
 private:
 	//-------------------------------------------------------------------------
+	void onHostWindowOpen(void *src, const sdc::OnOpenEvent &ev);
+	//-------------------------------------------------------------------------
+	/**
+	 * setted when editor opened via open() ( instead of open(ptr) where
+	 * ptr is a host window handle )
+	 */
+	sambag::disco::components::WindowPtr parentWindow;
+	//-------------------------------------------------------------------------
 	sambag::disco::components::WindowPtr window;
 	//-------------------------------------------------------------------------
 	FrxCircuidViewPtr circView;
@@ -64,10 +72,6 @@ private:
 	sambag::com::RecursiveMutex mutex;
 protected:
 	//-------------------------------------------------------------------------
-	virtual bool open (void *ptr);
-	//-------------------------------------------------------------------------
-	virtual void close ();
-	//-------------------------------------------------------------------------
 	frx::processing::VstForxPlug *plug;
 	//-------------------------------------------------------------------------
 	/**
@@ -85,6 +89,27 @@ protected:
 	//-------------------------------------------------------------------------
 	void setCircuidView(FrxCircuidViewPtr view);
 public:
+	//-------------------------------------------------------------------------
+	/**
+	 * @return the window where the editor is nested in or
+	 * NULL when editor was opened by the host via open(ptr).
+	 */
+	sambag::disco::components::WindowPtr getParentWindow() const {
+		return parentWindow;
+	}
+	//-------------------------------------------------------------------------
+	/**
+	 * creates window and init editor.
+	 */
+	void open();
+	//-------------------------------------------------------------------------
+	/**
+	 * init editor on window (mainly called by host)
+	 * @param raw system handle ptr
+	 */
+	virtual bool open(void *ptr);
+	//-------------------------------------------------------------------------
+	virtual void close();
 	//-------------------------------------------------------------------------
 	FrxCircuidViewPtr getCircuidView() const {
 		return circView;

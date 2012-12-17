@@ -14,20 +14,6 @@
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::TestFrxCircuidView );
 
-namespace frx { namespace processing {
-	IModelController::Ptr
-	getModelController(frx::gui::components::FrxCircuidView::Ptr) {
-		return IModelController::Ptr();
-	}
-}}
-namespace frx { namespace gui {
-	IViewModelMap::Ptr 
-	getViewModelMap(components::FrxCircuidViewPtr view)
-	{
-		return IViewModelMap::Ptr();
-	}
-}}
-
 namespace tests {
 //=============================================================================
 //  Class TestFrxCircuidView

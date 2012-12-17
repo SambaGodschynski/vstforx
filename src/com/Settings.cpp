@@ -59,7 +59,7 @@ Settings & getSettings() {
 Settings & initSettings(const std::string &homeDirectory) {
 	Settings &res = FactoryHolder::Instance();
 	res.init(homeDirectory);
-	sambag::disco::FileResourceManager::init(homeDirectory+"/images");
+	sambag::disco::FileResourceManager::init(homeDirectory);
 	return res;
 }
 //------------------------------------------------------------------------------------------------------------

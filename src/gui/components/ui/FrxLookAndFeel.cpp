@@ -191,22 +191,22 @@ void FrxLookAndFeel::installDefaults() {
 		createStyle("stroke-width: 1; stroke: darkgrey;font-size: 13; font-family: arial"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<images
 	FileResourceManager &rManager = FileResourceManager::instance();
-	rManager.registerImage("FrxCircuidView.image", "disco-floor.png");
+	rManager.registerImage("FrxCircuidView.image", "images/disco-floor.png");
 	m.putProperty("FrxCircuidView.bgTransfomation", sambag::math::rotate2D(45.));
 	m.putProperty("FrxCircuidView.bgExtend", sd::IPattern::DISCO_EXTEND_REPEAT);
-	rManager.registerImage("StatusMessage.icon.default", "inf_icon.png");
-	rManager.registerImage("StatusMessage.icon.hint", "inf_icon.png");
-	rManager.registerImage("StatusMessage.icon.warning", "warning_icon.png");
+	rManager.registerImage("StatusMessage.icon.default", "images/inf_icon.png");
+	rManager.registerImage("StatusMessage.icon.hint", "images/inf_icon.png");
+	rManager.registerImage("StatusMessage.icon.warning", "images/warning_icon.png");
 	//rManager.registerImage("FrxPluginNode.image", "w3c.svg");
 	//rManager.registerImage("ProcessorInput.image", "w3c.svg");
 	//rManager.registerImage("ProcessorOutput.image", "w3c.svg");
-	rManager.registerImage("Entry.image", "entry.svg");
-	rManager.registerImage("Exit.image", "exit.svg");
-	rManager.registerImage("FrxBrowser.folder.image", "Blank-icon.png");
-	rManager.registerImage("FrxBrowser.default.image", "disco-floor.png");
-	rManager.registerImage("FrxBrowser.plugin.image", "vst-big-icon.png");
-	rManager.registerImage("FrxBrowser.processor.image", "disco-floor.png");
-	rManager.registerImage("FrxBrowser.parameter.image", "knob.png");
+	rManager.registerImage("Entry.image", "images/entry.svg");
+	rManager.registerImage("Exit.image", "images/exit.svg");
+	rManager.registerImage("FrxBrowser.folder.image", "images/Blank-icon.png");
+	rManager.registerImage("FrxBrowser.default.image", "images/disco-floor.png");
+	rManager.registerImage("FrxBrowser.plugin.image", "images/vst-big-icon.png");
+	rManager.registerImage("FrxBrowser.processor.image", "images/disco-floor.png");
+	rManager.registerImage("FrxBrowser.parameter.image", "images/knob.png");
 }	
 
 }}}} // namespace(s)

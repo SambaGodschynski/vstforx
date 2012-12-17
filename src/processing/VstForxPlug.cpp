@@ -392,9 +392,13 @@ void VstForxPlug::load(std::istream &is) {
 	}
 	initHostParameter();
 }
+//-----------------------------------------------------------------------------
+sambag::dsp::IEditor * VstForxPlug::getEditor() {
+	return host->getEditor();
+}
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
-extern IModelController::Ptr
+IModelController::Ptr
 getModelController(frx::gui::components::FrxCircuidViewPtr view)
 {
 	VstForxPlug *plug = getPlugin(view);
@@ -406,7 +410,7 @@ getModelController(frx::gui::components::FrxCircuidViewPtr view)
 
 namespace frx { namespace gui {
 //-----------------------------------------------------------------------------
-extern IViewModelMap::Ptr 
+IViewModelMap::Ptr 
 getViewModelMap(components::FrxCircuidViewPtr view)
 {
 	using namespace frx::processing;
