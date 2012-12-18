@@ -40,7 +40,6 @@ private:
 	TestPlugin * plug;
 	TestPlugin * createPlug();
 	frx::scripts::PluginScriptCtrl scriptCtrl;
-	void onEditorOpen(void *src, const frx::scripts::OnEditorOpening& ev);
 public:
 	ScriptedTests();
 	virtual void setUp();

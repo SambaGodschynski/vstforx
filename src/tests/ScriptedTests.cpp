@@ -25,9 +25,6 @@ int testHostCallback(AEffect* effect, VstInt32 opcode,
 //=============================================================================
 //-----------------------------------------------------------------------------
 ScriptedTests::ScriptedTests() {
-	scriptCtrl.EventSender<frx::scripts::OnEditorOpening>::addEventListener(
-		boost::bind(&ScriptedTests::onEditorOpen, this, _1, _2)	
-	);
 }
 //-----------------------------------------------------------------------------
 void ScriptedTests::setUp() {
@@ -52,13 +49,6 @@ TestPlugin * ScriptedTests::createPlug() {
 		return NULL;
 	}
 	return NULL;
-}
-//-----------------------------------------------------------------------------
-void ScriptedTests::onEditorOpen(void *src, const frx::scripts::OnEditorOpening& ev)
-{
-	/*scriptCtrl.getEditor()->getParentWindow()->setDefaultCloseOperation(
-		sambag::disco::components::Window::EXIT_ON_CLOSE
-	);*/
 }
 //-----------------------------------------------------------------------------
 void ScriptedTests::scriptTests() {

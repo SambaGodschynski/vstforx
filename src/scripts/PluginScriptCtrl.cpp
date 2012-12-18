@@ -13,37 +13,125 @@
 #include <sambag/com/Common.hpp>
 #include <boost/foreach.hpp>
 #include <sambag/disco/components/WindowToolkit.hpp>
+#include <loki/Typelist.h>
 
 namespace frx { namespace scripts {
 namespace {
-	struct FrxOpenPlugin_Tag {
+	///////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////
+	// Access
+	typedef PluginScriptCtrl Ctrl;
+	//-------------------------------------------------------------------------
+	struct FrxOpenPlugin {
 		typedef boost::function<void()> Function;
 		static const char * name() { return "frxOpenPlugin"; }
+		static void process(Ctrl *ctrl);
 	};
-	struct FrxClosePlugin_Tag {
+	//-------------------------------------------------------------------------
+	struct FrxClosePlugin {
 		typedef boost::function<void()> Function;
 		static const char * name() { return "frxClosePlugin"; }
+		static void process(Ctrl *ctrl);
 	};
-	struct FrxOpenEditor_Tag {
+	//-------------------------------------------------------------------------
+	struct FrxOpenEditor {
 		typedef boost::function<void()> Function;
 		static const char * name() { return "frxOpenEditor"; }
+		static void process(Ctrl *ctrl);
 	};
-	struct FrxCloseEditor_Tag {
+	//-------------------------------------------------------------------------
+	struct FrxCloseEditor {
 		typedef boost::function<void()> Function;
 		static const char * name() { return "frxCloseEditor"; }
+		static void process(Ctrl *ctrl);
 	};
-	struct FrxWait_Tag {
+	//-------------------------------------------------------------------------
+	struct FrxWait {
 		typedef boost::function<void(int)> Function;
 		static const char * name() { return "frxWait"; }
+		static void process(int sec, Ctrl *ctrl);
 	};
-	struct FrxAssert_Tag {
+	//-------------------------------------------------------------------------
+	struct FrxAssert {
 		typedef boost::function<void(bool)> Function;
 		static const char * name() { return "frxAssert"; }
+		static void process(bool val, Ctrl *ctrl);
 	};
-	struct FrxAssertMsg_Tag {
+	//-------------------------------------------------------------------------
+	struct FrxAssertMsg {
 		typedef boost::function<void(bool, std::string)> Function;
 		static const char * name() { return "frxAssertMsg"; }
+		static void process(bool val, std::string, Ctrl *ctrl);
 	};
+	//-------------------------------------------------------------------------
+	typedef LOKI_TYPELIST_7(FrxOpenPlugin,
+		FrxClosePlugin,
+		FrxOpenEditor,
+		FrxCloseEditor,
+		FrxWait,
+		FrxAssert,
+		FrxAssertMsg) FrxFunctionList;
+///////////////////////////////////////////////////////////////////////////////
+// FrxFunction impl.
+#define FRX_START_SCRIPTCALL ctrl->startScriptCall(__FUNCTION__);
+#define FRX_END_SCRIPTCALL ctrl->endScriptCall();
+#define FRX_GET_PLUG frx::processing::VstForxPlug * plug = ctrl->getPlugin();
+#define FRX_GET_EDITOR frx::gui::components::VstForxEditor * editor = ctrl->getEditor();
+//-----------------------------------------------------------------------------
+void FrxOpenPlugin::process(Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+	plug->open();
+	FRX_END_SCRIPTCALL
+}
+//-----------------------------------------------------------------------------
+void FrxClosePlugin::process(Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+	plug->close();
+	FRX_END_SCRIPTCALL
+}
+//-----------------------------------------------------------------------------
+void FrxOpenEditor::process(Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+	editor->open();
+	editor->getParentWindow()->setWindowLocation(sambag::disco::Point2D(100,100));
+	FRX_END_SCRIPTCALL
+}
+//-----------------------------------------------------------------------------
+void FrxCloseEditor::process(Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+	editor->close();
+	FRX_END_SCRIPTCALL
+}
+//-----------------------------------------------------------------------------
+void FrxWait::process(int sec, Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+	boost::this_thread::sleep(boost::posix_time::seconds(sec));
+	FRX_END_SCRIPTCALL
+}
+//-----------------------------------------------------------------------------
+void FrxAssert::process(bool val, Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+	FRX_END_SCRIPTCALL
+}
+//-----------------------------------------------------------------------------
+void FrxAssertMsg::process(bool val, std::string msg, Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+	FRX_END_SCRIPTCALL
+}
 } // namespace
 //=============================================================================
 //  Class PluginScriptCtrl
@@ -113,83 +201,76 @@ void PluginScriptCtrl::endScriptCall() {
 	//boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 }
 ///////////////////////////////////////////////////////////////////////////////
-//#define FRX_START_SCRIPTCALL startScriptCall();
-//#define FRX_END_SCRIPTCALL endScriptCall();
-#define FRX_START_SCRIPTCALL startScriptCall(__FUNCTION__);
-#define FRX_END_SCRIPTCALL endScriptCall();
-//-----------------------------------------------------------------------------
-void PluginScriptCtrl::frxOpenPlugin() {
-	FRX_START_SCRIPTCALL
-	plug->open();
-	FRX_END_SCRIPTCALL
+// register function approach
+namespace {
+template <int Val>
+struct Int2Type {
+	enum { Value = Val };
+};
+template <class FrxFunction> 
+void registerFunctionImpl(sambag::lua::LuaStateRef luaState, Ctrl *ctrl, Int2Type<0>)
+{
+	sambag::lua::registerFunction<FrxFunction>(
+		luaState.get(),
+		boost::bind(&FrxFunction::process, ctrl)
+	);
 }
-//-----------------------------------------------------------------------------
-void PluginScriptCtrl::frxClosePlugin() {
-	FRX_START_SCRIPTCALL
-	plug->close();
-	FRX_END_SCRIPTCALL
+template <class FrxFunction> 
+void registerFunctionImpl(sambag::lua::LuaStateRef luaState, Ctrl *ctrl, Int2Type<1>)
+{
+	sambag::lua::registerFunction<FrxFunction>(
+		luaState.get(),
+		boost::bind(&FrxFunction::process, _1, ctrl)
+	);
 }
-//-----------------------------------------------------------------------------
-void PluginScriptCtrl::frxOpenEditor() {
-	FRX_START_SCRIPTCALL
-	editor->open();
-	editor->getParentWindow()->setWindowLocation(sambag::disco::Point2D(100,100));
-	EventSender<OnEditorOpening>::notifyListeners(this, OnEditorOpening());
-	FRX_END_SCRIPTCALL
+template <class FrxFunction> 
+void registerFunctionImpl(sambag::lua::LuaStateRef luaState, Ctrl *ctrl, Int2Type<2>)
+{
+	sambag::lua::registerFunction<FrxFunction>(
+		luaState.get(),
+		boost::bind(&FrxFunction::process, _1, _2, ctrl)
+	);
 }
-//-----------------------------------------------------------------------------
-void PluginScriptCtrl::frxCloseEditor() {
-	FRX_START_SCRIPTCALL
-	editor->close();
-	EventSender<OnEditorClosing>::notifyListeners(this, OnEditorClosing());
-	FRX_END_SCRIPTCALL
+template <class FrxFunction> 
+void registerFunctionImpl(sambag::lua::LuaStateRef luaState, Ctrl *ctrl, Int2Type<3>)
+{
+	sambag::lua::registerFunction<FrxFunction>(
+		luaState.get(),
+		boost::bind(&FrxFunction::process, _1, _2, _3, ctrl)
+	);
 }
-//-----------------------------------------------------------------------------
-void PluginScriptCtrl::frxWait(int sec) {
-	FRX_START_SCRIPTCALL
-	boost::this_thread::sleep(boost::posix_time::seconds(sec));
-	FRX_END_SCRIPTCALL
+template <class FrxFunction> 
+void registerFunctionImpl(sambag::lua::LuaStateRef luaState, Ctrl *ctrl, Int2Type<4>)
+{
+	sambag::lua::registerFunction<FrxFunction>(
+		luaState.get(),
+		boost::bind(&FrxFunction::process, _1, _2, _3, _4, ctrl)
+	);
 }
-//-----------------------------------------------------------------------------
-void PluginScriptCtrl::frxAssert(bool val) {
-	FRX_START_SCRIPTCALL
-	FRX_END_SCRIPTCALL
+template <class FrxFunction> 
+void registerFunctionImpl(sambag::lua::LuaStateRef luaState, Ctrl *ctrl, Int2Type<5>)
+{
+	sambag::lua::registerFunction<FrxFunction>(
+		luaState.get(),
+		boost::bind(&FrxFunction::process, _1, _2, _3, _4, _5, ctrl)
+	);
 }
-//-----------------------------------------------------------------------------
-void PluginScriptCtrl::frxAssertMsg(bool val, std::string msg) {
-	FRX_START_SCRIPTCALL
-	FRX_END_SCRIPTCALL
+template <class FuncList>
+void _registerFunctions(sambag::lua::LuaStateRef luaState, Ctrl *ctrl) 
+{
+	typedef typename FuncList::Head FrxFunction;
+	enum { NumArgs = typename FrxFunction::Function::arity };
+	registerFunctionImpl<FrxFunction>(luaState, ctrl, Int2Type<NumArgs>());
+	// register next
+	_registerFunctions<FuncList::Tail>(luaState, ctrl);
 }
+template <>
+void _registerFunctions<Loki::NullType>
+(sambag::lua::LuaStateRef luaState,  Ctrl *ctrl) {}
+} // namespace(s)
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::registerFunctions(sambag::lua::LuaStateRef luaState) {
 	using namespace sambag::lua;
-	registerFunction<FrxOpenPlugin_Tag>(
-		luaState.get(),
-		boost::bind(&PluginScriptCtrl::frxOpenPlugin, this)
-	);
-	registerFunction<FrxClosePlugin_Tag>(
-		luaState.get(),
-		boost::bind(&PluginScriptCtrl::frxClosePlugin, this)
-	);
-	registerFunction<FrxOpenEditor_Tag>(
-		luaState.get(),
-		boost::bind(&PluginScriptCtrl::frxOpenEditor, this)
-	);
-	registerFunction<FrxCloseEditor_Tag>(
-		luaState.get(),
-		boost::bind(&PluginScriptCtrl::frxCloseEditor, this)
-	);
-	registerFunction<FrxWait_Tag>(
-		luaState.get(),
-		boost::bind(&PluginScriptCtrl::frxWait, this, _1)
-	);
-	registerFunction<FrxAssert_Tag>(
-		luaState.get(),
-		boost::bind(&PluginScriptCtrl::frxAssert, this, _1)
-	);
-	registerFunction<FrxAssertMsg_Tag>(
-		luaState.get(),
-		boost::bind(&PluginScriptCtrl::frxAssertMsg, this, _1, _2)
-	);
+	_registerFunctions<FrxFunctionList>(luaState, this);
 }
 }} // namespace(s)

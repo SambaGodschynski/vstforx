@@ -18,25 +18,16 @@
 #include <list>
 
 namespace frx { namespace scripts {
-struct OnEditorOpening {};
-struct OnEditorClosing {};
 //=============================================================================
 /** 
   * @class PluginScriptCtrl.
   */
-class PluginScriptCtrl : 
-	public sambag::com::events::EventSender<OnEditorOpening>,
-	public sambag::com::events::EventSender<OnEditorClosing>
-{
+class PluginScriptCtrl {
 //=============================================================================
 public:
 protected:
 	//-------------------------------------------------------------------------
 	void runThread();
-	//-------------------------------------------------------------------------
-	void startScriptCall(const std::string &fname="");
-	//-------------------------------------------------------------------------
-	void endScriptCall();
 private:
 	//-------------------------------------------------------------------------
 	std::list<std::string> scripts;
@@ -54,6 +45,10 @@ private:
 	void registerFunctions(sambag::lua::LuaStateRef luaState);
 public:
 	//-------------------------------------------------------------------------
+	void startScriptCall(const std::string &fname="");
+	//-------------------------------------------------------------------------
+	void endScriptCall();
+	//-------------------------------------------------------------------------
 	sambag::disco::components::WindowPtr getEditorWindow() const;
 	//-------------------------------------------------------------------------
 	void start();
@@ -69,23 +64,6 @@ public:
 	frx::gui::components::VstForxEditor * getEditor() const { return editor; }
 	//-------------------------------------------------------------------------
 	PluginScriptCtrl() : plug(NULL), editor(NULL) {}
-	///////////////////////////////////////////////////////////////////////////
-	// Access
-	//-------------------------------------------------------------------------
-	void frxOpenPlugin();
-	//-------------------------------------------------------------------------
-	void frxClosePlugin();
-	//-------------------------------------------------------------------------
-	void frxOpenEditor();
-	//-------------------------------------------------------------------------
-	void frxCloseEditor();
-	//-------------------------------------------------------------------------
-	void frxWait(int sec);
-	//-------------------------------------------------------------------------
-	void frxAssert(bool val);
-	//-------------------------------------------------------------------------
-	void frxAssertMsg(bool val, std::string msg);
-
 }; // PluginScriptCtrl
 }} // namespace(s)
 
