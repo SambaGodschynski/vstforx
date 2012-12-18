@@ -114,16 +114,8 @@ FrxCircuidView::Ptr VstForxEditor::deserializeViewTemp(::com::iArchive &ar) {
 		view = FrxControl::deserializeView(ar);
 		getPlugin()->registerView(view);
 		FrxControl::serializeViewComponents(ar, view);
-	} catch(const std::exception &ex) {
-		SAMBAG_THROW(
-			sambag::com::exceptions::IllegalStateException,
-			std::string("deserialization of view failed: ") + ex.what()
-		);
 	} catch(...) {
-		SAMBAG_THROW(
-			sambag::com::exceptions::IllegalStateException,
-			"deserialization of view failed."
-		);
+		return FrxCircuidView::Ptr();
 	}
 	return view;
 }
@@ -158,15 +150,24 @@ FrxCircuidViewPtr VstForxEditor::createView(sdc::Window::Ptr win) {
 	}
 
 	FrxCircuidView::Ptr res;
-	if (hiChamber.str().length()==0) {
-		res = createEmptyView();
-		getPlugin()->registerView(res);
-		initEntryExit(res);
-	} else {
+	if (hiChamber.str().length()!=0) { //deserialize view
 		::com::iArchive ar(hiChamber);
 		res = deserializeViewTemp(ar);
 		hiChamber.str();
 		hiChamber.clear();
+		if (res) {
+			return res;
+		}
+	} 
+
+	res = createEmptyView();
+	getPlugin()->registerView(res);
+	initEntryExit(res);
+	if (!res) {
+		SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"view creation failed."
+		);
 	}
 	return res;
 }

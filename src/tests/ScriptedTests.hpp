@@ -35,16 +35,20 @@ class ScriptedTests : public CPPUNIT_NS::TestFixture {
 //=============================================================================
 private:
 	CPPUNIT_TEST_SUITE( ScriptedTests );
-	CPPUNIT_TEST( scriptTests );
+	CPPUNIT_TEST( testOpenClose );
+	CPPUNIT_TEST( testSerializing );
 	CPPUNIT_TEST_SUITE_END();
 	TestPlugin * plug;
 	TestPlugin * createPlug();
-	frx::scripts::PluginScriptCtrl scriptCtrl;
+	frx::scripts::PluginScriptCtrl *scriptCtrl;
+	bool failed;
+	void onScriptExeFailed(void *src, const frx::scripts::ScriptExeFailedEvent &ev);
 public:
 	ScriptedTests();
 	virtual void setUp();
 	virtual void tearDown();
-	void scriptTests();
+	void testOpenClose();
+	void testSerializing();
 };
 
 } // namespace

@@ -14,6 +14,9 @@
 #include <boost/foreach.hpp>
 #include <sambag/disco/components/WindowToolkit.hpp>
 #include <loki/Typelist.h>
+#include <gui/components/IFrxComponentFactory.hpp>
+#include <gui/IFrxControl.hpp>
+#include <sambag/lua/LuaSequence.hpp>
 
 namespace frx { namespace scripts {
 namespace {
@@ -52,28 +55,37 @@ namespace {
 		static void process(int sec, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
-	struct FrxAssert {
+	struct FrxSetEditorExitOnClose {
 		typedef boost::function<void(bool)> Function;
-		static const char * name() { return "frxAssert"; }
+		static const char * name() { return "frxSetEditorExitOnClose"; }
 		static void process(bool val, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
-	struct FrxAssertMsg {
-		typedef boost::function<void(bool, std::string)> Function;
-		static const char * name() { return "frxAssertMsg"; }
-		static void process(bool val, std::string, Ctrl *ctrl);
+	struct FrxGetProcessors {
+		typedef sambag::lua::LuaSequence<std::string> Strings;
+		typedef boost::function<Strings()> Function;
+		static const char * name() { return "frxGetProcessors"; }
+		static Strings process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
-	typedef LOKI_TYPELIST_7(FrxOpenPlugin,
+	struct FrxAddProcessor {
+		typedef boost::function<void(std::string)> Function;
+		static const char * name() { return "frxAddProcessor"; }
+		static void process(std::string, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	typedef LOKI_TYPELIST_8(FrxOpenPlugin,
 		FrxClosePlugin,
 		FrxOpenEditor,
 		FrxCloseEditor,
 		FrxWait,
-		FrxAssert,
-		FrxAssertMsg) FrxFunctionList;
+		FrxSetEditorExitOnClose,
+		FrxGetProcessors,
+		FrxAddProcessor
+	) FrxFunctionList;
 ///////////////////////////////////////////////////////////////////////////////
 // FrxFunction impl.
-#define FRX_START_SCRIPTCALL ctrl->startScriptCall(__FUNCTION__);
+#define FRX_START_SCRIPTCALL ctrl->startScriptCall(std::string(name()));
 #define FRX_END_SCRIPTCALL ctrl->endScriptCall();
 #define FRX_GET_PLUG frx::processing::VstForxPlug * plug = ctrl->getPlugin();
 #define FRX_GET_EDITOR frx::gui::components::VstForxEditor * editor = ctrl->getEditor();
@@ -82,7 +94,7 @@ void FrxOpenPlugin::process(Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
-	plug->open();
+		plug->open();
 	FRX_END_SCRIPTCALL
 }
 //-----------------------------------------------------------------------------
@@ -90,7 +102,7 @@ void FrxClosePlugin::process(Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
-	plug->close();
+		plug->close();
 	FRX_END_SCRIPTCALL
 }
 //-----------------------------------------------------------------------------
@@ -98,8 +110,7 @@ void FrxOpenEditor::process(Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
-	editor->open();
-	editor->getParentWindow()->setWindowLocation(sambag::disco::Point2D(100,100));
+		editor->open();
 	FRX_END_SCRIPTCALL
 }
 //-----------------------------------------------------------------------------
@@ -107,29 +118,61 @@ void FrxCloseEditor::process(Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
-	editor->close();
+		editor->close();
 	FRX_END_SCRIPTCALL
 }
 //-----------------------------------------------------------------------------
-void FrxWait::process(int sec, Ctrl *ctrl) {
+void FrxWait::process(int millis, Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
-	boost::this_thread::sleep(boost::posix_time::seconds(sec));
+		boost::this_thread::sleep(boost::posix_time::milliseconds(millis));
 	FRX_END_SCRIPTCALL
 }
 //-----------------------------------------------------------------------------
-void FrxAssert::process(bool val, Ctrl *ctrl) {
+void FrxSetEditorExitOnClose::process(bool val, Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
+		using namespace sambag::disco::components;
+		Window::Ptr win = editor->getParentWindow();
+		if (!win) {
+			return;
+		}
+		win->setDefaultCloseOperation (
+			val ? Window::EXIT_ON_CLOSE : Window::DISPOSE_ON_CLOSE
+		);
 	FRX_END_SCRIPTCALL
 }
 //-----------------------------------------------------------------------------
-void FrxAssertMsg::process(bool val, std::string msg, Ctrl *ctrl) {
+FrxGetProcessors::Strings FrxGetProcessors::process(Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
+		using namespace frx::gui::components;
+		std::list<std::string> processors;
+		getComponentFactory(editor->getCircuidView()).getProcessorNames(processors);
+		Strings res;
+		BOOST_FOREACH(const std::string &str, processors) {
+			res.push_back(str);
+		}
+		return res;
+	FRX_END_SCRIPTCALL
+}
+//-----------------------------------------------------------------------------
+void FrxAddProcessor::process(std::string _name, Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+		using namespace frx::gui;
+		using namespace frx::gui::components;
+		FrxCircuidViewPtr view = editor->getCircuidView();
+		IFrxComponentFactory &fac = getComponentFactory(view);
+		IFrxControl &frxctrl = getFrxControl(view);
+		FrxProcessorNodePtr res = fac.getProcessorCreator(_name)(view);
+		if (res) {
+			frxctrl.addProcessorToView(view, res);
+		}
 	FRX_END_SCRIPTCALL
 }
 } // namespace
@@ -185,6 +228,10 @@ void PluginScriptCtrl::runThread() {
 			executeString(luaState.get(), script);
 		} catch(const ExecutionFailed &ex) {
 			sambag::com::log("executation failed: " + ex.errMsg);
+			EventSender<ScriptExeFailedEvent>::notifyListeners(
+				this,
+				ScriptExeFailedEvent()
+			);
 			break;
 		}
 	}

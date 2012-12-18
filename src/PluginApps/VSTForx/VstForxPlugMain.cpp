@@ -50,7 +50,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 		"win32.hinstance",
 		sambag::com::createObject((HINSTANCE)hInstance)
 	);
-	sambag::disco::components::getWindowToolkit()->initToolkit();
+	sambag::disco::components::getWindowToolkit()->useWithoutMainloop();
 	// load plugin
 	using namespace sambag::dsp::vst;
 	// settingup plugin

@@ -124,7 +124,6 @@ protected:
 	 * @param v neuer Wert
 	 */
 	void setFaderValue ( State n, const FadeValue::T &v ) {
-		assert ( one_ms_in_samples != 0.0f );
 		bool out = v<nFader[n];
 		float d = out ? *nDurationOUT[n] : *nDurationIN[n]; // fadein oder fadeout?
 		int t = mapInteger ( ( out ? *nCurveTypeOUT[n] : *nCurveTypeIN[n] ), FadeValue::NUM_FADE_TYPES );

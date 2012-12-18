@@ -10,6 +10,7 @@
 #include <sambag/disco/components/Window.hpp>
 #include <gui/components/VstForxEditor.hpp>
 #include <sambag/disco/IResourceManager.hpp>
+#include <sambag/disco/components/WindowToolkit.hpp>
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::ScriptedTests );
@@ -25,15 +26,21 @@ int testHostCallback(AEffect* effect, VstInt32 opcode,
 //=============================================================================
 //-----------------------------------------------------------------------------
 ScriptedTests::ScriptedTests() {
+
 }
 //-----------------------------------------------------------------------------
 void ScriptedTests::setUp() {
 	plug = createPlug();
-	scriptCtrl.setPlugin(plug);
+	scriptCtrl = new frx::scripts::PluginScriptCtrl();
+	scriptCtrl->setPlugin(plug);
+	scriptCtrl->EventSender<frx::scripts::ScriptExeFailedEvent>::addEventListener(
+		boost::bind(&ScriptedTests::onScriptExeFailed, this, _1, _2)
+	);
+	failed = false;
 }
 //-----------------------------------------------------------------------------
 void ScriptedTests::tearDown() {
-	// wait for threads
+	delete scriptCtrl;
 	delete plug;
 }
 //-----------------------------------------------------------------------------
@@ -51,14 +58,34 @@ TestPlugin * ScriptedTests::createPlug() {
 	return NULL;
 }
 //-----------------------------------------------------------------------------
-void ScriptedTests::scriptTests() {
+void ScriptedTests::
+onScriptExeFailed(void *src, const frx::scripts::ScriptExeFailedEvent &ev) {
+	failed = true;
+	sambag::disco::components::getWindowToolkit()->quit();
+
+}
+//-----------------------------------------------------------------------------
+void ScriptedTests::testOpenClose() {
 	sambag::disco::IResourceManager &rm =
 		sambag::disco::getResourceManager();
 	
-	scriptCtrl.addScript( rm.getString("testScripts/testOpenClose.lua") );
-	scriptCtrl.start();
+	scriptCtrl->addScript( rm.getString("testScripts/testOpenClose.lua") );
+	scriptCtrl->start();
 	sambag::disco::components::Window::startMainLoop();
-	scriptCtrl.join();
+	scriptCtrl->join();
+	CPPUNIT_ASSERT_MESSAGE("script execution failed", !failed);
+	
+}
+//-----------------------------------------------------------------------------
+void ScriptedTests::testSerializing() {
+	sambag::disco::IResourceManager &rm =
+		sambag::disco::getResourceManager();
+	
+	scriptCtrl->addScript( rm.getString("testScripts/testSerializing.lua") );
+	scriptCtrl->start();
+	sambag::disco::components::Window::startMainLoop();
+	scriptCtrl->join();
+	CPPUNIT_ASSERT_MESSAGE("script execution failed", !failed);
 	
 }
 ///////////////////////////////////////////////////////////////////////////////

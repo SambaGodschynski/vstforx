@@ -74,7 +74,9 @@ public:
 	 * @return v als Millisekunden String: z.B. 10ms
 	 */
 	virtual com::MyString  translateAsString ( float v ) {
-		assert ( oneMsInSamples != 0.0f );
+		if ( oneMsInSamples == 0.0f ) {
+                   return "NaN";
+                }
 		float y = fak * v + 1.0f; // abbildung 0.0..1.0 => 1.0 100.0
 		return com::MyString(y*minInSampl/oneMsInSamples) + " ms";
 	}
