@@ -36,6 +36,9 @@ void ScriptedTests::setUp() {
 	scriptCtrl->EventSender<frx::scripts::ScriptExeFailedEvent>::addEventListener(
 		boost::bind(&ScriptedTests::onScriptExeFailed, this, _1, _2)
 	);
+	scriptCtrl->EventSender<frx::scripts::ScriptEnded>::addEventListener(
+		boost::bind(&ScriptedTests::onScriptEnd, this, _1, _2)
+	);
 	failed = false;
 }
 //-----------------------------------------------------------------------------
@@ -62,7 +65,16 @@ void ScriptedTests::
 onScriptExeFailed(void *src, const frx::scripts::ScriptExeFailedEvent &ev) {
 	failed = true;
 	sambag::disco::components::getWindowToolkit()->quit();
-
+}
+//-----------------------------------------------------------------------------
+void ScriptedTests::
+onScriptEnd(void *src, const frx::scripts::ScriptEnded &ev) {
+	frx::gui::components::VstForxEditor *ed =
+		scriptCtrl->getEditor();
+	if (ed->isOpen()) {
+		ed->close();
+	}
+	sambag::disco::components::getWindowToolkit()->quit();
 }
 //-----------------------------------------------------------------------------
 void ScriptedTests::testOpenClose() {
@@ -73,7 +85,7 @@ void ScriptedTests::testOpenClose() {
 	scriptCtrl->start();
 	sambag::disco::components::Window::startMainLoop();
 	scriptCtrl->join();
-	CPPUNIT_ASSERT_MESSAGE("script execution failed", !failed);
+	CPPUNIT_ASSERT(!failed);
 	
 }
 //-----------------------------------------------------------------------------
@@ -85,7 +97,7 @@ void ScriptedTests::testSerializing() {
 	scriptCtrl->start();
 	sambag::disco::components::Window::startMainLoop();
 	scriptCtrl->join();
-	CPPUNIT_ASSERT_MESSAGE("script execution failed", !failed);
+	CPPUNIT_ASSERT(!failed);
 	
 }
 ///////////////////////////////////////////////////////////////////////////////

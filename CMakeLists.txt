@@ -6,8 +6,7 @@ project (vstforx)
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 add_definitions(-DBOOST_UBLAS_TYPE_CHECK=0)
 add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
-add_definitions(-DCAIRO_WIN32_STATIC_BUILD)
-
+#add_definitions(-DSAMBA_WARN_MISSING_IMPL) #show xy not impl. warning
 
 #to avoid name conflicts with existing FindSomeLib.cmake scripts
 #every finding script has a "X" postfix: FindSomeLibX.cmake

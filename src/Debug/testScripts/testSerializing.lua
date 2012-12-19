@@ -1,30 +1,58 @@
-function wait()
-  frxWait(500) --in hardcore mode it should work without waiting
+-- close, open editor and check
+-- whether derserialization succeed
+function doOpenCloseSequence()
+  old = frxGetComponents()
+  frxCloseEditor()
+  frxOpenEditor()
+  new = frxGetComponents()
+  assert(#old == #new, "deserialization failed")
 end
 
-frxOpenPlugin()
-wait()
-frxOpenEditor()
-wait()
+-- close, open editor/plug and check
+-- whether derserialization succeed
+function doOpenClosePlugSequence()
+  old = frxGetComponents()
+  frxClosePlugin()
+  frxCloseEditor()
+  frxOpenPlugin()
+  frxOpenEditor()
+  new = frxGetComponents()
+  assert(#old == (#new), "deserialization failed")
+end
 
-p = frxGetProcessors()
+
+checkZero = frxGetComponents()
+assert( #checkZero == 0)
+
+frxOpenPlugin()
+frxOpenEditor()
+components = frxGetComponents()
+assert(#components == 2)
+
+p = frxGetProcessors()  -- insert all possible processors
 for i, x in pairs(p) do
-    print(x)
     frxAddProcessor(x)
 end
 
+doOpenCloseSequence()
+doOpenCloseSequence()
+doOpenClosePlugSequence()
+doOpenClosePlugSequence()
 
-wait()
+--serialize plug, close plugin
+stream = frxSerializePlugin()
+beforClosePlug = frxGetComponents()
 frxCloseEditor()
-wait()
-
-frxOpenEditor()
-wait()
-
-frxSetEditorExitOnClose(1)
-frxCloseEditor()
-
 frxClosePlugin()
+
+frxOpenPlugin()
+frxOpenEditor()
+
+assert(#frxGetComponents() == #beforClosePlug, "content gone after close plugin")
+
+frxGetComponents()
+
+
 
 
 

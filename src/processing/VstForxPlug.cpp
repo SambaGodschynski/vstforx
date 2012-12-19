@@ -104,6 +104,10 @@ void VstForxPlug::unRegisterInstance() {
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::open() {
+	if (graph) {
+		updateGraphBaseConfiguration();
+		return;
+	}
 	hostInfoAdapter = IHostInfo::Ptr(new HostInfoAdapter(this));
 	graph = ::processing::Graph::create(hostInfoAdapter);
 	ctrl = ModelController::create();
@@ -123,7 +127,6 @@ void VstForxPlug::initHostParameter() {
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::close() {
-	graph.reset();
 }
 //-----------------------------------------------------------------------------
 VstForxPlug::~VstForxPlug() {

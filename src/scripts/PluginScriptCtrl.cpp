@@ -15,6 +15,8 @@
 #include <sambag/disco/components/WindowToolkit.hpp>
 #include <loki/Typelist.h>
 #include <gui/components/IFrxComponentFactory.hpp>
+#include <gui/components/FrxCircuidView.hpp>
+#include <gui/components/FrxComponent.hpp>
 #include <gui/IFrxControl.hpp>
 #include <sambag/lua/LuaSequence.hpp>
 
@@ -24,6 +26,7 @@ namespace {
 	///////////////////////////////////////////////////////////////////////////
 	// Access
 	typedef PluginScriptCtrl Ctrl;
+	typedef Ctrl::LuaFrxComponent LuaFrxComponent;
 	//-------------------------------------------------------------------------
 	struct FrxOpenPlugin {
 		typedef boost::function<void()> Function;
@@ -74,14 +77,36 @@ namespace {
 		static void process(std::string, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
-	typedef LOKI_TYPELIST_8(FrxOpenPlugin,
+	struct FrxSerializePlugin {
+		typedef boost::function<std::string()> Function;
+		static const char * name() { return "frxSerializePlugin"; }
+		static std::string process(Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxDeserializePlugin {
+		typedef boost::function<void(std::string)> Function;
+		static const char * name() { return "frxDeserializePlugin"; }
+		static void process(std::string, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxGetComponents {
+		typedef sambag::lua::LuaSequence<LuaFrxComponent> Components;
+		typedef boost::function<Components()> Function;
+		static const char * name() { return "frxGetComponents"; }
+		static Components process(Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	typedef LOKI_TYPELIST_11(FrxOpenPlugin,
 		FrxClosePlugin,
 		FrxOpenEditor,
 		FrxCloseEditor,
 		FrxWait,
 		FrxSetEditorExitOnClose,
 		FrxGetProcessors,
-		FrxAddProcessor
+		FrxAddProcessor,
+		FrxSerializePlugin,
+		FrxDeserializePlugin,
+		FrxGetComponents
 	) FrxFunctionList;
 ///////////////////////////////////////////////////////////////////////////////
 // FrxFunction impl.
@@ -90,11 +115,56 @@ namespace {
 #define FRX_GET_PLUG frx::processing::VstForxPlug * plug = ctrl->getPlugin();
 #define FRX_GET_EDITOR frx::gui::components::VstForxEditor * editor = ctrl->getEditor();
 //-----------------------------------------------------------------------------
+FrxGetComponents::Components FrxGetComponents::process(Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+	if (!editor->isOpen()) {
+		return Components();
+	}
+	using namespace frx::gui::components; 
+	using namespace sambag::disco::components;
+	FrxCircuidViewPtr view = editor->getCircuidView();
+	const FrxCircuidView::Components &comps = view->getContentPane()->getComponents();
+	Components res;
+	res.reserve(comps.size());
+	BOOST_FOREACH(AComponentPtr c, comps) {
+		FrxComponent::Ptr fc = 
+			boost::shared_dynamic_cast<FrxComponent>(c);
+		if (!fc) {
+			continue;
+		}
+		res.push_back(ctrl->getLuaFrxComponent(fc));
+	}
+	FRX_END_SCRIPTCALL
+	return res;
+}
+//-----------------------------------------------------------------------------
+std::string FrxSerializePlugin::process(Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	char *chunk[1];
+	int bytes = plug->getChunk((void**)&chunk[0]);
+	if (bytes == 0)
+		return "";
+	char * res = chunk[0];
+	FRX_END_SCRIPTCALL
+	return std::string(res);
+}
+//-----------------------------------------------------------------------------
+void FrxDeserializePlugin::process(std::string bytes, Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	plug->setChunk((void*)bytes.c_str(), bytes.size());
+	FRX_END_SCRIPTCALL
+}
+//-----------------------------------------------------------------------------
 void FrxOpenPlugin::process(Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
-		plug->open();
+	plug->open();
+	boost::this_thread::sleep(boost::posix_time::milliseconds(500));
 	FRX_END_SCRIPTCALL
 }
 //-----------------------------------------------------------------------------
@@ -102,7 +172,8 @@ void FrxClosePlugin::process(Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
-		plug->close();
+	plug->close();
+	boost::this_thread::sleep(boost::posix_time::milliseconds(500));
 	FRX_END_SCRIPTCALL
 }
 //-----------------------------------------------------------------------------
@@ -110,7 +181,8 @@ void FrxOpenEditor::process(Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
-		editor->open();
+	editor->open();
+	boost::this_thread::sleep(boost::posix_time::milliseconds(500));
 	FRX_END_SCRIPTCALL
 }
 //-----------------------------------------------------------------------------
@@ -118,7 +190,8 @@ void FrxCloseEditor::process(Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
-		editor->close();
+	editor->close();
+	boost::this_thread::sleep(boost::posix_time::milliseconds(500));
 	FRX_END_SCRIPTCALL
 }
 //-----------------------------------------------------------------------------
@@ -126,7 +199,7 @@ void FrxWait::process(int millis, Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
-		boost::this_thread::sleep(boost::posix_time::milliseconds(millis));
+	boost::this_thread::sleep(boost::posix_time::milliseconds(millis));
 	FRX_END_SCRIPTCALL
 }
 //-----------------------------------------------------------------------------
@@ -134,14 +207,14 @@ void FrxSetEditorExitOnClose::process(bool val, Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
-		using namespace sambag::disco::components;
-		Window::Ptr win = editor->getParentWindow();
-		if (!win) {
-			return;
-		}
-		win->setDefaultCloseOperation (
-			val ? Window::EXIT_ON_CLOSE : Window::DISPOSE_ON_CLOSE
-		);
+	using namespace sambag::disco::components;
+	Window::Ptr win = editor->getParentWindow();
+	if (!win) {
+		return;
+	}
+	/*win->setDefaultCloseOperation (
+		val ? Window::EXIT_ON_CLOSE : Window::DISPOSE_ON_CLOSE
+	);*/
 	FRX_END_SCRIPTCALL
 }
 //-----------------------------------------------------------------------------
@@ -149,36 +222,54 @@ FrxGetProcessors::Strings FrxGetProcessors::process(Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
-		using namespace frx::gui::components;
-		std::list<std::string> processors;
-		getComponentFactory(editor->getCircuidView()).getProcessorNames(processors);
-		Strings res;
-		BOOST_FOREACH(const std::string &str, processors) {
-			res.push_back(str);
-		}
-		return res;
+	using namespace frx::gui::components;
+	std::list<std::string> processors;
+	getComponentFactory(editor->getCircuidView()).getProcessorNames(processors);
+	Strings res;
+	BOOST_FOREACH(const std::string &str, processors) {
+		res.push_back(str);
+	}
 	FRX_END_SCRIPTCALL
+	return res;
 }
 //-----------------------------------------------------------------------------
 void FrxAddProcessor::process(std::string _name, Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
-		using namespace frx::gui;
-		using namespace frx::gui::components;
-		FrxCircuidViewPtr view = editor->getCircuidView();
-		IFrxComponentFactory &fac = getComponentFactory(view);
-		IFrxControl &frxctrl = getFrxControl(view);
-		FrxProcessorNodePtr res = fac.getProcessorCreator(_name)(view);
-		if (res) {
-			frxctrl.addProcessorToView(view, res);
-		}
+	using namespace frx::gui;
+	using namespace frx::gui::components;
+	FrxCircuidViewPtr view = editor->getCircuidView();
+	IFrxComponentFactory &fac = getComponentFactory(view);
+	IFrxControl &frxctrl = getFrxControl(view);
+	FrxProcessorNodePtr res = fac.getProcessorCreator(_name)(view);
+	if (res) {
+		frxctrl.addProcessorToView(view, res);
+	}
 	FRX_END_SCRIPTCALL
 }
 } // namespace
 //=============================================================================
 //  Class PluginScriptCtrl
 //=============================================================================
+//-----------------------------------------------------------------------------
+PluginScriptCtrl::LuaFrxComponent 
+PluginScriptCtrl::getLuaFrxComponent(FrxComponentPtr c)
+{
+	std::string key(sambag::com::toString(c.get()));
+	componentMap[key] = c;
+	return key;
+}
+//-----------------------------------------------------------------------------
+PluginScriptCtrl::FrxComponentPtr 
+PluginScriptCtrl::getFrxComponent(const LuaFrxComponent &c)
+{
+	ComponentMap::const_iterator it = componentMap.find(c);
+	if (it==componentMap.end()) {
+		return FrxComponentPtr();
+	}
+	return it->second;
+}
 //-----------------------------------------------------------------------------
 sambag::disco::components::WindowPtr PluginScriptCtrl::getEditorWindow() const {
 	if (!editor) {
@@ -222,7 +313,6 @@ void PluginScriptCtrl::join() {
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::runThread() {
 	using namespace sambag::lua;
-	sambag::com::log("start PluginScript thread.");
 	BOOST_FOREACH(const std::string &script, scripts) {
 		try {
 			executeString(luaState.get(), script);
@@ -235,13 +325,17 @@ void PluginScriptCtrl::runThread() {
 			break;
 		}
 	}
-	sambag::com::log("end PluginScript thread.");
+	EventSender<ScriptEnded>::notifyListeners(
+		this,
+		ScriptEnded()
+	);
 }
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::startScriptCall(const std::string &fname) {
-	if (fname!="") {
+	/*if (fname!="") {
 		sambag::com::log("call " + fname);
-	}
+	}*/
+	lastCall = fname;
 }
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::endScriptCall() {

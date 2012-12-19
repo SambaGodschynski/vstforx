@@ -43,6 +43,7 @@ private:
 	frx::scripts::PluginScriptCtrl *scriptCtrl;
 	bool failed;
 	void onScriptExeFailed(void *src, const frx::scripts::ScriptExeFailedEvent &ev);
+	void onScriptEnd(void *src, const frx::scripts::ScriptEnded &ev);
 public:
 	ScriptedTests();
 	virtual void setUp();
