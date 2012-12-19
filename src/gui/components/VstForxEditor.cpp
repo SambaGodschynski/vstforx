@@ -150,11 +150,12 @@ FrxCircuidViewPtr VstForxEditor::createView(sdc::Window::Ptr win) {
 	}
 
 	FrxCircuidView::Ptr res;
-	if (hiChamber.str().length()!=0) { //deserialize view
-		::com::iArchive ar(hiChamber);
+	if (hiChamber.length()!=0) { //deserialize view
+		std::stringstream ss;
+		ss<<hiChamber;
+		::com::iArchive ar(ss);
 		res = deserializeViewTemp(ar);
-		hiChamber.str();
-		hiChamber.clear();
+		hiChamber = "";
 		if (res) {
 			return res;
 		}
@@ -194,6 +195,9 @@ void VstForxEditor::open() {
 }
 //-----------------------------------------------------------------------------
 bool VstForxEditor::open( void *ptr ) {
+	if (isOpen()) {
+		return true;
+	}
 	using namespace sambag::com;
 	using namespace sambag::disco;
 	AEffEditor::open(ptr);
@@ -223,11 +227,16 @@ bool VstForxEditor::open( void *ptr ) {
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::close() {
+	if (!isOpen()) {
+		return;
+	}
 	AEffEditor::close();
 	try {
 		SAMBAG_BEGIN_SYNCHRONIZED(mutex)
-		::com::oArchive ar(hiChamber);
+		std::stringstream ss;
+		::com::oArchive ar(ss);
 		serializeViewTemp(ar, circView);
+		hiChamber = ss.str();
 		SAMBAG_END_SYNCHRONIZED
 	} catch (const std::exception &ex) {
 		std::stringstream ss;

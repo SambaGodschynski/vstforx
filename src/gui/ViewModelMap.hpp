@@ -19,7 +19,7 @@
 #include <boost/foreach.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <boost/serialization/access.hpp>
-
+#include <com/Serialization.h>
 namespace frx { namespace gui {
 //=============================================================================
 /** 
@@ -33,18 +33,17 @@ public:
 protected:
 	//-------------------------------------------------------------------------
 	ViewModelMap();
+	//-------------------------------------------------------------------------
+	ViewModelMap(const ViewModelMap&) {}
 private:
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
 	//-------------------------------------------------------------------------
 	friend class boost::serialization::access;
 	//-------------------------------------------------------------------------
-	template <typename Archive> 
-	void serialize(Archive &ar, const unsigned int version) {
-		ar & boost::serialization::base_object<IViewModelMap> ( *this );
-		ar & bedroom;
-		ar & closed;
-	}
+	void serialize(com::iArchive &ar, const unsigned int version);
+	//-------------------------------------------------------------------------
+	void serialize(com::oArchive &ar, const unsigned int version);
 	///////////////////////////////////////////////////////////////////////////
 	//-------------------------------------------------------------------------
 	/**
@@ -53,6 +52,8 @@ private:
 	typedef std::list<frx::processing::ModelObject::Ptr> ModelBedroom;
 	//-------------------------------------------------------------------------
 	ModelBedroom bedroom;
+	//-------------------------------------------------------------------------
+	typedef std::list<ViewObject::Ptr> ViewObjects;
 	//-------------------------------------------------------------------------
 	/**
      * throws if closed.
@@ -66,6 +67,8 @@ private:
 	//-------------------------------------------------------------------------
 	Map map;
 public:
+	//-------------------------------------------------------------------------
+	virtual Ptr clone() const;
 	//-------------------------------------------------------------------------
 	static Ptr create();
 	//-------------------------------------------------------------------------
@@ -100,47 +103,17 @@ public:
 	 */
 	size_t getSize() const;
 	//-------------------------------------------------------------------------
-	std::string toString() const;
+	virtual std::string toString() const;
 	//-------------------------------------------------------------------------
 	/**
 	 * serializes ViewModels intro archive and locks map.
 	 */
-	template <class Archive>
-	void lock(Archive &ar) {
-		std::list<ViewObject::Ptr> l;
-		BOOST_FOREACH(const Map::left_map::value_type &v, map.left) {
-			l.push_back(v.first);
-			bedroom.push_back(v.second);
-		}
-		ar & l;
-		map.clear();
-		closed = true;
-	}
+	void lock(::com::oArchive &ar);
 	//-------------------------------------------------------------------------
 	/**
 	 * deserializes ViewModels from archive and unlocks map.
 	 */
-	template <class Archive>
-	void unlock(Archive &ar) {
-		typedef std::list<ViewObject::Ptr> ViewList;
-		ViewList l;
-		ar>>l;
-		if (l.size() != bedroom.size()) {
-			SAMBAG_THROW(
-				sambag::com::exceptions::IllegalStateException,
-				"map unlock failed."
-			);
-		}
-		ViewList::const_iterator vit = l.begin();
-		ModelBedroom::const_iterator mit = bedroom.begin();
-		while(vit!=l.end()) {
-			map.insert(Map::value_type(*vit, *mit));
-			++vit;
-			++mit;
-		}
-		closed = false;
-		bedroom.clear();
-	}
+	void unlock(::com::iArchive &ar);
 	//-------------------------------------------------------------------------
 
 }; // ModelMap

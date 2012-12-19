@@ -61,6 +61,7 @@ private:
 		ar & boost::serialization::base_object < ProcessAdapter > ( *this );
 		ar & boost::serialization::base_object < MidiEventProcessor > ( *this );
 		ar & midiParameters; 
+		ar & channelSelector;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	void initParameter( size_t index, const std::string &name ) {

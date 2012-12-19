@@ -72,6 +72,8 @@ public:
 	 * @return number of registered relations
 	 */
 	virtual size_t getSize() const = 0;
+	//-------------------------------------------------------------------------
+	virtual std::string toString() const = 0;
 }; // IViewModelMap
 ///////////////////////////////////////////////////////////////////////////////
 extern IViewModelMap::Ptr 

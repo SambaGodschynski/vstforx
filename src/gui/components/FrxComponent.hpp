@@ -105,6 +105,10 @@ public:
 	virtual void setBounds(const sd::Rectangle &b);
 	//-------------------------------------------------------------------------
 	sd::Point2D getPivot() const; 
+	//-------------------------------------------------------------------------
+	virtual std::string getObjectName() const {
+		return AComponent::getName();
+	}
 }; // FrxComponent
 }}} // namespace(s)
 #endif /* SAMBAG_FRXCOMPONENT_H */

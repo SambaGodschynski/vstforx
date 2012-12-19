@@ -90,11 +90,7 @@ public:
 	 * @param shared_ptr is needed because we can't create one with "this". 
 	 * @return true if object removed from model
 	 */
-	virtual bool requestRemove(Ptr self) {
-		if (signal.num_slots()==0)
-			return true;
-		return signal(self);
-	}
+	virtual bool requestRemove(Ptr self);
 	//-------------------------------------------------------------------------
 	virtual ~ModelObject() {}
 	///////////////////////////////////////////////////////////////////////////

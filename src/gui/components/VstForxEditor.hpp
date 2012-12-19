@@ -67,7 +67,7 @@ private:
 	 */
 	void initEntryExit(FrxCircuidViewPtr view);
 	//-------------------------------------------------------------------------
-	std::stringstream hiChamber;
+	std::string hiChamber;
 	//-------------------------------------------------------------------------
 	sambag::com::RecursiveMutex mutex;
 protected:

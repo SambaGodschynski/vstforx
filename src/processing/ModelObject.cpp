@@ -10,4 +10,11 @@ namespace frx { namespace processing {
 //=============================================================================
 //  Class ModelObject
 //=============================================================================
+//-----------------------------------------------------------------------------
+bool ModelObject::requestRemove(Ptr self) {
+	if (signal.num_slots()==0) {
+		return true;
+	}
+	return signal(self);
+}
 }} // namespace(s)

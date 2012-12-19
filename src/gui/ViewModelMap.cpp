@@ -12,6 +12,41 @@ namespace frx { namespace gui {
 //  Class ViewModelMap
 //=============================================================================
 //-----------------------------------------------------------------------------
+void ViewModelMap::serialize(com::iArchive &ar, const unsigned int version) {
+	map.clear();
+	ar & boost::serialization::base_object<IViewModelMap> ( *this );
+	ar & bedroom;
+	ar & closed;
+	if (!isLocked()) {
+		SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"map was not locked while serializing."
+		);
+	}
+}
+//-----------------------------------------------------------------------------
+void ViewModelMap::serialize(com::oArchive &ar, const unsigned int version) {
+	if (!isLocked()) {
+		SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"map not locked."
+		);
+	}
+	ar & boost::serialization::base_object<IViewModelMap> ( *this );
+	ar & bedroom;
+	ar & closed;
+}
+//-----------------------------------------------------------------------------
+ViewModelMap::Ptr ViewModelMap::clone() const {
+	Ptr neu = create();
+	neu->bedroom = bedroom;
+	SAMBAG_ASSERT(neu->bedroom.size() == bedroom.size());
+	neu->closed = closed;
+	neu->map = map;
+	SAMBAG_ASSERT(neu->map.size() == map.size());
+	return neu;
+}
+//-----------------------------------------------------------------------------
 ViewModelMap::Ptr ViewModelMap::create() {
 	return Ptr(new ViewModelMap());
 }
@@ -25,8 +60,13 @@ std::string ViewModelMap::toString() const {
 		ss<<"locked"<<std::endl;
 		return ss.str();
 	}
+	ss<<"size="<<map.size();
 	BOOST_FOREACH(const Map::left_map::value_type &v, map.left) {
-		ss<<typeid(*(v.first.get())).name()<<" : "<<typeid(*(v.second.get())).name()<<std::endl;
+		ss<<std::endl;
+		//ss<<typeid(*(v.first.get())).name()<<"("<<(void*)v.first.get()<<")";
+		ss<<v.first->getObjectName()<<"("<<(void*)v.first.get()<<")";
+		ss<<" <<==>> ";
+		ss<<typeid(*(v.second.get())).name()<<"("<<(void*)v.second.get()<<")";
 	}
 	return ss.str();
 }
@@ -93,5 +133,42 @@ size_t ViewModelMap::getSize() const {
 	if (isLocked())
 		return bedroom.size();
 	return map.size();
+}
+//-----------------------------------------------------------------------------
+void ViewModelMap::lock(::com::oArchive &ar) {
+	ViewObjects l;
+	BOOST_FOREACH(const Map::left_map::value_type &v, map.left) {
+		l.push_back(v.first);
+		bedroom.push_back(v.second);
+	}
+	ar & l;
+	map.clear();
+	closed = true;
+}
+//-----------------------------------------------------------------------------
+void ViewModelMap::unlock(::com::iArchive &ar) {
+	if (!isLocked()) {
+		SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"map not locked."
+		);
+	}
+	ViewObjects l;
+	ar>>l;
+	if (l.size() != bedroom.size()) {
+		SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"map unlock failed."
+		);
+	}
+	ViewObjects::const_iterator vit = l.begin();
+	ModelBedroom::const_iterator mit = bedroom.begin();
+	while(vit!=l.end()) {
+		map.insert(Map::value_type(*vit, *mit));
+		++vit;
+		++mit;
+	}
+	closed = false;
+		bedroom.clear();
 }
 }} // namespace(s)

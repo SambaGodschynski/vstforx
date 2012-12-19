@@ -101,10 +101,11 @@ void parameterChanged(void *src, float value, FrxParameter::WPtr _knob) {
 bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj, FrxCircuidViewWPtr _view)
 {
 	fp::ModelObject::Ptr mObj = _mObj.lock();
-	FrxCircuidViewPtr view(_view);
-	if (!view)
+	FrxCircuidViewPtr view = _view.lock();
+	if (!view) {
 		return true; // nothing to do anymore
-	// get model obj.
+	}
+	// get view obj.
 	frx::processing::IModelController::Ptr ctrl;
 	IViewModelMap::Ptr map;
 	boost::tie(ctrl, map) = getControllerAndMap(view);
@@ -127,15 +128,18 @@ namespace {
 		IViewModelMap::Ptr map = getViewModelMap(view);
 		if (!map) {
 			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-				"tried to add processor with IViewModelMap == NULL");
+				"access to IViewModelMap failed");
+		}
+		frx::processing::ModelObject::Ptr mObj = map->getModelObject(c);
+		if (!mObj) {
+			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+				"related modelobject == NULL");
 		}
 		typename ModelType::Ptr modelObj = 
-			boost::shared_dynamic_cast<ModelType>(
-				map->getModelObject(c)
-		);
+			boost::shared_dynamic_cast<ModelType>(mObj);
 		if (!modelObj) {
 			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-				"tried register view object with related model == NULL");
+				"accessing to model object failed.");
 		}
 		return modelObj;
 	}
@@ -163,24 +167,6 @@ void registerOnView(FrxCircuidViewPtr view, FrxProcessorNode::Ptr viewObj)
 			boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
 		);
 	}
-}
-//-----------------------------------------------------------------------------
-void registerOnView(FrxCircuidViewPtr view, FrxInputNode::Ptr obj) {
-	frx::processing::INode::Ptr io = 
-		getModelObject<frx::processing::INode>(view, obj);
-	// removing request
-	io->addRemoveRequestExecuter(
-		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
-	);
-}
-//-----------------------------------------------------------------------------
-void registerOnView(FrxCircuidViewPtr view, FrxOutputNode::Ptr obj) {
-	frx::processing::INode::Ptr io = 
-		getModelObject<frx::processing::INode>(view, obj);
-	// removing request
-	io->addRemoveRequestExecuter(
-		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
-	);
 }
 //-----------------------------------------------------------------------------
 void registerOnView(FrxCircuidViewPtr view, FrxParameter::Ptr knob) {
@@ -376,10 +362,9 @@ namespace {
 //-----------------------------------------------------------------------------
 void FrxControl::registerComponent(fgc::FrxCircuidViewPtr view, FrxComponentPtr c)
 {
-	typedef LOKI_TYPELIST_4(FrxInputNode, 
-		FrxOutputNode, 
-		FrxParameter,
-		FrxProcessorNode) Types;
+	typedef LOKI_TYPELIST_2( FrxParameter,
+		FrxProcessorNode
+	) Types;
 	_castSwitch<Types>(view, c);
 }
 //-----------------------------------------------------------------------------
@@ -528,6 +513,7 @@ void FrxControl::removeComponent(FrxCircuidViewPtr _view, FrxComponentPtr _c)
 	IViewModelMap::Ptr map;
 	boost::tie(ctrl, map) = getControllerAndMap(view);
 	frx::processing::ModelObject::Ptr mObj = map->getModelObject(c);
+	ViewObject::Ptr xxxREMOVEMExxx = map->getViewObject(mObj);
 	if (!mObj) {
 		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
 			"access to model object failed while removing."

@@ -33,6 +33,8 @@ private:
 	}
 public:
 	//-------------------------------------------------------------------------
+	virtual std::string getObjectName() const = 0;
+	//-------------------------------------------------------------------------
 	virtual ~ViewObject() {}
 }; // ViewObject
 }} // namespace(s)

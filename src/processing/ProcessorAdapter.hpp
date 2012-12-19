@@ -37,9 +37,9 @@ private:
 	void serialize(Archive &ar, const unsigned int version) {
 		ar & boost::serialization::base_object<IProcessor> ( *this );
 		ar & processor;
-		if (Archive::is_loading::value == true) {
-			initParameter();
-		}
+		ar & inputs;
+		ar & outputs;
+		ar & parameters;
 	}
 public:
 	//-------------------------------------------------------------------------

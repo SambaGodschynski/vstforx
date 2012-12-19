@@ -17,6 +17,12 @@
 #include <gui/components/VstForxEditor.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <gui/components/FrxSerializationRegister.hpp>
+#include <sambag/com/Thread.hpp>
+
+
+namespace {
+	sambag::com::RecursiveMutex mutex;
+}
 
 namespace frx { namespace processing {
 namespace {
@@ -104,6 +110,14 @@ void VstForxPlug::unRegisterInstance() {
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::open() {
+	if (isOpen()) {
+		return;
+	}
+	_open = true;
+	if (graph) {
+		updateGraphBaseConfiguration();
+		return;
+	}
 	hostInfoAdapter = IHostInfo::Ptr(new HostInfoAdapter(this));
 	graph = ::processing::Graph::create(hostInfoAdapter);
 	ctrl = ModelController::create();
@@ -123,7 +137,10 @@ void VstForxPlug::initHostParameter() {
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::close() {
-	graph.reset();
+	if (!isOpen()) {
+		return;
+	}
+	_open = false;
 }
 //-----------------------------------------------------------------------------
 VstForxPlug::~VstForxPlug() {
@@ -243,6 +260,7 @@ void VstForxPlug::requestEditorResize(int width, int height) {
 }
 //-----------------------------------------------------------------------------
 int VstForxPlug::getChunk(void **data) {
+	SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
 	try {
 		std::stringstream ss;
 		save(ss);
@@ -276,6 +294,7 @@ int VstForxPlug::getChunk(void **data) {
 }
 //-----------------------------------------------------------------------------
 int VstForxPlug::setChunk(void *data, int byteSize) {
+	SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
 	if (byteSize==0) {
 		return 0;
 	}
@@ -312,24 +331,27 @@ void VstForxPlug::saveEditor(::com::oArchive &ar) {
 	}
 	std::string serializedViewStream;
 	std::stringstream tmpss;
+	frx::gui::ViewModelMap::Ptr tmpMap;
+	frx::gui::ViewModelMap::Ptr origMap;
 	if (editor->isOpen()) {
+		origMap = map; // keep orig. map untouched
+		tmpMap = map->clone();
+		map = tmpMap;
 		//void serializeViewTemp(::com::oArchive &ar, FrxCircuidViewPtr view);
 		::com::oArchive tmp(tmpss);
 		frx::gui::components::register_types(tmp);
-		editor->serializeViewTemp(tmp, editor->getCircuidView()); // as of now map is locked;
+		editor->serializeViewTemp(tmp, editor->getCircuidView());
 		serializedViewStream = tmpss.str();
 	} else {
-		serializedViewStream = editor->hiChamber.str();
+		serializedViewStream = editor->hiChamber;
 	}
 	frx::gui::components::register_types(ar);
 	ar.register_type<frx::gui::ViewModelMap>();
 	ar & serializedViewStream; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<1.
 	ar & map;				   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<2.
 	
-	if (tmpss.str().length() > 0) {
-		::com::iArchive tmp(tmpss);
-		frx::gui::components::register_types(tmp);
-		getViewModelMap()->unlock(tmp);
+	if (origMap) {
+		map = origMap;
 	}
 }
 //-----------------------------------------------------------------------------
@@ -359,9 +381,7 @@ void VstForxPlug::loadEditor(::com::iArchive &ar) {
 		editor->setCircuidView(view);
 		return;
 	}
-	editor->hiChamber.str("");
-	editor->hiChamber.clear();
-	editor->hiChamber << serializedViewStream;
+	editor->hiChamber = serializedViewStream;
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::save(std::ostream &os) {
@@ -401,6 +421,7 @@ sambag::dsp::IEditor * VstForxPlug::getEditor() {
 IModelController::Ptr
 getModelController(frx::gui::components::FrxCircuidViewPtr view)
 {
+	SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
 	VstForxPlug *plug = getPlugin(view);
 	if (!plug)
 		return IModelController::Ptr();
@@ -413,6 +434,7 @@ namespace frx { namespace gui {
 IViewModelMap::Ptr 
 getViewModelMap(components::FrxCircuidViewPtr view)
 {
+	SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
 	using namespace frx::processing;
 	VstForxPlug *plug = getPlugin(view);
 	if (!plug)
