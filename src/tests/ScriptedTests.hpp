@@ -18,6 +18,7 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/thread.hpp>
 #include <scripts/PluginScriptCtrl.hpp>
+#include <boost/thread.hpp>
 
 // settingup plugin
 typedef sambag::dsp::vst::VST2xPluginWrapper<
@@ -44,6 +45,7 @@ private:
 	bool failed;
 	void onScriptExeFailed(void *src, const frx::scripts::ScriptExeFailedEvent &ev);
 	void onScriptEnd(void *src, const frx::scripts::ScriptEnded &ev);
+	boost::thread processingThread;
 public:
 	ScriptedTests();
 	virtual void setUp();

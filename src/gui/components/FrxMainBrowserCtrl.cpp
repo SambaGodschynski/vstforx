@@ -720,7 +720,7 @@ addModelObjectParameter(FrxComponentPtr c,
 	IFrxControl & frxctrl = getFrxControl(view);
 	using frx::processing::IProcessor;
 	using frx::processing::IParameter;
-	IProcessor::ParameterGroupKeys keys;
+	frx::processing::ModelObject::ParameterGroupKeys keys;
 	pr->getParameterGroupKeys(keys);
 	// create browser nodes
 	BOOST_FOREACH(const IProcessor::ParameterGroupKey &key, keys) {

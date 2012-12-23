@@ -20,6 +20,31 @@ namespace tests {
 int testHostCallback(AEffect* effect, VstInt32 opcode, 
 	VstInt32 index, VstIntPtr value, void* ptr, float opt);
 
+bool plugProcessing = false;
+
+void processPlugin(TestPlugin * plug) {
+	static const int BS = 512;
+	float **in = new float*[2];
+	float **out = new float*[2];
+	in[0] = new float[512];
+	in[1] = new float[512];
+	out[0] = new float[512];
+	out[1] = new float[512];
+	plug->setSampleRate(44100.);
+	plug->setBlockSize(512);
+	while(plugProcessing) {
+		if (plug->isOpen()) {
+			plug->process(in, out, BS);
+			boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+		}
+	}
+	delete[] in[0];
+	delete[] in[1];
+	delete[] out[0];
+	delete[] out[1];
+	delete[] in;
+	delete[] out;
+}
 
 //=============================================================================
 //  Class ScriptedTests
@@ -39,10 +64,16 @@ void ScriptedTests::setUp() {
 	scriptCtrl->EventSender<frx::scripts::ScriptEnded>::addEventListener(
 		boost::bind(&ScriptedTests::onScriptEnd, this, _1, _2)
 	);
+	plugProcessing = true;
+	/*processingThread = boost::thread(
+		boost::bind(&processPlugin, plug)
+	);*/
 	failed = false;
 }
 //-----------------------------------------------------------------------------
 void ScriptedTests::tearDown() {
+	plugProcessing = false;
+	processingThread.join();
 	delete scriptCtrl;
 	delete plug;
 }
@@ -104,7 +135,7 @@ void ScriptedTests::testSerializing() {
 int testHostCallback(AEffect* effect, VstInt32 opcode, 
  VstInt32 index, VstIntPtr value, void* ptr, float opt) 
 {
-	std::cout<<"testHostCallback request("<<opcode<<")"<<std::endl;
+	//std::cout<<"testHostCallback request("<<opcode<<")"<<std::endl;
 	return 0;
 }
 } //namespace

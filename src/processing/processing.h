@@ -280,7 +280,7 @@ public:
 		if ( getNumActiveChildren() == 0 ) return;
 		frameStack.push (frames);
 		FrameContainer::iterator it = frameContainer.begin();
-		for ( int i=0; i<getNumActiveChildren() - 1; i++ ) { // kopiere weitere frames in stack
+		for ( size_t i=0; i<getNumActiveChildren() - 1; i++ ) { // kopiere weitere frames in stack
 			(*it)->copyIntoFrom ( *frames, numSamples );
 			frameStack.push ( (*it++).get() );
 		}

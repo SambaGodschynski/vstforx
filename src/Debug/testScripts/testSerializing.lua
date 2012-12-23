@@ -3,7 +3,8 @@
 function clearView()
     frxClearView()
     num = getNumElements()
-    assert( num == 2, "clear view failed:"..tostring(num))
+	-- entry + exit + connection = 3
+    assert( num == 3, "clear view failed:"..tostring(num))
 end
 
 OP = frxOpenPlugin
@@ -15,6 +16,20 @@ function doSequence(seq)
   for i, x in pairs(seq) do
     x()
   end
+end
+
+--brute connecting of all components on view
+function connectAllComponents()
+	a = frxGetViewNodes()
+	b = a
+	for i, x in pairs(a) do
+		for j, y in pairs(b) do 
+			if not (x == y) then
+				--print(frxGetComponentName(x)..x, frxGetComponentName(y)..y)
+				frxConnectComponents(x,y)		
+			end		
+		end	
+	end
 end
 
 -- assumes that the editor is isOpen
@@ -33,18 +48,32 @@ function doSequenceAssertElements(seq, numElements)
   end
   assert(getNumElements() == numElements, "deserialization failed.("..tostring(getNumElements())..")")
 end
-
 -- ### END FUNCTIONS
 
 --frxVerbose(frxTrue())
 
 doSequence({OP, OE})
+
+
 assert(getNumElements() == 2, tostring(#components))
 
 p = frxGetProcessors()  -- insert all possible processors
 for i, x in pairs(p) do
-    frxAddProcessor(x)
+    new = frxAddProcessor(x)
 end
+
+connectAllComponents()
+
+c = frxGetViewComponents()
+for i, x in pairs(c) do	
+	pars = frxGetComponentParameter(x)
+	for j, y in pairs(pars) do
+		frxAddComponentParameter(x ,y)
+	end
+end
+
+
+
 numElements = getNumElements()
 
 -- do some editor, plugin open/close sequences
@@ -87,7 +116,5 @@ assert(getNumElements() == numElements)
 stream = frxSerializePlugin()
 doSequenceAssertElements({CE, CP, OE, OP}, numElements)
 doSequence({CV})
-
-
 
 

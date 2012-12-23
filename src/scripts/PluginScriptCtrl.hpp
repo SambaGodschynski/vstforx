@@ -20,6 +20,7 @@
 #include <list>
 #include <boost/unordered_map.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
+#include <processing/ModelObject.hpp>
 
 namespace frx { namespace scripts {
 struct ScriptExeFailedEvent{};
@@ -35,7 +36,7 @@ class PluginScriptCtrl :
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef std::string LuaFrxComponent;
+	typedef std::string LuaPtr;
 protected:
 	//-------------------------------------------------------------------------
 	void runThread();
@@ -61,19 +62,28 @@ private:
 	//-------------------------------------------------------------------------
 	typedef frx::gui::components::FrxComponentPtr FrxComponentPtr;
 	//-------------------------------------------------------------------------
-	typedef boost::unordered_map<LuaFrxComponent, FrxComponentPtr> ComponentMap;
+	typedef frx::processing::ModelObject::Ptr ModelObjectPtr;
+	//-------------------------------------------------------------------------
+	typedef boost::unordered_map<LuaPtr, FrxComponentPtr> ComponentMap;
 	ComponentMap componentMap;
+	//-------------------------------------------------------------------------
+	typedef boost::unordered_map<LuaPtr, ModelObjectPtr> ModelObjectMap;
+	ModelObjectMap modelObjectMap;
 public:
 	//-------------------------------------------------------------------------
 	void setVerbose(bool val) { verbose = val; }
 	//-------------------------------------------------------------------------
 	bool isVerbose() const { return verbose; }
 	//-------------------------------------------------------------------------
-	LuaFrxComponent getLuaFrxComponent(FrxComponentPtr c);
+	LuaPtr getLuaPtr(FrxComponentPtr c);
 	//-------------------------------------------------------------------------
-	FrxComponentPtr getFrxComponent(const LuaFrxComponent &c);
+	FrxComponentPtr getFrxComponent(const LuaPtr &c);
 	//-------------------------------------------------------------------------
-	void remove(const LuaFrxComponent &c);
+	LuaPtr getLuaPtr(ModelObjectPtr c);
+	//-------------------------------------------------------------------------
+	ModelObjectPtr getModelObject(const LuaPtr &c);
+	//-------------------------------------------------------------------------
+	void remove(const LuaPtr &c);
 	//-------------------------------------------------------------------------
 	/**
 	 * @return last called function name (lua->this)

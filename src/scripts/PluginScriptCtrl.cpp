@@ -17,9 +17,11 @@
 #include <gui/components/IFrxComponentFactory.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/components/FrxComponent.hpp>
+#include <gui/components/FrxNode.hpp>
 #include <gui/components/FrxProcessorNode.hpp>
 #include <gui/IFrxControl.hpp>
 #include <sambag/lua/LuaSequence.hpp>
+#include <gui/IViewModelMap.hpp>
 
 namespace frx { namespace scripts {
 namespace {
@@ -31,10 +33,11 @@ namespace {
 	///////////////////////////////////////////////////////////////////////////
 	// Access
 	typedef PluginScriptCtrl Ctrl;
-	typedef Ctrl::LuaFrxComponent LuaFrxComponent;
+	typedef Ctrl::LuaPtr LuaPtr;
 	typedef int Bool; // #244 workaround
 	const int True = 1;
 	const int False = 0;
+	const LuaPtr NULL_LUAPTR = "";
 	//-------------------------------------------------------------------------
 	struct FrxOpenPlugin {
 		typedef boost::function<void()> Function;
@@ -86,9 +89,9 @@ namespace {
 	};
 	//-------------------------------------------------------------------------
 	struct FrxAddProcessor {
-		typedef boost::function<void(std::string)> Function;
+		typedef boost::function<LuaPtr(std::string)> Function;
 		static const char * name() { return "frxAddProcessor"; }
-		static void process(std::string, Ctrl *ctrl);
+		static LuaPtr process(std::string, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxSerializePlugin {
@@ -104,7 +107,7 @@ namespace {
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetViewComponents {
-		typedef sambag::lua::LuaSequence<LuaFrxComponent> Components;
+		typedef sambag::lua::LuaSequence<LuaPtr> Components;
 		typedef boost::function<Components()> Function;
 		static const char * name() { return "frxGetViewComponents"; }
 		static Components process(Ctrl *ctrl);
@@ -122,10 +125,10 @@ namespace {
 		static void process(Bool val, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
-	struct FrxRemoveViewObject {
-		typedef boost::function<void(LuaFrxComponent)> Function;
-		static const char * name() { return "frxRemoveViewObject"; }
-		static void process(LuaFrxComponent obj, Ctrl *ctrl);
+	struct FrxRemoveProcessor {
+		typedef boost::function<void(LuaPtr)> Function;
+		static const char * name() { return "frxRemoveProcessor"; }
+		static void process(LuaPtr obj, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxClearView {
@@ -135,12 +138,44 @@ namespace {
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetViewComponentType {
-		typedef boost::function<std::string(LuaFrxComponent)> Function;
+		typedef boost::function<std::string(LuaPtr)> Function;
 		static const char * name() { return "frxGetViewComponentType"; }
-		static std::string process(LuaFrxComponent, Ctrl *ctrl);
+		static std::string process(LuaPtr, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
-	typedef LOKI_TYPELIST_17(FrxOpenPlugin,
+	struct FrxGetComponentParameter {
+		typedef sambag::lua::LuaSequence<LuaPtr> Components;
+		typedef boost::function<Components(LuaPtr)> Function;
+		static const char * name() { return "frxGetComponentParameter"; }
+		static Components process(LuaPtr, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxAddComponentParameter {
+		typedef boost::function<void(LuaPtr, LuaPtr)> Function;
+		static const char * name() { return "frxAddComponentParameter"; }
+		static void process(LuaPtr, LuaPtr, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxGetComponentName {
+		typedef boost::function<std::string(LuaPtr)> Function;
+		static const char * name() { return "frxGetComponentName"; }
+		static std::string process(LuaPtr, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxConnectComponents {
+		typedef boost::function<Bool(LuaPtr, LuaPtr)> Function;
+		static const char * name() { return "frxConnectComponents"; }
+		static Bool process(LuaPtr, LuaPtr, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxGetViewNodes {
+		typedef sambag::lua::LuaSequence<LuaPtr> Components;
+		typedef boost::function<Components()> Function;
+		static const char * name() { return "frxGetViewNodes"; }
+		static Components process(Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	typedef LOKI_TYPELIST_22(FrxOpenPlugin,
 		FrxClosePlugin,
 		FrxOpenEditor,
 		FrxCloseEditor,
@@ -149,14 +184,19 @@ namespace {
 		FrxFalse,
 		FrxGetProcessors,
 		FrxAddProcessor,
-		FrxSerializePlugin,
+/*10*/	FrxSerializePlugin,
 		FrxDeserializePlugin,
 		FrxGetViewComponents,
 		FrxIsEditorOpen,
 		FrxVerbose,
 		FrxClearView,
-		FrxRemoveViewObject,
-		FrxGetViewComponentType
+		FrxRemoveProcessor,
+		FrxGetViewComponentType,
+		FrxGetComponentParameter,
+		FrxAddComponentParameter,
+/*20*/  FrxGetComponentName,
+		FrxConnectComponents,
+		FrxGetViewNodes
 	) FrxFunctionList;
 ///////////////////////////////////////////////////////////////////////////////
 // FrxFunction impl.
@@ -164,22 +204,166 @@ namespace {
 #define FRX_GET_PLUG frx::processing::VstForxPlug * plug = ctrl->getPlugin();
 #define FRX_GET_EDITOR frx::gui::components::VstForxEditor * editor = ctrl->getEditor();
 //-----------------------------------------------------------------------------
-std::string FrxGetViewComponentType::process(LuaFrxComponent objId, Ctrl *ctrl) {
+FrxGetViewNodes::Components FrxGetViewNodes::process(Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+	if (!editor->isOpen()) {
+		return Components();
+	}
+	using namespace frx::gui::components; 
+	using namespace sambag::disco::components;
+	FrxCircuidViewPtr view = editor->getCircuidView();
+	const FrxCircuidView::Components &comps = view->getContentPane()->getComponents();
+	Components res;
+	res.reserve(comps.size());
+	BOOST_FOREACH(AComponentPtr c, comps) {
+		FrxNode::Ptr fc = 
+			boost::shared_dynamic_cast<FrxNode>(c);
+		if (!fc) {
+			continue;
+		}
+		res.push_back(ctrl->getLuaPtr(fc));
+	}
+	return res;
+}
+//-----------------------------------------------------------------------------
+Bool FrxConnectComponents::process(LuaPtr a, LuaPtr b, Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_EDITOR
+	using namespace frx::gui;
+	using namespace frx::gui::components;
+	using namespace frx::processing;
+	FrxCircuidViewPtr view = editor->getCircuidView();
+	IFrxControl &frxctrl = getFrxControl(view);
+	FrxNode::Ptr fa = boost::shared_dynamic_cast<FrxNode>(
+		ctrl->getFrxComponent(a)
+	);
+	FrxNode::Ptr fb = boost::shared_dynamic_cast<FrxNode>(
+		ctrl->getFrxComponent(b)
+	);
+	if (!fa || !fb) {
+		return False;
+	}
+	return frxctrl.connect(view, fa, fb) ? True : False;
+}
+//-----------------------------------------------------------------------------
+std::string FrxGetComponentName::process(LuaPtr objId, Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	using namespace frx::gui;
 	using namespace frx::gui::components;
+	using namespace frx::processing;
 	
 	FrxComponentPtr fxobj = ctrl->getFrxComponent(objId);
-	if (!fxobj) {
+	ModelObjectPtr mobj = ctrl->getModelObject(objId);
+	if (!fxobj && !mobj) {
+		SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"Could'nt resolve lua_ptr."
+		);
+	}
+	if (fxobj) {
+		return fxobj->getName();
+	}
+	IParameter::Ptr par = boost::shared_dynamic_cast<IParameter>(mobj);
+	if (par) {
+		return par->getName();
+	}
+	if (mobj) {
+		return std::string( // TODO: replace this quick and dirty approach
+			typeid(*(mobj.get())).name()
+		);
+	}
+}
+//-----------------------------------------------------------------------------
+FrxGetComponentParameter::Components 
+FrxGetComponentParameter::process(LuaPtr lobj, Ctrl *ctrl)
+{
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+	using namespace frx::gui;
+	using namespace frx::gui::components;
+	using namespace frx::processing;
+	Components res;
+	FrxCircuidViewPtr view = editor->getCircuidView();
+	IFrxControl &frxctrl = getFrxControl(view);
+	IViewModelMap::Ptr map = getViewModelMap(view);
+	
+	FrxComponentPtr vObj = ctrl->getFrxComponent(lobj);
+	if (!vObj) {
+		SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"Could'nt resolve lua_ptr."
+		);
+	}
+	ModelObject::Ptr mObj = map->getModelObject(vObj);
+	if (!mObj) {
+		return res;
+	}
+	ModelObject::ParameterGroupKeys keys;
+	mObj->getParameterGroupKeys(keys);
+	BOOST_FOREACH(const ModelObject::ParameterGroupKeys::value_type &key, keys) {
+		IProcessor::Parameters parameters;
+		mObj->getParameters(key, parameters);
+		BOOST_FOREACH(IParameter::Ptr par, parameters) {
+			res.push_back(
+				ctrl->getLuaPtr(par)
+			);
+		}
+	}
+	return res;
+}
+//-----------------------------------------------------------------------------
+void FrxAddComponentParameter::process(LuaPtr component, LuaPtr par, Ctrl *ctrl) 
+{
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+	using namespace frx::gui;
+	using namespace frx::gui::components;
+	using namespace frx::processing;
+	FrxCircuidViewPtr view = editor->getCircuidView();
+	IFrxControl &frxctrl = getFrxControl(view);
+	
+	FrxComponentPtr fxobj = ctrl->getFrxComponent(component);
+	ModelObjectPtr mobj = ctrl->getModelObject(par);
+	if (!fxobj || !mobj) {
+		SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"Could'nt resolve lua_ptr."
+		);
+	}
+	IParameter::Ptr ipar = 
+		boost::shared_dynamic_cast<IParameter>(mobj);
+	if (!ipar) {
+		return;
+	}
+	frxctrl.addRelatedKnobToView(view, fxobj, ipar);
+}
+//-----------------------------------------------------------------------------
+std::string FrxGetViewComponentType::process(LuaPtr objId, Ctrl *ctrl) 
+{
+	FRX_START_SCRIPTCALL
+	using namespace frx::gui;
+	using namespace frx::gui::components;
+	using namespace frx::processing;
+	
+	FrxComponentPtr fxobj = ctrl->getFrxComponent(objId);
+	ModelObjectPtr mobj = ctrl->getModelObject(objId);
+	if (!fxobj && !mobj) {
 		return "null";
+	}
+	if (mobj) {
+		return "uknown model object";
 	}
 	if (dynamic_cast<FrxProcessorNode*>(fxobj.get())) {
 		return "processor";
 	}
-	return "unknown";
+	return "unknown processor";
 }
 //-----------------------------------------------------------------------------
-void FrxRemoveViewObject::process(LuaFrxComponent objId, Ctrl *ctrl) {
+void FrxRemoveProcessor::process(LuaPtr objId, Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
@@ -202,10 +386,10 @@ void FrxClearView::process(Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
-	typedef sambag::lua::LuaSequence<LuaFrxComponent> Components;
+	typedef sambag::lua::LuaSequence<LuaPtr> Components;
 	Components c = FrxGetViewComponents::process(ctrl);
-	BOOST_FOREACH(LuaFrxComponent comp, c) {
-		FrxRemoveViewObject::process(comp, ctrl);
+	BOOST_FOREACH(LuaPtr comp, c) {
+		FrxRemoveProcessor::process(comp, ctrl);
 	}
 }
 //-----------------------------------------------------------------------------
@@ -239,7 +423,7 @@ FrxGetViewComponents::Components FrxGetViewComponents::process(Ctrl *ctrl) {
 		if (!fc) {
 			continue;
 		}
-		res.push_back(ctrl->getLuaFrxComponent(fc));
+		res.push_back(ctrl->getLuaPtr(fc));
 	}
 	return res;
 }
@@ -314,7 +498,7 @@ FrxGetProcessors::Strings FrxGetProcessors::process(Ctrl *ctrl) {
 	return res;
 }
 //-----------------------------------------------------------------------------
-void FrxAddProcessor::process(std::string _name, Ctrl *ctrl) {
+LuaPtr FrxAddProcessor::process(std::string _name, Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
@@ -324,17 +508,19 @@ void FrxAddProcessor::process(std::string _name, Ctrl *ctrl) {
 	IFrxComponentFactory &fac = getComponentFactory(view);
 	IFrxControl &frxctrl = getFrxControl(view);
 	FrxProcessorNodePtr res = fac.getProcessorCreator(_name)(view);
-	if (res) {
-		frxctrl.addProcessorToView(view, res);
+	if (!res) {
+		return NULL_LUAPTR;
 	}
+	frxctrl.addProcessorToView(view, res);
+	return ctrl->getLuaPtr(res);
 }
 } // namespace
 //=============================================================================
 //  Class PluginScriptCtrl
 //=============================================================================
 //-----------------------------------------------------------------------------
-PluginScriptCtrl::LuaFrxComponent 
-PluginScriptCtrl::getLuaFrxComponent(FrxComponentPtr c)
+PluginScriptCtrl::LuaPtr 
+PluginScriptCtrl::getLuaPtr(FrxComponentPtr c)
 {
 	std::string key(sambag::com::toString(c.get()));
 	componentMap[key] = c;
@@ -342,7 +528,7 @@ PluginScriptCtrl::getLuaFrxComponent(FrxComponentPtr c)
 }
 //-----------------------------------------------------------------------------
 PluginScriptCtrl::FrxComponentPtr 
-PluginScriptCtrl::getFrxComponent(const LuaFrxComponent &c)
+PluginScriptCtrl::getFrxComponent(const LuaPtr &c)
 {
 	ComponentMap::const_iterator it = componentMap.find(c);
 	if (it==componentMap.end()) {
@@ -351,9 +537,26 @@ PluginScriptCtrl::getFrxComponent(const LuaFrxComponent &c)
 	return it->second;
 }
 //-----------------------------------------------------------------------------
-void PluginScriptCtrl::remove(const LuaFrxComponent &c)
+void PluginScriptCtrl::remove(const LuaPtr &c)
 {
 	componentMap.erase(c);
+	modelObjectMap.erase(c);
+}
+//-----------------------------------------------------------------------------
+LuaPtr PluginScriptCtrl::getLuaPtr(ModelObjectPtr c) {
+	std::string key(sambag::com::toString(c.get()));
+	modelObjectMap[key] = c;
+	return key;
+}
+//-----------------------------------------------------------------------------
+PluginScriptCtrl::ModelObjectPtr 
+PluginScriptCtrl::getModelObject(const LuaPtr &c) 
+{
+	ModelObjectMap::const_iterator it = modelObjectMap.find(c);
+	if (it==modelObjectMap.end()) {
+		return ModelObjectPtr();
+	}
+	return it->second;
 }
 //-----------------------------------------------------------------------------
 sambag::disco::components::WindowPtr PluginScriptCtrl::getEditorWindow() const {
