@@ -13,7 +13,7 @@
 #include "FrxConcreteParameter.hpp"
 #include "FrxSelection.hpp"
 #include "FrxHover.hpp"
-
+#include "FrxFlag.hpp"
 namespace frx { namespace gui { namespace components {
 //=============================================================================
 //  Class FrxSerializationRegister
@@ -43,6 +43,7 @@ void register_types_impl( Archive &ar ) {
 	ar.template register_type<FrxStdKnob>();
 	ar.template register_type<FrxSelection>();
 	ar.template register_type<FrxHover>();
+	ar.template register_type<FrxFlag>();
 }
 //-----------------------------------------------------------------------------
 void register_types( ::com::iArchive &ar ) {

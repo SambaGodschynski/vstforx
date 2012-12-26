@@ -94,6 +94,8 @@ void BgPane::postConstructor() {
 //-----------------------------------------------------------------------------
 const std::string FrxCircuidView::PROPERTY_ZORDER = "z_order";
 //-----------------------------------------------------------------------------
+const float FrxCircuidView::Z_Flags = 6.f;
+//-----------------------------------------------------------------------------
 const float FrxCircuidView::Z_Wires = 5.f;
 //-----------------------------------------------------------------------------
 const float FrxCircuidView::Z_ProcessorNodes = 4.f;
@@ -114,6 +116,7 @@ const float FrxCircuidView::ZArea_EndNodes = Z_IO;
 //-----------------------------------------------------------------------------
 void FrxCircuidView::add(sdc::AComponentPtr comp, ZOrder zord, bool normalize) 
 {
+	SAMBAG_BEGIN_SYNCHRONIZED(getTreeLock())
 	if (normalize) {
 		sd::Point2D loc = comp->getLocation();
 		boost::geometry::add_point(loc, viewPort->getViewPosition());
@@ -144,6 +147,7 @@ void FrxCircuidView::add(sdc::AComponentPtr comp, ZOrder zord, bool normalize)
 	EventSender<FrxCircuidViewEvent>::notifyListeners( this, 
 		FrxCircuidViewEvent(FrxCircuidViewEvent::ComponentAdded, frxC)
 	);
+	SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 FrxCircuidView::FrxCircuidView() {
@@ -157,6 +161,7 @@ FrxCircuidView::~FrxCircuidView() {
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::remove(sdc::AComponentPtr comp) {
+	SAMBAG_BEGIN_SYNCHRONIZED(getTreeLock())
 	FrxComponent::Ptr frxC = boost::shared_dynamic_cast<FrxComponent>(comp);
 	if (frxC) { // fire removing event
 		frxC->EventSender<OnRemoving>::notifyListeners(frxC.get(), 
@@ -168,6 +173,7 @@ void FrxCircuidView::remove(sdc::AComponentPtr comp) {
 			FrxCircuidViewEvent(FrxCircuidViewEvent::ComponentRemoved, frxC)
 		);
 	}
+	SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 sdcu::AComponentUIPtr 

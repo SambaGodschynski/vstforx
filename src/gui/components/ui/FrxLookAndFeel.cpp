@@ -36,6 +36,8 @@
 #include <gui/components/ui/FrxParameterLabelUI.hpp>
 #include <gui/components/ui/FrxBrowserListUI.hpp>
 #include <gui/components/FrxTooltipManager.hpp>
+#include <gui/components/FrxFlag.hpp>
+#include <gui/components/ui/FrxFlagUI.hpp>
 
 #include <sambag/disco/FileResourceManager.hpp>
 #include <sambag/disco/IPattern.hpp>
@@ -114,6 +116,8 @@ void FrxLookAndFeel::installComponents() {
 		fgcu::FrxSelectionUI>();
 	registerComponentUI<fgc::FrxHover, 
 		fgcu::FrxHoverUI>();
+	registerComponentUI<fgc::FrxFlag, 
+		fgcu::FrxFlagUI>();
 	// browser
 	using namespace sdc::ui::basic;
 	typedef FrxColumnBrowser::BrowserImpl CBrowser;
@@ -189,10 +193,12 @@ void FrxLookAndFeel::installDefaults() {
 		createStyle("stroke: white; fill: lightblue;"));
 	m.putProperty("StatusMessage.style", 
 		createStyle("stroke-width: 1; stroke: darkgrey;font-size: 13; font-family: arial"));
+	m.putProperty("FrxFlag.style", 
+		createStyle("stroke-width: 1; fill: black; stroke: darkgrey;font-size: 13; font-family: arial"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<images
 	FileResourceManager &rManager = FileResourceManager::instance();
 	rManager.registerImage("FrxCircuidView.image", "images/disco-floor.png");
-	m.putProperty("FrxCircuidView.bgTransfomation", sambag::math::rotate2D(45.));
+	m.putProperty("FrxCircuidView.bgTransfomation", sambag::math::scale2D(.125, .125));
 	m.putProperty("FrxCircuidView.bgExtend", sd::IPattern::DISCO_EXTEND_REPEAT);
 	rManager.registerImage("StatusMessage.icon.default", "images/inf_icon.png");
 	rManager.registerImage("StatusMessage.icon.hint", "images/inf_icon.png");

@@ -68,7 +68,7 @@ c = frxGetViewComponents()
 for i, x in pairs(c) do	
 	pars = frxGetComponentParameter(x)
 	for j, y in pairs(pars) do
-		frxAddComponentParameter(x ,y)
+		--frxAddComponentParameter(x ,y)
 	end
 end
 

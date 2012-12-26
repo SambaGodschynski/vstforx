@@ -48,9 +48,6 @@
 #include "components/FrxPluginEditor.hpp"
 #include "components/FrxPluginEditorCtrl.hpp"
 
-#define FRX_BEGIN_SYNCHRONIZE_VIEW(view) SAMBAG_BEGIN_SYNCHRONIZED((view)->getTreeLock())
-#define FRX_END_SYNCHRONIZE_VIEW SAMBAG_END_SYNCHRONIZED
-
 namespace frx { namespace gui {
 using namespace components;
 //------------------------------------------------------------------------------
@@ -86,19 +83,26 @@ bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj, FrxCircuidViewWPtr _view)
 //-----------------------------------------------------------------------------
 void knobChanged(void *src, 
 	const sdc::DefaultBoundedRangeModelChanged &ev,
-	frx::processing::IParameter::WPtr _par) 
+	frx::processing::IParameter::WPtr _par,
+	FrxParameter::WPtr _knob) 
 {
+	FrxParameter::Ptr knob = _knob.lock();
 	frx::processing::IParameter::Ptr par = _par.lock();
-	if (!par)
+	if (!knob || !par)
 		return;
 	par->setValue(ev.getSrc().getValue());
 }
 //-----------------------------------------------------------------------------
-void parameterChanged(void *src, float value, FrxParameter::WPtr _knob) {
+void parameterChanged(void *src, float value, 
+	frx::processing::IParameter::WPtr _par,
+	FrxParameter::WPtr _knob)
+{
 	FrxParameter::Ptr knob = _knob.lock();
-	if (!knob)
+	frx::processing::IParameter::Ptr par = _par.lock();
+	if (!knob || !par)
 		return;
 	knob->getRangeModel()->setValue(value);
+	knob->setFlagText( par->getName() + "/" + par->getDisplay() );
 }
 //-----------------------------------------------------------------------------
 bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj, FrxCircuidViewWPtr _view)
@@ -121,10 +125,8 @@ bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj, FrxCircuidViewWPtr _view)
 	
 	FrxComponent::Ptr c = boost::shared_dynamic_cast<FrxComponent>(obj);
 	map->remove(c, mObj);
-	FRX_BEGIN_SYNCHRONIZE_VIEW(view)
-		view->remove(c);
-		view->AContainer::redraw();
-	FRX_END_SYNCHRONIZE_VIEW
+	view->remove(c);
+	view->AContainer::redraw();
 	return true;
 }
 namespace {
@@ -178,14 +180,17 @@ void registerOnView(FrxCircuidViewPtr view, FrxProcessorNode::Ptr viewObj)
 void registerOnView(FrxCircuidViewPtr view, FrxParameter::Ptr knob) {
 	frx::processing::IParameter::Ptr par = 
 		getModelObject<frx::processing::IParameter>(view, knob);
+	
+	frx::processing::IParameter::WPtr _par = par;
+	FrxParameter::WPtr _knob = knob;
 
 	knob->getRangeModel()->setValue(par->getValue());
 	// knob listener
 	knob->getRangeModel()->EventSender<sdc::DefaultBoundedRangeModelChanged>::
-		addTrackedEventListener ( boost::bind(&knobChanged, _1, _2, par), par );
+		addTrackedEventListener ( boost::bind(&knobChanged, _1, _2, _par, _knob), par );
 	// parameter listener
 	par->getEventSender().addTrackedValueChangedListener(
-		boost::bind(&parameterChanged, _1, _2, FrxParameter::WPtr(knob)), knob
+		boost::bind(&parameterChanged, _1, _2, _par, _knob), knob
 	);
 	par->addRemoveRequestExecuter( // make sure that knob will be removed
 								   // when related model object does.
@@ -217,10 +222,8 @@ bool perfomConnect(FrxCircuidView::Ptr view,
 	typename ConnectionType::Ptr cn = ConnectionType::create();
 	cn->setSrcComponent(src);
 	cn->setDstComponent(dst);
-	FRX_BEGIN_SYNCHRONIZE_VIEW(view)
-		view->add(cn, FrxCircuidView::Z_Wires);
-		map->registerObjects(cn, mcnt);
-	FRX_END_SYNCHRONIZE_VIEW
+	view->add(cn, FrxCircuidView::Z_Wires);
+	map->registerObjects(cn, mcnt);
 	return true;
 }
 //-----------------------------------------------------------------------------
@@ -397,14 +400,12 @@ fgc::FrxComponentPtr FrxControl::addRelatedKnobToView(FrxCircuidViewPtr view,
 	}
 	cn->setSrcComponent(c);
 	cn->setDstComponent(knob);
-	FRX_BEGIN_SYNCHRONIZE_VIEW(view)
-		view->add(cn, FrxCircuidView::Z_Wires);
-		view->add(knob, FrxCircuidView::Z_Knobs);
-		// add hover
-		FrxSelection::Ptr sel = view->getSelection();
-		sel->addElement(knob);
-		sel->setVisible(true);
-	FRX_END_SYNCHRONIZE_VIEW
+	view->add(cn, FrxCircuidView::Z_Wires);
+	view->add(knob, FrxCircuidView::Z_Knobs);
+	// add hover
+	FrxSelection::Ptr sel = view->getSelection();
+	sel->addElement(knob);
+	sel->setVisible(true);
 	return knob;
 }
 //-----------------------------------------------------------------------------
@@ -430,18 +431,16 @@ FrxComponentPtr FrxControl::addProcessorInput(fgc::FrxCircuidViewPtr view,
 	ProcessorInputCn::Ptr cn = ProcessorInputCn::create();
 	cn->setSrcComponent(c);
 	cn->setDstComponent(viewIo);
-	FRX_BEGIN_SYNCHRONIZE_VIEW(view)
-		view->add(viewIo, FrxCircuidView::Z_IO, true);
-		view->add(cn, FrxCircuidView::Z_Wires);
-		map->registerObjects(viewIo, io);
-		registerComponent(view, viewIo);
-		// add hover
-		FrxHover::Ptr sel = FrxHover::create();
-		view->add(sel);
-		sel->addElement(viewIo);
-		sel->setVisible(true);
-		return viewIo;
-	FRX_END_SYNCHRONIZE_VIEW
+	view->add(viewIo, FrxCircuidView::Z_IO, true);
+	view->add(cn, FrxCircuidView::Z_Wires);
+	map->registerObjects(viewIo, io);
+	registerComponent(view, viewIo);
+	// add hover
+	FrxHover::Ptr sel = FrxHover::create();
+	view->add(sel);
+	sel->addElement(viewIo);
+	sel->setVisible(true);
+	return viewIo;
 }
 //-----------------------------------------------------------------------------
 FrxComponentPtr FrxControl::addProcessorOutput(fgc::FrxCircuidViewPtr view, 
@@ -466,52 +465,48 @@ FrxComponentPtr FrxControl::addProcessorOutput(fgc::FrxCircuidViewPtr view,
 	ProcessorOutputCn::Ptr cn = ProcessorOutputCn::create();
 	cn->setSrcComponent(c);
 	cn->setDstComponent(viewIo);
-	FRX_BEGIN_SYNCHRONIZE_VIEW(view)
-		view->add(viewIo, FrxCircuidView::Z_IO, true);
-		view->add(cn, FrxCircuidView::Z_Wires);
-		map->registerObjects(viewIo, io);
-		registerComponent(view, viewIo);
-		// add hover
-		FrxHover::Ptr sel = FrxHover::create();
-		view->add(sel);
-		sel->addElement(viewIo);
-		sel->setVisible(true);
-		return viewIo;
-	FRX_END_SYNCHRONIZE_VIEW
+	view->add(viewIo, FrxCircuidView::Z_IO, true);
+	view->add(cn, FrxCircuidView::Z_Wires);
+	map->registerObjects(viewIo, io);
+	registerComponent(view, viewIo);
+	// add hover
+	FrxHover::Ptr sel = FrxHover::create();
+	view->add(sel);
+	sel->addElement(viewIo);
+	sel->setVisible(true);
+	return viewIo;
 }
 //-----------------------------------------------------------------------------
 void FrxControl::addParameterToView(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxParameterPtr knob)
 {
 
-	FRX_BEGIN_SYNCHRONIZE_VIEW(view)
-		registerComponent(view, knob);
-		view->add(knob, FrxCircuidView::Z_Knobs);
-		// add hover
-		FrxSelection::Ptr sel = view->getSelection();
-		sel->addElement(knob);
-		sel->setVisible(true);
-	FRX_END_SYNCHRONIZE_VIEW
+	
+	registerComponent(view, knob);
+	view->add(knob, FrxCircuidView::Z_Knobs);
+	// add hover
+	FrxSelection::Ptr sel = view->getSelection();
+	sel->addElement(knob);
+	sel->setVisible(true);
+	
 }
 //-----------------------------------------------------------------------------
 void FrxControl::addProcessorToView(fgc::FrxCircuidViewPtr view, 
 		FrxProcessorNodePtr pr)
 {
-	FRX_BEGIN_SYNCHRONIZE_VIEW(view)
-		// add to view
-		view->add(pr, FrxCircuidView::Z_ProcessorNodes);
-		pr->resetIOLocation();
-		// register
-		registerComponent(view, pr);
-		// hover
-		FrxSelection::Ptr sel = view->getSelection();
-		sel->setVisible(true);
-		std::list<sdc::AComponentPtr> toAdd;
-		toAdd.push_back(pr);
-		toAdd.insert(toAdd.end(), pr->getInputs().begin(), pr->getInputs().end());
-		toAdd.insert(toAdd.end(), pr->getOutputs().begin(), pr->getOutputs().end());
-		sel->addElements(toAdd);
-	FRX_END_SYNCHRONIZE_VIEW
+	// add to view
+	view->add(pr, FrxCircuidView::Z_ProcessorNodes);
+	pr->resetIOLocation();
+	// register
+	registerComponent(view, pr);
+	// hover
+	FrxSelection::Ptr sel = view->getSelection();
+	sel->setVisible(true);
+	std::list<sdc::AComponentPtr> toAdd;
+	toAdd.push_back(pr);
+	toAdd.insert(toAdd.end(), pr->getInputs().begin(), pr->getInputs().end());
+	toAdd.insert(toAdd.end(), pr->getOutputs().begin(), pr->getOutputs().end());
+	sel->addElements(toAdd);
 }
 //-----------------------------------------------------------------------------
 FrxControl::FrxControl() {
@@ -542,11 +537,11 @@ void FrxControl::removeComponent(FrxCircuidViewPtr _view, FrxComponentPtr _c)
 			"removing model object failed."
 		);
 	}
-	FRX_BEGIN_SYNCHRONIZE_VIEW(view)
-		map->remove(c, mObj);
-		view->remove(c);
-		view->AContainer::redraw();
-	FRX_END_SYNCHRONIZE_VIEW
+
+	map->remove(c, mObj);
+	view->remove(c);
+	view->AContainer::redraw();
+	
 }
 //-----------------------------------------------------------------------------
 sdc::PopupMenuPtr FrxControl::getCircuidViewPopup(FrxCircuidViewPtr c) {

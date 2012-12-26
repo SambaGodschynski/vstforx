@@ -13,8 +13,17 @@ namespace frx { namespace gui { namespace components {
 //  Class FrxComponent
 //=============================================================================
 //-----------------------------------------------------------------------------
+const std::string FrxComponent::PROPERTY_FLAG_TXT = "flag_text";
+//-----------------------------------------------------------------------------
+void FrxComponent::setFlagText(const std::string &txt) {
+	std::string old = flagTxt;
+	flagTxt = txt;
+	firePropertyChanged(PROPERTY_FLAG_TXT, old, flagTxt);
+}
+//-----------------------------------------------------------------------------
 FrxComponent::FrxComponent() {
 	setName("FrxComponent");
+	setFlagText(getName());
 }
 //-----------------------------------------------------------------------------
 sdc::ui::AComponentUIPtr 

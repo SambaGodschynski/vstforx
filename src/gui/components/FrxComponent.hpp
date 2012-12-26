@@ -51,10 +51,14 @@ public:
 	//-------------------------------------------------------------------------
 	virtual sdc::ui::AComponentUIPtr 
 	createComponentUI(sdc::ui::ALookAndFeelPtr laf) const;
+	//-------------------------------------------------------------------------
+	static const std::string PROPERTY_FLAG_TXT;
 protected:
 	//-------------------------------------------------------------------------
 	FrxComponent();
 private:
+	//-------------------------------------------------------------------------
+	std::string flagTxt;
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
 	//-------------------------------------------------------------------------
@@ -73,6 +77,7 @@ private:
 		}
 		ar & boost::serialization::base_object<ViewObject>(*this); 
 		ar & tmpSelf;
+		ar & flagTxt;
 		std::string name = getName();
 		ar & name;
 		if (Archive::is_loading::value) {
@@ -101,6 +106,18 @@ private:
 		boost::serialization::split_member(ar, *this, version);
 	}
 public:
+	//-------------------------------------------------------------------------
+	/**
+	 * @return representing string for @seeFrxFlag component.
+	 */
+	virtual const std::string & getFlagText() const { return flagTxt; }
+	//-------------------------------------------------------------------------
+	/**
+	 * set representing string for @seeFrxFlag component.
+	 * upper and lower flag text is seperated by '/':
+	 * upperflagtext/lowerflagtext
+	 */
+	virtual void setFlagText(const std::string &txt);
 	//-------------------------------------------------------------------------
 	virtual void setBounds(const sd::Rectangle &b);
 	//-------------------------------------------------------------------------

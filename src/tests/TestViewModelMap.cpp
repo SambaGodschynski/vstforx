@@ -23,6 +23,9 @@ template <class Base>
 struct TestClass : public Base {
 	int id;
 	typedef boost::shared_ptr<TestClass> Ptr;
+	virtual std::string getObjectName(void) const {
+		return "";
+	}
 	static Ptr create(int id=0) {
 		Ptr res(new TestClass());
 		res->id = id;
