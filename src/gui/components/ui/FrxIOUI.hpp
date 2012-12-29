@@ -11,31 +11,29 @@
 #include <boost/shared_ptr.hpp>
 #include <gui/components/FrxConcreteIO.hpp>
 #include "FrxNodeUI.hpp"
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
-namespace sdcu = sdc::ui;
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 namespace {
+	SAMBAG_PROPERTY_TAG(EntryPropertyTag, "Entry.radius");
+	SAMBAG_PROPERTY_TAG(InputPropertyTag, "ProcessorInput.radius");
+	SAMBAG_PROPERTY_TAG(OutputPropertyTag, "ProcessorOutput.radius");
 	template <class IOType>
 	sambag::com::Number getIORadius() {
-		SAMBAG_PROPERTY_TAG(PropertyTag, "Entry.radius");
-		return sdcu::getUIPropertyCached<PropertyTag>((double)0.);
+		return sdcu::getUIPropertyCached<EntryPropertyTag>((double)0.);
 	}
 	template <>
 	sambag::com::Number getIORadius<ioTypes::Input>() {
-		SAMBAG_PROPERTY_TAG(PropertyTag, "ProcessorInput.radius");
 		return
-			sdcu::getUIPropertyCached<PropertyTag>((double)0.);
+			sdcu::getUIPropertyCached<InputPropertyTag>((double)0.);
 	}
 	template <>
 	sambag::com::Number getIORadius<ioTypes::Output>() {
-		SAMBAG_PROPERTY_TAG(PropertyTag, "ProcessorOutput.radius");
 		return
-			sdcu::getUIPropertyCached<PropertyTag>((double)0.);
+			sdcu::getUIPropertyCached<OutputPropertyTag>((double)0.);
 	}
 } // namespace
 //=============================================================================

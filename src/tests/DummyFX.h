@@ -13,9 +13,10 @@
 		test effect instance
 */
 
-#include "AudioEffectX.h"
+#include "audioeffectx.h"
 #include "processing/IHostInfo.h"
 #include <boost/shared_ptr.hpp>
+#include <com/Serialization.h>
 
 namespace processing {
 
@@ -41,7 +42,7 @@ public:
 		return this;
 	}
 	virtual void * getMasterCallback() {
-		return audioMaster;
+		return (void*)audioMaster;
 	}
 	virtual ~DummyFX(){}
 	virtual HostIOChangedConnection 

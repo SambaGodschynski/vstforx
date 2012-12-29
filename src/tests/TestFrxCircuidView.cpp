@@ -38,9 +38,23 @@ void TestFrxCircuidView::testZOrder() {
 	CPPUNIT_ASSERT_EQUAL(expStr, circ->componentsToString());
 }
 namespace {
-	int filterFunc( sambag::disco::components::AComponent::Ptr c ) {
+	using namespace sambag::disco::components;
+	using namespace frx::gui::components;
+	int filterFunc( AComponent::Ptr c ) {
 		return 1;
 	}
+	struct TestFilter {
+		int operator()( AComponent::Ptr c ) {
+			float z = 0;
+			c->getClientProperty(FrxCircuidView::PROPERTY_ZORDER, z);
+				if (z>=99.f)
+					return 1;
+				return 0;
+		}
+		int filter(AComponent::Ptr c) {
+			return -1;
+		}
+	};
 } // namespace
 //-----------------------------------------------------------------------------
 void TestFrxCircuidView::testFindComponentsFiltered() {
@@ -56,20 +70,9 @@ void TestFrxCircuidView::testFindComponentsFiltered() {
 	circ->add(p03, 99.f);
 	circ->add(p04, 100.f);
 
-	struct Filter {
-		int operator()( AComponent::Ptr c ) {
-			float z = 0;
-			c->getClientProperty(FrxCircuidView::PROPERTY_ZORDER, z);
-			if (z>=99.f)
-				return 1;
-			return 0;
-		}
-		int filter(AComponent::Ptr c) {
-			return -1;
-		}
-	};
 	std::vector<AComponent::Ptr> res;
-	circ->findComponents(res, Filter());
+	TestFilter filter;
+	circ->findComponents(res, filter);
 	CPPUNIT_ASSERT_EQUAL((size_t)2, res.size());
 	CPPUNIT_ASSERT(res[0] == p03);
 	CPPUNIT_ASSERT(res[1] == p04);
@@ -78,8 +81,10 @@ void TestFrxCircuidView::testFindComponentsFiltered() {
 	CPPUNIT_ASSERT_EQUAL((size_t)4 + 1, res.size());
 
 	res.clear();
-	Filter f;
-	circ->findComponents(res, boost::bind(&Filter::filter, &f, _1));
+	TestFilter f;
+	boost::function<int(AComponent::Ptr)> bf = 
+		boost::bind(&TestFilter::filter, &f, _1);
+	circ->findComponents(res, bf);
 	CPPUNIT_ASSERT_EQUAL((size_t)0, res.size());
 }
 //-----------------------------------------------------------------------------

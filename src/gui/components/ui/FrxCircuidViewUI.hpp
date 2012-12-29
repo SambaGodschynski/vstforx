@@ -14,12 +14,10 @@
 #include <sambag/disco/components/Forward.hpp>
 #include <sambag/disco/Geometry.hpp>
 #include "FrxCircuidMouseListener.hpp"
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
-namespace sdcu = sdc::ui;
 //=============================================================================
 /** 
   * @class FrxCircuidViewUI.

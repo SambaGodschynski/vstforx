@@ -9,7 +9,6 @@
 #define SAMBAG_ICONNECTION_H
 
 #include <boost/shared_ptr.hpp>
-
 #include "ModelObject.hpp"
 
 namespace frx { namespace processing {

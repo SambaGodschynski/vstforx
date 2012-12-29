@@ -4,6 +4,7 @@
  *      Author: Johannes Unger
  * ===========================================================================================================
  */
+#ifdef FRX_OS_WINDOWS
 
 #include "OS_VSTPlugin2x.h" 
 #include "processing/pluginTypes/NullAEffect.h"
@@ -115,5 +116,6 @@ bool OS_VSTPlugNode2x::unloadModule() {
 }
 } //namespace
 
+#endif //#ifdef FRX_OS_WINDOWS
 
 

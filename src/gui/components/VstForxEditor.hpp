@@ -12,28 +12,13 @@
 #include <sambag/dsp/IEditor.hpp>
 #include <com/Serialization.h>
 #include <sambag/com/Thread.hpp>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace processing {
 	class VstForxPlug;
 }} // namespace(s)
 
 namespace frx { namespace gui { namespace components {
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
-//=============================================================================
-// class CreateDiscoEditor
-//=============================================================================
-struct CreateVstForxEditor {
-	template <class Editor, class Plugin>
-	Editor * createEditor(Plugin* plugin) 
-	{ 
-		AudioEffect *aEff = plugin;
-		frx::gui::components::VstForxEditor *res 
-			= new frx::gui::components::VstForxEditor(aEff); 
-		res->setPlugin(plugin);
-		return res;
-	}
-};
 //=============================================================================
 class VstForxEditor : 
 	public AEffEditor,
@@ -134,6 +119,20 @@ public:
 	virtual bool getRect (ERect** rect);
 	//-------------------------------------------------------------------------
 	virtual void idle();
+};
+//=============================================================================
+// class CreateDiscoEditor
+//=============================================================================
+struct CreateVstForxEditor {
+	template <class Editor, class Plugin>
+	Editor * createEditor(Plugin* plugin) 
+	{ 
+		AudioEffect *aEff = plugin;
+		frx::gui::components::VstForxEditor *res 
+			= new frx::gui::components::VstForxEditor(aEff); 
+		res->setPlugin(plugin);
+		return res;
+	}
 };
 }}} // namespace(s)
 #endif

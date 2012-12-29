@@ -12,10 +12,9 @@
 #include <boost/weak_ptr.hpp>
 #include <sambag/disco/components/Label.hpp>
 #include <sambag/disco/components/DefaultBoundedRangeModel.hpp>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
 //=============================================================================
 /** 
   * @class FrxParameterLabel.

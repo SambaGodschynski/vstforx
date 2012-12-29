@@ -14,23 +14,24 @@
 #include "FrxNodeUI.hpp"
 #include <sambag/disco/components/PopupMenu.hpp>
 #include <sambag/disco/IResourceManager.hpp>
+#include <processing/IModelController.hpp>
+#include <gui/IViewModelMap.hpp>
+#include <gui/IFrxControl.hpp>
+#include <sambag/disco/components/ui/UIManager.hpp>
 #include <gui/IFrxControl.hpp>
 #include <map>
 #include <boost/assign.hpp>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui {
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
-namespace sdcu = sdc::ui;
-
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 namespace {
+SAMBAG_PROPERTY_TAG(ProcessorRadiusTag, "Processor.radius");
 template <class PrType>
 sambag::com::Number getProcessorRadius() {
-	SAMBAG_PROPERTY_TAG(PropertyTag, "Processor.radius");
-	return sdcu::getUIPropertyCached<PropertyTag>((double)0.);
+	return sdcu::getUIPropertyCached<ProcessorRadiusTag>((double)0.);
 }
 typedef std::map<std::string, std::string> ProcessorImageMap;
 ProcessorImageMap processorImageMap;
@@ -179,7 +180,7 @@ inline void createSpecificEntries<FrxPluginNode::ProcessorType>(sdc::PopupMenuPt
 	sdc::MenuItem::Ptr m = sdc::MenuItem::create();
 	m->setText("open " + c->getName() + " editor...");
 	IFrxControl &ctrl = getFrxControl(view); 
-	m->EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
+	m->sdc::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
 		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
 		&IFrxControl::openPluginEditor),
 		c
@@ -195,7 +196,7 @@ void FrxProcessorNodeUI<CT>::addHasMultipleInputEntry(sdc::PopupMenuPtr menu,
 	sdc::MenuItem::Ptr m = sdc::MenuItem::create();
 	m->setText("add input");
 	IFrxControl &ctrl = getFrxControl(view); 
-	m->EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
+	m->sdc::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
 		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
 		&IFrxControl::addProcessorInput),
 		c
@@ -210,7 +211,7 @@ void FrxProcessorNodeUI<CT>::addHasMultipleOutputEntry(sdc::PopupMenuPtr menu,
 	sdc::MenuItem::Ptr m = sdc::MenuItem::create();
 	m->setText("add output");
 	IFrxControl &ctrl = getFrxControl(view); 
-	m->EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
+	m->sdc::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
 		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
 		&IFrxControl::addProcessorOutput),
 		c
@@ -225,9 +226,9 @@ void FrxProcessorNodeUI<CT>::createPopupmenuEntries(sdc::PopupMenuPtr menu,
 {
 	Super::createPopupmenuEntries(menu, view, c);
 	// io
-	frx::processing::IModelController::Ptr mCtrl;
-	IViewModelMap::Ptr map;
-	boost::tie(mCtrl, map) = getControllerAndMap(view);
+	//frx::processing::IModelController::Ptr mCtrl;
+	IViewModelMap::Ptr map = getViewModelMap(view);
+	
 	frx::processing::IProcessor::Ptr processor =
 		boost::shared_dynamic_cast<frx::processing::IProcessor>(
 			map->getModelObject(c)
@@ -244,7 +245,7 @@ void FrxProcessorNodeUI<CT>::createPopupmenuEntries(sdc::PopupMenuPtr menu,
 	sdc::MenuItem::Ptr m = sdc::MenuItem::create();
 	m->setText("show " + c->getName() + " details...");
 	IFrxControl &ctrl = getFrxControl(view); 
-	m->EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
+	m->sdc::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
 		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
 		&IFrxControl::showProcessorDetails),
 		c

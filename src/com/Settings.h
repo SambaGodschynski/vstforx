@@ -88,8 +88,6 @@ public:
 	void reloadConfigFile() { loadConfigFile(); }
 	//--------------------------------------------------------------------------------------------------------
 	// PPI KONSTANTEN
-	enum { UNIQUE_ID = 'forx' };
-	enum { UNIQUE_ID_INSTR = 'frxi' };
 	enum { COMMAND_WORKER_INTERVAL_MS = 1000 };
 	enum { PROGRAM_PARAMETER = 512 };
 	static const int PPI_VERSION = /*000*/ 4444; // xx.xx.xxx

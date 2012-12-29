@@ -8,7 +8,7 @@
 #include "ParameterConnection.hpp"
 #include "ParameterAdapter.hpp"
 #include <processing/parameter/ConnectionOperators.h>
-#include <loki/TypeList.h>
+#include <loki/Typelist.h>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -41,7 +41,7 @@ namespace {
 	template <class COps>
 	void getCopIds(ParameterCnOpTypeIds &out) {
 		out.push_back(COps::Head::name());
-		getCopIds<COps::Tail>(out);
+		getCopIds<typename COps::Tail>(out);
 	}
 	template <>
 	void getCopIds<Loki::NullType>(ParameterCnOpTypeIds &out) {
@@ -49,11 +49,11 @@ namespace {
 	//#########################################################################
 	template <class COps>
 	pp::ConnectionOperator::Ptr createCOp(const ParameterCnOpTypeId &id) {
-		typedef COps::Head COp;
+		typedef typename COps::Head COp;
 		if (id == COp::name()) {
 			return COp::create();
 		}
-		return createCOp<COps::Tail>(id);
+		return createCOp<typename COps::Tail>(id);
 	}
 	template <>
 	pp::ConnectionOperator::Ptr createCOp<Loki::NullType>(const ParameterCnOpTypeId &id)

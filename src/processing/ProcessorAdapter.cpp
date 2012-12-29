@@ -62,24 +62,27 @@ INode::Ptr ProcessorAdapter::getOutput(size_t nr) const {
 }
 //-----------------------------------------------------------------------------
 bool ProcessorAdapter::hasMultipleInputs() const {
-	::processing::VariableInputAdapter *va =
-		dynamic_cast<::processing::VariableInputAdapter*>(getAdaptee().get());
+	typedef ::processing::VariableInputAdapter VIA;
+	VIA *va =
+		dynamic_cast<VIA*>(getAdaptee().get());
 	if (!va)
 		return false;
 	return true;
 }
 //-----------------------------------------------------------------------------
 bool ProcessorAdapter::hasMultipleOutputs() const {
-	::processing::VariableOutputAdapter *va =
-		dynamic_cast<::processing::VariableOutputAdapter*>(getAdaptee().get());
+	typedef ::processing::VariableOutputAdapter VOA;
+	VOA *va =
+		dynamic_cast<VOA*>(getAdaptee().get());
 	if (!va)
 		return false;
 	return true;
 }
 //-----------------------------------------------------------------------------
 INode::Ptr ProcessorAdapter::addOutput() {
-	::processing::VariableOutputAdapter *va =
-		dynamic_cast<::processing::VariableOutputAdapter*>(getAdaptee().get());
+	typedef ::processing::VariableOutputAdapter VOA;
+	VOA *va =
+		dynamic_cast<VOA*>(getAdaptee().get());
 	if (!va)
 		return INode::Ptr();
 	::processing::ProcessorNode::Ptr n = va->addOutputNode();
@@ -94,8 +97,9 @@ INode::Ptr ProcessorAdapter::addOutput() {
 }
 //-----------------------------------------------------------------------------
 INode::Ptr ProcessorAdapter::addInput() {
-	::processing::VariableInputAdapter *va =
-		dynamic_cast<::processing::VariableInputAdapter*>(getAdaptee().get());
+	typedef ::processing::VariableInputAdapter VIA;
+	VIA *va =
+		dynamic_cast<VIA*>(getAdaptee().get());
 	if (!va)
 		return INode::Ptr();
 	::processing::ProcessorNode::Ptr n = va->addInputNode();

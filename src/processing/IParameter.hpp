@@ -14,6 +14,7 @@
 #include <string>
 #include <com/Events.h>
 
+
 namespace frx { namespace processing {
 //-----------------------------------------------------------------------------
 typedef std::string ParameterCnOpTypeId;

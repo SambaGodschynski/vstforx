@@ -14,12 +14,9 @@
 #include <sambag/disco/components/DefaultBoundedRangeModel.hpp>
 #include "FrxNode.hpp"
 #include <string>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
-namespace sce = sambag::com::events;
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
-namespace sdcu = sdc::ui;
 //=============================================================================
 /** 
   * @class FrxParameter.

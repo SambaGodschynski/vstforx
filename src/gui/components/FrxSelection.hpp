@@ -14,12 +14,9 @@
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include "IFormatter.hpp"
 #include <list>
-
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
-namespace sdcu = sdc::ui;
 class FrxCircuidView;
 //=============================================================================
 /** 

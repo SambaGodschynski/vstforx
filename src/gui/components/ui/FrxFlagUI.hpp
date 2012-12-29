@@ -13,13 +13,9 @@
 #include "FrxComponentUI.hpp"
 #include <sambag/com/events/PropertyChanged.hpp>
 #include <sambag/disco/svg/graphicElements/Style.hpp>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components { namespace ui {
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
-namespace sdcu = sdc::ui;
-namespace sce = sambag::com::events;
-namespace sdsg = sambag::disco::svg::graphicElements;
 //=============================================================================
 /** 
   * @class FrxFlagUI.

@@ -126,7 +126,7 @@ showShellSelection(const ::processing::PluginInfo &pI,
 	BOOST_FOREACH(const ::processing::ShellPluginInfo &inf, infos) {
 		shlsl->addShellInfo(inf);
 	}
-	shlsl->EventSender<ShellPluginSelection::ActionEvent>::addTrackedEventListener
+	shlsl->sce::EventSender<ShellPluginSelection::ActionEvent>::addTrackedEventListener
 	(
 		boost::bind(&FrxMainBrowserCtrl::onShellPluginSelected, this, _1, _2),
 		self
@@ -294,7 +294,7 @@ void FrxMainBrowserCtrl::initListeners(FrxColumnBrowserPtr brws) {
 	if (!browser)
 		return;
 	// add btnOk listener
-	browser->getBtnAdd()->EventSender<sdc::events::ActionEvent>::addEventListener(
+	browser->getBtnAdd()->sdc::EventSender<sdc::events::ActionEvent>::addEventListener(
 		boost::bind(&FrxMainBrowserCtrl::onBrowserOk, this, _1, _2)
 	);
 }
@@ -667,7 +667,7 @@ void FrxMainBrowserCtrl::initTree(FrxCircuidViewPtr view,
 {
 	browser = brws;
 	wView = view; 
-	view->EventSender<FrxCircuidViewEvent>::addTrackedEventListener(
+	view->sdc::EventSender<FrxCircuidViewEvent>::addTrackedEventListener(
 		boost::bind(&FrxMainBrowserCtrl::onFrxViewChanged, this, _1, _2),
 		self.lock()
 	);
@@ -677,7 +677,7 @@ void FrxMainBrowserCtrl::initTree(FrxCircuidViewPtr view,
 	initRoot(view, brws);
 	
 	// extra from installListeners() because not all browser need this:
-	tree->EventSender<sdc::SelectionPathChanged>::addTrackedEventListener(
+	tree->sdc::EventSender<sdc::SelectionPathChanged>::addTrackedEventListener(
 		boost::bind(&onSelectionPathChanged, _1, _2, FrxColumnBrowser::WPtr(brws)),
 		self.lock()
 	);

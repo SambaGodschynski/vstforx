@@ -5,6 +5,8 @@
  * ===========================================================================================================
  */
 
+#ifdef FRX_OS_WINDOWS
+
 // ONE4ALL WINDOWS
 #include "win_one4All.h"
 #include "com/one4All.h"
@@ -15,6 +17,18 @@
 extern void* hInstance;
 
 namespace com {
+//------------------------------------------------------------------------------------------------------------
+std::string getRootDirectory() {
+	using namespace com;
+	std::string home_dir;
+	const size_t N = 512; 
+	char _d[N];
+	DWORD r = GetModuleFileName ( NULL, &_d[0], N );
+	com::Filename f( _d  );
+	if ( is_regular_file(f) ) home_dir = f.remove_filename().string();
+	else home_dir = f.string();
+	return home_dir;
+}
 //------------------------------------------------------------------------------------------------------------
 bool isPlugFilename ( const string &filename ) { 
 	return Filename(filename).extension() == ".dll"; 
@@ -92,3 +106,6 @@ std::string osSelectDirectory ( const std::string &wndTitle,
 	return ret;
 }
 } // namespace com
+
+#endif //#ifdef FRX_OS_WINDOWS
+

@@ -105,11 +105,8 @@ void PluginCollectionTest::eventHandler( void *src, const com::ScanComplete &ev 
 */
 
 
-#if WIN32
 static const size_t NUM_PLUG_COLLECTION = 31;
-#elif __APPLE_CC__
-static const size_t NUM_PLUG_COLLECTION = 36;
-#endif
+
 
 //              folder       subfolder
 typedef multimap< std::string, std::string > ExcpectedFolderMap; 

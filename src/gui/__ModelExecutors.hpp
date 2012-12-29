@@ -9,10 +9,12 @@
 #define SAMBAGMODELEXEC_H
 
 #include <processing/IModelController.hpp>
+#include <processing/IProcessor.hpp>
 #include "components/FrxConcreteProcessor.hpp"
 #include "components/FrxConcreteConnections.hpp"
+#include <gui/HandyNamespaces.hpp>
+
 namespace frx { namespace gui {
-namespace fp = frx::processing;
 using namespace components;
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
@@ -20,7 +22,7 @@ template <class ConcreteProcessor>
 fp::IProcessor::Ptr 
 createProcessorOnModel(fp::IModelController::Ptr ctrl, size_t numInputs, size_t numOutputs) 
 {
-	return IProcessor::Ptr();
+	return fp::IProcessor::Ptr();
 }
 //-----------------------------------------------------------------------------
 template <>

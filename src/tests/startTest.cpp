@@ -1,41 +1,36 @@
+
+#ifdef FRX_OS_WINDOWS
+	#define WIN32ONLY(x) x
+	#include <crtdbg.h>
+#else
+	#define WIN32ONLY(x)
+#endif
+
 #include <iostream>
 #include "tests/MyStringTest.hpp"
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
-#include "windows.h"
 #include "com/one4All.h"
 #include <cppunit/TestResult.h>
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/BriefTestProgressListener.h>
 #include "com/Settings.h"
 #include <stdlib.h>
-#include <crtdbg.h>
+#include <OS_Specific/OS_com.h>
 
 #pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.VC90.CRT' version='9.0.21022.8' processorArchitecture='X86' publicKeyToken='1fc8b3b9a1e18e3b' language='*'\"")
-
-//---------------------------------------------------------------------------------------
-std::string getHomeDirectory() {
-	using namespace com;
-	std::string home_dir;
-	const size_t N = 512; 
-	char _d[N];
-	DWORD r = GetModuleFileName ( NULL, &_d[0], N );
-	com::Filename f( _d  );
-	if ( is_regular_file(f) ) home_dir = f.remove_filename().string();
-	else home_dir = f.string();
-	return home_dir;
-}
-
 
 //=============================================================================
 //                       CPPUnit TestApp fuer VSTForx
 //=============================================================================
 int main ( const int argc, char **argv ) {
 
-	::com::initSettings(getHomeDirectory());
+	::com::initSettings(com::getRootDirectory());
 
-	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); //VS memory tracking
+	WIN32ONLY(
+		_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); //VS memory tracking
+	)
 	using namespace std;
 	using namespace tests;
 	cout<<"* VSTForx TestApp *"<<endl;

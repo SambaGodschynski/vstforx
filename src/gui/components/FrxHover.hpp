@@ -10,10 +10,9 @@
 
 #include <boost/shared_ptr.hpp>
 #include "FrxSelection.hpp"
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
-namespace sdc = sambag::disco::components;
-namespace sdcu = sdc::ui;
 class FrxCircuidView;
 //=============================================================================
 /** 

@@ -11,11 +11,9 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include "FrxComponent.hpp"
+#include <gui/HandyNamespaces.hpp>
+
 namespace frx { namespace gui { namespace components {
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
-namespace sdcu = sdc::ui;
-namespace sce = sambag::com::events;
 //=============================================================================
 /** 
   * @class FrxFlag.

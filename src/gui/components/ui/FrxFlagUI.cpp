@@ -76,8 +76,10 @@ void FrxFlagUI::updateText(const std::string &txt) {
 		return;
 	}
 	flag->setSize(Dimension(
-		tb.width() + ((distance.x()>0) ? distance.x() : -1. * distance.x()),
-		tb.height() + ((distance.y()>0) ? distance.y() : -1. * distance.y())
+		tb.width() + ((distance.x()>0) ? (double)distance.x() : 
+					 -1. * (double)distance.x()),
+		tb.height() + ((distance.y()>0) ? (double)distance.y() : 
+					   -1. * (double)distance.y())
 	));
 	sdc::AComponentPtr parent = flag->getParent();
 	if (parent) {
@@ -117,7 +119,7 @@ void FrxFlagUI::onTargetPropertyChanged(void *, const sce::PropertyChanged &ev)
 }
 //-----------------------------------------------------------------------------
 void FrxFlagUI::installTargetListeners(FrxComponent::Ptr c) {
-	evcn = c->EventSender<sce::PropertyChanged>::addTrackedEventListener(
+	evcn = c->sce::EventSender<sce::PropertyChanged>::addTrackedEventListener(
 		boost::bind(&FrxFlagUI::onTargetPropertyChanged, this, _1, _2),
 		self
 	);
@@ -125,7 +127,7 @@ void FrxFlagUI::installTargetListeners(FrxComponent::Ptr c) {
 	if (!fc) {
 		return;
 	}
-	rmcn = fc->EventSender<OnRemoving>::addTrackedEventListener(
+	rmcn = fc->sce::EventSender<OnRemoving>::addTrackedEventListener(
 		boost::bind(&FrxFlagUI::onRemovingTarget, this, _1, _2),
 		self
 	);
@@ -159,7 +161,7 @@ void FrxFlagUI::installListeners(sdc::AComponentPtr c) {
 	Super::installListeners(c);
 	FrxFlag::Ptr flag = boost::shared_dynamic_cast<FrxFlag>(c);
 	SAMBAG_ASSERT(flag);
-	flag->EventSender<sce::PropertyChanged>::addTrackedEventListener(
+	flag->sce::EventSender<sce::PropertyChanged>::addTrackedEventListener(
 		boost::bind(&FrxFlagUI::onFlagPropertyChanged, this, _1, _2),
 		self
 	);

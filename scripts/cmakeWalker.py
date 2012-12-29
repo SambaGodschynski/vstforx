@@ -7,7 +7,7 @@ inDir = "../src/"
 
 add = """
 SET ( FRX_STANDALONE
-	GuiStandaloneApp/main.cpp
+	PluginApps/GuiStandalone/Main.cpp
 )
 
 add_executable(standalone ${FRX_STANDALONE})
@@ -30,8 +30,7 @@ ignoreDirs = (
     "CMakeFiles",
     #".*test.*",
     ".*GuiStandaloneApp",
-     ".*PluginApps",
-    ".*mac.*"
+     ".*PluginApps"
 )
 ignoreFiles = (
     ".*win_Window.cpp",

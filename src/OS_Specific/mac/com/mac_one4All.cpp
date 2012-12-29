@@ -5,6 +5,8 @@
  * ===========================================================================================================
  */
 
+#ifdef FRX_OS_MAC
+
 // ONE4ALL MAC
 #include "mac_one4All.h"
 #include "com/one4All.h"
@@ -26,7 +28,7 @@ bool isDirectory ( const string &filename ) {
 	return is_directory (s) &&  p.extension() != ".vst" &&  p.extension() != ".app";
 } 	
 //------------------------------------------------------------------------------------------------------------
-MessageBoxReturn MessageBox ( const string &title, const string &text, const MessageBoxType &type ) {
+MessageBoxReturn osMessageBox ( const string &title, const string &text, const MessageBoxType &type ) {
 	//convert the strings from char* to CFStringRef
     CFStringRef header_ref = CFStringCreateWithCString( NULL, title.c_str(), title.length() );
     CFStringRef message_ref = CFStringCreateWithCString( NULL, text.c_str(), text.length() );
@@ -77,6 +79,11 @@ MessageBoxReturn MessageBox ( const string &title, const string &text, const Mes
 	}
 	return MSG_RET_NONE;
 }
+//------------------------------------------------------------------------------------------------------------
+std::string osSelectDirectory ( const std::string &wndTitle, const std::string &startPath)
+{
+	return "";
+}
 //============================================================================================================
 // Klasse SysTimer.
 //============================================================================================================
@@ -103,3 +110,6 @@ void SysTimer::stop() {
 	id = NULL;
 }
 } // namespace com
+
+#endif //#ifdef FRX_OS_MAC
+

@@ -10,12 +10,11 @@
 
 #include <boost/shared_ptr.hpp>
 #include <sambag/disco/components/ui/basic/BasicLookAndFeel.hpp>
+#include <gui/HandyNamespaces.hpp>
+
 namespace frx { namespace gui {
 namespace components { namespace ui { 
 //=============================================================================
-namespace sdc = sambag::disco::components;
-namespace sdcu = sdc::ui;
-//namespace sdcub = sdcu::basic;
 /** 
   * @class FrxLookAndFeel.
   */

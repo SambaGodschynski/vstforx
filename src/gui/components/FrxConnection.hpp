@@ -12,11 +12,9 @@
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include "FrxComponent.hpp"
 #include <sambag/com/events/PropertyChanged.hpp>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
-namespace sdc = sambag::disco::components;
-namespace sdcu = sdc::ui;
-namespace sce = sambag::com::events;
 //=============================================================================
 /** 
   * @class FrxConnection.

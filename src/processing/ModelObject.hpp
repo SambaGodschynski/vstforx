@@ -12,6 +12,7 @@
 #include <boost/weak_ptr.hpp>
 #include <boost/function.hpp>
 #include <boost/signals2.hpp>
+#include "com/Serialization.h"
 #include <boost/serialization/access.hpp>
 #include <string>
 #include <vector>

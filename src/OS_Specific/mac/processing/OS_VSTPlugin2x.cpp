@@ -5,6 +5,8 @@
  * ===========================================================================================================
  */
 
+#ifdef FRX_OS_MAC
+
 #include "OS_VSTPlugin2x.h" 
 #include "processing/pluginTypes/NullAEffect.h"
 
@@ -122,5 +124,6 @@ bool OS_VSTPlugNode2x::unloadModule() {
 }
 } //namespace
 
+#endif // #ifdef FRX_OS_MAC
 
 

@@ -15,9 +15,10 @@
 #include <boost/foreach.hpp>
 #include <sambag/com/Common.hpp>
 #include <loki/MultiMethods.h>
-#include <loki/TypeList.h>
+#include <loki/Typelist.h>
 #include <sambag/disco/components/PopupMenu.hpp>
 #include <sambag/disco/components/MenuSelectionManager.hpp>
+#include <sambag/disco/components/Window.hpp>
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <processing/IModelController.hpp>
@@ -357,13 +358,13 @@ namespace {
 	}
 	template<class TypeList>
 	void _castSwitch(fgc::FrxCircuidViewPtr view, FrxComponentPtr c) {	
-		typedef TypeList::Head T;
+		typedef typename TypeList::Head T;
 		typename T::Ptr ptr = 
 			boost::shared_dynamic_cast<T>(c);
 		if (ptr) {
 			registerOnView(view, ptr);
 		}
-		_castSwitch<TypeList::Tail>(view, c);
+		_castSwitch<typename TypeList::Tail>(view, c);
 	}
 	template<>
 	void _castSwitch<Loki::NullType>(fgc::FrxCircuidViewPtr view, FrxComponentPtr c) 

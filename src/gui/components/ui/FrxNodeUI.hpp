@@ -19,13 +19,10 @@
 #include <sambag/disco/components/ComponentWrapper.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
-namespace sdcu = sdc::ui;
-namespace sdsg = sd::svg::graphicElements;
 //=============================================================================
 /** 
   * @class FrxNodeUI.

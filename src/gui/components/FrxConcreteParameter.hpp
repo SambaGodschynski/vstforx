@@ -13,11 +13,9 @@
 #include "FrxParameter.hpp"
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <sambag/disco/components/Knob.hpp>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
-namespace sdc = sambag::disco::components;
-namespace sdcu = sdc::ui;
-
 //=============================================================================
 /** 
   * @class FrxConcreteParameter.

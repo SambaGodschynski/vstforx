@@ -17,14 +17,9 @@
 #include <boost/tuple/tuple.hpp>
 #include <loki/Singleton.h>
 #include <processing/IModelController.hpp>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui {
-namespace sdc = sambag::disco::components;
-namespace sc = sambag::com;
-namespace sdcu = sdc::ui;
-namespace fgc = frx::gui::components;
-namespace gc = gui::components;
-namespace pr = frx::processing;
 //=============================================================================
 /** 
   * @class FrxControl.
@@ -51,13 +46,13 @@ public:
 	virtual ~FrxControl();
 	//-------------------------------------------------------------------------
 	template <class Archive>
-	static void serializeView(Archive &ar, gc::FrxCircuidViewPtr c);
+	static void serializeView(Archive &ar, fgc::FrxCircuidViewPtr c);
 	//-------------------------------------------------------------------------
 	template <class Archive>
-	static gc::FrxCircuidViewPtr deserializeView(Archive &ar);
+	static fgc::FrxCircuidViewPtr deserializeView(Archive &ar);
 	//-------------------------------------------------------------------------
 	template <class Archive>
-	static void serializeViewComponents(Archive &ar, gc::FrxCircuidViewPtr c);
+	static void serializeViewComponents(Archive &ar, fgc::FrxCircuidViewPtr c);
 	//-------------------------------------------------------------------------
 	/**
 	 * @return tuple(entry, exit)
@@ -95,8 +90,9 @@ public:
 	virtual void openPluginEditor(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c);
 	//-------------------------------------------------------------------------
-	fgc::FrxComponentPtr addRelatedKnobToView(gc::FrxCircuidViewPtr view, gc::FrxComponentPtr c,
-	frx::processing::IParameter::Ptr par); 
+	fgc::FrxComponentPtr
+	addRelatedKnobToView(fgc::FrxCircuidViewPtr view, fgc::FrxComponentPtr c,
+		frx::processing::IParameter::Ptr par); 
 	//-------------------------------------------------------------------------
 	virtual void addWindow(sdc::WindowPtr win, const std::string &wndClass="");
 	//-------------------------------------------------------------------------
@@ -116,25 +112,25 @@ extern boost::tuple<
 	frx::processing::IModelController::Ptr,
 	IViewModelMap::Ptr
 >
-getControllerAndMap(gc::FrxCircuidViewPtr circ);
+getControllerAndMap(fgc::FrxCircuidViewPtr circ);
 ///////////////////////////////////////////////////////////////////////////////	
 //-----------------------------------------------------------------------------
 template <class Archive>
-void FrxControl::serializeView(Archive &ar, gc::FrxCircuidViewPtr c) 
+void FrxControl::serializeView(Archive &ar, fgc::FrxCircuidViewPtr c) 
 {
 	ar & c;
 }
 //-----------------------------------------------------------------------------
 template <class Archive>
-gc::FrxCircuidViewPtr FrxControl::deserializeView(Archive &ar) 
+fgc::FrxCircuidViewPtr FrxControl::deserializeView(Archive &ar) 
 {
-	gc::FrxCircuidViewPtr res;
+	fgc::FrxCircuidViewPtr res;
 	ar & res;
 	return res;
 }
 //-----------------------------------------------------------------------------
 template <class Archive>
-void FrxControl::serializeViewComponents(Archive &ar, gc::FrxCircuidViewPtr c) 
+void FrxControl::serializeViewComponents(Archive &ar, fgc::FrxCircuidViewPtr c) 
 {
 	c->serializeComponents(ar, ar.get_library_version());
 }

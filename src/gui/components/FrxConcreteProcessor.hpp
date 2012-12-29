@@ -11,10 +11,9 @@
 #include <boost/shared_ptr.hpp>
 #include "FrxProcessorNode.hpp"
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
-namespace sdc = sambag::disco::components;
-namespace sdcu = sdc::ui;
 //-----------------------------------------------------------------------------
 template <class _ProcessorType>
 std::string getProcessorName();

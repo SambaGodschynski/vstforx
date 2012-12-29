@@ -1,4 +1,0 @@
-FrxControl has a removing function which accepts a base ptr. 
-What we want is to remove a concrete object avoiding 
-frequently using dynamic_cast's. So every concrete object has to be registered 
-in a "removing request" signal system on the ModelController.

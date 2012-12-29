@@ -176,7 +176,7 @@ int main() {
 	sdc::Window::startMainLoop();
 	ptimer->stop();
 
-	serializeView(savefile, circ);
+	//serializeView(savefile, circ);
 	std::cout<<"bye dave."<<std::endl;
 	return 0;
 }

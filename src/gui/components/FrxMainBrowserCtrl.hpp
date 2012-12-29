@@ -17,7 +17,7 @@
 #include <processing/IProcessor.hpp>
 #include <com/PluginCollection.h>
 #include "IFrxComponentFactory.hpp"
-#include <loki/LokiTypeinfo.h>
+#include <loki/LokiTypeInfo.h>
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include "FrxComponent.hpp"
 #include <processing/pluginTypes/VstShellPlugin.hpp>

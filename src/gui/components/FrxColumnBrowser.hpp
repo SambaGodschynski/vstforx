@@ -24,12 +24,9 @@
 #include "Forward.hpp"
 #include <gui/components/FrxParameterLabel.hpp>
 #include <sambag/com/ArbitraryType.hpp>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
-namespace sce = sambag::com::events;
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
-namespace sdcu = sdc::ui;
 //=============================================================================
 // @class BrowserConstants
 struct BrowserConstants {
@@ -79,13 +76,13 @@ struct BrowserNode : public BrowserConstants {
 	AcceptedFunction f;
 	std::string type; // specify node type for rendering 
 	BrowserNode(const std::string &name, bool isFolder = false,
-		AcceptedFunction &f = AcceptedFunction()
+		const AcceptedFunction &f = AcceptedFunction()
 	) : name(name), f(f)
 	{
 		type = isFolder ? FRX_BROWSER_FOLDER : FRX_BROWSER_DEFAULT;
 	}
 	BrowserNode(const std::string &name, const std::string &type,
-		AcceptedFunction &f = AcceptedFunction()
+		const AcceptedFunction &f = AcceptedFunction()
 	) : name(name), f(f), type(type)
 	{
 	}

@@ -29,7 +29,7 @@ void FrxBrowserListUI::installDefaults(sdc::AComponentPtr c) {
 }
 //-----------------------------------------------------------------------------
 void FrxBrowserListUI::installListeners(sdc::AComponentPtr c) {
-	c->EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
+	c->sdc::EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
 		boost::bind(&FrxBrowserListUI::onMouse, this, _1, _2),
 		self
 	);

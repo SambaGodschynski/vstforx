@@ -8,12 +8,13 @@
 #ifndef OS_PROCESSING_H
 #define OS_PROCESSING_H
 
-#include "OS_Specific/OS_Specific.h"
 
-#ifdef OS_WINDOWS
+#if defined(FRX_OS_WINDOWS)
 #include "windows/processing/OS_VSTPlugin2x.h"
-#else ifdef OS_MAC
+#elif defined(FRX_OS_MAC)
 #include "mac/processing/OS_VSTPlugin2x.h"
+#elif defined(FRX_OS_LINUX)
+#include "linux/processing/OS_VSTPlugin2x.h"
 #endif
 
 

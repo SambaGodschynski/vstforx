@@ -10,10 +10,9 @@
 
 #include <boost/shared_ptr.hpp>
 #include <sambag/disco/components/Forward.hpp>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
 //=============================================================================
 /** 
   * @class IFormatter. A minimal version of a LayoutManager.

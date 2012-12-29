@@ -712,10 +712,10 @@ template <class FuncList>
 void _registerFunctions(sambag::lua::LuaStateRef luaState, Ctrl *ctrl) 
 {
 	typedef typename FuncList::Head FrxFunction;
-	enum { NumArgs = typename FrxFunction::Function::arity };
+	enum { NumArgs = FrxFunction::Function::arity };
 	registerFunctionImpl<FrxFunction>(luaState, ctrl, Int2Type<NumArgs>());
 	// register next
-	_registerFunctions<FuncList::Tail>(luaState, ctrl);
+	_registerFunctions<typename FuncList::Tail>(luaState, ctrl);
 }
 template <>
 void _registerFunctions<Loki::NullType>

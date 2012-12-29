@@ -161,25 +161,11 @@ private:
 	/**
 	 * De/Serialisiert Graph-Objekt.
 	 * PObject-Objekte werden ueber die Methoden: save() bzw. load()[statisch] De/Serialisiert.
-	 * TODO: save() bzw. load() noch notwendig? Warum nicht hier? 
 	 * @param ar Archive-Objekt
 	 * @param version
 	 */
 	template < typename Archive >
-	void serialize ( Archive &ar, const unsigned int version ){
-		ar & self;
-		ar & hostInfo;
-		ar & startNode;
-		ar & endNode;
-		ar & graphObjects;
-		ar & hostParameter;
-		ar & parameterConnections;
-		ar & g;
-		if ( Archive::is_loading::value ) {
-			Ptr graph = self.lock();
-			graph->getJanitor()->updateProcessorNodeVertexRelations();
-		}
-	}
+	void serialize ( Archive &ar, const unsigned int version );
 	//--------------------------------------------------------------------------------------------------------
 	Graph () : _hasCycle(false) { initBglGraph(); }
 	//--------------------------------------------------------------------------------------------------------
@@ -684,6 +670,23 @@ public:
 		n->tmpFrames->setSize( graph->getBlockSize() );
 	}
 };
+///////////////////////////////////////////////////////////////////////////////
+template < typename Archive >
+void Graph::serialize ( Archive &ar, const unsigned int version )
+{
+	ar & self;
+	ar & hostInfo;
+	ar & startNode;
+	ar & endNode;
+	ar & graphObjects;
+	ar & hostParameter;
+	ar & parameterConnections;
+	ar & g;
+	if ( Archive::is_loading::value ) {
+		Ptr graph = self.lock();
+		graph->getJanitor()->updateProcessorNodeVertexRelations();
+	}
+}
 } // namespace Processing
 
 #endif

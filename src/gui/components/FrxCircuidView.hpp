@@ -10,9 +10,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <sambag/disco/components/Forward.hpp>
-#include <sambag/disco/components/AContainer.hpp>
-#include <sambag/disco/components/Viewport.hpp>
-#include <sambag/disco/components/Panel.hpp>
+#include "FrxComponent.hpp"
 #include <sambag/com/ArbitraryType.hpp>
 #include <boost/foreach.hpp>
 #include <string>
@@ -25,13 +23,13 @@
 #include <boost/serialization/weak_ptr.hpp>
 #include <gui/IFrxControl.hpp>
 #include "FrxHover.hpp"
+#include <sambag/disco/components/Forward.hpp>
+#include <sambag/disco/components/AContainer.hpp>
+#include <sambag/disco/components/Viewport.hpp>
+#include <sambag/disco/components/Panel.hpp>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
-namespace sc = sambag::com;
-namespace sce = sc::events;
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
-namespace sdcu = sdc::ui;
 struct FrxCircuidViewEvent {
 	enum Type{ComponentAdded, ComponentRemoved};
 	Type type;
@@ -324,22 +322,18 @@ void FrxCircuidView::findAllComponents(Container &container, ZOrder start = FLT_
 		container.push_back(c);
 	}
 }
-//-------------------------------------------------------------------------
-template <class Container>
-void FrxCircuidView::findComponentsInArea(Container &container, 
-	const sd::Rectangle &area, FrxCircuidView::ZOrder _start, 
-	FrxCircuidView::ZOrder _end) 
-{
-	struct Filter {
+namespace {
+	typedef FrxCircuidView::ZOrder ZOrder;
+	struct AreaFilter {
 		const sd::Rectangle &area;
 		ZOrder end;
-		Filter(const sd::Rectangle &area, ZOrder end) :
+		AreaFilter(const sd::Rectangle &area, ZOrder end) :
 		area(area), end(end) {}
 		int operator()( sdc::AComponent::Ptr p ) {
 			if (!p)
 				return 0;
 			ZOrder z = FLT_MIN;
-			p->getClientProperty(PROPERTY_ZORDER, z);
+			p->getClientProperty(FrxCircuidView::PROPERTY_ZORDER, z);
 			if (z > end)
 				return -1; // stop searching
 			sd::Point2D loc = p->getLocation();
@@ -350,10 +344,18 @@ void FrxCircuidView::findComponentsInArea(Container &container,
 				sd::Rectangle::Base>(loc, area) ? 1 : 0;
 		}
 	};
+} // namespace(s)
+//-------------------------------------------------------------------------
+template <class Container>
+void FrxCircuidView::findComponentsInArea(Container &container, 
+	const sd::Rectangle &area, FrxCircuidView::ZOrder _start, 
+	FrxCircuidView::ZOrder _end) 
+{
+
 	ZOrder start = std::min(_start, _end);
 	ZOrder end = std::max(_start, _end);
 	int startIndex = getIndexOf(start);
-	Filter filter(area, end);
+	AreaFilter filter(area, end);
 	findComponents(container, filter, startIndex); // set the endindex isn't really
 	                                         // useful because we have to iterate
 	                                         // through the elements anyway

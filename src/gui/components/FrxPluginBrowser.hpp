@@ -15,10 +15,9 @@
 #include <sambag/disco/components/Button.hpp>
 #include <sambag/disco/components/Forward.hpp>
 #include "FrxPluginBrowserCtrl.hpp"
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
 //=============================================================================
 /** 
   * @class FrxPluginBrowser.

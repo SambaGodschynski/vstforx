@@ -9,7 +9,7 @@
 #define SAMBAG_TOOLTIPTEXTS_H
 
 #include <boost/shared_ptr.hpp>
-#include <loki/LokiTypeinfo.h>
+#include <loki/LokiTypeInfo.h>
 #include <string>
 #include <map>
 

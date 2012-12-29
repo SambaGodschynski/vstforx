@@ -9,10 +9,9 @@
 #define SAMBAG_CONCRETECONNECTIONS_H
 
 #include "FrxConnection.hpp"
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
-namespace sdc = sambag::disco::components;
-namespace sdcu = sdc::ui;
 //-----------------------------------------------------------------------------
 template <class _ConnectionType>
 std::string getConnectionName();

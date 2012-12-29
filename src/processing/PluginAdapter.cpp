@@ -56,7 +56,7 @@ void PluginAdapter::openEditor(sdc::WindowPtr win) {
 	if (!plug)
 		return;
 
-	plug->EventSender<pr::ResizeEditorEvent>::addTrackedEventListener(
+	plug->Adaptee::EventSender<pr::ResizeEditorEvent>::addTrackedEventListener(
 		boost::bind(&onPluginEditorResize, _1, _2, sdc::WindowWPtr(win)),
 		win
 	);

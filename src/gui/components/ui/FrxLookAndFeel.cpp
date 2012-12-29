@@ -206,8 +206,8 @@ void FrxLookAndFeel::installDefaults() {
 	//rManager.registerImage("FrxPluginNode.image", "w3c.svg");
 	//rManager.registerImage("ProcessorInput.image", "w3c.svg");
 	//rManager.registerImage("ProcessorOutput.image", "w3c.svg");
-	rManager.registerImage("Entry.image", "images/entry.svg");
-	rManager.registerImage("Exit.image", "images/exit.svg");
+	//rManager.registerImage("Entry.image", "images/entry.svg");
+	//rManager.registerImage("Exit.image", "images/exit.svg");
 	rManager.registerImage("FrxBrowser.folder.image", "images/Blank-icon.png");
 	rManager.registerImage("FrxBrowser.default.image", "images/disco-floor.png");
 	rManager.registerImage("FrxBrowser.plugin.image", "images/vst-big-icon.png");

@@ -88,14 +88,17 @@ void startScanImpl(const FileEvF &f,
 	const ScanComplF &sccF, 
 	frx::processing::IHostInfo::Ptr hostInfo) 
 {
-	typedef ::com::PluginCollection::EventSender<::com::OnLoadFile>::EventConnection 
-		LoadEvConnection;
-	typedef ::com::PluginCollection::EventSender<::com::OnFileLoaded>::EventConnection 
-		LoadedEvConnection;
+	typedef ::com::OnLoadFile OnFileLoading;
+	typedef ::com::OnFileLoaded OnFileLoaded;
+	typedef ::com::PluginCollection::EventSender<OnFileLoading> LoadingEvSender; 
+	typedef ::com::PluginCollection::EventSender<OnFileLoaded> LoadedEvSender;
+	typedef LoadingEvSender::EventConnection LoadEvConnection;
+	typedef LoadedEvSender::EventConnection LoadedEvConnection;
+
 	::com::PluginCollection &db = ::com::getPluginCollection();
-	LoadEvConnection loadCn = db.EventSender<::com::OnLoadFile>::
+	LoadEvConnection loadCn = db.LoadingEvSender::
 		addEventListener(boost::bind(&onLoadFile, _1, _2, f));
-	LoadedEvConnection loadedCn = db.EventSender<::com::OnFileLoaded>::
+	LoadedEvConnection loadedCn = db.LoadedEvSender::
 		addEventListener(boost::bind(&onFileLoaded, _1, _2, f));
 	// scan
 	db.update(hostInfo);

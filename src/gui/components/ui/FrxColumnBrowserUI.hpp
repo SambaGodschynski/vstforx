@@ -10,11 +10,10 @@
 
 #include <boost/shared_ptr.hpp>
 #include <sambag/disco/components/ui/AComponentUI.hpp>
+#include <gui/HandyNamespaces.hpp>
+
 namespace frx { namespace gui {
 namespace components { namespace ui { 
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
-namespace sdcu = sdc::ui;
 //=============================================================================
 /** 
   * @class FrxColumnBrowserUI.

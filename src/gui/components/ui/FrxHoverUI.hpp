@@ -11,10 +11,10 @@
 #include <boost/shared_ptr.hpp>
 #include "FrxSelectionUI.hpp"
 #include "FrxHoverMouseListener.hpp"
+#include <gui/HandyNamespaces.hpp>
+
 namespace frx { namespace gui {
 namespace components { namespace ui { 
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
 //=============================================================================
 /** 
   * @class FrxHoverUI.

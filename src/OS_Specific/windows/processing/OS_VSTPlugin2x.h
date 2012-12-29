@@ -8,10 +8,8 @@
 #ifndef WIN_VST2XPLUGNODE_H
 #define WIN_VST2XPLUGNODE_H
 
-
-
 #include <string>
-#include "audioEffectX.h"
+#include "audioeffectx.h"
 #include "com/one4All.h"
 #include "processing/processing.h"
 #include <windows.h>
@@ -71,5 +69,4 @@ public:
 } // namespace processing
 
 #endif
-
 

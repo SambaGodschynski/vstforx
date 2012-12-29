@@ -18,6 +18,7 @@
 #include <sambag/com/events/Events.hpp>
 #include <processing/IParameter.hpp>
 #include <processing/PlugInfo.h>
+#include <gui/HandyNamespaces.hpp>
 
 #define SAMBAG_CREATE_FRXCONTROL_CMD(frxctrl, view, frxcomponent, frxcmdfunction) \
   ((frxctrl).createCtrlCommandFunction(                                           \
@@ -42,9 +43,6 @@
 
 
 namespace frx { namespace gui {
-namespace sdc = sambag::disco::components;
-namespace sdcu = sdc::ui;
-namespace fgc = frx::gui::components;
 //=============================================================================
 /** 
   * @class IFrxControl.

@@ -11,10 +11,9 @@
 #include <boost/shared_ptr.hpp>
 #include "FrxNode.hpp"
 #include <vector>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
-namespace sdc = sambag::disco::components;
-namespace sdcu = sdc::ui;
 //=============================================================================
 /** 
   * @class FrxProcessorNode.

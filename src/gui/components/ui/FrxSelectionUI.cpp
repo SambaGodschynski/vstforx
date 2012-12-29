@@ -17,7 +17,7 @@ namespace components { namespace ui {
 //-----------------------------------------------------------------------------
 void FrxSelectionUI::installListeners(sdc::AComponentPtr c) {
 	mouseListener = FrxSelectionMouseListener::create();
-	c->EventSender<sdc::events::MouseEvent>::addTrackedEventListener (
+	c->sdc::EventSender<sdc::events::MouseEvent>::addTrackedEventListener (
 		boost::bind(&FrxSelectionMouseListener::onMouse, mouseListener.get(), _1, _2),
 		getPtr()
 	);

@@ -19,11 +19,9 @@
 #include <boost/serialization/weak_ptr.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <sambag/disco/GeometrySerialization.hpp>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
-namespace sce = sambag::com::events;
 //=============================================================================
 /** 
   * @class OnRemoving.

@@ -12,11 +12,10 @@
 #include <gui/components/Forward.hpp>
 #include <sambag/disco/components/events/MouseEvent.hpp>
 #include <sambag/disco/Geometry.hpp>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
 //=============================================================================
 /** 
   * @class FrxSelectionMouseListener.

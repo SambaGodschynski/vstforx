@@ -3,7 +3,7 @@
 #define GRAPH_TEST_H
 
 #include <cppunit/extensions/HelperMacros.h>
-#include "AudioEffectX.h"
+#include "audioeffectx.h"
 #include "com/PPIError.h"
 #include "processing/processing.h"
 #include "processing/Graph.h"

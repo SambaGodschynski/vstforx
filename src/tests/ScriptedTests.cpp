@@ -55,13 +55,14 @@ ScriptedTests::ScriptedTests() {
 }
 //-----------------------------------------------------------------------------
 void ScriptedTests::setUp() {
+	namespace sce = sambag::com::events;
 	plug = createPlug();
 	scriptCtrl = new frx::scripts::PluginScriptCtrl();
 	scriptCtrl->setPlugin(plug);
-	scriptCtrl->EventSender<frx::scripts::ScriptExeFailedEvent>::addEventListener(
+	scriptCtrl->sce::EventSender<frx::scripts::ScriptExeFailedEvent>::addEventListener(
 		boost::bind(&ScriptedTests::onScriptExeFailed, this, _1, _2)
 	);
-	scriptCtrl->EventSender<frx::scripts::ScriptEnded>::addEventListener(
+	scriptCtrl->sce::EventSender<frx::scripts::ScriptEnded>::addEventListener(
 		boost::bind(&ScriptedTests::onScriptEnd, this, _1, _2)
 	);
 	plugProcessing = true;
@@ -84,7 +85,7 @@ TestPlugin * ScriptedTests::createPlug() {
 		TestPlugin *pl = new TestPlugin(&testHostCallback);
 		frx::processing::VstForxPlug &vpl = *pl;
 		vpl.setEffectPtr(pl);
-		vpl.setMasterCallback(&testHostCallback);
+		vpl.setMasterCallback((void*)&testHostCallback);
 		return pl;
 	} catch(...) {
 		return NULL;

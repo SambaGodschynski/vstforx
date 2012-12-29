@@ -10,6 +10,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <gui/components/FrxConcreteConnections.hpp>
+#include <gui/components/FrxCircuidView.hpp>
 #include <sambag/disco/IDiscoFactory.hpp>
 #include "FrxComponentUI.hpp"
 #include <sambag/disco/Geometry.hpp>
@@ -20,15 +21,10 @@
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <gui/IFrxControl.hpp>
 #include <sambag/disco/svg/graphicElements/Style.hpp>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
-namespace sd = sambag::disco;
-namespace sds = sd::svg;
-namespace sdsg = sds::graphicElements;
-namespace sdc = sd::components;
-namespace sdce = sdc::events;
-namespace sdcu = sdc::ui;
 //=============================================================================
 /** 
   * @class FrxConnectionUIBase.
@@ -206,7 +202,7 @@ inline void _createPopupmenuEntries<connectionTypes::Parameter>(
 	// details
 	sdc::MenuItem::Ptr item = sdc::MenuItem::create();
 	item->setText("show " + c->getName() + " details...");
-	item->EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
+	item->sce::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
 		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
 		&IFrxControl::showConnectionDetails),
 		c
@@ -223,7 +219,7 @@ inline void _createPopupmenuEntries<connectionTypes::Parameter>(
 	BOOST_FOREACH(const IFrxControl::ParameterCnOpTypeId &id, opIds) {
 		sdc::MenuItem::Ptr item = sdc::MenuItem::create();
 		item->setText(sambag::com::toString(id));
-		item->EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
+		item->sce::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
 			SAMBAG_CREATE_FRXCONTROL_CMD1(ctrl,view,c,&IFrxControl::addParamterCnOp, id),
 			c
 		);
@@ -247,7 +243,7 @@ template <class CT>
 void FrxConnectionUI<CT>::installListeners(sdc::AComponent::Ptr c) {
 	if ( !hasContextMenu<CT>() )
 		return;
-	c->EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
+	c->sce::EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
 		boost::bind(&Class::onMouse, this, _1, _2),
 		getPtr()
 	);
@@ -298,7 +294,7 @@ FrxConnectionUI<CT>::getConnectionPoints(ConcreteConnectionPtr ccn) const {
 template <class CT>
 void FrxConnectionUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	//Super::draw(cn, c);
-	_ConcreteConnection::Ptr ccn = 
+	typename _ConcreteConnection::Ptr ccn = 
 		boost::shared_dynamic_cast<_ConcreteConnection>(c);
 	SAMBAG_ASSERT(ccn);
 	
@@ -345,7 +341,7 @@ bool FrxConnectionUI<CT>::contains(sdc::AComponentPtr c, const sd::Point2D &p) {
 	// prepare vector data
 	sd::Coordinate distance = 
 		sdc::ui::getUIPropertyCached<FrxConnectionHitDistance>(sd::Coordinate(10.));
-	_ConcreteConnection::Ptr ccn = 
+	typename _ConcreteConnection::Ptr ccn = 
 		boost::shared_dynamic_cast<_ConcreteConnection>(c);
 	typedef sambag::math::VectorN<Number, 2> Vector2D;
 	std::pair<sd::Point2D, sd::Point2D> points = getConnectionPoints(ccn);

@@ -11,10 +11,9 @@
 #include <boost/shared_ptr.hpp>
 #include <sambag/disco/components/Forward.hpp>
 #include <sambag/com/events/Events.hpp>
+#include <gui/HandyNamespaces.hpp>
+
 namespace frx { namespace gui { namespace components {
-namespace sce = sambag::com::events;
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
 //=============================================================================
 /** 
   * @class IFrxProcessorEditorCtrl.

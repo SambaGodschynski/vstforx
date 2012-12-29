@@ -1,31 +1,32 @@
 /*
- * ===========================================================================================================
+ * ============================================================================
  * OS_com.h
  *      Author: Johannes Unger
- * ===========================================================================================================
+ * ============================================================================
  */
 
 #ifndef OS_COM_H
 #define OS_COM_H
 
-#include "OS_Specific/OS_Specific.h"
+#include "OS_Specific/MessageBoxDef.h"
 #include <string>
 
-#ifdef OS_WINDOWS
+#if defined(FRX_OS_WINDOWS)
 #include "windows/com/win_one4All.h"
-#else ifdef OS_MAC
+#elif defined(FRX_OS_MAC)
 #include "mac/com/mac_one4All.h"
+#elif defined(FRX_OS_LINUX)
+#include "linux/com/linux_one4All.h"
 #endif
 
-struct VstFileType;
-
-class AudioEffectX;
 
 namespace com {
-//--------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // testet ob filename == plugfilename ( zb.: *.dll )
 extern bool isPlugFilename ( const string &filename );
-//--------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 extern bool isDirectory ( const string &path );
+//-----------------------------------------------------------------------------
+extern std::string getRootDirectory();
 } //namespace
 #endif 

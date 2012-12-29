@@ -8,10 +8,8 @@
 #ifndef MAC_VST2XPLUGNODE_H
 #define MAC_VST2XPLUGNODE_H
 
-
-
 #include <string>
-#include "audioEffectX.h"
+#include "audioeffectx.h"
 #include "com/one4All.h"
 #include "CoreFoundation/CoreFoundation.h"
 #include "processing/processing.h"
@@ -69,5 +67,4 @@ public:
 } // namespace processing
 
 #endif
-
 

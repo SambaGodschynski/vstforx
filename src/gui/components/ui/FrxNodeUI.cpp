@@ -80,7 +80,7 @@ bool FrxNodeUI::hitsCore(sdc::AComponentPtr c, const sd::Point2D &p) const {
 //------------------------------------------------------------------------------
 void FrxNodeUI::installListeners(sdc::AComponent::Ptr c) {
 	// listeners
-	c->EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
+	c->sdc::EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
 		boost::bind(&FrxNodeUI::onMouse, this, _1, _2),
 		getPtr()
 	);
@@ -106,7 +106,7 @@ void FrxNodeUI::installDefaults(sdc::AComponent::Ptr c) {
 	fadeTimer->setNumRepetitions(-1);
 	fadeIn = true;
 	sdc::AComponent::WPtr _c = c;
-	fadeTimer->EventSender<sdc::Timer::Event>::addTrackedEventListener(
+	fadeTimer->sdc::EventSender<sdc::Timer::Event>::addTrackedEventListener(
 		boost::bind(
 			&onFadeTimer, _1, _2, &coronaAlpha, _c, &fadeIn
 		),
@@ -117,11 +117,13 @@ void FrxNodeUI::installDefaults(sdc::AComponent::Ptr c) {
 void FrxNodeUI::installUI(sdc::AComponentPtr c) {
 	Super::installUI(c);
 }
+namespace {
+	SAMBAG_PROPERTY_TAG(FrxNodeCoronaPropertyTag, "FrxNodeCorona.color");
+} // namespace(s)
 //-----------------------------------------------------------------------------
 void FrxNodeUI::drawCorona(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
-	SAMBAG_PROPERTY_TAG(PropertyTag, "FrxNodeCorona.color");
 	sd::ColorRGBA coronaCol = 
-		sdcu::getUIPropertyCached<PropertyTag>(sd::ColorRGBA());
+		sdcu::getUIPropertyCached<FrxNodeCoronaPropertyTag>(sd::ColorRGBA());
 	coronaCol.setA(coronaAlpha);
 	FrxComponent::Ptr node = boost::shared_dynamic_cast<FrxComponent>(c);
 	sd::Point2D loc = node->getPivot();

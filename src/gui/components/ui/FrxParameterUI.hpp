@@ -14,21 +14,18 @@
 #include <gui/components/FrxFlag.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 #include <sambag/disco/components/events/MouseEvent.hpp>
+#include <sambag/disco/components/ui/UIManager.hpp>
 #include <float.h>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
-namespace sdce = sdc::events;
-namespace sdcu = sdc::ui;
-
 ///////////////////////////////////////////////////////////////////////////////
 namespace {
+	SAMBAG_PROPERTY_TAG(KnobRadiusPropertyTag, "StdKnob.radius");
 	template <class ParameterType>
 	sambag::com::Number getParameterRadius() {
-		SAMBAG_PROPERTY_TAG(PropertyTag, "StdKnob.radius");
-		return sdcu::getUIPropertyCached<PropertyTag>((double)0.);
+		return sdcu::getUIPropertyCached<KnobRadiusPropertyTag>((double)0.);
 	}
 } // namespace
 
@@ -119,7 +116,7 @@ void FrxParameterUI<PT>::installUI(sdc::AComponentPtr c) {
 	SAMBAG_ASSERT(par);
 	sdc::AComponent::Ptr ctrl = par->getEncapsulatedCtrl();
 	SAMBAG_ASSERT(ctrl);
-	ctrl->EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
+	ctrl->sdc::EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
 		boost::bind(&ThisClass::onMouse, this, _1, _2),
 		getPtr()
 	);
@@ -136,14 +133,16 @@ void FrxParameterUI<PT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	Super::draw(cn, c);
 }
 //-----------------------------------------------------------------------------
+namespace {
+	SAMBAG_PROPERTY_TAG(Corona01PropertyTag, "FrxStdKnobCorona01.color");
+	SAMBAG_PROPERTY_TAG(Corona02PropertyTag, "FrxStdKnobCorona02.color");
+} // namespace(s)
 template <class PT>
 void FrxParameterUI<PT>::drawCorona(sd::IDrawContext::Ptr cn, 
 	sdc::AComponent::Ptr c)
 {
-	SAMBAG_PROPERTY_TAG(Corona01PropertyTag, "FrxStdKnobCorona01.color");
 	sd::ColorRGBA coronaCol01 = 
 		sdcu::getUIPropertyCached<Corona01PropertyTag>(sd::ColorRGBA());
-	SAMBAG_PROPERTY_TAG(Corona02PropertyTag, "FrxStdKnobCorona02.color");
 	sd::ColorRGBA coronaCol02 = 
 		sdcu::getUIPropertyCached<Corona02PropertyTag>(sd::ColorRGBA());
 	coronaCol01.setA(coronaAlpha);

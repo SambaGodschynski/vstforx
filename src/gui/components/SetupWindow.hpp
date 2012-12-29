@@ -17,11 +17,9 @@
 #include <sambag/disco/components/CheckBox.hpp>
 #include "SetupCtrl.hpp"
 #include "Forward.hpp"
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
-namespace sd = sambag::disco;
-namespace sdc = sd::components;
-
 //=============================================================================
 /** 
   * @class SetupWindow.
