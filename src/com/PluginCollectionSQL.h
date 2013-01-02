@@ -399,7 +399,7 @@ struct TblPlugins {
 		stringstream ss;
 		ss<<"SELECT * FROM plugins WHERE folderID="<<folderID;
 		if ( showall ) return ss.str() + ";";
-		return ss.str() + " AND access = 1;"; // 1 == succeed
+		return ss.str() + " AND access <> 2;"; // 2 == failed
 	}
 	//--------------------------------------------------------------------------------------------------------
 	static string getNumPluginsSucceed () 

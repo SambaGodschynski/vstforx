@@ -182,7 +182,13 @@ namespace {
 		static LuaPtr process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
-	typedef LOKI_TYPELIST_23(FrxOpenPlugin,
+	struct FrxSetEditorExitOnClose {
+		typedef boost::function<void(Bool)> Function;
+		static const char * name() { return "frxSetEditorExitOnClose"; }
+		static void process(Bool val, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	typedef LOKI_TYPELIST_24(FrxOpenPlugin,
 		FrxClosePlugin,
 		FrxOpenEditor,
 		FrxCloseEditor,
@@ -204,13 +210,24 @@ namespace {
 /*20*/  FrxGetComponentName,
 		FrxConnectComponents,
 		FrxGetViewNodes,
-		FrxAddFreeKnob
+		FrxAddFreeKnob,
+		FrxSetEditorExitOnClose
 	) FrxFunctionList;
 ///////////////////////////////////////////////////////////////////////////////
 // FrxFunction impl.
 #define FRX_START_SCRIPTCALL ctrl->startScriptCall(std::string(name()));
 #define FRX_GET_PLUG frx::processing::VstForxPlug * plug = ctrl->getPlugin();
 #define FRX_GET_EDITOR frx::gui::components::VstForxEditor * editor = ctrl->getEditor();
+//-----------------------------------------------------------------------------
+void FrxSetEditorExitOnClose::process(Bool val, Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_EDITOR
+	using sambag::disco::components::Window;
+	editor->getParentWindow()->setDefaultCloseOperation( 
+		val == True ? Window::EXIT_ON_CLOSE :
+		Window::DISPOSE_ON_CLOSE
+	);
+}
 //-----------------------------------------------------------------------------
 LuaPtr FrxAddFreeKnob::process(Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
@@ -298,6 +315,7 @@ std::string FrxGetComponentName::process(LuaPtr objId, Ctrl *ctrl) {
 			typeid(*(mobj.get())).name()
 		);
 	}
+	return "";
 }
 //-----------------------------------------------------------------------------
 FrxGetComponentParameter::Components 

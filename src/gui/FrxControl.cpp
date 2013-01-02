@@ -229,11 +229,11 @@ bool perfomConnect(FrxCircuidView::Ptr view,
 }
 //-----------------------------------------------------------------------------
 template <class Browser>
-typename Browser::Ptr openBrowser(fgc::FrxCircuidViewPtr view, 
+typename Browser::Ptr openDetailsBrowser(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c)
 {
 	typename Browser::Ptr browser;
-	browser = Browser::create();
+	browser = Browser::create( view->getLastContainer<sdc::Window>() );
 	browser->validate();
 	browser->pack();
 	browser->open();
@@ -244,7 +244,7 @@ FrxPluginEditor::Ptr createPluginEditor(fgc::FrxCircuidViewPtr view,
 	fgc::FrxComponentPtr c)
 {
 	FrxPluginEditor::Ptr ed;
-	ed = FrxPluginEditor::create();
+	ed = FrxPluginEditor::create( view->getLastContainer<sdc::Window>() );
 	ed->setTitle(c->getName() + " editor");
 	return ed;
 }
@@ -253,7 +253,7 @@ FrxColumnBrowser::Ptr openMainBrowser(fgc::FrxCircuidViewPtr view,
 		fgc::FrxComponentPtr c)
 {
 	FrxMainBrowser::Ptr browser;
-	browser = FrxMainBrowser::create();
+	browser = FrxMainBrowser::create( view->getLastContainer<sdc::Window>() );
 	getFrxControl(view).addWindow(browser, "FrxControl.extraWindow");
 	browser->validate();
 	browser->pack();
@@ -273,7 +273,7 @@ void openSetup(fgc::FrxCircuidViewPtr view,
 		fgc::FrxComponentPtr c)
 {
 	SetupWindow::Ptr setup;
-	setup = SetupWindow::create();
+	setup = SetupWindow::create( view->getLastContainer<sdc::Window>() );
 	getFrxControl(view).addWindow(setup, "FrxControl.extraWindow");
 	SetupCtrl::Ptr ctrl = SetupCtrl::create();
 	frx::processing::IModelController::Ptr mCtrl = frx::processing::getModelController(view);
@@ -663,7 +663,7 @@ void FrxControl::showProcessorDetails(fgc::FrxCircuidViewPtr view,
 {
 	// create browser
 	FrxProcessorBrowser::Ptr browser = 
-		openBrowser<FrxProcessorBrowser>(view, c);
+		openDetailsBrowser<FrxProcessorBrowser>(view, c);
 	
 	addWindow(browser);
 	browser->setTitle(c->getName() + " details");
@@ -678,7 +678,7 @@ void FrxControl::showConnectionDetails(fgc::FrxCircuidViewPtr view,
 {
 	// create browser
 	FrxConnectionBrowser::Ptr browser = 
-		openBrowser<FrxConnectionBrowser>(view, c);
+		openDetailsBrowser<FrxConnectionBrowser>(view, c);
 	addWindow(browser);
 	browser->setTitle(c->getName() + " details");
 	FrxConnectionBrowserCtrl::Ptr ctrl = FrxConnectionBrowserCtrl::create();
@@ -733,21 +733,12 @@ getParameterCnOpTypeIds(fgc::FrxCircuidViewPtr view, ParameterCnOpTypeIds &out) 
 	mCtrl->getParameterCnOpTypeIds(out);
 }
 //-----------------------------------------------------------------------------
-namespace {
-	void onWindowClose(void *src, const sdc::OnCloseEvent &ev, std::string key)
-	{
-		//extraWindows.erase(key);
-	}
-} // namespace(s)
 void FrxControl::addWindow(sdc::WindowPtr win, const std::string &wndClass) {
 	std::string key=wndClass;
 	if (key=="") {
 		key = sambag::com::toString((long)win.get());
 	}
-	extraWindows[key] = win;
-	win->addOnCloseEventListener(
-		boost::bind(&onWindowClose, _1, _2, key)
-	);
+	//extraWindows[key] = win;
 }
 //=============================================================================
 //-----------------------------------------------------------------------------

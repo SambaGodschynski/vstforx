@@ -187,12 +187,15 @@ FrxMainBrowserCtrl::fillPluginFolder(TreeNode parent, DBFolderID dbFolderId)
 	}
 	// fill add_plugins
 	::com::PluginCollection::PluginInfoList plugs;
-	db.getPlugInfoList(dbFolderId, plugs);
+	db.getPlugInfoList(dbFolderId, plugs, true);
 	BOOST_FOREACH(const ::processing::PluginInfo &pI, plugs) { 
 		TreeNode plug = 
 			tree->addNode(parent);
 
-		const std::string &name = pI.name;
+		std::string name = pI.name;
+		if (pI.access == ::processing::PluginInfo::FAILED) {
+			name+="<FAILED>";
+		}
 		BrowserNode node;
 		ctrl->createPluginNode(node, name);
 		node.f = 

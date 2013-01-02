@@ -11,7 +11,8 @@
 #include <gui/components/VstForxEditor.hpp>
 #include <sambag/disco/IResourceManager.hpp>
 #include <sambag/disco/components/WindowToolkit.hpp>
-
+#include <boost/program_options.hpp>
+#include <com/settings.h>
 
 typedef sambag::dsp::vst::VST2xPluginWrapper<
 	frx::processing::VstForxPlug, // Processor
@@ -28,7 +29,10 @@ frx::scripts::PluginScriptCtrl *scriptCtrl;
 bool failed;
 boost::thread processingThread;
 bool plugProcessing = false;
-
+namespace po = boost::program_options;
+po::variables_map vm;
+typedef std::string File;
+typedef std::vector<File> Files;
 //-----------------------------------------------------------------------------
 int testHostCallback(AEffect* effect, VstInt32 opcode, 
 		VstInt32 index, VstIntPtr value, void* ptr, float opt)
@@ -45,6 +49,7 @@ void onScriptEnd(void *src, const frx::scripts::ScriptEnded &ev) {
 //-----------------------------------------------------------------------------
 void setUp() {
 	std::cout<<"seting up..";
+	::com::initSettings(".");
 	namespace sce = sambag::com::events;
 	try {
 		plug = createPlug();
@@ -90,8 +95,64 @@ Plugin * createPlug() {
 	return pl;
 }
 //-----------------------------------------------------------------------------
+void processScript(const File &file) {
+	if ( !boost::filesystem::exists(file) ) {
+		std::cout<<file<<" does not exist."<<std::endl;
+		return;
+	}
+	std::cout<<"add script: "<<file<<std::endl;
+	try {
+		std::fstream f(file.c_str(), std::fstream::in);
+		std::string res;
+		std::stringstream ss;
+		std::string line;
+		while (std::getline(f, line)) {
+			ss<<line<<std::endl;
+		}
+		f.close();
+		// add script
+		scriptCtrl->addScript(ss.str());
+	} catch(...) {
+		std::cout<<"adding script failed."<<std::endl;
+	}
+}
+//-----------------------------------------------------------------------------
+void processScripts() {
+	if (vm.count("scripts") == 0) {
+		std::cout<<"no scripts to process."<<std::endl;
+		return;
+	}
+	const Files &files = vm["scripts"].as<Files>();
+	BOOST_FOREACH(const File &f, files) {
+		processScript(f);
+	}
+}
+//-----------------------------------------------------------------------------
+bool processArguments(int narg, char **args) {
+	po::options_description options("options for standalone app");
+	options.add_options()
+	("help", "produce help message")
+    ("scripts,s", po::value<Files>(), "scripts");
+	
+	try {
+		po::store(po::parse_command_line(narg, args, options), vm);
+	} catch(...) {
+		std::cout<<"invalide command line syntax."<<std::endl;
+		return false;
+	}
+	po::notify(vm);
+	if (vm.count("help")) {
+		cout << options << std::endl;
+		return false;
+	}
+	return true;
+}
+//-----------------------------------------------------------------------------
 int main(int narg, char **args) {
 	std::cout<<"hello dave.."<<std::endl;
+	if (!processArguments(narg, args)) {
+		return 0;
+	}
 	setUp();
 	if (!scriptCtrl) {
 		std::cout<<"creating script ctrl failed!"<<std::endl;
@@ -99,6 +160,8 @@ int main(int narg, char **args) {
 	}
 	scriptCtrl->addScript( "frxOpenPlugin()" );
 	scriptCtrl->addScript( "frxOpenEditor()" );
+	scriptCtrl->addScript( "frxSetEditorExitOnClose(frxTrue())" );
+	processScripts();
 	scriptCtrl->start();
 	sambag::disco::components::Window::startMainLoop();
 	scriptCtrl->join();

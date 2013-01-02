@@ -135,6 +135,14 @@ void FrxLookAndFeel::installDefaults() {
 	using namespace sambag::disco::components::ui;
 	using namespace sambag::disco::components::ui::basic;
 	UIManager &m = getUIManager();
+	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<install twice guard
+	bool alreadyInstalled = false;
+	m.getProperty("FrxLookAndFeel.installed", alreadyInstalled);
+	if (alreadyInstalled) {
+		return;
+	}
+	alreadyInstalled = true;
+	m.putProperty("FrxLookAndFeel.installed", alreadyInstalled);
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	static double RADIUS_SMALL = 10.;
 	static double RADIUS_MED = 15.;
@@ -144,7 +152,7 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("global.foreground", HtmlColors::getColor("black"));
 	m.putProperty("ColumnBrowser.fontStyle", createStyle("font-size: 17; font-family: arial"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<sizes
-	m.putProperty("Knob.mode", std::string("linear"));
+	m.putProperty("Knob.mode", std::string("circular"));
 	m.putProperty("Knob.size", Dimension(RADIUS_MED*2., RADIUS_MED*2.));
 	m.putProperty("Processor.radius", RADIUS_LARGE);
 	m.putProperty("ProcessorInput.radius", RADIUS_SMALL);
@@ -198,7 +206,7 @@ void FrxLookAndFeel::installDefaults() {
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<images
 	FileResourceManager &rManager = FileResourceManager::instance();
 	rManager.registerImage("FrxCircuidView.image", "images/disco-floor.png");
-	m.putProperty("FrxCircuidView.bgTransfomation", sambag::math::scale2D(.125, .125));
+	m.putProperty("FrxCircuidView.bgTransfomation", sambag::math::rotate2D(45.));
 	m.putProperty("FrxCircuidView.bgExtend", sd::IPattern::DISCO_EXTEND_REPEAT);
 	rManager.registerImage("StatusMessage.icon.default", "images/inf_icon.png");
 	rManager.registerImage("StatusMessage.icon.hint", "images/inf_icon.png");
@@ -206,8 +214,8 @@ void FrxLookAndFeel::installDefaults() {
 	//rManager.registerImage("FrxPluginNode.image", "w3c.svg");
 	//rManager.registerImage("ProcessorInput.image", "w3c.svg");
 	//rManager.registerImage("ProcessorOutput.image", "w3c.svg");
-	//rManager.registerImage("Entry.image", "images/entry.svg");
-	//rManager.registerImage("Exit.image", "images/exit.svg");
+	rManager.registerImage("Entry.image", "images/entry.svg");
+	rManager.registerImage("Exit.image", "images/exit.svg");
 	rManager.registerImage("FrxBrowser.folder.image", "images/Blank-icon.png");
 	rManager.registerImage("FrxBrowser.default.image", "images/disco-floor.png");
 	rManager.registerImage("FrxBrowser.plugin.image", "images/vst-big-icon.png");

@@ -46,7 +46,7 @@ SET(BOOST_ROOT $ENV{CLIBS}/boost)
 SET(Boost_USE_STATIC_LIBS        ON)
 #SET(Boost_USE_MULTITHREADED      ON)
 
-find_package(Boost 1.49.0 REQUIRED filesystem system thread regex signals locale serialization date_time timer chrono)
+find_package(Boost 1.49.0 REQUIRED filesystem system thread regex signals locale serialization date_time timer chrono program_options)
 include_directories(${CAIRO_INCLUDE_DIRS})
 include_directories(${CPPUNIT_INCLUDE_DIRS})
 include_directories(${TINYXML_INCLUDE_DIRS})

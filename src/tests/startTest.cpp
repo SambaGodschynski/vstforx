@@ -26,7 +26,7 @@
 //=============================================================================
 int main ( const int argc, char **argv ) {
 
-	::com::initSettings(com::getRootDirectory());
+	::com::initSettings(".");
 
 	WIN32ONLY(
 		_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); //VS memory tracking

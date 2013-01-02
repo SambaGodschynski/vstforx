@@ -168,8 +168,8 @@ void FrxComponentFactory::initMap() {
 	(getProcessorName<FrxOutStepNode::ProcessorType>(),         getCreator<FrxOutStepNode>(1, 2))
 	(getProcessorName<FrxInSwitchNode::ProcessorType>(),       getCreator<FrxInSwitchNode>(2, 1))
 	(getProcessorName<FrxOutSwitchNode::ProcessorType>(),     getCreator<FrxOutSwitchNode>(1, 2))
-	(getProcessorName<FrxADSRNode::ProcessorType>(),               getCreator<FrxADSRNode>(0, 1))
-	(getProcessorName<FrxPeakTrackerNode::ProcessorType>(), getCreator<FrxPeakTrackerNode>(0, 1));
+	(getProcessorName<FrxADSRNode::ProcessorType>(),               getCreator<FrxADSRNode>(1, 0))
+	(getProcessorName<FrxPeakTrackerNode::ProcessorType>(), getCreator<FrxPeakTrackerNode>(1, 0));
 }
 //-----------------------------------------------------------------------------
 FrxComponentFactory::FrxComponentFactory() {

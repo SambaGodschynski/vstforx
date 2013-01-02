@@ -76,8 +76,9 @@ protected:
 public:
 	//-------------------------------------------------------------------------
 	/**
-	 * @return the window where the editor is nested in or
-	 * NULL when editor was opened by the host via open(ptr).
+	 * @return the window where the editor is nested in. 
+	 * Is NULL when the editor was opened by a host via open(ptr) call.
+	 * ( the host produce its own window )
 	 */
 	sambag::disco::components::WindowPtr getParentWindow() const {
 		return parentWindow;
