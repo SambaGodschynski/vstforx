@@ -503,12 +503,31 @@ void FrxClosePlugin::process(Ctrl *ctrl) {
 	boost::this_thread::sleep(boost::posix_time::milliseconds(FRX_OPENCLOSE_WORKAROUND_WAIT));
 }
 //-----------------------------------------------------------------------------
+void onEditorOpen(void *src, const sambag::disco::components::OnOpenEvent &ev, bool *isOpen) 
+{
+	*isOpen = true;
+}
+//-----------------------------------------------------------------------------
 void FrxOpenEditor::process(Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
 	editor->open();
-	boost::this_thread::sleep(boost::posix_time::milliseconds(FRX_OPENCLOSE_WORKAROUND_WAIT));
+	if (editor->getParentWindow()->isOpen()) {
+		return;
+	}
+	bool isOpen = false;
+	editor->getParentWindow()->addOnOpenEventListener(
+		boost::bind(&onEditorOpen, _1, _2, &isOpen)
+	);
+	while (!isOpen) {
+		boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+	}
+}
+//-----------------------------------------------------------------------------
+void onEditorClose(void *src, const sambag::disco::components::OnCloseEvent &ev, bool *isClose) 
+{
+	*isClose = true;
 }
 //-----------------------------------------------------------------------------
 void FrxCloseEditor::process(Ctrl *ctrl) {
@@ -516,7 +535,16 @@ void FrxCloseEditor::process(Ctrl *ctrl) {
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
 	editor->close();
-	boost::this_thread::sleep(boost::posix_time::milliseconds(500));
+	if (!editor->getParentWindow()->isOpen()) {
+		return;
+	}
+	bool isClose = false;
+	editor->getParentWindow()->addOnCloseEventListener(
+		boost::bind(&onEditorClose, _1, _2, &isClose)
+	);
+	while (!isClose) {
+		boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+	}
 }
 //-----------------------------------------------------------------------------
 void FrxWait::process(int millis, Ctrl *ctrl) {

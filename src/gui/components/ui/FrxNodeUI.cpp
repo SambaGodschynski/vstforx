@@ -213,8 +213,7 @@ namespace {
 			Types,
 			bool
 		> Dispatcher;
-		Dispatcher disp;
-		return disp.Go(*(from.get()), *(to.get()), CanConnect());
+		return Dispatcher::Go(*(from.get()), *(to.get()), CanConnect());
 	}
 } // namespace(s)
 //-----------------------------------------------------------------------------

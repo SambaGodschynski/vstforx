@@ -6,6 +6,7 @@ project (vstforx)
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 add_definitions(-DBOOST_UBLAS_TYPE_CHECK=0)
 add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
+add_definitions(-D_SCL_SECURE_NO_WARNINGS) #disable warning C4996: 'std::uninitialized_copy' caused by boost::ublas
 #add_definitions(-DSAMBA_WARN_MISSING_IMPL) #show xy not impl. warning
 
 #to avoid name conflicts with existing FindSomeLib.cmake scripts

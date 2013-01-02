@@ -313,7 +313,7 @@ void FrxCircuidView::findAllComponents(Container &container, ZOrder start = FLT_
 	int startIndex = getIndexOf(start);
 	sdc::AContainer::Ptr cnt = getContentPane(); 
 	startIndex = std::max(0, startIndex);
-	for (int i=startIndex; i<cnt->getComponentCount(); ++i) {
+	for (size_t i=startIndex; i<cnt->getComponentCount(); ++i) {
 		sdc::AComponentPtr c = cnt->getComponent(i);
 		ZOrder z = FLT_MIN;
 		c->getClientProperty(PROPERTY_ZORDER, z);

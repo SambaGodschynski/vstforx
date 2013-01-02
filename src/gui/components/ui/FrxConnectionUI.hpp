@@ -13,6 +13,7 @@
 #include <gui/components/FrxCircuidView.hpp>
 #include <sambag/disco/IDiscoFactory.hpp>
 #include "FrxComponentUI.hpp"
+#include <gui/components/FrxNode.hpp>
 #include <sambag/disco/Geometry.hpp>
 #include <sambag/disco/components/events/MouseEvent.hpp>
 #include <sambag/disco/components/Menu.hpp>
@@ -74,6 +75,8 @@ protected:
 	//-------------------------------------------------------------------------
 	std::pair<sd::Point2D, sd::Point2D> 
 	getConnectionPoints(ConcreteConnectionPtr c) const;
+	//-------------------------------------------------------------------------
+	void clipEndNodes(ConcreteConnectionPtr c, sd::IDrawContext::Ptr cn) const;
 	//-------------------------------------------------------------------------
 	virtual void installListeners(sdc::AComponent::Ptr c);
 	//-------------------------------------------------------------------------
@@ -268,19 +271,13 @@ void FrxConnectionUI<CT>::adjustBoundingRect(sd::Rectangle &r,
 	// strokewitdh values.
 	sd::IDrawContext::Ptr cn = sd::getDiscoFactory()->createContext();
 	setStyleToContext(cn);
-	sambag::com::Number lw = cn->getStrokeWidth() * 2.5;
-	if (r.width() < lw) {
-		sambag::com::Number miss =  lw - r.width();
-		r.x( r.x() - miss/2. );
-		r.width( r.width() + miss/2. );
-	}
-	if (r.height() < lw) {
-		sambag::com::Number miss =  lw - r.height();
-		r.y( r.y() - miss/2. );
-		r.height( r.height() + miss/2. );
-	}
+	sambag::com::Number lw = cn->getStrokeWidth();
+	r.x( r.x() - lw );
+	r.y( r.y() - lw );
+	r.width( r.width() + lw*2. );
+	r.height( r.height() + lw*2. );
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 template <class CT>
 std::pair<sd::Point2D, sd::Point2D> 
 FrxConnectionUI<CT>::getConnectionPoints(ConcreteConnectionPtr ccn) const {
@@ -289,6 +286,34 @@ FrxConnectionUI<CT>::getConnectionPoints(ConcreteConnectionPtr ccn) const {
 	sd::Point2D bLoc = ccn->getDstComponent()->getLocation();
 	boost::geometry::add_point(bLoc, ccn->getDstComponent()->getPivot());
 	return std::make_pair(aLoc, bLoc);
+}
+//-----------------------------------------------------------------------------
+template <class CT>
+void FrxConnectionUI<CT>::clipEndNodes(ConcreteConnectionPtr c, 
+	sd::IDrawContext::Ptr cn) const
+{
+	FrxNode::Ptr a = boost::shared_dynamic_cast<FrxNode>( c->getSrcComponent() );
+	FrxNode::Ptr b = boost::shared_dynamic_cast<FrxNode>( c->getDstComponent() );
+	if (!a || !b) {
+		return;
+	}
+
+	sd::Point2D aLoc = a->getLocation();
+	boost::geometry::add_point(aLoc, a->getPivot());
+	sd::Point2D bLoc = b->getLocation();
+	boost::geometry::add_point(bLoc, b->getPivot());
+	boost::geometry::subtract_point(aLoc, c->getLocation());
+	boost::geometry::subtract_point(bLoc, c->getLocation());
+	
+	cn->setFillRule(sd::IDrawContext::FILL_RULE_EVEN_ODD);
+	
+	cn->rect(sd::Rectangle(0, 0, c->getWidth(), c->getHeight()));
+	cn->arc(aLoc, a->getRadius());
+	cn->clip();
+
+	cn->rect(sd::Rectangle(0, 0, c->getWidth(), c->getHeight()));
+	cn->arc(bLoc, b->getRadius());
+	cn->clip();
 }
 //-----------------------------------------------------------------------------
 template <class CT>
@@ -303,10 +328,10 @@ void FrxConnectionUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	boost::geometry::subtract_point(points.second, ccn->getLocation());
 
 	setStyleToContext(cn);
+	clipEndNodes(ccn, cn);
 	cn->moveTo(points.first);
 	cn->lineTo(points.second);
 	cn->stroke();
-
 }
 //-----------------------------------------------------------------------------
 SAMBAG_PROPERTY_TAG(FrxConnectionHitDistance, "FrxConnection.hitDistance");

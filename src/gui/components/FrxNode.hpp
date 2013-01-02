@@ -41,6 +41,8 @@ private:
 	} 
 public:
 	//-------------------------------------------------------------------------
+	virtual sambag::com::Number getRadius() const;
+	//-------------------------------------------------------------------------
 	SAMBAG_STD_STATIC_COMPONENT_CREATOR(FrxNode)
 }; // FrxNode
 }}} // namespace(s)

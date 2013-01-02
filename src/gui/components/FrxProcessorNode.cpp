@@ -80,7 +80,7 @@ void FrxProcessorNode::resetIOLocation() {
 	geom::add_point(origin, getPivot());
 	int numInputs = (int)inputs.size();
 	int numOutputs = (int)outputs.size();
-	float d = 100.0/(float)numInputs;
+	float d = 100.0f/(float)numInputs;
 	const float gap = 45.;
 	int numRotate = 1, i=0;
 	for (; i<numInputs/2; ++i ) { // spread left
@@ -109,7 +109,7 @@ void FrxProcessorNode::resetIOLocation() {
 		inputs[i]->setLocation(p);
 	}
 	// ### Output
-	d = 100.0/(float)numOutputs;
+	d = 100.0f/(float)numOutputs;
 	numRotate = 1;
 	for (i=0; i<numOutputs/2; ++i ) { // spread right
 		addOutputNodeToView(circ, outputs[i]);

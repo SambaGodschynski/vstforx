@@ -152,7 +152,7 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("global.foreground", HtmlColors::getColor("black"));
 	m.putProperty("ColumnBrowser.fontStyle", createStyle("font-size: 17; font-family: arial"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<sizes
-	m.putProperty("Knob.mode", std::string("circular"));
+	m.putProperty("Knob.mode", std::string("linear"));
 	m.putProperty("Knob.size", Dimension(RADIUS_MED*2., RADIUS_MED*2.));
 	m.putProperty("Processor.radius", RADIUS_LARGE);
 	m.putProperty("ProcessorInput.radius", RADIUS_SMALL);

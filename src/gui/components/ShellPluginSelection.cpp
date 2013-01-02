@@ -74,7 +74,7 @@ void ShellPluginSelection::setShellPlugin(const ::processing::PluginInfo &pI) {
 const ::processing::PluginInfo &
 ShellPluginSelection::getCurrentSelection() {
 	int index = list->getSelectedIndex();
-	if (index < 0 || index > plugids.size()) {
+	if (index < 0 || index > (int)plugids.size()) {
 		plugInf.location = "";
 		return plugInf;
 	}

@@ -129,7 +129,7 @@ void VstForxPlug::open() {
 //-----------------------------------------------------------------------------
 void VstForxPlug::initHostParameter() {
 	// init hostParameter	
-	for ( int i=0; i<graph->getNumHostParameter(); ++i ){
+	for ( size_t i=0; i<graph->getNumHostParameter(); ++i ){
 		graph->getHostParameter(i)->addValueChangedListener ( 
 			boost::bind(&VstForxPlug::hostParameterChanged, this, _1, _2, i)
 		);

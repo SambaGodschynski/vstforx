@@ -14,6 +14,13 @@
 #include <boost/program_options.hpp>
 #include <com/settings.h>
 
+#ifdef FRX_OS_WINDOWS
+	#define WIN32ONLY(x) x
+	#include <crtdbg.h>
+#else
+	#define WIN32ONLY(x)
+#endif
+
 typedef sambag::dsp::vst::VST2xPluginWrapper<
 	frx::processing::VstForxPlug, // Processor
 	'frxr', // uid
@@ -50,6 +57,10 @@ void onScriptEnd(void *src, const frx::scripts::ScriptEnded &ev) {
 void setUp() {
 	std::cout<<"seting up..";
 	::com::initSettings(".");
+	WIN32ONLY(
+		_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); //VS memory tracking
+	)
+
 	namespace sce = sambag::com::events;
 	try {
 		plug = createPlug();

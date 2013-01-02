@@ -569,9 +569,8 @@ bool FrxControl::connect(FrxCircuidViewPtr view, FrxNodePtr from, FrxNodePtr to)
         Types,
         bool
     > Dispatcher;
-	Dispatcher disp;
 	try {
-		return disp.Go(*(from.get()), *(to.get()), Connector(view));
+		return Dispatcher::Go(*(from.get()), *(to.get()), Connector(view));
 	} catch (...) {
 		return false;
 	}
