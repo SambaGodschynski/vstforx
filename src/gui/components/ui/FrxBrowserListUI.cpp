@@ -41,6 +41,9 @@ void FrxBrowserListUI::mouseDragged(const sdc::events::MouseEvent &ev) {
 		return;
 	const sd::Point2D &loc = ev.getLocation();
 	int index = locationToIndex(c, loc);
+	if (index<0) {
+		return;
+	}
 	sd::Coordinate value = loc.x();
 	value /= c->getWidth();
 	ListType::Ptr list = 
@@ -50,7 +53,7 @@ void FrxBrowserListUI::mouseDragged(const sdc::events::MouseEvent &ev) {
 	const ListType::ValueType &node = list->get(index);
 	if (!node.data.valueChanged)
 		return;
-	node.data.valueChanged(value);
+	node.data.valueChanged((float)value);
 }
 //-----------------------------------------------------------------------------
 void FrxBrowserListUI::onMouse(void *src, const sdc::events::MouseEvent &ev) {

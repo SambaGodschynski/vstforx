@@ -652,7 +652,7 @@ void PluginScriptCtrl::setPlugin(frx::processing::VstForxPlug *plug) {
 	}
 }
 //-----------------------------------------------------------------------------
-void PluginScriptCtrl::addScript(const std::string &str) {
+void PluginScriptCtrl::execute(const std::string &str) {
 	scripts.push_back(str);
 }
 //-----------------------------------------------------------------------------

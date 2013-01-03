@@ -122,7 +122,7 @@ void processScript(const File &file) {
 		}
 		f.close();
 		// add script
-		scriptCtrl->addScript(ss.str());
+		scriptCtrl->execute(ss.str());
 	} catch(...) {
 		std::cout<<"adding script failed."<<std::endl;
 	}
@@ -159,6 +159,14 @@ bool processArguments(int narg, char **args) {
 	return true;
 }
 //-----------------------------------------------------------------------------
+void onConsoleThread(bool *consoleRunning) {
+	while (*consoleRunning) {
+		std::string input;
+		cin>>input;
+		//scriptCtrl->execute(input);
+	}
+}
+//-----------------------------------------------------------------------------
 int main(int narg, char **args) {
 	std::cout<<"hello dave.."<<std::endl;
 	if (!processArguments(narg, args)) {
@@ -169,13 +177,18 @@ int main(int narg, char **args) {
 		std::cout<<"creating script ctrl failed!"<<std::endl;
 		return -1;
 	}
-	scriptCtrl->addScript( "frxOpenPlugin()" );
-	scriptCtrl->addScript( "frxOpenEditor()" );
-	scriptCtrl->addScript( "frxSetEditorExitOnClose(frxTrue())" );
+	scriptCtrl->execute( "frxOpenPlugin()" );
+	scriptCtrl->execute( "frxOpenEditor()" );
+	scriptCtrl->execute( "frxSetEditorExitOnClose(frxTrue())" );
 	processScripts();
 	scriptCtrl->start();
+	// start console thread
+	bool consoleRunning = true;
+	//boost::thread consoleThread(boost::bind(&onConsoleThread, &consoleRunning));
 	sambag::disco::components::Window::startMainLoop();
+	consoleRunning = false;
 	scriptCtrl->join();
+	//consoleThread.join();
 	tearDown();
 	return 0;
 }

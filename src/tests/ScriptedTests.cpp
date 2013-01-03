@@ -113,7 +113,7 @@ void ScriptedTests::testOpenClose() {
 	sambag::disco::IResourceManager &rm =
 		sambag::disco::getResourceManager();
 	
-	scriptCtrl->addScript( rm.getString("testScripts/testOpenClose.lua") );
+	scriptCtrl->execute( rm.getString("testScripts/testOpenClose.lua") );
 	scriptCtrl->start();
 	sambag::disco::components::Window::startMainLoop();
 	scriptCtrl->join();
@@ -125,7 +125,7 @@ void ScriptedTests::testSerializing() {
 	sambag::disco::IResourceManager &rm =
 		sambag::disco::getResourceManager();
 	
-	scriptCtrl->addScript( rm.getString("testScripts/testSerializing.lua") );
+	scriptCtrl->execute( rm.getString("testScripts/testSerializing.lua") );
 	scriptCtrl->start();
 	sambag::disco::components::Window::startMainLoop();
 	scriptCtrl->join();
