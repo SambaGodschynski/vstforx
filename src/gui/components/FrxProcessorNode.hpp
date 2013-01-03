@@ -35,9 +35,9 @@ protected:
 	//-------------------------------------------------------------------------
 	FrxProcessorNode();
 	//-------------------------------------------------------------------------
-	FrxNode::Ptr addInputNode();
+	FrxNode::Ptr createInputNode();
 	//-------------------------------------------------------------------------
-	FrxNode::Ptr addOutputNode();
+	FrxNode::Ptr createOutputNode();
 	//-------------------------------------------------------------------------
 	void addInputNodeToView(FrxCircuidViewPtr view, FrxNode::Ptr);
 	//-------------------------------------------------------------------------
@@ -55,6 +55,10 @@ private:
 		ar & outputs;
 	} 
 public:
+	//-------------------------------------------------------------------------
+	void addInputNode(FrxCircuidViewPtr view, FrxNode::Ptr);
+	//-------------------------------------------------------------------------
+	void addOutputNode(FrxCircuidViewPtr view, FrxNode::Ptr);
 	//-------------------------------------------------------------------------
 	const IOContainer & getInputs() const { return inputs; }
 	//-------------------------------------------------------------------------

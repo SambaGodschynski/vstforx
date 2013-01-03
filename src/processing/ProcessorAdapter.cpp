@@ -11,6 +11,8 @@
 #include <boost/unordered_map.hpp>
 #include <boost/foreach.hpp>
 #include "MidiEventProcessor.h"
+#include <algorithm>
+
 namespace frx { namespace processing {
 //=============================================================================
 //  Class ProcessorAdapter
@@ -90,6 +92,7 @@ INode::Ptr ProcessorAdapter::addOutput() {
 		return INode::Ptr();
 	NodeAdapter::Ptr res = NodeAdapter::create(n);
 	outputs.push_back(res);
+	updateParameter();
 	// send event
 	IOChangedEventSender::notifyListeners(this, IOChangedEvent(getPtr()));
 	// return result
@@ -107,10 +110,60 @@ INode::Ptr ProcessorAdapter::addInput() {
 		return INode::Ptr();
 	NodeAdapter::Ptr res = NodeAdapter::create(n);
 	inputs.push_back(res);
+	updateParameter();
 	// send event
 	IOChangedEventSender::notifyListeners(this, IOChangedEvent(getPtr()));
 	// return result
 	return res;
+}
+//-----------------------------------------------------------------------------
+void ProcessorAdapter::updateParameter() {
+	// TODO: handles only the case processor has unregistered parameter
+	// TODO: ignores the case processor parameters was removed
+	// TODO: quite inefficient approach
+
+	// determine the unregistered parameter
+	// default parameter
+	using ::processing::parameter::Parameter;
+	using ::processing::parameter::HasParameter;
+	using ::processing::MidiEventProcessor;
+	HasParameter::Ptr hp =
+		boost::shared_dynamic_cast<HasParameter>(processor);
+	if (!hp) {
+		return;
+	}
+	size_t num = hp->getNumParameter();
+	size_t istNum = parameters.count(".");
+	if ( num == istNum ) { // nothing changed
+		return;
+	}
+	// create comparing sets
+	typedef std::vector<::processing::parameter::Parameter::Ptr> Parameters;
+	Parameters soll;
+	soll.reserve(num);
+	Parameters ist;
+	ist.reserve(istNum);
+	for (size_t i=0; i<num; ++i) {
+		soll.push_back(hp->getParameter(i));
+	}
+	ParameterGroupMap::const_iterator it, end;
+	boost::tie(it, end) = parameters.equal_range(".");
+	for (; it!=end; ++it) {
+		ParameterAdapter::Ptr ad = it->second;
+		ist.push_back(ad->getAdaptee());
+	}
+	// sort comparing sets
+	std::sort(soll.begin(), soll.end());
+	std::sort(ist.begin(), ist.end());
+	// compute differecne
+	Parameters res(num);
+	Parameters::const_iterator rend = 
+		std::set_difference (soll.begin(), soll.end(), ist.begin(), ist.end(), res.begin());
+	// save result
+	for (Parameters::const_iterator it = res.begin(); it!=rend; ++it) {
+		parameters.insert(std::make_pair(".", ParameterAdapter::create(*it)));
+	}
+	// we ignore output parameter and midi config.
 }
 //-----------------------------------------------------------------------------
 void ProcessorAdapter::initParameter() {

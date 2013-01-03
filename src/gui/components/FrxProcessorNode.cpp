@@ -23,7 +23,7 @@ FrxProcessorNode::FrxProcessorNode() {
 	setName("FrxProcessorNode");
 }
 //-----------------------------------------------------------------------------
-FrxNode::Ptr FrxProcessorNode::addInputNode() {
+FrxNode::Ptr FrxProcessorNode::createInputNode() {
 	FrxInputNode::Ptr in = FrxInputNode::create();
 	std::stringstream ss;
 	ss<<getName()<<"_input_"<<inputs.size()+1;
@@ -32,7 +32,7 @@ FrxNode::Ptr FrxProcessorNode::addInputNode() {
 	return in;
 }
 //-----------------------------------------------------------------------------
-FrxNode::Ptr FrxProcessorNode::addOutputNode() {
+FrxNode::Ptr FrxProcessorNode::createOutputNode() {
 	FrxOutputNode::Ptr out = FrxOutputNode::create();
 	std::stringstream ss;
 	ss<<getName()<<"_output_"<<outputs.size()+1;
@@ -63,6 +63,16 @@ void FrxProcessorNode::addOutputNodeToView(FrxCircuidViewPtr view, FrxNode::Ptr 
 	onc->setDstComponent(node);
 	view->add(node, FrxCircuidView::Z_IO);
 	view->add(onc, FrxCircuidView::Z_Wires);
+}
+//-----------------------------------------------------------------------------
+void FrxProcessorNode::addInputNode(FrxCircuidViewPtr view, FrxNode::Ptr node) {
+	inputs.push_back(node);
+	addInputNodeToView(view, node);
+}
+//-----------------------------------------------------------------------------
+void FrxProcessorNode::addOutputNode(FrxCircuidViewPtr view, FrxNode::Ptr node) {
+	outputs.push_back(node);
+	addOutputNodeToView(view, node);
 }
 //-----------------------------------------------------------------------------
 void FrxProcessorNode::resetIOLocation() {
@@ -143,10 +153,10 @@ void FrxProcessorNode::configIO(int numInputs, int numOutputs) {
 	inputs.reserve(numInputs);
 	outputs.reserve(numOutputs);
 	for (int i = 0; i<numInputs; ++i) {
-		addInputNode();
+		createInputNode();
 	}
 	for (int i = 0; i<numOutputs; ++i) {
-		addOutputNode();
+		createOutputNode();
 	}
 }
 }}} // namespace(s)

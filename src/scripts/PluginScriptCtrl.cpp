@@ -517,12 +517,14 @@ void FrxOpenEditor::process(Ctrl *ctrl) {
 		return;
 	}
 	bool isOpen = false;
-	editor->getParentWindow()->addOnOpenEventListener(
-		boost::bind(&onEditorOpen, _1, _2, &isOpen)
-	);
+	sambag::disco::components::Window::OnOpenEventSender::Connection evcn = 
+		editor->getParentWindow()->addOnOpenEventListener(
+			boost::bind(&onEditorOpen, _1, _2, &isOpen)
+		);
 	while (!isOpen) {
 		boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 	}
+	evcn.disconnect();
 }
 //-----------------------------------------------------------------------------
 void onEditorClose(void *src, const sambag::disco::components::OnCloseEvent &ev, bool *isClose) 
@@ -539,12 +541,14 @@ void FrxCloseEditor::process(Ctrl *ctrl) {
 		return;
 	}
 	bool isClose = false;
-	editor->getParentWindow()->addOnCloseEventListener(
-		boost::bind(&onEditorClose, _1, _2, &isClose)
-	);
+	sambag::disco::components::Window::OnCloseEventSender::Connection evcn = 
+		editor->getParentWindow()->addOnCloseEventListener(
+			boost::bind(&onEditorClose, _1, _2, &isClose)
+		);
 	while (!isClose) {
 		boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 	}
+	evcn.disconnect();
 }
 //-----------------------------------------------------------------------------
 void FrxWait::process(int millis, Ctrl *ctrl) {
@@ -588,6 +592,12 @@ LuaPtr FrxAddProcessor::process(std::string _name, Ctrl *ctrl) {
 //=============================================================================
 //  Class PluginScriptCtrl
 //=============================================================================
+//-----------------------------------------------------------------------------
+PluginScriptCtrl::PluginScriptCtrl() : plug(NULL), editor(NULL) {
+	using namespace sambag::lua;
+	luaState = createLuaStateRef();
+	registerFunctions(luaState);
+}
 //-----------------------------------------------------------------------------
 PluginScriptCtrl::LuaPtr 
 PluginScriptCtrl::getLuaPtr(FrxComponentPtr c)
@@ -652,14 +662,12 @@ void PluginScriptCtrl::setPlugin(frx::processing::VstForxPlug *plug) {
 	}
 }
 //-----------------------------------------------------------------------------
-void PluginScriptCtrl::execute(const std::string &str) {
+void PluginScriptCtrl::appendJob(const std::string &str) {
 	scripts.push_back(str);
 }
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::start() {
 	using namespace sambag::lua;
-	luaState = createLuaStateRef();
-	registerFunctions(luaState);
 	thread = boost::thread(
 		boost::bind(&PluginScriptCtrl::runThread, this)
 	);
@@ -669,10 +677,17 @@ void PluginScriptCtrl::join() {
 	thread.join();
 }
 //-----------------------------------------------------------------------------
+void PluginScriptCtrl::execute(const std::string &str) {
+	using namespace sambag::lua;
+	SAMBAG_TRY_TO_LOCK_TIMED(scriptCallMutex)
+	executeString(luaState.get(), str);
+}
+//-----------------------------------------------------------------------------
 void PluginScriptCtrl::runThread() {
 	using namespace sambag::lua;
 	BOOST_FOREACH(const std::string &script, scripts) {
 		try {
+			SAMBAG_TRY_TO_LOCK_TIMED(scriptCallMutex)
 			executeString(luaState.get(), script);
 		} catch(const ExecutionFailed &ex) {
 			sambag::com::log("executation failed: " + ex.errMsg);

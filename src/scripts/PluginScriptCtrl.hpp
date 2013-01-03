@@ -15,6 +15,7 @@
 #include <gui/components/Forward.hpp>
 #include <sambag/com/events/Events.hpp>
 #include <boost/thread.hpp>
+#include <sambag/com/Thread.hpp>
 #include <string>
 #include <sambag/lua/Lua.hpp>
 #include <list>
@@ -43,6 +44,8 @@ protected:
 private:
 	//-------------------------------------------------------------------------
 	sambag::com::ArithmeticWrapper<bool> verbose;
+	//-------------------------------------------------------------------------
+	sambag::com::Mutex scriptCallMutex;
 	//-------------------------------------------------------------------------
 	std::string lastCall;
 	//-------------------------------------------------------------------------
@@ -100,6 +103,17 @@ public:
 	//-------------------------------------------------------------------------
 	void join();
 	//-------------------------------------------------------------------------
+	/**
+	 * appends job script. runs in seperate thread, every
+	 * failure will abort the job thread.
+	 * TODO: will only process scripts which was appended before
+	 * start().
+	 */
+	void appendJob(const std::string &str);
+	//-------------------------------------------------------------------------
+	/**
+	 * executes scripts in callers thread.
+	 */
 	void execute(const std::string &str);
 	//-------------------------------------------------------------------------
 	void setPlugin(frx::processing::VstForxPlug *plug);
@@ -108,7 +122,7 @@ public:
 	//-------------------------------------------------------------------------
 	frx::gui::components::VstForxEditor * getEditor() const { return editor; }
 	//-------------------------------------------------------------------------
-	PluginScriptCtrl() : plug(NULL), editor(NULL) {}
+	PluginScriptCtrl();
 }; // PluginScriptCtrl
 }} // namespace(s)
 

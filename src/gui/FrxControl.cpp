@@ -48,6 +48,7 @@
 #include "components/FrxMainBrowserCtrl.hpp"
 #include "components/FrxPluginEditor.hpp"
 #include "components/FrxPluginEditorCtrl.hpp"
+#include "components/FrxIO.hpp"
 
 namespace frx { namespace gui {
 using namespace components;
@@ -91,7 +92,8 @@ void knobChanged(void *src,
 	frx::processing::IParameter::Ptr par = _par.lock();
 	if (!knob || !par)
 		return;
-	par->setValue(ev.getSrc().getValue());
+	typedef frx::processing::IParameter::Number Number;
+	par->setValue((Number)ev.getSrc().getValue());
 }
 //-----------------------------------------------------------------------------
 void parameterChanged(void *src, float value, 
@@ -413,6 +415,11 @@ fgc::FrxComponentPtr FrxControl::addRelatedKnobToView(FrxCircuidViewPtr view,
 FrxComponentPtr FrxControl::addProcessorInput(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c)
 {
+	FrxProcessorNode::Ptr proV = 
+		boost::shared_dynamic_cast<FrxProcessorNode>(c);
+	if (!proV) {
+		return FrxComponentPtr();
+	}
 	// get model object
 	frx::processing::IModelController::Ptr ctrl;
 	IViewModelMap::Ptr map;
@@ -428,14 +435,12 @@ FrxComponentPtr FrxControl::addProcessorInput(fgc::FrxCircuidViewPtr view,
 		return FrxComponentPtr();
 	// create view object
 	FrxInputNode::Ptr viewIo = FrxInputNode::create();
-	// create connection
-	ProcessorInputCn::Ptr cn = ProcessorInputCn::create();
-	cn->setSrcComponent(c);
-	cn->setDstComponent(viewIo);
-	view->add(viewIo, FrxCircuidView::Z_IO, true);
-	view->add(cn, FrxCircuidView::Z_Wires);
+	proV->addInputNode(view, viewIo);
+	
 	map->registerObjects(viewIo, io);
-	registerComponent(view, viewIo);
+	io->addRemoveRequestExecuter(
+		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
+	);
 	// add hover
 	FrxHover::Ptr sel = FrxHover::create();
 	view->add(sel);
@@ -447,6 +452,11 @@ FrxComponentPtr FrxControl::addProcessorInput(fgc::FrxCircuidViewPtr view,
 FrxComponentPtr FrxControl::addProcessorOutput(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c)
 {
+	FrxProcessorNode::Ptr proV = 
+		boost::shared_dynamic_cast<FrxProcessorNode>(c);
+	if (!proV) {
+		return FrxComponentPtr();
+	}
 	// get model object
 	frx::processing::IModelController::Ptr ctrl;
 	IViewModelMap::Ptr map;
@@ -462,14 +472,14 @@ FrxComponentPtr FrxControl::addProcessorOutput(fgc::FrxCircuidViewPtr view,
 		return FrxComponentPtr();
 	// create view object
 	FrxOutputNode::Ptr viewIo = FrxOutputNode::create();
+
 	// create connection
 	ProcessorOutputCn::Ptr cn = ProcessorOutputCn::create();
-	cn->setSrcComponent(c);
-	cn->setDstComponent(viewIo);
-	view->add(viewIo, FrxCircuidView::Z_IO, true);
-	view->add(cn, FrxCircuidView::Z_Wires);
+	proV->addOutputNode(view, viewIo);
 	map->registerObjects(viewIo, io);
-	registerComponent(view, viewIo);
+	io->addRemoveRequestExecuter(
+		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
+	);
 	// add hover
 	FrxHover::Ptr sel = FrxHover::create();
 	view->add(sel);
@@ -515,11 +525,23 @@ FrxControl::FrxControl() {
 //-----------------------------------------------------------------------------
 FrxControl::~FrxControl() {
 }
+namespace {
+	// return true if removable
+	bool _isRemovable( FrxComponentPtr c) {
+		if (dynamic_cast<FrxIO*>(c.get())) {
+			return false;
+		}
+		return true;
+	}
+} // namespace(s)
 //-----------------------------------------------------------------------------
 void FrxControl::removeComponent(FrxCircuidViewPtr _view, FrxComponentPtr _c)
 {
 	FrxCircuidViewPtr view(_view);
 	FrxComponentPtr c(_c);
+	if (!_isRemovable(c)) {
+		return;
+	}
 	if (!c || !view)
 		return;
 	// get model obj.
