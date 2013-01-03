@@ -8,6 +8,10 @@
 #include "FrxSelectionUI.hpp"
 #include <sambag/disco/components/AComponent.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
+#include <sambag/disco/components/PopupMenu.hpp>
+#include <gui/IFrxControl.hpp>
+#include <gui/components/FrxCircuidView.hpp>
+#include <gui/components/FrxComponent.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -31,6 +35,7 @@ void FrxSelectionUI::installDefaults(sdc::AComponentPtr c) {
 void FrxSelectionUI::installUI(sdc::AComponentPtr c) {
 	installDefaults(c);
 	installListeners(c);
+	installContextMenu(c);
 }
 //-----------------------------------------------------------------------------
 void FrxSelectionUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
@@ -40,6 +45,43 @@ void FrxSelectionUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	cn->fill();
 	cn->rect(r);
 	cn->stroke();
+}
+//-----------------------------------------------------------------------------
+namespace {
+	void clearSelection(void *src, const sdce::ActionEvent &ev, sdc::AComponentWPtr c) 
+	{
+		FrxSelection::Ptr sel = boost::shared_dynamic_cast<FrxSelection> (c.lock());
+		if (!sel) {
+			return;
+		}
+		FrxCircuidViewPtr view = sel->getFirstContainer<FrxCircuidView>();
+		if (!view) {
+			return;
+		}
+		IFrxControl &ctrl = getFrxControl(view);
+		typedef FrxSelection::ContentContainer C;
+		BOOST_FOREACH(C::value_type v, sel->getContent()) {
+			FrxComponentPtr cmp = boost::shared_dynamic_cast<FrxComponent>(v.lock());
+			if (!cmp) {
+				continue;
+			}
+			ctrl.removeComponent(view, cmp);
+		}
+		sel->clearContent();
+
+	}
+} // namespace(s)
+//-----------------------------------------------------------------------------
+void FrxSelectionUI::installContextMenu(sdc::AComponentPtr c) {
+	sdc::PopupMenuPtr menu = sdc::PopupMenu::create();
+
+	sdc::MenuItem::Ptr item = sdc::MenuItem::create();
+	item->setText("remove selected items");
+	item->sdc::EventSender<sdce::ActionEvent>::addEventListener (
+		boost::bind(&clearSelection, _1, _2, sdc::AComponentWPtr(c))
+	);
+	menu->add(item);
+	c->setComponentPopupMenu(menu);
 }
 
 }}}} // namespace(s)

@@ -9,6 +9,7 @@
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/components/FrxComponent.hpp>
 #include <gui/components/FrxSelection.hpp>
+#include <gui/IFrxControl.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -69,12 +70,22 @@ void FrxSelectionMouseListener::mouseDragged(const sdc::events::MouseEvent &ev) 
 		moveSelection(ev);
 }
 //-----------------------------------------------------------------------------
+void FrxSelectionMouseListener::mouseClicked(const sdc::events::MouseEvent &ev) {
+	sdc::AComponent::Ptr c = ev.getSource();
+	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
+	if(!circ) {
+		return;
+	}
+	getFrxControl(circ).handleContextMenuPopup(ev);
+}
+//-----------------------------------------------------------------------------
 void FrxSelectionMouseListener::onMouse(void *src, const sdc::events::MouseEvent &ev)
 {
 	using namespace sdc::events;
 	enum { Filter = 
 		MouseEvent::DISCO_MOUSE_PRESSED |
-		MouseEvent::DISCO_MOUSE_DRAGGED
+		MouseEvent::DISCO_MOUSE_DRAGGED |
+		MouseEvent::DISCO_MOUSE_CLICKED
 	};
 	sdc::events::MouseEventSwitch<Filter>::
 		delegate(ev, *this);

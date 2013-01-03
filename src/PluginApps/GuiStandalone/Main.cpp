@@ -164,7 +164,7 @@ void onConsoleThread(bool *consoleRunning) {
 		std::string input;
 		cout<<">";
 		cin>>input;
-		if (input=="exit()" || input=="quit()") {
+		if (input=="exit()" || input=="quit()" || input=="bye()") {
 			sambag::disco::components::getWindowToolkit()->quit();
 			break;
 		}

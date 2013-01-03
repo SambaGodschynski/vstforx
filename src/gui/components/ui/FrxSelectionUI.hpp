@@ -48,6 +48,8 @@ protected:
 	virtual void installUI(sdc::AComponentPtr c);
 	//-------------------------------------------------------------------------
 	FrxSelectionMouseListener::Ptr mouseListener;
+	//-------------------------------------------------------------------------
+	virtual void installContextMenu(sdc::AComponentPtr c);
 public:
 	//-------------------------------------------------------------------------
 	Ptr getPtr() {
