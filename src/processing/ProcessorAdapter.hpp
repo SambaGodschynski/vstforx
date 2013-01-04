@@ -135,6 +135,13 @@ public:
 	virtual IOChangedEventSender::Connection 
 	addTrackedIOChangedListener(const IOChangedEventSender::EventFunction &, 
 		AnyWPtr holder);
+	//-------------------------------------------------------------------------
+	virtual PropertyChangedSender::Connection
+	addPropertyChangedListener(const PropertyChangedSender::EventFunction &);
+	//-------------------------------------------------------------------------
+	virtual PropertyChangedSender::Connection
+	addTrackedPropertyChangedListener(const PropertyChangedSender::EventFunction &, 
+		AnyWPtr holder);
 protected:
 private:
 public:

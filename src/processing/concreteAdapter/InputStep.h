@@ -95,6 +95,13 @@ private:
 	inline void processFrames ( InputMatrix &fr, Processor::Int numSamples );
 protected:
 	//--------------------------------------------------------------------------------------------------------
+	void stateChangedHandler(Switch::State old, Switch::State _new) {
+		sce::EventSender<sce::PropertyChanged>::notifyListeners(
+			this, 
+			sce::PropertyChanged(PROPERTY_SWITCH_STATE, SwitchState(true,old), SwitchState(true,_new))
+		);
+	}
+	//--------------------------------------------------------------------------------------------------------
 	vector<Parameter::Ptr> parameterMap;
 	//--------------------------------------------------------------------------------------------------------
 	Step *cStep;

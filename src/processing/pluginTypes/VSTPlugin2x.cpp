@@ -152,7 +152,7 @@ void VSTPlugin::setupFramesbuffer() {
 	}
 	blockSize = hI->getBlockSize();
 	// mappe von frames nach float[][]
-	for ( int i=0; i<getNumOutputNodes()*2; i+=2 ) {
+	for ( size_t i=0; i<getNumOutputNodes()*2; i+=2 ) {
 		Frames *fr = &( framebuffer[i/2] );
 		fr->setSize ( blockSize );
 		fr->setZero( blockSize );
@@ -276,7 +276,7 @@ size_t VSTPlugin::getProcessDelay() const {
 //ruft die processReplacing Methode des zugeordneten VST-Plugin auf.
 void VSTPlugin::processAdapter( Processor::Int numSamples ) {
 	// breite daten vor ( mappe frames => matrix )
-	for ( int i=0; i<getNumInputNodes(); i+=2 ) {
+	for ( size_t i=0; i<getNumInputNodes(); i+=2 ) {
 		ProcessorNode::Ptr pr = getInputNode(i/2);
 		
 		if ( !pr->isActive() ) { // inaktiver input
@@ -289,7 +289,7 @@ void VSTPlugin::processAdapter( Processor::Int numSamples ) {
 		inMatrix[i+1] = (*fr)[1];
 	}
 	
-	for ( int i=0; i<framebuffer.size(); ++i ) framebuffer[i].setZero( numSamples );
+	for ( size_t i=0; i<framebuffer.size(); ++i ) framebuffer[i].setZero( numSamples );
 	
 	if (!ioChangedLock) { 
 		// Process Event
@@ -305,7 +305,7 @@ void VSTPlugin::processAdapter( Processor::Int numSamples ) {
 		getOutputNode(0)->pushAndCopy( &framebuffer[0], numSamples );
 		return;
 	}
-	for ( int i=0; i<getNumOutputNodes(); i++ ) {
+	for ( size_t i=0; i<getNumOutputNodes(); i++ ) {
 		getOutputNode(i)->pushAndCopy( &framebuffer[i], numSamples );
 	}
 }
@@ -340,12 +340,18 @@ void VSTPlugin::onIOChanged() {
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::onEditorParameterChanged (int index, float value){
-	if ( param.empty() ) return;
+	if ( param.empty() ) {
+		return;
+	}
 	// try to lock:
 	boost::unique_lock<boost::timed_mutex> lock( mutex, boost::try_to_lock);
-	if (!lock.owns_lock()) return; // lock failed
+	if (!lock.owns_lock()) {
+		return; // lock failed
+	}
 
-	if ( index > getNumParameter() ) return;
+	if ( index > (int)getNumParameter() ) {
+		return;
+	}
 	onPlugChangeParameterIndex = index; 
 	param[index]->setValue ( value );
 	onPlugChangeParameterIndex = -1;

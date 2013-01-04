@@ -11,7 +11,6 @@
 #include <boost/shared_ptr.hpp>
 #include "FrxNode.hpp"
 #include <gui/HandyNamespaces.hpp>
-
 namespace frx { namespace gui { namespace components {
 //=============================================================================
 /** 
@@ -21,12 +20,24 @@ class FrxIO : public FrxNode {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
+	static const std::string PROPERTY_STATE;
+	//-------------------------------------------------------------------------
 	typedef FrxNode Super;
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<FrxIO> Ptr;
+	//-------------------------------------------------------------------------
+	enum State {
+		None = 0, 
+		/**
+		 * for ex. on step processors, means: this (step)node is active 
+		 */
+		Activated = 1 << 0 
+	};
 protected:
 	//-------------------------------------------------------------------------
-	FrxIO(){}
+	FrxIO() : states(0) {}
+	//-------------------------------------------------------------------------
+	unsigned int states;
 private:
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
@@ -35,9 +46,14 @@ private:
 	//-------------------------------------------------------------------------
 	template <typename Archive> 
 	void serialize(Archive &ar, const unsigned int version) { 
-		ar & boost::serialization::base_object<Super>(*this); 
+		ar & boost::serialization::base_object<Super>(*this);
+		ar & states;
 	} 
 public:
+	//-------------------------------------------------------------------------
+	virtual bool getState(State state) const;
+	//-------------------------------------------------------------------------
+	virtual void setState(State state, bool val);
 }; // FrxIO
 }}} // namespace(s)
 

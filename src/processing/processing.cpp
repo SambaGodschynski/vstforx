@@ -95,12 +95,14 @@ void EndNode::processNode( Processor::Int numSamples ) {
 // class ProcessAdapter::InputNode
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
+const std::string ProcessAdapter::PROPERTY_SWITCH_STATE = "switch state";
+//------------------------------------------------------------------------------------------------------------
 ProcessAdapter::InputNode::InputNode ( const string &name, ProcessAdapter *parent ) :
 	NOPNode (name), 
 	parent(parent)
 {
 }
-//--------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 void ProcessAdapter::InputNode::_processNode( Processor::Int numSamples, size_t delay ) { 
 	if (delay == 0) {
 		ProcessorNode::processNode(numSamples);
@@ -135,12 +137,12 @@ ProcessAdapter::ProcessAdapter( frx::processing::IHostInfo::Ptr  hostInfo, size_
 	outputNodes( OutputNodes(numOutputNodes) )
 {
 	aNode = ProcessAdapterNode::create ( this ); // zuerst !!
-	for ( int i=0; i<numInputNodes; ++i ) {
+	for ( size_t i=0; i<numInputNodes; ++i ) {
 		InputNode::Ptr iNode = InputNode::create( "ProcessAdapter InputNode(" + MyString(i+1) + ")", this );
 		inputNodes[i] = iNode;
 	}
 
-	for ( int i=0; i<numOutputNodes; ++i ) {
+	for ( size_t i=0; i<numOutputNodes; ++i ) {
 		OutputNode::Ptr oNode = OutputNode::create( "ProcessAdapter OutputNode(" + MyString(i+1) + ")", this );
 		outputNodes[i] = oNode;
 	}
@@ -149,7 +151,7 @@ ProcessAdapter::ProcessAdapter( frx::processing::IHostInfo::Ptr  hostInfo, size_
 void ProcessAdapter::setDelay(size_t v) {
 	if (inputNodes.size()<=1)
 		return;
-	for ( int i=0; i<inputNodes.size(); ++i ) {
+	for ( size_t i=0; i<inputNodes.size(); ++i ) {
 		inputNodes[i]->getDCStream().setMaxDelay(v);
 	} 
 }

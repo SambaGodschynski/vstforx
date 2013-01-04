@@ -78,6 +78,8 @@ fixTimeValue( 10.f, hostInfo->getSampleRate() )
 	setName ( "StepOutputAdapter" );
 	getInputNode(0)->setName ( getName() + " InputNode");
 	cStep = new Step( &fixTimeValue, initSteps, hostInfo->getSampleRate() );
+	cStep->stateChangedDelegate = 
+		boost::bind(&OutputStep::stateChangedHandler, this, _1, _2);
 	sync = new SyncTranslator ( hostInfo );
 	init();
 	cStep->setNumSteps (initSteps);
@@ -109,7 +111,7 @@ void OutputStep::reset(){
 inline void OutputStep::processFrames ( Frames *iFrame, OutputMatrix &fr, Processor::Int numSamples ) {
 	VstNumber *l = (*iFrame)[0];
 	VstNumber *r = (*iFrame)[1];
-	for ( int i=0; i<numSamples; ++i ) {
+	for ( size_t i=0; i<numSamples; ++i ) {
 		cStep->skimDuration();
 		for ( int j=0; j<cStep->getNumSteps(); j++ ){
 			float fac = cStep->getFaderValueAndIncT(j); // mit jedem lesezugriff wird fader::t erhoet!
@@ -177,6 +179,8 @@ void OutputStep::load(com::iArchive &ar, const unsigned int version) {
 	ar >> fixTimeValue;
 	ar >> sync;
 	ar >> cStep;
+	cStep->stateChangedDelegate = 
+		boost::bind(&OutputStep::stateChangedHandler, this, _1, _2);
 	Parameter::ParameterListenerFunction f = boost::bind( 
 			&OutputStep::typeChanged, this, _1, _2 
 	);

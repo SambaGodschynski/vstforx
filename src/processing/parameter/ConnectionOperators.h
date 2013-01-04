@@ -70,7 +70,7 @@ public:
 	 * @return Parameterwert nach Operation
 	 */
 	virtual VstNumber operate ( VstNumber dest ){
-		return 1.0 - dest;
+		return (VstNumber)(1.0 - dest);
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**

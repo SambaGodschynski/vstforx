@@ -310,7 +310,7 @@ IProcessor::Ptr ModelController::createPlugin(const ::processing::PluginInfo &pI
 	::processing::PluginInfo pluginInfo = pI;
 	try {
 		plugin = pC.restorePlugNode( getHostInfo(), pluginInfo ); 
-	} catch(const ::processing::ShellPluginException &ex) {
+	} catch(const ::processing::ShellPluginException) {
 		throw;
 	} catch(...) {
 		return IProcessor::Ptr(); 

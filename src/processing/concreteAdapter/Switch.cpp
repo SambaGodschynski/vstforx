@@ -27,7 +27,7 @@ nCurveTypeOUT( Parameters(_numStates) )
 	}
 	setSampleRate( sampleRate ); 
 }
-//--------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 void Switch::_addState() {
 	Parameter::ParameterListenerFunction dI = boost::bind( 
 		&Switch::durationINChanged, this, _1, _2 
@@ -68,7 +68,7 @@ void Switch::_addState() {
 	*nCurveTypeIN[i] = 0.0f;
 	*nCurveTypeOUT[i] = 0.0f;
 }
-//--------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 void Switch::addState() {
 	nFader.push_back ( FadeValue() );
 	nDurationIN.push_back ( Parameter::Ptr() );
@@ -77,17 +77,17 @@ void Switch::addState() {
 	nCurveTypeOUT.push_back ( Parameter::Ptr() );
 	_addState();
 }
-//--------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 void Switch::durationINChanged ( void *src, const float &v ) {
 	Parameter *p = (Parameter*)src;
 	p->setDisplay(MyString(v*1000.0));
 }
-//--------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 void Switch::durationOUTChanged ( void *src, const float &v ) {
 	Parameter *p = (Parameter*)src;
 	p->setDisplay(MyString(v*1000.0));
 }
-//--------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 void Switch::curveTypeChanged ( void *src, const float &v ) {
 	Parameter *p = (Parameter*) src;
 	int t = mapInteger ( *p, FadeValue::NUM_FADE_TYPES );
@@ -95,5 +95,15 @@ void Switch::curveTypeChanged ( void *src, const float &v ) {
 }
 //------------------------------------------------------------------------------------------------------------
 Switch::~Switch() {
+}
+//------------------------------------------------------------------------------------------------------------
+void Switch::setState ( State x ) {
+	State old = state;
+	setFaderValue(state, 0.0f);
+	state = x % numStates; 
+	setFaderValue(state, 1.0f);
+	if (old!=state) {
+		stateChanged(old, state);
+	}
 }
 }// namespace processing

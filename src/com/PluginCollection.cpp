@@ -224,7 +224,7 @@ void PluginCollection::update(  frx::processing::IHostInfo::Ptr hostInfo ) {
 		if ( pathSet.empty() ) {
 			removeUnusedFolders();
 		} else scanDirectories( pathSet );
-	} catch ( const sambag::cpsqlite::DataBaseException &ex ) {
+	} catch ( const sambag::cpsqlite::DataBaseException & ) {
 		// send interrupt
 		EventSender<ScanInterrupted>::notifyEventListeners (
 			this,

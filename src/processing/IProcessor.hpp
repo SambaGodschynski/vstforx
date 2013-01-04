@@ -14,6 +14,7 @@
 #include "INode.hpp"
 #include "IParameter.hpp"
 #include <sambag/com/events/Events.hpp>
+#include <sambag/com/events/PropertyChanged.hpp>
 #include <vector>
 #include <set>
 
@@ -88,6 +89,15 @@ public:
 	//-------------------------------------------------------------------------
 	virtual IOChangedEventSender::Connection 
 	addTrackedIOChangedListener(const IOChangedEventSender::EventFunction &, 
+		AnyWPtr holder) = 0;
+	//-------------------------------------------------------------------------
+	typedef sambag::com::events::PropertyChanged PropertyChangedEvent;
+	typedef sambag::com::events::EventSender<PropertyChangedEvent> PropertyChangedSender;
+	virtual PropertyChangedSender::Connection
+	addPropertyChangedListener(const PropertyChangedSender::EventFunction &) = 0;
+	//-------------------------------------------------------------------------
+	virtual PropertyChangedSender::Connection
+	addTrackedPropertyChangedListener(const PropertyChangedSender::EventFunction &, 
 		AnyWPtr holder) = 0;
 }; // IProcessor
 }} // namespace(s)

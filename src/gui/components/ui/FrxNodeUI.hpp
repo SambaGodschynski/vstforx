@@ -105,12 +105,6 @@ public:
 	void mouseWheelMoved(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
 	void onMouse(void *src, const sdc::events::MouseEvent &ev);
-	//-------------------------------------------------------------------------
-	virtual void createPopupmenuEntries(sdc::PopupMenuPtr menu, 
-		FrxCircuidViewPtr view, 
-		FrxComponentPtr c)
-	{
-	}
 private:
 	//-------------------------------------------------------------------------
 	sambag::com::ArithmeticWrapper<bool> inside;

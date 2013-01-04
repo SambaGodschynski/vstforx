@@ -73,6 +73,13 @@ private:
 private:
 protected:
 	//--------------------------------------------------------------------------------------------------------
+	virtual void stateChanged(State old, State _new) {
+		sce::EventSender<sce::PropertyChanged>::notifyListeners(
+			this, 
+			sce::PropertyChanged(PROPERTY_SWITCH_STATE, SwitchState(true,old), SwitchState(true,_new))
+		);
+	}
+	//--------------------------------------------------------------------------------------------------------
 	Parameter::Ptr selector;
 	//--------------------------------------------------------------------------------------------------------
 	vector<Parameter::Ptr> parameterMap;

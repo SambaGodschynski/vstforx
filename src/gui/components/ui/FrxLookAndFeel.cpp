@@ -174,6 +174,7 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("Exit.fgColor", HtmlColors::getColor("black"));
 	m.putProperty("FrxStdKnobCorona02.color",  HtmlColors::getColor("yellow"));
 	m.putProperty("FrxStdKnobCorona01.color",  HtmlColors::getColor("red"));
+	m.putProperty("ProcessorIO.stateActiveColor",  HtmlColors::getColor("red"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<styles
 	m.putProperty("IOCn.style", 
 		createStyle("stroke-width: 4; stroke: grey"));
@@ -205,8 +206,8 @@ void FrxLookAndFeel::installDefaults() {
 		createStyle("stroke-width: 1; fill: black; stroke: darkgrey;font-size: 13; font-family: arial"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<images
 	FileResourceManager &rManager = FileResourceManager::instance();
-	rManager.registerImage("FrxCircuidView.image", "images/disco-floor.png");
-	m.putProperty("FrxCircuidView.bgTransfomation", sambag::math::rotate2D(45.));
+	rManager.registerImage("FrxCircuidView.image", "images/bkgrey.png");
+	//m.putProperty("FrxCircuidView.bgTransfomation", sambag::math::rotate2D(45.));
 	m.putProperty("FrxCircuidView.bgExtend", sd::IPattern::DISCO_EXTEND_REPEAT);
 	rManager.registerImage("StatusMessage.icon.default", "images/inf_icon.png");
 	rManager.registerImage("StatusMessage.icon.hint", "images/inf_icon.png");

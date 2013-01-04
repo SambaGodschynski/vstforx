@@ -60,9 +60,9 @@ Switch ( initStates, hostInfo->getSampleRate() ), inputMatrix( InputMatrix(initS
 inline void InputSwitch::_processFrames ( InputMatrix &fr, Processor::Int numSamples ) {
 	VstNumber *l = tmpFrame[0];
 	VstNumber *r = tmpFrame[1];
-	for ( int i=0; i<numSamples; ++i ){
+	for ( size_t i=0; i<numSamples; ++i ){
 		*l = 0.0f; *r = 0.0f;
-		for ( int j=0; j<getNumStates(); j++ ){
+		for ( size_t j=0; j<getNumStates(); j++ ){
 			float fac = getFaderValueAndIncT(j); // mit jedem lesezugriff wird fader::t erhoet!
 			if (!fr[j]) continue; // !!Wichtig
 			 (*l) += (*fr[j])[0][i] * fac;
@@ -75,7 +75,7 @@ inline void InputSwitch::_processFrames ( InputMatrix &fr, Processor::Int numSam
 void InputSwitch::processAdapter( Processor::Int numSamples ) {
 	TRY_TO_LOCK_TIMED (mutex); // gleichzeitigen zugriff von addOutputNode blocken
 
-	for ( int i=0; i<getNumStates(); ++i ) { // bilde InputFrames auf Matrix ab.
+	for ( size_t i=0; i<getNumStates(); ++i ) { // bilde InputFrames auf Matrix ab.
 		if ( !inputNodes[i]->isActive() ) {
 			inputMatrix[i] = NULL;
 			continue;

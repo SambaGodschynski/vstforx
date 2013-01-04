@@ -55,8 +55,18 @@ protected:
 	typedef FrxIOUI<ConcreteIO> ThisClassType;
 	//-------------------------------------------------------------------------
 	FrxIOUI(){}
+	//-------------------------------------------------------------------------
+	sd::ColorRGBA stateActive;
+	//-------------------------------------------------------------------------
+	void drawActiveState(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c);
 private:
 public:
+	//-------------------------------------------------------------------------
+	virtual void createPopupmenuEntries(sdc::PopupMenuPtr menu, 
+		FrxCircuidViewPtr view, 
+		FrxComponentPtr c)
+	{
+	}
 	//-------------------------------------------------------------------------
 	virtual sambag::com::Number getCoreRadius(sdc::AComponentPtr c) const {
 		if (!hasImage())
@@ -119,10 +129,28 @@ namespace {
 } // namespace
 //-----------------------------------------------------------------------------
 template <class CIO>
+void FrxIOUI<CIO>::drawActiveState(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) 
+{
+	FrxIO::Ptr node = boost::shared_dynamic_cast<FrxIO>(c);
+	if (!node) {
+		return;
+	}
+	if (!node->getState(FrxIO::Activated)) {
+		return;
+	}
+	sd::Point2D loc = node->getPivot();
+	sambag::com::Number r = c->getWidth()/2.;
+	cn->arc(loc, r);
+	cn->setFillColor(stateActive);
+	cn->fill();
+}
+//-----------------------------------------------------------------------------
+template <class CIO>
 void FrxIOUI<CIO>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	Super::draw(cn, c);
 	if (hasImage()) {
 		drawImage(cn, c);
+		drawActiveState(cn,c);
 		return;
 	}
 	FrxIO::Ptr io = boost::shared_dynamic_cast<FrxIO>(c);
@@ -134,10 +162,14 @@ void FrxIOUI<CIO>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	cn->arc(loc, r);
 	cn->setFillColor(io->getBackground());
 	cn->fill();
+
+	drawActiveState(cn,c);
 }
 //-----------------------------------------------------------------------------
 template <class CIO>
 void FrxIOUI<CIO>::installUI(sdc::AComponentPtr c) {
+	sdcu::getUIManager().getProperty("ProcessorIO.stateActiveColor", stateActive);
+	stateActive.setA(0.3);
 	setImage(_ioDef<CIO>(c));
 	Super::installUI(c);
 }

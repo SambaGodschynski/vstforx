@@ -78,6 +78,8 @@ fixTimeValue( 10.f, hostInfo->getSampleRate() )
 	setName ( "StepInputAdapter" );
 	getOutputNode(0)->setName ( getName() + " OutputNode");
 	cStep = new Step( &fixTimeValue, initSteps, hostInfo->getSampleRate() );
+	cStep->stateChangedDelegate = 
+		boost::bind(&InputStep::stateChangedHandler, this, _1, _2);
 	sync = new SyncTranslator ( hostInfo );
 	init();
 	cStep->setNumSteps (initSteps);
@@ -110,14 +112,16 @@ void InputStep::reset(){
 inline void InputStep::processFrames ( InputMatrix &fr, Processor::Int numSamples ) {
 	VstNumber *l = tmpFrame[0];
 	VstNumber *r = tmpFrame[1];
-	for ( int i=0; i<numSamples; ++i ){
+	for ( size_t i=0; i<numSamples; ++i ){
 		*l = 0.0f; *r = 0.0f;
 		cStep->skimDuration();
 		for ( int j=0; j<cStep->getNumSteps(); j++ ){
 			float fac = cStep->getFaderValueAndIncT(j); // mit jedem lesezugriff wird fader::t erhoet!
-			if (!fr[j]) continue; // !!Wichtig
-			 (*l) += (*fr[j])[0][i] * fac;
-			 (*r) += (*fr[j])[1][i] * fac;
+			if (!fr[j]) {
+				continue; // !!Wichtig
+			}
+			(*l) += (*fr[j])[0][i] * fac;
+			(*r) += (*fr[j])[1][i] * fac;
 		}
 		++l; ++r;
 	}
@@ -174,6 +178,8 @@ void InputStep::load(com::iArchive &ar, const unsigned int version) {
 	ar >> fixTimeValue;
 	ar >> sync;
 	ar >> cStep;
+	cStep->stateChangedDelegate = 
+		boost::bind(&InputStep::stateChangedHandler, this, _1, _2);
 	frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
 	if (!hI) {
 		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,

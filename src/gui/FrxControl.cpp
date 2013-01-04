@@ -5,6 +5,10 @@
  *      Author: Johannes Unger
  */
 
+#include <list>
+#include <map>
+#include <string>
+#include <stack>
 #include "FrxControl.hpp"
 #include "components/FrxCircuidView.hpp"
 #include "components/FrxConcreteProcessor.hpp"
@@ -13,6 +17,7 @@
 #include "components/FrxConcreteConnections.hpp"
 #include "components/Forward.hpp"
 #include <boost/foreach.hpp>
+#include <boost/tuple/tuple.hpp>
 #include <sambag/com/Common.hpp>
 #include <loki/MultiMethods.h>
 #include <loki/Typelist.h>
@@ -21,6 +26,7 @@
 #include <sambag/disco/components/Window.hpp>
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <sambag/com/events/PropertyChanged.hpp>
 #include <processing/IModelController.hpp>
 #include "IViewModelMap.hpp"
 #include <exception>
@@ -28,15 +34,14 @@
 #include <boost/archive/text_oarchive.hpp> 
 #include <boost/archive/text_iarchive.hpp>
 #include "components/FrxSerializationRegister.hpp"
-#include <list>
-#include <map>
-#include <string>
 #include <gui/components/SetupWindow.hpp>
 #include <processing/IParameter.hpp>
 #include <processing/IProcessor.hpp>
 #include <processing/IPluginAdapter.hpp>
+#include <processing/processing.h>
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <sambag/disco/components/DefaultBoundedRangeModel.hpp>
+#include <sambag/disco/components/Timer.hpp>
 #include "components/SetupCtrl.hpp"
 #include <gui/components/FrxProcessorBrowser.hpp>
 #include <gui/components/FrxPluginBrowser.hpp>
@@ -132,29 +137,93 @@ bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj, FrxCircuidViewWPtr _view)
 	view->AContainer::redraw();
 	return true;
 }
-namespace {
-	template <class ModelType>
-	typename ModelType::Ptr getModelObject(FrxCircuidViewPtr view, FrxComponent::Ptr c) 
-	{
-		IViewModelMap::Ptr map = getViewModelMap(view);
-		if (!map) {
-			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-				"access to IViewModelMap failed");
-		}
-		frx::processing::ModelObject::Ptr mObj = map->getModelObject(c);
-		if (!mObj) {
-			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-				"related modelobject == NULL");
-		}
-		typename ModelType::Ptr modelObj = 
-			boost::shared_dynamic_cast<ModelType>(mObj);
-		if (!modelObj) {
-			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-				"accessing to model object failed.");
-		}
-		return modelObj;
+//-----------------------------------------------------------------------------
+template <class ModelType>
+typename ModelType::Ptr getModelObject(FrxCircuidViewPtr view, FrxComponent::Ptr c) 
+{
+	IViewModelMap::Ptr map = getViewModelMap(view);
+	if (!map) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"access to IViewModelMap failed");
 	}
-} // namespace
+	frx::processing::ModelObject::Ptr mObj = map->getModelObject(c);
+	if (!mObj) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"related modelobject == NULL");
+	}
+	typename ModelType::Ptr modelObj = 
+		boost::shared_dynamic_cast<ModelType>(mObj);
+	if (!modelObj) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"accessing to model object failed.");
+	}
+	return modelObj;
+}
+//-----------------------------------------------------------------------------
+typedef ::processing::ProcessAdapter::SwitchState SwitchState;
+typedef boost::tuple<FrxProcessorNode::WPtr, SwitchState, SwitchState> StateData;
+std::stack<StateData> states;
+sdc::Timer::Ptr updateStatesTimer;
+FrxIO::Ptr getStateChangedNode(FrxProcessorNode::Ptr pr, const SwitchState &sws) 
+{
+	try { 
+		if (sws.first==true) { // isInput
+			return boost::shared_dynamic_cast<FrxIO> (
+				pr->getInputs().at(sws.second)
+			);
+		} else {
+			return boost::shared_dynamic_cast<FrxIO> (
+				pr->getOutputs().at(sws.second)
+			);
+		}
+	} catch(...) {
+		return FrxIO::Ptr();
+	}
+	return FrxIO::Ptr();
+}
+void refreshStates(void *, const sdc::TimerEvent &ev) {
+	while(!states.empty()) {
+		FrxProcessorNode::WPtr _pr;
+		SwitchState old, _new;
+		boost::tie(_pr, old, _new) = states.top();
+		states.pop();
+		FrxProcessorNode::Ptr pr = _pr.lock();
+		if (!pr) {
+			continue;
+		}
+		FrxIO::Ptr oldNode = getStateChangedNode(pr, old);
+		FrxIO::Ptr newNode = getStateChangedNode(pr, _new);
+		if (oldNode) {
+			oldNode->setState(FrxIO::Activated, false);
+		}
+		if (newNode) {
+			newNode->setState(FrxIO::Activated, true);
+		}
+	}
+}
+void processorSwitchStateChanged(const StateData &data)
+{
+	states.push(data);
+	if (!updateStatesTimer) {
+		updateStatesTimer = sdc::Timer::create(10);
+		updateStatesTimer->sdc::EventSender<sdc::TimerEvent>::addEventListener(
+			&refreshStates
+		);
+		updateStatesTimer->setNumRepetitions(-1);
+		updateStatesTimer->start();
+	}
+}
+//-----------------------------------------------------------------------------
+void processorPropertyChanged(void *src, 
+	const sce::PropertyChanged &ev, FrxProcessorNode::WPtr pr) 
+{
+	if (ev.getPropertyName() == "switch state") {
+		SwitchState old, _new;
+		ev.getOldValue(old);
+		ev.getNewValue(_new);
+		processorSwitchStateChanged(StateData(pr, old, _new));
+	}
+}
 //-----------------------------------------------------------------------------
 void registerOnView(FrxCircuidViewPtr view, FrxProcessorNode::Ptr viewObj) 
 {
@@ -178,6 +247,11 @@ void registerOnView(FrxCircuidViewPtr view, FrxProcessorNode::Ptr viewObj)
 			boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
 		);
 	}
+	modelObj->addPropertyChangedListener(
+		boost::bind(&processorPropertyChanged, _1, _2, 
+			FrxProcessorNode::WPtr(viewObj)
+		)
+	);
 }
 //-----------------------------------------------------------------------------
 void registerOnView(FrxCircuidViewPtr view, FrxParameter::Ptr knob) {

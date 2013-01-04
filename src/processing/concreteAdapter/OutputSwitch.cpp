@@ -58,7 +58,7 @@ Switch ( initStates, hostInfo->getSampleRate() ), outpMatrix( OutputMatrix(initS
 inline void OutputSwitch::_processFrames ( Frames *iFrame, OutputMatrix &fr, Processor::Int numSamples ) {
 	VstNumber *l = (*iFrame)[0];
 	VstNumber *r = (*iFrame)[1];
-	for ( int i=0; i<numSamples; ++i ){
+	for ( size_t i=0; i<numSamples; ++i ){
 		for ( size_t j=0; j<getNumStates(); j++ ){
 			float fac = getFaderValueAndIncT(j); // mit jedem lesezugriff wird fader::t erhoet!
 			if (!fr[j]) continue; // !!Wichtig
@@ -76,7 +76,7 @@ void OutputSwitch::processAdapter( Processor::Int numSamples ) {
 	iFrame.copyIntoFrom ( *frame, numSamples );
 	aNode->pushAndCopy ( frame, numSamples );
 	size_t steps = getNumStates();
-	for ( int i=0; i<steps; ++i ) { // bilde InputFrames auf Matrix ab.
+	for ( size_t i=0; i<steps; ++i ) { // bilde InputFrames auf Matrix ab.
 		if ( !outputNodes[i]->isActive() ) {
 			outpMatrix[i] = NULL;
 			continue;
@@ -85,7 +85,7 @@ void OutputSwitch::processAdapter( Processor::Int numSamples ) {
 	}
 	// berechne OutputFrames
 	_processFrames( &iFrame, outpMatrix, numSamples );
-	for ( int i=0; i<steps; ++i ) {
+	for ( size_t i=0; i<steps; ++i ) {
 		if ( !outputNodes[i]->isActive() ) continue;
 		outputNodes[i]->pushAndCopy ( outpMatrix[i], numSamples ); // knoten Frames zuweisen
 	}

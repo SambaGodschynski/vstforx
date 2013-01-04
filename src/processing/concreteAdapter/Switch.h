@@ -20,7 +20,8 @@ using namespace parameter;
  * Oberklasse fuer Input/OutputSwitch, Step. Vewaltet N FadeValues
  * (fadeIn/fadeOut pro State)
  */
-class Switch : public HasParameter {
+class Switch : public HasParameter
+{
 //============================================================================================================
 	friend class boost::serialization::access;
 public:
@@ -58,7 +59,7 @@ private:
 				&Switch::curveTypeChanged, this, _1, _2 
 			);
 
-			for ( int i=0; i<numStates; ++i ) {
+			for ( size_t i=0; i<numStates; ++i ) {
 				nDurationIN[i]->addValueChangedListener ( dI );
 				nDurationOUT[i]->addValueChangedListener ( dO );
 				nCurveTypeIN[i]->addValueChangedListener ( cT );
@@ -131,6 +132,8 @@ protected:
 		nFader[n].setType ( (FadeValue::FadeType) t );
 		nFader[n].setValue(v);
 	}
+	//--------------------------------------------------------------------------------------------------------
+	virtual void stateChanged(State old, State _new) = 0; 
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -147,11 +150,7 @@ public:
 	 * Setzt State.
 	 * @param x
 	 */
-	void setState ( State x ) {
-		setFaderValue(state, 0.0f);
-		state = x % numStates; 
-		setFaderValue(state, 1.0f);
-	}
+	void setState ( State x );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * fuegt State hinzu.

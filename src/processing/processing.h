@@ -20,6 +20,7 @@
 #include "BglGraph.h"
 #include "Frames.h"
 #include "com/Events.h"
+#include <sambag/com/events/PropertyChanged.hpp>
 
 //============================================================================================================
 //	Vorwaerts Deklarationen
@@ -459,7 +460,7 @@ public:
 struct IOChangedEvent : public com::events::Event {
 //============================================================================================================
 };
-
+namespace sce = sambag::com::events;
 //============================================================================================================
 /**
  * @class ProcessAdapter
@@ -470,7 +471,8 @@ struct IOChangedEvent : public com::events::Event {
  */
 class ProcessAdapter : 
 	public PObject, 
-	public com::events::EventSender<IOChangedEvent>
+	public com::events::EventSender<IOChangedEvent>,
+	public sce::EventSender<sce::PropertyChanged> // TODO: replace IOChangedEvent with PropertyChanged 
 {
 //Klasse: ProcessAdapter.
 //    Input_Node0-O   O -  Input_Node1 ... Input_NodeN
@@ -483,6 +485,13 @@ friend class ProcessAdapterNode;
 friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
+	//--------------------------------------------------------------------------------------------------------
+	static const std::string PROPERTY_SWITCH_STATE;
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * SwitchState(isInput, num)
+	 */
+	typedef std::pair<bool, size_t> SwitchState;
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<ProcessAdapter> Ptr;
 	//--------------------------------------------------------------------------------------------------------

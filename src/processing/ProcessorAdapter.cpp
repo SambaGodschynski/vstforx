@@ -258,4 +258,25 @@ addTrackedIOChangedListener(const IOChangedEventSender::EventFunction &f,
 {
 	return IOChangedEventSender::addTrackedEventListener(f, holder);
 }
+//-----------------------------------------------------------------------------
+ProcessorAdapter::PropertyChangedSender::Connection
+ProcessorAdapter::
+addPropertyChangedListener(const PropertyChangedSender::EventFunction &f)
+{
+	namespace sce = sambag::com::events;
+	return processor->sce::EventSender<PropertyChangedEvent>::addEventListener(
+		f
+	);
+}
+//-----------------------------------------------------------------------------
+ProcessorAdapter::PropertyChangedSender::Connection
+ProcessorAdapter::
+addTrackedPropertyChangedListener(const PropertyChangedSender::EventFunction & f, 
+	AnyWPtr holder)
+{
+	namespace sce = sambag::com::events;
+	return processor->sce::EventSender<PropertyChangedEvent>::addTrackedEventListener(
+		f, holder
+	);
+}
 }} // namespace(s)
