@@ -65,12 +65,12 @@ void FrxProcessorNode::addOutputNodeToView(FrxCircuidViewPtr view, FrxNode::Ptr 
 	view->add(onc, FrxCircuidView::Z_Wires);
 }
 //-----------------------------------------------------------------------------
-void FrxProcessorNode::addInputNode(FrxCircuidViewPtr view, FrxNode::Ptr node) {
+void FrxProcessorNode::addInputNode(FrxCircuidViewPtr view, FrxIO::Ptr node) {
 	inputs.push_back(node);
 	addInputNodeToView(view, node);
 }
 //-----------------------------------------------------------------------------
-void FrxProcessorNode::addOutputNode(FrxCircuidViewPtr view, FrxNode::Ptr node) {
+void FrxProcessorNode::addOutputNode(FrxCircuidViewPtr view, FrxIO::Ptr node) {
 	outputs.push_back(node);
 	addOutputNodeToView(view, node);
 }
@@ -96,7 +96,7 @@ void FrxProcessorNode::resetIOLocation() {
 	for (; i<numInputs/2; ++i ) { // spread left
 		addInputNodeToView(circ, inputs[i]);
 		sd::Point2D p(0, 0);
-		Rotate rotate((numRotate++)*-d);
+		Rotate rotate((numRotate++)*d);
 		geom::transform(sd::Point2D(0, -gap), p, rotate);
 		geom::add_point(p, origin);
 		geom::subtract_point(p, inputs[i]->getPivot());
@@ -112,7 +112,7 @@ void FrxProcessorNode::resetIOLocation() {
 	for (; i<numInputs; i++ ) { // spread right
 		addInputNodeToView(circ, inputs[i]);
 		sd::Point2D p(0, 0);
-		Rotate rotate((numRotate++)*d);
+		Rotate rotate((numRotate++)*-d);
 		geom::transform(sd::Point2D(0, -gap), p, rotate);
 		geom::add_point(p, origin);
 		geom::subtract_point(p, inputs[i]->getPivot());
@@ -124,7 +124,7 @@ void FrxProcessorNode::resetIOLocation() {
 	for (i=0; i<numOutputs/2; ++i ) { // spread right
 		addOutputNodeToView(circ, outputs[i]);
 		sd::Point2D p(0, 0);
-		Rotate rotate((numRotate++)*d);
+		Rotate rotate((numRotate++)*-d);
 		geom::transform(sd::Point2D(0, +gap), p, rotate);
 		geom::add_point(p, origin);
 		geom::subtract_point(p, outputs[i]->getPivot());
@@ -140,7 +140,7 @@ void FrxProcessorNode::resetIOLocation() {
 	for (; i<numOutputs; ++i ) { // spread left
 		addOutputNodeToView(circ, outputs[i]);
 		sd::Point2D p(0, 0);
-		Rotate rotate((numRotate++)*-d);
+		Rotate rotate((numRotate++)*d);
 		geom::transform(sd::Point2D(0, +gap), p, rotate);
 		geom::add_point(p, origin);
 		geom::subtract_point(p, outputs[i]->getPivot());

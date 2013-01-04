@@ -10,6 +10,7 @@
 #include <gui/IFrxControl.hpp>
 #include "TooltipTexts.hpp"
 
+
 namespace frx { namespace gui {
 namespace components { namespace ui { 
 //=============================================================================

@@ -168,13 +168,9 @@ FrxIO::Ptr getStateChangedNode(FrxProcessorNode::Ptr pr, const SwitchState &sws)
 {
 	try { 
 		if (sws.first==true) { // isInput
-			return boost::shared_dynamic_cast<FrxIO> (
-				pr->getInputs().at(sws.second)
-			);
+			return pr->getInputs().at(sws.second);
 		} else {
-			return boost::shared_dynamic_cast<FrxIO> (
-				pr->getOutputs().at(sws.second)
-			);
+			return pr->getOutputs().at(sws.second);
 		}
 	} catch(...) {
 		return FrxIO::Ptr();

@@ -12,6 +12,7 @@
 #include <gui/components/FrxConcreteIO.hpp>
 #include "FrxNodeUI.hpp"
 #include <gui/HandyNamespaces.hpp>
+#include <sambag/disco/IDiscoFactory.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -56,7 +57,7 @@ protected:
 	//-------------------------------------------------------------------------
 	FrxIOUI(){}
 	//-------------------------------------------------------------------------
-	sd::ColorRGBA stateActive;
+	sd::IPattern::Ptr stateActive;
 	//-------------------------------------------------------------------------
 	void drawActiveState(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c);
 private:
@@ -140,8 +141,9 @@ void FrxIOUI<CIO>::drawActiveState(sd::IDrawContext::Ptr cn, sdc::AComponentPtr 
 	}
 	sd::Point2D loc = node->getPivot();
 	sambag::com::Number r = c->getWidth()/2.;
-	cn->arc(loc, r);
-	cn->setFillColor(stateActive);
+	cn->translate(loc);
+	cn->arc(sd::Point2D(0,0), r);
+	cn->setFillPattern(stateActive);
 	cn->fill();
 }
 //-----------------------------------------------------------------------------
@@ -168,8 +170,15 @@ void FrxIOUI<CIO>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 //-----------------------------------------------------------------------------
 template <class CIO>
 void FrxIOUI<CIO>::installUI(sdc::AComponentPtr c) {
-	sdcu::getUIManager().getProperty("ProcessorIO.stateActiveColor", stateActive);
-	stateActive.setA(0.3);
+	sd::ColorRGBA col;
+	double rad = 0;
+	sdcu::getUIManager().getProperty("ProcessorIO.stateActiveColor", col);
+	sdcu::getUIManager().getProperty("ProcessorIO.stateActiveRadius", rad);
+	sd::IRadialPattern::Ptr pat = 
+		sd::getDiscoFactory()->createRadialPattern(sd::Point2D(0,0), 0, sd::Point2D(0,0), rad);
+	pat->addColorStop(col.setA(0.), 1.0);
+	pat->addColorStop(col.setA(0.5), 0.0);
+	stateActive = pat;	
 	setImage(_ioDef<CIO>(c));
 	Super::installUI(c);
 }

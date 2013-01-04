@@ -9,7 +9,7 @@
 #define SAMBAG_FRXPROCESSORNODE_H
 
 #include <boost/shared_ptr.hpp>
-#include "FrxNode.hpp"
+#include "FrxIO.hpp"
 #include <vector>
 #include <gui/HandyNamespaces.hpp>
 
@@ -28,7 +28,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::weak_ptr<FrxProcessorNode> WPtr;
 	//-------------------------------------------------------------------------
-	typedef std::vector<FrxNode::Ptr> IOContainer;
+	typedef std::vector<FrxIO::Ptr> IOContainer;
 protected:
 	//-------------------------------------------------------------------------
 	IOContainer inputs;
@@ -58,9 +58,9 @@ private:
 	} 
 public:
 	//-------------------------------------------------------------------------
-	void addInputNode(FrxCircuidViewPtr view, FrxNode::Ptr);
+	void addInputNode(FrxCircuidViewPtr view, FrxIO::Ptr);
 	//-------------------------------------------------------------------------
-	void addOutputNode(FrxCircuidViewPtr view, FrxNode::Ptr);
+	void addOutputNode(FrxCircuidViewPtr view, FrxIO::Ptr);
 	//-------------------------------------------------------------------------
 	const IOContainer & getInputs() const { return inputs; }
 	//-------------------------------------------------------------------------
