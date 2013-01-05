@@ -47,6 +47,41 @@ int testHostCallback(AEffect* effect, VstInt32 opcode,
 	return 0;
 }
 //-----------------------------------------------------------------------------
+void fillBlock(float **data, int blockSize) {
+	for (int i=0; i<blockSize; ++i) {
+		data[0][i] = (float)rand() / (float)RAND_MAX;
+		data[1][i] = (float)rand() / (float)RAND_MAX;
+	}
+}
+//-----------------------------------------------------------------------------
+void processPlugin(Plugin * plug) {
+	static const int BS = 512;
+	float **in = new float*[2];
+	float **out = new float*[2];
+	in[0] = new float[BS];
+	in[1] = new float[BS];
+	fillBlock(in, BS);
+	out[0] = new float[BS];
+	out[1] = new float[BS];
+	plug->suspend();
+	plug->setSampleRate(44100.);
+	plug->setBlockSize(BS);
+	plug->resume();
+	while(plugProcessing) {
+		if (plug->isOpen()) {
+			fillBlock(in, BS);
+			plug->process(in, out, BS);
+			boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+		}
+	}
+	delete[] in[0];
+	delete[] in[1];
+	delete[] out[0];
+	delete[] out[1];
+	delete[] in;
+	delete[] out;
+}
+//-----------------------------------------------------------------------------
 void onScriptExeFailed(void *src, const frx::scripts::ScriptExeFailedEvent &ev) 
 {
 }
@@ -56,6 +91,7 @@ void onScriptEnd(void *src, const frx::scripts::ScriptEnded &ev) {
 //-----------------------------------------------------------------------------
 void setUp() {
 	std::cout<<"seting up..";
+	srand ( time(NULL) );
 	::com::initSettings(".");
 	WIN32ONLY(
 		_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); //VS memory tracking
@@ -80,10 +116,6 @@ void setUp() {
 	scriptCtrl->sce::EventSender<frx::scripts::ScriptEnded>::addEventListener(
 		&onScriptEnd
 	);
-	plugProcessing = true;
-	/*processingThread = boost::thread(
-		boost::bind(&processPlugin, plug)
-	);*/
 	failed = false;
 	std::cout<<"succeed."<<std::endl;
 }
@@ -193,6 +225,11 @@ int main(int narg, char **args) {
 	// start console thread
 	bool consoleRunning = true;
 	boost::thread consoleThread(boost::bind(&onConsoleThread, &consoleRunning));
+	// start processing thread
+	plugProcessing = true;
+	processingThread = boost::thread(
+		boost::bind(&processPlugin, plug)
+	);
 	sambag::disco::components::Window::startMainLoop();
 	consoleRunning = false;
 	scriptCtrl->join();

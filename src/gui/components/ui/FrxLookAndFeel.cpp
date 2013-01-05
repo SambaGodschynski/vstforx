@@ -13,8 +13,6 @@
 #include <sambag/disco/components/List.hpp>
 #include <sambag/disco/components/ColumnView.hpp>
 #include <sambag/disco/components/ui/basic/BasicColumnViewUI.hpp>
-
-#include <gui/FrxControl.hpp>
 #include <gui/components/FrxComponent.hpp>
 #include <gui/components/ui/FrxComponentUI.hpp>
 #include <gui/components/FrxConcreteProcessor.hpp>
@@ -160,7 +158,7 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("Entry.radius", RADIUS_LARGE);
 	m.putProperty("Exit.radius", RADIUS_LARGE);
 	m.putProperty("StdKnob.radius", RADIUS_SMALL); // affects hit range only
-	m.putProperty("ProcessorIO.stateActiveRadius",  RADIUS_SMALL * 2.);
+	m.putProperty("ProcessorIO.stateActiveRadius",  RADIUS_SMALL * 1.7);
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	m.putProperty("FrxConnection.hitDistance", Coordinate(10.));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<colors
@@ -176,6 +174,7 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("FrxStdKnobCorona02.color",  HtmlColors::getColor("yellow"));
 	m.putProperty("FrxStdKnobCorona01.color",  HtmlColors::getColor("red"));
 	m.putProperty("ProcessorIO.stateActiveColor",  HtmlColors::getColor("red"));
+	m.putProperty("FrxCircuidView.bgColor",  HtmlColors::getColor("orange"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<styles
 	m.putProperty("IOCn.style", 
 		createStyle("stroke-width: 4; stroke: grey"));

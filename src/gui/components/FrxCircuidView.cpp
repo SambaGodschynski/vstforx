@@ -37,6 +37,7 @@ public:
 protected:
 	BgPane(){}
 	sd::IPattern::Ptr pat;
+	sd::ColorRGBA bg;
 	virtual void postConstructor();
 public:
 	SAMBAG_STD_STATIC_COMPONENT_CREATOR(BgPane)
@@ -66,20 +67,24 @@ void BgPane::drawComponent(sd::IDrawContext::Ptr cn) {
 		Super::drawComponent(cn);
 		return;
 	}
+	cn->rect(sd::Rectangle(0, 0, getWidth(), getHeight()));
+	cn->setFillColor(bg);
+	cn->fill();
 	cn->setFillPattern(pat);
 	cn->rect(sd::Rectangle(0, 0, getWidth(), getHeight()));
 	cn->fill();
 }
 //-----------------------------------------------------------------------------
 void BgPane::postConstructor() {
+	sdc::ui::UIManager &ui = sdc::ui::getUIManager();
 	sd::ISurface::Ptr fillImg = 
 		sd::getResourceManager().getImage("FrxCircuidView.image");
+	ui.getProperty("FrxCircuidView.bgColor", bg);
 	if (!fillImg)
 		return;
 	pat = sd::getDiscoFactory()->createSurfacePattern(fillImg);
 	if (!pat)
 		return;
-	sdc::ui::UIManager &ui = sdc::ui::getUIManager();
 	sambag::math::Matrix m = IDENTITY_MATRIX;
 	ui.getProperty("FrxCircuidView.bgTransfomation", m);
 	sd::IPattern::Extend e = sd::IPattern::DISCO_EXTEND_REPEAT;

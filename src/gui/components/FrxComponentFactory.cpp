@@ -6,7 +6,7 @@
  */
 
 #include "FrxComponentFactory.hpp"
-#include <gui/FrxControl.hpp>
+#include <gui/IFrxControl.hpp>
 #include "FrxCircuidView.hpp"
 #include "FrxConcreteProcessor.hpp"
 #include "FrxConcreteParameter.hpp"
@@ -170,8 +170,7 @@ void FrxComponentFactory::initMap() {
 	(getProcessorName<FrxOutSwitchNode::ProcessorType>(),     getCreator<FrxOutSwitchNode>(1, 2))
 	(getProcessorName<FrxADSRNode::ProcessorType>(),               getCreator<FrxADSRNode>(1, 0))
 	(getProcessorName<FrxPeakTrackerNode::ProcessorType>(), getCreator<FrxPeakTrackerNode>(1, 0));
-}
-//-----------------------------------------------------------------------------
+}//-----------------------------------------------------------------------------
 FrxComponentFactory::FrxComponentFactory() {
 	initMap();
 }

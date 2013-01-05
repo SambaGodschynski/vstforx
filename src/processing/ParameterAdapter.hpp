@@ -126,7 +126,9 @@ public:
 	//-------------------------------------------------------------------------
 	virtual void setValue(Number value) {
 		SAMBAG_ASSERT(parameter);
-		parameter->setValue(value);
+		if (!parameter->isReadOnly()) {
+			parameter->setValue(value);
+		}
 	}
 	//-------------------------------------------------------------------------
 	virtual Number getValue() const {

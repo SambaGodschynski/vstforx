@@ -7,7 +7,8 @@
 
 #include "FrxMainBrowserCtrl.hpp"
 #include "FrxMainBrowser.hpp"
-#include <gui/FrxControl.hpp>
+#include <gui/IFrxControl.hpp>
+#include <processing/IModelController.hpp>
 #include <boost/foreach.hpp>
 #include <list>
 #include <string>
@@ -22,6 +23,7 @@
 #include "FrxConcreteConnections.hpp"
 #include <gui/components/ShellPluginSelection.hpp>
 #include "FrxCircuidView.hpp"
+#include <gui/TimedUpdater.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace {
@@ -326,14 +328,23 @@ void FrxMainBrowserCtrl::addMainProcessors()
 	}
 }
 //-----------------------------------------------------------------------------
+namespace {
+	template <class T>
+	struct RefreshBrowser { 
+		void update(const T &val) {
+			FrxColumnBrowserPtr brws = val.lock();
+			if (!brws)
+				return;
+			// TODO: update specific list or better specific entry
+			brws->getBrowserImpl()->redraw();
+		}
+	};
+}
 void FrxMainBrowserCtrl::parameterChanged(void *src, 
 		float value, const BrowserNode &node)
 {
-	FrxColumnBrowserPtr brws = browser.lock();
-	if (!brws)
-		return;
-	// TODO: update specific list or better specific entry
-	brws->getBrowserImpl()->redraw();
+	typedef TimedUpdater<FrxColumnBrowserWPtr, RefreshBrowser, 100> Updater;
+	Updater::instance().update(browser);
 }
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::parameterLabelChanged(float value, 

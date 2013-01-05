@@ -16,11 +16,10 @@
 #include "components/FrxConcreteIO.hpp"
 #include "components/FrxConcreteConnections.hpp"
 #include "components/Forward.hpp"
-#include <boost/foreach.hpp>
-#include <boost/tuple/tuple.hpp>
 #include <sambag/com/Common.hpp>
 #include <loki/MultiMethods.h>
 #include <loki/Typelist.h>
+#include <loki/LokiTypeinfo.h>
 #include <sambag/disco/components/PopupMenu.hpp>
 #include <sambag/disco/components/MenuSelectionManager.hpp>
 #include <sambag/disco/components/Window.hpp>
@@ -33,6 +32,9 @@
 #include "__ModelExecutors.hpp"
 #include <boost/archive/text_oarchive.hpp> 
 #include <boost/archive/text_iarchive.hpp>
+#include <boost/foreach.hpp>
+#include <boost/tuple/tuple.hpp>
+#include <boost/assign.hpp>
 #include "components/FrxSerializationRegister.hpp"
 #include <gui/components/SetupWindow.hpp>
 #include <processing/IParameter.hpp>
@@ -41,7 +43,6 @@
 #include <processing/processing.h>
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <sambag/disco/components/DefaultBoundedRangeModel.hpp>
-#include <sambag/disco/components/Timer.hpp>
 #include "components/SetupCtrl.hpp"
 #include <gui/components/FrxProcessorBrowser.hpp>
 #include <gui/components/FrxPluginBrowser.hpp>
@@ -54,6 +55,7 @@
 #include "components/FrxPluginEditor.hpp"
 #include "components/FrxPluginEditorCtrl.hpp"
 #include "components/FrxIO.hpp"
+#include "TimedUpdater.hpp"
 
 namespace frx { namespace gui {
 using namespace components;
@@ -101,16 +103,29 @@ void knobChanged(void *src,
 	par->setValue((Number)ev.getSrc().getValue());
 }
 //-----------------------------------------------------------------------------
+typedef std::pair<frx::processing::IParameter::WPtr, 
+		components::FrxParameter::WPtr> ParameterRefreshInfo;
+template <class T>
+struct RefreshParameter {
+	void update(const T &inf) {
+		using namespace frx::processing;
+		IParameter::Ptr p = inf.first.lock();
+		components::FrxParameter::Ptr vp = inf.second.lock(); 
+		if (!p || !vp) {
+			return;
+		}
+		vp->getRangeModel()->setValue(p->getValue());
+		vp->setFlagText( p->getName() + "/" + p->getDisplay() );
+	}
+};
 void parameterChanged(void *src, float value, 
 	frx::processing::IParameter::WPtr _par,
 	FrxParameter::WPtr _knob)
 {
-	FrxParameter::Ptr knob = _knob.lock();
-	frx::processing::IParameter::Ptr par = _par.lock();
-	if (!knob || !par)
-		return;
-	knob->getRangeModel()->setValue(value);
-	knob->setFlagText( par->getName() + "/" + par->getDisplay() );
+	TimedUpdater<ParameterRefreshInfo,
+	RefreshParameter, 10>::instance().update(
+		std::make_pair(_par, _knob)
+	);
 }
 //-----------------------------------------------------------------------------
 bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj, FrxCircuidViewWPtr _view)
@@ -163,7 +178,6 @@ typename ModelType::Ptr getModelObject(FrxCircuidViewPtr view, FrxComponent::Ptr
 typedef ::processing::ProcessAdapter::SwitchState SwitchState;
 typedef boost::tuple<FrxProcessorNode::WPtr, SwitchState, SwitchState> StateData;
 std::stack<StateData> states;
-sdc::Timer::Ptr updateStatesTimer;
 FrxIO::Ptr getStateChangedNode(FrxProcessorNode::Ptr pr, const SwitchState &sws) 
 {
 	try { 
@@ -177,15 +191,15 @@ FrxIO::Ptr getStateChangedNode(FrxProcessorNode::Ptr pr, const SwitchState &sws)
 	}
 	return FrxIO::Ptr();
 }
-void refreshStates(void *, const sdc::TimerEvent &ev) {
-	while(!states.empty()) {
+template <class T>
+struct RefreshStates {
+	void update(const T &data) {
 		FrxProcessorNode::WPtr _pr;
 		SwitchState old, _new;
-		boost::tie(_pr, old, _new) = states.top();
-		states.pop();
+		boost::tie(_pr, old, _new) = data;
 		FrxProcessorNode::Ptr pr = _pr.lock();
 		if (!pr) {
-			continue;
+			return;
 		}
 		FrxIO::Ptr oldNode = getStateChangedNode(pr, old);
 		FrxIO::Ptr newNode = getStateChangedNode(pr, _new);
@@ -196,18 +210,10 @@ void refreshStates(void *, const sdc::TimerEvent &ev) {
 			newNode->setState(FrxIO::Activated, true);
 		}
 	}
-}
+};
 void processorSwitchStateChanged(const StateData &data)
 {
-	states.push(data);
-	if (!updateStatesTimer) {
-		updateStatesTimer = sdc::Timer::create(10);
-		updateStatesTimer->sdc::EventSender<sdc::TimerEvent>::addEventListener(
-			&refreshStates
-		);
-		updateStatesTimer->setNumRepetitions(-1);
-		updateStatesTimer->start();
-	}
+	TimedUpdater<StateData, RefreshStates, 50>::instance().update(data);
 }
 //-----------------------------------------------------------------------------
 void processorPropertyChanged(void *src, 
@@ -452,8 +458,8 @@ void FrxControl::registerComponent(fgc::FrxCircuidViewPtr view, FrxComponentPtr 
 	_castSwitch<Types>(view, c);
 }
 //-----------------------------------------------------------------------------
-fgc::FrxComponentPtr FrxControl::addRelatedKnobToView(FrxCircuidViewPtr view, 
-	FrxComponentPtr c, frx::processing::IParameter::Ptr par) 
+fgc::FrxComponentPtr FrxControl::_addRelatedKnobToView(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c, frx::processing::IParameter::Ptr par)
 {
 	frx::processing::IModelController::Ptr ctrl;
 	IViewModelMap::Ptr map;
@@ -475,6 +481,13 @@ fgc::FrxComponentPtr FrxControl::addRelatedKnobToView(FrxCircuidViewPtr view,
 	cn->setDstComponent(knob);
 	view->add(cn, FrxCircuidView::Z_Wires);
 	view->add(knob, FrxCircuidView::Z_Knobs);
+	return knob;
+}
+//-----------------------------------------------------------------------------
+fgc::FrxComponentPtr FrxControl::addRelatedKnobToView(FrxCircuidViewPtr view, 
+	FrxComponentPtr c, frx::processing::IParameter::Ptr par) 
+{
+	FrxComponentPtr knob = _addRelatedKnobToView(view, c, par);
 	// add hover
 	FrxSelection::Ptr sel = view->getSelection();
 	sel->addElement(knob);
@@ -572,6 +585,57 @@ void FrxControl::addParameterToView(fgc::FrxCircuidViewPtr view,
 	
 }
 //-----------------------------------------------------------------------------
+namespace {
+typedef std::list<sdc::AComponentPtr> Components;
+typedef boost::function<void(fgc::FrxCircuidViewPtr, 
+	Components &out, FrxProcessorNodePtr pr)> ExtraF;
+typedef std::map<Loki::TypeInfo, ExtraF> ExtraMap;
+ExtraMap extraMap;
+void addOutParameter(fgc::FrxCircuidViewPtr view, 
+	Components &out, FrxProcessorNodePtr pr) 
+{
+	using namespace frx::processing;
+	IViewModelMap::Ptr map = getViewModelMap(view);
+	frx::processing::ModelObject::Ptr obj = 
+		map->getModelObject(pr);
+	if (!obj) {
+		return;
+	}
+	ModelObject::Parameters outp;
+	obj->getParameters("output parameter", outp);
+	BOOST_FOREACH(IParameter::Ptr par, outp) {
+		FrxComponentPtr knob = dynamic_cast<FrxControl*>(&getFrxControl(view))->
+			_addRelatedKnobToView(view, pr, par);
+		sc::Number x = pr->getX() + pr->getWidth()/2. + 15.;
+		sc::Number y = pr->getY() - 15.;
+		knob->setLocation(x,y);
+		out.push_back(knob);
+	}
+}
+void initExtraMap() 
+{
+	using namespace boost::assign;
+	extraMap = map_list_of
+		(Loki::TypeInfo(typeid(FrxPeakTrackerNode)), &addOutParameter)
+		(Loki::TypeInfo(typeid(FrxADSRNode)), &addOutParameter)
+	;
+}
+void addExtraContent(fgc::FrxCircuidViewPtr view, 
+	std::list<sdc::AComponentPtr> &out, 
+	FrxProcessorNodePtr pr)
+{
+	if (extraMap.empty()) {
+		initExtraMap();
+	}
+	ExtraMap::const_iterator it = extraMap.find(
+		typeid(*(pr.get()))
+	);
+	if (it==extraMap.end()) {
+		return;
+	}
+	it->second(view, out, pr);
+}
+} //namespace(s)
 void FrxControl::addProcessorToView(fgc::FrxCircuidViewPtr view, 
 		FrxProcessorNodePtr pr)
 {
@@ -583,8 +647,9 @@ void FrxControl::addProcessorToView(fgc::FrxCircuidViewPtr view,
 	// hover
 	FrxSelection::Ptr sel = view->getSelection();
 	sel->setVisible(true);
-	std::list<sdc::AComponentPtr> toAdd;
+	Components toAdd;
 	toAdd.push_back(pr);
+	addExtraContent(view, toAdd, pr);
 	toAdd.insert(toAdd.end(), pr->getInputs().begin(), pr->getInputs().end());
 	toAdd.insert(toAdd.end(), pr->getOutputs().begin(), pr->getOutputs().end());
 	sel->addElements(toAdd);

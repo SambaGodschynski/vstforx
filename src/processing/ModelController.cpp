@@ -169,8 +169,17 @@ IProcessor::Ptr ModelController::createPeakTracker() {
 		return IProcessor::Ptr();
 	pr::PeakTracker::Ptr res =  
 		pr::PeakTracker::create(graph->getHostInfo());
-	if ( graph->getJanitor()->add(res) != pr::Graph::Janitor::SUCCEED )
+	pr::Graph::Janitor::Ptr jan = graph->getJanitor();
+	// add processor to graph
+	if ( jan->add(res) != pr::Graph::Janitor::SUCCEED ) {
 		return IProcessor::Ptr();
+	}
+	// create invisible connection
+	if ( jan->connectNodes( res->getOutputNode(0), graph->getEndNode() )
+		!= pr::Graph::Janitor::SUCCEED )
+	{
+		return IProcessor::Ptr(); 
+	}
 	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
 	// register remove request excutor
 	installListeners(ad);
@@ -181,10 +190,18 @@ IProcessor::Ptr ModelController::createADSRTransformer() {
 	namespace pr = ::processing;
 	if (!graph)
 		return IProcessor::Ptr();
+	pr::Graph::Janitor::Ptr jan = graph->getJanitor();
 	pr::ADSRTrigger::Ptr res =  
 		pr::ADSRTrigger::create(graph->getHostInfo());
-	if ( graph->getJanitor()->add(res) != pr::Graph::Janitor::SUCCEED )
+	if ( jan->add(res) != pr::Graph::Janitor::SUCCEED ) {
 		return IProcessor::Ptr();
+	}
+	// create invisible connection
+	if ( jan->connectNodes( res->getOutputNode(0), graph->getEndNode() )
+		!= pr::Graph::Janitor::SUCCEED )
+	{
+		return IProcessor::Ptr(); 
+	}
 	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
 	// register remove request excutor
 	installListeners(ad);

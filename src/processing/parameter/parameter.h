@@ -554,9 +554,6 @@ public:
 	 * @param v
 	 */
 	virtual void setValue( VstNumber v ){
-		if (readOnly) {
-			return;
-		}
 		if ( updateLock ) return;
 		// avoid NaN. problems with serialize and deserialize
 		// see: issue #113
@@ -609,10 +606,17 @@ public:
 	 */
 	virtual VstNumber getMax() { return _max; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return true if parameter isReadOnly
+	 */
 	bool isReadOnly() const {
 		return readOnly;
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/** 
+	 * set parameter isReadOnly.
+	 * @note: this attribute is for query purpose only, it dosen't effect the setValue() function.
+	 */
 	void setReadOnly(bool val);
 };
 //============================================================================================================

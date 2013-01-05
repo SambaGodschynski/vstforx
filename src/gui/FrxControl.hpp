@@ -16,7 +16,6 @@
 #include <boost/function.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <loki/Singleton.h>
-#include <processing/IModelController.hpp>
 #include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui {
@@ -38,6 +37,9 @@ protected:
 		fgc::FrxComponentWPtr c, 
 		CtrlCmd cmd);
 public:
+	//-------------------------------------------------------------------------
+	fgc::FrxComponentPtr _addRelatedKnobToView(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c, frx::processing::IParameter::Ptr par);
 	//-------------------------------------------------------------------------
 	void registerComponent(fgc::FrxCircuidViewPtr view, fgc::FrxComponentPtr c);
 	//-------------------------------------------------------------------------
@@ -108,11 +110,6 @@ public:
 	virtual void getParameterCnOpTypeIds(fgc::FrxCircuidViewPtr view, 
 		ParameterCnOpTypeIds &out) const;
 }; // FrxControl
-extern boost::tuple<
-	frx::processing::IModelController::Ptr,
-	IViewModelMap::Ptr
->
-getControllerAndMap(fgc::FrxCircuidViewPtr circ);
 ///////////////////////////////////////////////////////////////////////////////	
 //-----------------------------------------------------------------------------
 template <class Archive>

@@ -6,12 +6,10 @@
  */
 
 #include "FrxProcessorBrowserCtrl.hpp"
-#include <gui/FrxControl.hpp>
 #include <gui/IViewModelMap.hpp>
 #include "FrxProcessorBrowser.hpp"
 #include <processing/IProcessor.hpp>
 #include "FrxComponent.hpp"
-#include <gui/FrxControl.hpp>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================

@@ -19,6 +19,8 @@
 #include <processing/IParameter.hpp>
 #include <processing/PlugInfo.h>
 #include <gui/HandyNamespaces.hpp>
+#include <processing/IModelController.hpp>
+#include "IViewModelMap.hpp"
 
 #define SAMBAG_CREATE_FRXCONTROL_CMD(frxctrl, view, frxcomponent, frxcmdfunction) \
   ((frxctrl).createCtrlCommandFunction(                                           \
@@ -145,6 +147,12 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 extern IFrxControl & getFrxControl(fgc::FrxCircuidViewPtr view);
+//-----------------------------------------------------------------------------
+extern boost::tuple<
+	frx::processing::IModelController::Ptr,
+	IViewModelMap::Ptr
+>
+getControllerAndMap(fgc::FrxCircuidViewPtr circ);
 }} // namespace(s)
 
 #endif /* SAMBAG_IFRXCONTROL_H */

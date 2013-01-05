@@ -177,7 +177,8 @@ void FrxIOUI<CIO>::installUI(sdc::AComponentPtr c) {
 	sd::IRadialPattern::Ptr pat = 
 		sd::getDiscoFactory()->createRadialPattern(sd::Point2D(0,0), 0, sd::Point2D(0,0), rad);
 	pat->addColorStop(col.setA(0.), 1.0);
-	pat->addColorStop(col.setA(0.5), 0.0);
+	pat->addColorStop(col.setA(0.5), 0.85);
+	pat->addColorStop(col.setA(0.0), 0.0);
 	stateActive = pat;	
 	setImage(_ioDef<CIO>(c));
 	Super::installUI(c);
