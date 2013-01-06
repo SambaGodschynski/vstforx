@@ -29,6 +29,9 @@ public:
 	typedef FrxComponentUI Super;
 protected:
 	//-------------------------------------------------------------------------
+	// missplaced location workaround
+	bool firstDraw;
+	//-------------------------------------------------------------------------
 	std::string upper, lower;
 	//-------------------------------------------------------------------------
 	sd::Point2D distance;
@@ -58,6 +61,8 @@ protected:
 	void installTargetListeners(FrxComponent::Ptr c);
 	//-------------------------------------------------------------------------
 	void updateText(const std::string &txt);
+	//-------------------------------------------------------------------------
+	void updateBounds(FrxFlag::Ptr flag);
 private:
 public:
 	//-------------------------------------------------------------------------

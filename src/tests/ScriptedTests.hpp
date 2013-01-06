@@ -38,6 +38,7 @@ private:
 	CPPUNIT_TEST_SUITE( ScriptedTests );
 	CPPUNIT_TEST( testOpenClose );
 	CPPUNIT_TEST( testSerializing );
+	CPPUNIT_TEST( issue255 );
 	CPPUNIT_TEST_SUITE_END();
 	TestPlugin * plug;
 	TestPlugin * createPlug();
@@ -52,6 +53,7 @@ public:
 	virtual void tearDown();
 	void testOpenClose();
 	void testSerializing();
+	void issue255();
 };
 
 } // namespace

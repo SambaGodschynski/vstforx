@@ -87,6 +87,22 @@ void FrxFlagUI::updateText(const std::string &txt) {
 	}
 }
 //-----------------------------------------------------------------------------
+void FrxFlagUI::updateBounds(FrxFlag::Ptr flag) {
+	sdc::AComponentPtr t = flag->getTarget();
+	if (!t) {
+		return;
+	}
+	sd::Rectangle r = t->getBounds();
+	sd::Point2D m (
+		r.x() + r.width()/2.,
+		r.y() + r.height()/2.
+	);
+	flag->setLocation( sd::Point2D( // update flag position
+		m.x(),
+		-flag->getHeight() + m.y() 
+	));
+}
+//-----------------------------------------------------------------------------
 void FrxFlagUI::onTargetPropertyChanged(void *, const sce::PropertyChanged &ev)
 {
 	FrxFlag::Ptr flag = _flag.lock();
@@ -95,16 +111,7 @@ void FrxFlagUI::onTargetPropertyChanged(void *, const sce::PropertyChanged &ev)
 	}
 
 	if (ev.getPropertyName() == sdc::AComponent::PROPERTY_BOUNDS) {
-		sd::Rectangle r;
-		ev.getNewValue(r);
-		sd::Point2D m (
-			r.x() + r.width()/2.,
-			r.y() + r.height()/2.
-		);
-		flag->setLocation( sd::Point2D( // update flag position
-			m.x(),
-			-flag->getHeight() + m.y() 
-		));
+		updateBounds(flag);
 		return;
 	}
 	if (ev.getPropertyName() == FrxComponent::PROPERTY_FLAG_TXT) {
@@ -155,10 +162,12 @@ void FrxFlagUI::onFlagPropertyChanged(void *, const sce::PropertyChanged &ev)
 	}
 	installTargetListeners(_new);
 	updateText(_new->getFlagText());
+
 }
 //-----------------------------------------------------------------------------
 void FrxFlagUI::installListeners(sdc::AComponentPtr c) {
 	Super::installListeners(c);
+	firstDraw = true;
 	FrxFlag::Ptr flag = boost::shared_dynamic_cast<FrxFlag>(c);
 	SAMBAG_ASSERT(flag);
 	flag->sce::EventSender<sce::PropertyChanged>::addTrackedEventListener(
@@ -169,6 +178,7 @@ void FrxFlagUI::installListeners(sdc::AComponentPtr c) {
 	if (!target) {
 		return;
 	}
+	updateText(flag->getFlagText());
 	installTargetListeners(target);
 }
 //-----------------------------------------------------------------------------
@@ -180,6 +190,10 @@ FrxFlagUI::Ptr FrxFlagUI::create() {
 //-----------------------------------------------------------------------------
 void FrxFlagUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	FrxFlag::Ptr flag = _flag.lock();
+	if (firstDraw) {
+		firstDraw = false;
+		updateBounds(flag);
+	}
 	FrxComponent::Ptr target;
 	if (!flag) {
 		return;

@@ -130,7 +130,17 @@ void ScriptedTests::testSerializing() {
 	sambag::disco::components::Window::startMainLoop();
 	scriptCtrl->join();
 	CPPUNIT_ASSERT(!failed);
+}
+//-----------------------------------------------------------------------------
+void ScriptedTests::issue255() {
+	sambag::disco::IResourceManager &rm =
+		sambag::disco::getResourceManager();
 	
+	scriptCtrl->appendJob( rm.getString("testScripts/issue255.lua") );
+	scriptCtrl->start();
+	sambag::disco::components::Window::startMainLoop();
+	scriptCtrl->join();
+	CPPUNIT_ASSERT(!failed);
 }
 ///////////////////////////////////////////////////////////////////////////////
 int testHostCallback(AEffect* effect, VstInt32 opcode, 
