@@ -17,24 +17,14 @@ void ViewModelMap::serialize(com::iArchive &ar, const unsigned int version) {
 	ar & boost::serialization::base_object<IViewModelMap> ( *this );
 	ar & bedroom;
 	ar & closed;
-	if (!isLocked()) {
-		SAMBAG_THROW(
-			sambag::com::exceptions::IllegalStateException,
-			"map was not locked while serializing."
-		);
-	}
+	ar & map;
 }
 //-----------------------------------------------------------------------------
 void ViewModelMap::serialize(com::oArchive &ar, const unsigned int version) {
-	if (!isLocked()) {
-		SAMBAG_THROW(
-			sambag::com::exceptions::IllegalStateException,
-			"map not locked."
-		);
-	}
 	ar & boost::serialization::base_object<IViewModelMap> ( *this );
 	ar & bedroom;
 	ar & closed;
+	ar & map;
 }
 //-----------------------------------------------------------------------------
 ViewModelMap::Ptr ViewModelMap::clone() const {
