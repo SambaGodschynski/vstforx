@@ -140,10 +140,8 @@ bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj, FrxCircuidViewWPtr _view)
 	IViewModelMap::Ptr map;
 	boost::tie(ctrl, map) = getControllerAndMap(view);
 	ViewObject::Ptr obj = map->getViewObject(mObj);
-	if (!obj) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"access to view object failed while removing model obj."
-		);
+	if (!obj) { // nothing to do anymore
+		return true;
 	}
 	
 	FrxComponent::Ptr c = boost::shared_dynamic_cast<FrxComponent>(obj);
