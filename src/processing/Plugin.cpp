@@ -18,6 +18,10 @@ enum { ALL_CHANNEL = 16 };
 // Plugin
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
+void Plugin::setStatusMsg( const std::string &msg ) {
+	statusMsg = msg;
+}
+//------------------------------------------------------------------------------------------------------------
 void Plugin::initListener() {
 	Parameter::ParameterListenerFunction xC = boost::bind( 
 		&Plugin::paramEditorPosXChanged, this, _1, _2 

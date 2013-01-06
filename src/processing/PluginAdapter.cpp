@@ -87,4 +87,9 @@ std::string PluginAdapter::getName() const {
 	Adaptee::Ptr plug = getPlugin();
 	return plug->getPlugName();
 }
+//-----------------------------------------------------------------------------
+std::string PluginAdapter::getStatusMessage() const {
+	Adaptee::Ptr plug = getPlugin();
+	return plug->getStatusMsg();
+}
 }} // namespace(s)

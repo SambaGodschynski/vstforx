@@ -103,7 +103,7 @@ void VSTPlugin::initPlug( VSTPlugin &plug ) {
 	plug.setType ( PluginInfo::VST2X );
 
 	if ( plug.aEff == &nullAEff ) {
-		plug.setPlugName( "could not load " + plug.getLocation() );
+		plug.setStatusMsg( "could not load " + plug.getLocation() );
 	}
 	
 	// can receive vst events?

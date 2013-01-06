@@ -21,9 +21,15 @@ void FrxComponent::setFlagText(const std::string &txt) {
 	firePropertyChanged(PROPERTY_FLAG_TXT, old, flagTxt);
 }
 //-----------------------------------------------------------------------------
+void FrxComponent::postConstructor() {
+	Super::postConstructor();
+	if (flagTxt=="") {
+		setFlagText(getName());
+	}
+}
+//-----------------------------------------------------------------------------
 FrxComponent::FrxComponent() {
 	setName("FrxComponent");
-	setFlagText(getName());
 }
 //-----------------------------------------------------------------------------
 sdc::ui::AComponentUIPtr 

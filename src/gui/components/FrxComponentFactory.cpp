@@ -95,6 +95,7 @@ FrxProcessorNodePtr createPlugin(FrxCircuidViewPtr circ, ::processing::PluginInf
 		boost::shared_dynamic_cast<frx::processing::IPluginAdapter>(mObj);
 	if (plAd) {
 		viewObj->setName(plAd->getName());
+		viewObj->setFlagText(plAd->getName() + "/" + plAd->getStatusMessage());
 	}
 	viewObj->configIO(mObj->getNumInputs(), mObj->getNumOutputs());
 	registerProcessor(map, viewObj, mObj);

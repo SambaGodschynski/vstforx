@@ -63,6 +63,8 @@ public:
 	typedef boost::shared_ptr<Plugin> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
+	std::string statusMsg;
+	//--------------------------------------------------------------------------------------------------------
 	parameter::Parameter::Connection paramEditorOpenConnection;
 	//--------------------------------------------------------------------------------------------------------
 	PluginInfo pluginInfo;
@@ -104,6 +106,10 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	Plugin( frx::processing::IHostInfo::Ptr hostInfo, const string &location, size_t numInputs = 1, size_t numOutputs = 1 );
 public:
+	//--------------------------------------------------------------------------------------------------------
+	const std::string & getStatusMsg() const { return statusMsg; }
+	//--------------------------------------------------------------------------------------------------------
+	void setStatusMsg( const std::string &msg );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Wird von GPluginController benoetigt um bei bedarf verbindung zu blockieren.

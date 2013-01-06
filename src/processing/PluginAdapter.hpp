@@ -56,6 +56,8 @@ public:
 	//-------------------------------------------------------------------------
 	virtual void onEditorIdle();
 	//-------------------------------------------------------------------------
+	virtual std::string getStatusMessage() const;
+	//-------------------------------------------------------------------------
 	virtual std::string getName() const;
 }; // PluginAdapter
 }} // namespace(s)

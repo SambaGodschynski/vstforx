@@ -43,6 +43,7 @@ protected:
 	}
 	//-------------------------------------------------------------------------
 	virtual void postConstructor() {
+		Super::postConstructor();
 		ProcessorType::init( getPtr() );
 	}
 private:
