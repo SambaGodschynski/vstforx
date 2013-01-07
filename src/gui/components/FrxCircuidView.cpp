@@ -165,6 +165,21 @@ FrxCircuidView::~FrxCircuidView() {
 
 }
 //-----------------------------------------------------------------------------
+void FrxCircuidView::open() {
+	fireViewEvent(FrxCircuidViewEvent::OnOpening);
+}
+//-----------------------------------------------------------------------------
+void FrxCircuidView::close() {
+	fireViewEvent(FrxCircuidViewEvent::OnClosing);
+}
+//-----------------------------------------------------------------------------
+void FrxCircuidView::fireViewEvent(FrxCircuidViewEvent::Type type, FrxComponentPtr c)
+{
+	EventSender<FrxCircuidViewEvent>::notifyListeners( this, 
+		FrxCircuidViewEvent(type, c)
+	);
+}
+//-----------------------------------------------------------------------------
 void FrxCircuidView::remove(sdc::AComponentPtr comp) {
 	SAMBAG_BEGIN_SYNCHRONIZED(getTreeLock())
 	FrxComponent::Ptr frxC = boost::shared_dynamic_cast<FrxComponent>(comp);
@@ -174,9 +189,7 @@ void FrxCircuidView::remove(sdc::AComponentPtr comp) {
 	}
 	content->remove(comp);
 	if (frxC) {
-		EventSender<FrxCircuidViewEvent>::notifyListeners( this, 
-			FrxCircuidViewEvent(FrxCircuidViewEvent::ComponentRemoved, frxC)
-		);
+		fireViewEvent(FrxCircuidViewEvent::ComponentRemoved, frxC);
 	}
 	SAMBAG_END_SYNCHRONIZED
 }

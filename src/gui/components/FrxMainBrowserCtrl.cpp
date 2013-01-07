@@ -63,18 +63,18 @@ namespace {
 	}
 }
 void FrxMainBrowserCtrl::initAdderMap() {
-	adderMap = boost::assign::map_list_of
-	(_type<FrxPluginNode>(), boost::bind(&FrxMainBrowserCtrl::addPluginToSceneTree, this, _1))
-	(_type<FrxVolumeNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1))
-	(_type<FrxPanNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1))
-	(_type<FrxInStepNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1))
-	(_type<FrxOutStepNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1))
-	(_type<FrxInSwitchNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1))
-	(_type<FrxOutSwitchNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1))
-	(_type<FrxADSRNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1))
-	(_type<FrxPeakTrackerNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1))
-	(_type<FrxStdKnob>(), boost::bind(&FrxMainBrowserCtrl::addParameterToSceneTree, this, _1))
-	(_type<ParameterCn>(), boost::bind(&FrxMainBrowserCtrl::addConnectionToSceneTree, this, _1));
+	handlerMap = boost::assign::map_list_of
+	(_type<FrxPluginNode>(), boost::bind(&FrxMainBrowserCtrl::addPluginToSceneTree, this, _1, _2))
+	(_type<FrxVolumeNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
+	(_type<FrxPanNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
+	(_type<FrxInStepNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
+	(_type<FrxOutStepNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
+	(_type<FrxInSwitchNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
+	(_type<FrxOutSwitchNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
+	(_type<FrxADSRNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
+	(_type<FrxPeakTrackerNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
+	(_type<FrxStdKnob>(), boost::bind(&FrxMainBrowserCtrl::addParameterToSceneTree, this, _1, _2))
+	(_type<ParameterCn>(), boost::bind(&FrxMainBrowserCtrl::addConnectionToSceneTree, this, _1, _2));
 	
 }
 //-----------------------------------------------------------------------------
@@ -106,7 +106,10 @@ void FrxMainBrowserCtrl::onBrowserOk(void *src,
 void FrxMainBrowserCtrl::onFrxViewChanged(void *, const FrxCircuidViewEvent &ev) 
 {
 	if (ev.type == FrxCircuidViewEvent::ComponentAdded) {
-		addToSceneTree(ev.component);
+		addToSceneTree(ev.component, Add);
+	}
+	if (ev.type == FrxCircuidViewEvent::ComponentUpdated) {
+		addToSceneTree(ev.component, Update);
 	}
 	// removing listeners will be installend while adding component
 	// to scenetree(because we have the concerning tree nodes there. 
@@ -364,7 +367,7 @@ void FrxMainBrowserCtrl::parameterLabelRedraw( sdc::AComponentPtr c,
 	processing::IParameter::Ptr p = _p.lock();
 	FrxParameterLabel::Ptr label = 
 		boost::shared_dynamic_cast<FrxParameterLabel>(c);
-	if (!label)
+	if (!label || !p)
 		return;
 	label->setText(label->getText() + ":" + p->getDisplay());
 	label->setValue(p->getValue());
@@ -523,7 +526,7 @@ void FrxMainBrowserCtrl::onSceneIOChanged(void*,
 }
 //-----------------------------------------------------------------------------
 Tree::Node FrxMainBrowserCtrl::
-addPluginToSceneTree(FrxComponentPtr c)
+addPluginToSceneTree(FrxComponentPtr c, Reason reason)
 {
 	
 	FrxCircuidViewPtr view = wView.lock();
@@ -548,7 +551,8 @@ addPluginToSceneTree(FrxComponentPtr c)
 	return plugin;
 }
 //-----------------------------------------------------------------------------
-Tree::Node FrxMainBrowserCtrl::addProcessorToSceneTree(FrxComponentPtr c) {
+Tree::Node FrxMainBrowserCtrl::addProcessorToSceneTree(FrxComponentPtr c, Reason reason)
+{
 	
 	FrxCircuidViewPtr view = wView.lock();
 	FrxProcessorNode::Ptr pr = 
@@ -578,7 +582,8 @@ Tree::Node FrxMainBrowserCtrl::addProcessorToSceneTree(FrxComponentPtr c) {
 	return newNode;
 }
 //-----------------------------------------------------------------------------
-Tree::Node FrxMainBrowserCtrl::addParameterToSceneTree(FrxComponentPtr c) {
+Tree::Node FrxMainBrowserCtrl::addParameterToSceneTree(FrxComponentPtr c, Reason reason)
+{
 	FrxCircuidViewPtr view = wView.lock();
 	FrxParameter::Ptr parComp = 
 		boost::shared_dynamic_cast<FrxParameter>(c);
@@ -603,7 +608,38 @@ Tree::Node FrxMainBrowserCtrl::addParameterToSceneTree(FrxComponentPtr c) {
 	return newNode;
 }
 //-----------------------------------------------------------------------------
-Tree::Node FrxMainBrowserCtrl::addConnectionToSceneTree(FrxComponentPtr c) {
+FrxMainBrowserCtrl::Id FrxMainBrowserCtrl::getId(FrxComponentPtr c) const {
+	return (Id)c.get();
+}
+//-----------------------------------------------------------------------------
+FrxMainBrowserCtrl::TreeNode FrxMainBrowserCtrl::getTreeNode(Id id) const {
+	NodeMap::const_iterator it = nodeMap.find(id);
+	if (it==nodeMap.end()) {
+		return Tree::NULL_NODE;
+	}
+	return it->second;
+}	
+//-----------------------------------------------------------------------------
+Tree::Node FrxMainBrowserCtrl::updateConnectionInSceneTree(FrxComponentPtr c) {
+	TreeNode n = getTreeNode(getId(c));
+	if (n==Tree::NULL_NODE) {
+		return n;
+	}
+	FrxColumnBrowserPtr browser = this->browser.lock();
+	if (!browser) {
+		return Tree::NULL_NODE;
+	}
+	Tree::Ptr tree = browser->getBrowserImpl();
+	tree->removeNode(n);
+	// TODO: cheap approach
+	return addConnectionToSceneTree(c, Add);
+}	
+//-----------------------------------------------------------------------------
+Tree::Node FrxMainBrowserCtrl::addConnectionToSceneTree(FrxComponentPtr c, Reason reason)
+{
+	if (reason==Update) {
+		return updateConnectionInSceneTree(c);
+	}
 	FrxCircuidViewPtr view = wView.lock();
 	FrxConnection::Ptr pr = 
 		boost::shared_dynamic_cast<FrxConnection>(c);
@@ -613,7 +649,7 @@ Tree::Node FrxMainBrowserCtrl::addConnectionToSceneTree(FrxComponentPtr c) {
 	}
 	Tree::Ptr tree = browser->getBrowserImpl();
 	Tree::Node newNode = tree->addNode(scene_connections);
-
+	nodeMap[getId(c)] = newNode;
 	BrowserNode browserNode(c->getName(), true);
 	addModelObjectParameter(pr, newNode);
 	tree->setNodeData(newNode, browserNode);
@@ -621,18 +657,18 @@ Tree::Node FrxMainBrowserCtrl::addConnectionToSceneTree(FrxComponentPtr c) {
 	return newNode;
 }
 //-----------------------------------------------------------------------------
-void FrxMainBrowserCtrl::addToSceneTree(FrxComponentPtr c) {
+void FrxMainBrowserCtrl::addToSceneTree(FrxComponentPtr c, Reason reason) {
 	if (!sceneTreeInit) 
 		return;
-	if (adderMap.empty()) {
+	if (handlerMap.empty()) {
 		initAdderMap();
 	}
-	AdderMap::const_iterator it = adderMap.find(
+	HandlerMap::const_iterator it = handlerMap.find(
 		Loki::TypeInfo(typeid(*(c.get())))
 	);
-	if (it==adderMap.end())
+	if (it==handlerMap.end())
 		return;
-	Tree::Node res = it->second(c);
+	Tree::Node res = it->second(c, reason);
 	if (res==Tree::NULL_NODE)
 		return;
 	c->FrxComponent::EventSender<OnRemoving>::addTrackedEventListener(
@@ -669,7 +705,7 @@ BrowserNode::ResultPtr FrxMainBrowserCtrl::createSceneTree(const Tree::Node &par
 		if (!fc) {
 			continue;
 		}
-		addToSceneTree(fc);
+		addToSceneTree(fc, Add);
 	}
 	tree->updateLists();
 	BrowserNode::ResultPtr();

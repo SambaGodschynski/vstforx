@@ -22,6 +22,7 @@
 #include "FrxComponent.hpp"
 #include <processing/pluginTypes/VstShellPlugin.hpp>
 #include <sambag/disco/components/events/ActionEvent.hpp>
+#include <boost/unordered_map.hpp>
 
 namespace frx { namespace gui { namespace components {
 struct FrxCircuidViewEvent;
@@ -114,33 +115,47 @@ protected:
 	BrowserNode::ResultPtr 
 	fillPluginFolder(TreeNode parent, DBFolderID dbFolderId);
 	//-------------------------------------------------------------------------
-	void addToSceneTree(FrxComponentPtr c);
-	//-------------------------------------------------------------------------
 	void showShellSelection(const ::processing::PluginInfo &plugin, 
 		const ::processing::ShellPluginInfos &infos);
 	//-------------------------------------------------------------------------
 	void onShellPluginSelected(void*, const sdc::events::ActionEvent &ev);
 private:
 	//-------------------------------------------------------------------------
+	typedef int Id;
+	enum { NoId = INT_MAX };
+	typedef boost::unordered_map<Id, TreeNode> NodeMap; 
+	//-------------------------------------------------------------------------
+	Id getId(FrxComponentPtr c) const;
+	//-------------------------------------------------------------------------
+	TreeNode getTreeNode(Id id) const;
+	//-------------------------------------------------------------------------
+	NodeMap nodeMap;
+	//-------------------------------------------------------------------------
 	sambag::com::ArithmeticWrapper<bool> sceneTreeInit;
 	//-------------------------------------------------------------------------
-	typedef boost::function<Tree::Node(FrxComponentPtr)> 
-		SceneTreeAdder;
-	typedef std::map<Loki::TypeInfo, SceneTreeAdder> AdderMap;
-	AdderMap adderMap;
+	enum Reason { Add, Update };
+	typedef boost::function<Tree::Node(FrxComponentPtr, Reason)> 
+		SceneTreeEventHandler;
+	typedef std::map<Loki::TypeInfo, SceneTreeEventHandler> HandlerMap;
+	HandlerMap handlerMap;
 	//-------------------------------------------------------------------------
 	void initAdderMap();
 	//-------------------------------------------------------------------------
-	Tree::Node addPluginToSceneTree(FrxComponentPtr c);
+	Tree::Node addPluginToSceneTree(FrxComponentPtr c, Reason reason);
 	//-------------------------------------------------------------------------
-	Tree::Node addProcessorToSceneTree(FrxComponentPtr c);
+	Tree::Node addProcessorToSceneTree(FrxComponentPtr c, Reason reason);
 	//-------------------------------------------------------------------------
-	Tree::Node addParameterToSceneTree(FrxComponentPtr c);
+	Tree::Node addParameterToSceneTree(FrxComponentPtr c, Reason reason);
 	//-------------------------------------------------------------------------
-	Tree::Node addConnectionToSceneTree(FrxComponentPtr c);
+	Tree::Node updateConnectionInSceneTree(FrxComponentPtr c);
+	//-------------------------------------------------------------------------
+	Tree::Node addConnectionToSceneTree(FrxComponentPtr c, Reason reason);
 	//-------------------------------------------------------------------------
 	void handleBrowserNodeResult(BrowserNode::ResultPtr res);
 	//-------------------------------------------------------------------------
+protected:
+	//-------------------------------------------------------------------------
+	void addToSceneTree(FrxComponentPtr c, Reason reason);
 public:
 	//-------------------------------------------------------------------------
 	void createParameterNode(BrowserNode &out, 

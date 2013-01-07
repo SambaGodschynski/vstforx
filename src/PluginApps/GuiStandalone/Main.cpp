@@ -194,8 +194,8 @@ bool processArguments(int narg, char **args) {
 void onConsoleThread(bool *consoleRunning) {
 	while (*consoleRunning) {
 		std::string input;
-		cout<<">";
-		cin>>input;
+		std::cout<<">";
+		std::getline(std::cin, input);
 		if (input=="exit()" || input=="quit()" || input=="bye()") {
 			sambag::disco::components::getWindowToolkit()->quit();
 			break;
@@ -220,6 +220,7 @@ int main(int narg, char **args) {
 	}
 	scriptCtrl->appendJob( "frxOpenPlugin()" );
 	scriptCtrl->appendJob( "frxOpenEditor()" );
+	scriptCtrl->appendJob( "require\"scripts/util\"" );
 	processScripts();
 	scriptCtrl->start();
 	// start console thread
@@ -235,6 +236,6 @@ int main(int narg, char **args) {
 	scriptCtrl->join();
 	consoleThread.join();
 	tearDown();
-	std::cout<<"by dave"<<std::endl;
+	std::cout<<"bye dave."<<std::endl;
 	return 0;
 }

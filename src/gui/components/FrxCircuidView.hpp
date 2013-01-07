@@ -31,10 +31,18 @@
 
 namespace frx { namespace gui { namespace components {
 struct FrxCircuidViewEvent {
-	enum Type{ComponentAdded, ComponentRemoved};
+	enum Type{ComponentAdded, 
+		ComponentRemoved, 
+		ComponentUpdated,
+		OnSerializing,
+		OnDeserializing,
+		OnOpening,
+		OnClosing
+	};
 	Type type;
 	FrxComponentPtr component;
-	FrxCircuidViewEvent(Type type, FrxComponentPtr component) :
+	FrxCircuidViewEvent(Type type, 
+		FrxComponentPtr component = FrxComponentPtr()) :
 		type(type),
 		component(component)
 	{
@@ -100,6 +108,9 @@ protected:
 	void setStatusMessage(const std::string &txt, const std::string &iconname);
 private:
 	//-------------------------------------------------------------------------
+	void fireViewEvent(FrxCircuidViewEvent::Type, 
+		FrxComponentPtr c = FrxComponentPtr());
+	//-------------------------------------------------------------------------
 	EditorResizeHandler rszHandler;
 	//-------------------------------------------------------------------------
 	std::string usrMsg;
@@ -132,9 +143,17 @@ private:
 	//-------------------------------------------------------------------------
 	template <typename Archive> 
 	void serialize(Archive &ar, const unsigned int version) {
+		fireViewEvent(Archive::is_loading::value ? 
+			FrxCircuidViewEvent::OnDeserializing :
+			FrxCircuidViewEvent::OnSerializing
+		);
 		serializeSelfPtr(ar, version);
 	}
 public:
+	//-------------------------------------------------------------------------
+	void open();
+	//-------------------------------------------------------------------------
+	void close();
 	//-------------------------------------------------------------------------
 	template <typename Archive> 
 	void serializeComponents(Archive &ar, const unsigned int version) {

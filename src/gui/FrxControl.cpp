@@ -92,17 +92,13 @@ ExtraWindows extraWindows;
 //-----------------------------------------------------------------------------
 bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj, FrxCircuidViewWPtr _view);
 //-----------------------------------------------------------------------------
-typedef boost::unordered_set<FrxParameter::Ptr> IgnoreKnobEvent;
-IgnoreKnobEvent ignoreKnobEvent;
 void ignoreFrxParameterEvents(FrxParameter::Ptr vp, bool val) {
-	if (val) {
-		ignoreKnobEvent.insert(vp);
-	} else {
-		ignoreKnobEvent.erase(vp);
-	}
+	vp->putClientProperty("Ctrl.edit", val);
 }
 bool isIgnored(FrxParameter::Ptr p) {
-	return ignoreKnobEvent.find(p) != ignoreKnobEvent.end();
+	bool val = false;
+	p->getClientProperty("Ctrl.edit", val);
+	return val;
 }
 //-----------------------------------------------------------------------------
 sambag::com::RecursiveMutex parameterMutex;
@@ -113,16 +109,15 @@ void knobChanged(void *src,
 {
 	FrxParameter::Ptr knob = _knob.lock();
 	// ignore parameter->knob events
-	SAMBAG_BEGIN_SYNCHRONIZED(parameterMutex)
-		if (isIgnored(knob)) {
-			return;
-		}
-		frx::processing::IParameter::Ptr par = _par.lock();
-		if (!knob || !par)
-			return;
-		typedef frx::processing::IParameter::Number Number;
-		par->setValue((Number)ev.getSrc().getValue());
-	SAMBAG_END_SYNCHRONIZED
+	if (isIgnored(knob)) {
+		return;
+	}
+	frx::processing::IParameter::Ptr par = _par.lock();
+	if (!knob || !par)
+		return;
+	typedef frx::processing::IParameter::Number Number;
+	par->setValue((Number)ev.getSrc().getValue());
+	
 }
 //-----------------------------------------------------------------------------
 typedef std::pair<frx::processing::IParameter::WPtr, 
@@ -136,12 +131,10 @@ struct RefreshParameter {
 		if (!p || !vp) {
 			return;
 		}
-		SAMBAG_BEGIN_SYNCHRONIZED(parameterMutex)
-			ignoreFrxParameterEvents(vp, true);
-			vp->getRangeModel()->setValue(p->getValue());
-			vp->setFlagText( p->getName() + "/" + p->getDisplay() );
-			ignoreFrxParameterEvents(vp, false);
-		SAMBAG_END_SYNCHRONIZED
+		ignoreFrxParameterEvents(vp, true);
+		vp->getRangeModel()->setValue(p->getValue());
+		vp->setFlagText( p->getName() + "/" + p->getDisplay() );
+		ignoreFrxParameterEvents(vp, false);
 	}
 };
 void parameterChanged(void *src, float value, 
@@ -149,7 +142,7 @@ void parameterChanged(void *src, float value,
 	FrxParameter::WPtr _knob)
 {
 	TimedUpdater<ParameterRefreshInfo,
-	RefreshParameter, 10>::instance().update(
+	RefreshParameter, 50>::instance().update(
 		std::make_pair(_par, _knob)
 	);
 }
@@ -351,11 +344,48 @@ FrxPluginEditor::Ptr createPluginEditor(fgc::FrxCircuidViewPtr view,
 	return ed;
 }
 //-----------------------------------------------------------------------------
+void onComponentRemoving(void *src, const OnRemoving &ev, sdc::WindowWPtr _win) 
+{
+	sdc::Window::Ptr win = _win.lock();
+	if (!win) {
+		return;
+	}
+	win->close();
+}
+//-----------------------------------------------------------------------------
+void onViewEvent(void *src, const FrxCircuidViewEvent &ev, sdc::WindowWPtr _win) 
+{
+	if (ev.type != FrxCircuidViewEvent::OnClosing) {
+		return;
+	}
+	sdc::Window::Ptr win = _win.lock();
+	if (!win) {
+		return;
+	}
+	win->close();
+}
+//-----------------------------------------------------------------------------
+void installBrowserListeners(sdc::WindowWPtr _browser, fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c = fgc::FrxComponentPtr() ) 
+{
+	if (c) {
+		c->sce::EventSender<OnRemoving>::addTrackedEventListener(
+			boost::bind(&onComponentRemoving, _1, _2, _browser),
+			_browser
+		);
+	}
+	view->sce::EventSender<FrxCircuidViewEvent>::addTrackedEventListener(
+		boost::bind(&onViewEvent, _1, _2, _browser),
+		_browser
+	);
+}
+//-----------------------------------------------------------------------------
 FrxColumnBrowser::Ptr openMainBrowser(fgc::FrxCircuidViewPtr view, 
-		fgc::FrxComponentPtr c)
+		fgc::FrxComponentPtr alwaysNull)
 {
 	FrxMainBrowser::Ptr browser;
 	browser = FrxMainBrowser::create( view->getLastContainer<sdc::Window>() );
+	installBrowserListeners(browser, view);
 	getFrxControl(view).addWindow(browser, "FrxControl.extraWindow");
 	browser->validate();
 	browser->pack();
@@ -828,17 +858,6 @@ FrxControl::createCtrlCommandFunction(fgc::FrxCircuidViewPtr view,
 		cmdF
 	);
 }
-namespace {
-//-----------------------------------------------------------------------------
-void onComponentRemoving(void *src, const OnRemoving &ev, sdc::WindowWPtr _win) 
-{
-	sdc::Window::Ptr win = _win.lock();
-	if (!win) {
-		return;
-	}
-	win->close();
-}
-} // namespace(s)
 //-----------------------------------------------------------------------------
 void FrxControl::showProcessorDetails(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c)
@@ -846,12 +865,8 @@ void FrxControl::showProcessorDetails(fgc::FrxCircuidViewPtr view,
 	// create browser
 	FrxProcessorBrowser::Ptr browser = 
 		openDetailsBrowser<FrxProcessorBrowser>(view, c);
-	
+	installBrowserListeners(browser, view, c);
 	addWindow(browser);
-	c->sce::EventSender<OnRemoving>::addTrackedEventListener(
-		boost::bind(&onComponentRemoving, _1, _2, sdc::WindowWPtr(browser)),
-		browser
-	);
 	browser->setTitle(c->getName() + " details");
 	FrxProcessorBrowserCtrl::Ptr ctrl = FrxProcessorBrowserCtrl::create();
 	ctrl->setComponent(c);
@@ -866,10 +881,7 @@ void FrxControl::showConnectionDetails(fgc::FrxCircuidViewPtr view,
 	FrxConnectionBrowser::Ptr browser = 
 		openDetailsBrowser<FrxConnectionBrowser>(view, c);
 	addWindow(browser);
-	c->sce::EventSender<OnRemoving>::addTrackedEventListener(
-		boost::bind(&onComponentRemoving, _1, _2, sdc::WindowWPtr(browser)),
-		browser
-	);
+	installBrowserListeners(browser, view, c);
 	browser->setTitle(c->getName() + " details");
 	FrxConnectionBrowserCtrl::Ptr ctrl = FrxConnectionBrowserCtrl::create();
 	ctrl->setComponent(c);
@@ -892,10 +904,7 @@ void FrxControl::openPluginEditor(fgc::FrxCircuidViewPtr view,
 	// create editor
 	FrxPluginEditor::Ptr ed = createPluginEditor(view, c);
 	addWindow(ed);
-	c->sce::EventSender<OnRemoving>::addTrackedEventListener(
-		boost::bind(&onComponentRemoving, _1, _2, sdc::WindowWPtr(ed)),
-		ed
-	);
+	installBrowserListeners(ed, view, c);
 	FrxPluginEditorCtrl::Ptr pluginCtrl = FrxPluginEditorCtrl::create();
 	pluginCtrl->setPlugin(plugin);
 	ed->setControl(pluginCtrl);
@@ -914,6 +923,10 @@ void FrxControl::addParamterCnOp(fgc::FrxCircuidViewPtr view,
 	if (!cn)
 		return;
 	mctrl->addParameterCnOp(cn, id);
+	view->sce::EventSender<FrxCircuidViewEvent>::notifyListeners(
+		view.get(),
+		FrxCircuidViewEvent(FrxCircuidViewEvent::ComponentUpdated, c)
+	);
 }
 //-----------------------------------------------------------------------------
 void FrxControl::

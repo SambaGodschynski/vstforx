@@ -126,7 +126,13 @@ void VstForxEditor::setCircuidView(FrxCircuidViewPtr view) {
 		return;
 	}
 	FrxCircuidViewPtr old = circView;
+	if (old) {
+		old->close();
+	}
 	circView = view;
+	if (circView) {
+		circView->open();
+	}
 
 	if (window) {
 		if (old) { // remove old view
