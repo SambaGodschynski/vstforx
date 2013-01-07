@@ -8,6 +8,7 @@
 #include "FrxConnection.hpp"
 #include "ui/FrxConnectionUI.hpp"
 #include "FrxCircuidView.hpp"
+#include <gui/IFrxControl.hpp>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -48,7 +49,7 @@ void FrxConnection::onComponentRemoving(void *src, const OnRemoving &ev) {
 	FrxConnection::Ptr saftey = getPtr(); // hold object
 	srcConnection.disconnect();
 	dstConnection.disconnect();
-	ev.view->remove(getPtr());
+	getFrxControl(ev.view).removeComponent(ev.view, getPtr());
 }
 //-----------------------------------------------------------------------------
 void FrxConnection::setSrcComponent(FrxComponent::Ptr a) {

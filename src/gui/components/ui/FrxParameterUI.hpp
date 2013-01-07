@@ -181,12 +181,15 @@ void FrxParameterUI<PT>::mousePressed(const sdc::events::MouseEvent &ev) {
 //-----------------------------------------------------------------------------
 template <class PT>
 void FrxParameterUI<PT>::mouseReleased(const sdc::events::MouseEvent &ev) {
-	if ( hitsCorona(ev.getSource()->getParent(), ev.getLocation()) )
+	sdc::AComponent::Ptr src = ev.getSource();
+	if ( hitsCorona(src->getParent(), ev.getLocation()) )
 		return;
 	// knob used and mouse is outside of corona now:
 	sdc::events::MouseEvent nEv = ev;
-	nEv.updateSoure(ev.getSource()->getParent());
+	nEv.updateSoure(src->getParent());
 	Super::mouseExited(nEv);
+	// endEdit
+	src->putClientProperty("Parameter.edit", (bool)false);
 }
 //-----------------------------------------------------------------------------
 template <class PT>
@@ -211,6 +214,9 @@ void FrxParameterUI<PT>::mouseMoved(const sdc::events::MouseEvent &ev) {
 //-----------------------------------------------------------------------------
 template <class PT>
 void FrxParameterUI<PT>::mouseDragged(const sdc::events::MouseEvent &ev) {
+	sdc::AComponent::Ptr src = ev.getSource();
+	// beginEdit
+	src->putClientProperty("Parameter.edit", (bool)true);
 }
 //-----------------------------------------------------------------------------
 template <class PT>

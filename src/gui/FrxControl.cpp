@@ -24,6 +24,7 @@
 #include <sambag/disco/components/MenuSelectionManager.hpp>
 #include <sambag/disco/components/Window.hpp>
 #include <sambag/com/Exception.hpp>
+#include <sambag/com/Thread.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <sambag/com/events/PropertyChanged.hpp>
 #include <processing/IModelController.hpp>
@@ -35,6 +36,7 @@
 #include <boost/foreach.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/assign.hpp>
+#include <boost/unordered_set.hpp>
 #include "components/FrxSerializationRegister.hpp"
 #include <gui/components/SetupWindow.hpp>
 #include <processing/IParameter.hpp>
@@ -90,17 +92,37 @@ ExtraWindows extraWindows;
 //-----------------------------------------------------------------------------
 bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj, FrxCircuidViewWPtr _view);
 //-----------------------------------------------------------------------------
+typedef boost::unordered_set<FrxParameter::Ptr> IgnoreKnobEvent;
+IgnoreKnobEvent ignoreKnobEvent;
+void ignoreFrxParameterEvents(FrxParameter::Ptr vp, bool val) {
+	if (val) {
+		ignoreKnobEvent.insert(vp);
+	} else {
+		ignoreKnobEvent.erase(vp);
+	}
+}
+bool isIgnored(FrxParameter::Ptr p) {
+	return ignoreKnobEvent.find(p) != ignoreKnobEvent.end();
+}
+//-----------------------------------------------------------------------------
+sambag::com::RecursiveMutex parameterMutex;
 void knobChanged(void *src, 
 	const sdc::DefaultBoundedRangeModelChanged &ev,
 	frx::processing::IParameter::WPtr _par,
 	FrxParameter::WPtr _knob) 
 {
 	FrxParameter::Ptr knob = _knob.lock();
-	frx::processing::IParameter::Ptr par = _par.lock();
-	if (!knob || !par)
-		return;
-	typedef frx::processing::IParameter::Number Number;
-	par->setValue((Number)ev.getSrc().getValue());
+	// ignore parameter->knob events
+	SAMBAG_BEGIN_SYNCHRONIZED(parameterMutex)
+		if (isIgnored(knob)) {
+			return;
+		}
+		frx::processing::IParameter::Ptr par = _par.lock();
+		if (!knob || !par)
+			return;
+		typedef frx::processing::IParameter::Number Number;
+		par->setValue((Number)ev.getSrc().getValue());
+	SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 typedef std::pair<frx::processing::IParameter::WPtr, 
@@ -114,8 +136,12 @@ struct RefreshParameter {
 		if (!p || !vp) {
 			return;
 		}
-		vp->getRangeModel()->setValue(p->getValue());
-		vp->setFlagText( p->getName() + "/" + p->getDisplay() );
+		SAMBAG_BEGIN_SYNCHRONIZED(parameterMutex)
+			ignoreFrxParameterEvents(vp, true);
+			vp->getRangeModel()->setValue(p->getValue());
+			vp->setFlagText( p->getName() + "/" + p->getDisplay() );
+			ignoreFrxParameterEvents(vp, false);
+		SAMBAG_END_SYNCHRONIZED
 	}
 };
 void parameterChanged(void *src, float value, 
@@ -682,22 +708,13 @@ void FrxControl::removeComponent(FrxCircuidViewPtr _view, FrxComponentPtr _c)
 	IViewModelMap::Ptr map;
 	boost::tie(ctrl, map) = getControllerAndMap(view);
 	frx::processing::ModelObject::Ptr mObj = map->getModelObject(c);
-	if (!mObj) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"access to model object failed while removing."
-		);
-	}
-
-	if (!mObj->requestRemove(mObj)) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"removing model object failed."
-		);
+	if (mObj) {
+		mObj->requestRemove(mObj);
 	}
 
 	map->remove(c, mObj);
 	view->remove(c);
 	view->AContainer::redraw();
-	
 }
 //-----------------------------------------------------------------------------
 sdc::PopupMenuPtr FrxControl::getCircuidViewPopup(FrxCircuidViewPtr c) {
@@ -811,6 +828,17 @@ FrxControl::createCtrlCommandFunction(fgc::FrxCircuidViewPtr view,
 		cmdF
 	);
 }
+namespace {
+//-----------------------------------------------------------------------------
+void onComponentRemoving(void *src, const OnRemoving &ev, sdc::WindowWPtr _win) 
+{
+	sdc::Window::Ptr win = _win.lock();
+	if (!win) {
+		return;
+	}
+	win->close();
+}
+} // namespace(s)
 //-----------------------------------------------------------------------------
 void FrxControl::showProcessorDetails(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c)
@@ -820,6 +848,10 @@ void FrxControl::showProcessorDetails(fgc::FrxCircuidViewPtr view,
 		openDetailsBrowser<FrxProcessorBrowser>(view, c);
 	
 	addWindow(browser);
+	c->sce::EventSender<OnRemoving>::addTrackedEventListener(
+		boost::bind(&onComponentRemoving, _1, _2, sdc::WindowWPtr(browser)),
+		browser
+	);
 	browser->setTitle(c->getName() + " details");
 	FrxProcessorBrowserCtrl::Ptr ctrl = FrxProcessorBrowserCtrl::create();
 	ctrl->setComponent(c);
@@ -834,6 +866,10 @@ void FrxControl::showConnectionDetails(fgc::FrxCircuidViewPtr view,
 	FrxConnectionBrowser::Ptr browser = 
 		openDetailsBrowser<FrxConnectionBrowser>(view, c);
 	addWindow(browser);
+	c->sce::EventSender<OnRemoving>::addTrackedEventListener(
+		boost::bind(&onComponentRemoving, _1, _2, sdc::WindowWPtr(browser)),
+		browser
+	);
 	browser->setTitle(c->getName() + " details");
 	FrxConnectionBrowserCtrl::Ptr ctrl = FrxConnectionBrowserCtrl::create();
 	ctrl->setComponent(c);
@@ -856,6 +892,10 @@ void FrxControl::openPluginEditor(fgc::FrxCircuidViewPtr view,
 	// create editor
 	FrxPluginEditor::Ptr ed = createPluginEditor(view, c);
 	addWindow(ed);
+	c->sce::EventSender<OnRemoving>::addTrackedEventListener(
+		boost::bind(&onComponentRemoving, _1, _2, sdc::WindowWPtr(ed)),
+		ed
+	);
 	FrxPluginEditorCtrl::Ptr pluginCtrl = FrxPluginEditorCtrl::create();
 	pluginCtrl->setPlugin(plugin);
 	ed->setControl(pluginCtrl);
