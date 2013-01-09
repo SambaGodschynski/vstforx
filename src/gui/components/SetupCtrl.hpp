@@ -71,6 +71,8 @@ public:
 	void startScan( const NotifyFileFunc &fileEventF, 
 		const ScanCompletedFunc &scanCompletedF);
 	//-------------------------------------------------------------------------
+	bool isAllScanned() const;
+	//-------------------------------------------------------------------------
 	void stopScanning();
 	//-------------------------------------------------------------------------
 	/**

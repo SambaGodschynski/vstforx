@@ -582,8 +582,12 @@ VstIntPtr VSTCALLBACK pluginCallToPlugNode (AEffect* effect,
 
 		case audioMasterCanDo : {
 			const char *text = (const char*) ptr;
-			if (!strcmp (text, "sizeWindow") )
+			if (!strcmp (text, "sizeWindow") ) {
 				return 1;
+			}
+			if (!strcmp (text, "shellCategory") ) {
+				return 1;
+			}
 			else
 				break;
 		}

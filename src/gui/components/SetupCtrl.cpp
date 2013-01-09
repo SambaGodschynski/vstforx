@@ -121,6 +121,11 @@ void SetupCtrl::startScan(const NotifyFileFunc &fileEventF,
 	);
 }
 //-----------------------------------------------------------------------------
+bool SetupCtrl::isAllScanned() const {
+	::com::PluginCollection &db = ::com::getPluginCollection();
+	return db.isAllScanned();
+}
+//-----------------------------------------------------------------------------
 void SetupCtrl::joinScan() {
 	scanThread.join();
 }

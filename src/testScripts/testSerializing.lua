@@ -26,7 +26,9 @@ function connectAllComponents()
 		for j, y in pairs(b) do 
 			if not (x == y) then
 				--print(frxGetComponentName(x)..x, frxGetComponentName(y)..y)
-				frxConnectComponents(x,y)	
+				if frxConnectComponents(x,y) == frxTrue() then
+					--frxWait(600)
+				end	
 			end		
 		end	
 	end
@@ -59,7 +61,7 @@ doSequence({OP, OE})
 
 assert(getNumElements() == 2, tostring(#components))
 
-p = frxGetProcessorTypes()  -- insert all possible processors
+p = frxGetProcessorTypes()  -- insert all available processors
 for i, x in pairs(p) do
     new = frxAddProcessor(x)
 end

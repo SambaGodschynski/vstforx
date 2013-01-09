@@ -39,7 +39,9 @@ public:
 protected:
 	//-------------------------------------------------------------------------
 	FrxConcreteProcessor() {
+		instances++;
 		setName(getProcessorName<ProcessorType>());
+		setName(getName()+"_"+sambag::com::toString(instances));
 	}
 	//-------------------------------------------------------------------------
 	virtual void postConstructor() {
@@ -47,6 +49,8 @@ protected:
 		ProcessorType::init( getPtr() );
 	}
 private:
+	//-------------------------------------------------------------------------
+	static int instances;
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
 	//-------------------------------------------------------------------------
@@ -74,6 +78,9 @@ public:
 		return res;
 	}
 }; // FrxConcreteProcessor
+//-----------------------------------------------------------------------------
+template <class _ProcessorType>
+int FrxConcreteProcessor<_ProcessorType>::instances = 0;
 //=============================================================================
 // Types
 //=============================================================================

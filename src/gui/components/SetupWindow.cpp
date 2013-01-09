@@ -497,6 +497,10 @@ sdc::AContainerPtr SetupWindow::createDirListBtnPane() {
 		createBtn(&SetupWindow::onBtnRemoveDirPressed, "remove directory");
 	dirListBtnPane->add(btn);
 
+	btn = 
+		createBtn(&SetupWindow::onBtnRescanPressed, "rescan");
+	dirListBtnPane->add(btn);
+
 	return dirListBtnPane;
 }
 //-----------------------------------------------------------------------------
@@ -558,7 +562,29 @@ void SetupWindow::onBtnOkPressed(void *, const sdc::events::ActionEvent &ev) {
 		//TODO: handle
 		throw;
 	}
+	if (!ctrl)
+		return;
 	close();
+	if (ctrl->isAllScanned()) {
+		return;
+	}
+	openScanningDialog();
+	scanningDlg->startScan(ctrl);
+}
+//-----------------------------------------------------------------------------
+void SetupWindow::onBtnRescanPressed(void *, const sdc::events::ActionEvent &ev) 
+{
+	try {
+		saveSettings();
+	} catch (const std::exception &ex) {
+		// TODO: handle
+		throw;
+	} catch(...) {
+		//TODO: handle
+		throw;
+	}
+	if (!ctrl)
+		return;
 	openScanningDialog();
 	scanningDlg->startScan(ctrl);
 }	

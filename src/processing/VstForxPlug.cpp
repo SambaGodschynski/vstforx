@@ -154,7 +154,8 @@ void VstForxPlug::process(float **in, float **out, int numSamples) {
 		fr.getBlock ( out, numSamples );
 		return;
 	}
-	SAMBAG_BEGIN_SYNCHRONIZED(saveLoadProcess)
+	TRY_TO_LOCK_TIMED2 ( graph->getProcessingLock(), 30 ); // pushandcopy needs the lock #issue272
+	SAMBAG_BEGIN_SYNCHRONIZED(saveLoadProcess) // extra save/load lock
 		graph->pushAndCopy ( &fr, numSamples );
 		graph->processGraph( out, numSamples  );
 	SAMBAG_END_SYNCHRONIZED
@@ -273,7 +274,7 @@ int VstForxPlug::getChunk(void **data) {
 		chunkData = new char[datasize];
 		memcpy(chunkData, datastr.c_str(), datasize);
 		*data = (void*)chunkData;
-		std::cout<<datasize<<" bytes saved."<<std::endl;
+		//std::cout<<datasize<<" bytes saved."<<std::endl;
 		return datasize;
 	} catch(const std::exception &ex) {
 		std::stringstream ss;
@@ -298,7 +299,7 @@ int VstForxPlug::setChunk(void *data, int byteSize) {
 		std::string dataStr((char*)data, byteSize);
 		ss<<dataStr;
 		load(ss);
-		std::cout<<byteSize<<" bytes loaded."<<std::endl;
+		//std::cout<<byteSize<<" bytes loaded."<<std::endl;
 		return byteSize;
 	} catch(const std::exception &ex) {
 		std::stringstream ss;

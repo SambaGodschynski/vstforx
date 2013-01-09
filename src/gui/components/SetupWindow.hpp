@@ -101,6 +101,8 @@ public:
 	//-------------------------------------------------------------------------
 	void onBtnRemoveDirPressed(void *, const sdc::events::ActionEvent &ev);
 	//-------------------------------------------------------------------------
+	void onBtnRescanPressed(void *, const sdc::events::ActionEvent &ev);
+	//-------------------------------------------------------------------------
 	sdc::AContainerPtr getDirListPane() const {
 		return dirListPane;
 	}

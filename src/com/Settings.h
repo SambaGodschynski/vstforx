@@ -104,13 +104,13 @@ public:
 	static const string PLUG_LOAD_LOGFILE; 
 	static const string CONFIG_FILE;
 	//--------------------------------------------------------------------------------------------------------
-	string getPlugCollectionDumpFilename ()  { return getHomeDirectory() + plugCollectionDumpFile; }
+	string getPlugCollectionDumpFilename();
 	//--------------------------------------------------------------------------------------------------------
-	static string getLogFilename()  { return SETTINGS.getHomeDirectory() + NAME + ".log"; }
+	static string getLogFilename();
 	//--------------------------------------------------------------------------------------------------------
-	static string getConfFilename()  { return SETTINGS.getHomeDirectory() + CONFIG_FILE; }
+	static string getConfFilename();
 	//--------------------------------------------------------------------------------------------------------
-	static string getPlugInitLogFilename()  { return SETTINGS.getHomeDirectory() + PLUG_LOAD_LOGFILE; }
+	static string getPlugInitLogFilename();
 	//--------------------------------------------------------------------------------------------------------
 	bool addVSTFolder ( const string &path );
 	//--------------------------------------------------------------------------------------------------------

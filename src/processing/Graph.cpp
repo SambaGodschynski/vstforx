@@ -143,7 +143,6 @@ bool Graph::contains ( PObject::Ptr obj ) const {
 }
 //------------------------------------------------------------------------------------------------------------
 void Graph::processGraph( float **outputs, Processor::Int numSamples ) {
-	TRY_TO_LOCK_TIMED2 ( getProcessingLock(), 30 );
 	if ( endNode->isActive() ) {
 		SignalProcessPath::iterator it = signalProcessPath.begin();
 		for ( ; it!=signalProcessPath.end(); ++it ) { // process path

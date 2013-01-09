@@ -84,6 +84,22 @@ void Settings::setHomeDirectory(const std::string &path) {
 	homeDir = path;
 }
 //------------------------------------------------------------------------------------------------------------
+string Settings::getPlugCollectionDumpFilename ()  { 
+	return getHomeDirectory() + "/" + plugCollectionDumpFile; 
+}
+//------------------------------------------------------------------------------------------------------------
+string Settings::getLogFilename()  { 
+	return SETTINGS.getHomeDirectory() + "/" + NAME + ".log"; 
+}
+//------------------------------------------------------------------------------------------------------------
+string Settings::getConfFilename()  { 
+	return SETTINGS.getHomeDirectory() + "/" + CONFIG_FILE; 
+}
+//------------------------------------------------------------------------------------------------------------
+string Settings::getPlugInitLogFilename()  { 
+	return SETTINGS.getHomeDirectory() + "/" + PLUG_LOAD_LOGFILE;
+}
+//------------------------------------------------------------------------------------------------------------
 void Settings::init(const std::string &homeDirectory) {
 	using namespace boost::algorithm;
 	setHomeDirectory(homeDirectory);
