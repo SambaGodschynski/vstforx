@@ -51,7 +51,7 @@ public:
 	/**
 	 * @throw when map is closed or one of the arguments == NULL
 	 */
-	virtual void registerObjects(ViewObject::Ptr vobj,
+	virtual bool registerObjects(ViewObject::Ptr vobj,
 		frx::processing::ModelObject::Ptr mobj) = 0;
 	//-------------------------------------------------------------------------
 	/**

@@ -58,6 +58,8 @@
 #include "components/FrxPluginEditorCtrl.hpp"
 #include "components/FrxIO.hpp"
 #include "TimedUpdater.hpp"
+#include <gui/components/FrxFlag.hpp>
+
 
 namespace frx { namespace gui {
 using namespace components;
@@ -523,8 +525,14 @@ fgc::FrxComponentPtr FrxControl::_addRelatedKnobToView(fgc::FrxCircuidViewPtr vi
 	if (!knob) {
 		return FrxComponentPtr();
 	}
+	// flag
+	FrxFlag::Ptr flag = FrxFlag::create();
+	flag->setTarget(knob);
+	view->add(flag, FrxCircuidView::Z_Flags, true);
+	knob->setFlagText( par->getName() + "/" + par->getDisplay() );
 	// register knob
-	map->registerObjects(knob, par);
+	if (!map->registerObjects(knob, par))
+		return fgc::FrxComponentPtr();
 	registerComponent(view, knob);
 	// create connection
 	FrxConnection::Ptr cn = createConnectionForKnobAnd(c);

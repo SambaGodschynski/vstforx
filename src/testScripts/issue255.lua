@@ -1,0 +1,5 @@
+frxOpenPlugin()
+frxOpenEditor()
+frxAddProcessor("FrxPeakTracker")
+frxCloseEditor()
+frxOpenEditor()

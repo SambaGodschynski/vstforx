@@ -19,6 +19,8 @@
 #include <gui/components/Forward.hpp>
 #include <iostream>
 #include <com/Serialization.h>
+#include <sambag/com/Thread.hpp>
+
 
 namespace frx { namespace processing {
 namespace sce=sambag::com::events;
@@ -34,6 +36,8 @@ public:
 	//-------------------------------------------------------------------------
 	typedef sambag::dsp::PluginProcessorBase Super;
 private:
+	//-------------------------------------------------------------------------
+	sambag::com::RecursiveMutex saveLoadProcess;
 	//-------------------------------------------------------------------------
 	void *effectPtr;
 	//-------------------------------------------------------------------------

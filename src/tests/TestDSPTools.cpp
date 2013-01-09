@@ -20,7 +20,7 @@ void _testTimer(processing::Timer::SecondType timeToWait) {
 	time_t start = time(NULL);
 	while(!timer.isElapsed(timeToWait));
 	CPPUNIT_ASSERT_EQUAL((time_t)timeToWait, time(NULL) - start);
-	cout<<".";
+	cout<<"."<<std::flush;
 }
 
 

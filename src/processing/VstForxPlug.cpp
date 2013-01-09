@@ -17,12 +17,6 @@
 #include <gui/components/VstForxEditor.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <gui/components/FrxSerializationRegister.hpp>
-#include <sambag/com/Thread.hpp>
-
-
-namespace {
-	sambag::com::RecursiveMutex mutex;
-}
 
 namespace frx { namespace processing {
 namespace {
@@ -155,14 +149,15 @@ void VstForxPlug::process(float **in, float **out, int numSamples) {
 	if ( !graph ) 
 		return;
 	::processing::Frames fr ( in, numSamples ); 
-	TRY_TO_LOCK_TIMED2 ( graph->getProcessingLock(), 30 );
 	if ( !graph->getEndNode()->isActive() ){
 		fr.setZero ( numSamples );
 		fr.getBlock ( out, numSamples );
 		return;
-	} 
-	graph->pushAndCopy ( &fr, numSamples );
-	graph->processGraph( out, numSamples  );
+	}
+	SAMBAG_BEGIN_SYNCHRONIZED(saveLoadProcess)
+		graph->pushAndCopy ( &fr, numSamples );
+		graph->processGraph( out, numSamples  );
+	SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::processEvents(sambag::dsp::IMidiEvents *ev) {
@@ -260,7 +255,7 @@ void VstForxPlug::requestEditorResize(int width, int height) {
 }
 //-----------------------------------------------------------------------------
 int VstForxPlug::getChunk(void **data) {
-	SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+	SAMBAG_TRY_TO_LOCK_RECURSIVE(saveLoadProcess);
 	try {
 		std::stringstream ss;
 		save(ss);
@@ -294,7 +289,7 @@ int VstForxPlug::getChunk(void **data) {
 }
 //-----------------------------------------------------------------------------
 int VstForxPlug::setChunk(void *data, int byteSize) {
-	SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+	SAMBAG_TRY_TO_LOCK_RECURSIVE(saveLoadProcess);
 	if (byteSize==0) {
 		return 0;
 	}
@@ -421,7 +416,6 @@ sambag::dsp::IEditor * VstForxPlug::getEditor() {
 IModelController::Ptr
 getModelController(frx::gui::components::FrxCircuidViewPtr view)
 {
-	SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
 	VstForxPlug *plug = getPlugin(view);
 	if (!plug)
 		return IModelController::Ptr();
@@ -434,7 +428,6 @@ namespace frx { namespace gui {
 IViewModelMap::Ptr 
 getViewModelMap(components::FrxCircuidViewPtr view)
 {
-	SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
 	using namespace frx::processing;
 	VstForxPlug *plug = getPlugin(view);
 	if (!plug)

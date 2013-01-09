@@ -90,7 +90,7 @@ ViewModelMap::getViewObject(frx::processing::ModelObject::Ptr obj)
 	return it->second;
 }
 //-----------------------------------------------------------------------------
-void ViewModelMap::registerObjects(ViewObject::Ptr vobj,
+bool ViewModelMap::registerObjects(ViewObject::Ptr vobj,
 	frx::processing::ModelObject::Ptr mobj)
 {
 	checkState();
@@ -100,7 +100,10 @@ void ViewModelMap::registerObjects(ViewObject::Ptr vobj,
 			"tried to register NULL in ViewModelMap."
 		);
 	}
-	map.insert(Map::value_type(vobj, mobj));
+	Map::const_iterator it;
+	bool inserted;
+	boost::tie(it, inserted) = map.insert(Map::value_type(vobj, mobj));
+	return inserted;
 }
 //-----------------------------------------------------------------------------
 void ViewModelMap::remove(ViewObject::Ptr vobj,

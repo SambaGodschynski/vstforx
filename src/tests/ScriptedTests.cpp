@@ -22,18 +22,28 @@ int testHostCallback(AEffect* effect, VstInt32 opcode,
 
 bool plugProcessing = false;
 
+void fillBlock(float **data, int blockSize) {
+	for (int i=0; i<blockSize; ++i) {
+		data[0][i] = (float)rand() / (float)RAND_MAX;
+		data[1][i] = (float)rand() / (float)RAND_MAX;
+	}
+}
 void processPlugin(TestPlugin * plug) {
 	static const int BS = 512;
 	float **in = new float*[2];
 	float **out = new float*[2];
-	in[0] = new float[512];
-	in[1] = new float[512];
-	out[0] = new float[512];
-	out[1] = new float[512];
+	in[0] = new float[BS];
+	in[1] = new float[BS];
+	fillBlock(in, BS);
+	out[0] = new float[BS];
+	out[1] = new float[BS];
+	plug->suspend();
 	plug->setSampleRate(44100.);
-	plug->setBlockSize(512);
+	plug->setBlockSize(BS);
+	plug->resume();
 	while(plugProcessing) {
 		if (plug->isOpen()) {
+			fillBlock(in, BS);
 			plug->process(in, out, BS);
 			boost::this_thread::sleep(boost::posix_time::milliseconds(10));
 		}
@@ -66,9 +76,9 @@ void ScriptedTests::setUp() {
 		boost::bind(&ScriptedTests::onScriptEnd, this, _1, _2)
 	);
 	plugProcessing = true;
-	/*processingThread = boost::thread(
+	processingThread = boost::thread(
 		boost::bind(&processPlugin, plug)
-	);*/
+	);
 	failed = false;
 }
 //-----------------------------------------------------------------------------
@@ -137,6 +147,28 @@ void ScriptedTests::issue255() {
 		sambag::disco::getResourceManager();
 	
 	scriptCtrl->appendJob( rm.getString("testScripts/issue255.lua") );
+	scriptCtrl->start();
+	sambag::disco::components::Window::startMainLoop();
+	scriptCtrl->join();
+	CPPUNIT_ASSERT(!failed);
+}
+//-----------------------------------------------------------------------------
+void ScriptedTests::issue265() {
+	sambag::disco::IResourceManager &rm =
+		sambag::disco::getResourceManager();
+	
+	scriptCtrl->appendJob( rm.getString("testScripts/issue265.lua") );
+	scriptCtrl->start();
+	sambag::disco::components::Window::startMainLoop();
+	scriptCtrl->join();
+	CPPUNIT_ASSERT(!failed);
+}
+//-----------------------------------------------------------------------------
+void ScriptedTests::issue269() {
+	sambag::disco::IResourceManager &rm =
+		sambag::disco::getResourceManager();
+	
+	scriptCtrl->appendJob( rm.getString("testScripts/issue269.lua") );
 	scriptCtrl->start();
 	sambag::disco::components::Window::startMainLoop();
 	scriptCtrl->join();

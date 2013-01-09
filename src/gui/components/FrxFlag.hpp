@@ -30,8 +30,14 @@ public:
 	//-------------------------------------------------------------------------
 	static const std::string PROPERTY_TARGET;
 protected:
+	//-------------------------------------------------------------------------
 	FrxFlag(){}
+	//-------------------------------------------------------------------------
+	void onComponentRemoving(void *src, const OnRemoving &ev);
 private:
+	//-------------------------------------------------------------------------
+	typedef FrxComponent::EventSender<OnRemoving>::Connection RemovingConnection;
+	RemovingConnection rmvConnection;
 	//-------------------------------------------------------------------------
 	FrxComponent::Ptr target;
 	//-------------------------------------------------------------------------
@@ -40,8 +46,11 @@ private:
 	template <typename Archive> 
 	void serialize(Archive &ar, const unsigned int version) {
 		ar & boost::serialization::base_object<Super>(*this); 
+		ar & target;
 	}
 public:
+	//-------------------------------------------------------------------------
+	~FrxFlag();
 	//-------------------------------------------------------------------------
 	void setTarget(FrxComponent::Ptr target);
 	//-------------------------------------------------------------------------

@@ -14,6 +14,7 @@
 #include "OS_Specific/OS_com.h"
 #include "OS_Specific/OS_processing.h"
 
+
 namespace processing {
 
 using namespace parameter;
@@ -43,7 +44,9 @@ void DFSVisitor::processNodeParents( ProcessorNode::Ptr node ) {
 	for ( ; i!=end; ++i ) { // alle parents:
 		ProcessorNode::Ptr n = graph->vertexProcessorNode[*i];
 		++(n->activeChildren); // erhoehe activeChidren des vorgaenger, da node active
-		if ( n->isActive() ) node->parents.push_back( n.get() );
+		if ( n->isActive() ) {
+			node->parents.push_back( n.get() );
+		}
 		// nur ein parent sprich: serielle verknuepfung ?
 		if ( inDegree == 1 ) { // ja => addiere delay wert
 			delay += n->getNodeDelay();
@@ -139,7 +142,8 @@ bool Graph::contains ( PObject::Ptr obj ) const {
 	return false;
 }
 //------------------------------------------------------------------------------------------------------------
-void Graph::processGraph( float **outputs, Processor::Int numSamples ){
+void Graph::processGraph( float **outputs, Processor::Int numSamples ) {
+	TRY_TO_LOCK_TIMED2 ( getProcessingLock(), 30 );
 	if ( endNode->isActive() ) {
 		SignalProcessPath::iterator it = signalProcessPath.begin();
 		for ( ; it!=signalProcessPath.end(); ++it ) { // process path
@@ -207,13 +211,15 @@ void Graph::processEvents(sambag::dsp::IMidiEvents * events) {
 }
 //------------------------------------------------------------------------------------------------------------
 Graph::Janitor::Ptr Graph::getJanitor() {
-	Janitor::Ptr up = updater.lock();
-	if (up) {
+	SAMBAG_BEGIN_SYNCHRONIZED(janitorLock)
+		Janitor::Ptr up = updater.lock();
+		if (up) {
+			return up;
+		}
+		up = Janitor::Ptr ( new Janitor( this ) );
+		updater = up;
 		return up;
-	}
-	up = Janitor::Ptr ( new Janitor( this ) );
-	updater = up;
-	return up;
+	SAMBAG_END_SYNCHRONIZED
 }
 //------------------------------------------------------------------------------------------------------------
 bgl::Edge Graph::findEdge( ProcessorNode::Ptr source, ProcessorNode::Ptr target ) const {
@@ -240,12 +246,16 @@ Graph::Janitor::Janitor(processing::Graph *graph) :
 graph(graph), 
 _hostBaseConfigChanged(false)
 {
-	if ( !graph->self.lock() ) return;
+	if ( !graph->self.lock() ) {
+		return;
+	}
 	graph->getProcessingLock().lock(); // sperre processing
 }
 //------------------------------------------------------------------------------------------------------------
 Graph::Janitor::~Janitor() {
-	if ( !graph->self.lock() ) return;
+	if ( !graph->self.lock() ) {
+		return;
+	}
 	if ( _hostBaseConfigChanged  ) { // samplerate oder blockisze geandert
 		GraphObjectContainer::iterator it = graph->graphObjects.begin();
 		for ( ; it!=graph->graphObjects.end(); ++it ){
@@ -270,40 +280,54 @@ void Graph::Janitor::hostBaseConfigChanged() {
 //------------------------------------------------------------------------------------------------------------
 Graph::Janitor::State Graph::Janitor::connectNodes( ProcessorNode::Ptr parent, ProcessorNode::Ptr child ) {
 
-	if ( !parent || !child ) return FAILED;
-	if ( !com::contains<Graph::GraphObjectContainer>( graph->graphObjects, parent ) ) return FAILED;
-	if ( !com::contains<Graph::GraphObjectContainer>( graph->graphObjects, child ) ) return FAILED;
+	if ( !parent || !child ) {
+		return FAILED;
+	}
+	if ( !com::contains<Graph::GraphObjectContainer>( graph->graphObjects, parent ) ) {
+		return FAILED;
+	}
+	if ( !com::contains<Graph::GraphObjectContainer>( graph->graphObjects, child ) ) {
+		return FAILED;
+	}
 	
 	ProcessorNode::Ptr a = graph->vertexProcessorNode[parent->getBglVertex()];
 	ProcessorNode::Ptr b = graph->vertexProcessorNode[child->getBglVertex()];
 	
-	if ( graph->findEdge( parent, child ) != Graph::nullEdge ) return FAILED;
+	if ( graph->findEdge( parent, child ) != Graph::nullEdge ) {
+		return FAILED;
+	}
 	bgl::Edge e; 
 	bool inserted = false;
 	boost::tie(e, inserted) = boost::add_edge( parent->getBglVertex(), 
 		                                       child->getBglVertex(), 
 											   graph->g );
-	if ( !inserted ) return FAILED;
+	if ( !inserted ) {
+		return FAILED;
+	}
 
 	// updateGraph
 	graph->updateGraph();
-	
-	if ( graph->hasCycle() ) {
-		removeConnection( parent, child );
-		return FAILED;
-	}
 	
 	// prepare parent ProcessorNode
 	size_t numCh = parent->getFramesContainer().size();
 	graph->updateProcessorNode( parent, _numChildren = ++numCh );
 
+	if ( graph->hasCycle() ) {
+		removeConnection( parent, child );
+		return FAILED;
+	}
+
 	return SUCCEED;
 }
 //------------------------------------------------------------------------------------------------------------
 Graph::Janitor::State Graph::Janitor::removeConnection( ProcessorNode::Ptr parent, ProcessorNode::Ptr child ) {
-	if ( !parent || !child ) return FAILED;
+	if ( !parent || !child ) {
+		return FAILED;
+	}
 	bgl::Edge e = graph->findEdge( parent, child );
-	if ( e == Graph::nullEdge ) return FAILED;
+	if ( e == Graph::nullEdge ) {
+		return FAILED;
+	}
 	boost::remove_edge( e, graph->g );
 	
 	// prepare parent ProcessorNode

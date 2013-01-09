@@ -12,12 +12,12 @@
 #include "FrxConcreteParameter.hpp"
 #include <gui/__ModelExecutors.hpp>
 #include <boost/assign/list_of.hpp>
+#include <gui/components/FrxFlag.hpp>
 #include <boost/bind.hpp>
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <boost/foreach.hpp>
 #include <processing/IModelController.hpp>
-
 
 namespace frx { namespace gui { namespace components {
 namespace {
@@ -65,6 +65,10 @@ FrxProcessorNodePtr createProcessor(FrxCircuidViewPtr circ, int numInputs, int n
 		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
 			"could'nt create processor object.");
 	}
+	// flag
+	FrxFlag::Ptr flag = FrxFlag::create();
+	flag->setTarget(viewObj);
+	circ->add(flag, FrxCircuidView::Z_Flags, true);
 	// register
 	registerProcessor(map, viewObj, mObj);
 	return viewObj;
@@ -91,6 +95,10 @@ FrxProcessorNodePtr createPlugin(FrxCircuidViewPtr circ, ::processing::PluginInf
 	if (!viewObj) {
 		return FrxProcessorNodePtr();
 	}
+	// flag
+	FrxFlag::Ptr flag = FrxFlag::create();
+	flag->setTarget(viewObj);
+	circ->add(flag, FrxCircuidView::Z_Flags, true);
 	frx::processing::IPluginAdapter::Ptr plAd = 
 		boost::shared_dynamic_cast<frx::processing::IPluginAdapter>(mObj);
 	if (plAd) {
@@ -121,7 +129,12 @@ FrxParameterPtr createFreeParameter(FrxCircuidViewPtr circ) {
 	FrxStdKnob::Ptr viewObj = FrxStdKnob::create();
 	if (!viewObj) {
 		return FrxParameterPtr();
-	} 
+	}
+	// flag
+	FrxFlag::Ptr flag = FrxFlag::create();
+	flag->setTarget(viewObj);
+	circ->add(flag, FrxCircuidView::Z_Flags, true);
+	viewObj->setFlagText( mObj->getName() + "/" + mObj->getDisplay() );
 	map->registerObjects(viewObj, mObj);
 	return viewObj;
 }
@@ -145,8 +158,15 @@ FrxParameterPtr createHostParameter(FrxCircuidViewPtr circ, int id) {
 	FrxStdKnob::Ptr viewObj = FrxStdKnob::create();
 	if (!viewObj) {
 		return FrxParameterPtr();
-	} 
-	map->registerObjects(viewObj, mObj);
+	}
+	// flag
+	FrxFlag::Ptr flag = FrxFlag::create();
+	flag->setTarget(viewObj);
+	circ->add(flag, FrxCircuidView::Z_Flags, true);
+	viewObj->setFlagText( mObj->getName() + "/" + mObj->getDisplay() );
+	if (!map->registerObjects(viewObj, mObj)) {
+		return FrxParameterPtr();
+	}
 	return viewObj;
 }
 //-----------------------------------------------------------------------------

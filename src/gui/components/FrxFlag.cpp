@@ -7,6 +7,8 @@
 
 #include "FrxFlag.hpp"
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
+#include "FrxCircuidView.hpp"
+
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -21,10 +23,25 @@ FrxFlag::createComponentUI(sdcu::ALookAndFeelPtr laf) const
 	return laf->getUI<FrxFlag>();
 }
 //-----------------------------------------------------------------------------
+void FrxFlag::onComponentRemoving(void *src, const OnRemoving &ev) {
+	Ptr saftey = getPtr(); // hold object
+	ev.view->remove(saftey);
+}
+//-----------------------------------------------------------------------------
 void FrxFlag::setTarget(FrxComponent::Ptr target) {
 	FrxComponent::Ptr old = this->target;
+	if (rmvConnection.connected()) {
+		rmvConnection.disconnect();
+	}
 	this->target = target;
 	firePropertyChanged(PROPERTY_TARGET, old, target);
+	rmvConnection = target->EventSender<OnRemoving>::addTrackedEventListener(
+		boost::bind(&FrxFlag::onComponentRemoving, this, _1, _2),
+		getPtr()
+	);
 }
-
+//-----------------------------------------------------------------------------
+FrxFlag::~FrxFlag() {
+	
+}
 }}} // namespace(s)

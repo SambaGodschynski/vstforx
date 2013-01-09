@@ -59,13 +59,10 @@ void TestViewModelMap::testRegistering() {
 	TestModelObject::Ptr m1 = TestModelObject::create();
 	TestModelObject::Ptr m2 = TestModelObject::create();
 	CPPUNIT_ASSERT_EQUAL((size_t)0, map->getSize());
-	map->registerObjects(v1, m1);
-	CPPUNIT_ASSERT_EQUAL((size_t)1, map->getSize());
-	map->registerObjects(v1, m1);
-	CPPUNIT_ASSERT_EQUAL((size_t)1, map->getSize());
-	map->registerObjects(v1, m2);
-	CPPUNIT_ASSERT_EQUAL((size_t)1, map->getSize());
-	map->registerObjects(v2, m2);
+	CPPUNIT_ASSERT(map->registerObjects(v1, m1));
+	CPPUNIT_ASSERT(!map->registerObjects(v1, m1));
+	CPPUNIT_ASSERT(!map->registerObjects(v1, m2));
+	CPPUNIT_ASSERT(map->registerObjects(v2, m2));
 	CPPUNIT_ASSERT_EQUAL((size_t)2, map->getSize());
 	CPPUNIT_ASSERT(m1 == map->getModelObject(v1));
 	CPPUNIT_ASSERT(m2 == map->getModelObject(v2));

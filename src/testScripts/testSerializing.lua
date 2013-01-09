@@ -26,7 +26,7 @@ function connectAllComponents()
 		for j, y in pairs(b) do 
 			if not (x == y) then
 				--print(frxGetComponentName(x)..x, frxGetComponentName(y)..y)
-				frxConnectComponents(x,y)		
+				frxConnectComponents(x,y)	
 			end		
 		end	
 	end
@@ -46,7 +46,9 @@ function doSequenceAssertElements(seq, numElements)
   for i, x in pairs(seq) do
     x()
   end
-  assert(getNumElements() == numElements, "deserialization failed.("..tostring(getNumElements())..")")
+  ist=getNumElements()
+  assert(ist == numElements, 
+	"deserialization failed.((soll)"..tostring(numElements)..", (ist)"..tostring(ist)..")")
 end
 -- ### END FUNCTIONS
 
@@ -57,7 +59,7 @@ doSequence({OP, OE})
 
 assert(getNumElements() == 2, tostring(#components))
 
-p = frxGetProcessors()  -- insert all possible processors
+p = frxGetProcessorTypes()  -- insert all possible processors
 for i, x in pairs(p) do
     new = frxAddProcessor(x)
 end
@@ -68,7 +70,8 @@ c = frxGetViewComponents()
 for i, x in pairs(c) do	
 	pars = frxGetComponentParameter(x)
 	for j, y in pairs(pars) do
-		--frxAddComponentParameter(x ,y)
+		-- TODO: flag objects remains in view => clearView assertion
+ 		-- frxAddComponentParameter(x ,y)
 	end
 end
 

@@ -19,6 +19,7 @@
 #include <boost/foreach.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <boost/serialization/access.hpp>
+#include <boost/bimap/unordered_set_of.hpp>
 #include <com/Serialization.h>
 namespace frx { namespace gui {
 //=============================================================================
@@ -62,8 +63,10 @@ private:
 	//-------------------------------------------------------------------------
 	bool closed;
 	//-------------------------------------------------------------------------
-	typedef boost::bimap<ViewObject::Ptr,
-		frx::processing::ModelObject::Ptr> Map;
+	typedef boost::bimap< 
+		boost::bimaps::unordered_set_of<ViewObject::Ptr>,
+		boost::bimaps::unordered_set_of<frx::processing::ModelObject::Ptr> 
+	> Map;
 	//-------------------------------------------------------------------------
 	Map map;
 public:
@@ -84,7 +87,7 @@ public:
 	 */
 	virtual ViewObject::Ptr getViewObject(frx::processing::ModelObject::Ptr obj);
 	//-------------------------------------------------------------------------
-	virtual void registerObjects(ViewObject::Ptr vobj,
+	virtual bool registerObjects(ViewObject::Ptr vobj,
 		frx::processing::ModelObject::Ptr mobj);
 	//-------------------------------------------------------------------------
 	virtual void remove(ViewObject::Ptr vobj,

@@ -24,7 +24,7 @@
 #include <boost/parameter/preprocessor.hpp>
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
-
+#include <sambag/com/Thread.hpp>
 
 //============================================================================================================
 //	Vorwaerts Deklarationen
@@ -157,6 +157,8 @@ private:
 	 * blockiert processGraph() gegen Janitor-Objekt
 	 */
 	com::Mutex processingLock;
+	//--------------------------------------------------------------------------------------------------------
+	sambag::com::RecursiveMutex janitorLock;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * De/Serialisiert Graph-Objekt.

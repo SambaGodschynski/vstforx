@@ -60,7 +60,9 @@ void FrxFlagUI::updateText(const std::string &txt) {
 	if (strs.size() >= 2) {
 		lower = strs[1];
 	}
-	
+	if (upper=="") {
+		upper="?";
+	}
 	IDiscoFactory *fac = getDiscoFactory();
 	IRecordingSurface::Ptr sf = fac->createRecordingSurface();
 	IDrawContext::Ptr cn = fac->createContext(sf);

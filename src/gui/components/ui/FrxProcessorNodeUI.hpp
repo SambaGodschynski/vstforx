@@ -22,7 +22,6 @@
 #include <map>
 #include <boost/assign.hpp>
 #include <gui/HandyNamespaces.hpp>
-#include <gui/components/FrxFlag.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui {
@@ -138,12 +137,6 @@ void FrxProcessorNodeUI<CT>::installUI(sdc::AComponentPtr c) {
 	Super::installUI(c);
 	FrxProcessorNode::Ptr pr = boost::shared_dynamic_cast<FrxProcessorNode>(c);
 	SAMBAG_ASSERT(pr);
-	// flag
-	FrxFlag::Ptr flag = FrxFlag::create();
-	flag->setTarget(pr);
-	FrxCircuidView::Ptr view = pr->getFirstContainer<FrxCircuidView>();
-	SAMBAG_ASSERT(view);
-	view->add(flag, FrxCircuidView::Z_Flags, true);
 }
 //-----------------------------------------------------------------------------
 template <class CT>

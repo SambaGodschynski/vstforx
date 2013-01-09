@@ -21,6 +21,7 @@
 #include "Frames.h"
 #include "com/Events.h"
 #include <sambag/com/events/PropertyChanged.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 
 //============================================================================================================
 //	Vorwaerts Deklarationen
@@ -278,10 +279,20 @@ public:
 			frameStack.push (frames);
 			return;
 		}
-		if ( getNumActiveChildren() == 0 ) return;
+		size_t ac = getNumActiveChildren();
+		if ( ac == 0 ) {
+			return;
+		}
+		--ac;
+		if (frameContainer.size() < ac) {
+			SAMBAG_THROW(
+				sambag::com::exceptions::IllegalStateException,
+				"ProcessorNode::PushAndCopy out of bounds."
+			);
+		}
 		frameStack.push (frames);
 		FrameContainer::iterator it = frameContainer.begin();
-		for ( size_t i=0; i<getNumActiveChildren() - 1; i++ ) { // kopiere weitere frames in stack
+		for ( size_t i=0; i<ac; i++ ) { // kopiere weitere frames in stack
 			(*it)->copyIntoFrom ( *frames, numSamples );
 			frameStack.push ( (*it++).get() );
 		}

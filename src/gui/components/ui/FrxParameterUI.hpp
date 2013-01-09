@@ -11,7 +11,6 @@
 #include <boost/shared_ptr.hpp>
 #include <gui/components/FrxConcreteParameter.hpp>
 #include "FrxNodeUI.hpp"
-#include <gui/components/FrxFlag.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 #include <sambag/disco/components/events/MouseEvent.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
@@ -120,12 +119,6 @@ void FrxParameterUI<PT>::installUI(sdc::AComponentPtr c) {
 		boost::bind(&ThisClass::onMouse, this, _1, _2),
 		getPtr()
 	);
-	// flag
-	FrxFlag::Ptr flag = FrxFlag::create();
-	flag->setTarget(par);
-	FrxCircuidView::Ptr view = par->getFirstContainer<FrxCircuidView>();
-	SAMBAG_ASSERT(view);
-	view->add(flag, FrxCircuidView::Z_Flags, true);
 }
 //-----------------------------------------------------------------------------
 template <class PT>
