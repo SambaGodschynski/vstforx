@@ -64,6 +64,7 @@ namespace {
 boost::thread scanThread;
 typedef SetupCtrl::NotifyFileFunc FileEvF;
 typedef SetupCtrl::ScanCompletedFunc ScanComplF;
+typedef SetupCtrl::ScanFailedFunc ScanFailedFunc;
 void onLoadFile(void *src, const ::com::OnLoadFile &ev, const FileEvF &f) 
 {
 	std::cout<<ev.filename<<"...";
@@ -86,6 +87,7 @@ void onFileLoaded(void *src, const ::com::OnFileLoaded &ev, const FileEvF &f)
 }
 void startScanImpl(const FileEvF &f, 
 	const ScanComplF &sccF, 
+	const ScanFailedFunc &failed,
 	frx::processing::IHostInfo::Ptr hostInfo) 
 {
 	typedef ::com::OnLoadFile OnFileLoading;
@@ -94,36 +96,51 @@ void startScanImpl(const FileEvF &f,
 	typedef ::com::PluginCollection::EventSender<OnFileLoaded> LoadedEvSender;
 	typedef LoadingEvSender::EventConnection LoadEvConnection;
 	typedef LoadedEvSender::EventConnection LoadedEvConnection;
-
-	::com::PluginCollection &db = ::com::getPluginCollection();
-	LoadEvConnection loadCn = db.LoadingEvSender::
+	
+	::com::PluginCollection *db = NULL;
+	try {
+		 db = &(::com::getPluginCollection());
+	} catch (...) {
+		failed("database access failed.");
+		return;
+	}
+	LoadEvConnection loadCn = db->LoadingEvSender::
 		addEventListener(boost::bind(&onLoadFile, _1, _2, f));
-	LoadedEvConnection loadedCn = db.LoadedEvSender::
+	LoadedEvConnection loadedCn = db->LoadedEvSender::
 		addEventListener(boost::bind(&onFileLoaded, _1, _2, f));
-	// scan
-	db.update(hostInfo);
+	try {
+		// scan
+		db->update(hostInfo);
+	} catch (...) {
+		failed("database update failed.");
+		return;
+	}
 	// disconnect
 	loadCn.disconnect();
 	loadedCn.disconnect();
-	sccF(db.getNumSucceed(), db.getNumFailed(), db.getNumNotChecked());
+	sccF(db->getNumSucceed(), db->getNumFailed(), db->getNumNotChecked());
 }
 } // namespace(s)
 //-----------------------------------------------------------------------------
 void SetupCtrl::startScan(const NotifyFileFunc &fileEventF, 
-	const ScanCompletedFunc &scanCompletedF)
+	const ScanCompletedFunc &scanCompletedF, const ScanFailedFunc &failed)
 {
 	if (!hostInfo) {
 		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
 			"tried to start scan with hostInfo == NULL");
 	}
 	scanThread = boost::thread(
-		boost::bind(&startScanImpl, fileEventF, scanCompletedF, hostInfo)	
+		boost::bind(&startScanImpl, fileEventF, scanCompletedF, failed, hostInfo)	
 	);
 }
 //-----------------------------------------------------------------------------
 bool SetupCtrl::isAllScanned() const {
-	::com::PluginCollection &db = ::com::getPluginCollection();
-	return db.isAllScanned();
+	try {
+		::com::PluginCollection &db = ::com::getPluginCollection();
+		return db.isAllScanned();
+	} catch (...) {
+		return false;
+	}
 }
 //-----------------------------------------------------------------------------
 void SetupCtrl::joinScan() {
@@ -131,8 +148,13 @@ void SetupCtrl::joinScan() {
 }
 //-----------------------------------------------------------------------------
 void SetupCtrl::stopScanning() {
-	::com::PluginCollection &db = ::com::getPluginCollection();
-	db.stopScanning();
+	try {
+		::com::PluginCollection &db = ::com::getPluginCollection();
+		db.stopScanning();
+	} catch(...) {
+		// what should I do? ...
+		return; // ... die
+	}
 }
 //-----------------------------------------------------------------------------
 bool SetupCtrl::getBooleanValue(const std::string &key) const {

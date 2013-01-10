@@ -151,6 +151,7 @@ PluginCollection::PluginCollection() :
 			initDB();
 		} catch(...) { // failed again
 			showDatabaseConnectionFailedMSG();
+			throw;
 		}
 	}
 }

@@ -170,10 +170,18 @@ FrxMainBrowserCtrl::fillPluginFolder(TreeNode parent, DBFolderID dbFolderId)
 	Tree::Ptr tree = brws->getBrowserImpl();
 	if (tree->getNumChildren(parent) > 0)
 		return BrowserNode::ResultPtr();
-
-	::com::PluginCollection &db = ::com::getPluginCollection();
+	::com::PluginCollection *db = NULL;
+	try {
+		db = &(::com::getPluginCollection());
+	} catch (...) {
+		return BrowserNode::ResultPtr();
+	}
 	::com::PluginCollection::Folders folders;
-	db.getSubFolders(dbFolderId, folders);
+	try {
+		db->getSubFolders(dbFolderId, folders);
+	} catch (...) {
+		return BrowserNode::ResultPtr();
+	}
 	// fill subfolder
 	BOOST_FOREACH(const DBFolderType &dbF, folders) { 
 		TreeNode treeFolder = 
@@ -192,7 +200,11 @@ FrxMainBrowserCtrl::fillPluginFolder(TreeNode parent, DBFolderID dbFolderId)
 	}
 	// fill add_plugins
 	::com::PluginCollection::PluginInfoList plugs;
-	db.getPlugInfoList(dbFolderId, plugs, true);
+	try {
+		db->getPlugInfoList(dbFolderId, plugs, true);
+	} catch (...) {
+		return BrowserNode::ResultPtr();
+	}
 	BOOST_FOREACH(const ::processing::PluginInfo &pI, plugs) { 
 		TreeNode plug = 
 			tree->addNode(parent);

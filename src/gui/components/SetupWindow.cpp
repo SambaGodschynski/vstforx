@@ -18,11 +18,11 @@
 #include <sambag/disco/components/TitledBorder.hpp>
 #include <sambag/disco/components/SolidBorder.hpp>
 #include <sambag/disco/components/Timer.hpp>
+#include <sambag/com/ArithmeticWrapper.hpp>
 #include <boost/foreach.hpp>
 #include <sambag/com/Thread.hpp>
 #include <queue>
 #include <boost/unordered_map.hpp>
-#include <sambag/com/Thread.hpp>
 #include <com/one4All.h>
 
 namespace frx { namespace gui { namespace components {
@@ -78,6 +78,8 @@ protected:
 	SetupCtrl::Ptr ctrl;
 	//-------------------------------------------------------------------------
 	sdc::Timer::Ptr timer;
+	//-------------------------------------------------------------------------
+	sambag::com::ArithmeticWrapper<bool> scanFailed;
 public:
 	//-------------------------------------------------------------------------
 	static Ptr create(sdc::Window::Ptr parent = sdc::Window::Ptr()) { 																		
@@ -97,6 +99,8 @@ public:
 	void onFileEvent(const std::string &file, SetupCtrl::FileStatus fst);
 	//-------------------------------------------------------------------------
 	void onScanCompleted(int succeed, int failed, int skipped);
+	//-------------------------------------------------------------------------
+	void onScanFailed(const std::string msg);
 	//-------------------------------------------------------------------------
 	/**
 	 * redraw timer
@@ -148,7 +152,7 @@ void ScanningDialog::onBtnOk(void *, const sdc::events::ActionEvent &ev) {
 //-----------------------------------------------------------------------------
 void ScanningDialog::onBtnCancel(void *, const sdc::events::ActionEvent &ev) 
 {
-	if (ctrl) {
+	if (ctrl && !scanFailed) {
 		ctrl->stopScanning();
 		ctrl->joinScan();
 	}
@@ -162,7 +166,8 @@ void ScanningDialog::startScan(SetupCtrl::Ptr ctrl) {
 	btnOk->setEnabled(false);
 	ctrl->startScan(
 		boost::bind(&ScanningDialog::onFileEvent, this, _1, _2),
-		boost::bind(&ScanningDialog::onScanCompleted, this, _1, _2, _3)
+		boost::bind(&ScanningDialog::onScanCompleted, this, _1, _2, _3),
+		boost::bind(&ScanningDialog::onScanFailed, this, _1)
 	);
 	timer = sdc::Timer::create(100);
 	timer->EventSender<sdc::TimerEvent>::addTrackedEventListener(
@@ -209,6 +214,15 @@ void ScanningDialog::onScanCompleted(int succeed, int failed, int skipped) {
 	dirListScrollPane->revalidate();
 	int i = list->DefaultListModel::getSize() - 1;
 	list->ensureIndexIsVisible(i);
+	list->revalidate();
+	list->redraw();
+}
+//-----------------------------------------------------------------------------
+void ScanningDialog::onScanFailed(const std::string msg) {
+	scanFailed = true;
+	timer->stop();
+	list->addElement("Scan Failed:");
+	list->addElement(msg);
 	list->revalidate();
 	list->redraw();
 }
@@ -582,11 +596,15 @@ void SetupWindow::onBtnRescanPressed(void *, const sdc::events::ActionEvent &ev)
 	try {
 		saveSettings();
 	} catch (const std::exception &ex) {
-		// TODO: handle
-		throw;
+		::com::osMessageBox ( 
+			"Error", std::string("saving setting failed: ") + ex.what(), ::com::MSG_ALERT 
+		);
+		//return;
 	} catch(...) {
-		//TODO: handle
-		throw;
+		::com::osMessageBox ( 
+			"Error", "saving setting failed: unkown reason.", ::com::MSG_ALERT 
+		);
+		return;
 	}
 	if (!ctrl)
 		return;

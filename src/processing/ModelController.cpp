@@ -323,10 +323,15 @@ IProcessor::Ptr ModelController::createPlugin(const ::processing::PluginInfo &pI
 {
 	
 	::processing::Plugin::Ptr plugin;
-	::com::PluginCollection &pC = ::com::getPluginCollection();
+	::com::PluginCollection *pC = NULL;
+	try {
+		pC = &(::com::getPluginCollection());
+	} catch (...) {
+		return IProcessor::Ptr();
+	}
 	::processing::PluginInfo pluginInfo = pI;
 	try {
-		plugin = pC.restorePlugNode( getHostInfo(), pluginInfo ); 
+		plugin = pC->restorePlugNode( getHostInfo(), pluginInfo ); 
 	} catch(const ::processing::ShellPluginException) {
 		throw;
 	} catch(...) {

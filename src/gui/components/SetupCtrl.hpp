@@ -15,7 +15,6 @@
 #include "Forward.hpp"
 #include <processing/IHostInfo.h>
 #include <sambag/disco/Geometry.hpp>
-
 namespace frx { namespace gui { namespace components {
 //=============================================================================
 /** 
@@ -30,7 +29,7 @@ protected:
 	//-------------------------------------------------------------------------
 	SetupCtrl(){}
 private:
-	//-------------------------------------------------------------------------
+ 	//-------------------------------------------------------------------------
 	::frx::processing::IHostInfo::Ptr hostInfo;
 	//-------------------------------------------------------------------------
 	FrxCircuidViewPtr view;
@@ -61,6 +60,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::function<void(const std::string&, FileStatus)> NotifyFileFunc;
 	typedef boost::function<void(int, int, int)> ScanCompletedFunc;
+	typedef boost::function<void(std::string)> ScanFailedFunc;
 	//-------------------------------------------------------------------------
 	/**
 	 * starts plugin scan (in a seperate thread so don't forget joinScan())
@@ -69,7 +69,7 @@ public:
 	 * @see joinScan()
 	 */
 	void startScan( const NotifyFileFunc &fileEventF, 
-		const ScanCompletedFunc &scanCompletedF);
+		const ScanCompletedFunc &scanCompletedF, const ScanFailedFunc &failed);
 	//-------------------------------------------------------------------------
 	bool isAllScanned() const;
 	//-------------------------------------------------------------------------

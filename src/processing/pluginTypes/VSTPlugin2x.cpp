@@ -395,6 +395,7 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 		com::PluginCollection &pC = com::getPluginCollection();
 		pC.restorePluginInfo ( hostInfo.lock(), plugInfo );
 	} catch(...) {
+		aEff = &nullAEff;
 	}
 
 	//check type
