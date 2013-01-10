@@ -13,7 +13,7 @@ namespace {
 //-----------------------------------------------------------------------------------------------------------
 inline com::MyString shortenCenter ( const com::MyString &str, int max, const string & space ) {
 	// space muss min. 2 einheiten kleiner sein
-	if ( space.length()  > max - 2 ) return str;
+	if ( (int)space.length()  > max - 2 ) return str;
 	size_t l = str.length();
 	using namespace com;	
 	int diff = l - ( max - space.length() - 1 );
@@ -62,9 +62,9 @@ MyString MyString::trim() const {
 }
 //------------------------------------------------------------------------------------------------------------
 MyString MyString::shorten( int max, ShortenStyle type, const string & space ) const {
-	if ( this->length() < max ) return *this;
+	if ( (int)this->length() < max ) return *this;
 	// space muss mind. 2 kleiner sein als max
-	if ( space.length() - 1 >= max ) return *this;
+	if ( (int)space.length() - 1 >= max ) return *this;
 	switch (type) {
 		case kCenter:
 			return shortenCenter( *this, max, space );

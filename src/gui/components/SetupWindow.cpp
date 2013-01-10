@@ -23,6 +23,7 @@
 #include <queue>
 #include <boost/unordered_map.hpp>
 #include <sambag/com/Thread.hpp>
+#include <com/one4All.h>
 
 namespace frx { namespace gui { namespace components {
 ///////////////////////////////////////////////////////////////////////////////
@@ -484,7 +485,7 @@ sdc::AContainerPtr SetupWindow::createWindowSizePane() {
 //-----------------------------------------------------------------------------
 sdc::AContainerPtr SetupWindow::createDirListBtnPane() {
 	dirListBtnPane = sdc::Panel::create();
-	dirListBtnPane->setLayout(sdc::GridLayout::create(3,0));
+	dirListBtnPane->setLayout(sdc::GridLayout::create(4,0));
 	sdc::Button::Ptr btn =
 		createBtn(&SetupWindow::onBtnAddDirPressed, "add directory");
 	dirListBtnPane->add(btn);
@@ -556,11 +557,15 @@ void SetupWindow::onBtnOkPressed(void *, const sdc::events::ActionEvent &ev) {
 	try {
 		saveSettings();
 	} catch (const std::exception &ex) {
-		// TODO: handle
-		throw;
+		::com::osMessageBox ( 
+			"Error", std::string("saving setting failed: ") + ex.what(), ::com::MSG_ALERT 
+		);
+		return;
 	} catch(...) {
-		//TODO: handle
-		throw;
+		::com::osMessageBox ( 
+			"Error", "saving setting failed: unkown reason.", ::com::MSG_ALERT 
+		);
+		return;
 	}
 	if (!ctrl)
 		return;

@@ -367,7 +367,7 @@ void FrxSetEditorExitOnClose::process(Bool val, Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_EDITOR
 	using sambag::disco::components::Window;
-	editor->getParentWindow()->setDefaultCloseOperation( 
+	editor->getHostWindow()->setDefaultCloseOperation( 
 		val == True ? Window::EXIT_ON_CLOSE :
 		Window::DISPOSE_ON_CLOSE
 	);
@@ -675,12 +675,12 @@ void FrxOpenEditor::process(Ctrl *ctrl) {
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
 	editor->open();
-	if (editor->getParentWindow()->isOpen()) {
+	if (editor->getHostWindow()->isOpen()) {
 		return;
 	}
 	bool isOpen = false;
 	sambag::disco::components::Window::OnOpenEventSender::Connection evcn = 
-		editor->getParentWindow()->addOnOpenEventListener(
+		editor->getHostWindow()->addOnOpenEventListener(
 			boost::bind(&onEditorOpen, _1, _2, &isOpen)
 		);
 	while (!isOpen) {
@@ -699,12 +699,12 @@ void FrxCloseEditor::process(Ctrl *ctrl) {
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
 	editor->close();
-	if (!editor->getParentWindow()->isOpen()) {
+	if (!editor->getHostWindow()->isOpen()) {
 		return;
 	}
 	bool isClose = false;
 	sambag::disco::components::Window::OnCloseEventSender::Connection evcn = 
-		editor->getParentWindow()->addOnCloseEventListener(
+		editor->getHostWindow()->addOnCloseEventListener(
 			boost::bind(&onEditorClose, _1, _2, &isClose)
 		);
 	while (!isClose) {
@@ -805,7 +805,7 @@ sambag::disco::components::WindowPtr PluginScriptCtrl::getEditorWindow() const {
 	if (!editor) {
 		return sambag::disco::components::WindowPtr();
 	}
-	return editor->getParentWindow();
+	return editor->getHostWindow();
 }
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::setPlugin(frx::processing::VstForxPlug *plug) {

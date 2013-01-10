@@ -23,7 +23,9 @@ LogFile::LogFile() {
 	filename = Settings::getLogFilename();
 	struct stat filestatus;
 	stat( filename.c_str(), &filestatus );
-	if ( filestatus.st_size > SETTINGS.getMaxLogSize() ) std::remove ( filename.c_str() );
+	if ( (int)filestatus.st_size > SETTINGS.getMaxLogSize() ) {
+		std::remove ( filename.c_str() );
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 void LogFile::flushBff(){

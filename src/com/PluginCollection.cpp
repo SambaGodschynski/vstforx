@@ -14,6 +14,7 @@
 #include "OS_Specific/OS_com.h"
 #include "processing/pluginTypes/VSTPlugin2x.h"
 #include "processing/pluginTypes/VstShellPlugin.hpp"
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 
 #define DB_QUERY(x)											\
 	try {x}													\
@@ -24,7 +25,7 @@
 
 namespace com {
 //------------------------------------------------------------------------------------------------------------
-void ShowDatabaseConnectionFailedMSG() {
+void showDatabaseConnectionFailedMSG() {
 	::com::osMessageBox ( "Error.", 
 			"Could not create/access the databasefile in your VSTForx folder"
 			". Please check write protection or try to run host as administrator.", 
@@ -149,7 +150,7 @@ PluginCollection::PluginCollection() :
 			database = DataBase::getDataBase ( settings.getPlugCollectionDumpFilename() );
 			initDB();
 		} catch(...) { // failed again
-			ShowDatabaseConnectionFailedMSG();
+			showDatabaseConnectionFailedMSG();
 		}
 	}
 }

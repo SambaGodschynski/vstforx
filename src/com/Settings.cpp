@@ -84,20 +84,28 @@ void Settings::setHomeDirectory(const std::string &path) {
 	homeDir = path;
 }
 //------------------------------------------------------------------------------------------------------------
-string Settings::getPlugCollectionDumpFilename ()  { 
-	return getHomeDirectory() + "/" + plugCollectionDumpFile; 
+string Settings::getPlugCollectionDumpFilename ()  {
+	std::string str = getHomeDirectory() + "/" + plugCollectionDumpFile; 
+	boost::filesystem::path p(str);
+	return p.relative_path().string();
 }
 //------------------------------------------------------------------------------------------------------------
 string Settings::getLogFilename()  { 
-	return SETTINGS.getHomeDirectory() + "/" + NAME + ".log"; 
+	std::string str = SETTINGS.getHomeDirectory() + "/" + NAME + ".log";
+	boost::filesystem::path p(str);
+	return p.relative_path().string();
 }
 //------------------------------------------------------------------------------------------------------------
 string Settings::getConfFilename()  { 
-	return SETTINGS.getHomeDirectory() + "/" + CONFIG_FILE; 
+	std::string str = SETTINGS.getHomeDirectory() + "/" + CONFIG_FILE; 
+	boost::filesystem::path p(str);
+	return p.relative_path().string();
 }
 //------------------------------------------------------------------------------------------------------------
 string Settings::getPlugInitLogFilename()  { 
-	return SETTINGS.getHomeDirectory() + "/" + PLUG_LOAD_LOGFILE;
+	std::string str = SETTINGS.getHomeDirectory() + "/" + PLUG_LOAD_LOGFILE;
+	boost::filesystem::path p(str);
+	return p.relative_path().string();
 }
 //------------------------------------------------------------------------------------------------------------
 void Settings::init(const std::string &homeDirectory) {
@@ -140,82 +148,71 @@ void Settings::loadConfigFile() { // TODO: use boost::Program_options
 	// wenn zugriff verw. aber datei existent
 	if ( f.fail() )  {
 		if (  boost::filesystem::exists(conFile) ) {
-			osMessageBox ( "Error.", 
-						 string("could not access: " + conFile ).c_str(), 
-						 MSG_ALERT );
+			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+				string("access to [" + conFile + "] failed. (check protection)" )
+			);
 		}
 		return;
 	}
-	try { // try read
-		while ( !f.eof() ) {
-			MyString cont, token;
-			parseConfigLine (f, token, cont);
-			if ( token == IN_DIR ) {
-				if ( cont.length() > 0 ) {
-					try {
-						addVSTFolder(cont); // throws SettingsException if folder==already given subfolder
-					} catch ( ppiError::SettingsException &ex ) {continue;}
-				}
-			}
-			if ( token == WINDOW_WIDTH ) {
-				if ( cont.length() == 0 ) continue;
-				windowWidth = atoi( cont.c_str() );
-				if ( windowWidth == 0 || windowWidth == INT_MAX || windowWidth == INT_MIN ) {
-					windowWidth = MIN_WINDOW_WIDTH;
-				}
-			}
-			if ( token == WINDOW_HEIGHT ) {
-				if ( cont.length() == 0 ) continue;
-				windowHeight = atoi( cont.c_str() );
-				if ( windowHeight == 0 || windowHeight == INT_MAX || windowHeight == INT_MIN ) {
-					windowHeight = MIN_WINDOW_HEIGHT;
-				}
-			}
-			if ( token == MAX_LOGSIZE ) {
-				if ( cont.length() == 0 ) continue;
-				maxLogSize = (unsigned int)atoi( cont.c_str() ) * KILO;
-			}
-			if ( token == SKIP_SCAN ) {
-				if ( cont.length() == 0 ) continue;
-				if ( atoi( cont.c_str() ) == 1 ) fastScan = true;
-				else fastScan = false;
+	while ( !f.eof() ) {
+		MyString cont, token;
+		parseConfigLine (f, token, cont);
+		if ( token == IN_DIR ) {
+			if ( cont.length() > 0 ) {
+				try {
+					addVSTFolder(cont); // throws SettingsException if folder==already given subfolder
+				} catch ( ppiError::SettingsException &ex ) {continue;}
 			}
 		}
-	} catch (...) {
-		f.close();
-		return;
+		if ( token == WINDOW_WIDTH ) {
+			if ( cont.length() == 0 ) continue;
+			windowWidth = atoi( cont.c_str() );
+			if ( windowWidth == 0 || windowWidth == INT_MAX || windowWidth == INT_MIN ) {
+				windowWidth = MIN_WINDOW_WIDTH;
+			}
+		}
+		if ( token == WINDOW_HEIGHT ) {
+			if ( cont.length() == 0 ) continue;
+			windowHeight = atoi( cont.c_str() );
+			if ( windowHeight == 0 || windowHeight == INT_MAX || windowHeight == INT_MIN ) {
+				windowHeight = MIN_WINDOW_HEIGHT;
+			}
+		}
+		if ( token == MAX_LOGSIZE ) {
+			if ( cont.length() == 0 ) continue;
+			maxLogSize = (unsigned int)atoi( cont.c_str() ) * KILO;
+		}
+		if ( token == SKIP_SCAN ) {
+			if ( cont.length() == 0 ) continue;
+			if ( atoi( cont.c_str() ) == 1 ) fastScan = true;
+				else fastScan = false;
+		}
 	}
 	f.close();
 }
 //------------------------------------------------------------------------------------------------------------
 void Settings::saveConfigFile() {  // TODO: use boost::Program_options
 	ofstream f;
-	try {
-		if ( CONFIG_FILE == "" ) return;
-		f.open ( getConfFilename().c_str(), ios::trunc );
-		if ( f.fail() ) {
-			osMessageBox ( "Error.", 
-						string("could not write (check write protection): " 
-							   + getConfFilename() ).c_str(), MSG_ALERT );
-			return;
-		}
-		
-		// indirs
-		PathnameSet::const_iterator it = pluginDirectories.begin();
-		for ( ; it!=pluginDirectories.end(); ++it ) {
-			f<<IN_DIR<<"="<<*it<<endl;
-		}
-		// window metrics
-		f<<WINDOW_WIDTH<<"="<<getWindowWidth()<<endl;
-		f<<WINDOW_HEIGHT<<"="<<getWindowHeight()<<endl;
-		// logfile
-		f<<MAX_LOGSIZE<<"="<<( getMaxLogSize() / KILO )<<endl;
-		// fastScan
-		f<<SKIP_SCAN<<"="<<isFastScan();
-	} catch (...) {
-		f.close();
-		return;
+	if ( CONFIG_FILE == "" ) return;
+	f.open ( getConfFilename().c_str(), ios::trunc );
+	if ( f.fail() ) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+			string("writing to [" + getConfFilename() + "] failed. (check protection)" )
+		);
 	}
+	
+	// indirs
+	PathnameSet::const_iterator it = pluginDirectories.begin();
+	for ( ; it!=pluginDirectories.end(); ++it ) {
+		f<<IN_DIR<<"="<<*it<<endl;
+	}
+	// window metrics
+	f<<WINDOW_WIDTH<<"="<<getWindowWidth()<<endl;
+	f<<WINDOW_HEIGHT<<"="<<getWindowHeight()<<endl;
+	// logfile
+	f<<MAX_LOGSIZE<<"="<<( getMaxLogSize() / KILO )<<endl;
+	// fastScan
+	f<<SKIP_SCAN<<"="<<isFastScan();
 	f.close();
 }
 //------------------------------------------------------------------------------------------------------------

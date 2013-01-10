@@ -67,9 +67,9 @@ void VerticalFormatter::translateCompound() {
 }
 //-----------------------------------------------------------------------------
 void VerticalFormatter::addElement(sdc::AComponentPtr c) {
-	if (tmp.size() < numCompound) {
+	if ((int)tmp.size() < numCompound) {
 		tmp.push_back(c);
-		if (tmp.size() == numCompound) {
+		if ((int)tmp.size() == numCompound) {
 			translateCompound();
 		}
 		return;

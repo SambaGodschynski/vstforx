@@ -182,23 +182,23 @@ FrxCircuidViewPtr VstForxEditor::createView(sdc::Window::Ptr win) {
 //-----------------------------------------------------------------------------
 void VstForxEditor::onHostWindowOpen(void *src, const sdc::OnOpenEvent &ev)
 {
-	open( parentWindow->getWindowImpl()->getSystemHandle() );
+	open( hostWindow->getWindowImpl()->getSystemHandle() );
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::open() {
-	if (!parentWindow) {
-		parentWindow = sdc::FramedWindow::create();
-		parentWindow->getContentPane()->setOpaque(false);
-		parentWindow->getWindowImpl()->setFlag(sdc::WindowFlags::WND_RAW, true);
-		parentWindow->addOnOpenEventListener(
+	if (!hostWindow) {
+		hostWindow = sdc::FramedWindow::create();
+		hostWindow->getContentPane()->setOpaque(false);
+		hostWindow->getWindowImpl()->setFlag(sdc::WindowFlags::WND_RAW, true);
+		hostWindow->addOnOpenEventListener(
 			boost::bind(&VstForxEditor::onHostWindowOpen, this, _1, _2)
 		);
 	}
-	parentWindow->setWindowBounds(
+	hostWindow->setWindowBounds(
 		sd::Rectangle(0,0,::com::getSettings().getWindowWidth(), 
 		::com::getSettings().getWindowHeight())
 	);
-	parentWindow->open();
+	hostWindow->open();
 }
 //-----------------------------------------------------------------------------
 bool VstForxEditor::open( void *ptr ) {
@@ -257,9 +257,9 @@ void VstForxEditor::close() {
 	getPlugin()->unRegisterView(circView);
 	window.reset();
 	circView.reset();
-	if (parentWindow) {
-		parentWindow->close();
-		//parentWindow.reset();
+	if (hostWindow) {
+		hostWindow->close();
+		//hostWindow.reset();
 	}
 }
 //-----------------------------------------------------------------------------

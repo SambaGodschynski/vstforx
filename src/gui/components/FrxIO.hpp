@@ -27,11 +27,11 @@ public:
 	typedef boost::shared_ptr<FrxIO> Ptr;
 	//-------------------------------------------------------------------------
 	enum State {
-		None = 0, 
+		None, 
 		/**
 		 * for ex. on step processors, means: this (step)node is active 
 		 */
-		Activated = 1 << 0 
+		Activated 
 	};
 protected:
 	//-------------------------------------------------------------------------

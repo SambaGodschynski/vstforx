@@ -114,7 +114,7 @@ void SetupCtrl::startScan(const NotifyFileFunc &fileEventF,
 {
 	if (!hostInfo) {
 		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"Tried to start scan with hostInfo == NULL");
+			"tried to start scan with hostInfo == NULL");
 	}
 	scanThread = boost::thread(
 		boost::bind(&startScanImpl, fileEventF, scanCompletedF, hostInfo)	

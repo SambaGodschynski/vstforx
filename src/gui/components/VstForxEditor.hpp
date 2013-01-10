@@ -35,7 +35,7 @@ private:
 	 * setted when editor opened via open() ( instead of open(ptr) where
 	 * ptr is a host window handle )
 	 */
-	sambag::disco::components::WindowPtr parentWindow;
+	sambag::disco::components::WindowPtr hostWindow;
 	//-------------------------------------------------------------------------
 	sambag::disco::components::WindowPtr window;
 	//-------------------------------------------------------------------------
@@ -80,8 +80,8 @@ public:
 	 * Is NULL when the editor was opened by a host via open(ptr) call.
 	 * ( the host produce its own window )
 	 */
-	sambag::disco::components::WindowPtr getParentWindow() const {
-		return parentWindow;
+	sambag::disco::components::WindowPtr getHostWindow() const {
+		return hostWindow;
 	}
 	//-------------------------------------------------------------------------
 	/**
