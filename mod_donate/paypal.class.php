@@ -7,7 +7,7 @@
  *      Website:    http://www.micahcarrick.com
  *
  *      File:       paypal.class.php
- *      Version:    1.00
+ *      Version:    1.3.0
  *      Copyright:  (c) 2005 - Micah Carrick 
  *                  You are free to use, distribute, and modify this software 
  *                  under the terms of the GNU General Public License.  See the
@@ -15,11 +15,29 @@
  *      
  *******************************************************************************
  *  VERION HISTORY:
+ *      v1.3.0 [10.10.2005] - Fixed it so that single quotes are handled the 
+ *                            right way rather than simple stripping them.  This
+ *                            was needed because the user could still put in
+ *                            quotes.
  *  
+ *      v1.2.1 [06.05.2005] - Fixed typo from previous fix :)
+ *
+ *      v1.2.0 [05.31.2005] - Added the optional ability to remove all quotes
+ *                            from the paypal posts.  The IPN will come back
+ *                            invalid sometimes when quotes are used in certian
+ *                            fields.
+ *
+ *      v1.1.0 [05.15.2005] - Revised the form output in the submit_paypal_post
+ *                            method to allow non-javascript capable browsers
+ *                            to provide a means of manual form submission.
+ *
  *      v1.0.0 [04.16.2005] - Initial Version
  *
  *******************************************************************************
  *  DESCRIPTION:
+ *
+ *      NOTE: See www.micahcarrick.com for the most recent version of this class
+ *            along with any applicable sample files and other documentaion.
  *
  *      This file provides a neat and simple method to interface with paypal and
  *      The paypal Instant Payment Notification (IPN) interface.  This file is
@@ -77,6 +95,7 @@ class paypal_class {
    var $last_error;                 // holds the last error encountered
    
    var $ipn_log;                    // bool: log IPN results to text file?
+   
    var $ipn_log_file;               // filename of the IPN log
    var $ipn_response;               // holds the IPN response from paypal   
    var $ipn_data = array();         // array contains the POST values for IPN
@@ -92,8 +111,8 @@ class paypal_class {
       
       $this->last_error = '';
       
-      $this->ipn_log_file = 'ipn_log.txt';
-      $this->ipn_log = true;
+      $this->ipn_log_file = 'ipn_results.log';
+      $this->ipn_log = true; 
       $this->ipn_response = '';
       
       // populate $fields array with a few default values.  See the paypal
@@ -110,7 +129,7 @@ class paypal_class {
       // adds a key=>value pair to the fields array, which is what will be 
       // sent to paypal as POST variables.  If the value is already in the 
       // array, it will be overwritten.
-      
+            
       $this->fields["$field"] = $value;
    }
 
@@ -130,14 +149,19 @@ class paypal_class {
 
       echo "<html>\n";
       echo "<head><title>Processing Payment...</title></head>\n";
-      echo "<body onLoad=\"document.form.submit();\">\n";
-      echo "<center><h3>Please wait, your order is being processed...</h3></center>\n";
-      echo "<form method=\"post\" name=\"form\" action=\"".$this->paypal_url."\">\n";
+      echo "<body onLoad=\"document.forms['paypal_form'].submit();\">\n";
+      echo "<center><h2>Please wait, your order is being processed and you";
+      echo " will be redirected to the paypal website.</h2></center>\n";
+      echo "<form method=\"post\" name=\"paypal_form\" ";
+      echo "action=\"".$this->paypal_url."\">\n";
 
       foreach ($this->fields as $name => $value) {
-         echo "<input type=\"hidden\" name=\"$name\" value=\"$value\">";
+         echo "<input type=\"hidden\" name=\"$name\" value=\"$value\"/>\n";
       }
- 
+      echo "<center><br/><br/>If you are not automatically redirected to ";
+      echo "paypal within 5 seconds...<br/><br/>\n";
+      echo "<input type=\"submit\" value=\"Click Here\"></center>\n";
+      
       echo "</form>\n";
       echo "</body></html>\n";
     
@@ -151,16 +175,16 @@ class paypal_class {
       // generate the post string from the _POST vars aswell as load the
       // _POST vars into an arry so we can play with them from the calling
       // script.
-      $post_string = '';    
+      $post_string="cmd=_notify-validate";
       foreach ($_POST as $field=>$value) { 
          $this->ipn_data["$field"] = $value;
-         $post_string .= $field.'='.urlencode($value).'&'; 
+         $post_string .= '&' . $field.'='.urlencode(stripslashes($value)); 
       }
-      $post_string.="cmd=_notify-validate"; // append ipn command
 
       // open the connection to paypal
-      $fp = fsockopen($url_parsed[host],"80",$err_num,$err_str,30); 
-      if(!$fp) {
+      //$fp = fsockopen($url_parsed[host],"80",$err_num,$err_str,30); 
+     $fp = fsockopen ('ssl://www.sandbox.paypal.com', 443, $errno, $errstr, 30);  
+     if(!$fp) {
           
          // could not open the connection.  If loggin is on, the error message
          // will be in the log.
