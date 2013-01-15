@@ -56,6 +56,7 @@ void FrxSelectionMouseListener::moveSelection(const sdc::events::MouseEvent &ev)
 	boost::geometry::subtract_point(distance, tmpPoint);
 	translateSelection(sel, distance);
 	tmpPoint = circ->getLocationOnComponent(ev.getLocationOnScreen());
+	sel->getParent()->redraw();
 }
 //-----------------------------------------------------------------------------
 void FrxSelectionMouseListener::mousePressed(const sdc::events::MouseEvent &ev) {

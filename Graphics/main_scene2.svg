@@ -988,14 +988,36 @@
        fx="229.27177"
        fy="926.00867"
        r="42.50074"
-       gradientTransform="matrix(1.6098374,-0.02698089,0.01071478,1.6072626,-116.38652,-797.83207)"
+       gradientTransform="matrix(1.6098374,-0.02698089,0.01071478,1.6072626,-122.74007,-781.05081)"
        gradientUnits="userSpaceOnUse" />
     <radialGradient
        inkscape:collect="always"
        xlink:href="#linearGradient5653"
        id="radialGradient5697"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.6063996,-0.02708348,0.0106919,1.6133743,-150.19758,-796.31278)"
+       gradientTransform="matrix(1.6063996,-0.02708348,0.0106919,1.6133743,-124.38818,-794.05256)"
+       cx="229.27177"
+       cy="926.00867"
+       fx="229.27177"
+       fy="926.00867"
+       r="42.50074" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5653"
+       id="radialGradient4201"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.6063996,-0.01694608,0.0106919,1.0094849,360.60281,-135.56581)"
+       cx="229.27177"
+       cy="926.00867"
+       fx="229.27177"
+       fy="926.00867"
+       r="42.50074" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5653"
+       id="radialGradient4209"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.6063996,-0.01694608,0.0106919,1.0094849,342.46068,-131.83097)"
        cx="229.27177"
        cy="926.00867"
        fx="229.27177"
@@ -1009,11 +1031,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.8284271"
-     inkscape:cx="699.10564"
-     inkscape:cy="200.05711"
+     inkscape:zoom="4"
+     inkscape:cx="709.88153"
+     inkscape:cy="211.53469"
      inkscape:document-units="px"
-     inkscape:current-layer="g5350"
+     inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1680"
      inkscape:window-height="998"
@@ -1059,7 +1081,20 @@
        inkscape:groupmode="layer"
        id="layer4"
        inkscape:label="Ebene#2"
-       style="display:inline" />
+       style="display:inline">
+      <use
+         style="display:inline"
+         x="0"
+         y="0"
+         xlink:href="#rect5667"
+         id="use4198"
+         transform="translate(-117.08164,0.84314537)"
+         width="1052.3622"
+         height="744.09448"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\iplug.png"
+         inkscape:export-xdpi="26"
+         inkscape:export-ydpi="26" />
+    </g>
     <path
        sodipodi:type="arc"
        style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:37.28166962;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
@@ -1071,9 +1106,12 @@
        d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
        transform="matrix(0.22992742,0,0,0.26277374,677.54382,638.45918)" />
     <g
-       transform="translate(771.87769,572.99356)"
+       transform="translate(581.87769,549.99356)"
        style="display:inline"
-       id="g3848-0">
+       id="g3848-0"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\e.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
       <path
          transform="matrix(0.11551982,0,0,0.13202244,134.25702,301.37743)"
          d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
@@ -1782,27 +1820,13 @@
     </g>
     <g
        id="g5350"
-       transform="matrix(1,0,0,0.62569789,347.15695,367.08338)">
-      <g
-         style="display:inline"
-         id="g4980"
-         transform="matrix(1,0,0,1.5982154,32.148234,-795.23329)"
-         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\iplug.png"
-         inkscape:export-xdpi="26.086956"
-         inkscape:export-ydpi="26.086956">
-        <rect
-           ry="11.986387"
-           rx="11.896544"
-           y="908.11218"
-           x="185"
-           height="84.25"
-           width="85.00148"
-           id="rect4982"
-           style="fill:#ff5cda;fill-opacity:1;stroke:#000000;stroke-width:1.98835540000000010;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline" />
-      </g>
+       transform="matrix(1,0,0,0.62569789,347.33373,361.24975)"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\iplug.png"
+       inkscape:export-xdpi="26"
+       inkscape:export-ydpi="26">
       <g
          id="g5636"
-         transform="matrix(1,0,0,1.286265,0,-226.24173)"
+         transform="matrix(1,0,0,1.286265,-6.0000001,-209.46047)"
          inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\iplug.png"
          inkscape:export-xdpi="26"
          inkscape:export-ydpi="26">
@@ -1916,8 +1940,8 @@
          id="rect5650"
          width="86.937141"
          height="136.62733"
-         x="216.26434"
-         y="654.99548"
+         x="209.91078"
+         y="671.77673"
          rx="12.167454"
          ry="19.438196"
          inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\iplug.png"
@@ -2045,39 +2069,18 @@
          d="m 312.18764,570.0578 c 0,13.61953 -4.82788,24.66035 -10.78337,24.66035 -5.9555,0 -10.78338,-11.04082 -10.78338,-24.66035 0,-13.61953 4.82788,-24.66035 10.78338,-24.66035 5.95549,0 10.78337,11.04082 10.78337,24.66035 z"
          transform="matrix(1.4897958,0,0,1.3870968,-146.54424,86.5395)" />
     </g>
-    <g
-       transform="matrix(1,0,0,0.62569789,502.13833,362.15508)"
-       id="g5663"
+    <rect
+       style="fill:#9790c3;fill-opacity:1;stroke:#000000;stroke-width:1.9883554;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       id="rect5667"
+       width="85.00148"
+       height="84.25"
+       x="675.30646"
+       y="781.36823"
+       rx="11.896544"
+       ry="11.986387"
        inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\plugin.png"
        inkscape:export-xdpi="26"
-       inkscape:export-ydpi="26">
-      <g
-         inkscape:export-ydpi="26.086956"
-         inkscape:export-xdpi="26.086956"
-         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\processor.png"
-         transform="matrix(1,0,0,1.5982154,-2.3517663,-788.04132)"
-         id="g5665"
-         style="display:inline">
-        <rect
-           style="fill:#ff5cda;fill-opacity:1;stroke:#000000;stroke-width:1.9883554;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
-           id="rect5667"
-           width="85.00148"
-           height="84.25"
-           x="185"
-           y="908.11218"
-           rx="11.896544"
-           ry="11.986387" />
-      </g>
-      <rect
-         ry="19.51211"
-         rx="12.141468"
-         y="662.03906"
-         x="181.74287"
-         height="137.14687"
-         width="86.75148"
-         id="rect5695"
-         style="fill:url(#radialGradient5697);fill-opacity:1;stroke:none;display:inline" />
-    </g>
+       inkscape:export-ydpi="26" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -2908,7 +2911,7 @@
        inkscape:export-ydpi="90" />
     <g
        id="g5623"
-       transform="translate(-102.55903,-41.461941)"
+       transform="translate(-112.03911,-37.108388)"
        style="fill:#000000;fill-opacity:1"
        inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\plugin.png"
        inkscape:export-xdpi="26"
@@ -2925,6 +2928,18 @@
            style="fill:#000000;fill-opacity:1" />
       </g>
     </g>
+    <rect
+       style="fill:url(#radialGradient4209);fill-opacity:1;stroke:none;display:inline"
+       id="rect5695"
+       width="86.75148"
+       height="85.812508"
+       x="674.40106"
+       y="780.65662"
+       rx="12.141468"
+       ry="12.208686"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\plugin.png"
+       inkscape:export-xdpi="26"
+       inkscape:export-ydpi="26" />
   </g>
   <g
      inkscape:groupmode="layer"

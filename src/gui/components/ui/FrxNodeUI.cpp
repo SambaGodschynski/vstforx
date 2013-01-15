@@ -166,6 +166,7 @@ void FrxNodeUI::drag(const sdc::events::MouseEvent &ev) {
 	geom::transform(c->getLocation(), loc, transl);
 	c->setLocation(loc);
 	clickLoc = circ->getViewport()->getView()->getLocationOnComponent(ev.getLocationOnScreen());
+	circ->redraw();
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::beginConnecting(const sdc::events::MouseEvent &ev) {
@@ -277,6 +278,7 @@ void FrxNodeUI::connecting(const sdc::events::MouseEvent &ev) {
 	line->getP1().y().setValue(loc.y());
 	toConnect->updateBounds();
 	toConnect->redraw();
+	circ->redraw();
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::endConnecting(const sdc::events::MouseEvent &ev) {

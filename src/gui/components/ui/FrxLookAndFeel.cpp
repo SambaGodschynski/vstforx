@@ -213,6 +213,7 @@ void FrxLookAndFeel::installDefaults() {
 	rManager.registerImage("StatusMessage.icon.hint", "images/inf_icon.png");
 	rManager.registerImage("StatusMessage.icon.warning", "images/warning_icon.png");
 	rManager.registerImage("FrxPlugin.image", "images/vstPlugNode.png");
+	rManager.registerImage("FrxPlugin.e.image", "images/e.png");
 	rManager.registerImage("FrxVolume.image", "images/volume_node.png");
 	rManager.registerImage("FrxPan.image", "images/channel_split.png");
 	rManager.registerImage("FrxInStep.image", "images/step_adapter.png");

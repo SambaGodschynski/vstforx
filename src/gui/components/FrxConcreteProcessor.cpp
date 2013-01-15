@@ -9,14 +9,20 @@
 #include <boost/function.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/unordered_map.hpp>
+#include <sambag/disco/IResourceManager.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace processorTypes {
 void Plugin::init( FrxProcessorNode::Ptr obj ) {
 	sdc::Button::Ptr btn(sdc::Button::create());
-	btn->setText("(e)");
+	btn->setIcon(
+		sd::getResourceManager().getImage("FrxPlugin.e.image")
+	);
 	btn->setSize(sd::Dimension(30., 30.));
-	btn->putClientProperty("Button.cornerRadius", sd::Coordinate(10.));
+	btn->setFont( btn->getFont().setSize(25.) );
+	btn->setTooltipText("click the (e) to open/close plug's editor.");
+	//btn->putClientProperty("Button.cornerRadius", sd::Coordinate(10.));
+	btn->putClientProperty("Button.drawRect", false);
 	btn->setInheritsPopupMenu(true);
 	obj->add(btn);
 }
@@ -66,7 +72,7 @@ std::string getProcessorBeautyName<processorTypes::PeakTracker>() {return "Peak_
 // Tooltips
 template <>
 std::string getProcessorTooltip<processorTypes::Plugin>() 
-{return "";}
+{return "click the (e) to open/close plug's editor.";}
 template <>
 std::string getProcessorTooltip<processorTypes::Volume>() 
 {return "sets volume";}
