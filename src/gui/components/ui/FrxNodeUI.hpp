@@ -105,6 +105,8 @@ public:
 	void mouseWheelMoved(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
 	void onMouse(void *src, const sdc::events::MouseEvent &ev);
+	//-------------------------------------------------------------------------
+	void onChildComponentMouse(void *src, const sdc::events::MouseEvent &ev);
 private:
 	//-------------------------------------------------------------------------
 	sambag::com::ArithmeticWrapper<bool> inside;

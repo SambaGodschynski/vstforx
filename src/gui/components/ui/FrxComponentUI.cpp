@@ -36,6 +36,9 @@ void FrxComponentUI::installUI(sdc::AComponentPtr c) {
 }
 //-----------------------------------------------------------------------------
 void FrxComponentUI::setTooltipText(sdc::AComponentPtr c) {
+	if (c->getTooltipText().length() > 0) {
+		return;
+	}
 	c->setTooltipText(
 		TooltipTexts::getText(*(c.get()))
 	);

@@ -220,7 +220,8 @@ FrxMainBrowserCtrl::fillPluginFolder(TreeNode parent, DBFolderID dbFolderId)
 			this,
 			pI			 // plugin info
 		);
-		node.type = BrowserConstants::FRX_BROWSER_PLUGIN;
+		node.type = pI.isSynth ? BrowserConstants::FRX_BROWSER_PLUGIN_INSTRUMENT :
+			BrowserConstants::FRX_BROWSER_PLUGIN;
 		tree->setNodeData(plug, node);
 	}
 
@@ -335,7 +336,7 @@ void FrxMainBrowserCtrl::addMainProcessors()
 	BOOST_FOREACH(const std::string &name, processorNames) {
 		IFrxComponentFactory::ProcessorCreator f = fac.getProcessorCreator(name);
 		BrowserNode node;
-		createProcessorNode(node, name);
+		createProcessorNode(node, getProcessorBeautyName(name));
 		node.f = boost::bind(&FrxMainBrowserCtrl::addProcessor, 
 			this, f);
 		node.type = BrowserConstants::FRX_BROWSER_PROCESSOR;
@@ -434,7 +435,7 @@ void FrxMainBrowserCtrl::addMainKnobs()
 	Tree::Ptr tree = brws->getBrowserImpl();
 	IFrxComponentFactory &fac = getComponentFactory(view);
 	BrowserNode node;
-	createParameterNode(node, "free knob");
+	createParameterNode(node, "Free Parameter");
 	IFrxComponentFactory::FreeParameterCreator f = fac.getFreeParameterCreator();
 	node.type = BrowserConstants::FRX_BROWSER_PARAMETER;
 	node.f = boost::bind(&FrxMainBrowserCtrl::addFreeKnob, 
@@ -443,14 +444,14 @@ void FrxMainBrowserCtrl::addMainKnobs()
 	// host add_knobs:
 	frx::processing::IModelController::Ptr ctrl
 		= frx::processing::getModelController(view);
-	Tree::Node hostKnobs = tree->addNode(add_knobs, BrowserNode ("host add_knobs", true));
+	Tree::Node hostKnobs = tree->addNode(add_knobs, BrowserNode ("Host Parameter", true));
 	int nbKnobs = ctrl->getNumHostParameter();
 	IFrxComponentFactory::HostParameterCreator hPcreator = fac.getHostParameterCreator();
 	for (int i=0; i<nbKnobs; ++i) {
 		BrowserNode node;
 		processing::IParameter::Ptr par = 
 			ctrl->getHostParameter(i);
-		createParameterNode(node, "host knob: " + sambag::com::toString(i), par);
+		createParameterNode(node, "Host Parameter: " + sambag::com::toString(i), par);
 		node.f = boost::bind(&FrxMainBrowserCtrl::addHostKnob, 
 			this, hPcreator, i);
 		tree->addNode(hostKnobs, node);
@@ -459,14 +460,33 @@ void FrxMainBrowserCtrl::addMainKnobs()
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws)
 {
-	Tree::Ptr tree = brws->getBrowserImpl();
-	// add
-	add = tree->addNode(tree->getRootNode(), BrowserNode("add to scene", true));
-	// add_plugins
-	add_plugins = 
-		tree->addNode(add);
 	FrxCircuidViewWPtr wView = view;
-	BrowserNode node("plugins", true);
+	Tree::Ptr tree = brws->getBrowserImpl();
+
+	// scene tree
+	scene = 
+		tree->addNode(tree->getRootNode());
+		
+	BrowserNode node("Main Scene", true);
+	node.f = 
+		boost::bind(&FrxMainBrowserCtrl::createSceneTree, this, scene);
+	tree->setNodeData(scene, node);
+	
+	scene_plugins = tree->addNode(scene, BrowserNode("Plugins", true));
+	scene_processors = tree->addNode(scene, BrowserNode("Processors", true));
+	scene_parameter = tree->addNode(scene, BrowserNode("Parameter", true));
+	// add_knobs
+	add_knobs = 
+		tree->addNode(scene_parameter, BrowserNode("Add Parameter", 
+			BrowserConstants::FRX_BROWSER_ADD_CONTENT_FOLDER));
+	addMainKnobs();
+	scene_connections = tree->addNode(scene_parameter, BrowserNode("Parameter Connections", true));
+
+	// add_plugins
+	add_plugins = tree->addNode(scene_plugins);
+	
+	node = BrowserNode("Add Plugin", 
+		BrowserConstants::FRX_BROWSER_ADD_CONTENT_FOLDER);
 	node.f = 
 		boost::bind(&FrxMainBrowserCtrl::fillPluginFolder, 
 		this,							    // browser	
@@ -477,27 +497,9 @@ void FrxMainBrowserCtrl::initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr br
 
 	// add_processors
 	add_processors = 
-		tree->addNode(add, BrowserNode("processors", true));
+		tree->addNode(scene_processors, BrowserNode("Add Processor", 
+			BrowserConstants::FRX_BROWSER_ADD_CONTENT_FOLDER));
 	addMainProcessors();
-	
-	// add_knobs
-	add_knobs = 
-		tree->addNode(add, BrowserNode("knobs", true));
-	addMainKnobs();
-
-	// scene tree
-	scene = 
-		tree->addNode(tree->getRootNode());
-	node = BrowserNode("scene tree", true);
-	node.f = 
-		boost::bind(&FrxMainBrowserCtrl::createSceneTree, this, scene);
-	tree->setNodeData(scene, node);
-	
-	scene_plugins = tree->addNode(scene, BrowserNode("plugins", true));
-	scene_processors = tree->addNode(scene, BrowserNode("processors", true));
-	scene_parameter = tree->addNode(scene, BrowserNode("parameter", true));
-	scene_connections = tree->addNode(scene, BrowserNode("connections", true));
-
 }
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::
@@ -560,6 +562,7 @@ addPluginToSceneTree(FrxComponentPtr c, Reason reason)
 		plugin
 	);
 	tree->setNodeData(plugin, browserNode);
+	tree->updateLists();
 	return plugin;
 }
 //-----------------------------------------------------------------------------
@@ -590,6 +593,7 @@ Tree::Node FrxMainBrowserCtrl::addProcessorToSceneTree(FrxComponentPtr c, Reason
 		boost::bind(&FrxMainBrowserCtrl::onSceneIOChanged, this, _1, _2, newNode),
 		self
 	);
+	tree->updateLists();
 	// return result
 	return newNode;
 }
@@ -617,6 +621,7 @@ Tree::Node FrxMainBrowserCtrl::addParameterToSceneTree(FrxComponentPtr c, Reason
 	createParameterNode(nodeData, prPar->getName(), prPar);
 	Tree::Ptr tree = browser->getBrowserImpl();
 	Tree::Node newNode = tree->addNode(scene_parameter, nodeData);
+	tree->updateLists();
 	return newNode;
 }
 //-----------------------------------------------------------------------------
@@ -665,6 +670,7 @@ Tree::Node FrxMainBrowserCtrl::addConnectionToSceneTree(FrxComponentPtr c, Reaso
 	BrowserNode browserNode(c->getName(), true);
 	addModelObjectParameter(pr, newNode);
 	tree->setNodeData(newNode, browserNode);
+	tree->updateLists();
 	// return result
 	return newNode;
 }
@@ -755,6 +761,7 @@ _addModelObjectParameter(FrxComponentWPtr c, Tree::Node parent)
 		return BrowserNode::ResultPtr();
 	
 	addModelObjectParameter(c.lock(), parent);
+	tree->updateLists();
 	return BrowserNode::ResultPtr();
 }
 //-----------------------------------------------------------------------------

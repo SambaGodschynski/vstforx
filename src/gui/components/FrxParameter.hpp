@@ -41,10 +41,6 @@ protected:
 	//-------------------------------------------------------------------------
 	sdc::DefaultBoundedRangeModel::Ptr rangeModel;
 	//-------------------------------------------------------------------------
-	void onCtrlChanged(void *src, const sce::PropertyChanged &ev);
-	//-------------------------------------------------------------------------
-	void updateCtrlLocation();
-	//-------------------------------------------------------------------------
 	sdc::AComponent::Ptr ctrl;
 	//-------------------------------------------------------------------------
 	FrxParameter();
@@ -60,14 +56,7 @@ private:
 	void serialize(Archive &ar, const unsigned int version) { 
 		ar & boost::serialization::base_object<Super>(*this); 
 	} 
-	//-------------------------------------------------------------------------
-	sce::EventSender<sce::PropertyChanged>::Connection ctrlConnection;
 public:
-	//-------------------------------------------------------------------------
-	/**
-	 * @override
-	 */
-	virtual void setBounds(const sd::Rectangle &r);
 	//-------------------------------------------------------------------------
 	void setEncapsulatedCtrl(sdc::AComponent::Ptr ctrl);
 	//-------------------------------------------------------------------------

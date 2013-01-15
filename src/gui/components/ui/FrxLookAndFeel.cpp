@@ -212,16 +212,27 @@ void FrxLookAndFeel::installDefaults() {
 	rManager.registerImage("StatusMessage.icon.default", "images/inf_icon.png");
 	rManager.registerImage("StatusMessage.icon.hint", "images/inf_icon.png");
 	rManager.registerImage("StatusMessage.icon.warning", "images/warning_icon.png");
-	//rManager.registerImage("FrxPluginNode.image", "w3c.svg");
+	rManager.registerImage("FrxPlugin.image", "images/vstPlugNode.png");
+	rManager.registerImage("FrxVolume.image", "images/volume_node.png");
+	rManager.registerImage("FrxPan.image", "images/channel_split.png");
+	rManager.registerImage("FrxInStep.image", "images/step_adapter.png");
+	rManager.registerImage("FrxOutStep.image", "images/step_adapter.png");
+	rManager.registerImage("FrxOutSwitch.image", "images/oSwitch.png");
+	rManager.registerImage("FrxInSwitch.image", "images/oSwitch.png");
+	rManager.registerImage("FrxADSR.image", "images/adsr_trigger.png");
+	rManager.registerImage("FrxPeakTracker.image", "images/peak_tracker.png");
+	
 	//rManager.registerImage("ProcessorInput.image", "w3c.svg");
 	//rManager.registerImage("ProcessorOutput.image", "w3c.svg");
 	rManager.registerImage("Entry.image", "images/entry.svg");
 	rManager.registerImage("Exit.image", "images/exit.svg");
-	rManager.registerImage("FrxBrowser.folder.image", "images/Blank-icon.png");
+	rManager.registerImage("FrxBrowser.folder.image", "images/folder.png");
 	rManager.registerImage("FrxBrowser.default.image", "images/disco-floor.png");
-	rManager.registerImage("FrxBrowser.plugin.image", "images/vst-big-icon.png");
-	rManager.registerImage("FrxBrowser.processor.image", "images/disco-floor.png");
+	rManager.registerImage("FrxBrowser.plugin.image", "images/plugin.png");
+	rManager.registerImage("FrxBrowser.processor.image", "images/processor.png");
 	rManager.registerImage("FrxBrowser.parameter.image", "images/knob.png");
+	rManager.registerImage("FrxBrowser.pluginInstrument.image", "images/iplug.png");
+	rManager.registerImage("FrxBrowser.addContent.image", "images/plus.png");
 }	
 
 }}}} // namespace(s)

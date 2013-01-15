@@ -63,6 +63,8 @@ protected:
 	void updateText(const std::string &txt);
 	//-------------------------------------------------------------------------
 	void updateBounds(FrxFlag::Ptr flag);
+	//-------------------------------------------------------------------------
+	void clip(FrxFlag::Ptr target, sd::IDrawContext::Ptr cn) const;
 private:
 public:
 	//-------------------------------------------------------------------------

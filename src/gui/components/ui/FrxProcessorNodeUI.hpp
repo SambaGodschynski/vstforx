@@ -22,9 +22,11 @@
 #include <map>
 #include <boost/assign.hpp>
 #include <gui/HandyNamespaces.hpp>
+#include <gui/components/FrxCircuidView.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui {
+	sd::ColorRGBA getProcessorFillColor(sdc::AComponent::Ptr c);
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 namespace {
@@ -33,20 +35,9 @@ template <class PrType>
 sambag::com::Number getProcessorRadius() {
 	return sdcu::getUIPropertyCached<ProcessorRadiusTag>((double)0.);
 }
-typedef std::map<std::string, std::string> ProcessorImageMap;
-ProcessorImageMap processorImageMap;
-void initProcessorImageMap() {
-	using namespace boost::assign;
-	processorImageMap = map_list_of
-		(getProcessorName<FrxPluginNode::ProcessorType>(), "FrxPluginNode.image");
-}
 template<class PrType>
 std::string getImageName() {
-	ProcessorImageMap::const_iterator it = 
-		processorImageMap.find(getProcessorName<PrType>());
-	if (it==processorImageMap.end())
-		return "ProcessorImageMap unknown request.";
-	return it->second;
+	return getProcessorName<PrType>() + ".image";
 }
 } // namespace
 
@@ -141,27 +132,62 @@ void FrxProcessorNodeUI<CT>::installUI(sdc::AComponentPtr c) {
 //-----------------------------------------------------------------------------
 template <class CT>
 void FrxProcessorNodeUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
+	FrxProcessorNode::Ptr node = boost::shared_dynamic_cast<FrxProcessorNode>(c);
 	Super::draw(cn, c);
 	if (hasImage()) {
+		cn->setFillColor(c->getBackground());
+		cn->arc(node->getPivot(), getImage()->getSize().width()/2. - 5.);
+		cn->fill();
 		drawImage(cn, c);
 		return;
 	}
-	FrxProcessorNode::Ptr node = boost::shared_dynamic_cast<FrxProcessorNode>(c);
 	cn->translate(node->getPivot());
 	cn->arc(sd::Point2D(0, 0), getCoreRadius(node));
 	cn->setFillColor(sd::ColorRGBA());
 	cn->fill();
 }
 //-----------------------------------------------------------------------------
+namespace {
+template <class CT>
+void installSpecificDefs(sdc::AComponentPtr c)
+{
+}
+template <>
+inline void installSpecificDefs<FrxPluginNode::ProcessorType>(sdc::AComponentPtr _c)
+{
+	FrxComponent::Ptr c = boost::shared_dynamic_cast<FrxComponent>(_c);
+	if (!c) {
+		return;
+	}
+	if (c->getComponentCount() == 0) {
+		return;
+	}
+	FrxCircuidView::Ptr view = c->getFirstContainer<FrxCircuidView>();
+	sdc::AComponent::Ptr edctrl = c->getComponent(0);
+	if (!edctrl || !view) {
+		return;
+	}
+	typedef sce::EventSender<sdc::events::ActionEvent> AcSender;
+	AcSender *sender = dynamic_cast<AcSender*>( edctrl.get() );
+	if (!sender) {
+		return;
+	}
+	IFrxControl &ctrl = getFrxControl(view); 
+	sender->addTrackedEventListener (
+		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
+		&IFrxControl::openClosePluginEditor),
+		c
+	);
+}
+} // namespace(s)
 template <class CT>
 void FrxProcessorNodeUI<CT>::installDefaults(sdc::AComponentPtr c) {
-	Super::installDefaults(c);
-	if (processorImageMap.empty()) {
-		initProcessorImageMap();
-	}
 	setImage(
 		sambag::disco::getResourceManager().getImage( getImageName<CT>() )
 	);
+	installSpecificDefs<CT>(c);
+	c->setBackground( getProcessorFillColor(c) );
+	Super::installDefaults(c);
 }
 //-----------------------------------------------------------------------------
 template <class CT>
@@ -180,11 +206,11 @@ inline void createSpecificEntries<FrxPluginNode::ProcessorType>(sdc::PopupMenuPt
 	FrxCircuidViewPtr view, FrxComponentPtr c)
 {
 	sdc::MenuItem::Ptr m = sdc::MenuItem::create();
-	m->setText("open " + c->getName() + " editor...");
+	m->setText("open/close " + c->getName() + "'s editor");
 	IFrxControl &ctrl = getFrxControl(view); 
 	m->sdc::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
 		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
-		&IFrxControl::openPluginEditor),
+		&IFrxControl::openClosePluginEditor),
 		c
 	);
 	menu->add(m);

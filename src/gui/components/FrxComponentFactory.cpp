@@ -104,6 +104,7 @@ FrxProcessorNodePtr createPlugin(FrxCircuidViewPtr circ, ::processing::PluginInf
 	if (plAd) {
 		viewObj->setName(plAd->getName());
 		viewObj->setFlagText(plAd->getName() + "/" + plAd->getStatusMessage());
+		viewObj->isSynth( plAd->isSynth() );
 	}
 	viewObj->configIO(mObj->getNumInputs(), mObj->getNumOutputs());
 	registerProcessor(map, viewObj, mObj);

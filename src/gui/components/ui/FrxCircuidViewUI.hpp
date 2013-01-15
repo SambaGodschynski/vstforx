@@ -48,6 +48,8 @@ public:
 	virtual void installUI(sdc::AComponentPtr c);
 	//-------------------------------------------------------------------------
 	static Ptr create();
+	//-------------------------------------------------------------------------
+	//virtual void draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c);
 }; // FrxCircuidViewUI
 }}}} // namespace(s)
 

@@ -20,12 +20,15 @@
 #include <sambag/disco/components/Panel.hpp>
 #include <sambag/disco/components/BorderLayout.hpp>
 #include <sambag/disco/components/FlowLayout.hpp>
+#include <sambag/disco/components/ViewPort.hpp>
 #include <sambag/math/Matrix.hpp>
 #include <sambag/disco/svg/graphicElements/Style.hpp>
 #include <sambag/disco/components/Window.hpp>
 #include <sambag/disco/components/SolidBorder.hpp>
 #include <sambag/disco/svg/StyleParser.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
+#include <sambag/math/Matrix.hpp>
+
 namespace frx { namespace gui { namespace components {
 namespace {
 //-----------------------------------------------------------------------------
@@ -37,8 +40,11 @@ public:
 protected:
 	BgPane(){}
 	sd::IPattern::Ptr pat;
+	sd::IPattern::Ptr shaderPat;
 	sd::ColorRGBA bg;
 	virtual void postConstructor();
+	void drawShadingLayer(sd::IDrawContext::Ptr cn, 
+		const sd::Rectangle &r);
 public:
 	SAMBAG_STD_STATIC_COMPONENT_CREATOR(BgPane)
 	virtual void drawComponent(sd::IDrawContext::Ptr cn);
@@ -62,17 +68,53 @@ public:
 };
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
+namespace {
+	sd::IPattern::Ptr _createSPattern() {
+		sd::ILinearPattern::Ptr sol = 
+			sd::getDiscoFactory()->createLinearPattern(sd::Point2D(0,0), sd::Point2D(0,600));
+		sol->addColorStop(sd::ColorRGBA(1.,1.,1., 0.5), 0);
+		sol->addColorStop(sd::ColorRGBA(1.,1.,1., 0.1), 1.0);
+		return sol;
+	}
+	void _getViewportRect(sdc::AComponentPtr view, sd::Rectangle &res) {
+		sdc::Viewport::Ptr v =
+			boost::shared_dynamic_cast<sdc::Viewport>(view->getParent());
+		if (!v) {
+			return;
+		}
+		sd::Point2D p = v->getViewPosition();
+		res = v->getBounds();
+		res.x( p.x() );
+		res.y( p.y() );
+	}
+}
+void BgPane::drawShadingLayer(sd::IDrawContext::Ptr cn, 
+	const sd::Rectangle &r) 
+{
+	if (!shaderPat) {
+		shaderPat = _createSPattern();
+	}
+	cn->rect(r);
+	shaderPat->setMatrix(
+		sambag::math::translate2D(
+			-r.x(),
+			-r.y()
+		)
+	);
+	cn->setFillPattern(shaderPat);
+	cn->fill();
+}
 void BgPane::drawComponent(sd::IDrawContext::Ptr cn) {
 	if (!pat) {
 		Super::drawComponent(cn);
 		return;
 	}
-	cn->rect(sd::Rectangle(0, 0, getWidth(), getHeight()));
-	cn->setFillColor(bg);
-	cn->fill();
+	sd::Rectangle r;
+	_getViewportRect(getPtr(), r);
 	cn->setFillPattern(pat);
 	cn->rect(sd::Rectangle(0, 0, getWidth(), getHeight()));
 	cn->fill();
+	drawShadingLayer(cn, r);
 }
 //-----------------------------------------------------------------------------
 void BgPane::postConstructor() {

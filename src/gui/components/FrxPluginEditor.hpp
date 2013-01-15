@@ -9,6 +9,7 @@
 #define SAMBAG_FRXPLUGINEDITOR_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include "FrxProcessorEditor.hpp"
 #include <gui/HandyNamespaces.hpp>
 
@@ -24,6 +25,8 @@ public:
 	typedef FrxProcessorEditor Super; 
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<FrxPluginEditor> Ptr;
+	//-------------------------------------------------------------------------
+	typedef boost::weak_ptr<FrxPluginEditor> WPtr;
 protected:
 	//-------------------------------------------------------------------------
 	virtual void postConstructor();

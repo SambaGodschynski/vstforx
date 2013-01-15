@@ -38,5 +38,13 @@ void FrxCircuidViewUI::installUI(sdc::AComponentPtr c) {
 	circ->getContentPane()->setTooltipText(
 		TooltipTexts::getText(*(c.get()))
 	);
-}
+}/*
+//-----------------------------------------------------------------------------
+void FrxCircuidViewUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
+	cn->setFillColor(sd::ColorRGBA(1));
+	sd::Coordinate w = c->getWidth();
+	sd::Coordinate h = c->getHeight();
+	cn->rect(sd::Rectangle(0,0,w,h));
+	cn->fill();
+}*/
 }}}} // namespace(s)

@@ -50,6 +50,8 @@ public:
 		return res;
 	}
 	//-------------------------------------------------------------------------
+	virtual bool isSynth() const;
+	//-------------------------------------------------------------------------
 	virtual void openEditor(sdc::WindowPtr win);
 	//-------------------------------------------------------------------------
 	virtual void closeEditor(sdc::WindowPtr win);

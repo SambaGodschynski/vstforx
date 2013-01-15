@@ -9,7 +9,7 @@
 #include <gui/components/FrxConcreteProcessor.hpp>
 #include <gui/components/FrxConcreteParameter.hpp>
 #include <gui/components/FrxConcreteIO.hpp>
-#include <sambag/disco/components/AComponent.hpp>
+#include <sambag/disco/components/AContainer.hpp>
 #include <sambag/disco/components/events/MouseEvent.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <gui/components/FrxCircuidView.hpp>
@@ -84,6 +84,17 @@ void FrxNodeUI::installListeners(sdc::AComponent::Ptr c) {
 		boost::bind(&FrxNodeUI::onMouse, this, _1, _2),
 		getPtr()
 	);
+	sdc::AContainer::Ptr cont = 
+		boost::shared_dynamic_cast<sdc::AContainer>(c);
+	if (!cont) {
+		return;
+	}
+	BOOST_FOREACH(sdc::AComponentPtr cc, cont->getComponents()) {
+		cc->sdc::EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
+			boost::bind(&FrxNodeUI::onChildComponentMouse, this, _1, _2),
+			getPtr()
+		);
+	}
 }
 //------------------------------------------------------------------------------
 void FrxNodeUI::installDefaults(sdc::AComponent::Ptr c) {
@@ -362,5 +373,24 @@ void FrxNodeUI::mouseWheelMoved(const sdc::events::MouseEvent &ev) {
 void FrxNodeUI::onMouse(void *src, const sdc::events::MouseEvent &ev) {
 	sdc::events::MouseEventSwitch<>::
 		delegate(ev, *this);
+}
+//-----------------------------------------------------------------------------
+namespace {
+	struct ChildComponentMouseHandler {
+		void mouseClicked(const sdc::events::MouseEvent &ev) {
+			sdc::AComponent::Ptr c = ev.getSource();
+			FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
+			SAMBAG_ASSERT(circ);
+			getFrxControl(circ).handleContextMenuPopup(ev);
+		}
+	};
+}
+void FrxNodeUI::onChildComponentMouse(void *src, const sdc::events::MouseEvent &ev) {
+	static ChildComponentMouseHandler childComponentMouseHandler;
+	enum  {
+		Filter = sdc::events::MouseEvent::DISCO_MOUSE_CLICKED
+	};
+	sdc::events::MouseEventSwitch<Filter>::
+		delegate(ev, childComponentMouseHandler);
 }
 }}}} // namespace(s)

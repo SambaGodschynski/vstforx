@@ -143,6 +143,9 @@ void parameterChanged(void *src, float value,
 	frx::processing::IParameter::WPtr _par,
 	FrxParameter::WPtr _knob)
 {
+	if (!_par.lock() || !_knob.lock()) {
+		return;
+	}
 	TimedUpdater<ParameterRefreshInfo,
 	RefreshParameter, 50>::instance().update(
 		std::make_pair(_par, _knob)
@@ -397,7 +400,7 @@ FrxColumnBrowser::Ptr openMainBrowser(fgc::FrxCircuidViewPtr view,
 		ctrl->setHostInfo(mCtrl->getHostInfo());
 	}
 	browser->setCtrl(ctrl);
-	browser->setTitle("Main-Browser:");
+	browser->setTitle("Scene Browser:");
 	browser->open();
 	browser->initTree(view);
 	return browser;
@@ -428,9 +431,9 @@ typedef std::pair<std::string, IFrxControl::CtrlCmd> Entry;
 typedef std::list<Entry> Entries;
 //-----------------------------------------------------------------------------
 void createMainMenuEntries(Entries &out) {
-	out.push_back( Entry("open main browser...",
+	out.push_back( Entry("Modify Scene...",
 		boost::bind(&openMainBrowser, _1, _2)));
-	out.push_back( Entry("open setup dialog...",
+	out.push_back( Entry("Open Setup Dialog...",
 		boost::bind(&openSetup, _1, _2)));
 }
 //-----------------------------------------------------------------------------
@@ -897,7 +900,7 @@ void FrxControl::showConnectionDetails(fgc::FrxCircuidViewPtr view,
 	browser->initTree(view);
 }
 //-----------------------------------------------------------------------------
-void FrxControl::openPluginEditor(fgc::FrxCircuidViewPtr view, 
+void FrxControl::openClosePluginEditor(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c)
 {
 	frx::processing::IModelController::Ptr ctrl;
@@ -909,9 +912,20 @@ void FrxControl::openPluginEditor(fgc::FrxCircuidViewPtr view,
 	);
 	if (!plugin)
 		return;
-	// create editor
-	FrxPluginEditor::Ptr ed = createPluginEditor(view, c);
+	// check editor is open
+	FrxPluginEditor::Ptr ed;
+	FrxPluginEditor::WPtr wed;
+	c->getClientProperty("plugin.editor", wed);
+	ed = wed.lock();
+	if (ed) { // and close
+		c->putClientProperty("plugin.editor", FrxPluginEditor::WPtr());
+		ed->close();
+		return;
+	}
+	// else: create editor
+	ed = createPluginEditor(view, c);
 	addWindow(ed);
+	c->putClientProperty("plugin.editor", FrxPluginEditor::WPtr(ed));
 	installBrowserListeners(ed, view, c);
 	FrxPluginEditorCtrl::Ptr pluginCtrl = FrxPluginEditorCtrl::create();
 	pluginCtrl->setPlugin(plugin);

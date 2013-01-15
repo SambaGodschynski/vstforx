@@ -18,6 +18,8 @@ const std::string BrowserConstants::FRX_BROWSER_DEFAULT = "default";
 const std::string BrowserConstants::FRX_BROWSER_PLUGIN = "plugin";
 const std::string BrowserConstants::FRX_BROWSER_PROCESSOR = "processor";
 const std::string BrowserConstants::FRX_BROWSER_PARAMETER = "parameter"; 
+const std::string BrowserConstants::FRX_BROWSER_ADD_CONTENT_FOLDER = "addContent"; 
+const std::string BrowserConstants::FRX_BROWSER_PLUGIN_INSTRUMENT = "pluginInstrument";
 //-----------------------------------------------------------------------------
 sd::ISurface::Ptr BrowserConstants::getIcon(const std::string &type) {
 	sd::IResourceManager &m = sd::getResourceManager();

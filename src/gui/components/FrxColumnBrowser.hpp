@@ -32,8 +32,10 @@ namespace frx { namespace gui { namespace components {
 struct BrowserConstants {
 //=============================================================================
 	static const std::string FRX_BROWSER_FOLDER; 
+	static const std::string FRX_BROWSER_ADD_CONTENT_FOLDER; 
 	static const std::string FRX_BROWSER_DEFAULT;
 	static const std::string FRX_BROWSER_PLUGIN;
+	static const std::string FRX_BROWSER_PLUGIN_INSTRUMENT;
 	static const std::string FRX_BROWSER_PROCESSOR;
 	static const std::string FRX_BROWSER_PARAMETER; 
 	static sd::ISurface::Ptr getIcon(const std::string &type);
@@ -100,7 +102,8 @@ struct BrowserNode : public BrowserConstants {
 		return ResultPtr();
 	}
 	bool isFolder() const {
-		return type == FRX_BROWSER_FOLDER;
+		return type == FRX_BROWSER_FOLDER || 
+			type == FRX_BROWSER_ADD_CONTENT_FOLDER;
 	}
 };
 inline std::ostream & operator <<(std::ostream &os, const BrowserNode &n) {

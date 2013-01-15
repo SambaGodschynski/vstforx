@@ -12,11 +12,22 @@
 #include "FrxProcessorNode.hpp"
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <gui/HandyNamespaces.hpp>
+#include <sambag/disco/components/Button.hpp>
 
 namespace frx { namespace gui { namespace components {
 //-----------------------------------------------------------------------------
 template <class _ProcessorType>
 std::string getProcessorName();
+//-----------------------------------------------------------------------------
+template <class _ProcessorType>
+std::string getProcessorBeautyName();
+//-----------------------------------------------------------------------------
+template <class _ProcessorType>
+std::string getProcessorTooltip();
+//-----------------------------------------------------------------------------
+std::string getProcessorBeautyName(const std::string &processorName);
+//-----------------------------------------------------------------------------
+std::string getProcessorTooltip(const std::string &processorName);
 //=============================================================================
 /** 
   * @class FrxConcreteProcessor.
@@ -40,13 +51,15 @@ protected:
 	//-------------------------------------------------------------------------
 	FrxConcreteProcessor() {
 		instances++;
-		setName(getProcessorName<ProcessorType>());
-		setName(getName()+"_"+sambag::com::toString(instances));
 	}
 	//-------------------------------------------------------------------------
 	virtual void postConstructor() {
 		Super::postConstructor();
 		ProcessorType::init( getPtr() );
+		setName(getProcessorBeautyName<ProcessorType>());
+		setName(getName()+"_"+sambag::com::toString(instances));
+		setFlagText(getName());
+		setTooltipText( getProcessorTooltip<ProcessorType>() );
 	}
 private:
 	//-------------------------------------------------------------------------
@@ -86,7 +99,13 @@ int FrxConcreteProcessor<_ProcessorType>::instances = 0;
 //=============================================================================
 namespace processorTypes {
 	struct ProcessorTypeBase{ void init( FrxProcessorNode::Ptr ){} };
-	struct Plugin : ProcessorTypeBase{};
+	struct Plugin : ProcessorTypeBase{ 
+		bool _isSynth;
+		void init( FrxProcessorNode::Ptr obj );
+		Plugin() : _isSynth(false) {}
+		void isSynth(bool val) { _isSynth = val; }
+		bool isSynth() const { return _isSynth; }
+	};
 	struct Volume : ProcessorTypeBase{};
 	struct Pan : ProcessorTypeBase{};
 	struct InStep : ProcessorTypeBase{};
@@ -95,8 +114,9 @@ namespace processorTypes {
 	struct OutSwitch : ProcessorTypeBase{};
 	struct ADSR : ProcessorTypeBase{};
 	struct PeakTracker : ProcessorTypeBase{};
-	
 }
+
+///////////////////////////////////////////////////////////////////////////////
 typedef FrxConcreteProcessor<processorTypes::Plugin> FrxPluginNode;
 typedef FrxConcreteProcessor<processorTypes::Volume> FrxVolumeNode;
 typedef FrxConcreteProcessor<processorTypes::Pan> FrxPanNode;
@@ -111,23 +131,65 @@ typedef FrxConcreteProcessor<processorTypes::PeakTracker> FrxPeakTrackerNode;
 template <class _ProcessorType>
 std::string getProcessorName() {return "unkonwn processortype";}
 template <>
-inline std::string getProcessorName<processorTypes::Plugin>() {return "FrxPlugin";}
+std::string getProcessorName<processorTypes::Plugin>();
 template <>
-inline std::string getProcessorName<processorTypes::Volume>() {return "FrxVolume";}
+std::string getProcessorName<processorTypes::Volume>();
 template <>
-inline std::string getProcessorName<processorTypes::Pan>() {return "FrxPan";}
+std::string getProcessorName<processorTypes::Pan>();
 template <>
-inline std::string getProcessorName<processorTypes::InStep>() {return "FrxInStep";}
+std::string getProcessorName<processorTypes::InStep>();
 template <>
-inline std::string getProcessorName<processorTypes::OutStep>() {return "FrxOutStep";}
+std::string getProcessorName<processorTypes::OutStep>();
 template <>
-inline std::string getProcessorName<processorTypes::InSwitch>() {return "FrxInSwitch";}
+std::string getProcessorName<processorTypes::InSwitch>();
 template <>
-inline std::string getProcessorName<processorTypes::OutSwitch>() {return "FrxOutSwitch";}
+std::string getProcessorName<processorTypes::OutSwitch>();
 template <>
-inline std::string getProcessorName<processorTypes::ADSR>() {return "FrxADSR";}
+std::string getProcessorName<processorTypes::ADSR>();
 template <>
-inline std::string getProcessorName<processorTypes::PeakTracker>() {return "FrxPeakTracker";}
+std::string getProcessorName<processorTypes::PeakTracker>();
+//-----------------------------------------------------------------------------
+template <class _ProcessorType>
+std::string getProcessorBeautyName() {return "unkonwn processortype";}
+template <>
+std::string getProcessorBeautyName<processorTypes::Plugin>();
+template <>
+std::string getProcessorBeautyName<processorTypes::Volume>();
+template <>
+std::string getProcessorBeautyName<processorTypes::Pan>();
+template <>
+std::string getProcessorBeautyName<processorTypes::InStep>();
+template <>
+std::string getProcessorBeautyName<processorTypes::OutStep>();
+template <>
+std::string getProcessorBeautyName<processorTypes::InSwitch>();
+template <>
+std::string getProcessorBeautyName<processorTypes::OutSwitch>();
+template <>
+std::string getProcessorBeautyName<processorTypes::ADSR>();
+template <>
+std::string getProcessorBeautyName<processorTypes::PeakTracker>();
+//-----------------------------------------------------------------------------
+template <class _ProcessorType>
+std::string getProcessorTooltip() {return "?";}
+template <>
+std::string getProcessorTooltip<processorTypes::Plugin>();
+template <>
+std::string getProcessorTooltip<processorTypes::Volume>();
+template <>
+std::string getProcessorTooltip<processorTypes::Pan>();
+template <>
+std::string getProcessorTooltip<processorTypes::InStep>();
+template <>
+std::string getProcessorTooltip<processorTypes::OutStep>();
+template <>
+std::string getProcessorTooltip<processorTypes::InSwitch>();
+template <>
+std::string getProcessorTooltip<processorTypes::OutSwitch>();
+template <>
+std::string getProcessorTooltip<processorTypes::ADSR>();
+template <>
+std::string getProcessorTooltip<processorTypes::PeakTracker>();
 }}} // namespace(s)
 
 #endif /* SAMBAG_FRXPLUGINNODE_H */

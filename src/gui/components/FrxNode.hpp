@@ -11,6 +11,8 @@
 #include <boost/shared_ptr.hpp>
 #include "FrxComponent.hpp"
 #include <gui/HandyNamespaces.hpp>
+#include <boost/unordered_map.hpp>
+#include <sambag/com/events/PropertyChanged.hpp>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -28,7 +30,22 @@ public:
 	virtual sdcu::AComponentUIPtr createComponentUI(sdcu::ALookAndFeelPtr laf) const;
 protected:
 	//-------------------------------------------------------------------------
+	typedef sce::EventSender<sce::PropertyChanged>::Connection ChildSender;
+	//-------------------------------------------------------------------------
+	typedef boost::unordered_map<sdc::AComponent::Ptr, ChildSender>
+		ChildSenderMap;
+	ChildSenderMap childSenderMap;
+	//-------------------------------------------------------------------------
 	FrxNode();
+	//-------------------------------------------------------------------------
+	virtual void updateChildLocation(sdc::AComponent::Ptr c);
+	//-------------------------------------------------------------------------
+	virtual void onChildChanged(void *src, 
+		const sce::PropertyChanged &ev, sdc::AComponentWPtr c);
+	//-------------------------------------------------------------------------
+	void installChildListener(sdc::AComponent::Ptr c);
+	//-------------------------------------------------------------------------
+	void uninstallChildListener(sdc::AComponent::Ptr c);
 private:
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
@@ -40,6 +57,18 @@ private:
 		ar & boost::serialization::base_object<Super>(*this); 
 	} 
 public:
+	//-------------------------------------------------------------------------
+	/**
+	 * @override
+	 */
+	virtual void setBounds(const sd::Rectangle &r);
+	//-------------------------------------------------------------------------
+	/**
+	 * add component to node. object will be paced at node center.
+	 */
+	virtual void add(sdc::AComponent::Ptr);
+	//-------------------------------------------------------------------------
+	virtual void remove(sdc::AComponent::Ptr);
 	//-------------------------------------------------------------------------
 	virtual sambag::com::Number getRadius() const;
 	//-------------------------------------------------------------------------

@@ -10,6 +10,7 @@
 #include <sambag/disco/IDiscoFactory.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 #include <boost/algorithm/string.hpp>
+#include <gui/components/FrxNode.hpp>
 
 namespace frx { namespace gui { namespace components { namespace ui {
 //=============================================================================
@@ -190,6 +191,26 @@ FrxFlagUI::Ptr FrxFlagUI::create() {
 	return res;
 } 
 //-----------------------------------------------------------------------------
+void FrxFlagUI::clip(FrxFlag::Ptr flag, 
+	sd::IDrawContext::Ptr cn) const
+{
+	FrxNode::Ptr a = boost::shared_dynamic_cast<FrxNode>( flag->getTarget() );
+	if (!a) {
+		return;
+	}
+
+	sd::Point2D aLoc = a->getLocation();
+	boost::geometry::add_point(aLoc, a->getPivot());
+	
+	boost::geometry::subtract_point(aLoc, flag->getLocation());
+	
+	cn->setFillRule(sd::IDrawContext::FILL_RULE_EVEN_ODD);
+	
+	cn->rect(sd::Rectangle(0, 0, flag->getWidth(), flag->getHeight()));
+	cn->arc(aLoc, a->getRadius());
+	cn->clip();
+}
+//-----------------------------------------------------------------------------
 void FrxFlagUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	FrxFlag::Ptr flag = _flag.lock();
 	if (firstDraw) {
@@ -204,6 +225,7 @@ void FrxFlagUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	if (!target) {
 		return;
 	}
+	clip(flag, cn);
 	sambag::com::Number fs = flagStyle.fontSize();
 	flagStyle.intoContext(cn);
 	sd::Rectangle r = cn->clipExtends();

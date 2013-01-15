@@ -89,7 +89,7 @@ public:
 	virtual void showConnectionDetails(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c);
 	//-------------------------------------------------------------------------
-	virtual void openPluginEditor(fgc::FrxCircuidViewPtr view, 
+	virtual void openClosePluginEditor(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c);
 	//-------------------------------------------------------------------------
 	fgc::FrxComponentPtr
