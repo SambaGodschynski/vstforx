@@ -48,8 +48,8 @@ void register_types_impl( Archive &ar ) {
 	ar.template register_type<pr::InputSwitch>();
 	ar.template register_type<pr::PeakTracker>();
 	ar.template register_type<pr::ADSRTrigger>();
-	//ar.template register_type <MidiProcessor>();
-	ar.template register_type <pr::FadeValue>();
+	ar.template register_type<pr::MidiProcessor>();
+	ar.template register_type<pr::FadeValue>();
 
 	ar.template register_type<ProcessorAdapter>();
 	ar.template register_type<PluginAdapter>();

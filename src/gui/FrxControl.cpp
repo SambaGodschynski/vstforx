@@ -533,6 +533,7 @@ fgc::FrxComponentPtr FrxControl::_addRelatedKnobToView(fgc::FrxCircuidViewPtr vi
 	flag->setTarget(knob);
 	view->add(flag, FrxCircuidView::Z_Flags, true);
 	knob->setFlagText( par->getName() + "/" + par->getDisplay() );
+	knob->setName( par->getName() );
 	// register knob
 	if (!map->registerObjects(knob, par))
 		return fgc::FrxComponentPtr();

@@ -31,6 +31,20 @@ std::string getProcessorTooltip(const std::string &processorName);
 //=============================================================================
 /** 
   * @class FrxConcreteProcessor.
+  * 
+  * Steps to implement a new processor type:
+  * 
+  *  add FrxConcreteProcessor, 
+  *  add createXY() IModelController method, 
+  *  add FrxComponentFactory creatorMap entry and impl. related ModelExecutor function
+  *  register new view type in FrxLookAndFeel
+  *  regitser new view type in MainBrowserCtrl TODO: could be removed if approach would
+  *                                             use base type casting instead of concrete 
+  *                                             type mapping.
+  *
+  * register new view type in FrxSerializationRegister
+  * register new model type in SerializationRegister
+  * 
   */
 template <class _ProcessorType>
 class FrxConcreteProcessor : 
@@ -114,6 +128,7 @@ namespace processorTypes {
 	struct OutSwitch : ProcessorTypeBase{};
 	struct ADSR : ProcessorTypeBase{};
 	struct PeakTracker : ProcessorTypeBase{};
+	struct MIDIReceiver : ProcessorTypeBase{};
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -126,6 +141,7 @@ typedef FrxConcreteProcessor<processorTypes::InSwitch> FrxInSwitchNode;
 typedef FrxConcreteProcessor<processorTypes::OutSwitch> FrxOutSwitchNode;
 typedef FrxConcreteProcessor<processorTypes::ADSR> FrxADSRNode;
 typedef FrxConcreteProcessor<processorTypes::PeakTracker> FrxPeakTrackerNode;
+typedef FrxConcreteProcessor<processorTypes::MIDIReceiver> FrxMIDIReceiver;
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 template <class _ProcessorType>
@@ -148,6 +164,8 @@ template <>
 std::string getProcessorName<processorTypes::ADSR>();
 template <>
 std::string getProcessorName<processorTypes::PeakTracker>();
+template <>
+std::string getProcessorName<processorTypes::MIDIReceiver>();
 //-----------------------------------------------------------------------------
 template <class _ProcessorType>
 std::string getProcessorBeautyName() {return "unkonwn processortype";}
@@ -169,6 +187,8 @@ template <>
 std::string getProcessorBeautyName<processorTypes::ADSR>();
 template <>
 std::string getProcessorBeautyName<processorTypes::PeakTracker>();
+template <>
+std::string getProcessorBeautyName<processorTypes::MIDIReceiver>();
 //-----------------------------------------------------------------------------
 template <class _ProcessorType>
 std::string getProcessorTooltip() {return "?";}
@@ -190,6 +210,8 @@ template <>
 std::string getProcessorTooltip<processorTypes::ADSR>();
 template <>
 std::string getProcessorTooltip<processorTypes::PeakTracker>();
+template <>
+std::string getProcessorTooltip<processorTypes::MIDIReceiver>();
 }}} // namespace(s)
 
 #endif /* SAMBAG_FRXPLUGINNODE_H */

@@ -39,12 +39,11 @@ protected:
 	//-------------------------------------------------------------------------
 	FrxConcreteParameter() {
 		instances++;
-		setName("FrxConcreteParameter");
-		setName(getName()+"_"+sambag::com::toString(instances));
 	}
 	//-------------------------------------------------------------------------
 	virtual void postConstructor() {
 		ControllerType::init( getPtr() );
+		setName(getName()+"_"+sambag::com::toString(instances));
 	}
 private:
 	//-------------------------------------------------------------------------
@@ -89,6 +88,7 @@ namespace contollerTypes {
 	struct StdKnob : ControllerTypeBase {
 		typedef sdc::Knob::Model Model;
 		void init( FrxParameter::Ptr obj ){
+			obj->setName("Knob");
 			sdc::Knob::Ptr knob(sdc::Knob::create());
 			knob->setMinimum(0.);
 			knob->setMaximum(1.);

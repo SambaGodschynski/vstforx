@@ -136,6 +136,7 @@ FrxParameterPtr createFreeParameter(FrxCircuidViewPtr circ) {
 	flag->setTarget(viewObj);
 	circ->add(flag, FrxCircuidView::Z_Flags, true);
 	viewObj->setFlagText( mObj->getName() + "/" + mObj->getDisplay() );
+	viewObj->setName( mObj->getName() );
 	map->registerObjects(viewObj, mObj);
 	return viewObj;
 }
@@ -165,6 +166,7 @@ FrxParameterPtr createHostParameter(FrxCircuidViewPtr circ, int id) {
 	flag->setTarget(viewObj);
 	circ->add(flag, FrxCircuidView::Z_Flags, true);
 	viewObj->setFlagText( mObj->getName() + "/" + mObj->getDisplay() );
+	viewObj->setName( mObj->getName() );
 	if (!map->registerObjects(viewObj, mObj)) {
 		return FrxParameterPtr();
 	}
@@ -191,7 +193,8 @@ void FrxComponentFactory::initMap() {
 	(getProcessorName<FrxInSwitchNode::ProcessorType>(),       getCreator<FrxInSwitchNode>(2, 1))
 	(getProcessorName<FrxOutSwitchNode::ProcessorType>(),     getCreator<FrxOutSwitchNode>(1, 2))
 	(getProcessorName<FrxADSRNode::ProcessorType>(),               getCreator<FrxADSRNode>(1, 0))
-	(getProcessorName<FrxPeakTrackerNode::ProcessorType>(), getCreator<FrxPeakTrackerNode>(1, 0));
+	(getProcessorName<FrxPeakTrackerNode::ProcessorType>(), getCreator<FrxPeakTrackerNode>(1, 0))
+	(getProcessorName<FrxMIDIReceiver::ProcessorType>(), getCreator<FrxMIDIReceiver>(0, 0));
 }//-----------------------------------------------------------------------------
 FrxComponentFactory::FrxComponentFactory() {
 	initMap();

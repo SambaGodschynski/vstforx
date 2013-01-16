@@ -86,6 +86,11 @@ public:
 	 */
 	virtual IProcessor::Ptr createADSRTransformer() = 0;
 	//-------------------------------------------------------------------------
+	/**
+	 * @return ModelObject pointer which points on a MIDIReceiver object
+	 */
+	virtual IProcessor::Ptr createMIDIReceiver() = 0;
+	//-------------------------------------------------------------------------
 	virtual IConnection::Ptr connect(INode::Ptr out, INode::Ptr in) = 0;
 	//-------------------------------------------------------------------------
 	virtual IConnection::Ptr connect(IParameter::Ptr a, IParameter::Ptr b) = 0;

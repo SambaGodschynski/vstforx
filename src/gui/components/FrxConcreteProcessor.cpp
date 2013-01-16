@@ -48,6 +48,8 @@ template <>
 std::string getProcessorName<processorTypes::ADSR>() {return "FrxADSR";}
 template <>
 std::string getProcessorName<processorTypes::PeakTracker>() {return "FrxPeakTracker";}
+template <>
+std::string getProcessorName<processorTypes::MIDIReceiver>() {return "FrxMidiReceiver";}
 ///////////////////////////////////////////////////////////////////////////////
 // Beauty Names
 template <>
@@ -68,6 +70,8 @@ template <>
 std::string getProcessorBeautyName<processorTypes::ADSR>() {return "ADSR_Trigger";}
 template <>
 std::string getProcessorBeautyName<processorTypes::PeakTracker>() {return "Peak_Tracker";}
+template <>
+std::string getProcessorBeautyName<processorTypes::MIDIReceiver>() {return "Midi_Receiver";}
 ///////////////////////////////////////////////////////////////////////////////
 // Tooltips
 template <>
@@ -97,6 +101,10 @@ std::string getProcessorTooltip<processorTypes::ADSR>()
 template <>
 std::string getProcessorTooltip<processorTypes::PeakTracker>() 
 {return "transforms audio peaks into parameter values";}
+template <>
+std::string getProcessorTooltip<processorTypes::MIDIReceiver>() {
+return "transform midi events into parameter values";
+}
 //-----------------------------------------------------------------------------
 namespace {
 	typedef boost::function <std::string()> GetStrF;
@@ -124,6 +132,7 @@ namespace {
 		addProcessor<FrxOutSwitchNode>();
 		addProcessor<FrxADSRNode>();
 		addProcessor<FrxPeakTrackerNode>();
+		addProcessor<FrxMIDIReceiver>();
 	}
 	ProcessorNameMap::const_iterator getPMapIterator(const std::string &processorName)
 	{

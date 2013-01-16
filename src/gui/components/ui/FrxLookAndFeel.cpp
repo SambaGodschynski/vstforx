@@ -84,6 +84,8 @@ void FrxLookAndFeel::installComponents() {
 		fgcu::FrxProcessorNodeUI<FrxADSRNode::ProcessorType> >();
 	registerComponentUI<fgc::FrxPeakTrackerNode, 
 		fgcu::FrxProcessorNodeUI<FrxPeakTrackerNode::ProcessorType> >();
+	registerComponentUI<fgc::FrxMIDIReceiver, 
+		fgcu::FrxProcessorNodeUI<FrxMIDIReceiver::ProcessorType> >();
 	// parameter components
 	registerComponentUI<fgc::FrxStdKnob, 
 		FrxParameterUI<FrxStdKnob::ControllerType> >();
@@ -177,13 +179,13 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("FrxCircuidView.bgColor",  HtmlColors::getColor("orange"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<styles
 	m.putProperty("IOCn.style", 
-		createStyle("stroke-width: 4; stroke: grey"));
+		createStyle("stroke-width: 4; stroke: darkgrey"));
 	m.putProperty("IOCn.hoverStyle", 
-		createStyle("stroke-width: 8; stroke: grey"));
+		createStyle("stroke-width: 8; stroke: darkgrey"));
 	m.putProperty("ProcessorInputCn.style", 
-		createStyle("stroke-width: 4; stroke: grey"));
+		createStyle("stroke-width: 4; stroke: darkgrey"));
 	m.putProperty("ProcessorOutputCn.style", 
-		createStyle("stroke-width: 4; stroke: grey"));
+		createStyle("stroke-width: 4; stroke: darkgrey"));
 	m.putProperty("ProcessorParameterCn.style", 
 		createStyle("stroke-width: 2; stroke: red; purple;stroke-dasharray: 9, 5"));
 	m.putProperty("ParameterCn.style", 
@@ -222,6 +224,7 @@ void FrxLookAndFeel::installDefaults() {
 	rManager.registerImage("FrxInSwitch.image", "images/oSwitch.png");
 	rManager.registerImage("FrxADSR.image", "images/adsr_trigger.png");
 	rManager.registerImage("FrxPeakTracker.image", "images/peak_tracker.png");
+	rManager.registerImage("FrxMidiReceiver.image", "images/midiReceiver.png");
 	
 	//rManager.registerImage("ProcessorInput.image", "w3c.svg");
 	//rManager.registerImage("ProcessorOutput.image", "w3c.svg");

@@ -28,6 +28,8 @@ public:
 	typedef boost::shared_ptr<FrxConnection> Ptr;
 private:
 	//-------------------------------------------------------------------------
+	mutable std::string tmpName;
+	//-------------------------------------------------------------------------
 	FrxComponent::Ptr src, dst;
 	//-------------------------------------------------------------------------
 	typedef FrxComponent::EventSender<sce::PropertyChanged>::Connection Connection;
@@ -69,6 +71,8 @@ private:
 	//-------------------------------------------------------------------------
 	void installListeners();
 public:
+	//-------------------------------------------------------------------------
+	virtual const std::string & getName() const;
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
 		return boost::shared_dynamic_cast<FrxConnection>(Super::getPtr());

@@ -6,6 +6,7 @@
  */
 #include "MidiProcessor.h"
 #include "processing/dspTools.h"
+#include <sambag/dsp/IMidiEvents.hpp>
 
 namespace processing{
 //============================================================================================================
@@ -28,22 +29,36 @@ MidiProcessor::MidiProcessor ( frx::processing::IHostInfo::Ptr iHost ) :
 }
 //------------------------------------------------------------------------------------------------------------
 void MidiProcessor::processMidiEvents ( sambag::dsp::IMidiEvents *ev ) {
-	/*for ( size_t i=0; i<ev->numEvents; ++i ) {
-		VstMidiEvent *midiEv = (VstMidiEvent*)ev->events[i];
-		Byte status = ( midiEv->midiData[0] & 0xf0 ) >> 4;
-		size_t gv=0, cc=0;
-		switch ( status ) {
-			case 0xE : // pitchbend
-				gv = ( midiEv->midiData[2] << 7 ) | midiEv->midiData[1];
-				midiParameters[PITCH_BEND]->setValue( gv / 16383.0f );
-				break;
-			case 0xB // cc        :
-				cc = midiEv->midiData[1];
-				if ( cc >= (size_t)NUM_CC ) continue;
-				gv = midiEv->midiData[2];
-				midiParameters[ cc + (size_t)NUM_NO_CC_PARAMETER  ]->setValue( gv/127.0f );
-				break;
+	using namespace sambag::dsp;
+	size_t numEv = ev->getNumEvents();
+	for ( size_t i=0; i<numEv; ++i ) {
+		IMidiEvents::ByteSize size;
+		IMidiEvents::DeltaFrames d;
+		IMidiEvents::DataPtr data;
+		boost::tie(size, d, data) = ev->getMidiEvent(i);
+
+		for (int j=0; j<size-2;) { // through bytes
+			Byte status = ( data[j] & 0xf0 ) >> 4;
+			size_t gv=0, cc=0;
+			switch ( status ) {
+				case 0xE : // pitchbend
+					gv = (data[j+2] << 7 ) | data[j+1];
+					midiParameters[PITCH_BEND]->setValue( gv / 16383.0f );
+					j+=2; // skip next 2 bytes
+					continue;
+				case 0xB : // cc
+					cc = data[j+1];
+					if ( cc >= (size_t)NUM_CC ) {
+						j+=2; // skip next 2 bytes
+						continue;
+					}
+					gv = data[j+2];
+					midiParameters[ cc + (size_t)NUM_NO_CC_PARAMETER  ]->setValue( gv/127.0f );
+					j+=2; // skip next 2 bytes
+					continue;
+			}
+			++j; //next byte
 		}
-	}*/
+	}
 }
 }// namespace processing

@@ -14,6 +14,7 @@
 #include "FrxSelection.hpp"
 #include "FrxHover.hpp"
 #include "FrxFlag.hpp"
+
 namespace frx { namespace gui { namespace components {
 //=============================================================================
 //  Class FrxSerializationRegister
@@ -36,6 +37,7 @@ void register_types_impl( Archive &ar ) {
 	ar.template register_type<FrxOutSwitchNode>();
 	ar.template register_type<FrxADSRNode>();
 	ar.template register_type<FrxPeakTrackerNode>();
+	ar.template register_type<FrxMIDIReceiver>();
 	ar.template register_type<FrxInputNode>();
 	ar.template register_type<FrxOutputNode>();
 	ar.template register_type<FrxEntryNode>();

@@ -73,6 +73,7 @@ void FrxMainBrowserCtrl::initAdderMap() {
 	(_type<FrxOutSwitchNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
 	(_type<FrxADSRNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
 	(_type<FrxPeakTrackerNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
+	(_type<FrxMIDIReceiver>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
 	(_type<FrxStdKnob>(), boost::bind(&FrxMainBrowserCtrl::addParameterToSceneTree, this, _1, _2))
 	(_type<ParameterCn>(), boost::bind(&FrxMainBrowserCtrl::addConnectionToSceneTree, this, _1, _2));
 	

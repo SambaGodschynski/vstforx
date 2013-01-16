@@ -18,7 +18,7 @@ const std::string FrxParameter::PROPERTY_ENC_CTRL = "property_encapsulated_ctrl"
 const std::string FrxParameter::PROPERTY_RANGE_MODEL = "property_range_model";
 //-----------------------------------------------------------------------------
 FrxParameter::FrxParameter()  {
-	setName("FrxParameter");
+	setName("parameter");
 }
 //-----------------------------------------------------------------------------
 sdcu::AComponentUIPtr 

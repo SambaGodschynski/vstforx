@@ -88,6 +88,14 @@ inline createProcessorOnModel<FrxPeakTrackerNode>(fp::IModelController::Ptr ctrl
 {
 	return ctrl->createPeakTracker();
 }
+//-----------------------------------------------------------------------------
+template <>
+fp::IProcessor::Ptr 
+inline createProcessorOnModel<FrxMIDIReceiver>(fp::IModelController::Ptr ctrl, 
+						 size_t numInputs, size_t numOutputs) 
+{
+	return ctrl->createMIDIReceiver();
+}
 ///////////////////////////////////////////////////////////////////////////////
 template <class ConnectionType>
 fp::IConnection::Ptr 

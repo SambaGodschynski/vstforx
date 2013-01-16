@@ -59,6 +59,7 @@ void FrxConnection::setSrcComponent(FrxComponent::Ptr a) {
 	resetBounds();
 	srcConnection = connect(src);
 	installComponentListeners(src);
+	tmpName = "";
 }
 //-----------------------------------------------------------------------------
 void FrxConnection::setDstComponent(FrxComponent::Ptr b) {
@@ -68,6 +69,7 @@ void FrxConnection::setDstComponent(FrxComponent::Ptr b) {
 	resetBounds();
 	dstConnection = connect(dst);
 	installComponentListeners(dst);
+	tmpName = "";
 }
 //-----------------------------------------------------------------------------
 void FrxConnection::onComponentsPropertyChanged(void*, 
@@ -96,5 +98,16 @@ void FrxConnection::resetBounds() {
 		ui->adjustBoundingRect(r, getPtr());
 
 	setBounds(r);
+}
+//-----------------------------------------------------------------------------
+const std::string & FrxConnection::getName() const {
+	if (!src || !dst) {
+		return Super::getName();
+	}
+	if (tmpName != "") {
+		return tmpName;
+	}
+	tmpName = "\"" + src->getName() + "\" to \"" + dst->getName() + "\"";
+	return tmpName;
 }
 }}} // namespace(s)
