@@ -17,8 +17,11 @@ add_executable(unit_tests ${SAMBAG_TESTSOURCES})
 target_link_libraries (unit_tests frx_core ${FRX_CLIBS})
 
 SET (PlugSources ${PlugSources}
+    PluginApps/VSTForx/VstForxResourceManager.cpp
     PluginApps/VSTForx/VstForxPlugMain.cpp
+    PluginApps/VSTForx/initResourceMap.cpp
     PluginApps/VSTForx/vstplug.def
+    PluginApps/VSTForx/resources.rc
 )
 
 add_library(vstforx SHARED ${PlugSources})

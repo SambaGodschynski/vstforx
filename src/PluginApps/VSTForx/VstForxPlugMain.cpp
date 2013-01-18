@@ -8,6 +8,7 @@
 #include <sambag/disco/components/WindowToolkit.hpp>
 #include <windows.h>
 #include <exception>
+#include "VstForxResourceManager.hpp"
 
 extern void *hInstance; // @see vstsdk2.4::vstplugmain.cpp
 std::string getHomeDirectory();
@@ -40,10 +41,14 @@ Console console;
 
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
-#if _WIN32
-	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); //VS memory tracking
-#endif
 
+	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); //VS memory tracking
+	
+	//#ifndef _DEBUG  // release only
+		// init resourceManager
+		frx::VstForxResourceManager &rm = frx::VstForxResourceManager::instance();
+		sambag::disco::installResourceManager(rm);
+	//#endif
 	// init settings
 	::com::initSettings(getHomeDirectory());
 	sambag::disco::components::setGlobalUserData(

@@ -1,0 +1,22 @@
+/*
+ * initResourceMap.cpp
+ *
+ *  Created on: $$$DATE$$$
+ *      Author: createResources.py
+ */
+
+
+namespace frx { namespace createResourcesPy {
+/**
+ * RegisterCallbackFunction
+ */
+typedef void (RegisterResourceFunc*) (const std::string &path, long id);
+
+/**
+ * maps filename -> resourceID
+ */
+void initResourceMap(RegisterResourceFunc* registerF) {
+$$$REGISTER_CALLS$$$
+}
+
+}} // namespace

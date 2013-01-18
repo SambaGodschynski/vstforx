@@ -207,36 +207,38 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("FrxFlag.style", 
 		createStyle("stroke-width: 1; fill: black; stroke: darkgrey;font-size: 13; font-family: arial"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<images
-	FileResourceManager &rManager = FileResourceManager::instance();
-	rManager.registerImage("FrxCircuidView.image", "images/bkgrey.png");
+	FileResourceManager *rManager = dynamic_cast<FileResourceManager*> (
+		&getResourceManager()
+	);
+	rManager->registerImage("FrxCircuidView.image", "images/bkgrey.png");
 	//m.putProperty("FrxCircuidView.bgTransfomation", sambag::math::rotate2D(45.));
 	m.putProperty("FrxCircuidView.bgExtend", sd::IPattern::DISCO_EXTEND_REPEAT);
-	rManager.registerImage("StatusMessage.icon.default", "images/inf_icon.png");
-	rManager.registerImage("StatusMessage.icon.hint", "images/inf_icon.png");
-	rManager.registerImage("StatusMessage.icon.warning", "images/warning_icon.png");
-	rManager.registerImage("FrxPlugin.image", "images/vstPlugNode.png");
-	rManager.registerImage("FrxPlugin.e.image", "images/e.png");
-	rManager.registerImage("FrxVolume.image", "images/volume_node.png");
-	rManager.registerImage("FrxPan.image", "images/channel_split.png");
-	rManager.registerImage("FrxInStep.image", "images/step_adapter.png");
-	rManager.registerImage("FrxOutStep.image", "images/step_adapter.png");
-	rManager.registerImage("FrxOutSwitch.image", "images/oSwitch.png");
-	rManager.registerImage("FrxInSwitch.image", "images/oSwitch.png");
-	rManager.registerImage("FrxADSR.image", "images/adsr_trigger.png");
-	rManager.registerImage("FrxPeakTracker.image", "images/peak_tracker.png");
-	rManager.registerImage("FrxMidiReceiver.image", "images/midiReceiver.png");
+	rManager->registerImage("StatusMessage.icon.default", "images/inf_icon.png");
+	rManager->registerImage("StatusMessage.icon.hint", "images/inf_icon.png");
+	rManager->registerImage("StatusMessage.icon.warning", "images/warning_icon.png");
+	rManager->registerImage("FrxPlugin.image", "images/vstPlugNode.png");
+	rManager->registerImage("FrxPlugin.e.image", "images/e.png");
+	rManager->registerImage("FrxVolume.image", "images/volume_node.png");
+	rManager->registerImage("FrxPan.image", "images/channel_split.png");
+	rManager->registerImage("FrxInStep.image", "images/step_adapter.png");
+	rManager->registerImage("FrxOutStep.image", "images/step_adapter.png");
+	rManager->registerImage("FrxOutSwitch.image", "images/oSwitch.png");
+	rManager->registerImage("FrxInSwitch.image", "images/oSwitch.png");
+	rManager->registerImage("FrxADSR.image", "images/adsr_trigger.png");
+	rManager->registerImage("FrxPeakTracker.image", "images/peak_tracker.png");
+	rManager->registerImage("FrxMidiReceiver.image", "images/midiReceiver.png");
 	
-	//rManager.registerImage("ProcessorInput.image", "w3c.svg");
-	//rManager.registerImage("ProcessorOutput.image", "w3c.svg");
-	rManager.registerImage("Entry.image", "images/entry.svg");
-	rManager.registerImage("Exit.image", "images/exit.svg");
-	rManager.registerImage("FrxBrowser.folder.image", "images/folder.png");
-	rManager.registerImage("FrxBrowser.default.image", "images/disco-floor.png");
-	rManager.registerImage("FrxBrowser.plugin.image", "images/plugin.png");
-	rManager.registerImage("FrxBrowser.processor.image", "images/processor.png");
-	rManager.registerImage("FrxBrowser.parameter.image", "images/knob.png");
-	rManager.registerImage("FrxBrowser.pluginInstrument.image", "images/iplug.png");
-	rManager.registerImage("FrxBrowser.addContent.image", "images/plus.png");
+	//rManager->registerImage("ProcessorInput.image", "w3c.svg");
+	//rManager->registerImage("ProcessorOutput.image", "w3c.svg");
+	rManager->registerImage("Entry.image", "images/entry.svg");
+	rManager->registerImage("Exit.image", "images/exit.svg");
+	rManager->registerImage("FrxBrowser.folder.image", "images/folder.png");
+	rManager->registerImage("FrxBrowser.default.image", "images/disco-floor.png");
+	rManager->registerImage("FrxBrowser.plugin.image", "images/plugin.png");
+	rManager->registerImage("FrxBrowser.processor.image", "images/processor.png");
+	rManager->registerImage("FrxBrowser.parameter.image", "images/knob.png");
+	rManager->registerImage("FrxBrowser.pluginInstrument.image", "images/iplug.png");
+	rManager->registerImage("FrxBrowser.addContent.image", "images/plus.png");
 }	
 
 }}}} // namespace(s)
