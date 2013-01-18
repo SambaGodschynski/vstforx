@@ -217,11 +217,11 @@
     <linearGradient
        id="linearGradient5192">
       <stop
-         style="stop-color:#1f1430;stop-opacity:1;"
+         style="stop-color:#484848;stop-opacity:1;"
          offset="0"
          id="stop5194" />
       <stop
-         style="stop-color:#000000;stop-opacity:0.48648649;"
+         style="stop-color:#2c2c2c;stop-opacity:1;"
          offset="1"
          id="stop5196" />
     </linearGradient>
@@ -1032,8 +1032,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4"
-     inkscape:cx="709.88153"
-     inkscape:cy="211.53469"
+     inkscape:cx="389.31544"
+     inkscape:cy="485.3549"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -1061,7 +1061,7 @@
      inkscape:groupmode="layer"
      id="layer5"
      inkscape:label="bg"
-     style="opacity:0.63698413;display:inline"
+     style="display:inline"
      sodipodi:insensitive="true">
     <rect
        style="fill:url(#linearGradient5198);fill-opacity:1;stroke:none"
@@ -1103,11 +1103,11 @@
        sodipodi:cy="301.81885"
        sodipodi:rx="88.893425"
        sodipodi:ry="77.781746"
-       d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
+       d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
        transform="matrix(0.22992742,0,0,0.26277374,677.54382,638.45918)" />
     <g
-       transform="translate(581.87769,549.99356)"
-       style="display:inline"
+       transform="translate(171.50269,173.74356)"
+       style="display:inline;fill:#5ac2ff;fill-opacity:0;stroke:#5ac2ff;stroke-opacity:1"
        id="g3848-0"
        inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\e.png"
        inkscape:export-xdpi="90"
@@ -1120,13 +1120,13 @@
          sodipodi:cy="301.81885"
          sodipodi:cx="228.29448"
          id="path2816-4"
-         style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:21.08574104;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         style="fill:#5ac2ff;fill-opacity:0;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:21.08574103999999800;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
          sodipodi:type="arc" />
       <text
          id="text3644"
          y="346.0217"
          x="155.31383"
-         style="font-size:19.15789604px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+         style="font-size:19.15789604000000100px;font-style:normal;font-weight:normal;fill:#5ac2ff;fill-opacity:1;stroke:#5ac2ff;font-family:Arial;-inkscape-font-specification:Arial;stroke-opacity:1"
          xml:space="preserve"><tspan
            y="346.0217"
            x="155.31383"
@@ -1144,7 +1144,7 @@
        sodipodi:cy="301.81885"
        sodipodi:rx="88.893425"
        sodipodi:ry="77.781746"
-       d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
+       d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
        transform="matrix(0.22992742,0,0,0.26277374,739.59376,639.90911)" />
     <g
        id="g3797"
@@ -1164,7 +1164,7 @@
            sodipodi:cy="301.81885"
            sodipodi:rx="88.893425"
            sodipodi:ry="77.781746"
-           d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
+           d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
            transform="matrix(0.11551982,0,0,0.13202244,134.25702,301.37743)" />
         <text
            xml:space="preserve"
@@ -1189,7 +1189,7 @@
            sodipodi:cy="301.81885"
            sodipodi:rx="88.893425"
            sodipodi:ry="77.781746"
-           d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
+           d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
            transform="matrix(0.11551982,0,0,0.13202244,134.25702,300.37743)" />
         <text
            xml:space="preserve"
@@ -1212,7 +1212,7 @@
        inkscape:export-ydpi="90">
       <path
          transform="matrix(0.22992742,0,0,0.26277374,172.9589,178.60218)"
-         d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
+         d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
          sodipodi:ry="77.781746"
          sodipodi:rx="88.893425"
          sodipodi:cy="301.81885"
@@ -1244,7 +1244,7 @@
        inkscape:export-ydpi="90">
       <path
          transform="matrix(0.22992742,0,0,0.26277374,172.9589,178.60218)"
-         d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
+         d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
          sodipodi:ry="77.781746"
          sodipodi:rx="88.893425"
          sodipodi:cy="301.81885"
@@ -1283,7 +1283,7 @@
        inkscape:export-ydpi="90">
       <path
          transform="matrix(0.22992742,0,0,0.26277374,172.9589,178.60218)"
-         d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
+         d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
          sodipodi:ry="77.781746"
          sodipodi:rx="88.893425"
          sodipodi:cy="301.81885"
@@ -1308,7 +1308,7 @@
        inkscape:export-ydpi="90">
       <path
          transform="matrix(0.22992742,0,0,0.26277374,172.9589,178.60218)"
-         d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
+         d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
          sodipodi:ry="77.781746"
          sodipodi:rx="88.893425"
          sodipodi:cy="301.81885"
@@ -1360,7 +1360,7 @@
        sodipodi:cy="301.81885"
        sodipodi:rx="88.893425"
        sodipodi:ry="77.781746"
-       d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
+       d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
        transform="matrix(0.22992742,0,0,0.26277374,418.22034,678.16042)"
        inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\OutputNode.png"
        inkscape:export-xdpi="90"
@@ -1374,7 +1374,7 @@
        sodipodi:rx="88.893425"
        sodipodi:ry="77.781746"
        d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
-       transform="matrix(0.22973444,0,0,0.26255319,366.61978,790.71807)"
+       transform="matrix(0.22973444,0,0,0.26255319,143.61978,316.71807)"
        inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\InputNode.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
@@ -1387,13 +1387,13 @@
     <g
        style="display:inline"
        id="g4771-7"
-       transform="translate(22.537933,230.96545)"
+       transform="translate(307.40799,85.509606)"
        inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\volume_node.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90">
       <path
          transform="matrix(0.22992742,0,0,0.26277374,172.9589,178.60218)"
-         d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
+         d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
          sodipodi:ry="77.781746"
          sodipodi:rx="88.893425"
          sodipodi:cy="301.81885"
@@ -1497,7 +1497,8 @@
        id="g4067"
        inkscape:export-filename="/media/AED4E9C1D4E98BC1/Eigene Dateien/Eigene Progs/VST/Apps/PPI/Graphics/Nodes/midiReceiver.png"
        inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90">
+       inkscape:export-ydpi="90"
+       transform="translate(140.20458,-79.876154)">
       <g
          inkscape:export-ydpi="90"
          inkscape:export-xdpi="90"
@@ -1574,7 +1575,7 @@
        inkscape:export-xdpi="90.578484"
        inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\script01.png"
        transform="matrix(0.22992742,0,0,0.26277374,291.77806,587.44363)"
-       d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
+       d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
        sodipodi:ry="77.781746"
        sodipodi:rx="88.893425"
        sodipodi:cy="301.81885"
@@ -1629,7 +1630,7 @@
        sodipodi:cy="301.81885"
        sodipodi:rx="88.893425"
        sodipodi:ry="77.781746"
-       d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
+       d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
        transform="matrix(0.22992742,0,0,0.26277374,355.77806,587.69363)" />
     <path
        style="fill:none;stroke:#ff0000;stroke-width:3.93565226;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none"
@@ -1660,7 +1661,7 @@
        inkscape:export-xdpi="90"
        inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\script01_valid.png"
        transform="matrix(0.22992742,0,0,0.26277374,419.41767,587.69363)"
-       d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
+       d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
        sodipodi:ry="77.781746"
        sodipodi:rx="88.893425"
        sodipodi:cy="301.81885"
@@ -1697,7 +1698,7 @@
        transform="translate(91.923882,-39.244427)">
       <path
          transform="matrix(0.22992742,0,0,0.26277374,214.70342,689.26701)"
-         d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
+         d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
          sodipodi:ry="77.781746"
          sodipodi:rx="88.893425"
          sodipodi:cy="301.81885"
@@ -1716,7 +1717,7 @@
          sodipodi:cy="749.45532"
          sodipodi:rx="1.016466"
          sodipodi:ry="0.9722718"
-         d="m 197.01763,749.45532 c 0,0.53697 -0.45509,0.97227 -1.01647,0.97227 -0.56138,0 -1.01647,-0.4353 -1.01647,-0.97227 0,-0.53697 0.45509,-0.97227 1.01647,-0.97227 0.56138,0 1.01647,0.4353 1.01647,0.97227 z"
+         d="m 197.01763,749.45532 a 1.016466,0.9722718 0 1 1 -2.03294,0 1.016466,0.9722718 0 1 1 2.03294,0 z"
          transform="matrix(1.308543,0,0,1.2771132,10.63362,-197.34249)"
          inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\remoteChannel.png"
          inkscape:export-xdpi="90"
@@ -1747,7 +1748,7 @@
        inkscape:export-ydpi="45.841057">
       <path
          sodipodi:type="arc"
-         style="fill:url(#radialGradient4923);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:16.27322578000000100;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker-start:none"
+         style="fill:url(#radialGradient4923);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:16.27322578;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker-start:none"
          id="path4713"
          sodipodi:cx="228.29448"
          sodipodi:cy="301.81885"
@@ -1794,7 +1795,7 @@
            sodipodi:cy="650.21948"
            sodipodi:rx="16"
            sodipodi:ry="15.875"
-           d="m 220.25,650.21948 c 0,8.76752 -7.16344,15.875 -16,15.875 -8.83656,0 -16,-7.10748 -16,-15.875 0,-8.76752 7.16344,-15.875 16,-15.875 8.83656,0 16,7.10748 16,15.875 z"
+           d="m 220.25,650.21948 a 16,15.875 0 1 1 -32,0 16,15.875 0 1 1 32,0 z"
            transform="translate(0,304.55539)" />
         <path
            sodipodi:type="arc"
@@ -1804,11 +1805,11 @@
            sodipodi:cy="650.21948"
            sodipodi:rx="16"
            sodipodi:ry="15.875"
-           d="m 220.25,650.21948 c 0,8.76752 -7.16344,15.875 -16,15.875 -8.83656,0 -16,-7.10748 -16,-15.875 0,-8.76752 7.16344,-15.875 16,-15.875 8.83656,0 16,7.10748 16,15.875 z"
+           d="m 220.25,650.21948 a 16,15.875 0 1 1 -32,0 16,15.875 0 1 1 32,0 z"
            transform="translate(38.987176,283.91567)" />
         <path
            transform="translate(39.14771,323.62987)"
-           d="m 220.25,650.21948 c 0,8.76752 -7.16344,15.875 -16,15.875 -8.83656,0 -16,-7.10748 -16,-15.875 0,-8.76752 7.16344,-15.875 16,-15.875 8.83656,0 16,7.10748 16,15.875 z"
+           d="m 220.25,650.21948 a 16,15.875 0 1 1 -32,0 16,15.875 0 1 1 32,0 z"
            sodipodi:ry="15.875"
            sodipodi:rx="16"
            sodipodi:cy="650.21948"
@@ -1995,24 +1996,6 @@
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <g
-       inkscape:export-ydpi="90"
-       inkscape:export-xdpi="90"
-       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\vstPlugNode.png"
-       transform="translate(-102.41182,80.24006)"
-       id="g5108"
-       style="display:inline">
-      <path
-         sodipodi:type="arc"
-         style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:37.28166962;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-         id="path5110"
-         sodipodi:cx="228.29448"
-         sodipodi:cy="301.81885"
-         sodipodi:rx="88.893425"
-         sodipodi:ry="77.781746"
-         d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
-         transform="matrix(0.22992742,0,0,0.26277374,172.9589,178.60218)" />
-    </g>
-    <g
        id="g5236"
        inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\plugin.png"
        inkscape:export-xdpi="26"
@@ -2053,7 +2036,7 @@
            sodipodi:cy="572.97461"
            sodipodi:rx="4.9497476"
            sodipodi:ry="10.581935"
-           d="m 290.56332,577.19703 c -1.09079,5.35882 -4.00707,7.81257 -6.51369,5.4806 -2.50661,-2.33198 -3.65436,-8.56661 -2.56357,-13.92544 1.09079,-5.35883 4.00707,-7.81257 6.51368,-5.4806 1.3798,1.28367 2.41153,3.83953 2.80367,6.94541 l -4.77872,2.75761 z"
+           d="m 290.56332,577.19703 a 4.9497476,10.581935 0 1 1 0.24009,-6.98003 l -4.77872,2.75761 z"
            transform="matrix(1.4362244,0,0,1.3870968,-164.60654,-26.415125)"
            sodipodi:start="0.41044919"
            sodipodi:end="6.0195461" />
@@ -2066,7 +2049,7 @@
          sodipodi:cy="570.0578"
          sodipodi:rx="10.783379"
          sodipodi:ry="24.660349"
-         d="m 312.18764,570.0578 c 0,13.61953 -4.82788,24.66035 -10.78337,24.66035 -5.9555,0 -10.78338,-11.04082 -10.78338,-24.66035 0,-13.61953 4.82788,-24.66035 10.78338,-24.66035 5.95549,0 10.78337,11.04082 10.78337,24.66035 z"
+         d="m 312.18764,570.0578 a 10.783379,24.660349 0 1 1 -21.56675,0 10.783379,24.660349 0 1 1 21.56675,0 z"
          transform="matrix(1.4897958,0,0,1.3870968,-146.54424,86.5395)" />
     </g>
     <rect
@@ -2569,10 +2552,10 @@
          style="fill:none;stroke:#000000;stroke-width:2.79999995;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     </g>
     <rect
-       style="stroke:none;fill:none"
+       style="fill:none;stroke:none"
        width="66.25"
        height="59.5"
-       x="4.48922"
+       x="4.4892201"
        y="311.09775"
        id="rect6316" />
     <rect
@@ -2590,7 +2573,7 @@
        sodipodi:cy="301.81885"
        sodipodi:rx="88.893425"
        sodipodi:ry="77.781746"
-       d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
+       d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
        transform="matrix(0.22992742,0,0,0.26277374,-15.23938,260.66868)" />
     <use
        x="0"
@@ -2639,7 +2622,7 @@
            sodipodi:cy="301.81885"
            sodipodi:rx="88.893425"
            sodipodi:ry="77.781746"
-           d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
+           d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
            transform="matrix(0.22992742,0,0,0.26277374,172.9589,178.60218)" />
       </g>
       <g
@@ -2698,7 +2681,7 @@
          inkscape:export-ydpi="90">
         <path
            transform="matrix(0.22992742,0,0,0.26277374,172.9589,178.60218)"
-           d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
+           d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
            sodipodi:ry="77.781746"
            sodipodi:rx="88.893425"
            sodipodi:cy="301.81885"
@@ -2897,18 +2880,39 @@
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"
        inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\oSwitch.png" />
-    <use
-       style="display:inline"
-       x="0"
-       y="0"
-       xlink:href="#path5059"
-       id="use5170"
-       transform="translate(-3.2803305,-178.6956)"
-       width="1052.3622"
-       height="744.09448"
-       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\vstPlugNode.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
+    <g
+       id="g3433">
+      <g
+         style="display:inline"
+         id="g5108"
+         transform="translate(-102.41182,80.24006)"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\vstPlugNode.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90">
+        <path
+           transform="matrix(0.22992742,0,0,0.26277374,172.9589,178.60218)"
+           d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
+           sodipodi:ry="77.781746"
+           sodipodi:rx="88.893425"
+           sodipodi:cy="301.81885"
+           sodipodi:cx="228.29448"
+           id="path5110"
+           style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:37.28166962;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+           sodipodi:type="arc" />
+      </g>
+      <use
+         inkscape:export-ydpi="90"
+         inkscape:export-xdpi="90"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\vstPlugNode.png"
+         height="744.09448"
+         width="1052.3622"
+         transform="translate(-3.2803305,-178.6956)"
+         id="use5170"
+         xlink:href="#path5059"
+         y="0"
+         x="0"
+         style="display:inline" />
+    </g>
     <g
        id="g5623"
        transform="translate(-112.03911,-37.108388)"
@@ -2940,6 +2944,398 @@
        inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\plugin.png"
        inkscape:export-xdpi="26"
        inkscape:export-ydpi="26" />
+    <g
+       id="g3438"
+       transform="translate(71,0)">
+      <g
+         inkscape:export-ydpi="90"
+         inkscape:export-xdpi="90"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\vstPlugNode.png"
+         transform="translate(-102.41182,80.24006)"
+         id="g3440"
+         style="display:inline">
+        <path
+           sodipodi:type="arc"
+           style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:37.28166962;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+           id="path3442"
+           sodipodi:cx="228.29448"
+           sodipodi:cy="301.81885"
+           sodipodi:rx="88.893425"
+           sodipodi:ry="77.781746"
+           d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
+           transform="matrix(0.22992742,0,0,0.26277374,172.9589,178.60218)" />
+      </g>
+      <use
+         style="display:inline"
+         x="0"
+         y="0"
+         xlink:href="#path5059"
+         id="use3444"
+         transform="translate(-3.2803305,-178.6956)"
+         width="1052.3622"
+         height="744.09448"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\vstPlugNode.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90" />
+    </g>
+    <use
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\oSwitch.png"
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       style="display:inline"
+       x="0"
+       y="0"
+       xlink:href="#path5059"
+       id="use3446"
+       transform="translate(69.738406,-120.91527)"
+       width="1052.3622"
+       height="744.09448" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:0;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:37.28166962;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="path4354"
+       sodipodi:cx="228.29448"
+       sodipodi:cy="301.81885"
+       sodipodi:rx="88.893425"
+       sodipodi:ry="77.781746"
+       d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
+       transform="matrix(0.22992742,0,0,0.26277374,212.68343,261.99896)"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\exit.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <image
+       style="fill:#ffffff;fill-opacity:0.42857145"
+       y="578.927"
+       x="341.35962"
+       id="image4368"
+       xlink:href="data:image/png;base64,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
+"
+       height="50"
+       width="50" />
+    <path
+       transform="matrix(0.22992742,0,0,0.26277374,212.68343,319.49896)"
+       d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
+       sodipodi:ry="77.781746"
+       sodipodi:rx="88.893425"
+       sodipodi:cy="301.81885"
+       sodipodi:cx="228.29448"
+       id="path4384"
+       style="fill:#5ac2ff;fill-opacity:1;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:37.28166962;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       sodipodi:type="arc"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\entry.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <g
+       id="g4527"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\volume_node.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <use
+         inkscape:export-ydpi="90"
+         inkscape:export-xdpi="90"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\volume_node.png"
+         style="fill:#ffd5d5"
+         height="744.09448"
+         width="1052.3622"
+         transform="translate(0.5,113.5)"
+         id="use4386"
+         xlink:href="#path4354"
+         y="0"
+         x="0" />
+      <rect
+         style="fill:#5ac2ff;fill-opacity:1;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:2.5;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+         id="rect4388"
+         width="10.75"
+         height="8.75"
+         x="259.97672"
+         y="439.78497" />
+      <rect
+         style="fill:#5ac2ff;fill-opacity:1;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:2.5;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+         id="rect4390"
+         width="10.75"
+         height="8.75"
+         x="259.85172"
+         y="462.40997" />
+    </g>
+    <g
+       id="g4541"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\channel_split.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <use
+         height="744.09448"
+         width="1052.3622"
+         transform="translate(-0.70710678,175.36248)"
+         id="use4400"
+         xlink:href="#path4354"
+         y="0"
+         x="0" />
+      <rect
+         style="fill:#5ac2ff;fill-opacity:0;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:2.99300003;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+         id="rect4402"
+         width="7.0710678"
+         height="14.318913"
+         x="253.5183"
+         y="509.49564" />
+      <rect
+         style="fill:#5ac2ff;fill-opacity:1;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:1.69299996;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+         id="rect4404"
+         width="7.601398"
+         height="22.804193"
+         x="265.2355"
+         y="505.50299" />
+    </g>
+    <g
+       id="g4546"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\peak_tracker.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <use
+         height="744.09448"
+         width="1052.3622"
+         transform="translate(-3,239.5)"
+         id="use4406"
+         xlink:href="#path4354"
+         y="0"
+         x="0" />
+      <g
+         style="fill:#5ac2ff;fill-opacity:1;stroke:#5ac2ff;stroke-opacity:1"
+         id="g4410"
+         transform="translate(229.15533,-3.1678932)">
+        <rect
+           y="578.72192"
+           x="24.844631"
+           height="10.429825"
+           width="3.3587573"
+           id="rect4412"
+           style="fill:#5ac2ff;fill-opacity:1;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+        <rect
+           y="573.65088"
+           x="31.208588"
+           height="19.79899"
+           width="3.5355339"
+           id="rect4414"
+           style="fill:#5ac2ff;fill-opacity:1;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+        <rect
+           y="578.87622"
+           x="37.69566"
+           height="10.429825"
+           width="3.3587573"
+           id="rect4416"
+           style="fill:#5ac2ff;fill-opacity:1;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+        <rect
+           y="582.50745"
+           x="43.94035"
+           height="3.5355339"
+           width="1.5909903"
+           id="rect4418"
+           style="fill:#5ac2ff;fill-opacity:1;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+        <rect
+           y="582.27887"
+           x="20.583143"
+           height="3.5355339"
+           width="1.5909903"
+           id="rect4420"
+           style="fill:#5ac2ff;fill-opacity:1;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:2;stroke-linecap:butt;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+      </g>
+    </g>
+    <g
+       id="g4555"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\step_adapter.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <use
+         height="744.09448"
+         width="1052.3622"
+         transform="translate(-1,300)"
+         id="use4422"
+         xlink:href="#path4354"
+         y="0"
+         x="0" />
+      <g
+         style="fill:#5ac2ff;fill-opacity:1;stroke:#5ac2ff;stroke-opacity:1"
+         id="g4426"
+         transform="translate(230.03921,-20.991116)">
+        <rect
+           y="664.5874"
+           x="35.926926"
+           height="5.0971727"
+           width="5.901989"
+           id="rect4428"
+           style="fill:#5ac2ff;fill-opacity:1;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:4.26879978;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+        <rect
+           y="664.62415"
+           x="24.89772"
+           height="5.0971727"
+           width="5.901989"
+           id="rect4430"
+           style="fill:#5ac2ff;fill-opacity:1;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:4.26879978;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+        <rect
+           y="653.65002"
+           x="36.021881"
+           height="5.0971727"
+           width="5.901989"
+           id="rect4432"
+           style="fill:#5ac2ff;fill-opacity:1;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:4.26879978;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+      </g>
+    </g>
+    <g
+       id="g4562"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\adsr_trigger.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <use
+         height="744.09448"
+         width="1052.3622"
+         transform="translate(-4,367)"
+         id="use4424"
+         xlink:href="#path4354"
+         y="0"
+         x="0" />
+      <path
+         style="fill:none;stroke:#5ac2ff;stroke-width:4.5999999;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+         d="m 253.01035,727.30213 c 14,-23.875 1.125,-35.25 1.125,-35.25 l 25,23.625"
+         id="path4436"
+         sodipodi:nodetypes="ccc"
+         inkscape:connector-curvature="0" />
+    </g>
+    <g
+       id="g4566"
+       inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\midiReceiver.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <use
+         height="744.09448"
+         width="1052.3622"
+         transform="translate(65.053824,113.13708)"
+         id="use4438"
+         xlink:href="#path4354"
+         y="0"
+         x="0" />
+      <path
+         transform="translate(-3.3620278,313.47014)"
+         d="m 324.56202,141.55112 a 2.3864853,2.3864853 0 1 1 -4.77297,0 2.3864853,2.3864853 0 1 1 4.77297,0 z"
+         sodipodi:ry="2.3864853"
+         sodipodi:rx="2.3864853"
+         sodipodi:cy="141.55112"
+         sodipodi:cx="322.17554"
+         id="path4440"
+         style="fill:#5ac2ff;fill-opacity:1;stroke:#5ac2ff;stroke-width:1.98800004;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+         sodipodi:type="arc" />
+      <use
+         height="744.09448"
+         width="1052.3622"
+         transform="translate(11.37621,-12.219042)"
+         id="use4444"
+         xlink:href="#path4440"
+         y="0"
+         x="0"
+         style="display:inline" />
+      <use
+         height="744.09448"
+         width="1052.3622"
+         transform="translate(11.056127,12.008791)"
+         id="use4446"
+         xlink:href="#use4444"
+         y="0"
+         x="0"
+         style="display:inline" />
+      <use
+         height="744.09448"
+         width="1052.3622"
+         transform="translate(-19.111492,-7.8255167)"
+         id="use4448"
+         xlink:href="#use4446"
+         y="0"
+         x="0"
+         style="display:inline" />
+      <use
+         height="744.09448"
+         width="1052.3622"
+         transform="translate(15.981283,0.05491433)"
+         id="use4450"
+         xlink:href="#use4448"
+         y="0"
+         x="0"
+         style="display:inline" />
+      <rect
+         rx="0.9375"
+         ry="3.34375"
+         y="465.11218"
+         x="324.375"
+         height="6.6875"
+         width="11.75"
+         id="rect4501"
+         style="fill:#5ac2ff;fill-opacity:1;stroke:#5ac2ff;stroke-width:1.98800004;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+    </g>
+    <g
+       transform="translate(72.053531,122.27045)"
+       id="g4577"
+       style="display:inline;stroke:#5ac2ff;stroke-opacity:1;fill:#5ac2ff;fill-opacity:1">
+      <g
+         id="g4584"
+         transform="translate(135.0574,-51.265242)"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\oSwitch.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90">
+        <use
+           height="744.09448"
+           width="1052.3622"
+           transform="translate(-142.76421,-12.6689)"
+           id="use4575"
+           xlink:href="#path4354"
+           y="0"
+           x="0" />
+        <rect
+           y="332.68582"
+           x="118.08075"
+           height="6.8513293"
+           width="7.9331207"
+           id="rect4579"
+           style="fill:#5ac2ff;fill-opacity:0;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:1.84013247;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+        <rect
+           y="319.66641"
+           x="118.10667"
+           height="6.8513293"
+           width="7.9331207"
+           id="rect4581"
+           style="fill:#5ac2ff;fill-opacity:1;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:5.73788023;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+      </g>
+    </g>
   </g>
   <g
      inkscape:groupmode="layer"

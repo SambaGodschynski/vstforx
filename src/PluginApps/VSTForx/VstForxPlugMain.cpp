@@ -5,6 +5,7 @@
 #include <string>
 #include <audioeffectx.h>
 #include <com/Settings.h>
+#include <com/one4All.h>
 #include <sambag/disco/components/WindowToolkit.hpp>
 #include <windows.h>
 #include <exception>
@@ -44,11 +45,22 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 
 	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); //VS memory tracking
 	
-	//#ifndef _DEBUG  // release only
-		// init resourceManager
+	// init resourceManager
+	try {
 		frx::VstForxResourceManager &rm = frx::VstForxResourceManager::instance();
+		rm.initMap((HINSTANCE)hInstance);
 		sambag::disco::installResourceManager(rm);
-	//#endif
+	} catch (const std::exception &ex) {
+		std::stringstream ss;
+		ss<<"Initiation of plugin instance failed: "<<ex.what();
+		com::osMessageBox("Error", 
+			ss.str(), com::MSG_ALERT);
+		return NULL;
+	} catch(...) {
+		com::osMessageBox("Error", 
+			"Initiation of plugin instance failed: unkonwn reason.", com::MSG_ALERT);
+		return NULL;
+	}
 	// init settings
 	::com::initSettings(getHomeDirectory());
 	sambag::disco::components::setGlobalUserData(
@@ -74,7 +86,15 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 		vpl.setEffectPtr(pl);
 		vpl.setMasterCallback(audioMaster);
 		return pl;
+	} catch (const std::exception &ex) {
+		std::stringstream ss;
+		ss<<"Creating of plugin instance failed: "<<ex.what();
+		com::osMessageBox("Error", 
+			ss.str(), com::MSG_ALERT);
+		return NULL;
 	} catch(...) {
+		com::osMessageBox("Error", 
+			"Creating of plugin instance failed: unkonwn reason.", com::MSG_ALERT);
 		return NULL;
 	}
 	return NULL;
@@ -91,6 +111,5 @@ std::string getHomeDirectory() {
 	} else {
 		res = f.string();
 	}
-	return res + "/";
-	return "";
+	return res;
 }

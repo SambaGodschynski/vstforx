@@ -135,9 +135,9 @@ void FrxProcessorNodeUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c
 	FrxProcessorNode::Ptr node = boost::shared_dynamic_cast<FrxProcessorNode>(c);
 	Super::draw(cn, c);
 	if (hasImage()) {
-		cn->setFillColor(c->getBackground());
+		/*cn->setFillColor(c->getBackground());
 		cn->arc(node->getPivot(), getImage()->getSize().width()/2. - 5.);
-		cn->fill();
+		cn->fill();*/
 		drawImage(cn, c);
 		return;
 	}
@@ -271,7 +271,7 @@ void FrxProcessorNodeUI<CT>::createPopupmenuEntries(sdc::PopupMenuPtr menu,
 	}
 	// browser
 	sdc::MenuItem::Ptr m = sdc::MenuItem::create();
-	m->setText("show " + c->getName() + " details...");
+	m->setText("show '" + c->getName() + "' details...");
 	IFrxControl &ctrl = getFrxControl(view); 
 	m->sdc::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
 		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 

@@ -87,25 +87,25 @@ void Settings::setHomeDirectory(const std::string &path) {
 string Settings::getPlugCollectionDumpFilename ()  {
 	std::string str = getHomeDirectory() + "/" + plugCollectionDumpFile; 
 	boost::filesystem::path p(str);
-	return p.relative_path().string();
+	return absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
 string Settings::getLogFilename()  { 
 	std::string str = SETTINGS.getHomeDirectory() + "/" + NAME + ".log";
 	boost::filesystem::path p(str);
-	return p.relative_path().string();
+	return absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
 string Settings::getConfFilename()  { 
 	std::string str = SETTINGS.getHomeDirectory() + "/" + CONFIG_FILE; 
 	boost::filesystem::path p(str);
-	return p.relative_path().string();
+	return absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
 string Settings::getPlugInitLogFilename()  { 
 	std::string str = SETTINGS.getHomeDirectory() + "/" + PLUG_LOAD_LOGFILE;
 	boost::filesystem::path p(str);
-	return p.relative_path().string();
+	return absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
 void Settings::init(const std::string &homeDirectory) {

@@ -12,7 +12,11 @@
 #include <sambag/disco/FileResourceManager.hpp>
 #include <sambag/disco/Win32IntResourceManager.hpp>
 #include <gui/HandyNamespaces.hpp>
-namespace frx {
+#include <windows.h>
+namespace frx { 
+	namespace createResourcesPy {
+
+	} // namespace(s)
 //=============================================================================
 /** 
   * @class VstForxResourceManager.
@@ -31,7 +35,7 @@ private:
 	sd::Win32IntResourceManager *adaptee;
 public:
 	//-------------------------------------------------------------------------
-	void initMap();
+	void initMap(HINSTANCE hI);
 	//-------------------------------------------------------------------------
 	sd::Win32IntResourceManager * getAdaptee() const {
 		return adaptee;

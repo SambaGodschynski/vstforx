@@ -81,6 +81,13 @@ sampleRate(0.f)
 {
 }
 //-----------------------------------------------------------------------------
+void VstForxPlug::onGraphChanged(void *src, const ::processing::GraphChanged &ev)
+{
+	if (host) {
+		host->configurationChanged();
+	}
+}
+//-----------------------------------------------------------------------------
 void VstForxPlug::registerView(fgc::FrxCircuidViewPtr view) {
 	PlugMap::right_map::iterator it = plugMap.right.find(this);
 	if (it!=plugMap.right.end()) {
@@ -103,6 +110,14 @@ void VstForxPlug::unRegisterInstance() {
 	plugMap.right.erase(it);
 }
 //-----------------------------------------------------------------------------
+void VstForxPlug::installGraphListener() {
+	typedef ::processing::Graph::EventSender<::processing::GraphChanged> Sender;
+	graph->Sender::addTrackedEventListener(
+		boost::bind(&VstForxPlug::onGraphChanged, this, _1, _2),
+		hostInfoAdapter
+	);
+}
+//-----------------------------------------------------------------------------
 void VstForxPlug::open() {
 	if (isOpen()) {
 		return;
@@ -114,6 +129,7 @@ void VstForxPlug::open() {
 	}
 	hostInfoAdapter = IHostInfo::Ptr(new HostInfoAdapter(this));
 	graph = ::processing::Graph::create(hostInfoAdapter);
+	installGraphListener();
 	ctrl = ModelController::create();
 	ctrl->setGraph(graph);
 	map = frx::gui::ViewModelMap::create();
@@ -399,6 +415,7 @@ void VstForxPlug::load(std::istream &is) {
 	dynamic_cast<HostInfoAdapter*>
 		(hostInfoAdapter.get())->hostInfo = this;
 	ar & graph;
+	installGraphListener();
 	ctrl->setGraph(graph);
 	loadEditor(ar);
 	// reinit graph
@@ -411,6 +428,13 @@ void VstForxPlug::load(std::istream &is) {
 //-----------------------------------------------------------------------------
 sambag::dsp::IEditor * VstForxPlug::getEditor() {
 	return host->getEditor();
+}
+//-----------------------------------------------------------------------------
+int VstForxPlug::getLatency() const {
+	if (graph) {
+		return graph->getGraphDelay();
+	}
+	return 0;
 }
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------

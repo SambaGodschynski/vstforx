@@ -169,14 +169,24 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("ProcessorOutput.bgColor", HtmlColors::getColor("black"));
 	m.putProperty("Entry.bgColor", HtmlColors::getColor("black"));
 	m.putProperty("Exit.bgColor", HtmlColors::getColor("white"));
-	m.putProperty("ProcessorInput.fgColor", HtmlColors::getColor("black"));
-	m.putProperty("ProcessorOutput.fgColor", HtmlColors::getColor("black"));
+	m.putProperty("ProcessorInput.fgColor", sd::ColorRGBA(.352, .76, 1.));
+	m.putProperty("ProcessorOutput.fgColor", sd::ColorRGBA(.352, .76, 1.));
+	m.putProperty("ProcessorInput.bgColor", sd::ColorRGBA(0, 0, 0, 0));
+	m.putProperty("ProcessorOutput.bgColor", sd::ColorRGBA(.352, .76, 1.));
 	m.putProperty("Entry.fgColor", HtmlColors::getColor("black"));
 	m.putProperty("Exit.fgColor", HtmlColors::getColor("black"));
 	m.putProperty("FrxStdKnobCorona02.color",  HtmlColors::getColor("yellow"));
 	m.putProperty("FrxStdKnobCorona01.color",  HtmlColors::getColor("red"));
 	m.putProperty("ProcessorIO.stateActiveColor",  HtmlColors::getColor("red"));
 	m.putProperty("FrxCircuidView.bgColor",  HtmlColors::getColor("orange"));
+	m.putProperty("Knob.strokeColor", sd::ColorRGBA(.352, .76, 1.));
+	m.putProperty("Knob.fillColor", sd::ColorRGBA(0,0,0,0));
+	m.putProperty("Knob.colorHandler", sd::ColorRGBA(.352, .76, 1.));
+	typedef sd::IGradient::ColorStop Stop;
+	sd::IGradient::ColorStops stops(2);
+	stops[0] = Stop( sd::ColorRGBA(1.,1.,1., 0.2), 0);
+	stops[1] = Stop( sd::ColorRGBA(0.,0.,0., 1.), 1.0);
+	m.putProperty("FrxCircuidView.bg.gradient.colorStops", stops);
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<styles
 	m.putProperty("IOCn.style", 
 		createStyle("stroke-width: 4; stroke: darkgrey"));
@@ -230,8 +240,8 @@ void FrxLookAndFeel::installDefaults() {
 	
 	//rManager->registerImage("ProcessorInput.image", "w3c.svg");
 	//rManager->registerImage("ProcessorOutput.image", "w3c.svg");
-	rManager->registerImage("Entry.image", "images/entry.svg");
-	rManager->registerImage("Exit.image", "images/exit.svg");
+	rManager->registerImage("Entry.image", "images/entry.png");
+	rManager->registerImage("Exit.image", "images/exit.png");
 	rManager->registerImage("FrxBrowser.folder.image", "images/folder.png");
 	rManager->registerImage("FrxBrowser.default.image", "images/disco-floor.png");
 	rManager->registerImage("FrxBrowser.plugin.image", "images/plugin.png");

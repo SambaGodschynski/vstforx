@@ -401,6 +401,7 @@ FrxColumnBrowser::Ptr openMainBrowser(fgc::FrxCircuidViewPtr view,
 	}
 	browser->setCtrl(ctrl);
 	browser->setTitle("Scene Browser:");
+	browser->setWindowSize(sd::Dimension(800,400));
 	browser->open();
 	browser->initTree(view);
 	return browser;

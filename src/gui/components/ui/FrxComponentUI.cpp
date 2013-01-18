@@ -56,7 +56,7 @@ void FrxComponentUI::createPopupmenuEntries(sdc::PopupMenuPtr menu,
 {
 	IFrxControl &ctrl = getFrxControl(view);
 	sdc::MenuItem::Ptr item = sdc::MenuItem::create();
-	item->setText("remove " + c->getName());
+	item->setText("remove '" + c->getName() + "'");
 	item->sdc::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
 		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl,view,c,&IFrxControl::removeComponent),
 		c

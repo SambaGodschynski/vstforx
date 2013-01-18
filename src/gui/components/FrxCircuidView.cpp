@@ -70,10 +70,12 @@ public:
 //-----------------------------------------------------------------------------
 namespace {
 	sd::IPattern::Ptr _createSPattern() {
+		sd::IGradient::ColorStops stops;
+		sdc::ui::UIManager &ui = sdc::ui::getUIManager();
+		ui.getProperty("FrxCircuidView.bg.gradient.colorStops", stops);
 		sd::ILinearPattern::Ptr sol = 
 			sd::getDiscoFactory()->createLinearPattern(sd::Point2D(0,0), sd::Point2D(0,600));
-		sol->addColorStop(sd::ColorRGBA(1.,1.,1., 0.5), 0);
-		sol->addColorStop(sd::ColorRGBA(1.,1.,1., 0.1), 1.0);
+		sol->addColorStops(stops);
 		return sol;
 	}
 	void _getViewportRect(sdc::AComponentPtr view, sd::Rectangle &res) {

@@ -48,9 +48,20 @@ void onSelectionPathChanged(void *src,
 	if (path.empty())
 		return;
 	const BrowserNode &bNode = tree->getNodeData(path.back());
-	if (!bNode.isFolder())
-		return;
-	bNode.accept();
+
+	FrxMainBrowser::Ptr mbrowser = 
+		boost::shared_dynamic_cast<FrxMainBrowser>(browser);
+
+	if (!bNode.isFolder()) {
+		if (mbrowser) {
+			mbrowser->getBtnAdd()->setEnabled(true);
+		}
+	} else {
+		if (mbrowser) {
+			mbrowser->getBtnAdd()->setEnabled(false);
+		}
+		bNode.accept();
+	}
 }
 } // namespace(s)
 //=============================================================================
@@ -210,7 +221,8 @@ FrxMainBrowserCtrl::fillPluginFolder(TreeNode parent, DBFolderID dbFolderId)
 		TreeNode plug = 
 			tree->addNode(parent);
 
-		std::string name = pI.name;
+		std::string name =
+			boost::filesystem::path(pI.location).filename().string();
 		if (pI.access == ::processing::PluginInfo::FAILED) {
 			name+="<FAILED>";
 		}

@@ -11,6 +11,9 @@ import os.path
 
 resCounter = 100
 
+validImages = ['.png']
+
+
 def getResourceId(obj):
     if obj.has_key('resID'):
         return obj['resID']
@@ -24,9 +27,12 @@ def scanimages(_dir, images):
     print("scan for images in " + _dir + ":")
     for cd,sd,files in os.walk(_dir):
         for x in files:
+            if not os.path.splitext(x)[1] in validImages:
+                print("ignore: " + x)
+                continue
             f = os.path.basename(cd) + '/' + x
             print(f)
-            images[f] = {"path": os.path.abspath(x)}
+            images[f] = {"path": os.path.abspath(_dir+"/"+x)}
     print("=============================")
     print(str(len(f)) + " images found.")
 
@@ -46,6 +52,18 @@ def createInitResourcesCpp(files, dstpath):
     f.close()
     print(fname + " wrote.")
 
+def createInitResourcesH(files, dstpath):
+    f = open('initResourceMap._h', "r")
+    iTxt = f.read()
+    f.close()
+    iTxt = iTxt.replace('$$$DATE$$$', time.asctime())
+    calls = ""
+    fname = dstpath + '/' + 'initResourceMap.h'
+    f = open(fname, "w")
+    f.write(iTxt)
+    f.close()
+    print(fname + " wrote.")
+
 def createResourcesRc(files, dstpath):
     f = open('resources._rc', "r")
     iTxt = f.read()
@@ -56,6 +74,7 @@ def createResourcesRc(files, dstpath):
         resID = getResourceId(files[x])
         calls = calls + '%s\tSAMBAG_CUSTOM\t"%s"\n' % (resID, files[x]['path'])
     iTxt = iTxt.replace('$$$RESOURCE_DEFS$$$', calls)
+    iTxt = iTxt.replace("\\", "/")
     fname = dstpath + '/' + 'resources.rc'
     f = open(fname, "w")
     f.write(iTxt)
@@ -78,4 +97,5 @@ if __name__ == "__main__":
     images={}
     scanimages(args.indir, images)
     createInitResourcesCpp(images, args.outdir)
+    createInitResourcesH(images, args.outdir)
     createResourcesRc(images, args.outdir)

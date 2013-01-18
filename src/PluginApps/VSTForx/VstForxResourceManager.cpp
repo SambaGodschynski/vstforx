@@ -6,7 +6,7 @@
  */
 
 #include "VstForxResourceManager.hpp"
-
+#include "initResourceMap.h"
 
 namespace frx {
 typedef Loki::SingletonHolder<VstForxResourceManager> VstForxResourceManagerHolder;
@@ -28,7 +28,15 @@ VstForxResourceManager::loadImage(const std::string &path)
 	return adaptee->getImage(path);
 }
 //-----------------------------------------------------------------------------
-void VstForxResourceManager::initMap() {
-	
+namespace {
+	void _register(const char *p, long id) {
+		VstForxResourceManager &m = VstForxResourceManager::instance();
+		m.getAdaptee()->registerImage(p, id);
+	}
+} // namespace(s)
+void VstForxResourceManager::initMap(HINSTANCE hI) {
+	using namespace createResourcesPy;
+	adaptee->setInstance(hI);
+	initResourceMap(&_register);
 }
 } // namespace(s)

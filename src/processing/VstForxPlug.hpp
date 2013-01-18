@@ -13,7 +13,7 @@
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include <sambag/dsp/DspPlugin.hpp>
 #include <processing/IHostInfo.h>
-#include <processing/graph.h>
+#include <processing/Graph.h>
 #include <processing/ModelController.hpp>
 #include <gui/ViewModelMap.hpp>
 #include <gui/components/Forward.hpp>
@@ -71,6 +71,10 @@ private:
 	//-------------------------------------------------------------------------
 	void loadEditor(::com::iArchive &ar);
 protected:
+	//-------------------------------------------------------------------------
+	void installGraphListener();
+	//-------------------------------------------------------------------------
+	void onGraphChanged(void *src, const ::processing::GraphChanged &ev);
 	//-------------------------------------------------------------------------
 	/**
 	 * updates graph samplerate and blocksize
@@ -160,6 +164,8 @@ public:
 	int getChunk(void **data);
 	//-------------------------------------------------------------------------
 	int setChunk(void *data, int byteSize);
+	//-------------------------------------------------------------------------
+	int getLatency() const;
 };
 }} // namespace
 

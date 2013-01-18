@@ -43,6 +43,7 @@ void FrxMainBrowser::createMainBtns() {
 	btnAdd = sdc::Button::create();
 	btnAdd->setText("add");
 	getButtonPane()->add(btnAdd);
+	btnAdd->setEnabled(false);
 	
 	btnClose = sdc::Button::create();
 	btnClose->setText("close");

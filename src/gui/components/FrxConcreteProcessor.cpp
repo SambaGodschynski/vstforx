@@ -59,19 +59,19 @@ std::string getProcessorBeautyName<processorTypes::Volume>() {return "Volume";}
 template <>
 std::string getProcessorBeautyName<processorTypes::Pan>() {return "Pan";}
 template <>
-std::string getProcessorBeautyName<processorTypes::InStep>() {return "Input_Step";}
+std::string getProcessorBeautyName<processorTypes::InStep>() {return "Input Step";}
 template <>
-std::string getProcessorBeautyName<processorTypes::OutStep>() {return "Output_Step";}
+std::string getProcessorBeautyName<processorTypes::OutStep>() {return "Output Step";}
 template <>
-std::string getProcessorBeautyName<processorTypes::InSwitch>() {return "Input_Switch";}
+std::string getProcessorBeautyName<processorTypes::InSwitch>() {return "Input Switch";}
 template <>
-std::string getProcessorBeautyName<processorTypes::OutSwitch>() {return "Output_Switch";}
+std::string getProcessorBeautyName<processorTypes::OutSwitch>() {return "Output Switch";}
 template <>
-std::string getProcessorBeautyName<processorTypes::ADSR>() {return "ADSR_Trigger";}
+std::string getProcessorBeautyName<processorTypes::ADSR>() {return "ADSR Trigger";}
 template <>
-std::string getProcessorBeautyName<processorTypes::PeakTracker>() {return "Peak_Tracker";}
+std::string getProcessorBeautyName<processorTypes::PeakTracker>() {return "Peak Tracker";}
 template <>
-std::string getProcessorBeautyName<processorTypes::MIDIReceiver>() {return "Midi_Receiver";}
+std::string getProcessorBeautyName<processorTypes::MIDIReceiver>() {return "Midi Receiver";}
 ///////////////////////////////////////////////////////////////////////////////
 // Tooltips
 template <>
