@@ -22,7 +22,7 @@ function myValidate(f) {
 </script>
 
 <div id="j2Mantis" class="item-page">
-<h2>Report Issue</h2>
+<h2>Report Bug</h2>
 
 <?php if(!empty($_POST['errors'])): ?>
 <div class="error"><h3><?php echo JText::_('Error');?></h3><ul>
@@ -33,6 +33,13 @@ function myValidate(f) {
 <?php endif; ?>
 
 
+<?php
+	$user	= JFactory::getUser();
+	if (!$user->guest) {
+		$uname = $user->name;
+		$uemail = $user->email;	
+	}
+?>
 
 <form method="post" action="?option=com_j2mantis&amp;task=addBug&amp;Itemid=<?php echo JRequest::getInt('Itemid',0);?>"  onsubmit="return myValidate(this);">
 <input type="hidden" name="view" value="addbug" />

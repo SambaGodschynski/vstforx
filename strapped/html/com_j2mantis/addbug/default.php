@@ -33,6 +33,13 @@ function myValidate(f) {
 <?php endif; ?>
 
 
+<?php
+	$user	= JFactory::getUser();
+	if (!$user->guest) {
+		$uname = $user->username;
+		$uemail = $user->email;	
+	}
+?>
 
 <form method="post" action="?option=com_j2mantis&amp;task=addBug&amp;Itemid=<?php echo JRequest::getInt('Itemid',0);?>"  onsubmit="return myValidate(this);">
 <input type="hidden" name="view" value="addbug" />
@@ -66,10 +73,10 @@ function myValidate(f) {
 <input type="text" name="summary" id="summary" class="required" <?php if(!empty($_POST['summary']))echo 'value="'.$_POST['summary'].'"' ?> />
 <br />
 <label for="name"><?php echo JText::_('Name');?>*</label>
-<input type="text" name="name" id="name" class="required"  <?php if(!empty($_POST['name']))echo 'value="'.$_POST['name'].'"' ?>  />
+<input type="text" name="name" id="name" class="required"  <?php if(!empty($uname))echo 'value="'.$uname.'"' ?>  />
 <br />
 <label for="email"><?php echo JText::_('E-Mail');?>*</label>
-<input type="text" name="email" id="email" class="required validate-email"  <?php if(!empty($_POST['email']))echo 'value="'.$_POST['email'].'"' ?> />
+<input type="text" name="email" id="email" class="required validate-email"  <?php if(!empty($uemail))echo 'value="'.$uemail.'"' ?> />
 <br />
 <label for="priority"><?php echo JText::_('Priority');?></label>
 <select name="priority" id="priority">
