@@ -94,7 +94,7 @@ function myValidate(f) {
 </form>
 <?php if((boolean)$params->get('overview')): ?>
 	<br />
-	<a href="?option=com_j2mantis&amp;Itemid=<?php echo JRequest::getInt('Itemid',0);?>"><?php echo JText::_('Return to Report Overview');?></a>
+	
 <?php endif; ?>
 <br style="clear: both;" />
 </div>
