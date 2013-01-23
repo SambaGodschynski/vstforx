@@ -20,7 +20,7 @@ namespace frx { namespace gui { namespace components {
 //=============================================================================
 //-----------------------------------------------------------------------------
 FrxProcessorNode::FrxProcessorNode() {
-	setName("FrxProcessorNode");
+	setName(""); // no name here, needed to recognize first init.
 }
 //-----------------------------------------------------------------------------
 FrxNode::Ptr FrxProcessorNode::createInputNode() {
