@@ -210,7 +210,7 @@ void onConsoleThread(bool *consoleRunning) {
 }
 //-----------------------------------------------------------------------------
 int main(int narg, char **args) {
-	std::cout<<"hello dave.."<<std::endl;
+	std::cout<<"hello daves.."<<std::endl;
 	if (!processArguments(narg, args)) {
 		return 0;
 	}
