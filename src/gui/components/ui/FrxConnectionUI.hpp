@@ -92,6 +92,8 @@ private:
 	sdsg::Style lineStyle;
 	//-------------------------------------------------------------------------
 	sdsg::Style lineHoverStyle;
+	//-------------------------------------------------------------------------
+	inline const sdsg::Style & determineStyle() const;
 public:
 	//-------------------------------------------------------------------------
 	virtual void installUI(sdc::AComponentPtr c);
@@ -234,12 +236,17 @@ inline void _createPopupmenuEntries<connectionTypes::Parameter>(
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 template <class CT>
-void FrxConnectionUI<CT>::setStyleToContext(sd::IDrawContext::Ptr cn) const {
+inline const sdsg::Style & FrxConnectionUI<CT>::determineStyle() const {
 	if (_mouseEntered) {
-		lineHoverStyle.intoContext(cn);
-	} else {
-		lineStyle.intoContext(cn);
-	}
+		return lineHoverStyle;
+	} 
+	return lineStyle;
+}
+//-----------------------------------------------------------------------------
+template <class CT>
+void FrxConnectionUI<CT>::setStyleToContext(sd::IDrawContext::Ptr cn) const {
+	const sdsg::Style & style = determineStyle(); 
+	style.intoContext(cn);
 }
 //-----------------------------------------------------------------------------
 template <class CT>
@@ -267,11 +274,7 @@ template <class CT>
 void FrxConnectionUI<CT>::adjustBoundingRect(sd::Rectangle &r, 
 	FrxConnection::Ptr c) const 
 {
-	// approach isn't really satisfying, dosen't work with higher 
-	// strokewitdh values.
-	sd::IDrawContext::Ptr cn = sd::getDiscoFactory()->createContext();
-	setStyleToContext(cn);
-	sambag::com::Number lw = cn->getStrokeWidth();
+	sambag::com::Number lw = determineStyle().strokeWidth();
 	r.x( r.x() - lw );
 	r.y( r.y() - lw );
 	r.width( r.width() + lw*2. );

@@ -72,6 +72,12 @@ private:
 	void installListeners();
 public:
 	//-------------------------------------------------------------------------
+	/**
+	 * @override for performance reasons
+	 * @note: disables PropertyChanged notification.
+	 */
+	virtual void setBounds(const sd::Rectangle &r);
+	//-------------------------------------------------------------------------
 	virtual const std::string & getName() const;
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {

@@ -11,6 +11,7 @@
 #include <gui/components/FrxCircuidView.hpp>
 #include <boost/algorithm/string.hpp>
 #include <gui/components/FrxNode.hpp>
+#include <sambag/disco/FontCache.hpp>
 
 namespace frx { namespace gui { namespace components { namespace ui {
 //=============================================================================
@@ -40,44 +41,45 @@ void FrxFlagUI::installDefaults(sdc::AComponentPtr c) {
 	_flag = flag;
 	sdc::ui::UIManager &mg = sdc::ui::getUIManager();
 	mg.getProperty("FrxFlag.style", flagStyle);
-	
+	sd::FontCache::instance().installFont( flagStyle.font() );
 	FrxComponent::Ptr target = flag->getTarget();
 	if (!target) {
 		return;
 	}
 	distance = sd::Point2D(15., -30.); // TODO: accepts only (x>0, y<0)
 	hGap = 3.;
-	updateText(target->getFlagText());
+	updateText();
 }
 //-----------------------------------------------------------------------------
-void FrxFlagUI::updateText(const std::string &txt) {
+sd::IDrawContext::Ptr FrxFlagUI::getOffscreenContext() {
+	if (!offSf || !offCn) {
+		sd::IDiscoFactory *fac = sd::getDiscoFactory();
+		offSf = fac->createRecordingSurface();
+		offCn = fac->createContext(offSf);
+	}
+	return offCn;
+}
+//-----------------------------------------------------------------------------
+void FrxFlagUI::updateText() {
 	using namespace sambag::disco;
-	std::vector<std::string> strs;
-	strs.reserve(2);
-	boost::split(strs, txt, boost::is_any_of("/"));
-	if (strs.size() >= 1) {
-		upper = strs[0];
-	}
-	if (strs.size() >= 2) {
-		lower = strs[1];
-	}
-	if (upper=="") {
-		upper="?";
-	}
-	IDiscoFactory *fac = getDiscoFactory();
-	IRecordingSurface::Ptr sf = fac->createRecordingSurface();
-	IDrawContext::Ptr cn = fac->createContext(sf);
-	flagStyle.intoContext(cn);
-	
-	Rectangle ta = cn->textExtends(upper);
-	Rectangle tb = cn->textExtends(lower);
-	tb.width( std::max(ta.width(), tb.width()) );
-	tb.height( ta.height() + tb.height() + hGap );
 	
 	FrxFlag::Ptr flag = _flag.lock();
 	if (!flag) {
 		return;
 	}
+	FrxComponent::Ptr tg = flag->getTarget();
+	if (!tg) {
+		return;
+	}
+
+	IDrawContext::Ptr cn = getOffscreenContext();
+	flagStyle.intoContext(cn);
+
+	Rectangle ta = cn->textExtends(tg->getUpperFlagText());
+	Rectangle tb = cn->textExtends(tg->getLowerFlagText());
+	tb.width( std::max(ta.width(), tb.width()) );
+	tb.height( ta.height() + tb.height() + hGap );
+
 	flag->setSize(Dimension(
 		tb.width() + ((distance.x()>0) ? (double)distance.x() : 
 					 -1. * (double)distance.x()),
@@ -85,9 +87,7 @@ void FrxFlagUI::updateText(const std::string &txt) {
 					   -1. * (double)distance.y())
 	));
 	sdc::AComponentPtr parent = flag->getParent();
-	if (parent) {
-		parent->redraw();
-	}
+	flag->redraw();
 }
 //-----------------------------------------------------------------------------
 void FrxFlagUI::updateBounds(FrxFlag::Ptr flag) {
@@ -122,7 +122,7 @@ void FrxFlagUI::onTargetPropertyChanged(void *, const sce::PropertyChanged &ev)
 		ev.getOldValue(old);
 		ev.getNewValue(_new);
 		if (old!=_new) {
-			updateText(_new);
+			updateText();
 		}
 	}
 
@@ -164,7 +164,7 @@ void FrxFlagUI::onFlagPropertyChanged(void *, const sce::PropertyChanged &ev)
 		rmcn.disconnect();
 	}
 	installTargetListeners(_new);
-	updateText(_new->getFlagText());
+	updateText();
 
 }
 //-----------------------------------------------------------------------------
@@ -181,13 +181,14 @@ void FrxFlagUI::installListeners(sdc::AComponentPtr c) {
 	if (!target) {
 		return;
 	}
-	updateText(flag->getFlagText());
+	updateText();
 	installTargetListeners(target);
 }
 //-----------------------------------------------------------------------------
 FrxFlagUI::Ptr FrxFlagUI::create() {
 	Ptr res( new FrxFlagUI() );
 	res->self = res;
+	res->postConstructor(res);
 	return res;
 } 
 //-----------------------------------------------------------------------------
@@ -228,11 +229,16 @@ void FrxFlagUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	clip(flag, cn);
 	sambag::com::Number fs = flagStyle.fontSize();
 	flagStyle.intoContext(cn);
-	sd::Rectangle r = cn->clipExtends();
-	cn->moveTo(sd::Point2D(distance.x(), fs));
-	cn->textPath(upper);
-	cn->moveTo(sd::Point2D(distance.x(), 2*fs+hGap));
-	cn->textPath(lower);
+	
+	sd::Rectangle r(0,0,c->getWidth(), c->getHeight());
+	sd::FontCache &fc = sd::FontCache::instance();
+
+	cn->moveTo(sd::Point2D(distance.x(), fs/2. - 2.));
+	//cn->textPath(target->getUpperFlagText());
+	fc.drawText(cn ,target->getUpperFlagText());
+	cn->moveTo(sd::Point2D(distance.x(), fs+hGap + 2.));
+	//cn->textPath(target->getLowerFlagText());
+	fc.drawText(cn ,target->getLowerFlagText());
 	cn->fill();
 
 	cn->moveTo(sd::Point2D(0, r.height()));

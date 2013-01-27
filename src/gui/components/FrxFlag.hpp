@@ -50,7 +50,14 @@ private:
 	}
 public:
 	//-------------------------------------------------------------------------
-	~FrxFlag();
+	/**
+	 * @override
+	 * redraws parent containers area which fits to the
+	 * the bounding rect of this object.
+	 */
+	virtual void redraw();
+	//-------------------------------------------------------------------------
+	virtual ~FrxFlag();
 	//-------------------------------------------------------------------------
 	void setTarget(FrxComponent::Ptr target);
 	//-------------------------------------------------------------------------

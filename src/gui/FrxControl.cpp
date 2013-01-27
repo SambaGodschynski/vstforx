@@ -143,13 +143,13 @@ void parameterChanged(void *src, float value,
 	frx::processing::IParameter::WPtr _par,
 	FrxParameter::WPtr _knob)
 {
-/*	if (!_par.lock() || !_knob.lock()) {
+	if (!_par.lock() || !_knob.lock()) {
 		return;
 	}
 	TimedUpdater<ParameterRefreshInfo,
 	RefreshParameter, 50>::instance().update(
 		std::make_pair(_par, _knob)
-	);*/
+	);
 }
 //-----------------------------------------------------------------------------
 bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj, FrxCircuidViewWPtr _view)
