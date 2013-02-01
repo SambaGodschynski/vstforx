@@ -35,7 +35,8 @@ Console::~Console() {
 	FreeConsole();
 }
 
-#ifdef _DEBUG 
+
+#ifdef _DEBUG
 Console console;
 #pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.VC90.CRT' version='9.0.21022.8' processorArchitecture='X86' publicKeyToken='1fc8b3b9a1e18e3b' language='*'\"")
 #endif
@@ -43,8 +44,7 @@ Console console;
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 
-	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); //VS memory tracking
-	
+	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); //VS memory tracking	
 	// init resourceManager
 	try {
 		frx::VstForxResourceManager &rm = frx::VstForxResourceManager::instance();
@@ -67,7 +67,9 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 		"win32.hinstance",
 		sambag::com::createObject((HINSTANCE)hInstance)
 	);
+
 	sambag::disco::components::getWindowToolkit()->useWithoutMainloop();
+	
 	// load plugin
 	using namespace sambag::dsp::vst;
 	// settingup plugin
