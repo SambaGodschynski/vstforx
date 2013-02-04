@@ -147,7 +147,7 @@ void parameterChanged(void *src, float value,
 		return;
 	}
 	TimedUpdater<ParameterRefreshInfo,
-	RefreshParameter, 50>::instance().update(
+		RefreshParameter, 25>::instance().update(
 		std::make_pair(_par, _knob)
 	);
 }

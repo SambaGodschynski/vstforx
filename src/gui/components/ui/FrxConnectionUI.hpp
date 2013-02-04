@@ -76,6 +76,9 @@ protected:
 	std::pair<sd::Point2D, sd::Point2D> 
 	getConnectionPoints(ConcreteConnectionPtr c) const;
 	//-------------------------------------------------------------------------
+	void clipNode(ConcreteConnectionPtr c, 
+		FrxNode::Ptr node, sd::IDrawContext::Ptr cn) const;
+	//-------------------------------------------------------------------------
 	void clipEndNodes(ConcreteConnectionPtr c, sd::IDrawContext::Ptr cn) const;
 	//-------------------------------------------------------------------------
 	virtual void installListeners(sdc::AComponent::Ptr c);
@@ -292,31 +295,36 @@ FrxConnectionUI<CT>::getConnectionPoints(ConcreteConnectionPtr ccn) const {
 }
 //-----------------------------------------------------------------------------
 template <class CT>
+void FrxConnectionUI<CT>::clipNode(ConcreteConnectionPtr c, FrxNode::Ptr node, 
+	sd::IDrawContext::Ptr cn) const 
+{
+	sd::Point2D loc = node->getLocation();
+	boost::geometry::add_point(loc, node->getPivot());
+	boost::geometry::subtract_point(loc, c->getLocation());
+	
+	cn->arc(loc, node->getRadius());
+	cn->clip();
+}
+//-----------------------------------------------------------------------------
+template <class CT>
 void FrxConnectionUI<CT>::clipEndNodes(ConcreteConnectionPtr c, 
 	sd::IDrawContext::Ptr cn) const
 {
 	FrxNode::Ptr a = boost::shared_dynamic_cast<FrxNode>( c->getSrcComponent() );
 	FrxNode::Ptr b = boost::shared_dynamic_cast<FrxNode>( c->getDstComponent() );
-	if (!a || !b) {
+	if (!a && !b) {
 		return;
 	}
-
-	sd::Point2D aLoc = a->getLocation();
-	boost::geometry::add_point(aLoc, a->getPivot());
-	sd::Point2D bLoc = b->getLocation();
-	boost::geometry::add_point(bLoc, b->getPivot());
-	boost::geometry::subtract_point(aLoc, c->getLocation());
-	boost::geometry::subtract_point(bLoc, c->getLocation());
 	
 	cn->setFillRule(sd::IDrawContext::FILL_RULE_EVEN_ODD);
-	
-	cn->rect(sd::Rectangle(0, 0, c->getWidth(), c->getHeight()));
-	cn->arc(aLoc, a->getRadius());
-	cn->clip();
-
-	cn->rect(sd::Rectangle(0, 0, c->getWidth(), c->getHeight()));
-	cn->arc(bLoc, b->getRadius());
-	cn->clip();
+	if (a) {
+		cn->rect(sd::Rectangle(0, 0, c->getWidth(), c->getHeight()));
+		clipNode(c, a, cn);	
+	}
+	if (b) {
+		cn->rect(sd::Rectangle(0, 0, c->getWidth(), c->getHeight()));
+		clipNode(c, b, cn);	
+	}
 }
 //-----------------------------------------------------------------------------
 template <class CT>

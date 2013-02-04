@@ -35,7 +35,9 @@ public:
 	FrxComponentPtr getComponent() const;
 	//-------------------------------------------------------------------------
 	static Ptr create() {
-		return Ptr(new FrxConnectionBrowserCtrl());
+		Ptr res(new FrxConnectionBrowserCtrl());
+		res->self = res;
+		return res;
 	}
 	//-------------------------------------------------------------------------
 	virtual void initTree(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws);

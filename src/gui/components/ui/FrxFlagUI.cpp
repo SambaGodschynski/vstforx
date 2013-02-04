@@ -75,8 +75,11 @@ void FrxFlagUI::updateText() {
 	IDrawContext::Ptr cn = getOffscreenContext();
 	flagStyle.intoContext(cn);
 
-	Rectangle ta = cn->textExtends(tg->getUpperFlagText());
-	Rectangle tb = cn->textExtends(tg->getLowerFlagText());
+	sd::FontCache &fc = sd::FontCache::instance();
+	Rectangle ta = fc.getTextBounds( cn, tg->getUpperFlagText() );
+	Rectangle tb = fc.getTextBounds( cn, tg->getLowerFlagText() );
+
+
 	tb.width( std::max(ta.width(), tb.width()) );
 	tb.height( ta.height() + tb.height() + hGap );
 

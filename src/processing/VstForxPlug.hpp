@@ -37,8 +37,6 @@ public:
 	typedef sambag::dsp::PluginProcessorBase Super;
 private:
 	//-------------------------------------------------------------------------
-	sambag::com::RecursiveMutex saveLoadProcess;
-	//-------------------------------------------------------------------------
 	void *effectPtr;
 	//-------------------------------------------------------------------------
 	void *masterCallback;
