@@ -207,7 +207,7 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("FrxSelection.selectingStyle", 
 		createStyle("stroke-width: 4; stroke: grey; fill: purple;stroke-dasharray: 9, 5; fill-opacity: 0.25"));
 	m.putProperty("FrxSelection.selectedStyle", 
-		createStyle("stroke-width: 4; stroke: grey; fill: purple; fill-opacity: 0.25"));
+		createStyle("stroke-width: 4; stroke: black; fill: purple; fill-opacity: 0.25"));
 	m.putProperty("FrxParameterLabel.style", 
 		createStyle("stroke-width: 1; stroke: red; fill: grey; fill-opacity: 0.25"));
 	m.putProperty("FrxBrowserList.selectedEntryStyle", 

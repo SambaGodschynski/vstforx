@@ -6,7 +6,6 @@
 #include <boost/tuple/tuple.hpp>
 #include <boost/thread.hpp>
 #include <scripts/PluginScriptCtrl.hpp>
-#include <boost/thread.hpp>
 #include <sambag/disco/components/Window.hpp>
 #include <gui/components/VstForxEditor.hpp>
 #include <sambag/disco/IResourceManager.hpp>
@@ -14,9 +13,11 @@
 #include <boost/program_options.hpp>
 #include <com/settings.h>
 
+
 #ifdef FRX_OS_WINDOWS
 	#define WIN32ONLY(x) x
 	#include <crtdbg.h>
+	#pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.VC90.CRT' version='9.0.21022.8' processorArchitecture='X86'	publicKeyToken='1fc8b3b9a1e18e3b' language='*'\"")
 #else
 	#define WIN32ONLY(x)
 #endif
@@ -209,7 +210,7 @@ void onConsoleThread(bool *consoleRunning) {
 }
 //-----------------------------------------------------------------------------
 int main(int narg, char **args) {
-	std::cout<<"hello dave.."<<std::endl;
+	std::cout<<"hello daves.."<<std::endl;
 	if (!processArguments(narg, args)) {
 		return 0;
 	}

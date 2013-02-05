@@ -331,6 +331,12 @@ void FrxMainBrowserCtrl::initListeners(FrxColumnBrowserPtr brws) {
 	browser->getBtnAdd()->sdc::EventSender<sdc::events::ActionEvent>::addEventListener(
 		boost::bind(&FrxMainBrowserCtrl::onBrowserOk, this, _1, _2)
 	);
+	Tree::Ptr tree = brws->getBrowserImpl();
+	// sel. path listener
+	tree->sdc::EventSender<sdc::SelectionPathChanged>::addTrackedEventListener(
+		boost::bind(&onSelectionPathChanged, _1, _2, FrxColumnBrowser::WPtr(brws)),
+		self.lock()
+	);
 }
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::setHostInfo(IHostInfo::Ptr hostInfo) {
@@ -756,12 +762,7 @@ void FrxMainBrowserCtrl::initTree(FrxCircuidViewPtr view,
 	typedef FrxColumnBrowser::BrowserImpl Tree;
 	Tree::Ptr tree = brws->getBrowserImpl();
 	initRoot(view, brws);
-	
-	// extra from installListeners() because not all browser need this:
-	tree->sdc::EventSender<sdc::SelectionPathChanged>::addTrackedEventListener(
-		boost::bind(&onSelectionPathChanged, _1, _2, FrxColumnBrowser::WPtr(brws)),
-		self.lock()
-	);
+
 	tree->updateLists();
 }
 //-----------------------------------------------------------------------------

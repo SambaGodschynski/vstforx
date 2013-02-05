@@ -60,6 +60,13 @@ public:
 	//-------------------------------------------------------------------------
 	/**
 	 * @override
+	 * redraws parent containers area which fits to the
+	 * the bounding rect of this object.
+	 */
+	virtual void redraw();
+	//-------------------------------------------------------------------------
+	/**
+	 * @override
 	 */
 	virtual void setBounds(const sd::Rectangle &r);
 	//-------------------------------------------------------------------------

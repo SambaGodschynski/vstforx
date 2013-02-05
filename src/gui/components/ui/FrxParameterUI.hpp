@@ -10,6 +10,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <gui/components/FrxConcreteParameter.hpp>
+#include <sambag/disco/components/DefaultBoundedRangeModel.hpp>
 #include "FrxNodeUI.hpp"
 #include <gui/components/FrxCircuidView.hpp>
 #include <sambag/disco/components/events/MouseEvent.hpp>
@@ -42,7 +43,11 @@ public:
 	typedef _ParameterType ParameterType;
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<FrxParameterUI> Ptr;
+	//-------------------------------------------------------------------------
+	typedef sdc::DefaultBoundedRangeModelChanged KnobStateChanged;
 protected:
+	//-------------------------------------------------------------------------
+	virtual void onKnobStateChanged(void *src, const KnobStateChanged &ev);
 	//-------------------------------------------------------------------------
 	FrxParameterUI(){}
 private:
@@ -50,6 +55,8 @@ private:
 	typedef typename ParameterType::Model Model;
 	//-------------------------------------------------------------------------
 	typedef FrxParameterUI<ParameterType> ThisClass;
+	//-------------------------------------------------------------------------
+	FrxParameter::WPtr _parameter;
 public:
 	//-------------------------------------------------------------------------
 	// MouseEvents
@@ -109,16 +116,42 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 template <class PT>
+void FrxParameterUI<PT>::onKnobStateChanged(void *src, const KnobStateChanged &ev)
+{
+	FrxParameter::Ptr parameter = _parameter.lock();
+	if (!parameter) {
+		return;
+	}
+	sdc::AComponent::Ptr parent = parameter->getParent();
+	if (!parent) {
+		return;
+	}
+	parent->redraw(parameter->getBounds());
+}
+//-----------------------------------------------------------------------------
+template <class PT>
 void FrxParameterUI<PT>::installUI(sdc::AComponentPtr c) {
 	Super::installUI(c);
-	FrxParameter::Ptr par = boost::shared_dynamic_cast<FrxParameter>(c);
-	SAMBAG_ASSERT(par);
-	sdc::AComponent::Ptr ctrl = par->getEncapsulatedCtrl();
+	FrxParameter::Ptr parameter = boost::shared_dynamic_cast<FrxParameter>(c);
+	SAMBAG_ASSERT(parameter);
+	_parameter = parameter; 
+	sdc::AComponent::Ptr ctrl = parameter->getEncapsulatedCtrl();
 	SAMBAG_ASSERT(ctrl);
 	ctrl->sdc::EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
 		boost::bind(&ThisClass::onMouse, this, _1, _2),
 		getPtr()
 	);
+
+	sdc::DefaultBoundedRangeModel::Ptr ctrlModel = 
+		boost::shared_dynamic_cast<sdc::DefaultBoundedRangeModel>(ctrl);
+	if (!ctrlModel) {
+		return;
+	}
+	ctrlModel->sdc::EventSender<KnobStateChanged>::addTrackedEventListener(
+		boost::bind(&ThisClass::onKnobStateChanged, this, _1, _2),
+		getPtr()
+	);
+
 }
 //-----------------------------------------------------------------------------
 template <class PT>
@@ -134,6 +167,10 @@ template <class PT>
 void FrxParameterUI<PT>::drawCorona(sd::IDrawContext::Ptr cn, 
 	sdc::AComponent::Ptr c)
 {
+	FrxParameter::Ptr parameter = _parameter.lock();
+	if (!parameter) {
+		return;
+	}
 	sd::ColorRGBA coronaCol01 = 
 		sdcu::getUIPropertyCached<Corona01PropertyTag>(sd::ColorRGBA());
 	sd::ColorRGBA coronaCol02 = 
@@ -141,18 +178,21 @@ void FrxParameterUI<PT>::drawCorona(sd::IDrawContext::Ptr cn,
 	coronaCol01.setA(coronaAlpha);
 	coronaCol02.setA(coronaAlpha);
 
-	FrxComponent::Ptr node = boost::shared_dynamic_cast<FrxComponent>(c);
-	
+	sd::Point2D loc = parameter->getPivot();
+	double rCore = getCoreRadius(c), rCorona = getCoronaRadius(c);
+	// clip
+	cn->save();
+	clipCorona(cn, loc, rCore, rCorona);
+	// draw
 	sambag::com::Number sa = 90. * (M_PI / 180.);
 	sambag::com::Number ea = 270. * (M_PI / 180.);
-	sd::Point2D loc = node->getPivot();
-	cn->arc(loc, getCoronaRadius(c), sa, ea);
+	cn->arc(loc, rCorona, sa, ea);
 	cn->setFillColor(coronaCol01);
 	cn->fill();
-	
-	cn->arcNegative(loc, getCoronaRadius(c), sa, ea);
+	cn->arcNegative(loc, rCorona, sa, ea);
 	cn->setFillColor(coronaCol02);
 	cn->fill();
+	cn->restore();
 }
 //-----------------------------------------------------------------------------
 template <class PT>
@@ -194,6 +234,9 @@ void FrxParameterUI<PT>::mouseEntered(const sdc::events::MouseEvent &ev) {
 //-----------------------------------------------------------------------------
 template <class PT>
 void FrxParameterUI<PT>::mouseExited(const sdc::events::MouseEvent &ev) {
+	sdc::events::MouseEvent nEv = ev;
+	nEv.updateSoure(ev.getSource()->getParent());
+	Super::mouseExited(nEv);
 }
 //-----------------------------------------------------------------------------
 template <class PT>

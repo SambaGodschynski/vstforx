@@ -79,9 +79,14 @@ void FrxConnection::onComponentsPropertyChanged(void*,
 		resetBounds();
 }
 //-----------------------------------------------------------------------------
+void FrxConnection::setBounds(const sd::Rectangle &r) {
+	this->bounds = r;
+	redrawParentIfNeeded(r);
+}
+//-----------------------------------------------------------------------------
 void FrxConnection::resetBounds() {
 	if ( !src || !dst )
-		return;
+		return; 
 	sd::Rectangle r = getBounds();
 	sd::Point2D aLoc = src->getLocation();
 	boost::geometry::add_point(aLoc, src->getPivot());

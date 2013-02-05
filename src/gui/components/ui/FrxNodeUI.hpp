@@ -41,6 +41,9 @@ public:
 	typedef boost::weak_ptr<FrxNodeUI> WPtr;
 protected:
 	//-------------------------------------------------------------------------
+	virtual void clipCorona(sd::IDrawContext::Ptr cn, 
+		const sd::Point2D &loc, double coreRadius, double coronaRadius);
+	//-------------------------------------------------------------------------
 	virtual void installListeners(sdc::AComponent::Ptr c);
 	//-------------------------------------------------------------------------
 	virtual void installDefaults(sdc::AComponent::Ptr c);

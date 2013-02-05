@@ -70,8 +70,10 @@ protected:
 	virtual void postConstructor() {
 		Super::postConstructor();
 		ProcessorType::init( getPtr() );
-		setName(getProcessorBeautyName<ProcessorType>());
-		setName(getName()+"_"+sambag::com::toString(instances));
+		if (getName() == "") {
+			setName(getProcessorBeautyName<ProcessorType>());
+			setName(getName()+"_"+sambag::com::toString(instances));
+		}
 		setFlagText(getName());
 		setTooltipText( getProcessorTooltip<ProcessorType>() );
 	}

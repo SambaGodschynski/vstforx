@@ -43,7 +43,9 @@ protected:
 	//-------------------------------------------------------------------------
 	virtual void postConstructor() {
 		ControllerType::init( getPtr() );
-		setName(getName()+"_"+sambag::com::toString(instances));
+		if (getName() == "") {
+			setName(getName()+"_"+sambag::com::toString(instances));
+		}
 	}
 private:
 	//-------------------------------------------------------------------------

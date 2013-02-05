@@ -28,6 +28,15 @@ void FrxFlag::onComponentRemoving(void *src, const OnRemoving &ev) {
 	ev.view->remove(saftey);
 }
 //-----------------------------------------------------------------------------
+void FrxFlag::redraw() {
+	AContainer::Ptr c = getParent();
+	if (!c) {
+		return;
+	}
+	sd::Rectangle b = getBounds();
+	c->redraw(b);
+}
+//-----------------------------------------------------------------------------
 void FrxFlag::setTarget(FrxComponent::Ptr target) {
 	FrxComponent::Ptr old = this->target;
 	if (rmvConnection.connected()) {

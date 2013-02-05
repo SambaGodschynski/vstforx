@@ -35,7 +35,7 @@ void FrxHoverMouseListener::mouseMoved(const sdc::events::MouseEvent &ev) {
 	boost::geometry::subtract_point(distance, sd::Point2D(hover->getWidth()/2., 
 		hover->getHeight()/2.));
 	translateSelection(boost::shared_dynamic_cast<FrxHover>(hover), distance);
-	circ->redraw();
+	hover->redraw();
 }
 //-----------------------------------------------------------------------------
 void FrxHoverMouseListener::onMouse(void *src, const sdc::events::MouseEvent &ev)

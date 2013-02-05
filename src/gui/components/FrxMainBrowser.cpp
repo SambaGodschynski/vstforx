@@ -41,7 +41,7 @@ void FrxMainBrowser::installListeners() {
 //-----------------------------------------------------------------------------
 void FrxMainBrowser::createMainBtns() {
 	btnAdd = sdc::Button::create();
-	btnAdd->setText("add");
+	btnAdd->setText("add to scene");
 	getButtonPane()->add(btnAdd);
 	btnAdd->setEnabled(false);
 	

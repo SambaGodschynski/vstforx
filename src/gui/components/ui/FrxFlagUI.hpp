@@ -14,6 +14,8 @@
 #include <sambag/com/events/PropertyChanged.hpp>
 #include <sambag/disco/svg/graphicElements/Style.hpp>
 #include <gui/HandyNamespaces.hpp>
+#include <sambag/disco/IDrawContext.hpp>
+#include <sambag/disco/ISurface.hpp>
 
 namespace frx { namespace gui { namespace components { namespace ui {
 //=============================================================================
@@ -29,10 +31,12 @@ public:
 	typedef FrxComponentUI Super;
 protected:
 	//-------------------------------------------------------------------------
+	sd::ISurface::Ptr offSf;
+	//-------------------------------------------------------------------------
+	sd::IDrawContext::Ptr offCn;
+	//-------------------------------------------------------------------------
 	// missplaced location workaround
 	bool firstDraw;
-	//-------------------------------------------------------------------------
-	std::string upper, lower;
 	//-------------------------------------------------------------------------
 	sd::Point2D distance;
 	//-------------------------------------------------------------------------
@@ -41,6 +45,8 @@ protected:
 	sdsg::Style flagStyle;
 	//-------------------------------------------------------------------------
 	FrxFlag::WPtr _flag;
+	//-------------------------------------------------------------------------
+	sd::IDrawContext::Ptr getOffscreenContext();
 	//-------------------------------------------------------------------------
 	void postConstructor(Ptr self);
 	//-------------------------------------------------------------------------
@@ -60,7 +66,7 @@ protected:
 	//-------------------------------------------------------------------------
 	void installTargetListeners(FrxComponent::Ptr c);
 	//-------------------------------------------------------------------------
-	void updateText(const std::string &txt);
+	void updateText();
 	//-------------------------------------------------------------------------
 	void updateBounds(FrxFlag::Ptr flag);
 	//-------------------------------------------------------------------------

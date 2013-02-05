@@ -18,6 +18,14 @@ FrxNode::FrxNode() {
 	setName("FrxNode");
 }
 //-----------------------------------------------------------------------------
+void FrxNode::redraw() {
+	AContainer::Ptr c = getParent();
+	if (!c) {
+		return;
+	}
+	c->redraw(getBounds());
+}
+//-----------------------------------------------------------------------------
 sdcu::AComponentUIPtr FrxNode::createComponentUI(sdcu::ALookAndFeelPtr laf) const {
 	return laf->getUI<FrxNode>();
 }

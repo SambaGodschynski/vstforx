@@ -66,9 +66,9 @@ FrxProcessorNodePtr createProcessor(FrxCircuidViewPtr circ, int numInputs, int n
 			"could'nt create processor object.");
 	}
 	// flag
-	FrxFlag::Ptr flag = FrxFlag::create();
+	/*FrxFlag::Ptr flag = FrxFlag::create();
 	flag->setTarget(viewObj);
-	circ->add(flag, FrxCircuidView::Z_Flags, true);
+	circ->add(flag, FrxCircuidView::Z_Flags, true);*/
 	// register
 	registerProcessor(map, viewObj, mObj);
 	return viewObj;

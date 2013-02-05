@@ -58,7 +58,7 @@ protected:
 	FrxComponent();
 private:
 	//-------------------------------------------------------------------------
-	std::string flagTxt;
+	std::string uFlagTxt, lFlagTxt;
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
 	//-------------------------------------------------------------------------
@@ -77,13 +77,14 @@ private:
 		}
 		ar & boost::serialization::base_object<ViewObject>(*this); 
 		ar & tmpSelf;
-		ar & flagTxt;
+		ar & uFlagTxt;
+		ar & lFlagTxt;
 		std::string name = getName();
 		ar & name;
 		if (Archive::is_loading::value) {
 			self = tmpSelf;
-			postConstructor();
 			setName(name);
+			postConstructor();
 		}
 	}
 	//-------------------------------------------------------------------------
@@ -108,9 +109,43 @@ private:
 public:
 	//-------------------------------------------------------------------------
 	/**
-	 * @return representing string for @seeFrxFlag component.
+	 * Overridden for performance reasons.
+	 * See the <a href="#override">Implementation Note</a>
+	 * for more information.
 	 */
-	virtual const std::string & getFlagText() const { return flagTxt; }
+	virtual void validate() {}
+	//-------------------------------------------------------------------------
+	/**
+	 * Overridden for performance reasons.
+	 * See the <a href="#override">Implementation Note</a>
+	 * for more information.
+	 *
+	 * @since 1.5
+	 */
+	virtual void invalidate() {}
+	//-------------------------------------------------------------------------
+	/**
+	 * Overridden for performance reasons.
+	 * See the <a href="#override">Implementation Note</a>
+	 * for more information.
+	 *
+	 * @since 1.5
+	 */
+	//void redraw() {}
+	//-------------------------------------------------------------------------
+	/**
+	 * Overridden for performance reasons.
+	 * See the <a href="#override">Implementation Note</a>
+	 * for more information.
+	 */
+	virtual void revalidate() {}
+	//-------------------------------------------------------------------------
+	/**
+	 * Overridden for performance reasons.
+	 * See the <a href="#override">Implementation Note</a>
+	 * for more information.
+	 */
+	//void redraw(const Rectangle &r) {}
 	//-------------------------------------------------------------------------
 	/**
 	 * set representing string for @seeFrxFlag component.
@@ -118,6 +153,31 @@ public:
 	 * upperflagtext/lowerflagtext
 	 */
 	virtual void setFlagText(const std::string &txt);
+	//-------------------------------------------------------------------------
+	virtual void setUpperFlagText(const std::string &txt);
+	//-------------------------------------------------------------------------
+	virtual void setLowerFlagText(const std::string &txt);
+	//-------------------------------------------------------------------------
+	/**
+	 * @return representing string for @seeFrxFlag component.
+	 */
+	virtual std::string getFlagText() const { 
+		return uFlagTxt + "/" + lFlagTxt; 
+	}
+	//-------------------------------------------------------------------------
+	/**
+	 * @return representing string for @seeFrxFlag component.
+	 */
+	virtual const std::string & getUpperFlagText() const { 
+		return uFlagTxt; 
+	}
+	//-------------------------------------------------------------------------
+	/**
+	 * @return representing string for @seeFrxFlag component.
+	 */
+	virtual const std::string & getLowerFlagText() const { 
+		return lFlagTxt; 
+	}
 	//-------------------------------------------------------------------------
 	virtual void setBounds(const sd::Rectangle &b);
 	//-------------------------------------------------------------------------
