@@ -1,27 +1,7 @@
 <?php
 
 defined('_JEXEC') or die;
-
-
-function getDB() {
-	$db = JFactory::getDBO();
-	if ($db == null) {
-		throw new Exception("Database access failed.");	
-	}
-	return $db;
-}
-
-function processQuery($db, $query) {
-	$db->setQuery($query);
-	if ( !$db->query() ) {
-		throw new Exception( "Database query failed."); //  : " . $db->getErrorMsg() );	
-	}	
-	$res = $db->loadRowList();
-	if (!$res) {
-		return null;
-	}
-	return $res;
-}
+require_once 'database.php';
 
 function getPaymentStates($user) {
 	$db = getDB();
@@ -43,6 +23,9 @@ function getPaymentState($user, $item) {
 }
 
 function hasUserPaid($user) {
+	if ($user->guest == true) {
+		return -1;	
+	}
 	$paysts = getPaymentState($user, "VSTForx");
 	if (!$paysts) {
 		return 0;	

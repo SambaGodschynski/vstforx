@@ -19,6 +19,9 @@
 		<filename>mod_getvstforx.xml</filename>
 		<filename>paypalbtn.php</filename>
 		<filename>paymentDetails.php</filename>
+		<filename>download.php</filename>
+		<filename>database.php</filename>
+		<filename>redirect_download.php</filename>
 	</files>
 	<languages>
 	</languages>

@@ -8,8 +8,9 @@
 
 // no direct access
 defined('_JEXEC') or die;
-require'paymentDetails.php';
-require'paypalbtn.php';
+require_once'paymentDetails.php';
+require_once'paypalbtn.php';
+require_once'download.php';
 
 $user	= JFactory::getUser();
 if ($user.guest)
@@ -20,7 +21,6 @@ if ($user.guest)
 	<div class="alert alert-error">	
 		<p>You need to login first!</p>
 	</div>
-	<?php return; ?>
 <?php endif; ?>
 
 <?php								
@@ -36,14 +36,23 @@ if ($user.guest)
 	}
 ?>
 
-<?php 					 						/* user has'nt paid    */ 
+<?php
 	if ($userpaid == 0) {
 		showPaypalBtn($user);
-		return;	
+	} elseif($userpaid == 1) {
+		showDownloads($user);
 	}
-?>		
-<?php if ($userpaid==1) : /* user has paid*/ ?>		
-	<p>download</p>
-<?php endif; ?>
+?>
+<br/>
+<div>
+  <p><strong>-OR-</strong></p>
+  <p>
+  Download the old Beta version to get the idea.
+  </p>
+<?php
+	showBetaDownloads();
+?>
+</div>
+
 
 
