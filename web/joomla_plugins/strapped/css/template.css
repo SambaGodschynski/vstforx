@@ -1,6 +1,6 @@
 /* CSS Document */
 body {
-	padding-top:40px;
+	padding-top:0px;
 }
 .brand > i {
 	margin-top:5px;
@@ -106,11 +106,6 @@ body.item-524 #header .custom p {
 body.item-524 #breadcrumbs .custom ul {
 	margin-bottom:0;
 }
-
-.hero-unit {
-	background-image:url(../images/bk.png);
-}
-
 body.item-525 #below .custom {
 	background:#eee;
 	padding:10px;

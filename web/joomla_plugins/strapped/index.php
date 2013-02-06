@@ -135,32 +135,38 @@ endif;
 
 </head>
 <body class="<?php echo $option . " " . $view . " " . $layout . " " . $task . " item-" . $itemid;?> <?php if($site_home){ echo "home";}?> <?php echo $body_font_class.' '.$heading_font_class.' '.$browser_classes;?>" data-spy="scroll" data-target=".subnav" data-offset="50" data-redering="true">
-<!--pre-navbar 
-    ================================================== -->
-<?php if($this->countModules('top-menu')) : ?>
-	<jdoc:include type="modules" name="pre-navbar" style="none" />
-<?php endif; ?>
 <!-- Navbar
     ================================================== -->
-<div class="navbar navbar-fixed-top">
-	<div class="navbar-inner">
-		<div class="container<?php echo $template_width; ?>"> 
-			<?php if($this->countModules('top-menu')) : ?>
-			<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> 
-				<span class="icon-bar"></span> 
-				<span class="icon-bar"></span> 
-				<span class="icon-bar"></span> 
-			</a> 
-			<?php endif; ?>
-			<?php echo $custom_logo; ?>
-			<?php if($this->countModules('top-menu')) : ?>
-			<div class="nav-collapse">
-				<jdoc:include type="modules" name="top-menu" style="none" />
+<div class="navbar-wrapper">
+	<!-- Wrap the .navbar in .container to center it within the absolutely positioned parent. -->
+	<div class="container">
+		<div class="navbar navbar-inverse">
+			<div class="navbar-inner">
+				<div class="container<?php echo $template_width; ?>"> 
+					<?php if($this->countModules('top-menu')) : ?>
+					<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> 
+						<span class="icon-bar"></span> 
+						<span class="icon-bar"></span> 
+						<span class="icon-bar"></span> 
+					</a>
+					<?php endif; ?>
+					<?php echo $custom_logo; ?>
+					<?php if($this->countModules('top-menu')) : ?>
+					<div class="nav-collapse">
+						<jdoc:include type="modules" name="top-menu" style="none" />
+					</div>
+					<?php endif; ?>
+				</div>
 			</div>
-			<?php endif; ?>
 		</div>
 	</div>
 </div>
+<!--post-navbar 
+    ================================================== -->
+<?php if($this->countModules('top-menu')) : ?>
+	<jdoc:include type="modules" name="post-navbar" style="none" />
+<?php endif; ?>
+
 <?php if(($this->countModules('header') || $this->countModules('sub-nav'))) : ?>
 <!-- Masthead
 ================================================== -->

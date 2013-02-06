@@ -28,7 +28,7 @@
 		<folder>php</folder>
 	</files>
 	<positions>
-		<position>pre-navbar</position>
+		<position>post-navbar</position>
 		<position>above</position>
 		<position>above-article</position>
 		<position>banner</position>
