@@ -29,14 +29,14 @@ if ($p->validate_ipn()) {
 				`transaction_id` ,
 				`email` ,
 				`amount` ,
-				`item`,
+				`productid`,
 				`rquest`
 				) VALUES (
 					".(int)$p->ipn_data['custom'].",
 					'".esc($p->ipn_data['txn_id'], $link)."',
 					'".esc($p->ipn_data['payer_email'], $link)."',
 					".(float)$amount.",
-					'".esc($p->ipn_data['item_name'], $link)."',
+					'".esc($p->ipn_data['item_number'], $link)."',
 					'".esc(http_build_query($_POST), $link)."'
 				)");
 

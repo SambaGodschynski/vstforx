@@ -8,51 +8,36 @@
 
 // no direct access
 defined('_JEXEC') or die;
-require_once'paymentDetails.php';
-require_once'paypalbtn.php';
 require_once'download.php';
+require_once'payment.php';
 
-$user	= JFactory::getUser();
-if ($user.guest)
-
+try {
+	$user	= JFactory::getUser();
+	if (!showShop($user)) {
 ?>
-
-<?php if ($user->guest == true) : /*user isn't logged in*/ ?>
-	<div class="alert alert-error">	
-		<p>You need to login first!</p>
-	</div>
-<?php endif; ?>
-
-<?php								
-	try {
-		$userpaid = hasUserPaid($user); 
-	} catch (Exception $e) {
-		?>
-		<div class="alert alert-error">
-		<h4>Critical Error:</h4> <?php echo($e->getMessage()); ?>		
+		<div class="alert alert-warning">
+		<strong>Login needed!</strong>
+		<p>you need to login in order to purchase VSTForx.</p>		
 		</div>
-		<?php
-		$userpaid = -1;
-	}
+		<br/>
+		<p><strong>- OR -</strong></p>
+		<br/>
+		<p>Download the outdated beta version for free.</p>
+<?php	
+	} else {
 ?>
-
+		<h4>Your Downloads</h4>
 <?php
-	if ($userpaid == 0) {
-		showPaypalBtn($user);
-	} elseif($userpaid == 1) {
-		showDownloads($user);
 	}
+	showDownloads($user);
+} catch (Exception $e) {
+	?>
+	<div class="alert alert-error">
+	<h4>Critical Error:</h4> <?php echo($e->getMessage()); ?>		
+	</div>
+	<?php
+}
 ?>
-<br/>
-<div>
-  <p><strong>-OR-</strong></p>
-  <p>
-  Download the old Beta version to get the idea.
-  </p>
-<?php
-	showBetaDownloads();
-?>
-</div>
 
 
 

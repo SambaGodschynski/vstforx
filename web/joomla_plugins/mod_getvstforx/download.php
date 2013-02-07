@@ -2,64 +2,66 @@
 
 defined('_JEXEC') or die;
 require_once 'database.php';
+require_once 'paypalbtn.php';
 
 /**
  * @param 2=old beta
  *        3=VSTForx
  */
-function getDownloads($productid) {
+function getDownloads($user) {
 	$db = getDB();
-	$query = "
-		SELECT frx_downloads.name, 
-			   frx_product_os.name, 
-			   frx_downloads.date,
-			   frx_downloads.filename,
-			   frx_download_notes.text
+	$userid = 0;
+	$default_user = getDefaultUser();
+	if (!$user->guest) {
+		$userid = $user->id;	
+	}
+	$query = "SELECT frx_products.name AS pr_name,
+              frx_downloads.name AS version, 
+			  frx_product_os.name AS os, 
+			  frx_downloads.date,
+			  frx_downloads.filename,
+			  frx_download_notes.text AS notes
 		FROM frx_downloads
-		JOIN frx_product_os      ON frx_product_os.id = frx_downloads.osid
-		JOIN frx_download_notes  ON frx_downloads.noteid = frx_download_notes.id
-		WHERE productid = ". $db->quote($productid) ."
+		JOIN frx_products       ON frx_products.id = frx_downloads.productid
+		JOIN frx_product_os     ON frx_product_os.id = frx_downloads.osid
+		JOIN frx_download_notes ON frx_downloads.noteid = frx_download_notes.id
+		WHERE productid IN (
+			SELECT productid FROM frx_selled WHERE frx_selled.juser=". $db->quote($userid) ."		
+			OR frx_selled.juser=". $db->quote($default_user) ."
+		)
 		ORDER BY frx_downloads.date DESC;
 	";
 	return processQuery($db, $query);
-
-	/*
-		SELECT frx_downloads.name, 
-			   frx_product_os.name, 
-			   frx_downloads.date,
-			   frx_downloads.filename,
-			   frx_download_notes.text
-		FROM frx_downloads
-		JOIN frx_product_os      ON frx_product_os.id = frx_downloads.osid
-		JOIN frx_download_notes ON frx_downloads.noteid = frx_download_notes.id
-		WHERE productid = 2
-		ORDER BY frx_downloads.date DESC;
-	*/
 }
 
-function showDownloadsImpl($prodid) {
-		$res = getDownloads($prodid);
+function showDownloadsImpl($user) {
+		$res = getDownloads($user);
 ?>
-	<form class="form-horizontal">
-		<fieldset>
-			<legend>Select your version:</legend>
-			<select>
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>Product</th>
+				<th>Version</th>
+				<th>Os</th>
+			</tr>
+		</thead>
 <?php foreach($res as $x) { ?>
-				<option><?php echo($x[0] . "  | " . $x[1])?></option>
+		<tr>			
+ 			<td><?php echo($x[0])?></td>
+			<td><?php echo($x[1])?></td> 
+			<td><?php echo($x[2])?></td>
+			<td>
+				<a href="#" class="btn btn-success">Download</a> 
+			</td>
+		</tr>
 <?php } ?>
-			</select>
-			<button type="submit" class="btn btn-success">Download</button>
-		</fieldset>
-	</form>
+			
+	</table>
 <?php
 }
 
 
 function showDownloads($user) {
-	showDownloadsImpl(3);
-}
-
-function showBetaDownloads() {
-	showDownloadsImpl(2);
+	showDownloadsImpl($user);
 }
 ?>
