@@ -22,7 +22,8 @@ function processQuery($db, $query) {
 	return $res;
 }
 
-function getDefaultUser() {
+function getDefaultUser() { 
+	/*!hardcoded in frx_redirect_download*/
 	return 0;
 }
 

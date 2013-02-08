@@ -19,7 +19,7 @@ function getDownloads($user) {
               frx_downloads.name AS version, 
 			  frx_product_os.name AS os, 
 			  frx_downloads.date,
-			  frx_downloads.filename,
+			  frx_downloads.id,
 			  frx_download_notes.text AS notes
 		FROM frx_downloads
 		JOIN frx_products       ON frx_products.id = frx_downloads.productid
@@ -51,7 +51,7 @@ function showDownloadsImpl($user) {
 			<td><?php echo($x[1])?></td> 
 			<td><?php echo($x[2])?></td>
 			<td>
-				<a href="#" class="btn btn-success">Download</a> 
+				<a href="frx_redirect_download.php?dst=<?php echo($x[4]) ?>" class="btn btn-success">Download</a> 
 			</td>
 		</tr>
 <?php } ?>

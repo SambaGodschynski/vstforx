@@ -11,6 +11,27 @@ defined('_JEXEC') or die;
 require_once'download.php';
 require_once'payment.php';
 
+function handleTransactionSucceed() {
+?>
+	<div class="alert alert-success">
+		<strong>Thank you</strong> for purchase.
+	</div>
+
+<?php
+}
+
+
+function checkPageSource() {
+	$val = $_GET["src"];
+	switch ($val) {
+		case "ppsc": /*paypal succeed*/
+			handleTransactionSucceed();	
+			break;
+	}
+}
+
+checkPageSource();
+
 try {
 	$user	= JFactory::getUser();
 	if (!showShop($user)) {
