@@ -143,7 +143,7 @@ void BgPane::postConstructor() {
 //-----------------------------------------------------------------------------
 const std::string FrxCircuidView::PROPERTY_ZORDER = "z_order";
 //-----------------------------------------------------------------------------
-const float FrxCircuidView::Z_Flags = 1.f;
+const float FrxCircuidView::Z_Flags = 6.f;
 //-----------------------------------------------------------------------------
 const float FrxCircuidView::Z_Wires = 5.f;
 //-----------------------------------------------------------------------------
