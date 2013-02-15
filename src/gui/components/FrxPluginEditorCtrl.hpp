@@ -13,6 +13,7 @@
 #include "IFrxProcessorEditorCtrl.hpp"
 #include <processing/IPluginAdapter.hpp>
 #include <sambag/disco/components/Timer.hpp>
+#include <sambag/com/ArithmeticWrapper.hpp>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -38,6 +39,12 @@ protected:
 	//-------------------------------------------------------------------------
 	sdc::Timer::Ptr idleTimer;
 private:
+	//-------------------------------------------------------------------------
+	/**
+	 * need to lock closeWindow() against onIdleTimer().
+	 * Window::isOpen() is to unsafe for that job (toolkit timer related).
+	 */
+	sambag::com::ArithmeticWrapper<bool> __isOpen;
 public:
 	//-------------------------------------------------------------------------
 	void onIdleTimer(void *src, const sdc::TimerEvent &ev);

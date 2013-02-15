@@ -13,7 +13,8 @@
 #include <gui/components/FrxComponent.hpp>
 #include <gui/components/Forward.hpp>
 #include "FrxComponentUI.hpp"
-#include <sambag/disco/components/Timer.hpp>
+#include <sambag/disco/components/Animation.hpp>
+#include <sambag/disco/components/Tweens.hpp>
 #include <sambag/disco/components/events/MouseEvent.hpp>
 #include <sambag/disco/svg/graphicElements/Line.hpp>
 #include <sambag/disco/components/ComponentWrapper.hpp>
@@ -83,8 +84,6 @@ protected:
 	//-------------------------------------------------------------------------
 	virtual void use(const sdc::events::MouseEvent &ev) {}
 	//-------------------------------------------------------------------------
-	sambag::com::Number coronaAlpha;
-	//-------------------------------------------------------------------------
 	typedef boost::tuple<FrxNodePtr, FrxNodePtr, sd::Point2D> ConnectingComponents;
 	//-------------------------------------------------------------------------
 	ConnectingComponents getConnectingComponents(const sdc::events::MouseEvent &ev);
@@ -114,10 +113,37 @@ private:
 	//-------------------------------------------------------------------------
 	sambag::com::ArithmeticWrapper<bool> inside;
 	//-------------------------------------------------------------------------
-	bool fadeIn;
-	//-------------------------------------------------------------------------
-	sdc::Timer::Ptr fadeTimer;
+	template <class T>
+	struct CoronaAlpha {
+		T alpha;
+		sdc::AComponent::WPtr _component;
+		void update(const T& val){
+			sdc::AComponent::Ptr component = _component.lock();
+			if (!component) {
+				return;
+			}
+			alpha = val;
+			component->redraw();
+		}
+		CoronaAlpha() : alpha( T() ) {}
+		void setComponent(sdc::AComponent::Ptr c) {
+			_component = c;
+		}
+		sdc::AComponent::Ptr getComponent() const { 
+			return component.lock(); 
+		}
+	};
+	typedef sdc::Animation<double, sdc::defaultTweens::DynamicTween, CoronaAlpha>
+		FadeAnimation; 
+	FadeAnimation::Ptr fadeAnimation;
 public:
+	//-------------------------------------------------------------------------
+	double getCoronaAlpha() const {
+		if (!fadeAnimation) {
+			return 0.;
+		}
+		return fadeAnimation->alpha;
+	}
 	//-------------------------------------------------------------------------
 	/**
 	 * Returns true if the specified x,y location

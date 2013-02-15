@@ -23,11 +23,13 @@ void FrxPluginEditorCtrl::open(sdc::WindowPtr win) {
 		win
 	);
 	idleTimer->start();
+	__isOpen = true;
 }
 //-----------------------------------------------------------------------------
 void FrxPluginEditorCtrl::close(sdc::WindowPtr win) {
 	if (!plugin)
 		return;
+	__isOpen = false;
 	plugin->closeEditor(win);
 	idleTimer->stop();
 }
@@ -37,7 +39,7 @@ void FrxPluginEditorCtrl::setPlugin(Plugin::Ptr plugin) {
 }
 //-----------------------------------------------------------------------------
 void FrxPluginEditorCtrl::onIdleTimer(void *src, const sdc::TimerEvent &ev) {
-	if (!plugin)
+	if (!plugin || !__isOpen)
 		return;
 	plugin->onEditorIdle();
 }

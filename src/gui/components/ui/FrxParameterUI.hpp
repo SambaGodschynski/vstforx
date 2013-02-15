@@ -175,8 +175,8 @@ void FrxParameterUI<PT>::drawCorona(sd::IDrawContext::Ptr cn,
 		sdcu::getUIPropertyCached<Corona01PropertyTag>(sd::ColorRGBA());
 	sd::ColorRGBA coronaCol02 = 
 		sdcu::getUIPropertyCached<Corona02PropertyTag>(sd::ColorRGBA());
-	coronaCol01.setA(coronaAlpha);
-	coronaCol02.setA(coronaAlpha);
+	coronaCol01.setA(getCoronaAlpha());
+	coronaCol02.setA(getCoronaAlpha());
 
 	sd::Point2D loc = parameter->getPivot();
 	double rCore = getCoreRadius(c), rCorona = getCoronaRadius(c);

@@ -163,6 +163,9 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("ProcessorIO.stateActiveRadius",  RADIUS_SMALL * 1.7);
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	m.putProperty("FrxConnection.hitDistance", Coordinate(10.));
+	m.putProperty("FrxNodeCorona.fadeAnimation.duration", (long)150);
+	m.putProperty("FrxNodeCorona.fadeAnimation.refreshRate", (long)15);
+	m.putProperty("FrxNodeCorona.fadeAnimation.tweenType", std::string("lin"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<colors
 	m.putProperty("FrxNodeCorona.color",  HtmlColors::getColor("yellow"));
 	m.putProperty("ProcessorInput.bgColor", HtmlColors::getColor("white"));

@@ -1,29 +1,29 @@
 /**
  * resources.rc
  *
- *  Created on: Fri Jan 18 21:00:49 2013
+ *  Created on: Fri Feb  1 13:12:20 2013
  *      Author: createResources.py
  */
 
-100	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/adsr_trigger.png"
-110	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/iplug.png"
-120	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/bkgrey.png"
-130	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/entry.png"
-140	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/knob.png"
-150	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/processor.png"
-160	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/step_adapter.png"
-170	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/plugin.png"
-180	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/peak_tracker.png"
-190	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/vstPlugNode.png"
-200	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/e.png"
-210	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/oSwitch.png"
-220	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/disco-floor.png"
-230	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/warning_icon.png"
-240	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/midiReceiver.png"
-250	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/plus.png"
-260	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/inf_icon.png"
-270	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/volume_node.png"
-280	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/channel_split.png"
-290	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/exit.png"
-300	SAMBAG_CUSTOM	"c:/Eigene Dateien/Eigene Progs/VST/Apps/PPI/src/images/folder.png"
+100	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/adsr_trigger.png"
+110	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/iplug.png"
+120	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/bkgrey.png"
+130	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/entry.png"
+140	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/knob.png"
+150	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/processor.png"
+160	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/step_adapter.png"
+170	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/plugin.png"
+180	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/peak_tracker.png"
+190	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/vstPlugNode.png"
+200	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/e.png"
+210	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/oSwitch.png"
+220	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/disco-floor.png"
+230	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/warning_icon.png"
+240	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/midiReceiver.png"
+250	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/plus.png"
+260	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/inf_icon.png"
+270	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/volume_node.png"
+280	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/channel_split.png"
+290	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/exit.png"
+300	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/folder.png"
 
