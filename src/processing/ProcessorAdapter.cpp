@@ -12,6 +12,7 @@
 #include <boost/foreach.hpp>
 #include "MidiEventProcessor.h"
 #include <algorithm>
+#include "IModelController.hpp"
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -232,18 +233,18 @@ getParameters(const ParameterGroupKey &key, Parameters &out) const
 	}
 }
 //-----------------------------------------------------------------------------
-bool ProcessorAdapter::requestRemove(ModelObject::Ptr obj) {
+bool ProcessorAdapter::requestRemove() {
 	bool res = true;
 	BOOST_FOREACH(ModelObject::Ptr m, inputs) {
-		res &= m->requestRemove(m);
+		res &= m->requestRemove();
 	}
 	BOOST_FOREACH(ModelObject::Ptr m, outputs) {
-		res &= m->requestRemove(m);
+		res &= m->requestRemove();
 	}
 	BOOST_FOREACH(const ParameterGroupMap::value_type &v, parameters) {
-		res &= v.second->requestRemove(v.second);
+		res &= v.second->requestRemove();
 	}
-	return res && Super::requestRemove(obj);
+	return res && Super::requestRemove();
 }
 //-----------------------------------------------------------------------------
 ProcessorAdapter::IOChangedEventSender::Connection ProcessorAdapter::
@@ -278,5 +279,9 @@ addTrackedPropertyChangedListener(const PropertyChangedSender::EventFunction & f
 	return processor->sce::EventSender<PropertyChangedEvent>::addTrackedEventListener(
 		f, holder
 	);
+}
+//-----------------------------------------------------------------------------
+bool ProcessorAdapter::removeImpl(IModelControllerPtr ctrl) {
+	return ctrl->removeProcessor(getPtr());
 }
 }} // namespace(s)

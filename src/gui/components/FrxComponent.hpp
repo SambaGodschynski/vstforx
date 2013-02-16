@@ -50,7 +50,9 @@ public:
 	virtual sdc::ui::AComponentUIPtr 
 	createComponentUI(sdc::ui::ALookAndFeelPtr laf) const;
 	//-------------------------------------------------------------------------
-	static const std::string PROPERTY_FLAG_TXT;
+	static const std::string PROPERTY_UPFLAG_TXT;
+	//-------------------------------------------------------------------------
+	static const std::string PROPERTY_LOFLAG_TXT;
 protected:
 	//-------------------------------------------------------------------------
 	virtual void postConstructor();
@@ -147,23 +149,9 @@ public:
 	 */
 	//void redraw(const Rectangle &r) {}
 	//-------------------------------------------------------------------------
-	/**
-	 * set representing string for @seeFrxFlag component.
-	 * upper and lower flag text is seperated by '/':
-	 * upperflagtext/lowerflagtext
-	 */
-	virtual void setFlagText(const std::string &txt);
-	//-------------------------------------------------------------------------
 	virtual void setUpperFlagText(const std::string &txt);
 	//-------------------------------------------------------------------------
 	virtual void setLowerFlagText(const std::string &txt);
-	//-------------------------------------------------------------------------
-	/**
-	 * @return representing string for @seeFrxFlag component.
-	 */
-	virtual std::string getFlagText() const { 
-		return uFlagTxt + "/" + lFlagTxt; 
-	}
 	//-------------------------------------------------------------------------
 	/**
 	 * @return representing string for @seeFrxFlag component.

@@ -107,7 +107,7 @@ public:
 	//-------------------------------------------------------------------------
 	virtual IParameter::Ptr createFreeParameter() = 0;
 	//-------------------------------------------------------------------------
-	virtual bool removeFreeParameter(IParameter::Ptr p) = 0;
+	virtual bool removeParameter(IParameter::Ptr p) = 0;
 	//-------------------------------------------------------------------------
 	virtual IParameter::Ptr getHostParameter(int id) = 0;
 	//-------------------------------------------------------------------------

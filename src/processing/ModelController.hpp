@@ -133,7 +133,7 @@ public:
 	//-------------------------------------------------------------------------
 	virtual IParameter::Ptr getHostParameter(int id);
 	//-------------------------------------------------------------------------
-	virtual bool removeFreeParameter(IParameter::Ptr p);
+	virtual bool removeParameter(IParameter::Ptr p);
 	//-------------------------------------------------------------------------
 	virtual int getNumHostParameter();
 	//-------------------------------------------------------------------------
@@ -146,17 +146,6 @@ public:
 	virtual void getParameterCnOpTypeIds(ParameterCnOpTypeIds &out) const;
 	//-------------------------------------------------------------------------
 	virtual void addParameterCnOp(IConnection::Ptr cn, const ParameterCnOpTypeId &opId);
-	///////////////////////////////////////////////////////////////////////////
-	// specific impl.
-	//-------------------------------------------------------------------------
-	bool excuteConnectionRemoveRequest(ModelObject::Ptr obj, 
-		boost::weak_ptr<IConnection> cn);
-	//-------------------------------------------------------------------------
-	bool excuteProcessorRemoveRequest(ModelObject::Ptr obj, 
-		boost::weak_ptr<IProcessor> cn);
-	//-------------------------------------------------------------------------
-	bool excuteParameterRemoveRequest(ModelObject::Ptr obj, 
-		boost::weak_ptr<IParameter> cn);
 }; // ModelController
 }} // namespace(s)
 

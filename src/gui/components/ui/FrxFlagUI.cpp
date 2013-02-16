@@ -120,7 +120,9 @@ void FrxFlagUI::onTargetPropertyChanged(void *, const sce::PropertyChanged &ev)
 		updateBounds(flag);
 		return;
 	}
-	if (ev.getPropertyName() == FrxComponent::PROPERTY_FLAG_TXT) {
+	if (ev.getPropertyName() == FrxComponent::PROPERTY_UPFLAG_TXT ||
+		ev.getPropertyName() == FrxComponent::PROPERTY_LOFLAG_TXT) 
+	{
 		std::string old, _new;
 		ev.getOldValue(old);
 		ev.getNewValue(_new);

@@ -74,7 +74,7 @@ protected:
 			setName(getProcessorBeautyName<ProcessorType>());
 			setName(getName()+"_"+sambag::com::toString(instances));
 		}
-		setFlagText(getName());
+		setUpperFlagText(getName());
 		setTooltipText( getProcessorTooltip<ProcessorType>() );
 	}
 private:

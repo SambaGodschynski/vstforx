@@ -31,6 +31,10 @@ protected:
 	NodeAdapter(){}
 	//-------------------------------------------------------------------------
 	Adaptee::Ptr node;
+	//-------------------------------------------------------------------------
+	virtual bool removeImpl(IModelControllerPtr ctrl) {
+		return true;
+	}
 private:
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
@@ -44,9 +48,14 @@ private:
 	}
 public:
 	//-------------------------------------------------------------------------
+	Ptr getPtr() const {
+		return boost::shared_dynamic_cast<NodeAdapter>( self.lock() );
+	}
+	//-------------------------------------------------------------------------
 	static Ptr create(Adaptee::Ptr a = Adaptee::Ptr()) {
 		Ptr res(new NodeAdapter());
 		res->setAdaptee(a);
+		res->self = res;
 		return res;
 	}
 	//-------------------------------------------------------------------------

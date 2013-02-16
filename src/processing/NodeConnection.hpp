@@ -27,7 +27,10 @@ public:
 	typedef boost::shared_ptr<NodeConnection> Ptr;
 	//-------------------------------------------------------------------------
 protected:
+	//-------------------------------------------------------------------------
 	NodeConnection() {}
+	//-------------------------------------------------------------------------
+	virtual bool removeImpl(IModelControllerPtr ctrl);
 private:
 	//-------------------------------------------------------------------------
 	NodeAdapter::Ptr src;
@@ -48,8 +51,14 @@ private:
 	}
 public:
 	//-------------------------------------------------------------------------
+	Ptr getPtr() const {
+		return boost::shared_dynamic_cast<NodeConnection>( self.lock() );
+	}
+	//-------------------------------------------------------------------------
 	static Ptr create() {
-		return Ptr(new NodeConnection());
+		Ptr res(new NodeConnection());
+		res->self = res;
+		return res;
 	}
 	//-------------------------------------------------------------------------
 	virtual ModelObject::Ptr getSource() const {

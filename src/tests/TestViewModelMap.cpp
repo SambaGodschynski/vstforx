@@ -26,6 +26,9 @@ struct TestClass : public Base {
 	virtual std::string getObjectName(void) const {
 		return "";
 	}
+	virtual bool removeImpl(frx::processing::IModelControllerPtr ctrl) {
+		return true;
+	}
 	static Ptr create(int id=0) {
 		Ptr res(new TestClass());
 		res->id = id;

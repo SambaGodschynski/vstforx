@@ -6,11 +6,15 @@
  */
 
 #include "ParameterAdapter.hpp"
+#include "IModelController.hpp"
 
 namespace frx { namespace processing {
 //=============================================================================
 //  Class ParameterAdapter
 //=============================================================================
 //-----------------------------------------------------------------------------
+bool ParameterAdapter::removeImpl(IModelControllerPtr ctrl) {
+	return ctrl->removeParameter(getPtr());
+}
 
 }} // namespace(s)

@@ -28,7 +28,10 @@ public:
 	//-------------------------------------------------------------------------
 	typedef ::processing::parameter::ConnectionOperator ConnectionOperator;
 protected:
+	//-------------------------------------------------------------------------
 	ParameterConnection() {}
+	//-------------------------------------------------------------------------
+	virtual bool removeImpl(IModelControllerPtr ctrl);
 private:
 	//-------------------------------------------------------------------------
 	ParameterAdapter::Ptr src;
@@ -54,12 +57,18 @@ private:
 	}
 public:
 	//-------------------------------------------------------------------------
+	Ptr getPtr() const {
+		return boost::shared_dynamic_cast<ParameterConnection>( self.lock() );
+	}
+	//-------------------------------------------------------------------------
 	virtual ~ParameterConnection() {
 	
 	}
 	//-------------------------------------------------------------------------
 	static Ptr create() {
-		return Ptr(new ParameterConnection());
+		Ptr res(new ParameterConnection());
+		res->self = res;
+		return res;
 	}
 	//-------------------------------------------------------------------------
 	virtual ModelObject::Ptr getSource() const {
@@ -100,7 +109,7 @@ public:
 	//-------------------------------------------------------------------------
 	virtual void getConnectionOps(ParameterCnOpTypeIds &out);
 	//-------------------------------------------------------------------------
-	virtual bool requestRemove(ModelObject::Ptr obj);
+	virtual bool requestRemove();
 }; // ParameterConnection
 }} // namespace(s)
 

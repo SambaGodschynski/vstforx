@@ -135,7 +135,8 @@ struct RefreshParameter {
 		}
 		ignoreFrxParameterEvents(vp, true);
 		vp->getRangeModel()->setValue(p->getValue());
-		vp->setFlagText( p->getName() + "/" + p->getDisplay() );
+		vp->setUpperFlagText(p->getName());
+		vp->setLowerFlagText(p->getDisplay());
 		ignoreFrxParameterEvents(vp, false);
 	}
 };
@@ -533,7 +534,8 @@ fgc::FrxComponentPtr FrxControl::_addRelatedKnobToView(fgc::FrxCircuidViewPtr vi
 	FrxFlag::Ptr flag = FrxFlag::create();
 	flag->setTarget(knob);
 	view->add(flag, FrxCircuidView::Z_Flags, true);
-	knob->setFlagText( par->getName() + "/" + par->getDisplay() );
+	knob->setUpperFlagText(par->getName());
+	knob->setLowerFlagText(par->getDisplay());
 	knob->setName( par->getName() );
 	// register knob
 	if (!map->registerObjects(knob, par))
@@ -752,7 +754,7 @@ void FrxControl::removeComponent(FrxCircuidViewPtr _view, FrxComponentPtr _c)
 	boost::tie(ctrl, map) = getControllerAndMap(view);
 	frx::processing::ModelObject::Ptr mObj = map->getModelObject(c);
 	if (mObj) {
-		mObj->requestRemove(mObj);
+		mObj->remove(ctrl);
 	}
 
 	map->remove(c, mObj);
