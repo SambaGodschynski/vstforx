@@ -19,6 +19,9 @@ FrxComponentUI::FrxComponentUI() {
 
 }
 //----------------------------------------------------------------------------
+FrxComponentUI::~FrxComponentUI() {
+}
+//----------------------------------------------------------------------------
 void FrxComponentUI::postConstructor(FrxComponentUI::Ptr self) {
 	this->self = self;
 }

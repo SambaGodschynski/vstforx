@@ -36,6 +36,8 @@
 #include <gui/components/FrxTooltipManager.hpp>
 #include <gui/components/FrxFlag.hpp>
 #include <gui/components/ui/FrxFlagUI.hpp>
+#include <sambag/disco/components/Knob.hpp>
+#include <gui/components/ui/FrxKnobUI.hpp>
 
 #include <sambag/disco/FileResourceManager.hpp>
 #include <sambag/disco/IPattern.hpp>
@@ -89,6 +91,7 @@ void FrxLookAndFeel::installComponents() {
 	// parameter components
 	registerComponentUI<fgc::FrxStdKnob, 
 		FrxParameterUI<FrxStdKnob::ControllerType> >();
+	registerComponentUI<sdc::Knob, FrxKnobUI<sdc::Knob::Model> >();
 	// connections
 	registerComponentUI<fgc::IOCn, 
 		fgcu::FrxConnectionUI<fgc::IOCn::ConnectionType> >();

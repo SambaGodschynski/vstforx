@@ -39,6 +39,9 @@ void FrxComponent::postConstructor() {
 FrxComponent::FrxComponent() {
 	setName("");
 }
+//----------------------------------------------------------------------------
+FrxComponent::~FrxComponent() {
+}
 //-----------------------------------------------------------------------------
 sdc::ui::AComponentUIPtr 
 FrxComponent::createComponentUI(sdc::ui::ALookAndFeelPtr laf) const 

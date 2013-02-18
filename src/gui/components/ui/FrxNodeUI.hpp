@@ -89,6 +89,8 @@ protected:
 	ConnectingComponents getConnectingComponents(const sdc::events::MouseEvent &ev);
 public:
 	//-------------------------------------------------------------------------
+	virtual ~FrxNodeUI();
+	//-------------------------------------------------------------------------
 	// MouseEvents
 	void mousePressed(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------

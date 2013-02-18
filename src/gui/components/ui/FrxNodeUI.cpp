@@ -318,6 +318,9 @@ void FrxNodeUI::mouseReleased(const sdc::events::MouseEvent &ev)  {
 	context = NONE;
 }
 //-----------------------------------------------------------------------------
+FrxNodeUI::~FrxNodeUI() {
+}
+//-----------------------------------------------------------------------------
 void FrxNodeUI::mouseEntered(const sdc::events::MouseEvent &ev)  {
 	if (inside)
 		return;

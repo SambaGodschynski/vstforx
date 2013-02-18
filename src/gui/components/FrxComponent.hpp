@@ -109,6 +109,7 @@ private:
 		boost::serialization::split_member(ar, *this, version);
 	}
 public:
+	virtual ~FrxComponent();
 	//-------------------------------------------------------------------------
 	/**
 	 * Overridden for performance reasons.

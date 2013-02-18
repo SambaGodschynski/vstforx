@@ -50,6 +50,8 @@ protected:
 	virtual void onKnobStateChanged(void *src, const KnobStateChanged &ev);
 	//-------------------------------------------------------------------------
 	FrxParameterUI(){}
+	//-------------------------------------------------------------------------
+	virtual void installListeners(sdc::AComponent::Ptr c);
 private:
 	//-------------------------------------------------------------------------
 	typedef typename ParameterType::Model Model;
@@ -132,6 +134,11 @@ void FrxParameterUI<PT>::onKnobStateChanged(void *src, const KnobStateChanged &e
 template <class PT>
 void FrxParameterUI<PT>::installUI(sdc::AComponentPtr c) {
 	Super::installUI(c);
+}
+//-----------------------------------------------------------------------------
+template <class PT>
+void FrxParameterUI<PT>::installListeners(sdc::AComponentPtr c) {
+	Super::installListeners(c);
 	FrxParameter::Ptr parameter = boost::shared_dynamic_cast<FrxParameter>(c);
 	SAMBAG_ASSERT(parameter);
 	_parameter = parameter; 
@@ -151,7 +158,6 @@ void FrxParameterUI<PT>::installUI(sdc::AComponentPtr c) {
 		boost::bind(&ThisClass::onKnobStateChanged, this, _1, _2),
 		getPtr()
 	);
-
 }
 //-----------------------------------------------------------------------------
 template <class PT>
@@ -227,16 +233,16 @@ void FrxParameterUI<PT>::mouseReleased(const sdc::events::MouseEvent &ev) {
 //-----------------------------------------------------------------------------
 template <class PT>
 void FrxParameterUI<PT>::mouseEntered(const sdc::events::MouseEvent &ev) {
-	sdc::events::MouseEvent nEv = ev;
-	nEv.updateSoure(ev.getSource()->getParent());
-	Super::mouseEntered(nEv);
+	/*sdc::events::MouseEvent nEv = ev;
+	nEv.updateSoure(ev.getSource()->getParent());*/
+	Super::mouseEntered(ev);
 }
 //-----------------------------------------------------------------------------
 template <class PT>
 void FrxParameterUI<PT>::mouseExited(const sdc::events::MouseEvent &ev) {
-	sdc::events::MouseEvent nEv = ev;
-	nEv.updateSoure(ev.getSource()->getParent());
-	Super::mouseExited(nEv);
+	/*sdc::events::MouseEvent nEv = ev;
+	nEv.updateSoure(ev.getSource()->getParent());*/
+	//Super::mouseExited(ev);
 }
 //-----------------------------------------------------------------------------
 template <class PT>
