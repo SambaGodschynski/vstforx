@@ -404,6 +404,8 @@ void VstForxPlug::save(std::ostream &os) {
 void VstForxPlug::load(std::istream &is) {
 	
 	::processing::Graph::Ptr alt = graph; // hold old until loosing scope
+	IHostInfo::Ptr altHostInfoAdapter = hostInfoAdapter;
+
 	::com::iArchive ar(is);
 	ar.register_type<HostInfoAdapter>();
 	register_types(ar);
