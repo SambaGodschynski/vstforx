@@ -684,7 +684,6 @@ void Graph::serialize ( Archive &ar, const unsigned int version )
 	ar & hostParameter;
 	ar & parameterConnections;
 	ar & g;
-	std::cout<<graphObjects.size();
 	if ( Archive::is_loading::value ) {
 		Ptr graph = self.lock();
 		graph->getJanitor()->updateProcessorNodeVertexRelations();

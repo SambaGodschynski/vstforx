@@ -114,6 +114,6 @@ void InputSwitch::load(com::iArchive &ar, const unsigned int version) {
 	selector->addValueChangedListener ( 
 		boost::bind(&InputSwitch::valueChanged, this, _1, _2)
 	);
-
+	tmpFrame.setSize ( hI->getBlockSize() );
 }
 }// namespace processing

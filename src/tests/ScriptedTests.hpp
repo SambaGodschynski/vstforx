@@ -60,6 +60,7 @@ public:
 	void issue265();
 	void issue269();
 	void issue272();
+	void issue320();
 };
 
 } // namespace
