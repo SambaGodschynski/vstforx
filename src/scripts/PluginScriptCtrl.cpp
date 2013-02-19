@@ -232,6 +232,18 @@ namespace {
 		static Components process(LuaPtr, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
+	struct FrxAddProcessorOutput {
+		typedef boost::function<LuaPtr(LuaPtr)> Function;
+		static const char * name() { return "frxAddProcessorOutput"; }
+		static LuaPtr process(LuaPtr, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxAddProcessorInput {
+		typedef boost::function<LuaPtr(LuaPtr)> Function;
+		static const char * name() { return "frxAddProcessorInput"; }
+		static LuaPtr process(LuaPtr, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
 	struct FrxGetEntryExit {
 		typedef boost::tuple<LuaPtr, LuaPtr> EntryExit;
 		typedef boost::function<EntryExit()> Function;
@@ -239,7 +251,7 @@ namespace {
 		static EntryExit process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
-	typedef LOKI_TYPELIST_30(FrxOpenPlugin,
+	typedef LOKI_TYPELIST_32(FrxOpenPlugin,
 		FrxClosePlugin,
 		FrxOpenEditor,
 		FrxCloseEditor,
@@ -268,9 +280,59 @@ namespace {
 		FrxGetProcessorsOnView,
 		FrxGetProcessorInputs,
 		FrxGetProcessorOutputs,
-/*30*/	FrxGetEntryExit
+/*30*/	FrxGetEntryExit,
+		FrxAddProcessorOutput,
+		FrxAddProcessorInput
 	) FrxFunctionList;
-//----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+LuaPtr FrxAddProcessorOutput::process(LuaPtr component, Ctrl *ctrl) 
+{
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+	using namespace frx::gui;
+	using namespace frx::gui::components;
+	using namespace frx::processing;
+	FrxCircuidViewPtr view = editor->getCircuidView();
+	IFrxControl &frxctrl = getFrxControl(view);
+	
+	FrxComponentPtr fxobj = ctrl->getFrxComponent(component);
+
+	if (!fxobj) {
+		SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"Could'nt resolve lua_ptr."
+		);
+	}
+	
+	FrxComponent::Ptr res = frxctrl.addProcessorOutput(view, fxobj);
+	return ctrl->getLuaPtr(res);
+}
+//-----------------------------------------------------------------------------
+LuaPtr FrxAddProcessorInput::process(LuaPtr component, Ctrl *ctrl) 
+{
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+	using namespace frx::gui;
+	using namespace frx::gui::components;
+	using namespace frx::processing;
+	FrxCircuidViewPtr view = editor->getCircuidView();
+	IFrxControl &frxctrl = getFrxControl(view);
+	
+	FrxComponentPtr fxobj = ctrl->getFrxComponent(component);
+
+	if (!fxobj) {
+		SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"Could'nt resolve lua_ptr."
+		);
+	}
+	
+	FrxComponent::Ptr res = frxctrl.addProcessorInput(view, fxobj);
+	return ctrl->getLuaPtr(res);
+}
+//-----------------------------------------------------------------------------
 FrxGetEntryExit::EntryExit FrxGetEntryExit::process(Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
 	FRX_GET_EDITOR

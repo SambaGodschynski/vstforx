@@ -356,6 +356,9 @@ int ModelController::getNumHostParameter() {
 }
 //-----------------------------------------------------------------------------
 INode::Ptr ModelController::addInputTo(IProcessor::Ptr pr) {
+	typedef ::processing::Graph::Janitor Janitor; 
+	// get janitor respectively lock graph
+	Janitor::Ptr jan = graph->getJanitor();
 	// add i/o to processor
 	INode::Ptr res = pr->addInput();
 	NodeAdapter::Ptr src =
@@ -364,19 +367,21 @@ INode::Ptr ModelController::addInputTo(IProcessor::Ptr pr) {
 		return INode::Ptr();
 	
 	// get concrete node (adaptee)
-	typedef ::processing::Graph::Janitor Janitor; 
 	::processing::ProcessAdapter::InputNode::Ptr atom = 
 		boost::shared_dynamic_cast< ::processing::ProcessAdapter::InputNode >(
 			src->getAdaptee()
 		);
 	// add concrete node to graph
-	if (graph->getJanitor()->add(atom)!=Janitor::SUCCEED) {
+	if (jan->add(atom)!=Janitor::SUCCEED) {
 		return INode::Ptr();
 	}
 	return res;
 }
 //-----------------------------------------------------------------------------
 INode::Ptr ModelController::addOutputTo(IProcessor::Ptr pr) {
+	typedef ::processing::Graph::Janitor Janitor; 
+	// get janitor respectively lock graph
+	Janitor::Ptr jan = graph->getJanitor();
 	// add i/o to processor
 	INode::Ptr res = pr->addOutput();
 	NodeAdapter::Ptr src =
@@ -391,7 +396,7 @@ INode::Ptr ModelController::addOutputTo(IProcessor::Ptr pr) {
 			src->getAdaptee()
 		);
 	// add concrete node to graph
-	if (graph->getJanitor()->add(atom)!=Janitor::SUCCEED) {
+	if (jan->add(atom)!=Janitor::SUCCEED) {
 		return INode::Ptr();
 	}
 	return res;
