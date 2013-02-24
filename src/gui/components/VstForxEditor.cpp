@@ -15,6 +15,7 @@
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <gui/IFrxControl.hpp>
 #include <OS_Specific/OS_com.h>
+#include <OS_Specific/OS_gui.h>
 #include <sstream>
 #include <com/Settings.h>
 #include <gui/FrxControl.hpp>
@@ -30,11 +31,6 @@ VstForxEditor::VstForxEditor (AudioEffect *aEff) :
 AEffEditor(aEff),
 plug(NULL)
 {
-	::com::Settings &set = com::getSettings(); 
-	size.left = 0;
-	size.top = 0;
-	size.right = set.getWindowWidth();
-	size.bottom = set.getWindowHeight();
 }
 //-----------------------------------------------------------------------------
 VstForxEditor::~VstForxEditor () {
@@ -134,21 +130,29 @@ void VstForxEditor::setCircuidView(FrxCircuidViewPtr view) {
 		circView->open();
 	}
 
-	if (window) {
+	if (nestedWindow) {
 		if (old) { // remove old view
-			window->getContentPane()->remove(old);
+			nestedWindow->getContentPane()->remove(old);
 		}
-		window->getContentPane()->add(circView, sdc::BorderLayout::CENTER, -1);
-		window->getContentPane()->validate();
-		window->getContentPane()->redraw();
+		nestedWindow->getContentPane()->add(circView, sdc::BorderLayout::CENTER, -1);
+		nestedWindow->getContentPane()->validate();
+		nestedWindow->getContentPane()->redraw();
 	}
 	if (!view) {
 		return;
 	}
 	using namespace frx::processing;
 	circView->setEditorResizeHandler(
-		boost::bind(&VstForxPlug::requestEditorResize, getPlugin(), _1, _2)
+		boost::bind(&VstForxEditor::setEditorSize, this, _1, _2)
 	);
+}
+//-----------------------------------------------------------------------------
+void VstForxEditor::setEditorSize(int width, int height) {
+	if ( getPlugin()->requestEditorResize(width, height) ) {
+		// operation succeed:
+		return;
+	}
+	osHostWontResizeFix(nestedWindow, width, height);
 }
 //-----------------------------------------------------------------------------
 FrxCircuidViewPtr VstForxEditor::createView(sdc::Window::Ptr win) {
@@ -182,23 +186,23 @@ FrxCircuidViewPtr VstForxEditor::createView(sdc::Window::Ptr win) {
 //-----------------------------------------------------------------------------
 void VstForxEditor::onHostWindowOpen(void *src, const sdc::OnOpenEvent &ev)
 {
-	open( hostWindow->getWindowImpl()->getSystemHandle() );
+	open( clientWindow->getWindowImpl()->getSystemHandle() );
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::open() {
-	if (!hostWindow) {
-		hostWindow = sdc::FramedWindow::create();
-		hostWindow->getContentPane()->setOpaque(false);
-		hostWindow->getWindowImpl()->setFlag(sdc::WindowFlags::WND_RAW, true);
-		hostWindow->addOnOpenEventListener(
+	if (!clientWindow) {
+		clientWindow = sdc::FramedWindow::create();
+		clientWindow->getContentPane()->setOpaque(false);
+		clientWindow->getWindowImpl()->setFlag(sdc::WindowFlags::WND_RAW, true);
+		clientWindow->addOnOpenEventListener(
 			boost::bind(&VstForxEditor::onHostWindowOpen, this, _1, _2)
 		);
 	}
-	hostWindow->setWindowBounds(
+	clientWindow->setWindowBounds(
 		sd::Rectangle(0,0,::com::getSettings().getWindowWidth(), 
 		::com::getSettings().getWindowHeight())
 	);
-	hostWindow->open();
+	clientWindow->open();
 }
 //-----------------------------------------------------------------------------
 bool VstForxEditor::open( void *ptr ) {
@@ -208,13 +212,12 @@ bool VstForxEditor::open( void *ptr ) {
 	using namespace sambag::com;
 	using namespace sambag::disco;
 	AEffEditor::open(ptr);
-	sambag::disco::Rectangle bounds(Point2D(size.left, size.top), 
-		Point2D(size.right, size.bottom)
-	);
+	sd::Dimension size = getEditorSize();
+	sambag::disco::Rectangle bounds( 0, 0, size.width(), size.height() );
 	try {
 		SAMBAG_BEGIN_SYNCHRONIZED(mutex)
-			window = createMainWindow(bounds);
-			FrxCircuidViewPtr view = createView(window);
+			nestedWindow = createMainWindow(bounds);
+			FrxCircuidViewPtr view = createView(nestedWindow);
 			setCircuidView(view);
 		SAMBAG_END_SYNCHRONIZED
 	} catch (const std::exception &ex) {
@@ -229,7 +232,7 @@ bool VstForxEditor::open( void *ptr ) {
 		errorMessage(ss.str());
 		return false;
 	}
-	window->validate();
+	nestedWindow->validate();
 	return true;
 }
 //-----------------------------------------------------------------------------
@@ -255,16 +258,26 @@ void VstForxEditor::close() {
 		errorMessage(ss.str());
 	}
 	getPlugin()->unRegisterView(circView);
-	window.reset();
+	nestedWindow.reset();
 	circView.reset();
-	if (hostWindow) {
-		hostWindow->close();
-		//hostWindow.reset();
+	if (clientWindow) {
+		clientWindow->close();
+		//clientWindow.reset();
 	}
 }
 //-----------------------------------------------------------------------------
+sd::Dimension VstForxEditor::getEditorSize() const {
+	::com::Settings &set = com::getSettings(); 
+	return sd::Dimension(set.getWindowWidth(), set.getWindowHeight());
+}
+//-----------------------------------------------------------------------------
 bool VstForxEditor::getRect (ERect** rect) {
-	*rect = &size;
+	::com::Settings &set = com::getSettings(); 
+	tmpRect.left = 0;
+	tmpRect.top = 0;
+	tmpRect.right = set.getWindowWidth();
+	tmpRect.bottom = set.getWindowHeight();
+	*rect = &tmpRect;
 	return true;
 }
 //-----------------------------------------------------------------------------
@@ -279,8 +292,5 @@ void VstForxEditor::errorMessage(const std::string &str) {
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::idle() {
-//	if (!window)
-//		return;
-//	window->invalidateWindow();
 }
 }}} // namespace(s)

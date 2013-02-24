@@ -236,7 +236,7 @@ struct RefreshStates {
 };
 void processorSwitchStateChanged(const StateData &data)
 {
-	TimedUpdater<StateData, RefreshStates, 50>::instance().update(data);
+	TimedUpdater<StateData, RefreshStates, 5>::instance().update(data);
 }
 //-----------------------------------------------------------------------------
 void processorPropertyChanged(void *src, 

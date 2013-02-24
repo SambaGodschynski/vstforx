@@ -117,6 +117,7 @@ void ScanningDialog::postConstructor() {
 	getContentPane()->add(createMainBtnPane(), sdc::BorderLayout::SOUTH, APPEND);
 	setTitle("Scan results:");
 	windowImpl->setFlag(sdc::WindowFlags::WND_NO_SYSTEM_MENU, true);
+	windowImpl->setFlag(sdc::WindowFlags::WND_ALWAYS_ON_TOP, true);
 }
 //-----------------------------------------------------------------------------
 sdc::AContainerPtr ScanningDialog::createListPane() {

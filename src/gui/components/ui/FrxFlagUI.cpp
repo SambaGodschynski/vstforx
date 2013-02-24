@@ -41,7 +41,16 @@ void FrxFlagUI::installDefaults(sdc::AComponentPtr c) {
 	_flag = flag;
 	sdc::ui::UIManager &mg = sdc::ui::getUIManager();
 	mg.getProperty("FrxFlag.style", flagStyle);
-	sd::FontCache::instance().installFont( flagStyle.font() );
+
+	// be sure that later used font settings (in final context) are the same like below.
+	// otherwise the resulting cache map is usless and will be overriden.
+	sd::FontCache::instance().installFont( 
+			sd::createFontTraits(flagStyle.strokePattern()->getColor(),
+				flagStyle.fillPattern()->getColor(),
+				0.0, //flagStyle.strokeWidth(),
+				flagStyle.font() 
+			)
+	);
 	FrxComponent::Ptr target = flag->getTarget();
 	if (!target) {
 		return;
@@ -74,6 +83,7 @@ void FrxFlagUI::updateText() {
 
 	IDrawContext::Ptr cn = getOffscreenContext();
 	flagStyle.intoContext(cn);
+	cn->setStrokeWidth(0.0);
 
 	sd::FontCache &fc = sd::FontCache::instance();
 	Rectangle ta = fc.getTextBounds( cn, tg->getUpperFlagText() );
@@ -238,17 +248,19 @@ void FrxFlagUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	sd::Rectangle r(0,0,c->getWidth(), c->getHeight());
 	sd::FontCache &fc = sd::FontCache::instance();
 
+	// draw lines
+	cn->moveTo(sd::Point2D(0, r.height()));
+	cn->lineTo(sd::Point2D(distance.x(), fs+hGap));
+	cn->lineTo(sd::Point2D(r.width(), fs+hGap));
+	cn->stroke();
+
+	// draw text
+	cn->setStrokeWidth(0.0);
 	cn->moveTo(sd::Point2D(distance.x(), fs/2. - 2.));
 	//cn->textPath(target->getUpperFlagText());
 	fc.drawText(cn ,target->getUpperFlagText());
 	cn->moveTo(sd::Point2D(distance.x(), fs+hGap + 2.));
 	//cn->textPath(target->getLowerFlagText());
 	fc.drawText(cn ,target->getLowerFlagText());
-	cn->fill();
-
-	cn->moveTo(sd::Point2D(0, r.height()));
-	cn->lineTo(sd::Point2D(distance.x(), fs+hGap));
-	cn->lineTo(sd::Point2D(r.width(), fs+hGap));
-	cn->stroke();
 }
 }}}} // namespace(s)

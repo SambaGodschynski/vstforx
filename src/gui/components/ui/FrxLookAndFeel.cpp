@@ -221,7 +221,7 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("StatusMessage.style", 
 		createStyle("stroke-width: 1; stroke: darkgrey;font-size: 13; font-family: arial"));
 	m.putProperty("FrxFlag.style", 
-		createStyle("stroke-width: 1; fill: black; stroke: darkgrey;font-size: 13; font-family: arial"));
+		createStyle("stroke-width: 1; fill: darkgrey; stroke: darkgrey;font-size: 13; font-family: arial"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<images
 	FileResourceManager *rManager = dynamic_cast<FileResourceManager*> (
 		&getResourceManager()

@@ -68,11 +68,13 @@ private:
 	void saveEditor(::com::oArchive &ar);
 	//-------------------------------------------------------------------------
 	void loadEditor(::com::iArchive &ar);
+	//-------------------------------------------------------------------------
+	sambag::com::Mutex processingLoadLock;
 protected:
 	//-------------------------------------------------------------------------
 	void installGraphListener();
 	//-------------------------------------------------------------------------
-	void onGraphChanged(void *src, const ::processing::GraphChanged &ev);
+	void onGraphDelayChanged(void *src, const ::processing::GraphDelayChanged &ev);
 	//-------------------------------------------------------------------------
 	/**
 	 * updates graph samplerate and blocksize
@@ -100,7 +102,7 @@ public:
 	//-------------------------------------------------------------------------
 	sambag::dsp::IEditor * getEditor();
 	//-------------------------------------------------------------------------
-	void requestEditorResize(int width, int height);
+	bool requestEditorResize(int width, int height);
 	//-------------------------------------------------------------------------
 	void processEvents(sambag::dsp::IMidiEvents *ev);
 	//-------------------------------------------------------------------------

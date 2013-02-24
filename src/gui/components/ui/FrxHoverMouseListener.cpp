@@ -20,6 +20,10 @@ FrxHoverMouseListener::FrxHoverMouseListener() {
 }
 //-----------------------------------------------------------------------------
 void FrxHoverMouseListener::mouseClicked(const sdc::events::MouseEvent &ev) {
+	FrxHover::Ptr hover = _hover.lock();
+	if (!hover) {
+		return;
+	}
 	FrxCircuidView::Ptr circ = hover->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
 	circ->remove(hover);
@@ -27,6 +31,10 @@ void FrxHoverMouseListener::mouseClicked(const sdc::events::MouseEvent &ev) {
 }
 //-----------------------------------------------------------------------------
 void FrxHoverMouseListener::mouseMoved(const sdc::events::MouseEvent &ev) {
+	FrxHover::Ptr hover = _hover.lock();
+	if (!hover) {
+		return;
+	}
 	FrxCircuidView::Ptr circ = hover->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
 	sd::Point2D distance = ev.getLocation();
