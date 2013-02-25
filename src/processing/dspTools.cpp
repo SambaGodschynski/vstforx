@@ -86,24 +86,27 @@ attackVal(0.0f)
 	mode->addValueChangedListener ( mC );
 	//parameterMap.push_back ( mode );
 	
-	for ( int i=A; i<NUM_STATES; ++i ){
+	for ( int i=A; i<NUM_STATES; ++i ) {
 		curveType[i] = Parameter::create();
 		curveType[i]->setIndex (i);
 		curveType[i]->setName (MyString(bff[i]) + " slope type"); 
 		curveType[i]->addValueChangedListener (cT); 
 		curveType[i]->setValue(0.0f); 
+		curveType[i]->setGroupName(MyString(bff[i]));
 		duration[i] = Parameter::create();
 		duration[i]->setIndex (i);
 		duration[i]->addValueChangedListener(dC);
 		duration[i]->setName (MyString(bff[i]) + " duration"); 
 		duration[i]->setLabel(" s"); 
 		duration[i]->setDisplay("?");
-		duration[i]->setValue (1.0f / maxD); 
+		duration[i]->setValue (1.0f / maxD);
+		duration[i]->setGroupName(MyString(bff[i]));
 		level[i] = Parameter::create();
 		level[i]->setIndex (i);
 		level[i]->setValue (1.0f - (i*1.0f/4.0f) ); 
 		level[i]->setName (MyString(bff[i]) + " level"); 
 		level[i]->addValueChangedListener (lC);
+		level[i]->setGroupName(MyString(bff[i]));
 		parameterMap.push_back ( level[i] );
 		parameterMap.push_back ( duration[i] );
 		parameterMap.push_back ( curveType[i] );

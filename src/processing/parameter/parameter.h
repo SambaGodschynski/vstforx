@@ -441,6 +441,11 @@ private:
 	static int instances;
 	//--------------------------------------------------------------------------------------------------------
 	/**
+	 * Parameter Groupname 
+	 */
+	MyString groupname;
+	//--------------------------------------------------------------------------------------------------------
+	/**
 	 * nach VST-SDK:
 	 * Stuff text with the name
 	 * ("Time", "Gain", "RoomType", etc...) of parameter index.
@@ -529,6 +534,16 @@ public:
 	 * @param name
 	 */
 	void setName(const MyString &name){ Parameter::name = name.trim(); }
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return ParameterGroupName
+	 */
+	const MyString & getGroupName() const { return groupname; }
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return ParameterGroupName
+	 */
+	void setGroupName(const MyString &name) { groupname = name; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Parameterwert als String  ("0.5", "-3", "PLATE", etc...)
@@ -628,6 +643,7 @@ template < typename Archiv >
 void Parameter::serialize( Archiv &ar, const unsigned int version) {
 	ar & boost::serialization::base_object<PObject>(*this);
 	ar & name;
+	ar & groupname;
 	ar & label;
 	ar & display;
 	ar & _min;
