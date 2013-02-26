@@ -34,6 +34,12 @@ function getDownloads($user) {
 	return processQuery($db, $query);
 }
 
+function showDwnlBtn($download_id) {
+?>
+	<a href="frx_download.php?dst=<?php echo($download_id); ?>" class="btn btn-success">Download</a> 
+<?php
+}
+
 function showDownloadsImpl($user) {
 		$res = getDownloads($user);
 ?>
@@ -51,7 +57,7 @@ function showDownloadsImpl($user) {
 			<td><?php echo($x[1])?></td> 
 			<td><?php echo($x[2])?></td>
 			<td>
-				<a href="frx_redirect_download.php?dst=<?php echo($x[4]) ?>" class="btn btn-success">Download</a> 
+				<?php echo showDwnlBtn($x[4]); ?>
 			</td>
 		</tr>
 <?php } ?>
