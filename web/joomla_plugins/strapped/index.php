@@ -135,6 +135,18 @@ endif;
 
 </head>
 <body class="<?php echo $option . " " . $view . " " . $layout . " " . $task . " item-" . $itemid;?> <?php if($site_home){ echo "home";}?> <?php echo $body_font_class.' '.$heading_font_class.' '.$browser_classes;?>" data-spy="scroll" data-target=".subnav" data-offset="50" data-redering="true">
+
+<?php 
+	//Placed at the top to have component access 
+?>
+<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/jquery.js"></script> 
+<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/bootstrap.min.js"></script> 
+<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/application.js"></script> 
+<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/prettify.js"></script> 
+<script type="text/javascript">
+        jQuery.noConflict();
+</script>
+
 <!-- Navbar
     ================================================== -->
 <div class="navbar-wrapper">
@@ -273,13 +285,5 @@ endif;
 </div><!-- /container -->
 <!-- Le javascript
     ================================================== --> 
-<!-- Placed at the end of the document so the pages load faster --> 
-<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/jquery.js"></script> 
-<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/bootstrap.min.js"></script> 
-<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/application.js"></script> 
-<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/prettify.js"></script> 
-<script type="text/javascript">
-        jQuery.noConflict();
-</script>
 </body>
 </html>

@@ -16,16 +16,16 @@
 defined('_JEXEC') or die('Restricted access');
  
 $document =& JFactory::getDocument();	 
-$document->addStyleDeclaration("div#poll_loading_".$poll->id." {
+/*$document->addStyleDeclaration("div#poll_loading_".$poll->id." {
 	background: url(media/system/images/mootree_loader.gif) 0% 50% no-repeat;
 	width:100%;
 	height:20px; 
 	padding: 4px 0 0 20px; 
 }
-");
+");*/
 ?>
 
-<div class="poll<?php echo $params->get('moduleclass_sfx'); ?>" style="border:none; padding:1px;">
+<div class="poll<?php echo $params->get('moduleclass_sfx'); ?>" style="">
 
 <?php if ($params->get('show_poll_title')) : ?>
     <h4><?php echo $poll->title; ?></h4>
@@ -34,10 +34,13 @@ $document->addStyleDeclaration("div#poll_loading_".$poll->id." {
 <div id="polldiv_<?php echo $poll->id;?>">
 
 <?php if ($display_poll) { ?>
-Poller
-<form action="<?php echo JRoute::_('index.php');?>" method="post" name="poll_vote_<?php echo $poll->id;?>" id="poll_vote_<?php echo $poll->id;?>">
+<form action="<?php echo JRoute::_('index.php');?>" 
+      method="post" name="poll_vote_<?php echo $poll->id;?>" 
+      id="poll_vote_<?php echo $poll->id;?>"
+      class="form-horizontal"
+>
 <?php for ($i = 0, $n = count($options); $i < $n; $i ++) { ?>
-	<label for="mod_voteid<?php echo $options[$i]->id;?>" class="<?php echo $tabclass_arr[$tabcnt].$params->get('moduleclass_sfx'); ?>" style="display:block; padding:2px;">
+	<label for="mod_voteid<?php echo $options[$i]->id;?>" class="checkbox">
 		<input type="radio" name="voteid" id="mod_voteid<?php echo $options[$i]->id;?>" value="<?php echo $options[$i]->id;?>" alt="<?php echo $options[$i]->id;?>" <?php echo $disabled; ?> />
 			<?php echo $options[$i]->text; ?>
 	</label>
@@ -50,8 +53,10 @@ Poller
 				echo '</div>';
 			endif;
 	?>
-	<div style="padding:2px;" id="poll_buttons_<?php echo $poll->id;?>" >	
-	<input type="submit" id="submit_vote_<?php echo $poll->id; ?>" name="task_button" class="button" value="<?php echo JText::_('MOD_ACEPOLLS_VOTE'); ?>" <?php echo $disabled; ?> />
+	<div id="poll_buttons_<?php echo $poll->id;?>" class="control-group">
+		<div class="controls">
+			<input type="submit" id="submit_vote_<?php echo $poll->id; ?>" name="task_button" class="btn" value="<?php echo JText::_('MOD_ACEPOLLS_VOTE'); ?>" <?php echo $disabled; ?> />
+		</div>
 	</div>	
 	<div id="poll_loading_<?php echo $poll->id;?>" style="display:none;"><?php echo JText::_('MOD_ACEPOLLS_PROCESSING'); ?>
 	</div>		

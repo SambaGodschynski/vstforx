@@ -161,10 +161,10 @@ endif;
 		</div>
 	</div>
 </div>
-<!--pre-navbar 
+<!--post-navbar 
     ================================================== -->
 <?php if($this->countModules('top-menu')) : ?>
-	<jdoc:include type="modules" name="pre-navbar" style="none" />
+	<jdoc:include type="modules" name="post-navbar" style="none" />
 <?php endif; ?>
 
 <?php if(($this->countModules('header') || $this->countModules('sub-nav'))) : ?>
