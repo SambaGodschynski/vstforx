@@ -25,13 +25,10 @@ $document =& JFactory::getDocument();
 ");*/
 ?>
 
-<div class="poll<?php echo $params->get('moduleclass_sfx'); ?>" style="">
-
 <?php if ($params->get('show_poll_title')) : ?>
     <h4><?php echo $poll->title; ?></h4>
 <?php endif; ?>
 
-<div id="polldiv_<?php echo $poll->id;?>">
 
 <?php if ($display_poll) { ?>
 <form action="<?php echo JRoute::_('index.php');?>" 
@@ -174,19 +171,4 @@ $document->addScriptDeclaration($js);
  } ?>
 
 <!-- End of #polldiv -->
-</div>
-<?php if (($params->get('show_view_details')) || ($params->get('rel_article_window'))) { ?>
-<div id="poll_links" style="padding-top:5px; ">
 
-	<?php if ($params->get('show_view_details')) : ?>
-	<a class="poll_result_link" href="<?php echo JRoute::_('index.php?option=com_acepolls&view=poll&id='.$slug.$itemid); ?>"><?php echo JText::_('MOD_ACEPOLLS_VIEW_DETAILS'); ?></a><br />
-	<?php endif; ?>
-	
-	<?php if ($params->get('show_rel_article')) : ?>
-	<a class="poll_result_link" target="<?php echo $params->get('rel_article_window'); ?>" href="<?php echo JRoute::_($params->get('rel_article')); ?>">
-		<?php echo JText::_('MOD_ACEPOLLS_READ_RELATED_ARTICLE'); ?> >></a>
-	<?php endif; ?>
-<?php } ?>
-
-</div>
-</div>
