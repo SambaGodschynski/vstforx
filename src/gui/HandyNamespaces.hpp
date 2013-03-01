@@ -1,3 +1,10 @@
+/*
+ * HandyNamespaces.hpp
+ *
+ *  Created on: XXX
+ *      Author: Johannes Unger
+ */
+
 #ifndef FRX_HANDY_SAMBAG_NAMESPACES
 #define FRX_HANDY_SAMBAG_NAMESPACES
 

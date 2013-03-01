@@ -47,6 +47,7 @@ public:
 	static Ptr create(Adaptee::Ptr a = Adaptee::Ptr()) {
 		Ptr res(new PluginAdapter());
 		res->setAdaptee(a);
+		res->self = res;
 		return res;
 	}
 	//-------------------------------------------------------------------------

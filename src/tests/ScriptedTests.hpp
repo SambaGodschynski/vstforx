@@ -36,6 +36,9 @@ class ScriptedTests : public CPPUNIT_NS::TestFixture {
 //=============================================================================
 private:
 	CPPUNIT_TEST_SUITE( ScriptedTests );
+	CPPUNIT_TEST( issue324 );
+	CPPUNIT_TEST( issue320 );
+	CPPUNIT_TEST( issue322 );
 	CPPUNIT_TEST( issue272 );
 	CPPUNIT_TEST( issue255 );
 	CPPUNIT_TEST( issue265 );
@@ -60,6 +63,9 @@ public:
 	void issue265();
 	void issue269();
 	void issue272();
+	void issue320();
+	void issue322();
+	void issue324();
 };
 
 } // namespace

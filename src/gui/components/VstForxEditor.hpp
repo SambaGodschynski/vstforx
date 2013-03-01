@@ -32,29 +32,29 @@ private:
 	void onHostWindowOpen(void *src, const sdc::OnOpenEvent &ev);
 	//-------------------------------------------------------------------------
 	/**
-	 * setted when editor opened via open() ( instead of open(ptr) where
-	 * ptr is a host window handle )
+	 * only setted when editor opened via open() ( instead of open(ptr) where
+	 * ptr is a native nestedWindow handle given by host )
 	 */
-	sambag::disco::components::WindowPtr hostWindow;
+	sambag::disco::components::WindowPtr clientWindow;
 	//-------------------------------------------------------------------------
-	sambag::disco::components::WindowPtr window;
+	sambag::disco::components::WindowPtr nestedWindow;
 	//-------------------------------------------------------------------------
 	FrxCircuidViewPtr circView;
-	//-------------------------------------------------------------------------
-	ERect size;
 	//-------------------------------------------------------------------------
 	sdc::Window::Ptr createMainWindow(const sd::Rectangle &bounds);
 	//-------------------------------------------------------------------------
 	FrxCircuidViewPtr createEmptyView();
 	//-------------------------------------------------------------------------
 	/**
-	 * assumes that view is added to window yet.
+	 * assumes that view is added to nestedWindow yet.
 	 */
 	void initEntryExit(FrxCircuidViewPtr view);
 	//-------------------------------------------------------------------------
 	std::string hiChamber;
 	//-------------------------------------------------------------------------
 	sambag::com::RecursiveMutex mutex;
+	//-------------------------------------------------------------------------
+	ERect tmpRect; // to return as ptr. see getRect().
 protected:
 	//-------------------------------------------------------------------------
 	frx::processing::VstForxPlug *plug;
@@ -75,22 +75,24 @@ protected:
 	void setCircuidView(FrxCircuidViewPtr view);
 public:
 	//-------------------------------------------------------------------------
+	void setEditorSize(int width, int height);
+	//-------------------------------------------------------------------------
 	/**
-	 * @return the window where the editor is nested in. 
+	 * @return the nestedWindow where the editor is nested in. 
 	 * Is NULL when the editor was opened by a host via open(ptr) call.
-	 * ( the host produce its own window )
+	 * ( the host produce its own nestedWindow )
 	 */
 	sambag::disco::components::WindowPtr getHostWindow() const {
-		return hostWindow;
+		return clientWindow;
 	}
 	//-------------------------------------------------------------------------
 	/**
-	 * creates window and init editor.
+	 * creates nestedWindow and init editor.
 	 */
 	void open();
 	//-------------------------------------------------------------------------
 	/**
-	 * init editor on window (mainly called by host)
+	 * init editor on nestedWindow (mainly called by host)
 	 * @param raw system handle ptr
 	 */
 	virtual bool open(void *ptr);
@@ -118,6 +120,8 @@ public:
 	virtual ~VstForxEditor();
 	//-------------------------------------------------------------------------
 	virtual bool getRect (ERect** rect);
+	//-------------------------------------------------------------------------
+	sd::Dimension getEditorSize() const;
 	//-------------------------------------------------------------------------
 	virtual void idle();
 };

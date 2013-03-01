@@ -103,7 +103,8 @@ FrxProcessorNodePtr createPlugin(FrxCircuidViewPtr circ, ::processing::PluginInf
 		boost::shared_dynamic_cast<frx::processing::IPluginAdapter>(mObj);
 	if (plAd) {
 		viewObj->setName(plAd->getName());
-		viewObj->setFlagText(plAd->getName() + "/" + plAd->getStatusMessage());
+		viewObj->setUpperFlagText(plAd->getName());
+		viewObj->setLowerFlagText(plAd->getStatusMessage());
 		viewObj->isSynth( plAd->isSynth() );
 	}
 	viewObj->configIO(mObj->getNumInputs(), mObj->getNumOutputs());
@@ -135,7 +136,8 @@ FrxParameterPtr createFreeParameter(FrxCircuidViewPtr circ) {
 	FrxFlag::Ptr flag = FrxFlag::create();
 	flag->setTarget(viewObj);
 	circ->add(flag, FrxCircuidView::Z_Flags, true);
-	viewObj->setFlagText( mObj->getName() + "/" + mObj->getDisplay() );
+	viewObj->setUpperFlagText(mObj->getName());
+	viewObj->setLowerFlagText(mObj->getDisplay());
 	viewObj->setName( mObj->getName() );
 	map->registerObjects(viewObj, mObj);
 	return viewObj;
@@ -165,7 +167,8 @@ FrxParameterPtr createHostParameter(FrxCircuidViewPtr circ, int id) {
 	FrxFlag::Ptr flag = FrxFlag::create();
 	flag->setTarget(viewObj);
 	circ->add(flag, FrxCircuidView::Z_Flags, true);
-	viewObj->setFlagText( mObj->getName() + "/" + mObj->getDisplay() );
+	viewObj->setUpperFlagText(mObj->getName());
+	viewObj->setLowerFlagText(mObj->getDisplay());
 	viewObj->setName( mObj->getName() );
 	if (!map->registerObjects(viewObj, mObj)) {
 		return FrxParameterPtr();

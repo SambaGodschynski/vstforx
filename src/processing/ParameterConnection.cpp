@@ -9,6 +9,7 @@
 #include "ParameterAdapter.hpp"
 #include <processing/parameter/ConnectionOperators.h>
 #include <loki/Typelist.h>
+#include "IModelController.hpp"
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -117,11 +118,18 @@ getParameters(const ParameterGroupKey &key, Parameters &out) const
 void ParameterConnection::getConnectionOps(ParameterCnOpTypeIds &out) {
 }
 //-----------------------------------------------------------------------------
-bool ParameterConnection::requestRemove(ModelObject::Ptr obj) {
+bool ParameterConnection::requestRemove() {
 	bool res = true;
 	BOOST_FOREACH(const ParameterGroupMap::value_type &v, parameters) {
-		res &= v.second->requestRemove(v.second);
+		res &= v.second->requestRemove();
 	}
-	return res && Super::requestRemove(obj);
+	return res && Super::requestRemove();
+}
+//-----------------------------------------------------------------------------
+bool ParameterConnection::removeImpl(IModelControllerPtr ctrl) {
+	/*
+		ParameterConnection disconnects when ModelObject deleted.
+	*/
+	return true;
 }
 }} // namespace(s)

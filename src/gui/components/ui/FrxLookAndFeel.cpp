@@ -36,6 +36,8 @@
 #include <gui/components/FrxTooltipManager.hpp>
 #include <gui/components/FrxFlag.hpp>
 #include <gui/components/ui/FrxFlagUI.hpp>
+#include <sambag/disco/components/Knob.hpp>
+#include <gui/components/ui/FrxKnobUI.hpp>
 
 #include <sambag/disco/FileResourceManager.hpp>
 #include <sambag/disco/IPattern.hpp>
@@ -89,6 +91,7 @@ void FrxLookAndFeel::installComponents() {
 	// parameter components
 	registerComponentUI<fgc::FrxStdKnob, 
 		FrxParameterUI<FrxStdKnob::ControllerType> >();
+	registerComponentUI<sdc::Knob, FrxKnobUI<sdc::Knob::Model> >();
 	// connections
 	registerComponentUI<fgc::IOCn, 
 		fgcu::FrxConnectionUI<fgc::IOCn::ConnectionType> >();
@@ -163,6 +166,9 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("ProcessorIO.stateActiveRadius",  RADIUS_SMALL * 1.7);
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	m.putProperty("FrxConnection.hitDistance", Coordinate(10.));
+	m.putProperty("FrxNodeCorona.fadeAnimation.duration", (long)150);
+	m.putProperty("FrxNodeCorona.fadeAnimation.refreshRate", (long)15);
+	m.putProperty("FrxNodeCorona.fadeAnimation.tweenType", std::string("lin"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<colors
 	m.putProperty("FrxNodeCorona.color",  HtmlColors::getColor("yellow"));
 	m.putProperty("ProcessorInput.bgColor", HtmlColors::getColor("white"));
@@ -215,7 +221,7 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("StatusMessage.style", 
 		createStyle("stroke-width: 1; stroke: darkgrey;font-size: 13; font-family: arial"));
 	m.putProperty("FrxFlag.style", 
-		createStyle("stroke-width: 1; fill: black; stroke: darkgrey;font-size: 13; font-family: arial"));
+		createStyle("stroke-width: 1; fill: darkgrey; stroke: darkgrey;font-size: 13; font-family: arial"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<images
 	FileResourceManager *rManager = dynamic_cast<FileResourceManager*> (
 		&getResourceManager()

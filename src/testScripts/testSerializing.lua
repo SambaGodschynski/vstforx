@@ -15,6 +15,7 @@ CV = clearView
 function doSequence(seq)
   for i, x in pairs(seq) do
     x()
+	frxWait(100)
   end
 end
 

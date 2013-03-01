@@ -166,6 +166,7 @@ void Graph::pushAndCopy ( Frames *fr, Processor::Int numSamples ){
 }
 //------------------------------------------------------------------------------------------------------------
 void Graph::updateGraph() {
+	size_t oldDelay = getGraphDelay();
 	DFSVisitor vis(this);
 	boost::reverse_graph<bgl::G> rg(g);
 	boost::depth_first_search( 
@@ -173,7 +174,10 @@ void Graph::updateGraph() {
 		boost::visitor(vis).	// !! http://www.boost.org/doc/libs/1_46_1/libs/graph/doc/bgl_named_params.html
 		root_vertex( endNode->getBglVertex() ) 
 	);
-	EventSender<GraphChanged>::notifyEventListeners( this, GraphChanged( getGraphDelay() ) );
+	size_t delay = getGraphDelay();
+	if (oldDelay!=delay) {
+		EventSender<GraphDelayChanged>::notifyEventListeners( this, GraphDelayChanged( getGraphDelay() ) );
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 void Graph::initHostParameter(){
@@ -186,7 +190,6 @@ void Graph::initHostParameter(){
 }
 //------------------------------------------------------------------------------------------------------------
 Graph::~Graph(){
-	com::MethodMessage<Graph> methodMessage ("~Graph()");
 }
 //------------------------------------------------------------------------------------------------------------
 size_t Graph::getGraphDelay() {

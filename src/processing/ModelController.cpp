@@ -53,27 +53,9 @@ void ModelController::setGraph(::processing::Graph::Ptr graph) {
 }
 //-----------------------------------------------------------------------------
 void ModelController::installListeners(IProcessor::Ptr pr) {
-	pr->addRemoveRequestExecuter(
-		boost::bind(
-			&ModelController::excuteProcessorRemoveRequest,
-			this,
-			_1,
-			boost::weak_ptr<IProcessor>(pr)
-		),
-		self
-	);
 }
 //-----------------------------------------------------------------------------
 void ModelController::installListeners(IParameter::Ptr pr)  {
-	pr->addRemoveRequestExecuter(
-		boost::bind(
-			&ModelController::excuteParameterRemoveRequest,
-			this,
-			_1,
-			boost::weak_ptr<IParameter>(pr)
-		),
-		self
-	);
 }
 //-----------------------------------------------------------------------------
 IProcessor::Ptr ModelController::createVolumeProcessor() {
@@ -242,16 +224,6 @@ IConnection::Ptr ModelController::connect(INode::Ptr out, INode::Ptr in) {
 	NodeConnection::Ptr cn = NodeConnection::create();
 	cn->setSource(src);
 	cn->setDestination(dst);
-	// register remove request excutor
-	cn->addRemoveRequestExecuter(
-		boost::bind(
-			&ModelController::excuteConnectionRemoveRequest,
-			this,
-			_1,
-			boost::weak_ptr<NodeConnection>(cn)
-		),
-		self
-	);
 	return cn;
 }
 //-----------------------------------------------------------------------------
@@ -313,25 +285,6 @@ INode::Ptr ModelController::getExit() {
 	return exit;
 }
 //-----------------------------------------------------------------------------
-bool ModelController::
-excuteConnectionRemoveRequest(ModelObject::Ptr obj, 
-	boost::weak_ptr<IConnection> cn)
-{
-	return removeConnection(cn.lock());	
-}
-//-----------------------------------------------------------------------------
-bool ModelController::excuteProcessorRemoveRequest(ModelObject::Ptr obj, 
-	boost::weak_ptr<IProcessor> cn)
-{
-	return removeProcessor(cn.lock());	
-}
-//-----------------------------------------------------------------------------
-bool ModelController::excuteParameterRemoveRequest(ModelObject::Ptr obj, 
-	boost::weak_ptr<IParameter> cn)
-{
-	return removeFreeParameter(cn.lock());	
-}
-//-----------------------------------------------------------------------------
 IHostInfo::Ptr ModelController::getHostInfo() const {
 	return graph->getHostInfo();
 }
@@ -375,8 +328,11 @@ IParameter::Ptr ModelController::createFreeParameter() {
 	return res;
 }
 //-----------------------------------------------------------------------------
-bool ModelController::removeFreeParameter(IParameter::Ptr p) {
+bool ModelController::removeParameter(IParameter::Ptr p) {
 	ParameterAdapter::Ptr ada = boost::shared_dynamic_cast<ParameterAdapter>(p);
+	if (ada->isHostParameter()) {
+		return true;
+	}
 	SAMBAG_ASSERT(ada);
 	return 
 		graph->getJanitor()->remove(ada->getAdaptee()) 
@@ -389,6 +345,7 @@ IParameter::Ptr ModelController::getHostParameter(int id) {
 	if (!tmpHostParameter[id]) {
 		ParameterAdapter::Ptr res = ParameterAdapter::create();
 		res->setAdaptee( graph->getHostParameter((size_t)id) );
+		res->setIsHostParameter(true);
 		tmpHostParameter[id] = res;
 	}
 	return tmpHostParameter[id];
@@ -399,6 +356,9 @@ int ModelController::getNumHostParameter() {
 }
 //-----------------------------------------------------------------------------
 INode::Ptr ModelController::addInputTo(IProcessor::Ptr pr) {
+	typedef ::processing::Graph::Janitor Janitor; 
+	// get janitor respectively lock graph
+	Janitor::Ptr jan = graph->getJanitor();
 	// add i/o to processor
 	INode::Ptr res = pr->addInput();
 	NodeAdapter::Ptr src =
@@ -407,19 +367,21 @@ INode::Ptr ModelController::addInputTo(IProcessor::Ptr pr) {
 		return INode::Ptr();
 	
 	// get concrete node (adaptee)
-	typedef ::processing::Graph::Janitor Janitor; 
 	::processing::ProcessAdapter::InputNode::Ptr atom = 
 		boost::shared_dynamic_cast< ::processing::ProcessAdapter::InputNode >(
 			src->getAdaptee()
 		);
 	// add concrete node to graph
-	if (graph->getJanitor()->add(atom)!=Janitor::SUCCEED) {
+	if (jan->add(atom)!=Janitor::SUCCEED) {
 		return INode::Ptr();
 	}
 	return res;
 }
 //-----------------------------------------------------------------------------
 INode::Ptr ModelController::addOutputTo(IProcessor::Ptr pr) {
+	typedef ::processing::Graph::Janitor Janitor; 
+	// get janitor respectively lock graph
+	Janitor::Ptr jan = graph->getJanitor();
 	// add i/o to processor
 	INode::Ptr res = pr->addOutput();
 	NodeAdapter::Ptr src =
@@ -434,7 +396,7 @@ INode::Ptr ModelController::addOutputTo(IProcessor::Ptr pr) {
 			src->getAdaptee()
 		);
 	// add concrete node to graph
-	if (graph->getJanitor()->add(atom)!=Janitor::SUCCEED) {
+	if (jan->add(atom)!=Janitor::SUCCEED) {
 		return INode::Ptr();
 	}
 	return res;

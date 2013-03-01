@@ -21,35 +21,8 @@ namespace frx { namespace gui {
 namespace components { namespace ui { 
 ///////////////////////////////////////////////////////////////////////////////
 namespace { 
-	const sambag::com::Number FINAL_ALPHA = .5f;
-	const int FADE_STEPS = 10;
-	void onFadeTimer( void *src, const sdc::Timer::Event &ev,
-		sambag::com::Number *alpha,
-		sdc::AComponent::WPtr _c, 
-		const bool *fadeIn
-	) {
-		sdc::AComponent::Ptr c = _c.lock();
-		if (!c)
-			return;
-		if (*fadeIn) {
-			if (*alpha>=FINAL_ALPHA) {
-				ev.getSource()->stop();
-				return;
-			}
-			// TODO: consider expired timer
-			*alpha+=FINAL_ALPHA/FADE_STEPS;
-		}
-		else {
-			if (*alpha<=0.) {
-				ev.getSource()->stop();
-				return;
-			}
-			// TODO: consider expired time
-			*alpha-=FINAL_ALPHA/FADE_STEPS;
-		}
-		c->redraw();
-	} // onFadeTimer
-}
+	const double FINAL_ALPHA = .5f;
+} // namespace(s)
 //=============================================================================
 //  Class FrxNodeUI
 //=============================================================================
@@ -102,7 +75,6 @@ void FrxNodeUI::installDefaults(sdc::AComponent::Ptr c) {
 	sd::Coordinate r = getCoronaRadius(c) * 2. + 5.;
 	c->setSize(sd::Dimension(r, r));
 
-	coronaAlpha = 0.;
 	// connection stuff
 	toConnect = Line::create();
 	sdsg::Line::Ptr line = toConnect->getObject();
@@ -112,16 +84,18 @@ void FrxNodeUI::installDefaults(sdc::AComponent::Ptr c) {
 	line->getP1().y().setType(sd::svg::units::Unit::PX);
 	toConnect->setForeground(sd::ColorRGBA(1));
 	// fade timer
-	fadeTimer = sdc::Timer::create(10);
-	fadeTimer->setNumRepetitions(-1);
-	fadeIn = true;
-	sdc::AComponent::WPtr _c = c;
-	fadeTimer->sdc::EventSender<sdc::Timer::Event>::addTrackedEventListener(
-		boost::bind(
-			&onFadeTimer, _1, _2, &coronaAlpha, _c, &fadeIn
-		),
-		getPtr()
-	);
+	sdcu::UIManager &uim = sdcu::getUIManager();
+	long duration = 150, rfRate = 15;
+	std::string tweenType = "lin";
+	
+	uim.getProperty("FrxNodeCorona.fadeAnimation.duration", duration);
+	uim.getProperty("FrxNodeCorona.fadeAnimation.refreshRate", rfRate);
+	uim.getProperty("FrxNodeCorona.fadeAnimation.tweenType", tweenType);
+	fadeAnimation = FadeAnimation::create();
+	fadeAnimation->setRefreshRate(rfRate);
+	fadeAnimation->setDuration(duration);
+	fadeAnimation->setTweenType(tweenType);
+	fadeAnimation->setComponent(c);
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::installUI(sdc::AComponentPtr c) {
@@ -143,7 +117,7 @@ void FrxNodeUI::clipCorona(sd::IDrawContext::Ptr cn, const sd::Point2D &loc,
 void FrxNodeUI::drawCorona(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	sd::ColorRGBA coronaCol = 
 		sdcu::getUIPropertyCached<FrxNodeCoronaPropertyTag>(sd::ColorRGBA());
-	coronaCol.setA(coronaAlpha);
+	coronaCol.setA(getCoronaAlpha());
 	FrxComponent::Ptr node = boost::shared_dynamic_cast<FrxComponent>(c);
 	sd::Point2D loc = node->getPivot();
 	double rCore = getCoreRadius(c), rCorona = getCoronaRadius(c);
@@ -158,7 +132,7 @@ void FrxNodeUI::drawCorona(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
-	if (!usesCorona() || coronaAlpha == 0.)
+	if (!usesCorona() || getCoronaAlpha() == 0.)
 		return;
 	drawCorona(cn, c);
 }
@@ -344,23 +318,32 @@ void FrxNodeUI::mouseReleased(const sdc::events::MouseEvent &ev)  {
 	context = NONE;
 }
 //-----------------------------------------------------------------------------
+FrxNodeUI::~FrxNodeUI() {
+}
+//-----------------------------------------------------------------------------
 void FrxNodeUI::mouseEntered(const sdc::events::MouseEvent &ev)  {
 	if (inside)
 		return;
-	fadeIn = true;
-	if (!fadeTimer->isRunning()) {
-		fadeTimer->start();
-	}
+	/* Problem: timer lock. The timer dosen't stop (under win32)
+	   immediately. The best solution (for now) is to ignore it.
+	if (fadeAnimation->isRunning()) {
+		fadeAnimation->stop();
+	}*/
+	fadeAnimation->setStartValue(getCoronaAlpha());
+	fadeAnimation->setEndValue(FINAL_ALPHA);
+	fadeAnimation->start();
 	inside = true;
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::mouseExited(const sdc::events::MouseEvent &ev) {
 	if (!inside)
 		return;
-	fadeIn = false;
-	if (!fadeTimer->isRunning()) {
-		fadeTimer->start();
-	}
+	/*if (fadeAnimation->isRunning()) {
+		fadeAnimation->stop();
+	}*/
+	fadeAnimation->setStartValue(getCoronaAlpha());
+	fadeAnimation->setEndValue(0.);
+	fadeAnimation->start();
 	inside = false;
 }
 //-----------------------------------------------------------------------------

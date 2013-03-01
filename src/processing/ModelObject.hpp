@@ -18,7 +18,10 @@
 #include <vector>
 #include <set>
 
+
 namespace frx { namespace processing {
+class IModelController;
+typedef boost::shared_ptr<IModelController> IModelControllerPtr;
 class IParameter;
 typedef boost::shared_ptr<IParameter> IParameterPtr;
 //=============================================================================
@@ -62,7 +65,11 @@ public:
 	typedef boost::signals2::connection Connection;
 protected:
 	//-------------------------------------------------------------------------
+	WPtr self;
+	//-------------------------------------------------------------------------
 	Signal signal;
+	//-------------------------------------------------------------------------
+	virtual bool removeImpl(IModelControllerPtr ctrl) = 0;
 private:
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
@@ -71,8 +78,15 @@ private:
 	//-------------------------------------------------------------------------
 	template <typename Archive> 
 	void serialize(Archive &ar, const unsigned int version) {
+		ar & self;
 	}
 public:
+	//-------------------------------------------------------------------------
+	/**
+	 * calls all connected remove handler.
+	 * @return true if object removed from model
+	 */
+	virtual bool requestRemove();
 	//-------------------------------------------------------------------------
 	virtual Connection addRemoveRequestExecuter(const RequestRemoveFunction& f)
 	{
@@ -87,11 +101,7 @@ public:
 		);
 	}
 	//-------------------------------------------------------------------------
-	/**
-	 * @param shared_ptr is needed because we can't create one with "this". 
-	 * @return true if object removed from model
-	 */
-	virtual bool requestRemove(Ptr self);
+	virtual bool remove(IModelControllerPtr ctrl);
 	//-------------------------------------------------------------------------
 	virtual ~ModelObject() {}
 	///////////////////////////////////////////////////////////////////////////

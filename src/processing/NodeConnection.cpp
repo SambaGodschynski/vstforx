@@ -7,6 +7,7 @@
 
 #include "NodeConnection.hpp"
 #include <sambag/com/exceptions/IllegalArgumentException.hpp>
+#include "IModelController.hpp"
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -32,5 +33,8 @@ void NodeConnection::setDestination(NodeAdapter::Ptr node) {
 	}
 	dst = node;
 }
-
+//-----------------------------------------------------------------------------
+bool NodeConnection::removeImpl(IModelControllerPtr ctrl) {
+	return ctrl->removeConnection(getPtr());
+}
 }} // namespace(s)

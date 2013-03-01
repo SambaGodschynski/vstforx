@@ -31,7 +31,9 @@ protected:
 	//-------------------------------------------------------------------------
 	Adaptee::Ptr parameter;
 	//-------------------------------------------------------------------------
-	ParameterAdapter(){}
+	ParameterAdapter() : _isHostParameter(false) {}
+	//-------------------------------------------------------------------------
+	virtual bool removeImpl(IModelControllerPtr ctrl);
 private:
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
@@ -42,8 +44,23 @@ private:
 	void serialize(Archive &ar, const unsigned int version) {
 		ar & boost::serialization::base_object<IParameter> ( *this );
 		ar & parameter;
+		ar & _isHostParameter;
 	}
+	//-------------------------------------------------------------------------
+	bool _isHostParameter;
 public:
+	//-------------------------------------------------------------------------
+	void setIsHostParameter(bool v) {
+		_isHostParameter = v;
+	}
+	//-------------------------------------------------------------------------
+	virtual bool isHostParameter() const {
+		return _isHostParameter;
+	}
+	//-------------------------------------------------------------------------
+	Ptr getPtr() const {
+		return boost::shared_dynamic_cast<ParameterAdapter>( self.lock() );
+	}
 	//-------------------------------------------------------------------------
 	void setAdaptee(Adaptee::Ptr p) {
 		parameter = p;
@@ -53,9 +70,11 @@ public:
 		return parameter;
 	}
 	//-------------------------------------------------------------------------
-	static Ptr create(Adaptee::Ptr a = Adaptee::Ptr()) {
+	static Ptr create(Adaptee::Ptr a = Adaptee::Ptr()) 
+	{
 		Ptr res(new ParameterAdapter());
 		res->setAdaptee(a);
+		res->self = res;
 		return res;
 	}
 	//-------------------------------------------------------------------------

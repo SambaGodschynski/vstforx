@@ -53,14 +53,14 @@ using namespace events;
 using namespace com;
 using namespace boost::parameter;
 //============================================================================================================
-// Klasse GraphChanged
+// Klasse GraphDelayChanged
 //============================================================================================================
 /**
- * @class GraphChanged Event-Klasse.
+ * @class GraphDelayChanged Event-Klasse.
  */
-struct GraphChanged : public Event {
+struct GraphDelayChanged : public Event {
 	size_t delay;
-	GraphChanged ( size_t delay ) : delay(delay) {}
+	GraphDelayChanged ( size_t delay ) : delay(delay) {}
 };
 //============================================================================================================
 /**
@@ -69,7 +69,7 @@ struct GraphChanged : public Event {
  * (zb. Parameter)
  */
 class Graph : 
-	public EventSender<GraphChanged>
+	public EventSender<GraphDelayChanged>
 //============================================================================================================
 {
 friend class boost::serialization::access;
@@ -156,7 +156,8 @@ private:
 	/**
 	 * blockiert processGraph() gegen Janitor-Objekt
 	 */
-	com::Mutex processingLock;
+	typedef sambag::com::Mutex ProcessingMutex;
+	ProcessingMutex processingLock;
 	//--------------------------------------------------------------------------------------------------------
 	sambag::com::RecursiveMutex janitorLock;
 	//--------------------------------------------------------------------------------------------------------
@@ -301,7 +302,7 @@ public:
 	/**
 	 * @return Processing Mutex
 	 */
-	com::Mutex & getProcessingLock() { return processingLock; }
+	ProcessingMutex & getProcessingLock() { return processingLock; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param i

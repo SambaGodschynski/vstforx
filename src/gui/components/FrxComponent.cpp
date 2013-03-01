@@ -14,43 +14,33 @@ namespace frx { namespace gui { namespace components {
 //  Class FrxComponent
 //=============================================================================
 //-----------------------------------------------------------------------------
-const std::string FrxComponent::PROPERTY_FLAG_TXT = "flag_text";
-//-----------------------------------------------------------------------------
-void FrxComponent::setFlagText(const std::string &txt) {
-	std::string old = getFlagText();
-	std::vector<std::string> strs;
-	strs.reserve(2);
-	boost::split(strs, txt, boost::is_any_of("/"));
-	if (strs.size() >= 1) {
-		uFlagTxt = strs[0];
-	}
-	if (strs.size() >= 2) {
-		lFlagTxt = strs[1];
-	}
-	firePropertyChanged(PROPERTY_FLAG_TXT, old, getFlagText());
-}
+const std::string FrxComponent::PROPERTY_UPFLAG_TXT = "upper_flag_text";
+const std::string FrxComponent::PROPERTY_LOFLAG_TXT = "lower_flag_text";
 //-----------------------------------------------------------------------------
 void FrxComponent::setUpperFlagText(const std::string &txt) {
-	std::string old = getFlagText();
+	std::string old = getUpperFlagText();
 	uFlagTxt = txt;
-	firePropertyChanged(PROPERTY_FLAG_TXT, old, getFlagText());
+	firePropertyChanged(PROPERTY_UPFLAG_TXT, old, txt);
 }
 //-----------------------------------------------------------------------------
 void FrxComponent::setLowerFlagText(const std::string &txt) {
-	std::string old = getFlagText();
+	std::string old = getLowerFlagText();
 	lFlagTxt = txt;
-	firePropertyChanged(PROPERTY_FLAG_TXT, old, getFlagText());
+	firePropertyChanged(PROPERTY_LOFLAG_TXT, old, txt);
 }
 //-----------------------------------------------------------------------------
 void FrxComponent::postConstructor() {
 	Super::postConstructor();
-	if (getFlagText()=="") {
-		setFlagText(getName());
+	if (getUpperFlagText()=="") {
+		setUpperFlagText(getName());
 	}
 }
 //-----------------------------------------------------------------------------
 FrxComponent::FrxComponent() {
 	setName("");
+}
+//----------------------------------------------------------------------------
+FrxComponent::~FrxComponent() {
 }
 //-----------------------------------------------------------------------------
 sdc::ui::AComponentUIPtr 

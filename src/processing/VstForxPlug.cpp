@@ -81,10 +81,10 @@ sampleRate(0.f)
 {
 }
 //-----------------------------------------------------------------------------
-void VstForxPlug::onGraphChanged(void *src, const ::processing::GraphChanged &ev)
+void VstForxPlug::onGraphDelayChanged(void *src, const ::processing::GraphDelayChanged &ev)
 {
 	if (host) {
-		host->configurationChanged();
+		host->delayChanged(ev.delay);
 	}
 }
 //-----------------------------------------------------------------------------
@@ -111,9 +111,9 @@ void VstForxPlug::unRegisterInstance() {
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::installGraphListener() {
-	typedef ::processing::Graph::EventSender<::processing::GraphChanged> Sender;
+	typedef ::processing::Graph::EventSender<::processing::GraphDelayChanged> Sender;
 	graph->Sender::addTrackedEventListener(
-		boost::bind(&VstForxPlug::onGraphChanged, this, _1, _2),
+		boost::bind(&VstForxPlug::onGraphDelayChanged, this, _1, _2),
 		hostInfoAdapter
 	);
 }
@@ -162,6 +162,7 @@ VstForxPlug::~VstForxPlug() {
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::process(float **in, float **out, int numSamples) {
+	TRY_TO_LOCK_TIMED2 ( processingLoadLock, 10 );
 	if ( !graph ) 
 		return;
 	::processing::Frames fr ( in, numSamples ); 
@@ -170,9 +171,11 @@ void VstForxPlug::process(float **in, float **out, int numSamples) {
 		fr.getBlock ( out, numSamples );
 		return;
 	}
-	TRY_TO_LOCK_TIMED2 ( graph->getProcessingLock(), 30 ); // pushandcopy needs the lock #issue272
-	graph->pushAndCopy ( &fr, numSamples );
-	graph->processGraph( out, numSamples  );
+	{
+		TRY_TO_LOCK_TIMED2 ( graph->getProcessingLock(), 10 ); // pushandcopy needs the lock #issue272
+		graph->pushAndCopy ( &fr, numSamples );
+		graph->processGraph( out, numSamples  );
+	}
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::processEvents(sambag::dsp::IMidiEvents *ev) {
@@ -265,11 +268,14 @@ void VstForxPlug::updateGraphBaseConfiguration() {
 	graph->getJanitor()->hostBaseConfigChanged();
 }
 //-----------------------------------------------------------------------------
-void VstForxPlug::requestEditorResize(int width, int height) {
-	getHost()->requestEditorResize(width, height);
+bool VstForxPlug::requestEditorResize(int width, int height) {
+	return getHost()->requestEditorResize(width, height);
 }
 //-----------------------------------------------------------------------------
 int VstForxPlug::getChunk(void **data) {
+	if (!_open) {
+		open();
+	}
 	try {
 		std::stringstream ss;
 		save(ss);
@@ -303,6 +309,9 @@ int VstForxPlug::getChunk(void **data) {
 }
 //-----------------------------------------------------------------------------
 int VstForxPlug::setChunk(void *data, int byteSize) {
+	if (!_open) {
+		open();
+	}
 	if (byteSize==0) {
 		return 0;
 	}
@@ -402,8 +411,10 @@ void VstForxPlug::save(std::ostream &os) {
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::load(std::istream &is) {
-	
+	TRY_TO_LOCK_TIMED2 ( processingLoadLock, 10 );
 	::processing::Graph::Ptr alt = graph; // hold old until loosing scope
+	IHostInfo::Ptr altHostInfoAdapter = hostInfoAdapter;
+
 	::com::iArchive ar(is);
 	ar.register_type<HostInfoAdapter>();
 	register_types(ar);

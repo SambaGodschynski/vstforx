@@ -185,6 +185,39 @@ void ScriptedTests::issue272() {
 	scriptCtrl->join();
 	CPPUNIT_ASSERT(!failed);
 }
+//-----------------------------------------------------------------------------
+void ScriptedTests::issue320() {
+	sambag::disco::IResourceManager &rm =
+		sambag::disco::getResourceManager();
+	
+	scriptCtrl->appendJob( rm.getString("testScripts/issue320.lua") );
+	scriptCtrl->start();
+	sambag::disco::components::Window::startMainLoop();
+	scriptCtrl->join();
+	CPPUNIT_ASSERT(!failed);
+}
+//-----------------------------------------------------------------------------
+void ScriptedTests::issue322() {
+	sambag::disco::IResourceManager &rm =
+		sambag::disco::getResourceManager();
+	
+	scriptCtrl->appendJob( rm.getString("testScripts/issue322.lua") );
+	scriptCtrl->start();
+	sambag::disco::components::Window::startMainLoop();
+	scriptCtrl->join();
+	CPPUNIT_ASSERT(!failed);
+}
+//-----------------------------------------------------------------------------
+void ScriptedTests::issue324() {
+	sambag::disco::IResourceManager &rm =
+		sambag::disco::getResourceManager();
+	
+	scriptCtrl->appendJob( rm.getString("testScripts/issue324.lua") );
+	scriptCtrl->start();
+	sambag::disco::components::Window::startMainLoop();
+	scriptCtrl->join();
+	CPPUNIT_ASSERT(!failed);
+}
 ///////////////////////////////////////////////////////////////////////////////
 int testHostCallback(AEffect* effect, VstInt32 opcode, 
  VstInt32 index, VstIntPtr value, void* ptr, float opt) 

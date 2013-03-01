@@ -54,8 +54,6 @@ protected:
 	//-------------------------------------------------------------------------
 	void updateParameter();
 	//-------------------------------------------------------------------------
-	WPtr self;
-	//-------------------------------------------------------------------------
 	Adaptee::Ptr processor;
 	//-------------------------------------------------------------------------
 	ProcessorAdapter(){}
@@ -69,10 +67,11 @@ protected:
 	//-------------------------------------------------------------------------
 	void initParameter();
 	//-------------------------------------------------------------------------
+	virtual bool removeImpl(IModelControllerPtr ctrl);
 public:
 	//-------------------------------------------------------------------------
 	virtual IProcessor::Ptr getPtr() const {
-		return self.lock();
+		return boost::shared_dynamic_cast<IProcessor>( self.lock() );
 	}
 	//-------------------------------------------------------------------------
 	static Ptr create(Adaptee::Ptr a = Adaptee::Ptr()) {
@@ -125,7 +124,7 @@ public:
 	virtual void 
 	getParameters(const ParameterGroupKey &key, Parameters &out) const;
 	//-------------------------------------------------------------------------
-	virtual bool requestRemove(ModelObject::Ptr obj);
+	virtual bool requestRemove();
 	///////////////////////////////////////////////////////////////////////////
 	// Events
 	//-------------------------------------------------------------------------
