@@ -14,6 +14,22 @@ JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 ?>
 
+<style type="text/css">
+label.invalid {
+  color: #b94a48;
+}
+input.invalid, select.invalid, textarea.invalid {
+  color: #b94a48;
+  border-color: #b94a48;
+}
+input.invalid:focus, select.invalid:focus, textarea.invalid:focus {
+  border-color: #953b39;
+  -webkit-box-shadow: 0 0 6px #d59392;
+  -moz-box-shadow: 0 0 6px #d59392;
+  box-shadow: 0 0 6px #d59392;
+}
+</style>
+
 <div class="registration<?php echo $this->pageclass_sfx?> row-fluid">
 	<?php if ($this->params->get('show_page_heading')) : ?>
 	<div class="page-header">

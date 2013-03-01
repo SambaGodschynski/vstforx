@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="j2Mantis show known issues">
+		<message>show all bugs of all unreleased versions</message>
+	</layout>
+	<state>
+		<name>J2Manits show known issues</name>
+		<description>show all bugs of all unreleased versions</description>
+		<advanced>
+		</advanced>
+	</state>
+	
+ 	<fields name="params" >
+        <fieldset name="params">
+            <field name="target_version" type="text"
+                label="target version"
+                required="true"
+                description="the issue target versions string."
+            />
+        </fieldset>
+    </fields>
+
+</metadata>

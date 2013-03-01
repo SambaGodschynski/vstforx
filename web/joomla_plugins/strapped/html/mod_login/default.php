@@ -40,6 +40,6 @@ JHtml::_('behavior.keepalive');
 		<input type="hidden" name="return" value="<?php echo $return; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 	</fieldset>
+	<a href="<?php echo JRoute::_('index.php?option=com_users&view=registration'); ?>" > <?php echo JText::_('MOD_LOGIN_REGISTER'); ?></a>
 </form>
-<!--a href="<?php echo JRoute::_('index.php?option=com_users&view=registration'); ?>"> <?php echo JText::_('MOD_LOGIN_REGISTER'); ?></a-->
 <?php endif; ?>
