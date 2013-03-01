@@ -22,68 +22,47 @@ jimport('joomla.application.component.helper');
 class J2MantisViewshowknownissues extends JView
 {
 
-
-	function array_sort($array, $on, $order='SORT_DESC') 
-    { 
-      $new_array = array(); 
-      $sortable_array = array(); 
-  
-      if (count($array) > 0) { 
-          foreach ($array as $k => $v) { 
-              if (is_array($v)) { 
-                  foreach ($v as $k2 => $v2) { 
-                      if ($k2 == $on) { 
-                          $sortable_array[$k] = $v2; 
-                      } 
-                  } 
-              } else { 
-                  $sortable_array[$k] = $v; 
-              } 
-          } 
-  
-          switch($order) 
-          { 
-              case 'SORT_ASC':    
-                  //echo "ASC"; 
-                  asort($sortable_array); 
-              break; 
-              case 'SORT_DESC': 
-                  //echo "DESC"; 
-                  arsort($sortable_array); 
-              break; 
-          } 
-  
-          foreach($sortable_array as $k => $v) { 
-              $new_array[] = $array[$k]; 
-          } 
-      } 
-      return $new_array; 
-   } 
-
-	function filterArray($bugs, $version) {
+	function filterArray($bugs, $version, $url) {
 		if (count($bugs) == 0) {
 			return $bugs;		
 		}
 		$new_array = array();
 		foreach ($bugs as $k => $v) {
-			if ( strcmp($v->target_version, $version)!=0 ) 
+			if ( $v->target_version != $version ) 
 			{
 				continue;			
 			}
+			if ( $v->status->name != "confirmed" &&
+				 $v->status->name != "assigned"  &&
+				 $v->status->name != "resolved" ) 
+			{
+				continue;			
+			}
+			$v->target_url = $url . "/view.php?id=" . $v->id;		
 			$new_array[$k] = $v;		
 		}
 		return $new_array;
 	}
 
+	function getTargetUrlBase() {
+		$url = &JComponentHelper::getParams( 'com_j2mantis' )->get("url");
+		$url = parse_url($url);
+		if (!$url) {
+			return "";		
+		}
+		return $url["scheme"] . "://" . $url["host"];
+	}
+
     function display($tpl = null)
     {
-		$app = JFactory::getApplication('site');
-		$componentParams = $app->getParams('com_j2mantis');
-		$version = $componentParams->get('target_version');
+		$input = JFactory::getApplication()->input;
+		$version = $input->get('target_version');
 		if (empty($version)) {
 			echo "no version set.";
 			return;		
 		}
+
+		$url = $this->getTargetUrlBase();
     	
     	require_once( JPATH_COMPONENT.DS.'JoomlaMantisParameter.class.php');
 		$settings = new JoomlaMantisParameter();
@@ -97,12 +76,13 @@ class J2MantisViewshowknownissues extends JView
 			}
 		}
 		$bugs = $Mantis->getAllBugsOfAllProjects();
-		$bugs = $this->filterArray($bugs, $version);
-		$bugs = $this->array_sort($bugs, 'last_updated');
+		$bugs = $this->filterArray($bugs, $version, $url);
     	$caption = JText::_('Known issues');
         $this->assignRef( 'caption', $caption );
         $this->assignRef( 'bugs', $bugs);
         $this->assignRef( 'mantis', $Mantis);
+		$this->assignRef( 'version', $version);
+		$this->assignRef( 'target_url', $url);
         
         parent::display($tpl);
     }

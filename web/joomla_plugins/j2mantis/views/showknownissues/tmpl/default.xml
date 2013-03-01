@@ -10,8 +10,8 @@
 		</advanced>
 	</state>
 	
- 	<fields name="params" >
-        <fieldset name="params">
+ 	<fields name="request" >
+        <fieldset name="request">
             <field name="target_version" type="text"
                 label="target version"
                 required="true"

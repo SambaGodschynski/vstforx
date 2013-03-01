@@ -11,7 +11,9 @@ defined('_JEXEC') or die('Restricted access'); ?>
 	}
 </style>
 
-
+<?php
+	echo "<!-- Show bugs for: " . $this->version . "-->";
+?>
 <h1><?php echo $this->caption; ?></h1>
 <table  id="mt_overview">
 <thead>
@@ -34,12 +36,12 @@ defined('_JEXEC') or die('Restricted access'); ?>
 </tr>
 </thead>
 <?php foreach($this->bugs as $bug){ ?>
-<tr <?php if ( strcmp( $bug->status->name, "resolved" ) == 0 ) echo 'class="issue-resolved"'; ?> >
+<tr <?php if ( $bug->status->name == "resolved" ) echo 'class="issue-resolved"'; ?> >
 	<td>
 		<?php echo $bug->status->name ?>
 	</td>
 	<td>
-		<a href="?option=com_j2mantis&amp;view=showbug&amp;bugid=<?php echo base64_encode($this->mantis->encode((string)$bug->id)); ?>&amp;Itemid=<?php echo JRequest::getInt('Itemid',0);?>"><?php echo $bug->summary ?></a>
+		<a href="<?php echo $bug->target_url; ?>"> <?php echo $bug->summary ?> </a>
 	</td>
 	<td>
 		<?php echo $bug->category ?>
