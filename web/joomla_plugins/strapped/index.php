@@ -80,6 +80,8 @@ if( $this->params->get('bodyColor') ) :
 $custom_css = '
 body {
 	background-color:#' . $this->params->get('bodyColor') . ';
+	background-image:url(' . $this->baseurl . '/templates/'. $this->template .'/images/bk.png);
+	background-repeat:repeat;
 	}
 ';
 endif;
@@ -236,21 +238,23 @@ endif;
 			<?php endif; ?>
 			<!-- Component -->
 			<div id="content" class="span<?php echo (12-$leftcolgrid-$rightcolgrid);?>">
-				<?php if($this->countModules('above-content')) : ?>
-				<!-- Above Content Module Position -->	
-				<div id="above-content">
-					<jdoc:include type="modules" name="above-content" style="xhtml" />	
+				<div class="well">
+					<?php if($this->countModules('above-content')) : ?>
+					<!-- Above Content Module Position -->	
+					<div id="above-content">
+						<jdoc:include type="modules" name="above-content" style="xhtml" />	
+					</div>
+					<hr />
+					<?php endif; ?>
+					<jdoc:include type="component" />
+					<?php if($this->countModules('below-content')) : ?>
+					<!-- Below Content Module Position -->	
+					<hr />
+					<div id="below-content">
+						<jdoc:include type="modules" name="below-content" style="xhtml" />	
+					</div>
+					<?php endif; ?>
 				</div>
-				<hr />
-				<?php endif; ?>
-				<jdoc:include type="component" />
-				<?php if($this->countModules('below-content')) : ?>
-				<!-- Below Content Module Position -->	
-				<hr />
-				<div id="below-content">
-					<jdoc:include type="modules" name="below-content" style="xhtml" />	
-				</div>
-				<?php endif; ?>
 			</div>
 			<!-- Right -->
 			<?php if($this->countModules('right')) : ?>
