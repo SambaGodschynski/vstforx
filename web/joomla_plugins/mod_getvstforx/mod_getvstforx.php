@@ -41,14 +41,16 @@ try {
 		<p>you need to login in order to purchase VSTForx.</p>
 		<a href="<?php echo JRoute::_('index.php?option=com_users&view=registration'); ?>">don't have an account?</a>	
 		</div>
-		<br/>
+		<br />
 		<p><strong>- OR -</strong></p>
-		<br/>
-		<p>Download the outdated beta version for free.</p>
+		<br />
+		<p>enjoy the <b>free</b> stuff:</p>
+		<br />
 <?php	
 	} else {
 ?>
 		<h4>Your Downloads</h4>
+		<br />
 <?php
 	}
 	showDownloads($user);

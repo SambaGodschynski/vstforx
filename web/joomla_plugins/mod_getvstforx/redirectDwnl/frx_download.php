@@ -55,7 +55,7 @@ function getFilename($downloads_id) {
 
 $path = '../binary/';
 
-$downloads_id = $_GET['dst'];
+$downloads_id = $_POST['dst'];
 try {
 	$rq=getFilename($downloads_id);
 	$path.=$rq[0];

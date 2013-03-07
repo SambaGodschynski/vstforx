@@ -80,6 +80,8 @@ if( $this->params->get('bodyColor') ) :
 $custom_css = '
 body {
 	background-color:#' . $this->params->get('bodyColor') . ';
+	background-image:url(' . $this->baseurl . '/templates/'. $this->template .'/images/bk.png);
+	background-repeat:repeat;
 	}
 ';
 endif;
@@ -135,6 +137,18 @@ endif;
 
 </head>
 <body class="<?php echo $option . " " . $view . " " . $layout . " " . $task . " item-" . $itemid;?> <?php if($site_home){ echo "home";}?> <?php echo $body_font_class.' '.$heading_font_class.' '.$browser_classes;?>" data-spy="scroll" data-target=".subnav" data-offset="50" data-redering="true">
+
+<?php 
+	//Placed at the top to have component access 
+?>
+<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/jquery.js"></script> 
+<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/bootstrap.min.js"></script> 
+<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/application.js"></script> 
+<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/prettify.js"></script> 
+<script type="text/javascript">
+        jQuery.noConflict();
+</script>
+
 <!-- Navbar
     ================================================== -->
 <div class="navbar-wrapper">
@@ -224,21 +238,23 @@ endif;
 			<?php endif; ?>
 			<!-- Component -->
 			<div id="content" class="span<?php echo (12-$leftcolgrid-$rightcolgrid);?>">
-				<?php if($this->countModules('above-content')) : ?>
-				<!-- Above Content Module Position -->	
-				<div id="above-content">
-					<jdoc:include type="modules" name="above-content" style="xhtml" />	
+				<div class="well well-large">
+					<?php if($this->countModules('above-content')) : ?>
+					<!-- Above Content Module Position -->	
+					<div id="above-content">
+						<jdoc:include type="modules" name="above-content" style="xhtml" />	
+					</div>
+					<hr />
+					<?php endif; ?>
+					<jdoc:include type="component" />
+					<?php if($this->countModules('below-content')) : ?>
+					<!-- Below Content Module Position -->	
+					<hr />
+					<div id="below-content">
+						<jdoc:include type="modules" name="below-content" style="xhtml" />	
+					</div>
+					<?php endif; ?>
 				</div>
-				<hr />
-				<?php endif; ?>
-				<jdoc:include type="component" />
-				<?php if($this->countModules('below-content')) : ?>
-				<!-- Below Content Module Position -->	
-				<hr />
-				<div id="below-content">
-					<jdoc:include type="modules" name="below-content" style="xhtml" />	
-				</div>
-				<?php endif; ?>
 			</div>
 			<!-- Right -->
 			<?php if($this->countModules('right')) : ?>
@@ -273,13 +289,5 @@ endif;
 </div><!-- /container -->
 <!-- Le javascript
     ================================================== --> 
-<!-- Placed at the end of the document so the pages load faster --> 
-<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/jquery.js"></script> 
-<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/bootstrap.min.js"></script> 
-<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/application.js"></script> 
-<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/prettify.js"></script> 
-<script type="text/javascript">
-        jQuery.noConflict();
-</script>
 </body>
 </html>
