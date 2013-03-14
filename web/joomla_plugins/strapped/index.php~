@@ -141,11 +141,11 @@ endif;
 <?php 
 	//Placed at the top to have component access 
 ?>
-<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/jquery.js"></script> 
-<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/bootstrap.min.js"></script> 
-<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/application.js"></script> 
-<script src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/prettify.js"></script> 
-<script type="text/javascript">
+<script type="text/javascript" src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/jquery.js"></script> 
+<script type="text/javascript" src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/bootstrap.min.js"></script> 
+<script type="text/javascript" src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/application.js"></script> 
+<script type="text/javascript" src="<?php echo $this->baseurl ?>/templates/<?php echo $this->template; ?>/js/prettify.js"></script> 
+<script type="text/javascript" type="text/javascript">
         jQuery.noConflict();
 </script>
 
@@ -238,7 +238,7 @@ endif;
 			<?php endif; ?>
 			<!-- Component -->
 			<div id="content" class="span<?php echo (12-$leftcolgrid-$rightcolgrid);?>">
-				<div class="well well-large">
+				<div class="well">
 					<?php if($this->countModules('above-content')) : ?>
 					<!-- Above Content Module Position -->	
 					<div id="above-content">

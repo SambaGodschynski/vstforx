@@ -1,0 +1,27 @@
+<div class="row-fluid">
+  <div class="span7"><br /></div>
+  <div id="socialshareprivacy" class="span5"></div>
+</div>
+<script type="text/javascript" src="http://www.vstforx.de/socialshareprivacy/jquery.socialshareprivacy.js"></script>
+<script type="text/javascript">
+      jQuery(document).ready(function($){
+        if($('#socialshareprivacy').length > 0){
+          $('#socialshareprivacy').socialSharePrivacy({
+              services: { 
+            facebook : { 
+            'dummy_img' : 'http://www.vstforx.de/socialshareprivacy/socialshareprivacy/images/dummy_facebook_en.png',
+            'language' : 'en_US'
+          },
+          twitter : {
+            'dummy_img' : 'http://www.vstforx.de/socialshareprivacy/socialshareprivacy/images/dummy_twitter.png'           
+          },
+          gplus : {
+            'status' : 'off'           
+          },  
+          },  
+              'css_path' : 'http://www.vstforx.de/socialshareprivacy/socialshareprivacy/socialshareprivacy.css',
+        
+        }); 
+        }
+      });
+</script>
