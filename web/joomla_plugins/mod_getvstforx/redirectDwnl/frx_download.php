@@ -43,7 +43,7 @@ function getFilename($downloads_id) {
 	";
 	$db->setQuery($query);
 	if ( !$db->query() ) {
-		throw new Exception( "Database query failed.  : " . $db->getErrorMsg() );	
+		throw new Exception( "Database query failed."); //  : " . $db->getErrorMsg() );	
 	}	
 	$res = $db->loadRow();
 	if (!$res) {
