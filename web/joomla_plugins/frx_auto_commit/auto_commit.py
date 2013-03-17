@@ -6,7 +6,6 @@ import os
 import getpass
 import time
 from exceptions import *
-import signal
 import datetime
 import re
 
@@ -110,19 +109,20 @@ parser.add_argument('--fork',
 args = parser.parse_args()
 pwd = getpass.getpass("pwd: ")
 args.pwd = pwd
-_lock(args)
 t = get_title(args)
 if not t == args.title:
     _print ("title missmatch: '%s' expected" % t)
     sys.exit(0)
 
 if args.fork:
+    import signal
     pid = os.fork()
     if not pid==0:
         _print ("stop the process with: kill -SIGTERM %d" % pid)
         sys.exit(0)
-    signal.signal(signal.SIGINT, _sighandler)
+    signal.signal(signal.SIGTERM, _sighandler)
 
+_lock(args)
 commit(args)
 dstamp = os.path.getmtime(args.path)
 stamp = checkfile(args) 
@@ -141,6 +141,6 @@ try:
 except KeyboardInterrupt:
     pass
 _unlock(args)
-_print ("done.")
+_print ("exited.")
 
 
