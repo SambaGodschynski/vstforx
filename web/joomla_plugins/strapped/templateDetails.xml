@@ -30,10 +30,10 @@
 	<positions>
 		<position>post-navbar</position>
 		<position>above</position>
-		<position>above-article</position>
+		<position>above-content</position>
 		<position>banner</position>
 		<position>below</position>
-		<position>below-article</position>
+		<position>below-content</position>
 		<position>bottom</position>
 		<position>bottom-menu</position>
 		<position>breadcrumbs</position>

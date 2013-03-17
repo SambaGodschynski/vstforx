@@ -19,7 +19,6 @@ $canEdit	= $this->item->params->get('access-edit');
 $user		= JFactory::getUser();
 
 ?>
-
 <div class="item-page<?php echo $this->pageclass_sfx?> row-fluid">
 	<?php if ($canEdit ||  $params->get('show_print_icon') || $params->get('show_email_icon')) : ?>
 	<!-- Item Actions -->

@@ -64,6 +64,14 @@ $canEdit	= $this->item->params->get('access-edit');
 		<?php if ($params->get('show_create_date')) : ?>
 		<span class="create"><i class="icon-time"></i> <?php echo JText::sprintf('COM_CONTENT_CREATED_DATE_ON', JHtml::_('date', $this->item->created, JText::_('DATE_FORMAT_LC1'))); ?> </span>
 		<?php endif; ?>
+		<?php if ($params->get('show_publish_date')) : ?>
+		<span class="muted">
+			<i class="icon-time"></i>
+			<em>
+				<?php echo JText::sprintf(JHtml::_('date', $this->item->created, JText::_('DATE_FORMAT_JS1'))); ?>
+			</em>
+		</span>
+		<?php endif; ?>
 		<?php if ($params->get('show_parent_category') && $this->item->parent_id != 1) : ?>
 		<span class="parent-category-name">
 		<?php $title = $this->escape($this->item->parent_title);
