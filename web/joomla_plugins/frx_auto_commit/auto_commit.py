@@ -10,6 +10,7 @@ import datetime
 import re
 
 running = True
+isdaemon = False
 
 def _post(args, values):
     url=args.url
@@ -50,14 +51,20 @@ def _sighandler(signum, frame):
     running = False
 
 def _print(s, newline=True, showdate=True):
+    if isdaemon:
+        out = open("log.txt", "a")
+    else:
+        out = sys.stdout
     if showdate:
         s = "%s: %s" % ( datetime.datetime.now().ctime(), s )
     if newline:
-        sys.stdout.write(s + "\n")
-        sys.stdout.flush()
+        out.write(s + "\n")
+        out.flush()
         return
-    sys.stdout.write(s)
-    sys.stdout.flush()
+    out.write(s)
+    out.flush()
+    if isdaemon:
+        out.close()
     
 def _lock(args):
     ids = []
@@ -111,22 +118,26 @@ pwd = getpass.getpass("pwd: ")
 args.pwd = pwd
 t = get_title(args)
 if not t == args.title:
-    _print ("title missmatch: '%s' expected" % t)
+    print ("title missmatch: '%s' expected" % t)
     sys.exit(0)
 
 if args.fork:
+    if os.name == "nt":
+        print "os dosen't support forking."
+        sys.exit(0)
     import signal
     pid = os.fork()
     if not pid==0:
-        _print ("stop the process with: kill -SIGTERM %d" % pid)
+        print ("stop the process with: kill -SIGTERM %d" % pid)
         sys.exit(0)
     signal.signal(signal.SIGTERM, _sighandler)
+    isdaemon = True
 
 _lock(args)
 commit(args)
 dstamp = os.path.getmtime(args.path)
 stamp = checkfile(args) 
-_print ("starting observer...")
+_print ("observer for %s started." % args.path)
 try:
     while running:
         ndstamp = os.path.getmtime(args.path)
@@ -141,6 +152,7 @@ try:
 except KeyboardInterrupt:
     pass
 _unlock(args)
-_print ("exited.")
-
+_print ("observer for %s stoped." % args.path)
+if isdaemon: 
+    print "process %d exited." % os.getpid()
 
