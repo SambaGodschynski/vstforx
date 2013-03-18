@@ -1,6 +1,23 @@
 <?php
 
 require "paypal.class/paypal.class.php";
+////////////////////////////////////////////////////////////////////////////////
+// BEGIN CONFIG
+////////////////////////////////////////////////////////////////////////////////
+/**
+ * get joomla access.
+ * altenative: impl. as extra joomla-module. 
+ */
+// Definiere J!
+define( '_JEXEC', 1 );
+define( 'NOT_SETTED', '##variable_not_setted++' );
+// J! Pfad setzen - BITTE ANPASSEN !!!
+define( 'JPATH_BASE', '../i' );
+define( 'DS', DIRECTORY_SEPARATOR );
+// Dateien des J! Frameworks einbinden
+require_once ( JPATH_BASE.DS.'includes'.DS.'defines.php' );
+require_once ( JPATH_BASE.DS.'includes'.DS.'framework.php' );  	
+defined('_JEXEC') OR defined('_VALID_MOS') OR die( "Direct Access Is Not Allowed" );
 
 $p = new paypal_class;
 /**
@@ -10,6 +27,19 @@ $p = new paypal_class;
  */
 $p->paypal_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
 
+////////////////////////////////////////////////////////////////////////////////
+// END CONFIG
+////////////////////////////////////////////////////////////////////////////////
+
+function getDB() {
+	$mainframe =& JFactory::getApplication('site');
+	$db = JFactory::getDBO();
+	if (!$db) {
+		error ("Database query failed.");
+	}	
+	return $db;
+}
+
 if ($p->validate_ipn()) {
 
 	if($p->ipn_data['payment_status']!='Completed') {
@@ -17,14 +47,10 @@ if ($p->validate_ipn()) {
 		return;
 	}
 	
-	$link = mysql_connect('localhost', 'web22', '$$1334$$');
-	if (!$link) {
-		error("connection to database failed.");
-		exit;
-	}
+	$db = getDB();
 
 	$amount = $p->ipn_data['mc_gross'] - $p->ipn_data['mc_fee'];
-	$result = mysql_query("INSERT INTO `usr_web22_1`.`frx_selled` (
+	$query = "INSERT INTO `usr_web22_1`.`frx_selled` (
 				`juser` ,
 				`transaction_id` ,
 				`email` ,
@@ -32,20 +58,17 @@ if ($p->validate_ipn()) {
 				`productid`,
 				`rquest`
 				) VALUES (
-					".(int)$p->ipn_data['custom'].",
-					'".esc($p->ipn_data['txn_id'], $link)."',
-					'".esc($p->ipn_data['payer_email'], $link)."',
-					".(float)$amount.",
-					'".esc($p->ipn_data['item_number'], $link)."',
-					'".esc(http_build_query($_POST), $link)."'
-				)");
-
-	if (!$result) {
-		error( "database query failed: ". mysql_error() );
-		mysql_close($link);
-		exit;
-	}
-	mysql_close($link);
+					" . (int)$p->ipn_data['custom'] . ",
+					" . $db->quote($p->ipn_data['txn_id'], $link). ",
+					" . $db->quote($p->ipn_data['payer_email'], $link). ",
+					" . (float)$amount . ",
+					" . $db->quote($p->ipn_data['item_number'], $link). ",
+					" . $db->quote(http_build_query($_POST), $link). "
+				);";
+	$db->setQuery($query);
+	if ( !$db->query() ) {
+		error( "Database query failed: " . $db->getErrorMsg() );	
+	}	
 }
 
 
@@ -62,11 +85,6 @@ function error($msg) {
 	$d = date("d.m.Y");
 	$t = date("H:i");	
 	error_log($d.', '.$t.':: '.$msg."\n", $type, "transactionResponseErr.log");
-}
-
-function esc($str, $dblink)
-{
-	return mysql_real_escape_string($str,$dblink);
 }
 ?>
 

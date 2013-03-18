@@ -13,9 +13,21 @@ function getDB() {
 function processQuery($db, $query) {
 	$db->setQuery($query);
 	if ( !$db->query() ) {
-		throw new Exception( "Database query failed."); // : " . $db->getErrorMsg() );	
+		throw new Exception( "Database query failed. : " . $db->getErrorMsg() );	
 	}	
 	$res = $db->loadRowList();
+	if (!$res) {
+		return null;
+	}
+	return $res;
+}
+
+function processQueryAssoc($db, $query) {
+	$db->setQuery($query);
+	if ( !$db->query() ) {
+		throw new Exception( "Database query failed. : " . $db->getErrorMsg() );	
+	}	
+	$res = $db->loadAssocList();
 	if (!$res) {
 		return null;
 	}
