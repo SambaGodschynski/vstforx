@@ -114,6 +114,9 @@ parser.add_argument('--fork',
                     help="starts child process and return")
 
 args = parser.parse_args()
+if not os.path.exists( args.path ):
+    print args.path + " does not exists."
+    sys.exit(0)
 pwd = getpass.getpass("pwd: ")
 args.pwd = pwd
 t = get_title(args)
@@ -142,6 +145,7 @@ try:
     while running:
         ndstamp = os.path.getmtime(args.path)
         if dstamp == ndstamp:
+            time.sleep(1)
             continue
         dstamp = ndstamp
         nstamp = checkfile(args)
