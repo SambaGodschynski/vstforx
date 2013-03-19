@@ -51,41 +51,50 @@ function showUserAlert() {
 <?php
 }
 
-function beginShop() {
+
+function beginX($title="") {
+	if ($title!="") {
 ?>
 
-		<h3>Your purchase options</h3>
-		<br />
-<?php
-}
-
-function beginDownl($showtitle) {
-	if ($showtitle) {
-?>
-
-		<h3>Your Downloads</h3>
+		<h3><?php echo $title ?></h3>
 		<br />
 <?php
 	}
+?>
+		<div class="row-fluid">
+			<div class="span1"> <p></p> </div>
+			<div class="span10">
+<?php
+}
+
+
+function endX() {
+?>
+		<div class="span1"> <p></p> </div>
+		</div>
+	</div>
+<?php
 }
 
 checkPageSource();
 
 try {
 	$user	= JFactory::getUser();
-	$showdwntitle = false;
+	$title = "";
 	if (!checkState($user)) {
 		showUserAlert();
 	} else {
 		$opt = getPurchaseOptions($user);
 		if ( sizeof($opt) > 0 ) {
-			beginShop();
-			showShop($opt);		
+			beginX("Your Purchase Options");
+			showShop($opt);	
+			endX();
 		}
-		$showdwntitle = true;
+		$title = "Your Downloads";
 	}
-	beginDownl($showdwntitle);
+	beginX($title);
 	showDownloads($user);
+	endX();
 } catch (Exception $e) {
 	?>
 	<div class="alert alert-error">
