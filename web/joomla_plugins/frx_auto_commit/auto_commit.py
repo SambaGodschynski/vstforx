@@ -8,6 +8,7 @@ import time
 from exceptions import *
 import datetime
 import re
+import pickle
 
 running = True
 isdaemon = False
@@ -70,7 +71,7 @@ def _lock(args):
     ids = []
     if os.path.exists(".lock"):
         f = open(".lock", "r")
-        ids = f.readlines()
+        ids = pickle.load(f)
         f.close()
     for x in ids:
         if x == args.id:
@@ -78,17 +79,17 @@ def _lock(args):
             sys.exit(0)
     f = open(".lock", "w")
     ids.append(str(args.id))
-    f.writelines(ids)
+    pickle.dump(ids, f)
     f.close()
 
 def _unlock(args):
     ids = []
     f = open(".lock", "r")
-    ids = f.readlines()
+    ids = pickle.load(f)
     f.close()
     ids = filter( lambda x: x!=args.id, ids )
     f = open(".lock", "w")
-    f.writelines(ids)
+    pickle.dump(ids, f)
     f.close()
 
 parser = argparse.ArgumentParser(description="""joomla auto-commiter.
