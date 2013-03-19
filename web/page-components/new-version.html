@@ -1,35 +1,44 @@
-<h3>It's finally done!</h3>
+<h3>It's done!</h3>
 <p>
   After almost a year of work VSTForx has a completely new vector oriented User Interface ...
 </p>
 
 <hr id="system-readmore" />
 
-<h3>It's finally done!</h3>
+<style type="text/css">
+  .hero-unit p {
+    text-align: justify;
+  }
+</style>
+
+<h3>It's done!</h3>
 <div class="row-fluid">
-  <div class="span8">
+  <div class="span7">
     <p>
       After almost a year of work VSTForx has a completely new vector oriented User Interface which increases the workflow dramatically. Besides that, it builds the "easy extendable" base for all future implementations. <em>(This was a major disadvantage of the old VstGui implementation)</em>
     </p>
   </div>
-  <div class="span4">
+  <div class="span5">
     <img src="images/frx/scene.png" 
 	 alt="A scene in VSTForx" 
 	 class="img-polaroid"
+	 width="320px"
 	 />
     <p><small>VSTForx's new GUI</small></p>
   </div>
 </div>
-
+<br />
+<br />
 <div class="row-fluid">
-  <div class="span10">
+  <div class="span7">
     <h3>Three Actions One Mouse Button</h3>
     <p>What was approached with three mouse states before, can now be done with the object itself.
       <br />
       The problem, which appears especially when using knobs, is that we can do three actions:
       moving, using and connecting.
       But we have only <strong>one</strong> mouse button!
-      <em>
+      <br />
+      <em class="muted">
 	(The right mouse button is for translating the view. Modificator keys such as “shift” or “ctrl” are problematic because there is lack of keyboard support in some host applications.)
       </em>
     </p>
@@ -37,32 +46,33 @@
 </div>
 <br />
 <div class="row-fluid">
-  <div class="span8">
+  <div class="span7">
     <p>
       The solution to this problem is the “coroa” field. When you hover over an object this “corona” field appears. There are “two” corona types:
     </p>
   </div>
 </div>
+<br />
+<br />
 <div class="row-fluid">
-  <div class="span2"><br/></div>
-  <div class="span8">
+  <!--div class="span1"><p></p></div-->
+  <div class="span12">
     <ul class="thumbnails">
-      <li class="span4">
+      <li class="span5" style="text-align: justify;">
 	<div class="thumbnail">
-	  <img src="images/frx/node-corona.png" alt="the node corona" class="img-polaroid"/>
+	  <img style="float: left;" src="images/frx/node-corona.png" alt="the node corona" class="img-polaroid"/>
 	  <h4>The Node Corona</h4>
 	  <p>
-	    The I/O node corona which is a single (yellow) field around a node. With it you are able to move the node. Connecting will be approached by dragging the mouse over the node itself.
+	    The I/O node corona which is a single (yellow) field around a node. With draggin this yellow zone you are able to move the node around. Connecting will be approached by dragging the mouse over the node itself.
 	  </p>
 	</div>
       </li>
-      
-      <li class="span4">
+      <li class="span6" style="text-align: justify">
 	<div class="thumbnail">
-	  <img src="images/frx/knob-corona.png" alt="the knob corona" class="img-polaroid"/>
+	  <img style="float:left;" src="images/frx/knob-corona.png" alt="the knob corona" class="img-polaroid"/>
 	  <h4>The Knob Corona</h4>
 	  <p>
-	    The knob corona which is a double sided field (red/yellow) around a knob. The yellow side is still for moving the knob, the red side is for connecting the knob with another knob. To manipulate (use) the knob just use the knob as expected.
+	    The knob corona is a double sided field (red/yellow) around a knob. The yellow side is still for moving the knob. The red side is for connecting the knob with another knob. To manipulate (use) the knob just use the knob as expected.
 	  </p>
 	</div>
       </li>
@@ -73,7 +83,7 @@
 <br />
 <br />
 <div class="row-fluid">
-  <div class="span6">
+  <div class="span7">
     <h3>The Scene Browser</h3>
     <p>
       Another inconvenient element was the context menu. Finding several plugins in a complex folder structure could be really annoying. 
@@ -87,7 +97,7 @@
       <li>add plugin/module parameter to view</li>
     </ul>
   </div>
-  <div class="span6">
+  <div class="span5">
     <img src="images/frx/browser.png"  
 	 alt="the scene browser"
 	 class="img-polaroid"/>
