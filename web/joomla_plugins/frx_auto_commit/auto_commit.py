@@ -142,8 +142,9 @@ commit(args)
 dstamp = os.path.getmtime(args.path)
 stamp = checkfile(args) 
 _print ("observer for %s started." % args.path)
-try:
-    while running:
+
+while running:
+    try:
         ndstamp = os.path.getmtime(args.path)
         if dstamp == ndstamp:
             time.sleep(1)
@@ -153,9 +154,13 @@ try:
         if not nstamp == stamp:
             commit(args)
             stamp = nstamp
-        time.sleep(1)
-except KeyboardInterrupt:
-    pass
+            time.sleep(1)
+    except KeyboardInterrupt:
+        break
+    except:
+        time.sleep(5)
+        continue
+
 _unlock(args)
 _print ("observer for %s stoped." % args.path)
 if isdaemon: 
