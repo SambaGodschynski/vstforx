@@ -11,67 +11,51 @@ function getPurchaseOptions($user) {
 	if (!$user->guest) {
 		$userid = $user->id;	
 	}
-	$query = "SELECT  frx_products.id,
-		          frx_products.name,
-				  frx_products.amount
-		  FROM frx_products
-		  WHERE id NOT IN (
-			SELECT productid FROM frx_selled 
-			WHERE frx_selled.juser=".$db->quote($userid)." 
-			OR frx_selled.juser=".$db->quote($default_user)."
-		);		
-	";
-	return processQuery($db, $query);
+	$date = date( 'Y-m-d', time() );
 
-	/*
-		SELECT  frx_products.id,
-				frx_products.name,
-				frx_products.amount
-		FROM frx_products
-		WHERE id NOT IN (
-			SELECT productid FROM frx_selled 
-			WHERE frx_selled.juser = 65 
-			OR frx_selled.juser = 0 << products bought by default user will not appear in puchase list 
-		);
-	*/
+	$query = "SELECT  frx_selling_event.productid,
+		              frx_products.name AS productname,
+				      frx_selling_event.amount,
+					  frx_selling_event.text
+		  FROM frx_selling_event
+		  JOIN frx_products       ON frx_products.id = frx_selling_event.productid
+		  WHERE ('" . $date . "' >= frx_selling_event.begin AND '" . $date . "' <= frx_selling_event.end
+          OR frx_selling_event.begin is NULL AND frx_selling_event.end is NULL)
+		  AND frx_selling_event.productid NOT IN (
+		    SELECT frx_selled.productid FROM frx_selled WHERE frx_selled.juser = " . $db->quote($userid) . "
+          )
+	;";
+	return processQueryAssoc($db, $query);
 }
 
 
-function checkState($user) {
-	if (!$user->guest) {
-		return true;	
-	}
-	return false;
-}
-
-function showShop($user) {
-		if (!checkState($user)) {
-			return false;		
-		}
-		$res = getPurchaseOptions($user);	
+function showShop($res) {
 		if (!$res) {
 			return true;		
 		}
 ?>
-	<h4>Your purchase options</h4>
-	<table class="table table-striped">
-		<thead>
-			<tr>
-				<th>Product</th>
-				<th>Amount</th>
-				<th>Action</th>
-			</tr>
-		</thead>
+		<div class="well frx-odd">
+			<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>Product</th>
+						<th>Notes</th>
+						<th>Amount</th>
+						<th>Action</th>
+					</tr>
+				</thead>
 <?php foreach($res as $x) { ?>
-		<tr>			
- 			<td><?php echo($x[1])?></td> 
-			<td><?php echo($x[2])?> EUR</td> 
-			<td>
-				<?php showPaypalBtn($user, $x[0]); ?>
-			</td>
-		</tr>
+				<tr>			
+		 			<td><?php echo($x['productname'])?></td> 
+					<td><?php echo($x['text'])?></td> 
+					<td><?php echo($x['amount'])?> EUR</td> 
+					<td>
+						<?php showPaypalBtn($user, $x['productid']); ?>
+					</td>
+				</tr>
 <?php } ?>		
-	</table>
+			</table>
+		</div>
 <?php
 	return true;
 }

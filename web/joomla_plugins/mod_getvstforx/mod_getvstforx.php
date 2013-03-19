@@ -14,12 +14,18 @@ require_once'payment.php';
 function handleTransactionSucceed() {
 ?>
 	<div class="alert alert-success">
-		<strong>Thank you</strong> for purchase.
+		<strong>Thank you</strong> for purchasing.
 	</div>
 
 <?php
 }
 
+function checkState($user) {
+	if (!$user->guest) {
+		return true;	
+	}
+	return false;
+}
 
 function checkPageSource() {
 	$val = $_GET["src"];
@@ -30,11 +36,7 @@ function checkPageSource() {
 	}
 }
 
-checkPageSource();
-
-try {
-	$user	= JFactory::getUser();
-	if (!showShop($user)) {
+function showUserAlert() {
 ?>
 		<div class="alert alert-warning">
 		<strong>Login needed!</strong>
@@ -46,13 +48,43 @@ try {
 		<br />
 		<p>enjoy the <b>free</b> stuff:</p>
 		<br />
-<?php	
-	} else {
+<?php
+}
+
+function beginShop() {
 ?>
-		<h4>Your Downloads</h4>
+
+		<h3>Your purchase options</h3>
+		<br />
+<?php
+}
+
+function beginDownl($showtitle) {
+	if ($showtitle) {
+?>
+
+		<h3>Your Downloads</h3>
 		<br />
 <?php
 	}
+}
+
+checkPageSource();
+
+try {
+	$user	= JFactory::getUser();
+	$showdwntitle = false;
+	if (!checkState($user)) {
+		showUserAlert();
+	} else {
+		$opt = getPurchaseOptions($user);
+		if ( sizeof($opt) > 0 ) {
+			beginShop();
+			showShop($opt);		
+		}
+		$showdwntitle = true;
+	}
+	beginDownl($showdwntitle);
 	showDownloads($user);
 } catch (Exception $e) {
 	?>
