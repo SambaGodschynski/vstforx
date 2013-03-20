@@ -87,7 +87,7 @@ try {
 		$opt = getPurchaseOptions($user);
 		if ( sizeof($opt) > 0 ) {
 			beginX("Your Purchase Options");
-			showShop($opt);	
+			showShop($user, $opt);	
 			endX();
 		}
 		$title = "Your Downloads";

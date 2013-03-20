@@ -26,6 +26,8 @@ $p = new paypal_class;
  * !!!!!!!!!!
  */
 $p->paypal_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
+//$p->paypal_url = 'https://www.paypal.com/cgi-bin/webscr';
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // END CONFIG
@@ -36,8 +38,71 @@ function getDB() {
 	$db = JFactory::getDBO();
 	if (!$db) {
 		error ("Database query failed.");
+		die;
 	}	
 	return $db;
+}
+
+function query($db, $q) {
+	$db->setQuery($q);
+	if ( !$db->query() ) {
+		error( "Database query failed: " . $db->getErrorMsg() );	
+	}
+	return $db->loadAssocList();
+}
+
+function getDetails($details) {
+	$name = $details->ipn_data['item_name'];
+	$am = $details->ipn_data['mc_gross'];
+	$tx = $details->ipn_data['txn_id'];
+	$em = $details->ipn_data['payer_email'];
+	$dt = $details->ipn_data['payment_date'];
+	return "product: $name 
+Price: $am 
+Payment Date: $dt
+Payer EMail: $em
+Paypal Transaction Id: $tx
+";
+}
+
+function sendEmail($juser, $prodid, $details) {
+	$db = getDB();
+	$q = "SELECT * FROM frx_selled_response_mail 
+		  WHERE frx_selled_response_mail.productid = " . $db->quote($prodid) . "
+	;";
+	$res = query($db, $q);
+	if (sizeof($res)==0) {
+		//echo "no content here.";
+		return;	
+	}
+	$res = $res[0];
+	$mainframe =& JFactory::getApplication('site');
+	$mailer =& JFactory::getMailer();
+
+	$config =& JFactory::getConfig();
+	$sender = array( 
+	    $config->getValue( 'config.mailfrom' ),
+	    $config->getValue( 'config.fromname' ) 
+	);
+	$mailer->setSender($sender);
+	$user =& JFactory::getUser($juser);
+
+	$body = str_replace('$USER', $user->name, $res["text"]);
+	$body = str_replace('$DETAILS', getDetails($details), $body);
+	
+
+	$recipient = array($user->email, 'selled@vstforx.de');
+	if ($user->email == "") {
+		error('Error sending email to juser_id: ' . $juser);
+		return;
+	}
+ 	$mailer->addRecipient($recipient);
+	$mailer->setSubject( $res["subject"] );
+	$mailer->setBody($body);
+	$send =& $mailer->Send();
+	if ( $send !== true ) {
+		error('Error sending email: ' . $recipient);
+	}
 }
 
 if ($p->validate_ipn()) {
@@ -47,8 +112,12 @@ if ($p->validate_ipn()) {
 		return;
 	}
 	
+	$juser = (int)$p->ipn_data['custom'];
+	if ($juser==0) {
+		error("tried handle user '0'.");
+		return;
+	}
 	$db = getDB();
-
 	$amount = $p->ipn_data['mc_gross'] - $p->ipn_data['mc_fee'];
 	$query = "INSERT INTO `usr_web22_1`.`frx_selled` (
 				`juser` ,
@@ -65,10 +134,8 @@ if ($p->validate_ipn()) {
 					" . $db->quote($p->ipn_data['item_number'], $link). ",
 					" . $db->quote(http_build_query($_POST), $link). "
 				);";
-	$db->setQuery($query);
-	if ( !$db->query() ) {
-		error( "Database query failed: " . $db->getErrorMsg() );	
-	}	
+	query($db, $query);
+	sendEmail((int)$p->ipn_data['custom'], $p->ipn_data['item_number'], $p);
 }
 
 
