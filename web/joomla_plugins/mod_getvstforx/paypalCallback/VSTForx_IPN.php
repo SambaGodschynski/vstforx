@@ -57,12 +57,30 @@ function getDetails($details) {
 	$tx = $details->ipn_data['txn_id'];
 	$em = $details->ipn_data['payer_email'];
 	$dt = $details->ipn_data['payment_date'];
-	return "product: $name 
+	return "Product: $name 
 Price: $am 
 Payment Date: $dt
 Payer EMail: $em
-Paypal Transaction Id: $tx
+Paypal Transaction ID: $tx
 ";
+}
+
+function _sendEmailImpl($mail, $sbj, $body) {
+	$mainframe =& JFactory::getApplication('site');
+	$mailer =& JFactory::getMailer();
+	$config =& JFactory::getConfig();
+	$sender = array( 
+	    $config->getValue( 'config.mailfrom' ),
+	    $config->getValue( 'config.fromname' ) 
+	);
+	$mailer->setSender($sender);
+ 	$mailer->addRecipient($mail);
+	$mailer->setSubject( $sbj );
+	$mailer->setBody($body);
+	$send =& $mailer->Send();
+	if ( $send !== true ) {
+		error('Error sending email: ' . $recipient);
+	}
 }
 
 function sendEmail($juser, $prodid, $details) {
@@ -76,33 +94,17 @@ function sendEmail($juser, $prodid, $details) {
 		return;	
 	}
 	$res = $res[0];
-	$mainframe =& JFactory::getApplication('site');
-	$mailer =& JFactory::getMailer();
-
-	$config =& JFactory::getConfig();
-	$sender = array( 
-	    $config->getValue( 'config.mailfrom' ),
-	    $config->getValue( 'config.fromname' ) 
-	);
-	$mailer->setSender($sender);
+	
 	$user =& JFactory::getUser($juser);
-
 	$body = str_replace('$USER', $user->name, $res["text"]);
 	$body = str_replace('$DETAILS', getDetails($details), $body);
-	
-
-	$recipient = array($user->email, 'selled@vstforx.de');
+	$recipient = $user->email;
 	if ($user->email == "") {
 		error('Error sending email to juser_id: ' . $juser);
 		return;
 	}
- 	$mailer->addRecipient($recipient);
-	$mailer->setSubject( $res["subject"] );
-	$mailer->setBody($body);
-	$send =& $mailer->Send();
-	if ( $send !== true ) {
-		error('Error sending email: ' . $recipient);
-	}
+ 	_sendEmailImpl($recipient, $res["subject"], $body);
+	_sendEmailImpl("selled@vstforx.de", $res["subject"], $body);
 }
 
 if ($p->validate_ipn()) {
