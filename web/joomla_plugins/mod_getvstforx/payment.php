@@ -29,7 +29,7 @@ function getPurchaseOptions($user) {
 }
 
 
-function showShop($res) {
+function showShop($user, $res) {
 		if (!$res) {
 			return true;		
 		}
@@ -48,7 +48,7 @@ function showShop($res) {
 				<tr>			
 		 			<td><?php echo($x['productname'])?></td> 
 					<td><?php echo($x['text'])?></td> 
-					<td><?php echo($x['amount'])?> EUR</td> 
+					<td><?php echo( number_format($x['amount'], 2) )?> EUR</td> 
 					<td>
 						<?php showPaypalBtn($user, $x['productid']); ?>
 					</td>

@@ -52,11 +52,49 @@ function getFilename($downloads_id) {
 	return $res;
 }
 
+function getIP() {
+	if ( !isset($_SERVER['HTTP_X_FORWARDED_FOR']) ) {
+		if ( isset($_SERVER['REMOTE_ADDR']) ) {
+			return $_SERVER['REMOTE_ADDR'];
+		}
+	}
+	else {
+		return $_SERVER['HTTP_X_FORWARDED_FOR'];
+	}
+	return "?";
+}
+
+function save_user($downloads_id) {
+	$mainframe =& JFactory::getApplication('site');
+	$db = JFactory::getDBO();
+	if (!$db) {
+		throw new Exception( "Datbase access failed." );	
+	}	
+	$user = JFactory::getUser();
+	$userid = 0;
+	$default_user = 0;
+	if (!$user->guest) {
+		$userid = $user->id;	
+	}
+	$ip = getIP();
+	$query = "INSERT INTO frx_juser_download (`juser`, `download`, `date`, `ip`) 
+		VALUES (" . $db->quote($userid) . ", 
+				" . $db->quote($downloads_id) . ", 
+				CURRENT_TIMESTAMP,
+				" . $db->quote($ip) . "
+	);";
+	$db->setQuery($query);
+	if ( !$db->query() ) {
+		throw new Exception( "Database query failed."); //  : " . $db->getErrorMsg() );	
+	}	
+}
+
 
 $path = '../binary/';
 
 $downloads_id = $_POST['dst'];
 try {
+	save_user($downloads_id);
 	$rq=getFilename($downloads_id);
 	$path.=$rq[0];
 	$file= $rq[1];

@@ -36,9 +36,9 @@ function getDB() {
 }
 
 function update($db, $id, $introtext, $fulltext) {	
-	$query = "UPDATE j16_content SET j16_content.introtext = " . $db->quote($introtext) .
-			  ", j16_content.fulltext = " . $db->quote($fulltext) . 
-			  " WHERE j16_content.id = ". $db->quote($id) ."; ";
+	$query = "UPDATE j16_content SET j16_content.introtext = '" . $introtext .
+			  "', j16_content.fulltext = '" . $fulltext . 
+			  "' WHERE j16_content.id = ". $db->quote($id) ."; ";
 	$db->setQuery($query);
 	if ( !$db->query() ) {
 		throw new Exception( "Database query failed: " . $db->getErrorMsg() );	

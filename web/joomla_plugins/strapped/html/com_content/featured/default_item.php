@@ -66,9 +66,8 @@ $canEdit	= $this->item->params->get('access-edit');
 		<?php endif; ?>
 		<?php if ($params->get('show_publish_date')) : ?>
 		<span class="muted">
-			<i class="icon-time"></i>
 			<em>
-				<?php echo JText::sprintf(JHtml::_('date', $this->item->created, JText::_('DATE_FORMAT_JS1'))); ?>
+				<?php echo JText::sprintf('COM_CONTENT_PUBLISHED_DATE_ON', JHtml::_('date', $this->item->created, JText::_('DATE_FORMAT_LC2'))); ?>
 			</em>
 		</span>
 		<?php endif; ?>
