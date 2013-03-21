@@ -22,7 +22,7 @@ function myValidate(f) {
 </script>
 
 <div id="j2Mantis" class="item-page">
-<h2>Report Bug</h2>
+<h2>Report a Bug</h2>
 
 <?php if(!empty($_POST['errors'])): ?>
 <div class="error"><h3><?php echo JText::_('Error');?></h3><ul>
