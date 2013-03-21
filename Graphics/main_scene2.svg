@@ -18,6 +18,17 @@
    sodipodi:docname="main_scene2.svg">
   <defs
      id="defs4">
+    <linearGradient
+       id="linearGradient4409">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop4411" />
+      <stop
+         style="stop-color:#ffffff;stop-opacity:0;"
+         offset="1"
+         id="stop4413" />
+    </linearGradient>
     <inkscape:path-effect
        effect="spiro"
        id="path-effect4358"
@@ -992,7 +1003,7 @@
        fx="229.27177"
        fy="926.00867"
        r="42.50074"
-       gradientTransform="matrix(1.6098374,-0.02698089,0.01071478,1.6072626,-122.74007,-781.05081)"
+       gradientTransform="matrix(1.6098374,-0.02698089,0.01071478,1.6072626,-123.74007,-781.05081)"
        gradientUnits="userSpaceOnUse" />
     <radialGradient
        inkscape:collect="always"
@@ -1047,6 +1058,52 @@
          stdDeviation="1.9073684"
          id="feGaussianBlur4384" />
     </filter>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5061"
+       id="radialGradient4446"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(2.0200443,0.01851819,-0.0098583,1.0027192,-980.79596,169.35452)"
+       cx="961.69446"
+       cy="477.89471"
+       fx="961.69446"
+       fy="477.89471"
+       r="81.001457" />
+    <filter
+       id="filter3541"
+       inkscape:label="Glow"
+       inkscape:menu="Shadows and Glows"
+       inkscape:menu-tooltip="Glow of object's own color at the edges"
+       color-interpolation-filters="sRGB">
+      <feGaussianBlur
+         id="feGaussianBlur3543"
+         stdDeviation="5"
+         result="result91" />
+      <feComposite
+         id="feComposite3545"
+         in2="result91"
+         in="SourceGraphic"
+         operator="over" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter4436">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="2.4088482"
+         id="feGaussianBlur4438" />
+    </filter>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5061"
+       id="radialGradient4440"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(2.0200443,0.01851819,-0.0098583,1.0027192,-980.4424,169.70807)"
+       cx="961.69446"
+       cy="477.89471"
+       fx="961.69446"
+       fy="477.89471"
+       r="81.001457" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -1055,12 +1112,12 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6568542"
-     inkscape:cx="283.21912"
-     inkscape:cy="239.59671"
+     inkscape:zoom="8"
+     inkscape:cx="435.24667"
+     inkscape:cy="673.00676"
      inkscape:document-units="px"
-     inkscape:current-layer="layer2"
-     showgrid="false"
+     inkscape:current-layer="layer1"
+     showgrid="true"
      inkscape:window-width="1676"
      inkscape:window-height="1006"
      inkscape:window-x="4"
@@ -1068,7 +1125,11 @@
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:snap-nodes="false" />
+     inkscape:snap-nodes="false">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3544" />
+  </sodipodi:namedview>
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -1118,6 +1179,25 @@
          inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\iplug.png"
          inkscape:export-xdpi="26"
          inkscape:export-ydpi="26" />
+      <rect
+         style="fill:#6b0c09;fill-opacity:1;stroke:none;display:inline;filter:url(#filter3541)"
+         id="rect4452"
+         width="171.82693"
+         height="165.81654"
+         x="869.38782"
+         y="660.62506"
+         rx="2.583745"
+         inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Graphics/prerelease_event.png"
+         inkscape:export-xdpi="157.40288"
+         inkscape:export-ydpi="157.40288" />
+      <path
+         inkscape:export-ydpi="57.671818"
+         inkscape:export-xdpi="57.671818"
+         inkscape:export-filename="/Users/johannesunger/workspace/vstforx/src/images/iplug.png"
+         id="path4336"
+         d="m 481.28945,343.297 11.70413,0 0,37.18322 -11.70413,0 z"
+         style="fill:#a4a4a4;fill-opacity:1;stroke:#000000;stroke-width:1.73421955;stroke-miterlimit:4;stroke-opacity:1;display:inline"
+         inkscape:connector-curvature="0" />
     </g>
     <path
        sodipodi:type="arc"
@@ -1131,7 +1211,7 @@
        transform="matrix(0.22992742,0,0,0.26277374,677.54382,638.45918)" />
     <g
        transform="translate(171.50269,173.74356)"
-       style="display:inline;fill:#5ac2ff;fill-opacity:0;stroke:#5ac2ff;stroke-opacity:1"
+       style="fill:#5ac2ff;fill-opacity:0;stroke:#5ac2ff;stroke-opacity:1;display:inline"
        id="g3848-0"
        inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\e.png"
        inkscape:export-xdpi="90"
@@ -1144,13 +1224,13 @@
          sodipodi:cy="301.81885"
          sodipodi:cx="228.29448"
          id="path2816-4"
-         style="fill:#5ac2ff;fill-opacity:0;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:21.08574103999999800;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         style="fill:#5ac2ff;fill-opacity:0;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:21.08574104;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
          sodipodi:type="arc" />
       <text
          id="text3644"
          y="346.0217"
          x="155.31383"
-         style="font-size:19.15789604000000100px;font-style:normal;font-weight:normal;fill:#5ac2ff;fill-opacity:1;stroke:#5ac2ff;font-family:Arial;-inkscape-font-specification:Arial;stroke-opacity:1"
+         style="font-size:19.15789604px;font-style:normal;font-weight:normal;fill:#5ac2ff;fill-opacity:1;stroke:#5ac2ff;stroke-opacity:1;font-family:Arial;-inkscape-font-specification:Arial"
          xml:space="preserve"><tspan
            y="346.0217"
            x="155.31383"
@@ -1411,7 +1491,7 @@
     <g
        style="display:inline"
        id="g4771-7"
-       transform="translate(307.40799,85.509606)"
+       transform="translate(348.15799,129.75961)"
        inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\volume_node.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90">
@@ -1724,7 +1804,7 @@
        id="g4270">
       <path
          transform="matrix(0.22992742,0,0,0.26277374,306.6273,650.02258)"
-         d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
+         d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
          sodipodi:ry="77.781746"
          sodipodi:rx="88.893425"
          sodipodi:cy="301.81885"
@@ -1743,7 +1823,7 @@
          sodipodi:cy="749.45532"
          sodipodi:rx="1.016466"
          sodipodi:ry="0.9722718"
-         d="m 197.01763,749.45532 a 1.016466,0.9722718 0 1 1 -2.03294,0 1.016466,0.9722718 0 1 1 2.03294,0 z"
+         d="m 197.01763,749.45532 c 0,0.53697 -0.45509,0.97227 -1.01647,0.97227 -0.56138,0 -1.01647,-0.4353 -1.01647,-0.97227 0,-0.53697 0.45509,-0.97227 1.01647,-0.97227 0.56138,0 1.01647,0.4353 1.01647,0.97227 z"
          transform="matrix(1.308543,0,0,1.2771132,102.5575,-236.58692)"
          inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\Graphics\Nodes\remoteChannel.png"
          inkscape:export-xdpi="90"
@@ -1847,7 +1927,7 @@
     </g>
     <g
        id="g5350"
-       transform="matrix(1,0,0,0.62569789,347.33373,361.24975)"
+       transform="matrix(1,0,0,0.62569789,354.08373,354.24975)"
        inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\iplug.png"
        inkscape:export-xdpi="26"
        inkscape:export-ydpi="26">
@@ -1967,13 +2047,61 @@
          id="rect5650"
          width="86.937141"
          height="136.62733"
-         x="209.91078"
+         x="208.9108"
          y="671.77673"
          rx="12.167454"
          ry="19.438196"
          inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\iplug.png"
          inkscape:export-xdpi="26"
          inkscape:export-ydpi="26" />
+      <g
+         inkscape:export-ydpi="26"
+         inkscape:export-xdpi="26"
+         inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\iplug.png"
+         transform="matrix(1,0,0,1.1434284,-118.5,-836.54716)"
+         id="g4310">
+        <path
+           inkscape:connector-curvature="0"
+           style="fill:#a4a4a4;fill-opacity:1;stroke:#000000;stroke-width:2.05029917;stroke-miterlimit:4;stroke-opacity:1;display:inline"
+           d="m 233.39322,716.30398 11.70413,0 0,51.97247 -11.70413,0 z"
+           id="path4312"
+           inkscape:export-filename="/Users/johannesunger/workspace/vstforx/src/images/iplug.png"
+           inkscape:export-xdpi="57.671818"
+           inkscape:export-ydpi="57.671818" />
+        <path
+           sodipodi:nodetypes="ccccc"
+           id="path4322"
+           d="m 219.25749,716.37258 12.49963,-0.0915 0,51.97247 c -4.92929,0.0922 -9.5154,-3.22693 -12.36705,-13.0822 z"
+           style="fill:#a4a4a4;fill-opacity:1;stroke:#000000;stroke-width:2.05029917;stroke-miterlimit:4;stroke-opacity:1;display:inline"
+           inkscape:connector-curvature="0"
+           inkscape:export-filename="/Users/johannesunger/workspace/vstforx/src/images/iplug.png"
+           inkscape:export-xdpi="57.671818"
+           inkscape:export-ydpi="57.671818" />
+        <rect
+           style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.32549429;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+           id="rect4326"
+           width="6.8336115"
+           height="37.203491"
+           x="228.62775"
+           y="716.21564"
+           rx="3.4168057"
+           ry="0"
+           inkscape:export-filename="/Users/johannesunger/workspace/vstforx/src/images/iplug.png"
+           inkscape:export-xdpi="57.671818"
+           inkscape:export-ydpi="57.671818" />
+        <rect
+           ry="0"
+           rx="3.4168057"
+           y="716.48077"
+           x="241.84181"
+           height="37.203491"
+           width="6.8336115"
+           id="rect4328"
+           style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1.32549429;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+           inkscape:export-filename="/Users/johannesunger/workspace/vstforx/src/images/iplug.png"
+           inkscape:export-xdpi="57.671818"
+           inkscape:export-ydpi="57.671818" />
+      </g>
     </g>
     <path
        sodipodi:type="arc"
@@ -2090,12 +2218,69 @@
        inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\plugin.png"
        inkscape:export-xdpi="26"
        inkscape:export-ydpi="26" />
+    <rect
+       rx="1.2546581"
+       y="663.61218"
+       x="872.20404"
+       height="160.19785"
+       width="165.4373"
+       id="rect4271"
+       style="opacity:0.36163522;fill:url(#radialGradient4440);fill-opacity:1;stroke:#ffffff;stroke-width:2.29267049;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Graphics/prerelease_event.png"
+       inkscape:export-xdpi="157.40288"
+       inkscape:export-ydpi="157.40288" />
+    <g
+       id="g4314"
+       inkscape:export-filename="/Users/johannesunger/workspace/vstforx/src/images/plugin.png"
+       inkscape:export-xdpi="37.519543"
+       inkscape:export-ydpi="37.519543">
+      <path
+         inkscape:export-ydpi="37.519543"
+         inkscape:export-xdpi="37.519543"
+         inkscape:export-filename="/Users/johannesunger/workspace/vstforx/src/images/processor.png"
+         transform="translate(1.25,305.7677)"
+         d="m 435.22424,56.079578 a 26.516504,25.986174 0 1 1 -53.03301,0 26.516504,25.986174 0 1 1 53.03301,0 z"
+         sodipodi:ry="25.986174"
+         sodipodi:rx="26.516504"
+         sodipodi:cy="56.079578"
+         sodipodi:cx="408.70773"
+         id="path3535"
+         style="fill:none;stroke:#a4a4a4;stroke-width:8;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         sodipodi:type="arc" />
+      <path
+         inkscape:export-ydpi="37.519543"
+         inkscape:export-xdpi="37.519543"
+         inkscape:export-filename="/Users/johannesunger/workspace/vstforx/src/images/processor.png"
+         sodipodi:type="arc"
+         style="fill:none;stroke:#a4a4a4;stroke-width:12.01570653;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         id="path4306"
+         sodipodi:cx="408.70773"
+         sodipodi:cy="56.079578"
+         sodipodi:rx="26.516504"
+         sodipodi:ry="25.986174"
+         d="m 435.22424,56.079578 a 26.516504,25.986174 0 1 1 -53.03301,0 26.516504,25.986174 0 1 1 53.03301,0 z"
+         transform="matrix(0.49907615,0,0,0.49961683,205.69486,334.44708)" />
+      <path
+         inkscape:export-ydpi="37.519543"
+         inkscape:export-xdpi="37.519543"
+         inkscape:export-filename="/Users/johannesunger/workspace/vstforx/src/images/processor.png"
+         transform="matrix(2.587474,0,0,2.9614274,-643.86702,193.26178)"
+         d="m 408.53095,57.14024 a 1.2374369,1.0606601 0 1 1 -2.47487,0 1.2374369,1.0606601 0 1 1 2.47487,0 z"
+         sodipodi:ry="1.0606601"
+         sodipodi:rx="1.2374369"
+         sodipodi:cy="57.14024"
+         sodipodi:cx="407.29352"
+         id="path4308"
+         style="fill:#b4b4b4;fill-opacity:1;stroke:#a4a4a4;stroke-width:0;stroke-linecap:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+    </g>
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="Ebene"
-     transform="translate(0,-308.2677)">
+     transform="translate(0,-308.2677)"
+     style="display:inline">
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:7.37179041;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
        id="rect4054-4-8-7-1"
@@ -3024,7 +3209,7 @@
        sodipodi:cy="301.81885"
        sodipodi:rx="88.893425"
        sodipodi:ry="77.781746"
-       d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
+       d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
        transform="matrix(0.22992742,0,0,0.26277374,215.1583,259.52409)"
        inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\exit.png"
        inkscape:export-xdpi="90"
@@ -3297,7 +3482,7 @@
     <g
        transform="translate(72.053531,122.27045)"
        id="g4577"
-       style="display:inline;stroke:#5ac2ff;stroke-opacity:1;fill:#5ac2ff;fill-opacity:1">
+       style="fill:#5ac2ff;fill-opacity:1;stroke:#5ac2ff;stroke-opacity:1;display:inline">
       <g
          id="g4584"
          transform="translate(135.0574,-51.265242)"
@@ -3335,13 +3520,13 @@
          inkscape:export-xdpi="213.12584"
          inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Graphics/remote.png"
          transform="matrix(1.308543,0,0,-1.2771132,3.73933,1743.7945)"
-         d="m 197.01763,749.45532 a 1.016466,0.9722718 0 1 1 -2.03294,0 1.016466,0.9722718 0 1 1 2.03294,0 z"
+         d="m 197.01763,749.45532 c 0,0.53697 -0.45509,0.97227 -1.01647,0.97227 -0.56138,0 -1.01647,-0.4353 -1.01647,-0.97227 0,-0.53697 0.45509,-0.97227 1.01647,-0.97227 0.56138,0 1.01647,0.4353 1.01647,0.97227 z"
          sodipodi:ry="0.9722718"
          sodipodi:rx="1.016466"
          sodipodi:cy="749.45532"
          sodipodi:cx="196.00116"
          id="path3478"
-         style="display:inline;stroke:#5ac2ff;stroke-width:4.50000000000000000;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none"
+         style="stroke:#5ac2ff;stroke-width:4.5;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none;display:inline"
          sodipodi:type="arc" />
       <path
          inkscape:export-ydpi="213.12584"
@@ -3351,12 +3536,12 @@
          inkscape:connector-curvature="0"
          id="path3480"
          d="m 253.64645,778.69455 c 1.72791,-1.22978 4.12251,-1.79519 6.48428,-1.76263 2.34003,0.0323 4.64784,0.65156 6.24305,1.79333"
-         style="display:inline;fill:none;stroke:#5ac2ff;stroke-width:4.19999980999999956;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+         style="fill:none;stroke:#5ac2ff;stroke-width:4.19999981;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline" />
       <path
          inkscape:export-ydpi="213.12584"
          inkscape:export-xdpi="213.12584"
          inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Graphics/remote.png"
-         style="display:inline;fill:none;stroke:#5ac2ff;stroke-width:4.19999980999999956;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+         style="fill:none;stroke:#5ac2ff;stroke-width:4.19999981;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
          d="m 249.80156,772.10958 c 2.65657,-3.11004 6.50073,-4.12695 10.41535,-4.10995 3.62896,0.0158 7.31846,0.83304 10.17854,3.83128"
          id="path3482"
          inkscape:connector-curvature="0"
@@ -3369,7 +3554,7 @@
          sodipodi:cy="301.81885"
          sodipodi:rx="88.893425"
          sodipodi:ry="77.781746"
-         d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
+         d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
          transform="matrix(0.22992742,0,0,0.26277374,207.73368,698.6374)"
          inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Graphics/remote.png"
          inkscape:export-xdpi="213.12584"
@@ -3418,7 +3603,7 @@
          inkscape:export-xdpi="213.12584"
          inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Graphics/remote.png"
          transform="matrix(0.22992742,0,0,0.26277374,210.63675,758.50746)"
-         d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
+         d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
          sodipodi:ry="77.781746"
          sodipodi:rx="88.893425"
          sodipodi:cy="301.81885"
@@ -3432,7 +3617,7 @@
        inkscape:export-xdpi="213.12584"
        inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Graphics/remote.png"
        transform="matrix(0.22992742,0,0,0.26277374,140.09838,688.17115)"
-       d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
+       d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
        sodipodi:ry="77.781746"
        sodipodi:rx="88.893425"
        sodipodi:cy="301.81885"
@@ -3460,13 +3645,13 @@
        sodipodi:cy="566.21948"
        sodipodi:rx="5.8125"
        sodipodi:ry="6"
-       d="m 402.125,566.21948 a 5.8125,6 0 1 1 -11.625,0 5.8125,6 0 1 1 11.625,0 z"
+       d="m 402.125,566.21948 c 0,3.31371 -2.60234,6 -5.8125,6 -3.21016,0 -5.8125,-2.68629 -5.8125,-6 0,-3.31371 2.60234,-6 5.8125,-6 3.21016,0 5.8125,2.68629 5.8125,6 z"
        transform="matrix(1.0299038,0,0,0.99771935,18.503586,290.62837)"
        inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Graphics/physx.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
     <path
-       style="fill:none;stroke:#5ac2ff;stroke-width:3.9;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:7.8,7.8;stroke-dashoffset:0"
+       style="fill:none;stroke:#5ac2ff;stroke-width:3.9000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:7.8, 7.8;stroke-dashoffset:0"
        d="m 328.5,549.34448 c 0,0 23.11156,-30.84777 32.375,-28.875 13.5,2.875 30.875,54.125 37.875,54.125 7,0 32.04334,-32.28966 32.04334,-32.28966"
        id="path4360"
        inkscape:connector-curvature="0"
@@ -3477,7 +3662,7 @@
        transform="translate(0,308.2677)" />
     <path
        transform="matrix(1.0299038,0,0,0.99771935,23.281315,284.80017)"
-       d="m 402.125,566.21948 a 5.8125,6 0 1 1 -11.625,0 5.8125,6 0 1 1 11.625,0 z"
+       d="m 402.125,566.21948 c 0,3.31371 -2.60234,6 -5.8125,6 -3.21016,0 -5.8125,-2.68629 -5.8125,-6 0,-3.31371 2.60234,-6 5.8125,-6 3.21016,0 5.8125,2.68629 5.8125,6 z"
        sodipodi:ry="6"
        sodipodi:rx="5.8125"
        sodipodi:cy="566.21948"
@@ -3496,11 +3681,162 @@
        sodipodi:cy="566.21948"
        sodipodi:rx="5.8125"
        sodipodi:ry="6"
-       d="m 402.125,566.21948 a 5.8125,6 0 1 1 -11.625,0 5.8125,6 0 1 1 11.625,0 z"
+       d="m 402.125,566.21948 c 0,3.31371 -2.60234,6 -5.8125,6 -3.21016,0 -5.8125,-2.68629 -5.8125,-6 0,-3.31371 2.60234,-6 5.8125,-6 3.21016,0 5.8125,2.68629 5.8125,6 z"
        transform="matrix(1.0299038,0,0,0.99771935,28.064469,278.89256)"
        inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Graphics/physx.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
+    <g
+       id="g4427"
+       transform="translate(-4.9999997,187.5)"
+       inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Graphics/prerelease_event.png"
+       inkscape:export-xdpi="157.40288"
+       inkscape:export-ydpi="157.40288">
+      <text
+         transform="scale(0.87982009,1.136596)"
+         sodipodi:linespacing="125%"
+         id="text3499"
+         y="538.20282"
+         x="1001.7958"
+         style="font-size:44.78546143px;font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial Rounded MT Bold;-inkscape-font-specification:Arial Rounded MT Bold"
+         xml:space="preserve"><tspan
+           style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#ffffff;fill-opacity:1;font-family:Arial Rounded MT Bold;-inkscape-font-specification:Arial Rounded MT Bold"
+           y="538.20282"
+           x="1001.7958"
+           id="tspan3501"
+           sodipodi:role="line">20% Off</tspan></text>
+      <text
+         transform="scale(1.0318629,0.96912099)"
+         sodipodi:linespacing="125%"
+         id="text4389"
+         y="653.50458"
+         x="855.45636"
+         style="font-size:17.58250999px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
+         xml:space="preserve"><tspan
+           style="font-size:17.58250999px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#ffffff;fill-opacity:1;font-family:Arial Rounded MT Bold;-inkscape-font-specification:Arial Rounded MT Bold"
+           y="653.50458"
+           x="855.45636"
+           id="tspan4391"
+           sodipodi:role="line">Till June 1</tspan></text>
+      <text
+         transform="scale(1.0656204,0.93842048)"
+         sodipodi:linespacing="125%"
+         id="text4393"
+         y="536.57837"
+         x="826.74847"
+         style="font-size:33.78313446px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
+         xml:space="preserve"><tspan
+           style="fill:#ffffff;fill-opacity:1;font-family:Arial Rounded MT Bold;-inkscape-font-specification:Arial Rounded MT Bold"
+           y="536.57837"
+           x="826.74847"
+           id="tspan4395"
+           sodipodi:role="line">Pre-</tspan><tspan
+           id="tspan4397"
+           style="fill:#ffffff;fill-opacity:1;font-family:Arial Rounded MT Bold;-inkscape-font-specification:Arial Rounded MT Bold"
+           y="578.80731"
+           x="826.74847"
+           sodipodi:role="line" /></text>
+      <text
+         xml:space="preserve"
+         style="font-size:36px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
+         x="879.89642"
+         y="534.71576"
+         id="text4438"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4440"
+           x="879.89642"
+           y="534.71576"
+           style="fill:#ffffff;fill-opacity:1;font-family:Arial Rounded MT Bold;-inkscape-font-specification:Arial Rounded MT Bold">Release</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:36px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
+         x="880.25"
+         y="566.31927"
+         id="text4442"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4444"
+           x="880.25"
+           y="566.31927"
+           style="fill:#ffffff;fill-opacity:1;font-family:Arial Rounded MT Bold;-inkscape-font-specification:Arial Rounded MT Bold">Event</tspan></text>
+    </g>
+    <g
+       inkscape:export-ydpi="157.40288"
+       inkscape:export-xdpi="157.40288"
+       inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Graphics/prerelease_event.png"
+       transform="translate(-4.2928929,187.14644)"
+       id="g4375"
+       style="opacity:0.52830189;stroke:#e20c23;stroke-opacity:1;filter:url(#filter4436)">
+      <text
+         xml:space="preserve"
+         style="font-size:44.78546142999999802px;font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:#e20c23;font-family:Arial Rounded MT Bold;-inkscape-font-specification:Arial Rounded MT Bold;stroke-opacity:1"
+         x="1001.7958"
+         y="538.20282"
+         id="text4377"
+         sodipodi:linespacing="125%"
+         transform="scale(0.87982009,1.136596)"><tspan
+           sodipodi:role="line"
+           id="tspan4379"
+           x="1001.7958"
+           y="538.20282"
+           style="font-style:italic;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#ffffff;fill-opacity:1;font-family:Arial Rounded MT Bold;-inkscape-font-specification:Arial Rounded MT Bold;stroke:#e20c23;stroke-opacity:1">20% Off</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:17.58250998999999837px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:#e20c23;font-family:Sans;-inkscape-font-specification:Sans;stroke-opacity:1"
+         x="855.45636"
+         y="653.50458"
+         id="text4381"
+         sodipodi:linespacing="125%"
+         transform="scale(1.0318629,0.96912099)"><tspan
+           sodipodi:role="line"
+           id="tspan4383"
+           x="855.45636"
+           y="653.50458"
+           style="font-size:17.58250998999999837px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#ffffff;fill-opacity:1;font-family:Arial Rounded MT Bold;-inkscape-font-specification:Arial Rounded MT Bold;stroke:#e20c23;stroke-opacity:1">Till June 1</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-size:33.78313445999999942px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:#e20c23;font-family:Sans;-inkscape-font-specification:Sans;stroke-opacity:1"
+         x="826.74847"
+         y="536.57837"
+         id="text4385"
+         sodipodi:linespacing="125%"
+         transform="scale(1.0656204,0.93842048)"><tspan
+           sodipodi:role="line"
+           id="tspan4387"
+           x="826.74847"
+           y="536.57837"
+           style="fill:#ffffff;fill-opacity:1;font-family:Arial Rounded MT Bold;-inkscape-font-specification:Arial Rounded MT Bold;stroke:#e20c23;stroke-opacity:1">Pre-</tspan><tspan
+           sodipodi:role="line"
+           x="826.74847"
+           y="578.80731"
+           style="fill:#ffffff;fill-opacity:1;font-family:Arial Rounded MT Bold;-inkscape-font-specification:Arial Rounded MT Bold;stroke:#e20c23;stroke-opacity:1"
+           id="tspan4389" /></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4391"
+         y="534.71576"
+         x="879.89642"
+         style="font-size:36px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:#e20c23;font-family:Sans;-inkscape-font-specification:Sans;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           style="fill:#ffffff;fill-opacity:1;font-family:Arial Rounded MT Bold;-inkscape-font-specification:Arial Rounded MT Bold;stroke:#e20c23;stroke-opacity:1"
+           y="534.71576"
+           x="879.89642"
+           id="tspan4393"
+           sodipodi:role="line">Release</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text4395"
+         y="566.31927"
+         x="880.25"
+         style="font-size:36px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:#e20c23;font-family:Sans;-inkscape-font-specification:Sans;stroke-opacity:1"
+         xml:space="preserve"><tspan
+           style="fill:#ffffff;fill-opacity:1;font-family:Arial Rounded MT Bold;-inkscape-font-specification:Arial Rounded MT Bold;stroke:#e20c23;stroke-opacity:1"
+           y="566.31927"
+           x="880.25"
+           id="tspan4398"
+           sodipodi:role="line">Event</tspan></text>
+    </g>
   </g>
   <g
      inkscape:groupmode="layer"

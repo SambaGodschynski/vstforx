@@ -8,6 +8,7 @@ import time
 from exceptions import *
 import datetime
 import re
+import pickle
 
 running = True
 isdaemon = False
@@ -70,7 +71,7 @@ def _lock(args):
     ids = []
     if os.path.exists(".lock"):
         f = open(".lock", "r")
-        ids = f.readlines()
+        ids = pickle.load(f)
         f.close()
     for x in ids:
         if x == args.id:
@@ -78,17 +79,17 @@ def _lock(args):
             sys.exit(0)
     f = open(".lock", "w")
     ids.append(str(args.id))
-    f.writelines(ids)
+    pickle.dump(ids, f)
     f.close()
 
 def _unlock(args):
     ids = []
     f = open(".lock", "r")
-    ids = f.readlines()
+    ids = pickle.load(f)
     f.close()
     ids = filter( lambda x: x!=args.id, ids )
     f = open(".lock", "w")
-    f.writelines(ids)
+    pickle.dump(ids, f)
     f.close()
 
 parser = argparse.ArgumentParser(description="""joomla auto-commiter.
@@ -114,6 +115,9 @@ parser.add_argument('--fork',
                     help="starts child process and return")
 
 args = parser.parse_args()
+if not os.path.exists( args.path ):
+    print args.path + " does not exists."
+    sys.exit(0)
 pwd = getpass.getpass("pwd: ")
 args.pwd = pwd
 t = get_title(args)
@@ -138,19 +142,25 @@ commit(args)
 dstamp = os.path.getmtime(args.path)
 stamp = checkfile(args) 
 _print ("observer for %s started." % args.path)
-try:
-    while running:
+
+while running:
+    try:
         ndstamp = os.path.getmtime(args.path)
         if dstamp == ndstamp:
+            time.sleep(1)
             continue
         dstamp = ndstamp
         nstamp = checkfile(args)
         if not nstamp == stamp:
             commit(args)
             stamp = nstamp
-        time.sleep(1)
-except KeyboardInterrupt:
-    pass
+            time.sleep(1)
+    except KeyboardInterrupt:
+        break
+    except:
+        time.sleep(5)
+        continue
+
 _unlock(args)
 _print ("observer for %s stoped." % args.path)
 if isdaemon: 
