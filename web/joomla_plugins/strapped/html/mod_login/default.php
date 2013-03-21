@@ -11,7 +11,8 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
 ?>
 <?php if ($type == 'logout') : ?>
-<form action="<?php echo JRoute::_('index.php', true, $params->get('usesecure')); ?>" method="post" id="login-form" class="navbar-form pull-right">
+<form action="<?php echo JRoute::_('index.php', true, $params->get('usesecure')); ?>" method="post" 
+	id="frx-main-logout-form" class="navbar-form pull-right">
 	<?php if ($params->get('greeting')) : ?>
 	<span class="navbar-text">
 		<?php if($params->get('name') == 0) : {
@@ -29,7 +30,7 @@ JHtml::_('behavior.keepalive');
 		<?php echo JHtml::_('form.token'); ?> 
 </form>
 <?php else : ?>
-<form action="<?php echo JRoute::_('index.php', true, $params->get('usesecure')); ?>" method="post" id="login-form" class="navbar-form pull-right">
+<form action="<?php echo JRoute::_('index.php', true, $params->get('usesecure')); ?>" method="post" id="frx-main-login-form" class="navbar-form pull-right">
 	<fieldset class="userdata">
 		<input id="modlgn-username" type="text" name="username" class="span2" placeHolder="Username"/>
 		<input id="modlgn-passwd" type="password" name="password" class="span2" placeHolder="Password"/>
@@ -39,6 +40,6 @@ JHtml::_('behavior.keepalive');
 		<input type="hidden" name="return" value="<?php echo $return; ?>" />
 		<?php echo JHtml::_('form.token'); ?>
 	</fieldset>
+	<a href="<?php echo JRoute::_('index.php?option=com_users&view=registration'); ?>" > <?php echo JText::_('MOD_LOGIN_REGISTER'); ?></a>
 </form>
-<a href="<?php echo JRoute::_('index.php?option=com_users&view=registration'); ?>"> <?php echo JText::_('MOD_LOGIN_REGISTER'); ?></a>
 <?php endif; ?>

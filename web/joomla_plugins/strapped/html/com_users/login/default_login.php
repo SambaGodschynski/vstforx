@@ -10,7 +10,6 @@
 defined('_JEXEC') or die;
 JHtml::_('behavior.keepalive');
 ?>
-
 <div class="login<?php echo $this->pageclass_sfx?>">
 	<?php if ($this->params->get('show_page_heading')) : ?>
 	<div class="page-header">
@@ -29,6 +28,7 @@ JHtml::_('behavior.keepalive');
 		<?php if (($this->params->get('logindescription_show') == 1 && str_replace(' ', '', $this->params->get('login_description')) != '') || $this->params->get('login_image') != '') : ?>
 	</div>
 	<?php endif ; ?>
+<!-- LOGIN -->
 	<form action="<?php echo JRoute::_('index.php?option=com_users&task=user.login'); ?>" method="post" class="form-horizontal">
 		<fieldset>
 			<legend>Login</legend>
@@ -47,6 +47,7 @@ JHtml::_('behavior.keepalive');
 		</fieldset>
 	</form>
 </div>
+<!-- END-LOGIN -->
 <div class="well" style="padding:8px 0;">
 	<ul class="nav nav-list">
 		<li> <a href="<?php echo JRoute::_('index.php?option=com_users&view=reset'); ?>"> <?php echo JText::_('COM_USERS_LOGIN_RESET'); ?></a> </li>

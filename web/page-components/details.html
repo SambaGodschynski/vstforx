@@ -1,0 +1,406 @@
+<style type="text/css">
+  .well img {
+    float: left;
+    margin-right: 15px;
+  }
+  .well p  {
+    text-align: justify;
+  }
+  .nav-list, .nav-header  {
+    font-size: 19px;
+  }
+  .userfeat .btn {
+    margin-top: 69px;
+  }
+</style>
+
+<div class="hero-unit">
+  <div class="row-fluid">
+    <div class="span4">   
+      <ul class="nav nav-list">
+        <li class="nav-header">Contents</li>
+        <li><a href="#summary">VSTForx Summary</a></li>
+	<li><a href="#available-features">Available Features</a></li>
+        <li><a href="#planned-features">Planned Features</a></li>
+        <li><a href="#feature-voting">Feature Voting</a></li>
+        <li><a href="#os-support">OS Support</a></li>
+      </ul>
+    </div>
+  </div>
+  <br />
+  <br />
+  <h1><a name="summary">VSTForx</a></h1>
+  <div class="row-fluid frx-even well well-large">
+    <div class="span8">
+      <h2>Modular Freedom</h2>
+      <p>
+        VSTForx is a full-modular effect network creation tool which comes as a VST-plugin. 
+        With VSTForx you are able to load any number of VST-plugins and connect them anyway you want.
+        <p>
+          Additional modules allow you to manipulate such signal chains and offer a whole new way in mixing and producing.
+        </p>
+      </p>
+    </div>
+    <div class="span4">
+      <img src="images/frx/chain.png" alt="Plugin chain example" class="img-polaroid"/>
+    </div>
+  </div>
+  <div class="row-fluid frx-odd well well-large">
+    <div class="span4">
+      <img src="images/frx/parameter-network.png" alt="Parameter network example" class="img-polaroid"/>
+    </div>
+    <div class="span8">
+      <h2>Advanced Controls</h2>
+      <p class="lead">
+        Furthermore it’s possible to build complex controler chains by creating parameter networks composed of arbitrary plugin parameters. With special audio-transformer modules it’s possible to control parameters with audio events.
+      </p>
+    </div>
+  </div>
+  
+  <br />
+  <br />
+  
+  <h2><a name="available-features">Available Features</a></h2>
+  <div class="frx-even well features">
+    <br />
+    <br />
+    <h2>Basic Features</h2>
+    <div class="row-fluid">
+      <div class="span6">
+	<img src="images/frx/chain.png" 
+	     alt="Effect chain example" width="230px"
+	     class="img-rounded"
+	     />
+	<p>
+          <b>Completely Free Plugin Chaining:</b>
+          Unlike many other plugin chainers you are able to build effect chains similar to 
+	  "real" circuits. With that you have more control on how your sound is created.
+	</p>
+      </div>
+      <div class="span6">
+        <img src="images/frx/parameter-network.png" 
+             alt="Parameter network example" width="140px" 
+	     class="img-rounded"
+             />
+        <p>
+          <b>Free Parameter binding:</b>
+          Every effect and every module is controlled by parameters. All these parameters have a knob
+	  representation which can be placed and controlled on the main "circuit" view. With the knobs you are able
+	  to bind parameters together, so that every parameter changing will be transmitted to its neighbours.
+        </p>
+      </div>
+    </div>
+
+    <br />
+    <br />
+
+    <div class="row-fluid">
+      <div class="span12">
+        <img src="images/frx/parameter-cn-op.png" 
+             alt="Parameter connection-operator example"
+	     class="img-rounded"
+             />
+        <p> 
+          <b>Parameter Connection Operators</b> are modificators for parameter value transmissions.
+	  Available operators are <em>Inverse</em>, <em>Logarithmic</em>, 
+	  <em>Exponential</em> and <em>Offset</em>.  
+	</p>
+      </div>
+    </div>
+    
+    <br />            
+    <br />
+    <br />
+    
+    <h2>Internal Modules</h2>
+    <p>
+      Besides the plugins VSTForx knows three types of modules: the <em>signal processor</em>, the <em>signal switch</em>
+      and the <em>signal transformer</em>.
+    </p>
+    <br />
+    <div class="row-fluid">
+      <div class="span6">
+        <img src="images/frx/volume.png" 
+             alt="Volume example"
+	     class="img-rounded"
+             />
+        <p>
+          <b>Volume:</b>
+          The Volume module is a signal processor. It contains a single parameter 
+	  which allows to control the volume of the incomming signal.
+	</p>
+      </div>
+      
+      <div class="span6">
+        <img src="images/frx/pan.png" 
+             alt="Pan example"
+	     class="img-rounded"
+	     width="220px"
+             />
+        <p>
+          <b>Pan:</b>
+          Like the Volume module, the Pan module is a signal processor with a single parameter.
+	  Use it to control the panning of the incomming signal.
+        </p>
+      </div>
+    </div>
+    
+    <br />
+    <br />      
+    
+    <div class="row-fluid">
+      <div class="span6">
+        <img src="images/frx/switch.png" 
+             alt="Input-Switch example"
+	     class="img-rounded"
+	     width="240px"
+             />
+        <p>
+          <b>Input / Output Switches</b>
+          are able to switch between several states while every state 
+	  belongs to an input respectively to an output. An "Input Switch" for example
+	  can switch several inputs to one output. A "selector" parameter controlls the switch state.
+	  Furthermore several parameters control the "fade-in / fade-out" behaviour.
+        </p>
+      </div>  
+      <div class="span6">
+        <img src="images/frx/step.png" 
+             alt="Output-Stepswitch example"
+	     class="img-rounded"
+	     width="200px"
+             />
+        <p>
+          <b>Input / Output Step Switches:</b>
+          Unlike the "I/O Switches" the "Step Switch" state is not controlled by a parameter.
+	  The states will be iterated automatically. Either with a fixed time per state or synced to 
+	  the beat of the current DAW.
+	  <!--span class="label label-info"><b>Heads up:<b> in sync mode the state counter resets during the "play" event of your main DAW project. </span-->
+        </p>
+      </div>
+    </div>
+    
+    <br />
+    <br /> 
+    <br />
+    
+    <div class="row-fluid">
+      <div class="span6">
+        <img src="images/frx/midi-receiver.png" 
+             alt="Midi-Receiver example"
+	     class="img-rounded"
+	     width="220px"
+             />
+        <p>
+          <b>The Midi-Receiver</b> is a transformer module. It transforms MIDI signals into parameter values.
+        </p>
+      </div>        
+      <div class="span6">
+        <img src="images/frx/peaktr.png" 
+             alt="Peaktracker example"
+	     class="img-rounded"
+	     width="220px"
+             />
+        <p>
+          <b>The Peak Transformer</b> transforms incomming audio peaks into an output parameter value.
+        </p>
+      </div>
+    </div>
+    
+    <br />    
+    <br />          
+    
+    <div class="row-fluid">
+      <div class="span12">
+        <img src="images/frx/adsr.png" 
+             alt="ADSR-Trigger with TAL-Baseline as input"
+	     class="img-rounded"
+	     />
+        <p>
+          <b>The ADSR Trigger</b> generates an ADSR sequence triggered by an audio signal. 
+	  This sequence will be transformed into an output parameter value.
+	  Thus it's possible to control parameters (or rather the connected units) with any audio input.
+	</p>
+      </div>
+    </div>         
+  </div>
+  
+  <h2><a name="planned-features">Planned Features</a></h2>
+  <div class="frx-odd well features">
+    <br />
+    <br />
+    <h2>Modules / Features</h2>
+    <div class="row-fluid">
+      <div class="span4">
+        <img src="images/frx/logo3.png" 
+             alt="Multiple IO's icon"
+	     class="img-rounded"
+             />
+        <p>
+          <b>Multiple I/O's:</b>
+	  At the present VSTForx has only one stereo input and one stereo output. Future versions of VSTForx are  
+	  able to add arbitrary inputs and outputs.
+          <a href="#feature-voting" class="a-feature" data-target="#mod_voteid12">Vote for this feature.</a>
+	</p>
+      </div>
+      <div class="span4">
+        <img src="images/frx/physx.png" 
+             alt="Physics icon"
+	     class="img-rounded"
+	     width="100px"
+             />
+        <p>
+          <b>Physics Contoller:</b>
+	  Consider the Physics Controller as a physics driven sandbox environment. Every object
+	  and it's physical values can be bound to an output parameter value.
+	  <a href="#feature-voting" class="a-feature" data-target="#mod_voteid13">Vote for this feature.</a>
+	</p>
+      </div>
+      
+      <div class="span4">
+        <img src="images/frx/remote.png" 
+             alt="Remote access symbol"
+	     class="img-rounded"
+	     width="90px"
+             />
+        <p>
+          <b>Remote Access</b> offers (system wide) signal communication between VSTForx instances. So it's
+	   - for example - possible to send an audio stream from a VSTForx instance in Ableton Live to a 
+	  VSTForx instance loaded in Cubase. Just as it works for audio data, it's possible to transmit parameter values.
+	  <a href="#feature-voting" class="a-feature" data-target="#mod_voteid14">Vote for this feature.</a>
+	</p>
+      </div>
+    </div>
+    <br />
+    <div class="row-fluid">
+      <div class="span4">
+        <img src="images/frx/script.png" 
+             alt="Script module symbol"
+	     class="img-rounded"
+	     width="90px"
+             />
+        <p>
+          <b>Script Modules</b> give you the opportunity to write user specific 
+	  modules in the - easy to learn - <a href="http://www.lua.org/">Lua</a> language.
+	  Lua is fast enough to implement own signal processors or sound generators.
+	  Furthermore you can write scripts to manage the view and its elements or 
+	  implement own parameter operators.
+	  <a href="#feature-voting" class="a-feature" data-target="#mod_voteid15">Vote for this feature.</a>
+	</p>
+      </div>
+      
+      <div class="span4">
+        <img src="images/frx/vst3.jpg" 
+             alt="VST3 Logo" width="125" height="125"
+	     class="img-rounded"
+	     width="100px"
+             />
+        <p>
+          <b>VST3 Support:</b>
+	  Future versions of VSTForx will support VST3 plugins.
+	  <a href="#feature-voting" class="a-feature" data-target="#mod_voteid16">Vote for this feature.</a>
+        </p>
+      </div>
+      <div class="span4">
+        <img src="images/frx/au.gif" 
+             alt="Audio Unit icon"
+	     class="img-rounded"
+	     width="100px"
+             />
+        <p>
+          <b>AU Support:</b>
+	  with AU-support it is possible to load AU-plugins in VSTForx as well as
+	  loading VSTForx as an AU plugin. Of course this feature is only available for
+	  the Mac version of VSTForx.
+	  <a href="#feature-voting" class="a-feature" data-target="#mod_voteid17">Vote for this feature.</a>
+        </p>
+      </div>
+    </div>
+    
+    <br />
+    
+    <h2>User Interface</h2>
+    
+    <div class="row-fluid">
+      <div class="span4">
+        <img src="images/frx/zoom.png" 
+             alt="Zoom icon"
+	     class="img-rounded"
+             />
+	<p>
+          <b>Zoom In/Out:</b>
+          thanks to the new vector oriented GUI, future versions of VSTForx will have a
+	  seamless zoom-in and zoom-out function.
+	  <a href="#feature-voting" class="a-feature" data-target="#mod_voteid18">Vote for this feature.</a>
+	</p>
+      </div>
+      
+      <div class="span4">
+        <img src="images/frx/undo.png" 
+             alt="Undo/Redo icon"
+	     class="img-rounded"
+             />
+        <p>
+          <b>Undo/Redo:</b>
+          VSTForx will support undo and redo in the future. 
+          <a href="#feature-voting" class="a-feature" data-target="#mod_voteid19">Vote for this feature.</a>
+	</p>
+      </div>
+      <div class="span4">
+        <img src="images/frx/steped.png" 
+             alt="Stepeditor icon"
+	     class="img-rounded"
+             />
+        <p>
+          <b>Editor for Step modules:</b>
+	  Create complex rhythm patterns for the Step Modules with
+	  a convenient "Piano Roll"-like editor. 
+          <a href="#feature-voting" class="a-feature" data-target="#mod_voteid20">Vote for this feature.</a>
+	</p>
+      </div>         
+    </div>
+    
+    <br />
+    <br />
+    <br />
+    
+    <h2><a name="feature-voting">Feature Voting</a></h2>
+    <p>Which of these planned features above do you want to see in the next major release?</p>
+    <div class="row-fluid">
+      <div class="span6 modfeat">
+        <h3>Modules / Features</h3>
+        {acepolls 04}
+      </div>
+      <div class="span6 userfeat">
+        <h3>User Interface</h3>
+       	{acepolls 05}
+      </div>
+    </div>
+  </div>
+  
+  <h2><a name="os-support">OS Support</a></h2>
+  <div class="row-fluid frx-even well">
+    <div class="span12">
+      <p>
+        VSTForx is currently <strong>available</strong> for Windows only. A MacOS version will be coming <strong>soon</strong>.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  !function ($) {
+  $(function(){
+  $('.a-feature').each( function() {
+  var tg = $(this).attr("data-target");
+  $(this).click( function() {
+  var obj = $(tg);
+  if (obj!=null) {
+  obj.attr("checked","checked");
+  }
+  });
+  });
+  })
+  }(window.jQuery)
+</script>
+
+

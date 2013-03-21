@@ -149,7 +149,7 @@ class MantisConnector{
 		$getBugArray = array();	
 		foreach($this->settings->getMantisProjectIds() as $id){   	
 			try{
-				$getBugArray =  array_merge($getBugArray, $client->mc_project_get_issues($this->settings->getMantisUser(),$this->settings->getMantisPassword(), $id ));
+				$getBugArray =  array_merge($getBugArray, $client->mc_project_get_issues($this->settings->getMantisUser(),$this->settings->getMantisPassword(), $id, 0, 99999 ));
 			}catch (Exception $e){
 		    	//return false;
 				//var_dump($e);

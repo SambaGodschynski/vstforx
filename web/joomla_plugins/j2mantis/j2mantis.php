@@ -1,6 +1,3 @@
-
-
-asdasdASD
 <?php
 /**
  * @package    Joomla.J2Mantis
