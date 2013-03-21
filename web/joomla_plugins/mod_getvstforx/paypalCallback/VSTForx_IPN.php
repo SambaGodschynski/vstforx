@@ -25,8 +25,8 @@ $p = new paypal_class;
  * consider line 186 in paypal.class.php before switching into realmode
  * !!!!!!!!!!
  */
-$p->paypal_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
-//$p->paypal_url = 'https://www.paypal.com/cgi-bin/webscr';
+//$p->paypal_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
+$p->paypal_url = 'https://www.paypal.com/cgi-bin/webscr';
 
 
 ////////////////////////////////////////////////////////////////////////////////
