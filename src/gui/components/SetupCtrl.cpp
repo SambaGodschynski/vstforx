@@ -9,10 +9,12 @@
 #include <com/Settings.h>
 #include <boost/foreach.hpp>
 #include <com/PluginCollection.h>
+#include <com/PPIError.h>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <boost/thread.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 #include <sambag/disco/components/Window.hpp>
+#include <com/one4All.h>
 
 namespace com {
 extern std::string osSelectDirectory(const std::string &wndTitle, 
@@ -33,7 +35,14 @@ std::string SetupCtrl::selectDirectory(const std::string &startDir) const {
 }
 //-----------------------------------------------------------------------------
 bool SetupCtrl::addPluginFolder(const std::string &path) {
-	return ::com::getSettings().addVSTFolder(path);
+	try {
+		return ::com::getSettings().addVSTFolder(path);
+	} catch (const ::com::ppiError::PPIError &ex) {
+		::com::osMessageBox ( 
+			"Error", std::string("adding folder failed: ") + ex.error, ::com::MSG_ALERT 
+		);
+	}
+	return false;
 }
 //-----------------------------------------------------------------------------
 void SetupCtrl::setView(FrxCircuidViewPtr view) {

@@ -217,7 +217,7 @@ void Settings::saveConfigFile() {  // TODO: use boost::Program_options
 }
 //------------------------------------------------------------------------------------------------------------
 string Settings::versionToString( const unsigned int version ) {
-	return "0.9.t10";
+	return "0.9.0";
 }
 //--------------------------------------------------------------------------------------------------------
 bool Settings::getBooleanValue(const std::string &key) const {

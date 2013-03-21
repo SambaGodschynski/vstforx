@@ -208,6 +208,13 @@ void VstForxPlug::getParameterValue(int index, float &outValue) {
 	outValue = *(graph->getHostParameter(index));
 }
 //-----------------------------------------------------------------------------
+void VstForxPlug::getParameterName (int index, std::string &outStr) const
+{
+	if ( !graph ) 
+		return;
+	outStr = graph->getHostParameter(index)->getName();
+}
+//-----------------------------------------------------------------------------
 void VstForxPlug::hostParameterChanged(void *src, float value, int index) {
 	using ::processing::parameter::Parameter;
 	Parameter *p = (Parameter*) src;
