@@ -40,7 +40,7 @@ function showUserAlert() {
 ?>
 		<div class="alert alert-warning">
 		<strong>Login needed!</strong>
-		<p>you need to login in order to purchase VSTForx.</p>
+		<p>you need to login in order to purchase/download VSTForx.</p>
 		<a href="<?php echo JRoute::_('index.php?option=com_users&view=registration'); ?>">don't have an account?</a>	
 		</div>
 		<br />
