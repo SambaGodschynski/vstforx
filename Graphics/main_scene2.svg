@@ -1112,11 +1112,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="8"
-     inkscape:cx="435.24667"
-     inkscape:cy="673.00676"
+     inkscape:zoom="4"
+     inkscape:cx="946.48122"
+     inkscape:cy="308.848"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="layer4"
      showgrid="true"
      inkscape:window-width="1676"
      inkscape:window-height="1006"
@@ -1180,7 +1180,7 @@
          inkscape:export-xdpi="26"
          inkscape:export-ydpi="26" />
       <rect
-         style="fill:#6b0c09;fill-opacity:1;stroke:none;display:inline;filter:url(#filter3541)"
+         style="fill:#c11781;fill-opacity:1;stroke:none;display:inline;filter:url(#filter3541)"
          id="rect4452"
          width="171.82693"
          height="165.81654"
@@ -2239,7 +2239,7 @@
          inkscape:export-xdpi="37.519543"
          inkscape:export-filename="/Users/johannesunger/workspace/vstforx/src/images/processor.png"
          transform="translate(1.25,305.7677)"
-         d="m 435.22424,56.079578 a 26.516504,25.986174 0 1 1 -53.03301,0 26.516504,25.986174 0 1 1 53.03301,0 z"
+         d="m 435.22424,56.079578 c 0,14.351768 -11.87185,25.986174 -26.51651,25.986174 -14.64466,0 -26.5165,-11.634406 -26.5165,-25.986174 0,-14.351767 11.87184,-25.986173 26.5165,-25.986173 14.64466,0 26.51651,11.634406 26.51651,25.986173 z"
          sodipodi:ry="25.986174"
          sodipodi:rx="26.516504"
          sodipodi:cy="56.079578"
@@ -2258,14 +2258,14 @@
          sodipodi:cy="56.079578"
          sodipodi:rx="26.516504"
          sodipodi:ry="25.986174"
-         d="m 435.22424,56.079578 a 26.516504,25.986174 0 1 1 -53.03301,0 26.516504,25.986174 0 1 1 53.03301,0 z"
+         d="m 435.22424,56.079578 c 0,14.351768 -11.87185,25.986174 -26.51651,25.986174 -14.64466,0 -26.5165,-11.634406 -26.5165,-25.986174 0,-14.351767 11.87184,-25.986173 26.5165,-25.986173 14.64466,0 26.51651,11.634406 26.51651,25.986173 z"
          transform="matrix(0.49907615,0,0,0.49961683,205.69486,334.44708)" />
       <path
          inkscape:export-ydpi="37.519543"
          inkscape:export-xdpi="37.519543"
          inkscape:export-filename="/Users/johannesunger/workspace/vstforx/src/images/processor.png"
          transform="matrix(2.587474,0,0,2.9614274,-643.86702,193.26178)"
-         d="m 408.53095,57.14024 a 1.2374369,1.0606601 0 1 1 -2.47487,0 1.2374369,1.0606601 0 1 1 2.47487,0 z"
+         d="m 408.53095,57.14024 c 0,0.585786 -0.55401,1.06066 -1.23743,1.06066 -0.68342,0 -1.23744,-0.474874 -1.23744,-1.06066 0,-0.585787 0.55402,-1.06066 1.23744,-1.06066 0.68342,0 1.23743,0.474873 1.23743,1.06066 z"
          sodipodi:ry="1.0606601"
          sodipodi:rx="1.2374369"
          sodipodi:cy="57.14024"
@@ -3759,7 +3759,7 @@
            id="tspan4444"
            x="880.25"
            y="566.31927"
-           style="fill:#ffffff;fill-opacity:1;font-family:Arial Rounded MT Bold;-inkscape-font-specification:Arial Rounded MT Bold">Event</tspan></text>
+           style="fill:#ffffff;fill-opacity:1;font-family:Arial Rounded MT Bold;-inkscape-font-specification:Arial Rounded MT Bold">Offer</tspan></text>
     </g>
     <g
        inkscape:export-ydpi="157.40288"
@@ -3827,15 +3827,15 @@
       <text
          sodipodi:linespacing="125%"
          id="text4395"
-         y="566.31927"
-         x="880.25"
-         style="font-size:36px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:#e20c23;font-family:Sans;-inkscape-font-specification:Sans;stroke-opacity:1"
+         y="566.76123"
+         x="880.78033"
+         style="font-size:36px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:#e20c23;stroke-opacity:1;font-family:Sans;-inkscape-font-specification:Sans"
          xml:space="preserve"><tspan
-           style="fill:#ffffff;fill-opacity:1;font-family:Arial Rounded MT Bold;-inkscape-font-specification:Arial Rounded MT Bold;stroke:#e20c23;stroke-opacity:1"
-           y="566.31927"
-           x="880.25"
+           style="fill:#ffffff;fill-opacity:1;stroke:#e20c23;stroke-opacity:1;font-family:Arial Rounded MT Bold;-inkscape-font-specification:Arial Rounded MT Bold"
+           y="566.76123"
+           x="880.78033"
            id="tspan4398"
-           sodipodi:role="line">Event</tspan></text>
+           sodipodi:role="line">Offer</tspan></text>
     </g>
   </g>
   <g
