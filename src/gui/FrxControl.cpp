@@ -422,7 +422,6 @@ void openSetup(fgc::FrxCircuidViewPtr view,
 	}
 	setup->setCtrl(ctrl);
 	setup->validate();
-	setup->setTitle("VSTForx Setup");
 	setup->open();
 }
 ////////////////////////////////////////////////////////////////////////////////

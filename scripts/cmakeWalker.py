@@ -26,6 +26,10 @@ SET (PlugSources ${PlugSources}
 
 add_library(vstforx SHARED ${PlugSources})
 target_link_libraries (vstforx frx_core ${FRX_CLIBS})
+
+add_library(vstforxInstrument SHARED ${PlugSources})
+target_link_libraries (vstforxInstrument frx_core ${FRX_CLIBS})
+set_target_properties(vstforxInstrument PROPERTIES COMPILE_FLAGS -DFRX_IS_INSTRUMENT)
 """
 
 ignoreDirs = (

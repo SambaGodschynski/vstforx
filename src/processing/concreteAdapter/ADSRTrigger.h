@@ -97,10 +97,7 @@ public:
 	 */
 	Parameter::Ptr getOutParameter(size_t index = 0) const { return out; }
 	//--------------------------------------------------------------------------------------------------------
-	virtual ~ADSRTrigger (){ 
-		delete adsr; 
-		TOLOG ( "+" + getName() );
-	}
+	virtual ~ADSRTrigger ();
 };
 }// namespace processing
 

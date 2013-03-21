@@ -41,6 +41,11 @@ Console console;
 #pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.VC90.CRT' version='9.0.21022.8' processorArchitecture='X86' publicKeyToken='1fc8b3b9a1e18e3b' language='*'\"")
 #endif
 
+#ifdef FRX_IS_INSTRUMENT
+	enum { _FRX_IS_INSTRUMENT = 1 };
+#else
+	enum { _FRX_IS_INSTRUMENT = 0 };
+#endif
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 
@@ -77,7 +82,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 		frx::processing::VstForxPlug, // Processor
 		'frxr', // uid
 		sambag::dsp::StdPluginTraits<
-			2,2,false,::com::Settings::PROGRAM_PARAMETER
+			2,2,_FRX_IS_INSTRUMENT,::com::Settings::PROGRAM_PARAMETER
 		>,
 		frx::gui::components::CreateVstForxEditor
 	> Plugin;

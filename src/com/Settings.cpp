@@ -217,17 +217,7 @@ void Settings::saveConfigFile() {  // TODO: use boost::Program_options
 }
 //------------------------------------------------------------------------------------------------------------
 string Settings::versionToString( const unsigned int version ) {
-	return "0.x.xxx";
-	stringstream ss;
-	ss.width (7);
-	ss.fill ('0');
-	ss<<version;
-	string tmp = ss.str();
-	ss.str("");
-	ss.clear();
-	ss.fill (' ');
-	ss<<tmp[0]<<tmp[1]<<"."<<tmp[2]<<tmp[3]<<"."<<tmp[4]<<tmp[5]<<tmp[6];
-	return ss.str();
+	return "0.9.t10";
 }
 //--------------------------------------------------------------------------------------------------------
 bool Settings::getBooleanValue(const std::string &key) const {
@@ -249,6 +239,9 @@ void Settings::setBooleanValue(const std::string &key, bool val) {
 }
 //--------------------------------------------------------------------------------------------------------
 std::string Settings::getStringValue(const std::string &key) const {
+	if (key=="version") {
+		return versionToString();
+	}
 	SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
 		"Key: " + key + " not found.");
 	return "";

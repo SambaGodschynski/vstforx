@@ -10,6 +10,7 @@
 #include <gui/components/VstForxEditor.hpp>
 #include <sambag/disco/IResourceManager.hpp>
 #include <sambag/disco/components/WindowToolkit.hpp>
+#include <sambag/com/Common.hpp>
 #include <boost/program_options.hpp>
 #include <com/settings.h>
 
@@ -45,6 +46,9 @@ typedef std::vector<File> Files;
 int testHostCallback(AEffect* effect, VstInt32 opcode, 
 		VstInt32 index, VstIntPtr value, void* ptr, float opt)
 {
+	/*SAMBAG_LOG_INFO<<"hostCallback { opc: "<<opcode<<
+		", index: "<<index<<". value:"<<value<<", opt:"<<opt<<
+		", ptr:"<<std::hex<<ptr<<" }";*/
 	return 0;
 }
 //-----------------------------------------------------------------------------

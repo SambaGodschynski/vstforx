@@ -532,7 +532,6 @@ private:
 	 */
 	template < typename Archive >
 	void save ( Archive &ar, const unsigned int version ) const {
-		com::MethodMessage<ProcessAdapter> methodMessage ( "save()", *this );
 		ar << boost::serialization::base_object< PObject > ( *this );
 		ar << hostInfo;
 		ar << inputNodes;
@@ -547,7 +546,6 @@ private:
 	 */
 	template < typename Archive >
 	void load ( Archive &ar, const unsigned int version ) {
-		com::MethodMessage<ProcessAdapter> methodMessage ( "load()", *this );
 		ar >> boost::serialization::base_object< PObject > ( *this );
 		ar >> hostInfo;
 		ar >> inputNodes;

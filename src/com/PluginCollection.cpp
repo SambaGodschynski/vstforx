@@ -411,7 +411,6 @@ void PluginCollection::checkFile( const PluginCollection::Path &path, const Plug
 }
 //------------------------------------------------------------------------------------------------------------
 PluginCollection::~PluginCollection () {
-	TOLOG ("closing plugin collection");
 }
 //************************************************************************************************************
 // DataBase
