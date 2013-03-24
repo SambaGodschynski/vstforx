@@ -467,14 +467,7 @@ function html_top_banner() {
 	echo '<link rel="stylesheet" type="text/css" href="css/forx.css" />';	
 	echo '<div id="forx_header">';
 	echo '<h1><img src="../images/logo.png" alt="VSTForx"/>';
-	echo ' beta.tester::zone</h1>';
-
-	$win_ver = helper_forx_getAllDownloads();
-	echo '<p id="header_info">';	
-	echo 'latest version: VSTForx-'. $win_ver[0]['version'] .'  //  built on '. $win_ver[0]['built'];
-	echo '<br />';
-	echo 'registered beta testers:'. helper_get_total_user_count();	
-	echo '</p>';
+	echo ' VSTForx::issues</h1>';
 	google_search();
 	echo '<a href="http://www.vstforx.de">to mainpage</a>';
 	echo '</div>';
@@ -773,11 +766,6 @@ function print_menu() {
 		
 		# Main Page
 		//$t_menu_options[] = '<a href="' . helper_mantis_url( 'main_page.php' ) . '">' . lang_get( 'main_link' ) . '</a>';
-		
-		# <von mir>
-		$t_menu_options[] = '<a href="' . helper_mantis_url( 'forx_startpage.php' ) . '">' . 'Startpage' . '</a>';
-		$t_menu_options[] = '<a href="' . helper_mantis_url( 'forx_download.php' ) . '">' . 'Get latest version' . '</a>';
-		# </von mir>		
 
 		# Plugin / Event added options
 		$t_event_menu_options = event_signal( 'EVENT_MENU_MAIN_FRONT' );
