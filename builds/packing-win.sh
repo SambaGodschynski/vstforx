@@ -6,10 +6,10 @@ if [ $# -ne 1 ]; then
 fi
 vstr=VSTForx-$1-win
 dst=win/$vstr
-folder=VSTForx.beta/
+folder=VSTForx.PreRelease/
 mkdir -p $dst/$folder
-cp ../VSTForx/Release/VSTForx.dll $dst/$folder
-cp ../VSTForx/iRelease/iVSTForx.dll $dst/$folder
+cp ../src/Release/vstforx.dll $dst/$folder
+cp ../src/Release/vstforxInstrument.dll $dst/$folder
 cp license.txt $dst/$folder
 cp readme-win.txt $dst/$folder/readme.txt
 cd $dst
