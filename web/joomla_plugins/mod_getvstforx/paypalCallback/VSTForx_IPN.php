@@ -79,7 +79,7 @@ function _sendEmailImpl($mail, $sbj, $body) {
 	$mailer->setBody($body);
 	$send =& $mailer->Send();
 	if ( $send !== true ) {
-		error('Error sending email: ' . $recipient);
+		error('Error sending email: ' . $mail);
 	}
 }
 
