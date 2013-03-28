@@ -1,0 +1,29 @@
+step {
+	Step Type | fix .. sync
+	Step x duration | 10ms\1/128 .. 1000ms\1/1
+	fade-in duration 0ms .. 1000ms
+	fade-in curve type x | type1 .. type6
+	fade-out duration x | 0ms .. 1000ms
+	fade-out curve type x | type 1 .. type6
+}
+
+switch {
+        fade-in duration 0ms .. 1000ms
+        fade-in curve type x | type1 .. type6
+        fade-out duration x | 0ms .. 1000ms
+        fade-out curve type x | type 1 .. type6
+}
+
+peak_tracker {
+	offset | 0 .. 1
+}
+
+adsr_trigger {
+	mode | absolut, relative
+	x level | 0..1
+	x duration | 0s .. 5s
+	x slope type | type1 .. type6
+	trigger threshold 0 .. 1
+	trigger hold 0s .. 5s
+}
+
