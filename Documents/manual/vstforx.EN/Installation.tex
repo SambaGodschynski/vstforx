@@ -1,87 +1,85 @@
 % !TEX encoding = UTF-8 Unicode
 \kap{Installation}
-\ukap{Systemvoraussetzungen}
+\ukap{System requirements}
 \uukap{Windows}
-	\paragraph{Hardware}
-		\begin{itemize}
-			\item Pentium/Athlon Prozessor mit 500Mhz oder schneller
-			\item 512MB RAM
-			\item 20MB freier Speicherplatz auf der Festplatte
-			\item Eine mit Windows XP(SP3)/Vista/7 kompatible Soundkarte
-		\end{itemize}
-	\paragraph{Software}
-		\begin{itemize}
-			\item Windows XP(SP3)/Vista/7
-			\item Eine VST2.x kompatible Hostanwendung
-		\end{itemize}
-\uukap{Mac}
-	\paragraph{Hardware}
-		\begin{itemize}
-			\item Apple PowerPC/i386 500Mhz oder schneller
-			\item 512MB RAM
-			\item 40MB freier Speicherplatz auf der Festplatte
-			\item Core-Audio kompatible Audioschnittstelle
-		\end{itemize}
-	\paragraph{Software}
-		\begin{itemize}
-			\item MacOs 10.4.0 oder höher
-			\item Eine VST2.x kompatible Hostanwendung
-		\end{itemize}
-\uukap{\label{compatible}Unterstützte Pluginformate}
-Derzeit wird lediglich das VST2.x Pluginformat in der 32-bit Variante unterstützt.
+        \begin{itemize}
+	\item Windows XP(SP3)/Vista/7  
+        \item Pentium/Athlon Prozessor 500Mhz or better
+	\item 512MB RAM
+	\item about 20MB free disk space
+	\item a Windows XP(SP3)/Vista/7 compatible soundcard
+	\item a host application with VST2.x support
+	\end{itemize}
+%\uukap{Mac}
+%	\begin{itemize}
+%        	\item Apple PowerPC/i386 500Mhz oder schneller
+%		\item 512MB RAM
+%		\item 40MB freier Speicherplatz auf der Festplatte
+%		\item Core-Audio kompatible Audioschnittstelle
+%		\item MacOs 10.4.0 oder höher
+%		\item Eine VST2.x kompatible Hostanwendung
+%	\end{itemize}
+%\uukap{\label{compatible}Unterstützte Pluginformate}
+%Derzeit wird lediglich das VST2.x Pluginformat in der 32-bit Variante unterstützt.
 \newpage
 \ukap{Installation}
-Entpacken Sie, je nach Betriebsystem, den Inhalt der Datei ''VSTForx-\forxVersion-win.zip'' oder ''VSTForx-\forxVersion-mac.zip'' in das VST-Pluginverzeichnis Ihrer Hostanwendung.
-\\\\
-Öffnen sie Ihre Hostanwendung und vergewissern Sie sich, dass VSTForx korrekt von Ihrer Hostanwendung erkannt wurde (die genaue Vorgehensweise hierfür ist abhängig von Ihrer Hostanwendung). 
-\\\\
-VSTForx sollte in zwei Varianten erscheinen:
+Just extract the whole content of the .zip file into the vst-plugin folder of your host application. 
+Open the host application and check that VSTForx was loaded successfully.
+You should find two VSTForx plugin variants:
 \begin{itemize}
-	\item VSTForx (als Effekt)
-	\item iVSTForx (als Instrument)
+	\item vstforx (the effect)
+	\item vstforxInstrument (the instrument)
 \end{itemize}
 
-\ukap{Konfiguration}
+\ukap{Configuration}
 \begin{figure}[h]
 \begin{center}
 	\includegraphics[scale=0.3]{../graphics/blank}
-\caption{der VSTForx-Editor}
+\caption{the editor}
 \label{blank}
 \end{center}
 \end{figure}
 
-Laden Sie VSTForx in Ihre Hostanwendung. Öffnen Sie das Editorfenster von VSTForx (siehe Abbildung \ref{blank}). \\
-Öffnen Sie den Einstellungsdialog durch Klicken auf die  \includegraphics[scale=0.4]{../graphics/btn_setup}
-Schaltfläche (oben rechts im Editor). 
+%Laden Sie VSTForx in Ihre Hostanwendung. Öffnen Sie das Editorfenster von VSTForx (siehe Abbildung \ref{blank}). \\
+%Öffnen Sie den Einstellungsdialog durch Klicken auf die  \includegraphics[scale=0.4]{../graphics/btn_setup}
+%Schaltfläche (oben rechts im Editor). 
+Load VSTForx into your host application. Open the editor (figure \ref{blank}). \\
+To open the setup dialog use the \emph{''Open Setup Dialog''} entry in the context menu of the main view.
 
 \begin{figure}[h]
 \begin{center}
 	\includegraphics[scale=0.4]{../graphics/setup}
-\caption{der VSTForx-Einstellungsdialog}
+\caption{the setup dialog}
 \label{setup}
 \end{center}
 \end{figure}
 
-\ukap{\label{scanconfig}Das Scannen}
-\paragraph{Hinzufügen von Pluginverzeichnissen}
-Mittels der Schaltflächen \emph{''add Directory''}, \emph{''change Directory''}, \emph{''remove Directory''} können Sie vorhandene Pluginverzeichnisse zur VSTForx-Plugindatenbank \emph{hinzufügen}, \emph{ändern}, oder \emph{entfernen}. Der Scanvorgang startet nach Betätigen der ''Ok'' Schaltfläche, sobald ein Verzeichnis hinzugefügt oder geändert wurde. Andernfalls können Sie jederzeit durch 
-Betätigen von ''scan now'' den Scanvorgang initiieren. \\ 
-\paragraph{Der Scanvorgang} 
-VSTForx durchsucht nun alle Pluginverzeichnisse nach kompatiblen Plugins (siehe unterstützte Pluginformate). Die Ergebnisse dieses Vorganges werden in einem weiteren ''VSTForx Scan Directories''-Dialog angezeigt. Während des Scanvorgang ist - systembedingt - keine Interaktion mit der VSTForx Oberfläche möglich. Es wird daher empfohlen zu warten, bis der Scanvorgang vollständig abgeschlossen ist. Dies kann, je nach System, mehrere Minuten dauern. Ist der Scanvorgang beendet, wird eine Zusammenfassung im ''VSTForx Scan Directories''-Dialog angezeigt (Siehe Abbildung \ref{scanres}).
+\uukap{\label{scanconfig}The Scan}
+\paragraph{Adding Pluginfolders}
+%Mittels der Schaltflächen \emph{''add Directory''}, \emph{''change Directory''}, \emph{''remove Directory''} %können Sie vorhandene Pluginverzeichnisse zur VSTForx-Plugindatenbank \emph{hinzufügen}, \emph{ändern}, oder %\emph{entfernen}. Der Scanvorgang startet nach Betätigen der ''Ok'' Schaltfläche, sobald ein Verzeichnis %hinzugefügt oder geändert wurde. Andernfalls können Sie jederzeit durch 
+%Betätigen von ''scan now'' den Scanvorgang initiieren. \\ 
+With the buttons \emph{'add Directory'}, \emph{'change Directory'} and \emph{'remove Directory'}
+you are able to configure the search folders of the VSTForx database.
+
+\paragraph{The Scan Process} 
+While the scanning process, VSTForx searches the given Folders for VST plugins. Depending on the number of plugins the scan process may take a while. An extra window will show you the results of the current scan (figure \ref{scanres}).
 \\\\
-\textbf{Denken Sie daran den Scanvorgang zu wiederholen, sollte sich der Inhalt eines Pluginverzeichnisses ändern!}
+%VSTForx durchsucht nun alle Pluginverzeichnisse nach kompatiblen Plugins (siehe unterstützte Pluginformate). %Die Ergebnisse dieses Vorganges werden in einem weiteren ''VSTForx Scan Directories''-Dialog angezeigt. %Während des Scanvorgang ist - systembedingt - keine Interaktion mit der VSTForx Oberfläche möglich. Es wird %daher empfohlen zu warten, bis der Scanvorgang vollständig abgeschlossen ist. Dies kann, je nach System, %mehrere Minuten dauern. Ist der Scanvorgang beendet, wird eine Zusammenfassung im ''VSTForx Scan %Directories''-Dialog angezeigt (Siehe Abbildung \ref{scanres}).
+
+\textbf{Heads Up: don't forget to repeat this process when your plugin folder content has changed!}
 \begin{figure}[h]
 \begin{center}
 	\includegraphics[scale=0.3]{../graphics/scanres}
-\caption{Beispiel eines erfolgreich abgeschlossenen Scanvorgangs}
+\caption{the scan result window}
 \label{scanres}
 \end{center}
 \end{figure}
 \paragraph{Fast Scan}
-Während des Scanvorgangs sucht VSTForx alle Dateien, die als Plugin infrage kommen\footnote{je nach System handelt es sich dabei um ''.dll'' oder alle ''.vst'' Dateien}. VSTForx versucht dabei diese Dateien als Plugin zu laden. Dies kann je nach Plugin und System mehrere Sekunden dauern. Sollte der Scanvorgang zu lange dauern oder es zu Abstürzen kommen, besteht die Möglichkeit das Laden der Plugins zu überspringen. Aktivieren Sie hierfür die ''Fast Scan'' Option.
-\\\\
-Ist die ''Fast Scan'' Option aktiviert, werden alle potentiellen Plugindateien ungeprüft in der Plugindatenbank aufgenommen. Allerdings besteht dabei die Gefahr, dass Dateien, die für VSTForx nicht ladbar sind, in die Plugindatenbank aufgenommen werden. 
+%Während des Scanvorgangs sucht VSTForx alle Dateien, die als Plugin infrage kommen\footnote{je nach System handelt es sich dabei um ''.dll'' oder alle ''.vst'' Dateien}. VSTForx versucht dabei diese Dateien als Plugin zu laden. Dies kann je nach Plugin und System mehrere Sekunden dauern. Sollte der Scanvorgang zu lange dauern oder es zu Abstürzen kommen, besteht die Möglichkeit das Laden der Plugins zu überspringen. Aktivieren Sie hierfür die ''Fast Scan'' Option.
+Is the \emph{''fast scan''} option activated, the scan process recognizes a plugin only with the filename.
+The scan process is faster now but there is a lack of detailed informations about the scanned plugins (e.g. is it a instrument or not). Besides that there is a risk of recognizing a system .dll as a plugin.
 
-\ukap{Editor Window}
-Mittels der Schaltflächen \textbf{''- smaller'', ''+ larger'', ''- narrower'', ''+ wider'', ''- flatter'', ''+ higher''} können Sie die VSTForx-Editorgröße verändern. 
+
+\uukap{Window Options}
+With the \emph{''Window Size''} buttons you are able to change the editor size of the VSTForx editor.  
 
