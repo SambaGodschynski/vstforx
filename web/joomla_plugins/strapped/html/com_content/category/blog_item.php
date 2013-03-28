@@ -37,7 +37,7 @@ JHtml::core();
 	<?php endif; ?>
 	<?php if ($params->get('show_title')) : ?>
 	<!-- Article Title -->
-	<div class="page-header">
+	<div class="">
 		<h2>
 			<?php if ($params->get('link_titles') && $params->get('access-view')) : ?>
 			<a href="<?php echo JRoute::_(ContentHelperRoute::getArticleRoute($this->item->slug, $this->item->catid)); ?>"> <?php echo $this->escape($this->item->title); ?></a>
@@ -64,32 +64,39 @@ JHtml::core();
 	<?php endif; ?>
 	
 	<?php // to do not that elegant would be nice to group the params ?>
+	<?php if ($params->get('show_parent_category') && $this->item->parent_id != 1) : ?>
+	<span class="parent-category-name">
+		<?php $title = $this->escape($this->item->parent_title);
+			$url = '<a href="' . JRoute::_(ContentHelperRoute::getCategoryRoute($this->item->parent_id)) . '">' . $title . '</a>'; ?>
+		<?php if ($params->get('link_parent_category')) : ?>
+		<?php echo JText::sprintf($url); ?>
+		<?php else : ?>
+		<?php echo JText::sprintf($title); ?>
+		<?php endif; ?>
+	</span>
+	<?php endif; ?>
+	<?php if ($params->get('show_category')) : ?>
+	<span class="category-name">
+		<?php $title = $this->escape($this->item->category_title);
+				$url = '<a href="' . JRoute::_(ContentHelperRoute::getCategoryRoute($this->item->catid)) . '">' . $title . '</a>'; ?>
+		<?php if ($params->get('link_category')) : ?>
+		<?php echo JText::sprintf($url); ?>
+		<?php else : ?>
+		<?php echo JText::sprintf($title); ?>
+		<?php endif; ?>
+	</span>
+	<?php endif; ?>
 	<?php if (($params->get('show_author')) or ($params->get('show_category')) or ($params->get('show_create_date')) or ($params->get('show_modify_date')) or ($params->get('show_publish_date')) or ($params->get('show_parent_category')) or ($params->get('show_hits'))) : ?>
 	<p class="article-info">
 		<?php endif; ?>
 		<?php if ($params->get('show_create_date')) : ?>
 		<span class="create"><i class="icon-time"></i> <?php echo JText::sprintf(JHtml::_('date', $this->item->created, JText::_('DATE_FORMAT_LC1'))); ?> </span>
 		<?php endif; ?>
-		<?php if ($params->get('show_parent_category') && $this->item->parent_id != 1) : ?>
-		<span class="parent-category-name">
-			<?php $title = $this->escape($this->item->parent_title);
-				$url = '<a href="' . JRoute::_(ContentHelperRoute::getCategoryRoute($this->item->parent_id)) . '">' . $title . '</a>'; ?>
-			<?php if ($params->get('link_parent_category')) : ?>
-			<?php echo JText::sprintf($url); ?>
-			<?php else : ?>
-			<?php echo JText::sprintf($title); ?>
-			<?php endif; ?>
-		</span>
-		<?php endif; ?>
-		<?php if ($params->get('show_category')) : ?>
-		<span class="category-name">
-			<?php $title = $this->escape($this->item->category_title);
-					$url = '<a href="' . JRoute::_(ContentHelperRoute::getCategoryRoute($this->item->catid)) . '">' . $title . '</a>'; ?>
-			<?php if ($params->get('link_category')) : ?>
-			<?php echo JText::sprintf($url); ?>
-			<?php else : ?>
-			<?php echo JText::sprintf($title); ?>
-			<?php endif; ?>
+		<?php if ($params->get('show_publish_date')) : ?>
+		<span class="muted">
+			<em>
+				<?php echo JText::sprintf('COM_CONTENT_PUBLISHED_DATE_ON', JHtml::_('date', $this->item->created, JText::_('DATE_FORMAT_LC2'))); ?>
+			</em>
 		</span>
 		<?php endif; ?>
 
