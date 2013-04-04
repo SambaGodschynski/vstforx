@@ -133,8 +133,11 @@ void BgPane::postConstructor() {
 	ui.getProperty("FrxCircuidView.bgTransfomation", m);
 	sd::IPattern::Extend e = sd::IPattern::DISCO_EXTEND_REPEAT;
 	ui.getProperty("FrxCircuidView.bgExtend", e);
+	double opac = 0.3;
+	ui.getProperty("FrxCircuidView.bgOpacity", opac);
 	pat->setMatrix(m);
 	pat->setExtendType(e);
+	pat->setOpacity(opac);
 }
 }// namespace(s)
 //=============================================================================

@@ -95,7 +95,6 @@ public:
 	virtual size_t getNumParameter () const { return 1; }
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~PeakTracker (){ 
-		TOLOG ( "-" + getName() );
 	}
 };
 }// namespace processing

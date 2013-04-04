@@ -22,7 +22,6 @@ PeakTracker::PeakTracker( frx::processing::IHostInfo::Ptr hostInfo ) : ProcessAd
 	out->setName ("peak tracker output");
 	offset = Parameter::create();
 	offset->setName ("offset");
-	TOLOG ( "+" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
 void PeakTracker::processAdapter( Processor::Int numSamples ) {

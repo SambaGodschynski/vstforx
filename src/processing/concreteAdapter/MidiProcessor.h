@@ -121,7 +121,6 @@ public:
 	virtual size_t getNumParameter () const { return midiParameters.size(); }
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~MidiProcessor (){
-		TOLOG ( "-" + getName() );
 	}
 };
 }// namespace processing

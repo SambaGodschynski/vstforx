@@ -62,7 +62,6 @@ ioChangedLock(false)
 	}
 	
 	initPlug ( *this ); // muss nach init i/o erfolgen
-	TOLOG ( "+" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
 MyString VSTPlugin::extractNameFromFilename( const string &fileName ){
@@ -319,7 +318,6 @@ VSTPlugin::~VSTPlugin() {
 	// TODO: hier gab es probleme, unload muss aber stattfinden
 	if ( aEff != &nullAEff )
 		unloadModule();
-	TOLOG ( "-" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
 inline VSTPlugin * VSTPlugin::getVSTPlugNode(AEffect *aEff){

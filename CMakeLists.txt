@@ -8,6 +8,7 @@ add_definitions(-DBOOST_UBLAS_TYPE_CHECK=0)
 add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
 add_definitions(-D_SCL_SECURE_NO_WARNINGS) #disable warning C4996: 'std::uninitialized_copy' caused by boost::ublas
 add_definitions(-D_CRT_SECURE_NO_WARNINGS) #disable strcpy warning in audioeffect.h
+#add_definitions(-DSAMBAG_USE_LOG) #BOOST_LOG FAILS WHEN CALLING FROM VST(.dll) SEE #332
 #add_definitions(-DSAMBA_WARN_MISSING_IMPL) #show xy not impl. warning
 set(CMAKE_CXX_FLAGS_DEBUG "/MTd /ZI")
 
@@ -50,7 +51,21 @@ SET(Boost_USE_STATIC_LIBS        ON)
 #SET(Boost_USE_MULTITHREADED      ON)
 SET(Boost_USE_STATIC_RUNTIME    ON)
 
-find_package(Boost 1.49.0 REQUIRED filesystem system thread regex signals locale serialization date_time timer chrono program_options)
+find_package(Boost 1.49.0 REQUIRED 
+	filesystem 
+	system 
+	thread 
+	regex 
+	signals 
+	locale 
+	serialization 
+	date_time 
+	timer 
+	chrono 
+	program_options
+	log
+	log_setup
+)
 include_directories(${CAIRO_INCLUDE_DIRS})
 include_directories(${CPPUNIT_INCLUDE_DIRS})
 include_directories(${TINYXML_INCLUDE_DIRS})

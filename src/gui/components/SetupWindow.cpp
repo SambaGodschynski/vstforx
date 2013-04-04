@@ -357,6 +357,7 @@ void SetupWindow::ResizeBtnHandler::performResize(ResizeDirection dir, int ammou
 //-----------------------------------------------------------------------------
 void SetupWindow::setCtrl(SetupCtrl::Ptr ctrl) {
 	this->ctrl = ctrl;
+	setTitle("VSTForx-" + ctrl->getStringValue("version") + " Setup");
 	updateSettings();
 }
 //-----------------------------------------------------------------------------

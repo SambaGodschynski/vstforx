@@ -189,9 +189,11 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("Knob.fillColor", sd::ColorRGBA(0,0,0,0));
 	m.putProperty("Knob.colorHandler", sd::ColorRGBA(.352, .76, 1.));
 	typedef sd::IGradient::ColorStop Stop;
-	sd::IGradient::ColorStops stops(2);
-	stops[0] = Stop( sd::ColorRGBA(1.,1.,1., 0.2), 0);
-	stops[1] = Stop( sd::ColorRGBA(0.,0.,0., 1.), 1.0);
+	sd::IGradient::ColorStops stops(4);
+	stops[0] = Stop( sd::ColorRGBA(0.843137254902, 0.360784313725, 0.560784313725, .7), 0);
+	stops[1] = Stop( sd::ColorRGBA(0.564705882353, 0.0666666666667, 0.317647058824, .7), 0.04);
+	stops[2] = Stop( sd::ColorRGBA(0.36862745098, 0.0, 0.176470588235, .7), 0.42);
+	stops[3] = Stop( sd::ColorRGBA(0.152941176471, 0.0078431372549, 0.0941176470588, .7), 1.0);
 	m.putProperty("FrxCircuidView.bg.gradient.colorStops", stops);
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<styles
 	m.putProperty("IOCn.style", 
@@ -227,8 +229,9 @@ void FrxLookAndFeel::installDefaults() {
 		&getResourceManager()
 	);
 	rManager->registerImage("FrxCircuidView.image", "images/bkgrey.png");
-	//m.putProperty("FrxCircuidView.bgTransfomation", sambag::math::rotate2D(45.));
+	m.putProperty("FrxCircuidView.bgTransfomation", sambag::math::scale2D(.25, .25));
 	m.putProperty("FrxCircuidView.bgExtend", sd::IPattern::DISCO_EXTEND_REPEAT);
+	m.putProperty("FrxCircuidView.bgOpacity", (double)0.02);
 	rManager->registerImage("StatusMessage.icon.default", "images/inf_icon.png");
 	rManager->registerImage("StatusMessage.icon.hint", "images/inf_icon.png");
 	rManager->registerImage("StatusMessage.icon.warning", "images/warning_icon.png");

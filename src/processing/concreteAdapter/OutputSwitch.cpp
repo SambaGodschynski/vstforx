@@ -38,7 +38,7 @@ Switch ( initStates, hostInfo->getSampleRate() ), outpMatrix( OutputMatrix(initS
 {
 	setName ( "OutputSwitch" );
 	selector = Parameter::create();
-	selector->setName ("selector switch");
+	selector->setName ("switch selector");
 	selector->addValueChangedListener ( 
 		boost::bind(&OutputSwitch::valueChanged, this, _1, _2)
 	);
@@ -52,7 +52,6 @@ Switch ( initStates, hostInfo->getSampleRate() ), outpMatrix( OutputMatrix(initS
 		getOutputNode(i)->setName ( getName() + " OutputNode" );
 	}
 	*selector = 0.0f;
-	TOLOG ( "+" + getName() );
 }
 //--------------------------------------------------------------------------------------------------------
 inline void OutputSwitch::_processFrames ( Frames *iFrame, OutputMatrix &fr, Processor::Int numSamples ) {
@@ -92,7 +91,6 @@ void OutputSwitch::processAdapter( Processor::Int numSamples ) {
 }
 //------------------------------------------------------------------------------------------------------------
 OutputSwitch::~OutputSwitch(){
-	TOLOG ( "-" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
 void OutputSwitch::save(com::oArchive &ar, const unsigned int version) const {

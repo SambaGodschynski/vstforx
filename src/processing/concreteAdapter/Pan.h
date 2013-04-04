@@ -74,7 +74,6 @@ public:
 	virtual size_t getNumParameter () const { return 1; }
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Pan() {
-		TOLOG ( "-" + getName() );
 	}
 
 };

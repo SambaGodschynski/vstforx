@@ -13,6 +13,8 @@ namespace processing{
 // verwaltet N FadeValue und dazugehoerige Parameter
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
+const std::string Switch::STATE_GROUP_NAME = "State";
+//------------------------------------------------------------------------------------------------------------
 Switch::Switch( size_t _numStates, float sampleRate ) :
 numStates(0), // wird ueber _addState erhoet
 state(0),
@@ -44,12 +46,14 @@ void Switch::_addState() {
 	nDurationIN[i] = Parameter::create(i);
 	parameterMap.push_back( nDurationIN[i] );
 	nDurationIN[i]->setName("fade-in duration " + MyString(i+1) );
+	nDurationIN[i]->setGroupName(STATE_GROUP_NAME + MyString(i+1));
 	nDurationIN[i]->setLabel("ms");
 	nDurationIN[i]->setMin(FLT_MIN);
 	nDurationIN[i]->addValueChangedListener ( dI );
 	nDurationOUT[i] = Parameter::create(i);
 	parameterMap.push_back( nDurationOUT[i] );
 	nDurationOUT[i]->setName("fade-out duration " + MyString(i+1) );
+	nDurationOUT[i]->setGroupName(STATE_GROUP_NAME + MyString(i+1));
 	nDurationOUT[i]->setLabel("ms");
 	nDurationOUT[i]->setMin(FLT_MIN);
 	nDurationIN[i]->addValueChangedListener ( dO );
@@ -57,10 +61,12 @@ void Switch::_addState() {
 	nCurveTypeIN[i] = Parameter::create(i);
 	parameterMap.push_back( nCurveTypeIN[i] );
 	nCurveTypeIN[i]->setName("fade-in curve type " + MyString(i+1) );
+	nCurveTypeIN[i]->setGroupName(STATE_GROUP_NAME + MyString(i+1));
 	nCurveTypeIN[i]->addValueChangedListener ( cT );
 	nCurveTypeOUT[i] = Parameter::create(i);
 	parameterMap.push_back( nCurveTypeOUT[i] );
 	nCurveTypeOUT[i]->setName("fade-out curve type " + MyString(i+1) );
+	nCurveTypeOUT[i]->setGroupName(STATE_GROUP_NAME + MyString(i+1));
 	nCurveTypeOUT[i]->addValueChangedListener ( cT );
 	// init
 	*nDurationIN[i] = 0.01f;

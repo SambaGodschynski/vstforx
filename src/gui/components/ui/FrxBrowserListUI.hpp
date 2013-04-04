@@ -14,6 +14,7 @@
 #include <gui/components/FrxColumnBrowser.hpp>
 #include <sambag/disco/svg/graphicElements/Style.hpp>
 #include <gui/HandyNamespaces.hpp>
+#include <sambag/com/ArithmeticWrapper.hpp>
 
 namespace frx { namespace gui { 
 namespace components { namespace ui {
@@ -46,7 +47,13 @@ protected:
 private:
 	//-------------------------------------------------------------------------
 	sdsg::Style selectedStyle;
+	//-------------------------------------------------------------------------
+	sambag::com::ArithmeticWrapper<int, -1> currentIndex;
 public:
+	//-------------------------------------------------------------------------
+	void mousePressed(const sdc::events::MouseEvent &ev);
+	//-------------------------------------------------------------------------
+	void mouseReleased(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
 	void mouseDragged(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------

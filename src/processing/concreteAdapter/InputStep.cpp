@@ -83,7 +83,6 @@ fixTimeValue( 10.f, hostInfo->getSampleRate() )
 	sync = new SyncTranslator ( hostInfo );
 	init();
 	cStep->setNumSteps (initSteps);
-	TOLOG ( "+" + getName() );
 	tmpFrame.setSize ( hostInfo->getBlockSize() );
 }
 //------------------------------------------------------------------------------------------------------------
@@ -155,7 +154,6 @@ void InputStep::processAdapter( Processor::Int numSamples ) {
 InputStep::~InputStep(){
 	delete cStep;
 	delete sync;
-	TOLOG ( "-" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
 void InputStep::save(com::oArchive &ar, const unsigned int version) const {

@@ -38,7 +38,7 @@ Switch ( initStates, hostInfo->getSampleRate() ), inputMatrix( InputMatrix(initS
 {
 	setName ( "InputSwitch" );
 	selector = Parameter::create();
-	selector->setName ("selector switch");
+	selector->setName ("switch selector");
 	selector->addValueChangedListener ( 
 		boost::bind(&InputSwitch::valueChanged, this, _1, _2)
 	);
@@ -52,7 +52,6 @@ Switch ( initStates, hostInfo->getSampleRate() ), inputMatrix( InputMatrix(initS
 		getInputNode(i)->setName ( getName() + " InputNode" );
 	}
 	*selector = 0.0f;
-	TOLOG ( "+" + getName() );
 
 	tmpFrame.setSize ( hostInfo->getBlockSize() );
 }
@@ -88,7 +87,6 @@ void InputSwitch::processAdapter( Processor::Int numSamples ) {
 }
 //------------------------------------------------------------------------------------------------------------
 InputSwitch::~InputSwitch() {
-	TOLOG ( "-" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
 void InputSwitch::save(com::oArchive &ar, const unsigned int version) const {

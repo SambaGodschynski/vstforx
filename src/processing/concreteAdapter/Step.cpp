@@ -24,6 +24,7 @@ currTranslator(tr), Switch (initSteps, sampleRate ),  steps(initSteps), nDuratio
 		nDuration[i] = Parameter::create(); 
 		Parameter::Ptr p = getParameter(i);
 		p->setName ( "Step " + MyString(i+1) + " duration." );
+		p->setGroupName(STATE_GROUP_NAME + MyString(i+1));
 		p->addValueChangedListener (f);
 		p->setValue(0.35f);
 	}
@@ -44,6 +45,7 @@ void Step::addState() {
 	nDuration[i] = Parameter::create(); 
 	Parameter::Ptr p = getParameter(i);
 	p->setName ( "Step " + MyString(i+1) + " duration." );
+	p->setGroupName(STATE_GROUP_NAME + MyString(i+1));
 	p->addValueChangedListener (f);
 	p->setValue(0.35f);
 
