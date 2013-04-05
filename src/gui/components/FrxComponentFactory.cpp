@@ -18,9 +18,33 @@
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <boost/foreach.hpp>
 #include <processing/IModelController.hpp>
+#include <com/Settings.h>
 
 namespace frx { namespace gui { namespace components {
 namespace {
+typedef boost::weak_ptr<void> AnyWPtr;
+typedef boost::shared_ptr<void> AnyPtr;
+//-----------------------------------------------------------------------------
+void checkDemoConstraints(AnyPtr object) {
+	if (!SETTINGS.isDemo()) {
+		return;
+	}
+	static const int numMax = 4;
+	static AnyWPtr slots[numMax];
+
+	// check for free slot
+	for (int i=0; i<numMax; ++i) {
+		AnyPtr p = slots[i].lock();
+		if (p) {
+			continue;
+		}
+		slots[i] = object; // free slot found
+		return;
+	}
+	std::stringstream ss;
+	ss<<"DEMO MODE LIMITATION: you can't add more than "<<numMax<<" modules.";
+	throw(std::runtime_error(ss.str()));
+}
 //-----------------------------------------------------------------------------
 void registerProcessor(IViewModelMap::Ptr map,
 					   FrxProcessorNode::Ptr v,
@@ -50,6 +74,7 @@ FrxProcessorNodePtr createProcessor(FrxCircuidViewPtr circ, int numInputs, int n
 	}
 	// create view obj
 	typename ConcreteProcessor::Ptr viewObj = ConcreteProcessor::create();
+	checkDemoConstraints(viewObj);
 	if (!viewObj) {
 		return FrxProcessorNodePtr();
 	}
@@ -92,6 +117,7 @@ FrxProcessorNodePtr createPlugin(FrxCircuidViewPtr circ, ::processing::PluginInf
 	}
 	// create view obj.
 	FrxPluginNode::Ptr viewObj = FrxPluginNode::create();
+	checkDemoConstraints(viewObj);
 	if (!viewObj) {
 		return FrxProcessorNodePtr();
 	}

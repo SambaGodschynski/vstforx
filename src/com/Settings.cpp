@@ -90,19 +90,19 @@ string Settings::getPlugCollectionDumpFilename ()  {
 	return absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
-string Settings::getLogFilename()  { 
+string Settings::getLogFilename() const { 
 	std::string str = SETTINGS.getHomeDirectory() + "/" + NAME + ".log";
 	boost::filesystem::path p(str);
 	return absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
-string Settings::getConfFilename()  { 
+string Settings::getConfFilename() const { 
 	std::string str = SETTINGS.getHomeDirectory() + "/" + CONFIG_FILE; 
 	boost::filesystem::path p(str);
 	return absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
-string Settings::getPlugInitLogFilename()  { 
+string Settings::getPlugInitLogFilename() const { 
 	std::string str = SETTINGS.getHomeDirectory() + "/" + PLUG_LOAD_LOGFILE;
 	boost::filesystem::path p(str);
 	return absolute(p).string();
@@ -215,9 +215,13 @@ void Settings::saveConfigFile() {  // TODO: use boost::Program_options
 	f<<SKIP_SCAN<<"="<<isFastScan();
 	f.close();
 }
-//------------------------------------------------------------------------------------------------------------
-string Settings::versionToString( const unsigned int version ) {
-	return "0.9.0";
+//--------------------------------------------------------------------------------------------------------
+void Settings::setIsDemo(bool val) {
+	_isDemo = val;
+}
+//--------------------------------------------------------------------------------------------------------
+string Settings::versionToString( const unsigned int version ) const {
+	return std::string("0.9.0") + (isDemo() ? " DEMO VERSION" : "");
 }
 //--------------------------------------------------------------------------------------------------------
 bool Settings::getBooleanValue(const std::string &key) const {

@@ -34,7 +34,7 @@ int main ( const int argc, char **argv ) {
 	using namespace std;
 	using namespace tests;
 	cout<<"* VSTForx TestApp *"<<endl;
-	cout<<"testing version: " << com::Settings::versionToString() << endl;
+	cout<<"testing version: " << SETTINGS.versionToString() << endl;
 	cout<<"==================================="<<endl;
 	
 	// Informiert Test-Listener ueber Testresultate

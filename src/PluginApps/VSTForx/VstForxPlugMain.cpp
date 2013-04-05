@@ -46,6 +46,11 @@ Console console;
 #else
 	enum { _FRX_IS_INSTRUMENT = 0 };
 #endif
+#ifdef FRX_IS_DEMO
+	enum { _FRX_IS_DEMO = 1 };
+#else
+	enum { _FRX_IS_DEMO = 0 };
+#endif
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 
@@ -72,6 +77,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 		"win32.hinstance",
 		sambag::com::createObject((HINSTANCE)hInstance)
 	);
+	com::getSettings().setIsDemo((bool)_FRX_IS_DEMO);
 
 	sambag::disco::components::getWindowToolkit()->useWithoutMainloop();
 	

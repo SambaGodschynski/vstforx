@@ -30,6 +30,15 @@ target_link_libraries (vstforx frx_core ${FRX_CLIBS})
 add_library(vstforxInstrument SHARED ${PlugSources})
 target_link_libraries (vstforxInstrument frx_core ${FRX_CLIBS})
 set_target_properties(vstforxInstrument PROPERTIES COMPILE_FLAGS -DFRX_IS_INSTRUMENT)
+
+add_library(vstforxDEMO SHARED ${PlugSources})
+target_link_libraries (vstforxDEMO frx_core ${FRX_CLIBS})
+set_target_properties(vstforxDEMO PROPERTIES COMPILE_FLAGS -DFRX_IS_DEMO)
+
+add_library(vstforxInstrumentDEMO SHARED ${PlugSources})
+target_link_libraries (vstforxInstrumentDEMO frx_core ${FRX_CLIBS})
+set_target_properties(vstforxInstrumentDEMO PROPERTIES COMPILE_FLAGS -DFRX_IS_INSTRUMENT)
+set_target_properties(vstforxInstrumentDEMO PROPERTIES COMPILE_FLAGS -DFRX_IS_DEMO)
 """
 
 ignoreDirs = (

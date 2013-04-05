@@ -10,7 +10,7 @@ folder=VSTForx.PreRelease/
 mkdir -p $dst/$folder
 cp ../src/Release/vstforx.dll $dst/$folder
 cp ../src/Release/vstforxInstrument.dll $dst/$folder
-cp license.txt $dst/$folder
+#cp license.txt $dst/$folder
 cp readme-win.txt $dst/$folder/readme.txt
 cd $dst
 zip -r $vstr.zip *

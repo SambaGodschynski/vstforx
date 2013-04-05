@@ -407,7 +407,10 @@ bool FrxConnectionUI<CT>::contains(sdc::AComponentPtr c, const sd::Point2D &p) {
 template <class CT>
 void FrxConnectionUI<CT>::mouseEntered(const sdce::MouseEvent &ev) {
 	_mouseEntered = true;
-	ev.getSource()->getParent()->redraw();
+	sdc::AComponent::Ptr c = ev.getSource()->getParent();
+	if (c) {
+		c->redraw();
+	}
 }
 //-----------------------------------------------------------------------------
 template <class CT>
@@ -421,7 +424,10 @@ void FrxConnectionUI<CT>::mouseClicked(const sdce::MouseEvent &ev) {
 template <class CT>
 void FrxConnectionUI<CT>::mouseExited(const sdce::MouseEvent &ev) {
 	_mouseEntered = false;
-	ev.getSource()->getParent()->redraw();
+	sdc::AComponent::Ptr c = ev.getSource()->getParent();
+	if (c) {
+		c->redraw();
+	}
 }
 //-----------------------------------------------------------------------------
 template <class CT>

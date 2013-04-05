@@ -28,6 +28,7 @@
 #include <sambag/disco/svg/StyleParser.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <sambag/math/Matrix.hpp>
+#include <com/Settings.h>
 
 namespace frx { namespace gui { namespace components {
 namespace {
@@ -106,6 +107,21 @@ void BgPane::drawShadingLayer(sd::IDrawContext::Ptr cn,
 	cn->setFillPattern(shaderPat);
 	cn->fill();
 }
+void drawDemoNotifictaion(sd::IDrawContext::Ptr cn, const sd::Rectangle &r) 
+{
+	if (!SETTINGS.isDemo()) {
+		return;
+	}
+	std::string txt("DEMO VERSION");
+	cn->setFont(cn->getCurrentFont().setSize(36.));
+	sd::Rectangle tx = cn->textExtends(txt);
+	sambag::com::Number x = r.x();
+	sambag::com::Number y = r.y() + tx.height();
+	cn->moveTo(sd::Point2D(x,y));
+	cn->textPath("DEMO VERSION");
+	cn->setFillColor(sd::ColorRGBA(0.6, 0.6, 0.6, 1));
+	cn->fill();
+}
 void BgPane::drawComponent(sd::IDrawContext::Ptr cn) {
 	if (!pat) {
 		Super::drawComponent(cn);
@@ -116,6 +132,7 @@ void BgPane::drawComponent(sd::IDrawContext::Ptr cn) {
 	cn->setFillPattern(pat);
 	cn->rect(sd::Rectangle(0, 0, getWidth(), getHeight()));
 	cn->fill();
+	drawDemoNotifictaion(cn, r);
 	drawShadingLayer(cn, r);
 }
 //-----------------------------------------------------------------------------

@@ -110,8 +110,8 @@ void FrxMainBrowserCtrl::onBrowserOk(void *src,
 		BrowserNode::ResultPtr res = bNode.accept();
 		handleBrowserNodeResult(res);
 	} catch(const std::exception &ex) {
+		view->errorMessage(ex.what());
 	} catch (...) {
-		// TODO
 	}
 }
 //-----------------------------------------------------------------------------
