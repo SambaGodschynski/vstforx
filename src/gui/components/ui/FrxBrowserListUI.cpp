@@ -21,10 +21,10 @@ void FrxBrowserListUI::installDefaults(sdc::AComponentPtr c) {
 		boost::shared_dynamic_cast<ListType>(c);
 	SAMBAG_ASSERT(list);
 	list->setSelectionBackground(
-		selectedStyle.fillPattern()->getColor() 
+		selectedStyle.fillPattern() 
 	);
 	list->setSelectionForeground(
-		selectedStyle.strokePattern()->getColor()
+		selectedStyle.strokePattern()
 	);
 }
 //-----------------------------------------------------------------------------
