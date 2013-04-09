@@ -1,6 +1,6 @@
 % !TEX encoding = UTF-8 Unicode
 \newcommand{\aktion}[1]{ \subsubsection{#1} }
-\newcommand{\bParameterlist}{\\\\ \begin{tabular}[t]{l|p{3.3cm}|l} Parameter & Wertebereich & Funktion \\ \hline }
+\newcommand{\bParameterlist}{\begin{tabular}[t]{l|p{3.3cm}|l} Parameter & Wertebereich & Funktion \\ \hline }
 \newcommand{\param}[4]{\emph{#1} & \emph{#2} ... \emph{#3} & \emph{#4} \\}
 \newcommand{\paramSw}[4]{\emph{#1} & \emph{#2} / \emph{#3} & \emph{#4} \\}
 \newcommand{\paramRe}[6]{\emph{#1} & \emph{#2}...\emph{#3} bzw. \emph{#4}...\emph{#5} & \emph{#6} \\}
@@ -36,95 +36,55 @@ VSTForx ist in der Lage beliebig viele Audio-Plugins (siehe Kapitel \ref{compati
 	\eParameterlist
  	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ukap{Das Lautstärke Modul}
-Das Lautstärke Modul gehört zu den Signal verändernden Modulen. Über ein Parameter lässt sich die Lautstärke des Signalpfades einstellen.
-\aktion{Modul Parameter}
-	Der Untermenüpunkt \untermenupunkt{volume parameter} enthält folgende Parameter:
+\ukap{Volume}
+The Volume module is a signal processor. It contains a single parameter which allows to control the volume of the incoming signal.
+\aktion{Module Parameter}
 	\bParameterlist
-		\param{Volume}{0}{1}{Lautstärke}
+		\param{Volume}{0}{1}{volume}
 	\eParameterlist
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ukap{Das Pan Modul}
-Das Pan Modul gehört zu den Signal verändernden Modulen. Über ein Parameter lässt sich die Stereoverteilung des Signalpfades einstellen.
+\ukap{Pan}
+Like the Volume module, the Pan module is a signal processor with a single parameter. Use it to control the panning of the incoming signal.
 \aktion{Modul Parameter}
-	Der Untermenüpunkt \untermenupunkt{pan parameter} enthält folgende Parameter:
-		\bParameterlist
-		\param{Pan}{0}{1}{Die Stereoverteilung}
+	\bParameterlist
+		\param{Pan}{0}{1}{pan}
 	\eParameterlist
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ukap{Das Eingangs-Step Modul} 
-Das Eingangs-Step Modul gehört zu den Signalwegschaltern. Es ist in der Lage zwischen beliebig vielen Eingängen auf einen Ausgang zu schalten. Dabei verhält sich das Eingangs-Step Modul wie ein Stepsequencer. Jeder Eingang wird für eine bestimmte Zeit geschaltet. Ist die Zeit abgelaufen, wird der nächste Eingang geschaltet. Ist die letzte Stepstufe erreicht, beginnt die Sequenz erneut. Es existieren zwei Modi für das Eingangs-Step Modul: \emph{''fix''} und \emph{''sync''}.\\
-\paragraph{fix} Im \emph{''fix''}-Modus kann für jede Stepstufe ein fester Millisekundenbetrag eingestellt werden.
-\paragraph{sync} Im \emph{''sync''}-Modus werden Notenwerte für die Stepstufen festgelegt. 
+\ukap{Input / Output Switches} 
+Input / Output Switches are able to switch between several states while every state belongs to an input respectively to an output. An "Input Switch" for example can switch several inputs to one output. A "selector" parameter controls the switch state. Furthermore several parameters control the "fade-in / fade-out" behaveiour.
+\aktion{Adding States}
+	To add an additional switch state you can find a respective option in the context menu of any switch object.  
+\aktion{Module Parameter}
+	\bParameterlist
+		\param{selector switch}{0}{1}{the state selector}
+		\param{fade-in duration x\stern}{0ms}{1000ms}{''fadein'' duration x}
+		\param{fade-in curve type x\stern}{type1}{type\sstern}{''fadein'' slope type x}
+		\param{fade-out duration x\stern}{0ms}{1000ms}{''fadeout'' duration x}
+		\param{fade-out curve type x\stern}{type1}{type\sstern}{''fadeout'' slope type x}
+	\eParameterlist
+\stern : x=the related state \\
+\sstern : see figure \ref{curvetypes} on page \pageref{curvetypes}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ukap{Input/Output Step Switches} 
+Unlike the "I/O Switches" the "Step Switch" state is not controlled by a parameter. The states will be iterated automatically. Either with a \emph{fixed} time per state or \emph{synced} to the beat of the current DAW.\\
 \\\\
-\tip{Wann der Syncmodus die Stepsequenz beginnt, ist abhängig davon, an welcher Taktposition in der Hostanwendung die Start-Taste gedrückt wurde. Gestartet wird immer an dem nächst liegenden Viertelnotenwert.}
-\aktion{Einen weiteren Eingang hinzufügen}
-	Wählen Sie den Menüpunkt \menupunkt{add\_input\_node}, um einen weiteren Moduleingang hinzuzufügen.
-\aktion{Modul Parameter}
-	Der Untermenüpunkt \untermenupunkt{input\_step parameter} enthält folgende Parameter:
+\tip{%Wann der Syncmodus die Stepsequenz beginnt, ist abhängig davon, an welcher Taktposition in der Hostanwendung die Start-Taste gedrückt wurde. Gestartet wird immer an dem nächst liegenden Viertelnotenwert.
+Heads Up! In sync mode the state position will be reseted on incoming "play" event of the DAW. }
+\aktion{Adding States}
+	To add an additional switch state you can find a respective option in the context menu of any switch object.   
+\aktion{Module Parameter}
 	\bParameterlist
 		\paramSw{Step Type}{fix}{sync}{Der Step Modus}
-		\paramRe{Step x duration\stern}{10ms}{1000ms}{1/128}{1/1\sstern}{Die Haltedauer für Stepstufe x}
-		\param{fade-in duration x\stern}{0ms}{1000ms}{''Fade-In'' dauer für Stepstufe x}
-		\param{fade-in curve type x\stern}{type1}{type\ssstern}{''Fade-In'' Kurventyp für Stepstufe x}
-		\param{fade-out duration x\stern}{0ms}{1000ms}{''Fade-Out'' dauer für Stepstufe x}
-		\param{fade-out curve type x\stern}{type1}{type\ssstern}{''Fade-Out'' Kurventyp für Stepstufe x}
+		\paramRe{Step x duration\stern}{10ms}{1000ms}{1/128}{1/1\sstern}{duration x}
+		\param{fade-in duration x\stern}{0ms}{1000ms}{''fadein'' duration x}
+		\param{fade-in curve type x\stern}{type1}{type\ssstern}{''fadein'' slope type x}
+		\param{fade-out duration x\stern}{0ms}{1000ms}{''fadeout'' duration x}
+		\param{fade-out curve type x\stern}{type1}{type\ssstern}{''fadeout'' slope type x}
 	\eParameterlist
-\stern : einmal pro Stepausgang \\ 
-\sstern : jeweils zusätzliche Varianten punktiert (D) und triolisch(T) \\
-\ssstern : siehe Abbildung \ref{curvetypes} auf Seite \pageref{curvetypes}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ukap{Das Ausgangs-Step Modul}
-Die Funktionsweise des Ausgangs-Step Modules ist im wesentlichen identisch mit dem Eingangs-Step Modul. Einziger Unterschied:
-Es werden keine Eingänge sondern Ausgänge geschaltet.
-\aktion{Einen weiteren Ausgang hinzufügen}
-	Wählen Sie den Menüpunkt \menupunkt{add\_output\_node}, um einen weiteren Modulausgang hinzuzufügen.
-\aktion{Modul Parameter}
-	Der Untermenüpunkt \untermenupunkt{output\_step parameter} enthält folgende Parameter:
-	\bParameterlist
-		\paramSw{Step Type}{fix}{sync}{Der Step Modus}
-		\paramRe{Step x duration\stern}{10ms}{1000ms}{1/128}{1/1\sstern}{Die Haltedauer für Stepstufe x}
-		\param{fade-in duration x\stern}{0ms}{1000ms}{''Fade-In'' dauer für Stepstufe x}
-		\param{fade-in curve type x\stern}{type1}{type\ssstern}{''Fade-In'' Kurventyp für Stepstufe x}
-		\param{fade-out duration x\stern}{0ms}{1000ms}{''Fade-Out'' dauer für Stepstufe x}
-		\param{fade-out curve type x\stern}{type1}{type\ssstern}{''Fade-Out'' Kurventyp für Stepstufe x}
-	\eParameterlist
-\stern : einmal pro Stepausgang \\ 
-\sstern : jeweils zusätzliche Varianten punktiert (D) und triolisch(T) \\
-\ssstern : siehe Abbildung \ref{curvetypes} auf Seite \pageref{curvetypes}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ukap{Das Eingangs-Switch Modul} 
-Genau wie die Step Module gehört das Eingangs-Step Modul zu den Signalwegschaltern. Es ist ebenso in der Lage zwischen beliebig vielen Eingängen auf einen Ausgang zu schalten. Welcher Eingang aktuell geschaltet ist, hängt von einem Parameter ab.
-\aktion{Einen weiteren Eingang hinzufügen}
-	Wählen Sie den Menüpunkt \menupunkt{add\_input\_node}, um einen weiteren Moduleingang hinzuzufügen.
-\aktion{Modul Parameter}
-	Der Untermenüpunkt \untermenupunkt{input\_switch parameter} enthält folgende Parameter:
-	\bParameterlist
-		\param{selector switch}{0}{1}{Die Eingangsauswahl}
-		\param{fade-in duration x\stern}{0ms}{1000ms}{''Fade-In'' dauer für Eingang x}
-		\param{fade-in curve type x\stern}{type1}{type\sstern}{''Fade-In'' Kurventyp für Eingang x}
-		\param{fade-out duration x\stern}{0ms}{1000ms}{''Fade-Out'' dauer für Eingang x}
-		\param{fade-out curve type x\stern}{type1}{type\sstern}{''Fade-Out'' Kurventyp für Eingang x}
-	\eParameterlist
-\stern : einmal pro Switcheingang \\
-\sstern : siehe Abbildung \ref{curvetypes} auf Seite \pageref{curvetypes}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ukap{Das Ausgangs-Switch Modul}
-Die Funktionsweise ist identisch zum Eingangs-Switch Modul. Einziger Unterschied: Es werden Ausgänge geschaltet. 
-\aktion{Einen weiteren Ausgang hinzufügen}
-	Wählen Sie den Menüpunkt \menupunkt{add\_output\_node} um einen weiteren Modulausgang hinzuzufügen.
-\aktion{Modul Parameter}
-	Der Untermenüpunkt \untermenupunkt{output\_switch parameter} enthält folgende Parameter:
-	\bParameterlist
-		\param{selector switch}{0}{1}{Die Eingangsauswahl}
-		\param{fade-in duration x\stern}{0ms}{1000ms}{''Fade-In'' dauer für Eingang x}
-		\param{fade-in curve type x\stern}{type1}{type\sstern}{''Fade-In'' Kurventyp für Eingang x}
-		\param{fade-out duration x\stern}{0ms}{1000ms}{''Fade-Out'' dauer für Eingang x}
-		\param{fade-out curve type x\stern}{type1}{type\sstern}{''Fade-Out'' Kurventyp für Eingang x}
-	\eParameterlist
-\stern : einmal pro Switcheingang \\
-\sstern : siehe Abbildung \ref{curvetypes} auf Seite \pageref{curvetypes}
+\stern : x=the related state \\
+\sstern : see figure \ref{curvetypes} on page \pageref{curvetypes}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ukap{Das Peaktracker Modul}
 Das Peaktracker Modul gehört zu den ''Signal nach Parameterwert Umwandler''. Diese analysieren das anliegende Eingangssignal und senden das Ergebnis an einen Ausgabeparameter. Somit ist es möglich, Plugin- sowie Modulparameter über ein Audiosignal zu steuern. Im Falle des Peaktracker Modules wird das anliegende Audiosignal direkt in einen Parameterwert umgewandelt. Signalausschläge wie zum Beispiel bei einer Snaredrum würden direkt an den Ausgabeparameter übertragen.

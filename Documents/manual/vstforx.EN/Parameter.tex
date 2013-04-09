@@ -1,34 +1,25 @@
 % !TEX encoding = UTF-8 Unicode
 \kap{Parameter}
-Nahezu alle Plugin-/Moduleinstellungen werden in VSTForx durch Parameter getätigt. Diese sind in Form von Drehreglern auf der Bühne platzier- und bedienbar. Außerdem bietet VSTForx die Möglichkeit, einmal platzierte Drehregler miteinander zu verbinden (siehe Kapitel \ref{mousecontext} auf Seite \pageref{mousecontext}).
-Dadurch ist es möglich, mehrere Drehregler gleichzeitig zu steuern. 
-\ukap{Operatoren}
-Zusätzlich können Sie, über das Kontextmenü einer Parameterverbindung, Operatoren auf solch eine Verbindung legen. Operatoren verändern das Verhalten einer Parameter Verbindung. So wird zum Beispiel mit dem ''Inverse'' Operator bewirkt, das sich, das Verhalten des Nachbar-Parameters umkehrt. 
+%Nahezu alle Plugin-/Moduleinstellungen werden in VSTForx durch Parameter getätigt. Diese sind in Form von Drehreglern auf der Bühne platzier- und bedienbar. Außerdem bietet VSTForx die Möglichkeit, einmal platzierte Drehregler miteinander zu verbinden (siehe Kapitel \ref{mousecontext} auf Seite \pageref{mousecontext}).
+%Dadurch ist es möglich, mehrere Drehregler gleichzeitig zu steuern. 
+Every effect and every module is controlled by parameters. All of these parameters have a knob representation which can be placed and controlled on the main view. With the knobs you are able to bind parameters together, so that every parameter changing will be transmitted to its neighbours.
 
-\paragraph{Inverse-Operator}
-Kehrt das Verhalten des Nachbarparameters um. Um den Inverse-Operator hinzuzufügen, rufen Sie das Kontextmenü der Verbindung auf und wählen sie \menupunkt{add +/- Operator}.
-
-\paragraph{Exp/Log-Operator}
-Sind zwei Parameter A, B miteinander verbunden und der Exp/log Operator ist hinzugefügt. Verhält sich Parameter B Exponentiell zu Parameter A. Umgekehrt verhält sich Parameter A logarithmisch zu Parameter B.
-Um den Exp/Log-Operator hinzuzufügen, rufen Sie das Kontextmenü der Verbindung auf und wählen sie \menupunkt{add EXP/LOG Operator}.
+\ukap{Special Parameter Types}
+\paragraph{Free}
+%Freie Regler sind nicht an ein Plugin oder Modul gebunden.Es lassen sich beliebig viele Freie Regler auf der Bühne platzieren.
+Free parameters are not related to any module or plugin in VSTForx. You can add as many free knobs on the view as you want.
+\paragraph{Host}
+%Host Regler repräsentieren die VST-Pluginparameter von VSTForx. Sie sind von der Hostanwendung aus bedien- und automatisierbar.
+The host parameter appears in your host application as VSTForx parameters. These parameters are the connection between the host application and VSTForx. Use these parameters e.g. for host automation.
+\ukap{Operators}
+%Zusätzlich können Sie, über das Kontextmenü einer Parameterverbindung, Operatoren auf solch eine Verbindung legen. Operatoren verändern das Verhalten einer Parameter Verbindung. So wird zum Beispiel mit dem ''Inverse'' Operator bewirkt, das sich, das Verhalten des Nachbar-Parameters umkehrt. 
+Parameter Connection Operators are modificators for parameter value transmissions. To add an operator move the mouse over a connection and open the context menu. Select one operator from the submenu entry \emph{add operator}. 
+Some operators are controlled by parameters too. You can access them using the scene browser.
 \\\\
-Im Kontextmenü der Verbindung ist nun zusätzlich ein \menupunkt{EXP/LOG slope} Parameter aufrufbar. Dieser Wert bestimmt den Anstieg der Exponential bzw. Logarithmus Funktion.
-
-\paragraph{Log/Exp-Operator}
-Um den Log/Exp-Operator hinzuzufügen, rufen Sie das Kontextmenü der Verbindung auf und wählen sie \menupunkt{add LOG/EXP Operator}.
-\\\\
-Im Kontextmenü der Verbindung ist nun zusätzlich ein \menupunkt{LOG/EXP slope} Parameter aufrufbar. Dieser Wert bestimmt den Anstieg der Exponential bzw. Logarithmus Funktion.
-
-\paragraph{Offset-Operator}
-Der Offset-Operator verschiebt den Nachbarparameter um einen festlegbaren Wert (im Bereich -0.5...+0.5).
-Um den Offset-Operator hinzuzufügen, rufen Sie das Kontextmenü der Verbindung auf und wählen sie \menupunkt{add Offset Operator}. 
-\\\\
-Möchten Sie nun den Verschiebungswert einstellen, rufen Sie abermals das Kontextmenü der Verbindung auf und benutzen Sie den Menüpunkt \menupunkt{Offset}.
-\ukap{Zusätzliche Regler}
-Neben den Plugin/Modul Reglern, existieren noch zwei weitere Typen:
-
-\paragraph{Freie Regler}
-Freie Regler sind nicht an ein Plugin oder Modul gebunden.
-Es lassen sich beliebig viele Freie Regler auf der Bühne platzieren.
-\paragraph{Host Regler}
-Host Regler repräsentieren die VST-Pluginparameter von VSTForx. Sie sind von der Hostanwendung aus bedien- und automatisierbar.
+Following operators are available:
+\begin{itemize}
+\item Inverse
+\item Exp/Log
+\item Log/Exp
+\item Offset
+\end{itemize}
