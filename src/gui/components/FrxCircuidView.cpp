@@ -57,7 +57,7 @@ public:
 	typedef sdc::Label Super;
 protected:
 	StatusLabel(){
-		setOpaque(false);
+		setOpaque(true);
 	}
 public:
 	SAMBAG_STD_STATIC_COMPONENT_CREATOR(StatusLabel)

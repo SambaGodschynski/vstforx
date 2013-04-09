@@ -206,7 +206,7 @@ inline void createSpecificEntries<FrxPluginNode::ProcessorType>(sdc::PopupMenuPt
 	FrxCircuidViewPtr view, FrxComponentPtr c)
 {
 	sdc::MenuItem::Ptr m = sdc::MenuItem::create();
-	m->setText("open/close " + c->getName() + "'s editor");
+	m->setText("open/close editor...");
 	IFrxControl &ctrl = getFrxControl(view); 
 	m->sdc::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
 		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
@@ -271,7 +271,7 @@ void FrxProcessorNodeUI<CT>::createPopupmenuEntries(sdc::PopupMenuPtr menu,
 	}
 	// browser
 	sdc::MenuItem::Ptr m = sdc::MenuItem::create();
-	m->setText("show '" + c->getName() + "' details...");
+	m->setText("show details...");
 	IFrxControl &ctrl = getFrxControl(view); 
 	m->sdc::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
 		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 

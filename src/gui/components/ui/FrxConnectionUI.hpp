@@ -209,7 +209,7 @@ inline void _createPopupmenuEntries<connectionTypes::Parameter>(
 	IFrxControl &ctrl = getFrxControl(view);
 	// details
 	sdc::MenuItem::Ptr item = sdc::MenuItem::create();
-	item->setText("show " + c->getName() + " details...");
+	item->setText("show details...");
 	item->sce::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
 		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
 		&IFrxControl::showConnectionDetails),
@@ -218,7 +218,7 @@ inline void _createPopupmenuEntries<connectionTypes::Parameter>(
 	menu->add(item);
 	// op's
 	sdc::Menu::Ptr smenu = sdc::Menu::create();
-	smenu->setText("add operator for " + c->getName());
+	smenu->setText("add operator");
 	menu->add(smenu);
 	
 	// get connection op's

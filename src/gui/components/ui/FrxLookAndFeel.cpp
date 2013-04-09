@@ -194,6 +194,8 @@ void FrxLookAndFeel::installDefaults() {
 	stops[3] = Stop( sd::ColorRGBA(0.152941176471, 0.0078431372549, 0.0941176470588, .7), 1.0);
 	m.putProperty("FrxCircuidView.bg.gradient.colorStops", stops);
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<styles
+	m.putProperty("FrxComponent.menu.label.style", 
+		createStyle("stroke:black; fill:royalblue; font-size: 12; font-family: arial; font-style: italic;"));
 	m.putProperty("IOCn.style", 
 		createStyle("stroke-width: 4; stroke: darkgrey"));
 	m.putProperty("IOCn.hoverStyle", 
