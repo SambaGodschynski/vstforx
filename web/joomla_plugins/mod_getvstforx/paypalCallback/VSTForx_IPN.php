@@ -79,11 +79,23 @@ function _sendEmailImpl($mail, $sbj, $body) {
 	$mailer->setBody($body);
 	$send =& $mailer->Send();
 	if ( $send !== true ) {
-		error('Error sending email: ' . $recipient);
+		error('Error sending email: ' . $mail);
 	}
 }
 
-function sendEmail($juser, $prodid, $details) {
+function updateUser($user) {
+	$data = array(
+        "groups"=>array("9")
+    );
+	if(!$user->bind($data)) {
+        error("Could not bind data. Error: " . $user->getError());
+    }
+    if (!$user->save()) {
+        error("Could not save user. Error: " . $user->getError());
+    }
+}
+
+function sendEmailAndUpdateUser($juser, $prodid, $details) {
 	$db = getDB();
 	$q = "SELECT * FROM frx_selled_response_mail 
 		  WHERE frx_selled_response_mail.productid = " . $db->quote($prodid) . "
@@ -96,6 +108,7 @@ function sendEmail($juser, $prodid, $details) {
 	$res = $res[0];
 	
 	$user =& JFactory::getUser($juser);
+	updateUser($user);
 	$body = str_replace('$USER', $user->name, $res["text"]);
 	$body = str_replace('$DETAILS', getDetails($details), $body);
 	$recipient = $user->email;
@@ -137,7 +150,7 @@ if ($p->validate_ipn()) {
 					" . $db->quote(http_build_query($_POST), $link). "
 				);";
 	query($db, $query);
-	sendEmail((int)$p->ipn_data['custom'], $p->ipn_data['item_number'], $p);
+	sendEmailAndUpdateUser((int)$p->ipn_data['custom'], $p->ipn_data['item_number'], $p);
 }
 
 
