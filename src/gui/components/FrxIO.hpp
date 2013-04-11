@@ -11,6 +11,8 @@
 #include <boost/shared_ptr.hpp>
 #include "FrxNode.hpp"
 #include <gui/HandyNamespaces.hpp>
+#include <boost/serialization/version.hpp>
+
 namespace frx { namespace gui { namespace components {
 //=============================================================================
 /** 
@@ -22,6 +24,8 @@ public:
 	//-------------------------------------------------------------------------
 	static const std::string PROPERTY_STATE;
 	//-------------------------------------------------------------------------
+	static const std::string PROPERTY_DISPLAY_TXT;
+	//-------------------------------------------------------------------------
 	typedef FrxNode Super;
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<FrxIO> Ptr;
@@ -29,7 +33,7 @@ public:
 	enum State {
 		None, 
 		/**
-		 * for ex. on step processors, means: this (step)node is active 
+		 * for ex. on step processors, means: this (state)node is active 
 		 */
 		Activated 
 	};
@@ -38,6 +42,8 @@ protected:
 	FrxIO() : states(0) {}
 	//-------------------------------------------------------------------------
 	unsigned int states;
+	//-------------------------------------------------------------------------
+	std::string display;
 private:
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
@@ -48,13 +54,22 @@ private:
 	void serialize(Archive &ar, const unsigned int version) { 
 		ar & boost::serialization::base_object<Super>(*this);
 		ar & states;
+		if (version > 0) {
+			ar & display;
+		}
 	} 
 public:
+	//-------------------------------------------------------------------------
+	virtual void setDisplayText(const std::string &txt);
+	//-------------------------------------------------------------------------
+	virtual const std::string & getDisplayText() const { return display; }
 	//-------------------------------------------------------------------------
 	virtual bool getState(State state) const;
 	//-------------------------------------------------------------------------
 	virtual void setState(State state, bool val);
 }; // FrxIO
 }}} // namespace(s)
+
+BOOST_CLASS_VERSION(frx::gui::components::FrxIO, 1)
 
 #endif /* SAMBAG_FRXIO_H */

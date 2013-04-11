@@ -125,7 +125,14 @@ bool Settings::addVSTFolder ( const string &path ) {
 	for ( ; it!=pluginDirectories.end(); ++it ) {
 		if ( isSubDirectory( sambag::com::Location(*it), sambag::com::Location(path) ) ) {
 			throw ppiError::SettingsException ( 
-				"given folder is subfolder of " + path,
+				"given folder is subfolder of " + *it,
+				__FILE__,
+				__LINE__
+			);
+		}
+		if ( isSubDirectory( sambag::com::Location(path), sambag::com::Location(*it) ) ) {
+			throw ppiError::SettingsException ( 
+				"given folder is parent folder of " + *it,
 				__FILE__,
 				__LINE__
 			);

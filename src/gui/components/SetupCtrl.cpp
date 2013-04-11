@@ -41,6 +41,7 @@ bool SetupCtrl::addPluginFolder(const std::string &path) {
 		::com::osMessageBox ( 
 			"Error", std::string("adding folder failed: ") + ex.error, ::com::MSG_ALERT 
 		);
+		return false;
 	}
 	return false;
 }

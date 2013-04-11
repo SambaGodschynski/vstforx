@@ -13,6 +13,8 @@
 #include "FrxNodeUI.hpp"
 #include <gui/HandyNamespaces.hpp>
 #include <sambag/disco/IDiscoFactory.hpp>
+#include <sambag/disco/svg/graphicElements/Style.hpp>
+#include <sambag/disco/FontCache.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -53,6 +55,10 @@ public:
 	typedef _ConcreteIO ConcreteIO;
 protected:
 	//-------------------------------------------------------------------------
+	virtual void drawDisplay(sd::IDrawContext::Ptr cn, FrxIO::Ptr c);
+	//-------------------------------------------------------------------------
+	sdsg::Style displayStyle;
+	//-------------------------------------------------------------------------
 	typedef FrxIOUI<ConcreteIO> ThisClassType;
 	//-------------------------------------------------------------------------
 	FrxIOUI(){}
@@ -60,7 +66,6 @@ protected:
 	sd::IPattern::Ptr stateActive;
 	//-------------------------------------------------------------------------
 	void drawActiveState(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c);
-private:
 public:
 	//-------------------------------------------------------------------------
 	virtual void createPopupmenuEntries(sdc::PopupMenuPtr menu, 
@@ -87,45 +92,66 @@ public:
 }; // FrxIOUI
 ///////////////////////////////////////////////////////////////////////////////
 namespace {
+	typedef sdsg::Style DisplayStyle;
+	typedef boost::tuple<sd::ISurface::Ptr, DisplayStyle> ReturnValue;
 	template <class IOType>
-	sd::ISurface::Ptr _ioDef(sdc::AComponentPtr c) {
-		return sd::ISurface::Ptr();
+	ReturnValue _ioDef(sdc::AComponentPtr c) {
+		return ReturnValue(
+			sd::ISurface::Ptr(),
+			DisplayStyle::DEFAULT_STYLE
+		);
 	}
 	template <>
-	sd::ISurface::Ptr _ioDef<ioTypes::Input>(sdc::AComponentPtr c) {
+	ReturnValue _ioDef<ioTypes::Input>(sdc::AComponentPtr c) {
 		sd::ColorRGBA col;
 		sdcu::getUIManager().getProperty("ProcessorInput.bgColor", col);
 		c->setBackground(col);
 		sdcu::getUIManager().getProperty("ProcessorInput.fgColor", col);
 		c->setForeground(col);
-		return sd::getResourceManager().getImage("ProcessorInput.image");
+		DisplayStyle style = DisplayStyle::DEFAULT_STYLE;
+		sdcu::getUIManager().getProperty("ProcessorInput.displayStyle", style);
+		return ReturnValue(
+			sd::getResourceManager().getImage("ProcessorInput.image"),
+			style
+		);
 	}
 	template <>
-	sd::ISurface::Ptr _ioDef<ioTypes::Output>(sdc::AComponentPtr c) {
+	ReturnValue _ioDef<ioTypes::Output>(sdc::AComponentPtr c) {
 		sd::ColorRGBA col;
 		sdcu::getUIManager().getProperty("ProcessorOutput.bgColor", col);
 		c->setBackground(col);
 		sdcu::getUIManager().getProperty("ProcessorOutput.fgColor", col);
 		c->setForeground(col);
-		return sd::getResourceManager().getImage("ProcessorOutput.image");
+		DisplayStyle style = DisplayStyle::DEFAULT_STYLE;
+		sdcu::getUIManager().getProperty("ProcessorOutput.displayStyle", style);
+		return ReturnValue(
+			sd::getResourceManager().getImage("ProcessorOutput.image"),
+			style
+		);
 	}
 	template <>
-	sd::ISurface::Ptr _ioDef<ioTypes::Entry>(sdc::AComponentPtr c) {
+	ReturnValue _ioDef<ioTypes::Entry>(sdc::AComponentPtr c) {
 		sd::ColorRGBA col;
 		sdcu::getUIManager().getProperty("Entry.bgColor", col);
 		c->setBackground(col);
 		sdcu::getUIManager().getProperty("Entry.fgColor", col);
 		c->setForeground(col);
-		return sd::getResourceManager().getImage("Entry.image");
+		return ReturnValue(
+			sd::getResourceManager().getImage("Entry.image"),
+			DisplayStyle::DEFAULT_STYLE
+		);
 	}
 	template <>
-	sd::ISurface::Ptr _ioDef<ioTypes::Exit>(sdc::AComponentPtr c) {
+	ReturnValue _ioDef<ioTypes::Exit>(sdc::AComponentPtr c) {
 		sd::ColorRGBA col;
 		sdcu::getUIManager().getProperty("Exit.bgColor", col);
 		c->setBackground(col);
 		sdcu::getUIManager().getProperty("Exit.fgColor", col);
 		c->setForeground(col);
-		return sd::getResourceManager().getImage("Exit.image");
+		return ReturnValue(
+			sd::getResourceManager().getImage("Exit.image"),
+			DisplayStyle::DEFAULT_STYLE
+		);
 	}
 } // namespace
 //-----------------------------------------------------------------------------
@@ -141,21 +167,42 @@ void FrxIOUI<CIO>::drawActiveState(sd::IDrawContext::Ptr cn, sdc::AComponentPtr 
 	}
 	sd::Point2D loc = node->getPivot();
 	sambag::com::Number r = c->getWidth()/2.;
+	cn->save();
 	cn->translate(loc);
 	cn->arc(sd::Point2D(0,0), r);
 	cn->setFillPattern(stateActive);
+	cn->fill();
+	cn->restore();
+}
+//-----------------------------------------------------------------------------
+template <class CIO>
+void FrxIOUI<CIO>::drawDisplay(sd::IDrawContext::Ptr cn, FrxIO::Ptr c)
+{
+	const std::string &txt = c->getDisplayText();
+	if (txt=="") {
+		return;
+	}
+	sd::FontCache &fc = sd::FontCache::instance();
+	displayStyle.intoContext(cn);
+	sd::Rectangle r = fc.getTextBounds( cn, txt );
+	cn->moveTo(sd::Point2D(
+		c->getWidth()/2. - r.width()/2.,
+		c->getHeight()/2. - r.height()/2
+	));
+	fc.drawText(cn , txt);
 	cn->fill();
 }
 //-----------------------------------------------------------------------------
 template <class CIO>
 void FrxIOUI<CIO>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	Super::draw(cn, c);
+	FrxIO::Ptr io = boost::shared_dynamic_cast<FrxIO>(c);
 	if (hasImage()) {
 		drawImage(cn, c);
 		drawActiveState(cn,c);
+		drawDisplay(cn, io);
 		return;
 	}
-	FrxIO::Ptr io = boost::shared_dynamic_cast<FrxIO>(c);
 	sd::Point2D loc = io->getPivot();
 	sambag::com::Number r = getCoreRadius(io);
 	cn->arc(loc, r);
@@ -164,8 +211,8 @@ void FrxIOUI<CIO>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	cn->arc(loc, r);
 	cn->setFillColor(io->getBackground());
 	cn->fill();
-
 	drawActiveState(cn,c);
+	drawDisplay(cn, io);
 }
 //-----------------------------------------------------------------------------
 template <class CIO>
@@ -180,7 +227,9 @@ void FrxIOUI<CIO>::installUI(sdc::AComponentPtr c) {
 	pat->addColorStop(col.setA(0.5), 0.85);
 	pat->addColorStop(col.setA(0.0), 0.0);
 	stateActive = pat;	
-	setImage(_ioDef<CIO>(c));
+	sd::ISurface::Ptr img;
+	boost::tie(img, displayStyle) = _ioDef<CIO>(c);
+	setImage(img);
 	Super::installUI(c);
 }
 }}}} // namespace(s)
