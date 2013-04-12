@@ -37,8 +37,7 @@ set_target_properties(vstforxDEMO PROPERTIES COMPILE_FLAGS -DFRX_IS_DEMO)
 
 add_library(vstforxInstrumentDEMO SHARED ${PlugSources})
 target_link_libraries (vstforxInstrumentDEMO frx_core ${FRX_CLIBS})
-set_target_properties(vstforxInstrumentDEMO PROPERTIES COMPILE_FLAGS -DFRX_IS_INSTRUMENT)
-set_target_properties(vstforxInstrumentDEMO PROPERTIES COMPILE_FLAGS -DFRX_IS_DEMO)
+set_target_properties(vstforxInstrumentDEMO PROPERTIES COMPILE_FLAGS "-DFRX_IS_INSTRUMENT -DFRX_IS_DEMO")
 """
 
 ignoreDirs = (

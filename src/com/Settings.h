@@ -95,10 +95,7 @@ public:
 	void reloadConfigFile() { loadConfigFile(); }
 	//--------------------------------------------------------------------------------------------------------
 	// PPI KONSTANTEN
-	enum { COMMAND_WORKER_INTERVAL_MS = 1000 };
 	enum { PROGRAM_PARAMETER = 512 };
-	static const int PPI_VERSION = /*000*/ 4444; // xx.xx.xxx
-	static const char PPI_VERSION_EXTRA_CHAR = 'd';
 	static const unsigned int MIN_WINDOW_WIDTH = 800;
 	static const unsigned int MIN_WINDOW_HEIGHT = 600;
 	static const unsigned int MAX_STR_MENU_LABEL = 40;
@@ -139,7 +136,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	const PathnameSet & getPluginDirectoryList() const { return pluginDirectories; }
 	//--------------------------------------------------------------------------------------------------------
-	string versionToString( const unsigned int version = PPI_VERSION ) const;
+	string versionToString() const;
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Settings(){}
 	//--------------------------------------------------------------------------------------------------------

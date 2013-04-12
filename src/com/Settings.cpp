@@ -24,6 +24,7 @@ static const string WINDOW_WIDTH = "window_width";
 static const string WINDOW_HEIGHT = "window_height";
 static const string MAX_LOGSIZE = "max_logfile_sizeKB";
 static const string SKIP_SCAN = "fast_scan";
+static const string STR_VERSION = "0.9.1";
 
 //------------------------------------------------------------------------------------------------------------
 static inline void parseConfigLine( ifstream &f, com::MyString &token, com::MyString &content ) {
@@ -227,8 +228,8 @@ void Settings::setIsDemo(bool val) {
 	_isDemo = val;
 }
 //--------------------------------------------------------------------------------------------------------
-string Settings::versionToString( const unsigned int version ) const {
-	return std::string("0.9.0") + (isDemo() ? " DEMO VERSION" : "");
+string Settings::versionToString() const {
+	return STR_VERSION + (isDemo() ? " DEMO VERSION" : "");
 }
 //--------------------------------------------------------------------------------------------------------
 bool Settings::getBooleanValue(const std::string &key) const {
