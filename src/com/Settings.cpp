@@ -90,19 +90,19 @@ string Settings::getPlugCollectionDumpFilename ()  {
 	return absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
-string Settings::getLogFilename()  { 
+string Settings::getLogFilename() const { 
 	std::string str = SETTINGS.getHomeDirectory() + "/" + NAME + ".log";
 	boost::filesystem::path p(str);
 	return absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
-string Settings::getConfFilename()  { 
+string Settings::getConfFilename() const { 
 	std::string str = SETTINGS.getHomeDirectory() + "/" + CONFIG_FILE; 
 	boost::filesystem::path p(str);
 	return absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
-string Settings::getPlugInitLogFilename()  { 
+string Settings::getPlugInitLogFilename() const { 
 	std::string str = SETTINGS.getHomeDirectory() + "/" + PLUG_LOAD_LOGFILE;
 	boost::filesystem::path p(str);
 	return absolute(p).string();
@@ -125,7 +125,14 @@ bool Settings::addVSTFolder ( const string &path ) {
 	for ( ; it!=pluginDirectories.end(); ++it ) {
 		if ( isSubDirectory( sambag::com::Location(*it), sambag::com::Location(path) ) ) {
 			throw ppiError::SettingsException ( 
-				"given folder is subfolder of " + path,
+				"given folder is subfolder of " + *it,
+				__FILE__,
+				__LINE__
+			);
+		}
+		if ( isSubDirectory( sambag::com::Location(path), sambag::com::Location(*it) ) ) {
+			throw ppiError::SettingsException ( 
+				"given folder is parent folder of " + *it,
 				__FILE__,
 				__LINE__
 			);
@@ -215,19 +222,13 @@ void Settings::saveConfigFile() {  // TODO: use boost::Program_options
 	f<<SKIP_SCAN<<"="<<isFastScan();
 	f.close();
 }
-//------------------------------------------------------------------------------------------------------------
-string Settings::versionToString( const unsigned int version ) {
-	return "0.x.xxx";
-	stringstream ss;
-	ss.width (7);
-	ss.fill ('0');
-	ss<<version;
-	string tmp = ss.str();
-	ss.str("");
-	ss.clear();
-	ss.fill (' ');
-	ss<<tmp[0]<<tmp[1]<<"."<<tmp[2]<<tmp[3]<<"."<<tmp[4]<<tmp[5]<<tmp[6];
-	return ss.str();
+//--------------------------------------------------------------------------------------------------------
+void Settings::setIsDemo(bool val) {
+	_isDemo = val;
+}
+//--------------------------------------------------------------------------------------------------------
+string Settings::versionToString( const unsigned int version ) const {
+	return std::string("0.9.0") + (isDemo() ? " DEMO VERSION" : "");
 }
 //--------------------------------------------------------------------------------------------------------
 bool Settings::getBooleanValue(const std::string &key) const {
@@ -249,6 +250,9 @@ void Settings::setBooleanValue(const std::string &key, bool val) {
 }
 //--------------------------------------------------------------------------------------------------------
 std::string Settings::getStringValue(const std::string &key) const {
+	if (key=="version") {
+		return versionToString();
+	}
 	SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
 		"Key: " + key + " not found.");
 	return "";

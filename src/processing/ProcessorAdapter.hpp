@@ -12,8 +12,10 @@
 #include <boost/weak_ptr.hpp>
 #include "IProcessor.hpp"
 #include <sambag/com/Exception.hpp>
+#include "ParameterAdapter.hpp"
 #include <vector>
-#include <map>
+#include <boost/bimap.hpp> 
+#include <boost/bimap/multiset_of.hpp> 
 #include "processing.h"
 #include "Forward.hpp"
 
@@ -52,7 +54,9 @@ public:
 	typedef IProcessor Super;
 protected:
 	//-------------------------------------------------------------------------
-	void updateParameter();
+	void updateParameter(::processing::parameter::Parameter::Ptr p);
+	//-------------------------------------------------------------------------
+	void updateParameters();
 	//-------------------------------------------------------------------------
 	Adaptee::Ptr processor;
 	//-------------------------------------------------------------------------
@@ -62,12 +66,22 @@ protected:
 	//-------------------------------------------------------------------------
 	mutable std::vector<NodeAdapterPtr> outputs; 
 	//-------------------------------------------------------------------------
-	typedef std::multimap<ParameterGroupKey, ParameterAdapterPtr> ParameterGroupMap;
+	typedef boost::bimap<
+		boost::bimaps::multiset_of<ParameterGroupKey>, 
+		boost::bimaps::set_of<ParameterAdapterPtr>
+	> ParameterGroupMap;
+	//typedef std::multimap<ParameterGroupKey, ParameterAdapterPtr> ParameterGroupMap;
 	ParameterGroupMap parameters; 
+	//-------------------------------------------------------------------------
+	typedef std::map<::processing::parameter::Parameter::Ptr, 
+		ParameterAdapterPtr> ParameterAdapterMap;
+	ParameterAdapterMap parameterAdapterMap;
 	//-------------------------------------------------------------------------
 	void initParameter();
 	//-------------------------------------------------------------------------
 	virtual bool removeImpl(IModelControllerPtr ctrl);
+	//-------------------------------------------------------------------------
+	ParameterAdapterPtr getAdapter(::processing::parameter::Parameter::Ptr p);
 public:
 	//-------------------------------------------------------------------------
 	virtual IProcessor::Ptr getPtr() const {

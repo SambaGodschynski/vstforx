@@ -96,7 +96,7 @@ function showProducts(&$map) {
 		}
 		$info = $info[0];
 ?>		
-		<h4><?php echo $info[0] ?></h4>
+		<a name="prod<?php echo $info[2] ?>"><h4><?php echo $info[0] ?></h4></a>
 		<?php showProductDetails($info); ?>
 		<div class="well frx-<?php echo $c % 2==0 ? 'even' : 'odd' ?>" >
 <?php

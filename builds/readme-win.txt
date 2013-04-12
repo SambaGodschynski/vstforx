@@ -1,5 +1,5 @@
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	                            VSTForx.beta
+	                            VSTForx.PreRelease
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
@@ -9,14 +9,14 @@ Install VSTForx
       
       after that your VST Folder should contain:
 			\VSTForx.beta              <- VSTForx folder
-			\VSTForx.beta\VSTForx.dll  <- VSTForx FX plugin file
-			\VSTForx.beta\iVSTForx.dll <- VSTForx Instrument plugin file
+			\VSTForx.beta\vstforx.dll  <- VSTForx FX plugin file
+			\VSTForx.beta\vstforxInstrument.dll <- VSTForx instrument plugin file
 
 Configure VSTForx
 -----------------
 
     - open your favourite Host / Sequencer Application and load VSTForx.
-    - press the 'Configure'  button to be found in the top-right corner.
+    - open the contextmenu and select "Open Setup Dialog"
     - add your VST directory/ies
     - press Ok.
     - don't forget to repeat this procedure when your directory content has changed !

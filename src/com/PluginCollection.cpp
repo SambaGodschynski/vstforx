@@ -164,7 +164,7 @@ bool PluginCollection::isScanning() {
 //------------------------------------------------------------------------------------------------------------
 void PluginCollection::processScanLogFile() {
 	// Logfile Fehlerbehandlung
-	if ( exists( Filename(Settings::getPlugInitLogFilename()) ) ) { // ja: 
+	if ( exists( Filename(SETTINGS.getPlugInitLogFilename()) ) ) { // ja: 
 		Filename f = Filename ( analyzeLog () );
 		if (exists (f)) {
 			MessageBoxReturn ret = 
@@ -245,7 +245,7 @@ void PluginCollection::update(  frx::processing::IHostInfo::Ptr hostInfo ) {
 	tmpHostInfo = frx::processing::IHostInfo::Ptr();
 	//!!
 	try {
-		std::remove ( Settings::getPlugInitLogFilename().c_str() ); // log wieder loeschen
+		std::remove ( SETTINGS.getPlugInitLogFilename().c_str() ); // log wieder loeschen
 	} catch (...) {
 		return;
 	}
@@ -255,7 +255,7 @@ void PluginCollection::update(  frx::processing::IHostInfo::Ptr hostInfo ) {
 void PluginCollection::appendLog ( const string &log_msg ) {
 	ofstream f;
 	try {
-		f.open ( Settings::getPlugInitLogFilename().c_str(), ios::app );
+		f.open ( SETTINGS.getPlugInitLogFilename().c_str(), ios::app );
 		f<<log_msg<<endl;
 	}
 	catch ( ... ) {
@@ -269,7 +269,7 @@ string PluginCollection::analyzeLog() {
 	ifstream f;
 	string str;
 	try {
-		f.open ( Settings::getPlugInitLogFilename().c_str() );
+		f.open ( SETTINGS.getPlugInitLogFilename().c_str() );
 		while ( !f.eof() ) {
 			MyString l;
 			getline(f, l);
@@ -411,7 +411,6 @@ void PluginCollection::checkFile( const PluginCollection::Path &path, const Plug
 }
 //------------------------------------------------------------------------------------------------------------
 PluginCollection::~PluginCollection () {
-	TOLOG ("closing plugin collection");
 }
 //************************************************************************************************************
 // DataBase

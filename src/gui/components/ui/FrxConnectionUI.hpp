@@ -209,7 +209,7 @@ inline void _createPopupmenuEntries<connectionTypes::Parameter>(
 	IFrxControl &ctrl = getFrxControl(view);
 	// details
 	sdc::MenuItem::Ptr item = sdc::MenuItem::create();
-	item->setText("show " + c->getName() + " details...");
+	item->setText("show details...");
 	item->sce::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
 		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
 		&IFrxControl::showConnectionDetails),
@@ -218,7 +218,7 @@ inline void _createPopupmenuEntries<connectionTypes::Parameter>(
 	menu->add(item);
 	// op's
 	sdc::Menu::Ptr smenu = sdc::Menu::create();
-	smenu->setText("add operator for " + c->getName());
+	smenu->setText("add operator");
 	menu->add(smenu);
 	
 	// get connection op's
@@ -407,7 +407,10 @@ bool FrxConnectionUI<CT>::contains(sdc::AComponentPtr c, const sd::Point2D &p) {
 template <class CT>
 void FrxConnectionUI<CT>::mouseEntered(const sdce::MouseEvent &ev) {
 	_mouseEntered = true;
-	ev.getSource()->getParent()->redraw();
+	sdc::AComponent::Ptr c = ev.getSource()->getParent();
+	if (c) {
+		c->redraw();
+	}
 }
 //-----------------------------------------------------------------------------
 template <class CT>
@@ -421,7 +424,10 @@ void FrxConnectionUI<CT>::mouseClicked(const sdce::MouseEvent &ev) {
 template <class CT>
 void FrxConnectionUI<CT>::mouseExited(const sdce::MouseEvent &ev) {
 	_mouseEntered = false;
-	ev.getSource()->getParent()->redraw();
+	sdc::AComponent::Ptr c = ev.getSource()->getParent();
+	if (c) {
+		c->redraw();
+	}
 }
 //-----------------------------------------------------------------------------
 template <class CT>

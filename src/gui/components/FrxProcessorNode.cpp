@@ -153,10 +153,20 @@ void FrxProcessorNode::configIO(int numInputs, int numOutputs) {
 	inputs.reserve(numInputs);
 	outputs.reserve(numOutputs);
 	for (int i = 0; i<numInputs; ++i) {
-		createInputNode();
+		FrxIO::Ptr io = boost::shared_dynamic_cast<FrxIO>(
+			createInputNode()
+		);
+		if (numInputs>1) {
+			io->setDisplayText( sambag::com::toString(i+1) );
+		}
 	}
 	for (int i = 0; i<numOutputs; ++i) {
-		createOutputNode();
+		FrxIO::Ptr io = boost::shared_dynamic_cast<FrxIO>(
+			createOutputNode()
+		);
+		if (numOutputs>1) {
+			io->setDisplayText( sambag::com::toString(i+1) );
+		}
 	}
 }
 }}} // namespace(s)

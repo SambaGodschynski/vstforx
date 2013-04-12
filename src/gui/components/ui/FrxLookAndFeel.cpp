@@ -9,6 +9,7 @@
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <sambag/disco/svg/HtmlColors.hpp>
 #include <sambag/disco/svg/StyleParser.hpp>
+#include <sambag/disco/svg/graphicElements/Style.hpp>
 #include <sambag/disco/components/ColumnBrowser.hpp>
 #include <sambag/disco/components/List.hpp>
 #include <sambag/disco/components/ColumnView.hpp>
@@ -38,7 +39,7 @@
 #include <gui/components/ui/FrxFlagUI.hpp>
 #include <sambag/disco/components/Knob.hpp>
 #include <gui/components/ui/FrxKnobUI.hpp>
-
+#include <sambag/disco/DiscoHelper.hpp>
 #include <sambag/disco/FileResourceManager.hpp>
 #include <sambag/disco/IPattern.hpp>
 #include <sambag/math/Matrix.hpp>
@@ -134,6 +135,7 @@ void FrxLookAndFeel::installDefaults() {
 	Super::installDefaults();
 	using namespace sambag::disco;
 	using namespace sambag::disco::svg;
+	using namespace sambag::disco::svg::graphicElements;
 	using namespace sambag::disco::components;
 	using namespace sambag::disco::components::ui;
 	using namespace sambag::disco::components::ui::basic;
@@ -151,8 +153,6 @@ void FrxLookAndFeel::installDefaults() {
 	static double RADIUS_MED = 15.;
 	static double RADIUS_LARGE = 20.;	
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<global
-	m.putProperty("global.background", HtmlColors::getColor("lightgrey"));
-	m.putProperty("global.foreground", HtmlColors::getColor("black"));
 	m.putProperty("ColumnBrowser.fontStyle", createStyle("font-size: 17; font-family: arial"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<sizes
 	m.putProperty("Knob.mode", std::string("linear"));
@@ -189,27 +189,34 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("Knob.fillColor", sd::ColorRGBA(0,0,0,0));
 	m.putProperty("Knob.colorHandler", sd::ColorRGBA(.352, .76, 1.));
 	typedef sd::IGradient::ColorStop Stop;
-	sd::IGradient::ColorStops stops(2);
-	stops[0] = Stop( sd::ColorRGBA(1.,1.,1., 0.2), 0);
-	stops[1] = Stop( sd::ColorRGBA(0.,0.,0., 1.), 1.0);
+	sd::IGradient::ColorStops stops(4);
+	stops[0] = Stop( sd::ColorRGBA(0.843137254902, 0.360784313725, 0.560784313725, .7), 0);
+	stops[1] = Stop( sd::ColorRGBA(0.564705882353, 0.0666666666667, 0.317647058824, .7), 0.04);
+	stops[2] = Stop( sd::ColorRGBA(0.36862745098, 0.0, 0.176470588235, .7), 0.42);
+	stops[3] = Stop( sd::ColorRGBA(0.152941176471, 0.0078431372549, 0.0941176470588, .7), 1.0);
 	m.putProperty("FrxCircuidView.bg.gradient.colorStops", stops);
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<styles
+	Style style = createStyle("stroke:darkgrey; fill:lightgrey; font-size: 12; font-family: arial; font-style: italic;");
+	//style.fillPattern( sd::createPattern("lin(0,1,[D3D3D3FF:0, D3D3D3FF:0.66, D3D3D3FF:0.667, FF:1])") );
+	m.putProperty("SetupWindow.style", style);
+	m.putProperty("FrxComponent.menu.label.style", 
+		createStyle("stroke:darkgrey; fill:royalblue; font-size: 12; font-family: arial; font-style: italic;"));
 	m.putProperty("IOCn.style", 
-		createStyle("stroke-width: 4; stroke: darkgrey"));
+		createStyle("stroke-width: 4; stroke: darkgrey; stroke-opacity:0.5;"));
 	m.putProperty("IOCn.hoverStyle", 
-		createStyle("stroke-width: 8; stroke: darkgrey"));
+		createStyle("stroke-width: 8; stroke: darkgrey; stroke-opacity:0.5;"));
 	m.putProperty("ProcessorInputCn.style", 
-		createStyle("stroke-width: 4; stroke: darkgrey"));
+		createStyle("stroke-width: 8; stroke: darkgrey; stroke-opacity:0.5;"));
 	m.putProperty("ProcessorOutputCn.style", 
-		createStyle("stroke-width: 4; stroke: darkgrey"));
+		createStyle("stroke-width: 8; stroke: darkgrey; stroke-opacity:0.5;"));
 	m.putProperty("ProcessorParameterCn.style", 
-		createStyle("stroke-width: 2; stroke: red; purple;stroke-dasharray: 9, 5"));
+		createStyle("stroke-width: 2; stroke: red; purple;stroke-dasharray: 9, 5; stroke-opacity:0.5;"));
 	m.putProperty("ParameterCn.style", 
-		createStyle("stroke-width: 4; stroke: green;stroke-dasharray: 9, 5;"));
+		createStyle("stroke-width: 4; stroke: green;stroke-dasharray: 9, 5; stroke-opacity:0.5;"));
 	m.putProperty("ParameterCn.hoverStyle", 
-		createStyle("stroke-width: 8; stroke: green;stroke-dasharray: 9, 5;"));
+		createStyle("stroke-width: 8; stroke: green;stroke-dasharray: 9, 5; stroke-opacity:0.5;"));
 	m.putProperty("ParameterOPCn.style", 
-		createStyle("stroke-width: 4; stroke: grey;stroke-dasharray: 9, 5;"));
+		createStyle("stroke-width: 4; stroke: grey;stroke-dasharray: 9, 5; stroke-opacity:0.5;"));
 	m.putProperty("FrxSelection.selectingStyle", 
 		createStyle("stroke-width: 4; stroke: grey; fill: purple;stroke-dasharray: 9, 5; fill-opacity: 0.25"));
 	m.putProperty("FrxSelection.selectedStyle", 
@@ -222,13 +229,16 @@ void FrxLookAndFeel::installDefaults() {
 		createStyle("stroke-width: 1; stroke: darkgrey;font-size: 13; font-family: arial"));
 	m.putProperty("FrxFlag.style", 
 		createStyle("stroke-width: 1; fill: darkgrey; stroke: darkgrey;font-size: 13; font-family: arial"));
+	m.putProperty("ProcessorInput.displayStyle", createStyle("fill: white; font-size: 10; font-family: arial"));
+	m.putProperty("ProcessorOutput.displayStyle", createStyle("fill: white; font-size: 10; font-family: arial"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<images
 	FileResourceManager *rManager = dynamic_cast<FileResourceManager*> (
 		&getResourceManager()
 	);
 	rManager->registerImage("FrxCircuidView.image", "images/bkgrey.png");
-	//m.putProperty("FrxCircuidView.bgTransfomation", sambag::math::rotate2D(45.));
+	m.putProperty("FrxCircuidView.bgTransfomation", sambag::math::scale2D(.25, .25));
 	m.putProperty("FrxCircuidView.bgExtend", sd::IPattern::DISCO_EXTEND_REPEAT);
+	m.putProperty("FrxCircuidView.bgOpacity", (double)0.02);
 	rManager->registerImage("StatusMessage.icon.default", "images/inf_icon.png");
 	rManager->registerImage("StatusMessage.icon.hint", "images/inf_icon.png");
 	rManager->registerImage("StatusMessage.icon.warning", "images/warning_icon.png");

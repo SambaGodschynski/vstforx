@@ -16,6 +16,7 @@
 #include <gui/HandyNamespaces.hpp>
 #include <sambag/disco/IDrawContext.hpp>
 #include <sambag/disco/ISurface.hpp>
+#include <sambag/disco/components/events/MouseEvent.hpp>
 
 namespace frx { namespace gui { namespace components { namespace ui {
 //=============================================================================
@@ -59,6 +60,8 @@ protected:
 	void onTargetPropertyChanged(void *, const sce::PropertyChanged &ev);
 	//-------------------------------------------------------------------------
 	void onFlagPropertyChanged(void *, const sce::PropertyChanged &ev);
+	//-------------------------------------------------------------------------
+	void onMouse(void *, const sdce::MouseEvent &ev);
 	//-------------------------------------------------------------------------
 	sce::EventSender<sce::PropertyChanged>::Connection evcn;
 	//-------------------------------------------------------------------------

@@ -25,7 +25,6 @@ MidiProcessor::MidiProcessor ( frx::processing::IHostInfo::Ptr iHost ) :
 		size_t c = i - (size_t)NUM_NO_CC_PARAMETER;
 		initParameter ( i, "cc(" + MyString(c) + ")" + musicalValues::getCCName(c) );
 	}
-	TOLOG ( "+" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
 void MidiProcessor::processMidiEvents ( sambag::dsp::IMidiEvents *ev ) {

@@ -22,7 +22,6 @@ ADSRTrigger::ADSRTrigger( frx::processing::IHostInfo::Ptr hostInfo ) : ProcessAd
 	*out = 0.0f;
 	out->setName ("ADSR Output");
 	adsr = new ADSR (hostInfo, 5.0f);
-	TOLOG ( "+" + getName() );
 }
 //------------------------------------------------------------------------------------------------------------
 void ADSRTrigger::processAdapter( Processor::Int numSamples ) {
@@ -44,5 +43,9 @@ void ADSRTrigger::processAdapter( Processor::Int numSamples ) {
 	out->setLabel ( states[ adsr->getState() ] );
 	// outputnode
 	outputNodes[0]->pushAndCopy(frame, numSamples);
+}
+//------------------------------------------------------------------------------------------------------------
+ADSRTrigger::~ADSRTrigger () { 
+	delete adsr; 
 }
 }// namespace processing

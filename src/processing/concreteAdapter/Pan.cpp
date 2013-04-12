@@ -16,8 +16,6 @@ Pan::Pan ( frx::processing::IHostInfo::Ptr hostInfo ) : ProcessAdapter( hostInfo
 	setName ("Pan");
 	getOutputNode(0)->setName ("PanAdapter_Output");
 	getInputNode(0)->setName ("PanAdapter_Input");
-	TOLOG ( "+" + getName() );
-	
 	pan = Parameter::create();
 	pan->setName ("Pan");
 	pan->setValue (0.5);

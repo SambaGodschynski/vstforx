@@ -1,0 +1,26 @@
+Hello there,
+
+VSTForx needs your vote. The next release is just around the corner! 
+Besides a few bugfixes we've implemented a lot of cool new features. 
+
+For example:
+ - a new plugin browser 
+ - two new modules types. 
+ - and most of all, a new improved GUI which notably increases your workflow
+
+So everything is getting a bit more advanced and we're wondering:
+
+"How much is VSTForx worth for you?"
+
+Please poll on:
+http://www.vstforx.de/index.php/component/acepolls/poll/3-how-much-is-vstforx-worth-for-you
+
+
+Best regards.
+
+Johannes Unger
+Petersburger Str. 95
+10247 Berlin
++493026344500
+www.vstforx.de
+johannes.unger@vstforx.de

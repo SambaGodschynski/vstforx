@@ -18,6 +18,7 @@
 #include <sambag/disco/components/TitledBorder.hpp>
 #include <sambag/disco/components/SolidBorder.hpp>
 #include <sambag/disco/components/Timer.hpp>
+#include <sambag/disco/svg/graphicElements/Style.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include <boost/foreach.hpp>
 #include <sambag/com/Thread.hpp>
@@ -357,6 +358,7 @@ void SetupWindow::ResizeBtnHandler::performResize(ResizeDirection dir, int ammou
 //-----------------------------------------------------------------------------
 void SetupWindow::setCtrl(SetupCtrl::Ptr ctrl) {
 	this->ctrl = ctrl;
+	setTitle("VSTForx-" + ctrl->getStringValue("version") + " Setup");
 	updateSettings();
 }
 //-----------------------------------------------------------------------------
@@ -409,9 +411,14 @@ void SetupWindow::postConstructor() {
 	sdc::ui::UIManager::instance().installLookAndFeel(getRootPane(),
 		ui::FrxLookAndFeel::create()
 	);
+	sdsg::Style style = sdsg::Style::DEFAULT_STYLE;
+	sdcu::UIManager::instance().getProperty("SetupWindow.style", style);
+	getContentPane()->setBackground(style.fillPattern());
+	getContentPane()->setForeground(style.strokePattern());
+	getContentPane()->setFont(style.font());
 	getContentPane()->add(createSetupPane(), sdc::BorderLayout::CENTER, APPEND);
 	getContentPane()->add(createMainBtnPane(), sdc::BorderLayout::SOUTH, APPEND);
-	setWindowSize(sd::Dimension(623., 452.));
+	setWindowSize(sd::Dimension(623., 462.));
 	windowImpl->setFlag(sdc::WindowFlags::WND_RESIZEABLE, false);
 }
 //-----------------------------------------------------------------------------
@@ -420,6 +427,7 @@ SetupWindow::~SetupWindow() {
 //-----------------------------------------------------------------------------
 sdc::AContainerPtr SetupWindow::createSetupPane() {
 	sdc::Panel::Ptr pane = sdc::Panel::create();
+	pane->setOpaque(false);
 	pane->add(createDirListPane());
 	pane->add(createDirListBtnPane());
 	pane->add(createMiscPane());
@@ -441,8 +449,10 @@ void SetupWindow::onFastScanSelected(void *, const sdc::events::ActionEvent &ev)
 sdc::AContainerPtr SetupWindow::createMiscPane() {
 	sdc::Panel::Ptr pane = sdc::Panel::create();
 	pane->add( createWindowSizePane() );
+	pane->setBackground(getContentPane()->getBackgroundPattern());
 	chkbxFS = sdc::CheckBox::create();
 	chkbxFS->setText("Fastscan");
+	chkbxFS->setOpaque(false);
 	chkbxFS->EventSender<sdc::events::ActionEvent>::addEventListener(
 		boost::bind(&SetupWindow::onFastScanSelected, this, _1, _2)
 	);
@@ -451,16 +461,23 @@ sdc::AContainerPtr SetupWindow::createMiscPane() {
 }
 //-----------------------------------------------------------------------------
 sdc::AContainerPtr SetupWindow::createWindowSizePane() {
+	sdc::Panel::Ptr ueberpane = sdc::Panel::create();
+	ueberpane->setOpaque(false);
 	sdc::Panel::Ptr pane = sdc::Panel::create();
+	pane->setOpaque(false);
 	sdc::Panel::Ptr labelpane = sdc::Panel::create();
+	labelpane->setOpaque(false);
 	sdc::Panel::Ptr btnpane = sdc::Panel::create();
+	btnpane->setOpaque(false);
 	rszBtnHandler = ResizeBtnHandler::create(this);
-
+	
 	sdc::TitledBorder::Ptr border = sdc::TitledBorder::create();
-	pane->setName("Window Size:");
-	pane->setBorder(border);
-
-	btnpane->setLayout(sdc::GridLayout::create(0,2));
+	pane->setOpaque(false);
+	ueberpane->setName("Window Size:");
+	ueberpane->setBorder(border);
+	ueberpane->add(pane);
+	
+	btnpane->setLayout(sdc::GridLayout::create(0,2,2,5));
 	// ed-w
 	sdc::Button::Ptr btn = sdc::Button::create();
 	rszBtnHandler->registerBtn(btn, EdMinusW);
@@ -487,20 +504,24 @@ sdc::AContainerPtr SetupWindow::createWindowSizePane() {
 	// label
 	sdc::Label::Ptr label = sdc::Label::create();
 	labelpane->setLayout(sdc::GridLayout::create(2,0));
+	labelpane->setOpaque(false);
+	label->setOpaque(false);
 	label->setText("Window Width");
 	labelpane->add(label);
 	label = sdc::Label::create();
+	label->setOpaque(false);
 	label->setText("Window Height");
 	labelpane->add(label);
 
 	pane->add(btnpane);
 	pane->add(labelpane);
-	return pane;
+	return ueberpane;
 }
 //-----------------------------------------------------------------------------
 sdc::AContainerPtr SetupWindow::createDirListBtnPane() {
 	dirListBtnPane = sdc::Panel::create();
-	dirListBtnPane->setLayout(sdc::GridLayout::create(4,0));
+	dirListBtnPane->setOpaque(false);
+	dirListBtnPane->setLayout(sdc::GridLayout::create(4,0,0,5.));
 	sdc::Button::Ptr btn =
 		createBtn(&SetupWindow::onBtnAddDirPressed, "add directory");
 	dirListBtnPane->add(btn);
@@ -522,6 +543,7 @@ sdc::AContainerPtr SetupWindow::createDirListBtnPane() {
 //-----------------------------------------------------------------------------
 sdc::AContainerPtr SetupWindow::createMainBtnPane() {
 	mainBtnPane = sdc::Panel::create();
+	mainBtnPane->setOpaque(false);
 	sdc::Button::Ptr btn = createBtn(&SetupWindow::onBtnOkPressed, "OK");
 	mainBtnPane->add(btn);
 	
@@ -624,8 +646,12 @@ void SetupWindow::onBtnAddDirPressed(void *, const sdc::events::ActionEvent &ev)
 	if (!ctrl)
 		return;
 	std::string dir = ctrl->selectDirectory();
-	if (!ctrl->addPluginFolder(dir))
+	if (dir=="") {
 		return;
+	}
+	if (!ctrl->addPluginFolder(dir)) {
+		return;
+	}
 	dirList->addElement(dir);
 	dirList->redraw();
 }
@@ -639,10 +665,16 @@ void SetupWindow::onBtnChangeDirPressed(void *, const sdc::events::ActionEvent &
 		return;
 	const std::string &old = dirList->get(index);
 	std::string dir = ctrl->selectDirectory(old);
+	if (dir=="") {
+		return;
+	}
 	if (!ctrl->removePluginFolder(old))
 		return;
-	if (!ctrl->addPluginFolder(dir))
+	if (!ctrl->addPluginFolder(dir)) {
+		// restore old value
+		ctrl->addPluginFolder(old);
 		return;
+	}
 	dirList->set(index, dir);
 	dirList->redraw();
 }

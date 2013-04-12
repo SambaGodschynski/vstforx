@@ -160,8 +160,8 @@ sdc::AComponentPtr FrxBrowserCellRenderer<T>::getListCellRendererComponent(
 		setBackground(list->getSelectionBackground());
 		setForeground(list->getSelectionForeground());
 	} else {
-		setBackground(list->getBackground());
-		setForeground(list->getForeground());
+		setBackground(list->getBackgroundPattern());
+		setForeground(list->getForegroundPattern());
 	}
 	
 	setText(sambag::com::toString(value.data));

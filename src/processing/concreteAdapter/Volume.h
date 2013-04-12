@@ -84,7 +84,6 @@ protected:
 		getInputNode(0)->setName ("Volume Input Node");
 		getOutputNode(0)->setName ("Volume Output Node");
 		fader.setDuration( getFaderDuration( hostInfo->getSampleRate() ) );  
-		TOLOG ( "+" + getName() );
 	}
 	//--------------------------------------------------------------------------------------------------------
 	//Lautstaerke-wert
@@ -143,7 +142,6 @@ public:
 	virtual size_t getNumParameter () const { return 1; }
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Volume () {
-		TOLOG ( "-" + getName() );
 	}
 };
 }// namespace processing

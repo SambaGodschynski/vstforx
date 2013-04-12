@@ -28,6 +28,7 @@
 #include <sambag/disco/svg/StyleParser.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <sambag/math/Matrix.hpp>
+#include <com/Settings.h>
 
 namespace frx { namespace gui { namespace components {
 namespace {
@@ -46,6 +47,14 @@ protected:
 	void drawShadingLayer(sd::IDrawContext::Ptr cn, 
 		const sd::Rectangle &r);
 public:
+	//-------------------------------------------------------------------------
+	/**
+	 * @override
+	 * do not find any objects which have set the client property
+	 * FrxCircuidView.inactive @see putClientProperty
+	 */
+	virtual sdc::AComponentPtr findComponentAt(const sd::Point2D &p,
+		bool includeSelf);
 	SAMBAG_STD_STATIC_COMPONENT_CREATOR(BgPane)
 	virtual void drawComponent(sd::IDrawContext::Ptr cn);
 };
@@ -56,7 +65,7 @@ public:
 	typedef sdc::Label Super;
 protected:
 	StatusLabel(){
-		setOpaque(false);
+		setOpaque(true);
 	}
 public:
 	SAMBAG_STD_STATIC_COMPONENT_CREATOR(StatusLabel)
@@ -106,6 +115,21 @@ void BgPane::drawShadingLayer(sd::IDrawContext::Ptr cn,
 	cn->setFillPattern(shaderPat);
 	cn->fill();
 }
+void drawDemoNotifictaion(sd::IDrawContext::Ptr cn, const sd::Rectangle &r) 
+{
+	if (!SETTINGS.isDemo()) {
+		return;
+	}
+	std::string txt("DEMO VERSION");
+	cn->setFont(cn->getCurrentFont().setSize(36.));
+	sd::Rectangle tx = cn->textExtends(txt);
+	sambag::com::Number x = r.x();
+	sambag::com::Number y = r.y() + tx.height();
+	cn->moveTo(sd::Point2D(x,y));
+	cn->textPath("DEMO VERSION");
+	cn->setFillColor(sd::ColorRGBA(0.6, 0.6, 0.6, 1));
+	cn->fill();
+}
 void BgPane::drawComponent(sd::IDrawContext::Ptr cn) {
 	if (!pat) {
 		Super::drawComponent(cn);
@@ -116,6 +140,7 @@ void BgPane::drawComponent(sd::IDrawContext::Ptr cn) {
 	cn->setFillPattern(pat);
 	cn->rect(sd::Rectangle(0, 0, getWidth(), getHeight()));
 	cn->fill();
+	drawDemoNotifictaion(cn, r);
 	drawShadingLayer(cn, r);
 }
 //-----------------------------------------------------------------------------
@@ -133,8 +158,49 @@ void BgPane::postConstructor() {
 	ui.getProperty("FrxCircuidView.bgTransfomation", m);
 	sd::IPattern::Extend e = sd::IPattern::DISCO_EXTEND_REPEAT;
 	ui.getProperty("FrxCircuidView.bgExtend", e);
+	double opac = 0.3;
+	ui.getProperty("FrxCircuidView.bgOpacity", opac);
 	pat->setMatrix(m);
 	pat->setExtendType(e);
+	pat->setOpacity(opac);
+}
+//-----------------------------------------------------------------------------
+sdc::AComponentPtr BgPane::findComponentAt(const sd::Point2D &p,
+		bool includeSelf)
+{
+	using namespace boost;
+	SAMBAG_BEGIN_SYNCHRONIZED(getTreeLock())
+		BOOST_FOREACH(sdc::AComponent::Ptr comp, getComponents()) {
+			sd::Point2D trP = p;
+			geometry::subtract_point(trP, comp->getLocation());
+			if (comp && 
+				comp->isVisible() &&
+				comp->contains(trP))
+			{
+				bool inactive = false;
+				comp->getClientProperty("FrxCircuidView.inactive", inactive);
+				if (inactive) {
+					continue;
+				}
+				sdc::AContainer::Ptr con = 
+					boost::shared_dynamic_cast<sdc::AContainer>(comp);
+				if (con) {
+					sdc::AComponent::Ptr deeper = con->findComponentAt(
+						trP,
+						includeSelf);
+					if (deeper) {
+						return deeper;
+					}
+				} else {
+					return comp;
+				}
+			}
+		}
+	SAMBAG_END_SYNCHRONIZED
+	if (contains(p) && includeSelf) {
+		return getPtr();
+	}
+	return sdc::AComponent::Ptr();
 }
 }// namespace(s)
 //=============================================================================
@@ -143,7 +209,7 @@ void BgPane::postConstructor() {
 //-----------------------------------------------------------------------------
 const std::string FrxCircuidView::PROPERTY_ZORDER = "z_order";
 //-----------------------------------------------------------------------------
-const float FrxCircuidView::Z_Flags = 6.f;
+const float FrxCircuidView::Z_Flags = 1.f;
 //-----------------------------------------------------------------------------
 const float FrxCircuidView::Z_Wires = 5.f;
 //-----------------------------------------------------------------------------

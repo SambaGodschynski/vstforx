@@ -422,7 +422,6 @@ void openSetup(fgc::FrxCircuidViewPtr view,
 	}
 	setup->setCtrl(ctrl);
 	setup->validate();
-	setup->setTitle("VSTForx Setup");
 	setup->open();
 }
 ////////////////////////////////////////////////////////////////////////////////
@@ -588,6 +587,7 @@ FrxComponentPtr FrxControl::addProcessorInput(fgc::FrxCircuidViewPtr view,
 	// create view object
 	FrxInputNode::Ptr viewIo = FrxInputNode::create();
 	proV->addInputNode(view, viewIo);
+	viewIo->setDisplayText(sambag::com::toString(proV->getInputs().size()));
 	
 	map->registerObjects(viewIo, io);
 	io->addRemoveRequestExecuter(
@@ -628,6 +628,7 @@ FrxComponentPtr FrxControl::addProcessorOutput(fgc::FrxCircuidViewPtr view,
 	// create connection
 	ProcessorOutputCn::Ptr cn = ProcessorOutputCn::create();
 	proV->addOutputNode(view, viewIo);
+	viewIo->setDisplayText(sambag::com::toString(proV->getOutputs().size()));
 	map->registerObjects(viewIo, io);
 	io->addRemoveRequestExecuter(
 		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))

@@ -93,7 +93,7 @@ INode::Ptr ProcessorAdapter::addOutput() {
 		return INode::Ptr();
 	NodeAdapter::Ptr res = NodeAdapter::create(n);
 	outputs.push_back(res);
-	updateParameter();
+	updateParameters();
 	// send event
 	IOChangedEventSender::notifyListeners(this, IOChangedEvent(getPtr()));
 	// return result
@@ -111,20 +111,31 @@ INode::Ptr ProcessorAdapter::addInput() {
 		return INode::Ptr();
 	NodeAdapter::Ptr res = NodeAdapter::create(n);
 	inputs.push_back(res);
-	updateParameter();
+	updateParameters();
 	// send event
 	IOChangedEventSender::notifyListeners(this, IOChangedEvent(getPtr()));
 	// return result
 	return res;
 }
 //-----------------------------------------------------------------------------
-void ProcessorAdapter::updateParameter() {
+void ProcessorAdapter::updateParameter(::processing::parameter::Parameter::Ptr p)
+{
+	ParameterAdapterPtr pAd = getAdapter(p);
+	if (!pAd) {
+		return;
+	}
+	ParameterGroupMap::right_map::iterator it = parameters.right.find(pAd);
+	if ( it==parameters.right.end() ) {
+		parameters.insert( 
+			ParameterGroupMap::value_type(p->getGroupName(), pAd) 
+		);
+		return;
+	}
+}
+//-----------------------------------------------------------------------------
+void ProcessorAdapter::updateParameters() {
 	// TODO: handles only the case processor has unregistered parameter
 	// TODO: ignores the case processor parameters was removed
-	// TODO: quite inefficient approach
-
-	// determine the unregistered parameter
-	// default parameter
 	using ::processing::parameter::Parameter;
 	using ::processing::parameter::HasParameter;
 	using ::processing::MidiEventProcessor;
@@ -134,37 +145,24 @@ void ProcessorAdapter::updateParameter() {
 		return;
 	}
 	size_t num = hp->getNumParameter();
-	size_t istNum = parameters.count(".");
-	if ( num == istNum ) { // nothing changed
+	if ( num == parameters.left.count(".") ) { // nothing changed
 		return;
 	}
-	// create comparing sets
-	typedef std::vector<::processing::parameter::Parameter::Ptr> Parameters;
-	Parameters soll;
-	soll.reserve(num);
-	Parameters ist;
-	ist.reserve(istNum);
 	for (size_t i=0; i<num; ++i) {
-		soll.push_back(hp->getParameter(i));
+		updateParameter(hp->getParameter(i));
 	}
-	ParameterGroupMap::const_iterator it, end;
-	boost::tie(it, end) = parameters.equal_range(".");
-	for (; it!=end; ++it) {
-		ParameterAdapter::Ptr ad = it->second;
-		ist.push_back(ad->getAdaptee());
+}
+//-----------------------------------------------------------------------------
+ParameterAdapterPtr 
+ProcessorAdapter::getAdapter(::processing::parameter::Parameter::Ptr p)
+{
+	ParameterAdapterMap::const_iterator it = parameterAdapterMap.find(p);
+	if (it==parameterAdapterMap.end()) {
+		ParameterAdapterPtr neu = ParameterAdapter::create(p);
+		parameterAdapterMap.insert(ParameterAdapterMap::value_type(p, neu));
+		return neu;
 	}
-	// sort comparing sets
-	std::sort(soll.begin(), soll.end());
-	std::sort(ist.begin(), ist.end());
-	// compute differecne
-	Parameters res(num);
-	Parameters::const_iterator rend = 
-		std::set_difference (soll.begin(), soll.end(), ist.begin(), ist.end(), res.begin());
-	// save result
-	for (Parameters::const_iterator it = res.begin(); it!=rend; ++it) {
-		parameters.insert(std::make_pair(".", ParameterAdapter::create(*it)));
-	}
-	// we ignore output parameter and midi config.
+	return it->second;
 }
 //-----------------------------------------------------------------------------
 void ProcessorAdapter::initParameter() {
@@ -179,7 +177,8 @@ void ProcessorAdapter::initParameter() {
 		for (size_t i=0; i<num; ++i) {
 			::processing::parameter::Parameter::Ptr p;
 			p = hp->getParameter(i);
-			parameters.insert(std::make_pair(".", ParameterAdapter::create(p)));
+			ParameterGroupKey gName = p->getGroupName() == "" ? "." : p->getGroupName();
+			parameters.insert(ParameterGroupMap::value_type(gName, getAdapter(p)));
 		}
 	}
 	// out parameter
@@ -194,7 +193,7 @@ void ProcessorAdapter::initParameter() {
 		for (size_t i=0; i<num; ++i) {
 			::processing::parameter::Parameter::Ptr p;
 			p = hpo->getOutParameter(i);
-			parameters.insert(std::make_pair("output parameter", ParameterAdapter::create(p)));
+			parameters.insert(ParameterGroupMap::value_type("output parameter", getAdapter(p)));
 		}
 	}
 	// midi config parameter
@@ -202,16 +201,16 @@ void ProcessorAdapter::initParameter() {
 		dynamic_cast<MidiEventProcessor*>(processor.get());
 	if (mevp) {
 		Parameter::Ptr p = mevp->getMidiChannelParameter();
-		parameters.insert(std::make_pair("midi config", ParameterAdapter::create(p)));
+		parameters.insert(ParameterGroupMap::value_type("midi config", getAdapter(p)));
 	}
 }
 //-----------------------------------------------------------------------------
 void ProcessorAdapter::getParameterGroupKeys(ParameterGroupKeys &out) const {
-	ParameterGroupMap::const_iterator it = parameters.begin();
-	while (it!=parameters.end()) {
+	ParameterGroupMap::left_map::const_iterator it = parameters.left.begin();
+	while (it!=parameters.left.end()) {
 		const ParameterGroupKey &key = it->first;
 		out.insert(key);
-		it = parameters.upper_bound(key); // next key
+		it = parameters.left.upper_bound(key); // next key
 	}
 }
 //-----------------------------------------------------------------------------
@@ -220,14 +219,14 @@ getParameters(const ParameterGroupKey &key, Parameters &out) const
 {
 	if (key=="*") { // all parameter
 		out.reserve(parameters.size());
-		BOOST_FOREACH(const ParameterGroupMap::value_type &v, parameters) {
+		BOOST_FOREACH(const ParameterGroupMap::left_map::value_type &v, parameters.left) {
 			out.push_back(v.second);
 		}
 		return;
 	}
-	ParameterGroupMap::const_iterator it, end;
-	boost::tie(it, end) = parameters.equal_range(key);
-	out.reserve(parameters.count(key));
+	ParameterGroupMap::left_map::const_iterator it, end;
+	boost::tie(it, end) = parameters.left.equal_range(key);
+	out.reserve(parameters.left.count(key));
 	for (; it!=end; ++it) {
 		out.push_back(it->second);
 	}
@@ -241,7 +240,7 @@ bool ProcessorAdapter::requestRemove() {
 	BOOST_FOREACH(ModelObject::Ptr m, outputs) {
 		res &= m->requestRemove();
 	}
-	BOOST_FOREACH(const ParameterGroupMap::value_type &v, parameters) {
+	BOOST_FOREACH(const ParameterGroupMap::left_map::value_type &v, parameters.left) {
 		res &= v.second->requestRemove();
 	}
 	return res && Super::requestRemove();
