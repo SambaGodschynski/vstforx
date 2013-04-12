@@ -1,46 +1,34 @@
 % !TEX encoding = UTF-8 Unicode
 \newcommand{\aktion}[1]{ \subsubsection{#1} }
-\newcommand{\bParameterlist}{\begin{tabular}[t]{l|p{3.3cm}|l} Parameter & Wertebereich & Funktion \\ \hline }
+\newcommand{\bParameterlist}{\begin{tabular}[t]{l|p{3.3cm}|l} parameter & range & function \\ \hline }
 \newcommand{\param}[4]{\emph{#1} & \emph{#2} ... \emph{#3} & \emph{#4} \\}
 \newcommand{\paramSw}[4]{\emph{#1} & \emph{#2} / \emph{#3} & \emph{#4} \\}
-\newcommand{\paramRe}[6]{\emph{#1} & \emph{#2}...\emph{#3} bzw. \emph{#4}...\emph{#5} & \emph{#6} \\}
+\newcommand{\paramRe}[6]{\emph{#1} & \emph{#2}...\emph{#3} or \emph{#4}...\emph{#5} & \emph{#6} \\}
 \newcommand{\eParameterlist}{\end{tabular}\\\\}
 
 
-\kap{Module}
-VSTForx bietet eine Reihe verschiedener Module, die in den Signalweg eingebunden werden können.
-Prinzipiell kann zwischen drei Modultypen unterschieden werden:
+\kap{Modules}
+VSTForx knows three types of modules: 
 \begin{itemize}
-	\item Signal verändernde Module
-	\item Signalwegschalter
-	\item Signal nach Parameterwert Umwandler
+	\item signal processor
+	\item signal switch
+	\item signal transformer
 \end{itemize}
-Alle Module lassen sich über das Kontextmenü bedienen.
-Rufen Sie einfach das Kontextmenü dort auf, wo sich das gewünschte Modul befindet. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ukap{Das Plugin}
-VSTForx ist in der Lage beliebig viele Audio-Plugins (siehe Kapitel \ref{compatible} auf Seite \pageref{compatible}) zu laden und in den Signalweg einzubinden. Durch Betätigen des (\includegraphics[scale=0.5]{../graphics/e}) Schalters im Plugin-Knoten kann (falls vorhanden) das Plugin-Editor Fenster geöffnet werden. Das Plugin kann dort auf herkömmliche Art und Weise bedient werden. 
-\\\\
-\aktion{MIDI Eigenschaften}
-	Ist das entsprechende Plugin in der Lage MIDI-Daten zu empfangen, erscheint ein Untermenüpunkt \untermenupunkt{midi properties}. Der Signalweg hat keinen Einfluss auf die MIDI-Daten Verteilung in VSTForx. Alle in VSTForx eingehenden MIDI-Daten werden an alle empfangsbereiten Plugins weitergeleitet. Um MIDI-Daten gezielt an ein Plugins zu leiten, muss eine MIDI-Kanal Einstellung an den betreffenden Plugins erfolgen. Über den \emph{'midi-channel'} Parameter lässt sich dem Plugin ein MIDI-Kanal zuordnen. Einstellbar sind die Werte: \emph{0..16 sowie 'all'}.
-\aktion{Plugin Parameter}
-	Im Untermenü \untermenupunkt{Plugin-Name Parameter} befinden sich alle Plugin Parameter.
-\aktion{Plugin Programme}
-	Im Untermenü  \untermenupunkt{programms} sind - falls vorhanden - die entsprechenden Pluginpresets auswählbar.
-\aktion{Plugin-Editor Eigenschaften}
- Im Untermenü \untermenupunkt{editor window} befinden sich alle Plugin-Editor Parameter:	
- 	\bParameterlist
-		\param{editor\_X}{0}{1}{X-Position des Editor-Fensters}
-		\param{editor\_Y}{0}{1}{Y-Position des Editor-Fensters}
-		\paramSw{editor\_open}{closed}{open}{sichtbarkeit des Editor-Fensters}
-	\eParameterlist
- 	
+\ukap{Common Module Parameters}
+\aktion{MIDI}
+Every modules/plugins which are able to receive midi data have an additional \emph{'midi-channel'} parameter:\\
+\bParameterlist
+	\param{midi\_channel}{all, 0}{16}{selects the receiving midi channel }
+\eParameterlist
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ukap{Volume}
 The Volume module is a signal processor. It contains a single parameter which allows to control the volume of the incoming signal.
 \aktion{Module Parameter}
 	\bParameterlist
-		\param{Volume}{0}{1}{volume}
+		\param{Volume}{0}{1}{controls the volume}
 	\eParameterlist
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -48,14 +36,14 @@ The Volume module is a signal processor. It contains a single parameter which al
 Like the Volume module, the Pan module is a signal processor with a single parameter. Use it to control the panning of the incoming signal.
 \aktion{Modul Parameter}
 	\bParameterlist
-		\param{Pan}{0}{1}{pan}
+		\param{Pan}{0}{1}{controls the pan}
 	\eParameterlist
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \ukap{Input / Output Switches} 
 Input / Output Switches are able to switch between several states while every state belongs to an input respectively to an output. An "Input Switch" for example can switch several inputs to one output. A "selector" parameter controls the switch state. Furthermore several parameters control the "fade-in / fade-out" behaveiour.
 \aktion{Adding States}
 	To add an additional switch state you can find a respective option in the context menu of any switch object.  
-\aktion{Module Parameter}
+\aktion{Module Parameters}
 	\bParameterlist
 		\param{selector switch}{0}{1}{the state selector}
 		\param{fade-in duration x\stern}{0ms}{1000ms}{''fadein'' duration x}
@@ -74,7 +62,7 @@ Unlike the "I/O Switches" the "Step Switch" state is not controlled by a paramet
 Heads Up! In sync mode the state position will be reseted on incoming "play" event of the DAW. }
 \aktion{Adding States}
 	To add an additional switch state you can find a respective option in the context menu of any switch object.   
-\aktion{Module Parameter}
+\aktion{Module Parameters}
 	\bParameterlist
 		\paramSw{Step Type}{fix}{sync}{Der Step Modus}
 		\paramRe{Step x duration\stern}{10ms}{1000ms}{1/128}{1/1\sstern}{duration x}
@@ -86,46 +74,39 @@ Heads Up! In sync mode the state position will be reseted on incoming "play" eve
 \stern : x=the related state \\
 \sstern : see figure \ref{curvetypes} on page \pageref{curvetypes}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ukap{Das Peaktracker Modul}
-Das Peaktracker Modul gehört zu den ''Signal nach Parameterwert Umwandler''. Diese analysieren das anliegende Eingangssignal und senden das Ergebnis an einen Ausgabeparameter. Somit ist es möglich, Plugin- sowie Modulparameter über ein Audiosignal zu steuern. Im Falle des Peaktracker Modules wird das anliegende Audiosignal direkt in einen Parameterwert umgewandelt. Signalausschläge wie zum Beispiel bei einer Snaredrum würden direkt an den Ausgabeparameter übertragen.
+\ukap{Peak Transformer}
+The peak transformer transforms incoming audio peaks into an output parameter value.
+\aktion{Module Parameters}
+	\bParameterlist
+		\param{out}{0}{1}{the output value}
+		\param{offset}{0}{1}{offset to the output value}
+	\eParameterlist
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ukap{ADSR Trigger}
+The ADSR Trigger generates an ADSR (figure \ref{adsr} on page \pageref{adsr}) sequence triggered by an audio signal. This sequence will be transformed into an output parameter value. Thus it's possible to control parameters (or rather the connected units) with any audio input.
+\aktion{Module Parameters}
+	\bParameterlist
+		\param{out}{0}{1}{the output value}
+		\param{x level\stern}{0}{1}{final value of x}
+		\param{x duration\stern}{0s}{5s}{duration of x}
+		\param{x slope type\stern}{type1}{type6\sstern}{slope type x}
+		\param{trigger\_threshold}{0}{1}{trigger threshold}
+		\param{trigger\_hold}{0}{5s}{determines the minimum retain duration of the trigger}
+	\eParameterlist
+\stern : x=the related state: attack, decay, sustain, release \\
+\sstern : see figure \ref{curvetypes} on page \pageref{curvetypes}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ukap{MIDI Receiver}
+The MIDI Receiver is a transformer module. It transforms MIDI signals into parameter values.
+\aktion{Module Parameters}
+127 MIDI control + pitchbend parameter. 
 
-\aktion{Modul Parameter}
-	Der Untermenüpunkt \untermenupunkt{peak\_tracker parameter} enthält folgende Parameter:
-	\bParameterlist
-		\param{offset}{0}{1}{verschiebt den Augabeparameter}
-	\eParameterlist
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ukap{Das ADSR-Trigger Modul}
-Das ADSR-Trigger Modul gehört ebenfalls zu den Signal nach Parameterwert Umwandlern. Ähnlich herkömmlicher Synthesizer wird hier eine ADSR-Sequenz (siehe \ref{adsr} auf Seite \pageref{adsr}) ausgelöst. Nur mit dem Unterschied, dass diese Sequenz nicht durch einen Tastendruck ausgelöst wird, sondern durch das anliegende Eingangssignal. 
-\\\\
-Am Eingangssignal liegt ein Schwellwert-Trigger. Ist ein Schwellwert überschritten, startet der ADS-Teil der Sequenz. Wird der Schwellwert wieder unterschritten, geht die Sequenz in den R-Teil über.\\ 
-%Das ADSR-Trigger Modul kann in zwei Modi arbeiten: \emph{''absolut''} und \emph{''relativ''}.
-%\paragraph{Absolut}
-%Im Absolut-Modus wird 
-%\paragraph{Relativ}
-\aktion{Modul Parameter}
-	Der Untermenüpunkt \untermenupunkt{adsr\_trigger parameter} enthält folgende Parameter:
-	\bParameterlist
-		%\paramSw{modus}{absolute}{relative}{-}
-		\param{x level\stern}{0}{1}{Endwert des Sequenzteils}
-		\param{x duration\stern}{0s}{5s}{Dauer des Sequenzteils}
-		\param{x slope type\stern}{type1}{type6\sstern}{Kurventyp des Sequenzteils}
-		\param{trigger\_threshold}{0}{1}{Trigger-Schwellwert}
-		\param{trigger\_hold}{0}{5s}{Trigger-Haltewert}
-	\eParameterlist
-\stern : jeweils für Attack, Decay, Sustain, Release \\
-\sstern : siehe Abbildung \ref{curvetypes} auf Seite \pageref{curvetypes}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\ukap{Das MIDI-Daten-Empfänger Modul}
-Das MIDI-Daten-Empfänger Modul empfängt MIDI-Kontrolldaten und überträgt dessen Werte an die jeweiligen Parameter.
-\aktion{MIDI Eigenschaften}
-Genau wie bei den (MIDI-fähigen) Plugins lässt sich über den Untermenüpunkt \untermenupunkt{midi properties} der MIDI-Empfangskanal einstellen.
-\aktion{Modul Parameter}
-Im Untermenüpunkt \untermenupunkt{midi\_receiver parameter} befinden sich alle 127 MIDI-Control + Pitchbend Parameter. 
+\ukap{Appendix}
+
 \begin{figure}[pth]
 \begin{center}
 	\includegraphics[scale=1.4]{../graphics/curvetypes}
-\caption{Die 6 Kurventypen die VSTForx bietet}
+\caption{the six slope types of VSTForx}
 \label{curvetypes}
 \end{center}
 \end{figure}
@@ -133,7 +114,7 @@ Im Untermenüpunkt \untermenupunkt{midi\_receiver parameter} befinden sich alle 
 \begin{figure}[pth]
 \begin{center}
 	\includegraphics[scale=1.4]{../graphics/adsr}
-\caption{Beispiel eines ADSR Kurvenverlaufes}
+\caption{example of an ADSR curve}
 \label{adsr}
 \end{center}
 \end{figure}

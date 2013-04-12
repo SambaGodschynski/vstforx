@@ -1,0 +1,19 @@
+http://www.ambientonline.org/forum/showthread.php?599-VSTForx // 04-09-2013:
+#############################################################
+VSTForx
+http://www.vstforx.de/
+
+Anyone else tried it?
+
+New pre-release version out that I've yet to try but original beta was fun to play with, modular host effectively that is also a vst itself. Lots of potentially powerful parameter modulation options.
+
+As much as I like Reaper, I do miss having some modular routability (new word!) and haven't found any of the existing options (energyxt, plogue etc) really did it for me. Time to play... 
+
+Pretty cheap too, 20% off in pre-release so around £10/€12/$17?
+----
+I tried it and it is FANTASTIC. The idea of FX network is beautiful, and its realisation in VSTForx is useable.
+I did tests, and I'm waiting for final version.
+----
+Hard to believe it can do all this for less than $20. I noticed it can generate "parameter" values from audio signals. Does anyone know if it can generate MIDI output based on these parameters? With only one input and output, it seems without it, only self-modulation is possible. I am definitely going to check this out.
+----
+Wow, that looks really good, and I noticed another use for it - when it goes 64 bit it will be able to load both 32 and 64 bit plugs - instant bit bridge replacement! Think I might invest in that later tonight.
