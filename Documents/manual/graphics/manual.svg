@@ -29,16 +29,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="234.25202"
-     inkscape:cy="903.67242"
+     inkscape:zoom="1.979899"
+     inkscape:cx="288.55698"
+     inkscape:cy="870.24692"
      inkscape:document-units="px"
-     inkscape:current-layer="g3138"
+     inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1676"
      inkscape:window-height="1006"
-     inkscape:window-x="58"
-     inkscape:window-y="3"
+     inkscape:window-x="19"
+     inkscape:window-y="0"
      inkscape:window-maximized="0" />
   <svg:defs
      id="defs4" />
@@ -133,7 +133,7 @@
            y="500.00302"
            x="146.53619"
            id="tspan2998"
-           sodipodi:role="line">Typ1: linear</svg:tspan></svg:text>
+           sodipodi:role="line">Typ1: lin</svg:tspan></svg:text>
       <svg:text
          transform="scale(0.95652077,1.0454556)"
          id="text2996-6"
@@ -149,7 +149,7 @@
            y="499.79593"
            x="234.99478"
            id="tspan2998-7"
-           sodipodi:role="line">Typ2: quadratisch</svg:tspan></svg:text>
+           sodipodi:role="line">Typ2: quad</svg:tspan></svg:text>
       <svg:text
          transform="scale(0.95652077,1.0454556)"
          id="text2996-6-4"
@@ -165,7 +165,7 @@
            y="589.17236"
            x="134.25711"
            id="tspan2998-7-3"
-           sodipodi:role="line">Typ4: biquadratisch</svg:tspan></svg:text>
+           sodipodi:role="line">Typ4: quart</svg:tspan></svg:text>
       <svg:text
          transform="scale(0.95652077,1.0454556)"
          id="text2996-6-4-7"
@@ -181,7 +181,7 @@
            y="499.31281"
            x="334.49377"
            id="tspan2998-7-3-7"
-           sodipodi:role="line">Typ3: kubisch</svg:tspan></svg:text>
+           sodipodi:role="line">Typ3: cub</svg:tspan></svg:text>
       <svg:text
          transform="scale(0.95652077,1.0454556)"
          id="text2996-6-4-7-5"
@@ -197,7 +197,7 @@
            y="589.65552"
            x="239.11304"
            id="tspan2998-7-3-7-8"
-           sodipodi:role="line">Typ5: quintisch</svg:tspan></svg:text>
+           sodipodi:role="line">Typ5: quint</svg:tspan></svg:text>
       <svg:text
          transform="scale(0.95652077,1.0454556)"
          id="text2996-6-4-7-5-4"
@@ -213,7 +213,7 @@
            y="590.38013"
            x="327.93439"
            id="tspan2998-7-3-7-8-7"
-           sodipodi:role="line">Typ6: exponential</svg:tspan></svg:text>
+           sodipodi:role="line">Typ6: exp</svg:tspan></svg:text>
     </svg:g>
     <svg:g
        id="g5176"
