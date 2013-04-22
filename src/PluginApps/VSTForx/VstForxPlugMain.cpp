@@ -51,6 +51,9 @@ Console console;
 #else
 	enum { _FRX_IS_DEMO = 0 };
 #endif
+
+enum { FRX_UID = '_frx' + _FRX_IS_INSTRUMENT + _FRX_IS_DEMO };
+
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 
@@ -86,7 +89,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 	// settingup plugin
 	typedef VST2xPluginWrapper<
 		frx::processing::VstForxPlug, // Processor
-		'frxr', // uid
+		FRX_UID, // uid
 		sambag::dsp::StdPluginTraits<
 			2,2,_FRX_IS_INSTRUMENT,::com::Settings::PROGRAM_PARAMETER
 		>,

@@ -42,7 +42,7 @@ void checkDemoConstraints(AnyPtr object) {
 		return;
 	}
 	std::stringstream ss;
-	ss<<"DEMO MODE LIMITATION: you can't add more than "<<numMax<<" modules.";
+	ss<<"DEMO LIMITATION: you can't add more than "<<numMax<<" modules per session.";
 	throw(std::runtime_error(ss.str()));
 }
 //-----------------------------------------------------------------------------
