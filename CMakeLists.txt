@@ -10,7 +10,6 @@ add_definitions(-D_SCL_SECURE_NO_WARNINGS) #disable warning C4996: 'std::uniniti
 add_definitions(-D_CRT_SECURE_NO_WARNINGS) #disable strcpy warning in audioeffect.h
 #add_definitions(-DSAMBAG_USE_LOG) #BOOST_LOG FAILS WHEN CALLING FROM VST(.dll) SEE #332
 #add_definitions(-DSAMBA_WARN_MISSING_IMPL) #show xy not impl. warning
-set(CMAKE_CXX_FLAGS_DEBUG "/MTd /ZI")
 
 #to avoid name conflicts with existing FindSomeLib.cmake scripts
 #every finding script has a "X" postfix: FindSomeLibX.cmake
@@ -21,11 +20,10 @@ set(CMAKE_CXX_FLAGS_DEBUG "/MTd /ZI")
 #APPLE is TRUE on Apple systems.
 
 IF(APPLE)
-	find_package(X11 REQUIRED)
-        include_directories(${X11_INCLUDE_DIRS})
 	find_package(IConvX REQUIRED)
-	add_definitions(-DDISCO_USE_X11)
 	add_definitions(-DFRX_OS_MAC)
+	add_definitions(-DDISCO_USE_COCOA)	
+	FIND_LIBRARY(COCOA_LIBRARY Cocoa)	
 ELSEIF(UNIX)
 	find_package(X11 REQUIRED)
 	include_directories(${X11_INCLUDE_DIRS})
@@ -35,6 +33,7 @@ ELSEIF(UNIX)
 ELSEIF(WIN32)
         add_definitions(-DDISCO_USE_WIN32)
 	add_definitions(-DFRX_OS_WINDOWS)
+	set(CMAKE_CXX_FLAGS_DEBUG "/MTd /ZI")
 ENDIF(APPLE)
 
 find_package(Cairo REQUIRED)
@@ -63,24 +62,24 @@ find_package(Boost 1.49.0 REQUIRED
 	timer 
 	chrono 
 	program_options
-	log
-	log_setup
+	#Log
+	#Log_Setup
 )
-include_directories(${CAIRO_INCLUDE_DIRS})
-include_directories(${CPPUNIT_INCLUDE_DIRS})
-include_directories(${TINYXML_INCLUDE_DIRS})
-include_directories(${Boost_INCLUDE_DIRS})
-include_directories(${LOKI_INCLUDE_DIRS})
-include_directories(${LUA52_INCLUDE_DIRS})
-include_directories(${SQLITE3_INCLUDE_DIRS})
-include_directories(${VSTSDK_INCLUDE_DIRS})
-include_directories(${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/)
-include_directories(${VSTSDK_INCLUDE_DIRS}/pluginterfaces/vst2.x)
-include_directories(${VSTPLUGIN_INTERFACES_DIRS})
-include_directories(${SAMBAG_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${CAIRO_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${CPPUNIT_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${TINYXML_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${BOOST_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${LOKI_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${LUA52_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${VSTSDK_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${VSTSDK_INCLUDE_DIRS}/PUBLIC.SDK/SOURCE/VST2.X/)
+INCLUDE_DIRECTORIES(${VSTSDK_INCLUDE_DIRS}/PLUGINTERFACES/VST2.X)
+INCLUDE_DIRECTORIES(${VSTPLUGIN_INTERFACES_DIRS})
+INCLUDE_DIRECTORIES(${SAMBAG_INCLUDE_DIRS})
 
 
-set (FRX_CLIBS ${FRX_CLIBS}
+SET (FRX_CLIBS ${FRX_CLIBS}
 	${SAMBAG_LIBRARIES}
 	${Boost_LIBRARIES}
 	${CPPUNIT_LIBRARIES}
@@ -92,7 +91,7 @@ set (FRX_CLIBS ${FRX_CLIBS}
 IF(APPLE)
 	set (FRX_CLIBS ${FRX_CLIBS}
 		${ICONV_LIBRARY_DIRS}/${LIBICONV}
-		${X11_LIBRARIES}
+		${COCOA_LIBRARY}		
 	)
 ELSEIF(UNIX)
 	set (FRX_CLIBS ${FRX_CLIBS}

@@ -132,7 +132,7 @@ private:
 			_component = c;
 		}
 		sdc::AComponent::Ptr getComponent() const { 
-			return component.lock(); 
+			return _component.lock();
 		}
 	};
 	typedef sdc::Animation<double, sdc::defaultTweens::DynamicTween, CoronaAlpha>

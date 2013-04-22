@@ -259,7 +259,7 @@ void FrxCircuidView::add(sdc::AComponentPtr comp, ZOrder zord, bool normalize)
 	if (!frxC)
 		return;
 
-	EventSender<FrxCircuidViewEvent>::notifyListeners( this, 
+	sce::EventSender<FrxCircuidViewEvent>::notifyListeners( this,
 		FrxCircuidViewEvent(FrxCircuidViewEvent::ComponentAdded, frxC)
 	);
 	SAMBAG_END_SYNCHRONIZED
@@ -285,7 +285,7 @@ void FrxCircuidView::close() {
 //-----------------------------------------------------------------------------
 void FrxCircuidView::fireViewEvent(FrxCircuidViewEvent::Type type, FrxComponentPtr c)
 {
-	EventSender<FrxCircuidViewEvent>::notifyListeners( this, 
+	sce::EventSender<FrxCircuidViewEvent>::notifyListeners( this,
 		FrxCircuidViewEvent(type, c)
 	);
 }
@@ -294,7 +294,7 @@ void FrxCircuidView::remove(sdc::AComponentPtr comp) {
 	SAMBAG_BEGIN_SYNCHRONIZED(getTreeLock())
 	FrxComponent::Ptr frxC = boost::shared_dynamic_cast<FrxComponent>(comp);
 	if (frxC) { // fire removing event
-		frxC->EventSender<OnRemoving>::notifyListeners(frxC.get(), 
+		frxC->sce::EventSender<OnRemoving>::notifyListeners(frxC.get(),
 			OnRemoving(getPtr()));
 	}
 	content->remove(comp);

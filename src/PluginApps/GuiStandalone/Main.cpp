@@ -43,7 +43,7 @@ po::variables_map vm;
 typedef std::string File;
 typedef std::vector<File> Files;
 //-----------------------------------------------------------------------------
-int testHostCallback(AEffect* effect, VstInt32 opcode, 
+VstIntPtr testHostCallback(AEffect* effect, VstInt32 opcode,
 		VstInt32 index, VstIntPtr value, void* ptr, float opt)
 {
 	/*SAMBAG_LOG_INFO<<"hostCallback { opc: "<<opcode<<

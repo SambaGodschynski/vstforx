@@ -18,7 +18,7 @@ void FrxPluginEditorCtrl::open(sdc::WindowPtr win) {
 	plugin->openEditor(win);
 	idleTimer = sdc::Timer::create(10);
 	idleTimer->setNumRepetitions(-1);
-	idleTimer->EventSender<sdc::TimerEvent>::addTrackedEventListener(
+	idleTimer->sce::EventSender<sdc::TimerEvent>::addTrackedEventListener(
 		boost::bind(&FrxPluginEditorCtrl::onIdleTimer, this, _1, _2),
 		win
 	);

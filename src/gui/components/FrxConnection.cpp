@@ -21,13 +21,13 @@ FrxConnection::FrxConnection() {
 }
 //-----------------------------------------------------------------------------
 void FrxConnection::installListeners() {
-	EventSender<sce::PropertyChanged>::addEventListener(
+	sce::EventSender<sce::PropertyChanged>::addEventListener(
 		boost::bind(&FrxConnection::onPropertyChanged, this, _1, _2)
 	);
 }
 //-----------------------------------------------------------------------------
 FrxConnection::Connection FrxConnection::connect(FrxComponent::Ptr c) {
-	return c->EventSender<sce::PropertyChanged>::addTrackedEventListener (
+	return c->sce::EventSender<sce::PropertyChanged>::addTrackedEventListener (
 		boost::bind(&FrxConnection::onComponentsPropertyChanged, this, _1, _2),
 		getPtr()
 	);
@@ -39,7 +39,7 @@ void FrxConnection::onPropertyChanged(void*, const sce::PropertyChanged &ev) {
 }
 //-----------------------------------------------------------------------------
 void FrxConnection::installComponentListeners(FrxComponent::Ptr c) {
-	c->EventSender<OnRemoving>::addTrackedEventListener(
+	c->sce::EventSender<OnRemoving>::addTrackedEventListener(
 		boost::bind(&FrxConnection::onComponentRemoving, this, _1, _2),
 		getPtr()
 	);

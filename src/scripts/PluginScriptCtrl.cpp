@@ -915,14 +915,14 @@ void PluginScriptCtrl::runThread() {
 			executeString(luaState.get(), script);
 		} catch(const ExecutionFailed &ex) {
 			sambag::com::log("executation failed: " + ex.errMsg);
-			EventSender<ScriptExeFailedEvent>::notifyListeners(
+			sce::EventSender<ScriptExeFailedEvent>::notifyListeners(
 				this,
 				ScriptExeFailedEvent()
 			);
 			break;
 		}
 	}
-	EventSender<ScriptEnded>::notifyListeners(
+	sce::EventSender<ScriptEnded>::notifyListeners(
 		this,
 		ScriptEnded()
 	);

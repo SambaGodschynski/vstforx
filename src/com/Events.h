@@ -51,7 +51,7 @@ struct OnDestroy : public Event {
 	OnDestroy ( T *src ) : src(src) {}
 };
 //============================================================================================================
-/** 
+/**
  * @class TrackingDummy.
  * Kann fuer signal::track verwendet werden.
  */
@@ -164,36 +164,36 @@ private:
 	enum { eventTypeVerification = EventType::verification };
 public:
 	//--------------------------------------------------------------------------------------------------------
-	EventConnection addEventListener ( const typename Base::ValueChangedFunction &f ) { 
-		return sender.addValueChangedListener(f);	
+	EventConnection addEventListener ( const typename Base::ValueChangedFunction &f ) {
+		return sender.addValueChangedListener(f);
 	}
 	//--------------------------------------------------------------------------------------------------------
-	EventConnection addEventListener ( EventListener<EventType> *eL ) { 
+	EventConnection addEventListener ( EventListener<EventType> *eL ) {
 		return sender.addValueChangedListener(
 			boost::bind( &EventListener<EventType>::eventHandler, eL, _1, _2)
-		);	
+		);
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Fuegt Listener hinzu und aktiviert tracking.
-	 * @see http://www.boost.org/doc/libs/1_40_0/doc/html/signals2/tutorial.html#id1664686 
+	 * @see http://www.boost.org/doc/libs/1_40_0/doc/html/signals2/tutorial.html#id1664686
 	 * Section: Automatic Connection Management (Intermediate)
-	 * @param 
+	 * @param
 	 * @param weak pointer zum zu trackenden Objekt
 	 */
 	EventConnection addTrackedEventListener ( EventListener<EventType> *eL,
-		const boost::weak_ptr<void> &toTrack ) 
-	{ 
+		const boost::weak_ptr<void> &toTrack )
+	{
 		return sender.addTrackedValueChangedListener(
 			boost::bind(&EventListener<EventType>::eventHandler, eL, _1, _2),
 			toTrack
-		);	
+		);
 	}
 	//--------------------------------------------------------------------------------------------------------
 	EventConnection addTrackedEventListener ( const typename Base::ValueChangedFunction &f,
-		const boost::weak_ptr<void> &toTrack ) 
-	{ 
-		return sender.addTrackedValueChangedListener(f, toTrack);	
+		const boost::weak_ptr<void> &toTrack )
+	{
+		return sender.addTrackedValueChangedListener(f, toTrack);
 	}
 	//--------------------------------------------------------------------------------------------------------
 	void notifyEventListeners( void *src, const EventType &ev ) {

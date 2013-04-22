@@ -36,7 +36,7 @@ protected:
 	void onComponentRemoving(void *src, const OnRemoving &ev);
 private:
 	//-------------------------------------------------------------------------
-	typedef FrxComponent::EventSender<OnRemoving>::Connection RemovingConnection;
+	typedef sce::EventSender<OnRemoving>::Connection RemovingConnection;
 	RemovingConnection rmvConnection;
 	//-------------------------------------------------------------------------
 	FrxComponent::Ptr target;

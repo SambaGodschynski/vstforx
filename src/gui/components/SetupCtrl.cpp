@@ -102,8 +102,8 @@ void startScanImpl(const FileEvF &f,
 {
 	typedef ::com::OnLoadFile OnFileLoading;
 	typedef ::com::OnFileLoaded OnFileLoaded;
-	typedef ::com::PluginCollection::EventSender<OnFileLoading> LoadingEvSender; 
-	typedef ::com::PluginCollection::EventSender<OnFileLoaded> LoadedEvSender;
+	typedef ::com::PluginCollection::OnLoadFileSender LoadingEvSender;
+	typedef ::com::PluginCollection::OnFileLoadedSender LoadedEvSender;
 	typedef LoadingEvSender::EventConnection LoadEvConnection;
 	typedef LoadedEvSender::EventConnection LoadedEvConnection;
 	

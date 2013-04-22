@@ -162,6 +162,12 @@ friend class ScanVisitor;
 friend struct Loki::CreateUsingNew<PluginCollection>;
 public:
 	//--------------------------------------------------------------------------------------------------------
+	typedef com::EventSender<OnLoadFile> OnLoadFileSender;
+	typedef com::EventSender<OnFileLoaded> OnFileLoadedSender;
+	typedef com::EventSender<CleaningUpDataBase> CleaningUpDataBaseSender;
+	typedef com::EventSender<ScanComplete> ScanCompleteSender;
+	typedef com::EventSender<ScanInterrupted> ScanInterruptedSender;
+	//--------------------------------------------------------------------------------------------------------
 	typedef std::string PluginIdType;
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<PluginCollection> Ptr;

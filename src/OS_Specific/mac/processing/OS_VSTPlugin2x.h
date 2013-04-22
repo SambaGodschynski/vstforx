@@ -16,6 +16,7 @@
 
 using namespace std;
 
+typedef AEffect* (*PluginEntryProc) (audioMasterCallback audioMaster);
 
 namespace processing {
 //============================================================================================================
@@ -28,7 +29,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef CFBundleRef Module;
 	//--------------------------------------------------------------------------------------------------------
-	typedef std::pair< AudioMasterCallback, AudioEffectX* > HostCallBackOnInit; 
+	typedef std::pair< audioMasterCallback, AudioEffectX* > HostCallBackOnInit;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	string moduleLocation;
