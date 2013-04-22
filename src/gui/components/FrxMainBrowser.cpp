@@ -25,14 +25,14 @@ void FrxMainBrowser::onAdd(void *src, const sdc::events::ActionEvent &ev)
 void FrxMainBrowser::installListeners() {
 	sdc::Button::Ptr btn = getBtnAdd();
 	if (btn) {
-		btn->EventSender<sdc::events::ActionEvent>::addTrackedEventListener(
+		btn->sce::EventSender<sdc::events::ActionEvent>::addTrackedEventListener(
 			boost::bind(&FrxMainBrowser::onAdd, this, _1, _2),
 			getPtr()
 		);
 	}
 	btn = getBtnClose();
 	if (btn) {
-		btn->EventSender<sdc::events::ActionEvent>::addTrackedEventListener(
+		btn->sce::EventSender<sdc::events::ActionEvent>::addTrackedEventListener(
 			boost::bind(&FrxMainBrowser::onClose, this, _1, _2),
 			getPtr()
 		);

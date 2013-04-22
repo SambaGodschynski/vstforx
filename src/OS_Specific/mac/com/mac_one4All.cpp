@@ -10,8 +10,8 @@
 // ONE4ALL MAC
 #include "mac_one4All.h"
 #include "com/one4All.h"
-#include "CoreFoundation/CoreFoundation.h"
-#include "cfileselector.h"
+//#include "CoreFoundation/CoreFoundation.h"
+//#include "cfileselector.h"
 //#include "CFUserNotification.h"
 #include <sstream>
 
@@ -29,7 +29,7 @@ bool isDirectory ( const string &filename ) {
 } 	
 //------------------------------------------------------------------------------------------------------------
 MessageBoxReturn osMessageBox ( const string &title, const string &text, const MessageBoxType &type ) {
-	//convert the strings from char* to CFStringRef
+/*	TODO: //convert the strings from char* to CFStringRef
     CFStringRef header_ref = CFStringCreateWithCString( NULL, title.c_str(), title.length() );
     CFStringRef message_ref = CFStringCreateWithCString( NULL, text.c_str(), text.length() );
     CFStringRef btn01 = NULL;
@@ -77,37 +77,13 @@ MessageBoxReturn osMessageBox ( const string &title, const string &text, const M
 		else
 			return MSG_RET_NO;
 	}
-	return MSG_RET_NONE;
+	return MSG_RET_NONE;*/
 }
 //------------------------------------------------------------------------------------------------------------
 std::string osSelectDirectory ( const std::string &wndTitle, const std::string &startPath)
 {
+	// TODO: implement
 	return "";
-}
-//============================================================================================================
-// Klasse SysTimer.
-//============================================================================================================
-//------------------------------------------------------------------------------------------------------------
-pascal void idleTimerProc (EventLoopTimerRef inTimer, void *inUserData) {
-	SysTimer *ptr = static_cast<SysTimer*>( inUserData );
-	if (!ptr) return;
-	ptr->callBack();
-}
-//-------------------------------------------------------------------------------------------------------------
-void SysTimer::start() {
-	static const float ONE_MS = kEventDurationSecond / 1000.0f;
-	InstallEventLoopTimer ( GetCurrentEventLoop(), 
-						    ONE_MS * (float)callTimeMS, //erstes warten
-							ONE_MS * (float)callTimeMS, 
-							idleTimerProc, 
-							this, 
-							&id);
-}
-//------------------------------------------------------------------------------------------------------------
-void SysTimer::stop() {
-	if (!id) return;
-	RemoveEventLoopTimer (id);
-	id = NULL;
 }
 } // namespace com
 

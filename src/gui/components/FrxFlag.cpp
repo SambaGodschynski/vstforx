@@ -44,7 +44,7 @@ void FrxFlag::setTarget(FrxComponent::Ptr target) {
 	}
 	this->target = target;
 	firePropertyChanged(PROPERTY_TARGET, old, target);
-	rmvConnection = target->EventSender<OnRemoving>::addTrackedEventListener(
+	rmvConnection = target->sce::EventSender<OnRemoving>::addTrackedEventListener(
 		boost::bind(&FrxFlag::onComponentRemoving, this, _1, _2),
 		getPtr()
 	);

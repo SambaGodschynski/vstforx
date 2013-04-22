@@ -142,7 +142,7 @@ sdc::ButtonPtr ScanningDialog::createBtn(BtnActionFunc f, const std::string &txt
 {
 	sdc::Button::Ptr res = sdc::Button::create();
 	res->setText(txt);
-	res->EventSender<sdc::events::ActionEvent>::addEventListener(
+	res->sce::EventSender<sdc::events::ActionEvent>::addEventListener(
 		boost::bind(f, this, _1, _2)
 	);
 	return res;
@@ -172,7 +172,7 @@ void ScanningDialog::startScan(SetupCtrl::Ptr ctrl) {
 		boost::bind(&ScanningDialog::onScanFailed, this, _1)
 	);
 	timer = sdc::Timer::create(100);
-	timer->EventSender<sdc::TimerEvent>::addTrackedEventListener(
+	timer->sce::EventSender<sdc::TimerEvent>::addTrackedEventListener(
 		boost::bind(&ScanningDialog::onRefresh, this, _1, _2),
 		getPtr()
 	);
@@ -214,7 +214,7 @@ void ScanningDialog::onScanCompleted(int succeed, int failed, int skipped) {
 	list->addElement("=====================================================");
 
 	dirListScrollPane->revalidate();
-	int i = list->DefaultListModel::getSize() - 1;
+	int i = list->ListModel::getSize() - 1;
 	list->ensureIndexIsVisible(i);
 	list->revalidate();
 	list->redraw();
@@ -241,7 +241,7 @@ void ScanningDialog::onRefresh(void *, const sdc::TimerEvent &ev) {
 				file2listindex.find(file);
 			if (it == file2listindex.end()) {
 				list->addElement(file);
-				file2listindex[file] = list->DefaultListModel::getSize() - 1;
+				file2listindex[file] = list->ListModel::getSize() - 1;
 			} else {
 				list->set(it->second, file + "->" + status);
 			}
@@ -249,7 +249,7 @@ void ScanningDialog::onRefresh(void *, const sdc::TimerEvent &ev) {
 		}
 	SAMBAG_END_SYNCHRONIZED
 	dirListScrollPane->revalidate();
-	int i = list->DefaultListModel::getSize() - 1;
+	int i = list->ListModel::getSize() - 1;
 	list->ensureIndexIsVisible(i);
 	list->revalidate();
 	list->redraw();
@@ -281,7 +281,7 @@ SetupWindow::ResizeBtnHandler::create(SetupWindow *host)
 	res->host = host;
 	res->timer = sdc::Timer::create(100);
 	res->timer->setInitialDelay(1000);
-	res->timer->EventSender<sdc::TimerEvent>::addTrackedEventListener(
+	res->timer->sce::EventSender<sdc::TimerEvent>::addTrackedEventListener(
 		boost::bind(&ResizeBtnHandler::onTimer, res.get(), _1, _2),
 		res
 	);
@@ -292,7 +292,7 @@ SetupWindow::ResizeBtnHandler::create(SetupWindow *host)
 void SetupWindow::ResizeBtnHandler::
 registerBtn(sdc::AComponentPtr c, ResizeDirection dir)
 {
-	c->EventSender<sdc::events::MouseEvent>::addEventListener(
+	c->sce::EventSender<sdc::events::MouseEvent>::addEventListener(
 		boost::bind(&ResizeBtnHandler::onMouse, this, _1, _2, dir)
 	);
 }
@@ -453,7 +453,7 @@ sdc::AContainerPtr SetupWindow::createMiscPane() {
 	chkbxFS = sdc::CheckBox::create();
 	chkbxFS->setText("Fastscan");
 	chkbxFS->setOpaque(false);
-	chkbxFS->EventSender<sdc::events::ActionEvent>::addEventListener(
+	chkbxFS->sce::EventSender<sdc::events::ActionEvent>::addEventListener(
 		boost::bind(&SetupWindow::onFastScanSelected, this, _1, _2)
 	);
 	pane->add(chkbxFS);
@@ -567,7 +567,7 @@ sdc::ScrollPanePtr SetupWindow::createDirListScrollPane() {
 sdc::ButtonPtr SetupWindow::createBtn(BtnActionFunc f, const std::string &txt) {
 	sdc::Button::Ptr res = sdc::Button::create();
 	res->setText(txt);
-	res->EventSender<sdc::events::ActionEvent>::addEventListener(
+	res->sce::EventSender<sdc::events::ActionEvent>::addEventListener(
 		boost::bind(f, this, _1, _2)
 	);
 	return res;

@@ -12,6 +12,7 @@
 #include <sambag/disco/components/Timer.hpp>
 #include <set>
 #include <sambag/com/Thread.hpp>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui {
 //=============================================================================
@@ -105,7 +106,7 @@ void TimedUpdater<V,P,T>::doUpdate(void *,
 		ValueType v;
 		{
 			SAMBAG_TRY_TO_LOCK_TIMED(mutex)
-			Values::iterator it = values.begin();
+			typename Values::iterator it = values.begin();
 			v = *it;
 			values.erase(it);
 		}

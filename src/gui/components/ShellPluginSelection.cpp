@@ -30,7 +30,7 @@ void ShellPluginSelection::postConstructor() {
 }
 //-----------------------------------------------------------------------------
 void ShellPluginSelection::onBtnOk(void *, const ActionEvent &ev) {
-	EventSender<ActionEvent>::notifyListeners(
+	sce::EventSender<ActionEvent>::notifyListeners(
 		this, ActionEvent(getPtr())
 	);
 	close();
@@ -52,14 +52,14 @@ void ShellPluginSelection::createContent() {
 	sdc::Panel::Ptr btns = sdc::Panel::create();
 	sdc::Button::Ptr btnOk = sdc::Button::create();
 	btnOk->setText("Ok");
-	btnOk->EventSender<ActionEvent>::addEventListener(
+	btnOk->sce::EventSender<ActionEvent>::addEventListener(
 		boost::bind(&ShellPluginSelection::onBtnOk, this, _1, _2)
 	);
 	btns->add(btnOk);
 
 	sdc::Button::Ptr btnCancel = sdc::Button::create();
 	btnCancel->setText("Cancel");
-	btnCancel->EventSender<ActionEvent>::addEventListener(
+	btnCancel->sce::EventSender<ActionEvent>::addEventListener(
 		boost::bind(&ShellPluginSelection::onBtnCancel, this, _1, _2)
 	);
 	btns->add(btnCancel);

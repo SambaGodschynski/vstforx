@@ -288,7 +288,7 @@ void registerOnView(FrxCircuidViewPtr view, FrxParameter::Ptr knob) {
 
 	knob->getRangeModel()->setValue(par->getValue());
 	// knob listener
-	knob->getRangeModel()->EventSender<sdc::DefaultBoundedRangeModelChanged>::
+	knob->getRangeModel()->sce::EventSender<sdc::DefaultBoundedRangeModelChanged>::
 		addTrackedEventListener ( boost::bind(&knobChanged, _1, _2, _par, _knob), par );
 	// parameter listener
 	par->getEventSender().addTrackedValueChangedListener(

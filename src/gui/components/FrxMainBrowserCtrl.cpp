@@ -708,7 +708,7 @@ void FrxMainBrowserCtrl::addToSceneTree(FrxComponentPtr c, Reason reason) {
 	Tree::Node res = it->second(c, reason);
 	if (res==Tree::NULL_NODE)
 		return;
-	c->FrxComponent::EventSender<OnRemoving>::addTrackedEventListener(
+	c->sce::EventSender<OnRemoving>::addTrackedEventListener(
 		boost::bind(&FrxMainBrowserCtrl::onRemovingFromScene, this, _1, _2, res),
 		self
 	);

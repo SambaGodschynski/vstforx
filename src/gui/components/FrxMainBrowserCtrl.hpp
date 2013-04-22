@@ -121,7 +121,7 @@ protected:
 	void onShellPluginSelected(void*, const sdc::events::ActionEvent &ev);
 private:
 	//-------------------------------------------------------------------------
-	typedef int Id;
+	typedef long int Id;
 	enum { NoId = INT_MAX };
 	typedef boost::unordered_map<Id, TreeNode> NodeMap; 
 	//-------------------------------------------------------------------------

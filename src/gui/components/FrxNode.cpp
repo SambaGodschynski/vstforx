@@ -65,7 +65,7 @@ void FrxNode::onChildChanged(void *src,
 //-----------------------------------------------------------------------------
 void FrxNode::installChildListener(sdc::AComponent::Ptr c) {
 	ChildSenderMap::iterator it = childSenderMap.find(c);
-	ChildSender con = c->EventSender<sce::PropertyChanged>::addEventListener (
+	ChildSender con = c->sce::EventSender<sce::PropertyChanged>::addEventListener (
 		boost::bind(&FrxNode::onChildChanged, this, _1, _2, sdc::AComponent::WPtr(c))
 	);
 	if (it!=childSenderMap.end()) {

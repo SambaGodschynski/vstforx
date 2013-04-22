@@ -111,7 +111,7 @@ void VstForxPlug::unRegisterInstance() {
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::installGraphListener() {
-	typedef ::processing::Graph::EventSender<::processing::GraphDelayChanged> Sender;
+	typedef com::events::EventSender< ::processing::GraphDelayChanged> Sender;
 	graph->Sender::addTrackedEventListener(
 		boost::bind(&VstForxPlug::onGraphDelayChanged, this, _1, _2),
 		hostInfoAdapter
@@ -232,7 +232,7 @@ int VstForxPlug::getBlockSize() const  {
 }
 //-----------------------------------------------------------------------------
 bool VstForxPlug::ioChanged() {
-	EventSender<HostIOChanged>::notifyListeners(this, HostIOChanged());
+	sce::EventSender<HostIOChanged>::notifyListeners(this, HostIOChanged());
 	return true;
 }
 //-----------------------------------------------------------------------------
@@ -242,13 +242,13 @@ TimeInfo * VstForxPlug::getHostTimeInfo (int filter) {
 //-----------------------------------------------------------------------------
 VstForxPlug::HostIOChangedConnection 
 VstForxPlug::addHostChangedListener(const HostIOChangedFunction &f) {
-	return EventSender<HostIOChanged>::addEventListener(f);
+	return sce::EventSender<HostIOChanged>::addEventListener(f);
 }
 //-----------------------------------------------------------------------------
 VstForxPlug::HostIOChangedConnection 
 VstForxPlug::addTrackedHostChangedListener(const HostIOChangedFunction &f, AnyWPtr wptr)
 {
-	return EventSender<HostIOChanged>::addTrackedEventListener(f, wptr);
+	return sce::EventSender<HostIOChanged>::addTrackedEventListener(f, wptr);
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::setEffectPtr(void *effPtr) {

@@ -73,7 +73,7 @@ protected:
 	//typedef std::multimap<ParameterGroupKey, ParameterAdapterPtr> ParameterGroupMap;
 	ParameterGroupMap parameters; 
 	//-------------------------------------------------------------------------
-	typedef std::map<::processing::parameter::Parameter::Ptr, 
+	typedef std::map< ::processing::parameter::Parameter::Ptr,
 		ParameterAdapterPtr> ParameterAdapterMap;
 	ParameterAdapterMap parameterAdapterMap;
 	//-------------------------------------------------------------------------

@@ -32,7 +32,7 @@ private:
 	//-------------------------------------------------------------------------
 	FrxComponent::Ptr src, dst;
 	//-------------------------------------------------------------------------
-	typedef FrxComponent::EventSender<sce::PropertyChanged>::Connection Connection;
+	typedef sce::EventSender<sce::PropertyChanged>::Connection Connection;
 	//-------------------------------------------------------------------------
 	Connection srcConnection, dstConnection;
 	//-------------------------------------------------------------------------
