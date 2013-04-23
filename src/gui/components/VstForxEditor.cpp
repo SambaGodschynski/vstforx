@@ -190,8 +190,9 @@ void VstForxEditor::onHostWindowOpen(void *src, const sdc::OnOpenEvent &ev)
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::open() {
+	sdc::FramedWindow::Ptr fWin;
 	if (!clientWindow) {
-		clientWindow = sdc::FramedWindow::create();
+		clientWindow = fWin = sdc::FramedWindow::create();
 		clientWindow->getContentPane()->setOpaque(false);
 		clientWindow->getWindowImpl()->setFlag(sdc::WindowFlags::WND_RAW, true);
 		clientWindow->addOnOpenEventListener(
@@ -202,6 +203,7 @@ void VstForxEditor::open() {
 		sd::Rectangle(0,0,::com::getSettings().getWindowWidth(), 
 		::com::getSettings().getWindowHeight())
 	);
+	fWin->setTitle("VSTForx " + com::getSettings().versionToString());
 	clientWindow->open();
 }
 //-----------------------------------------------------------------------------

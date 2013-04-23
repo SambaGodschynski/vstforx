@@ -12,10 +12,11 @@ fi
 #usage
 usage() 
 {
-	echo $0 "-i clib_location [-g generator(cmmake generator default=Unix Makefiles)]"
+	echo $0 "-i clib_location [-g generator(cmmake generator default=Unix Makefiles) -d(debug mode)]"
 }
 
 mode=""
+flags=""
 
 #passing arguments
 while [ "$1" != "" ]; do
@@ -24,8 +25,11 @@ while [ "$1" != "" ]; do
                                 in=$1
                                 ;;
         -g | --generator )      shift
+	                        #TODO: flags="-G '$1'" 
 				mode=$1
                                 ;;
+        -d )                    flags="$flags -D CMAKE_BUILD_TYPE=Debug"
+	                        ;;
         -h | --help )           usage
                                 exit
                                 ;;
@@ -34,14 +38,12 @@ while [ "$1" != "" ]; do
     esac
     shift
 done
-
 export CLIBS=$in
 echo use generator: $mode
 if [ "$mode" = "" ]
 then
-  cmake .
+  cmake $flags .
 else
-  cmake . -G "$mode"
+  cmake $flags -G "$mode" .
 fi
 
-#make
