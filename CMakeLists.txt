@@ -106,7 +106,7 @@ ENDIF(APPLE)
 set (VSTSDKSOURCE ${VSTSDKSOURCE}
       ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/audioeffect.cpp
       ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/audioeffectx.cpp
-      ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp
+      #${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp now part of target sources
 )
 
 add_subdirectory(src)

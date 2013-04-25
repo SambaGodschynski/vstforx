@@ -15,7 +15,7 @@ usage()
 	echo $0 "-i clib_location [-g generator(cmmake generator default=Unix Makefiles) -d(debug mode)]"
 }
 
-mode=""
+mode="Xcode"
 flags=""
 
 #passing arguments
@@ -47,5 +47,10 @@ else
   cmake $flags -G "$mode" .
 fi
 
-
+echo "
+Steps to do (for all plugin targets):
+ - build: change MACH-O type to bundle
+ - build: change wrapper extension to vst
+ - properties: set executable name
+"
 

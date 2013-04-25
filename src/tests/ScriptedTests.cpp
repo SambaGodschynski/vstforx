@@ -17,7 +17,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( tests::ScriptedTests );
 
 namespace tests {
 
-int testHostCallback(AEffect* effect, VstInt32 opcode, 
+VstIntPtr testHostCallback(AEffect* effect, VstInt32 opcode,
 	VstInt32 index, VstIntPtr value, void* ptr, float opt);
 
 bool plugProcessing = false;
@@ -208,7 +208,7 @@ void ScriptedTests::issue322() {
 	CPPUNIT_ASSERT(!failed);
 }
 ///////////////////////////////////////////////////////////////////////////////
-int testHostCallback(AEffect* effect, VstInt32 opcode, 
+VstIntPtr testHostCallback(AEffect* effect, VstInt32 opcode,
  VstInt32 index, VstIntPtr value, void* ptr, float opt) 
 {
 	//std::cout<<"testHostCallback request("<<opcode<<")"<<std::endl;
