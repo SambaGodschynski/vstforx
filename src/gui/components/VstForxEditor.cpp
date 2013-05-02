@@ -85,6 +85,9 @@ sdc::Window::Ptr VstForxEditor::createMainWindow(const sd::Rectangle &bounds) {
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::serializeViewTemp(::com::oArchive &ar, FrxCircuidView::Ptr view) {
+	if (!view) {
+		return;
+	}
 	try {
 		register_types(ar);
 		getPlugin()->getViewModelMap()->lock(ar);
@@ -216,7 +219,17 @@ bool VstForxEditor::open( void *ptr ) {
 	AEffEditor::open(ptr);
 	sd::Dimension size = getEditorSize();
 	sambag::disco::Rectangle bounds( 0, 0, size.width(), size.height() );
-	try {
+    
+    
+   /* sdc::getWindowToolkit()->invokeLater(
+        boost::bind( &VstForxEditor::createMainWindow, this, bounds)
+    );
+    
+    return true;*/
+    
+    
+    
+    try {
 		SAMBAG_BEGIN_SYNCHRONIZED(mutex)
 			nestedWindow = createMainWindow(bounds);
 			FrxCircuidViewPtr view = createView(nestedWindow);
@@ -239,7 +252,7 @@ bool VstForxEditor::open( void *ptr ) {
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::close() {
-	if (!isOpen()) {
+	if (!isOpen() || !circView) {
 		return;
 	}
 	AEffEditor::close();
@@ -274,7 +287,7 @@ sd::Dimension VstForxEditor::getEditorSize() const {
 }
 //-----------------------------------------------------------------------------
 bool VstForxEditor::getRect (ERect** rect) {
-	::com::Settings &set = com::getSettings(); 
+	::com::Settings &set = com::getSettings();
 	tmpRect.left = 0;
 	tmpRect.top = 0;
 	tmpRect.right = set.getWindowWidth();

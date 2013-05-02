@@ -131,7 +131,7 @@ public:
 struct CreateVstForxEditor {
 	template <class Editor, class Plugin>
 	Editor * createEditor(Plugin* plugin) 
-	{ 
+	{
 		AudioEffect *aEff = plugin;
 		frx::gui::components::VstForxEditor *res 
 			= new frx::gui::components::VstForxEditor(aEff); 

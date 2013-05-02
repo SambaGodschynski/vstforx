@@ -6,6 +6,8 @@
  */
 
 #include "VstForxResourceManager.hpp"
+#include "CocoaHelper.hpp"
+#include <boost/filesystem.hpp>
 
 namespace frx {
 typedef Loki::SingletonHolder<VstForxResourceManager> VstForxResourceManagerHolder;
@@ -18,11 +20,18 @@ VstForxResourceManager & VstForxResourceManager::instance() {
 }
 //-----------------------------------------------------------------------------
 VstForxResourceManager::VstForxResourceManager() {
+	Super::setHomeDirectory(".");
 }
 //-----------------------------------------------------------------------------
 VstForxResourceManager::ImagePtr 
-VstForxResourceManager::loadImage(const std::string &path) 
+VstForxResourceManager::loadImage(const std::string &_path) 
 {
-	return ImagePtr();
+	std::string filename = boost::filesystem::path(_path).filename().string();
+    filename = com::CocoaHelper::getResourceLocation(filename);
+	return Super::loadImage(filename);
+}
+//-----------------------------------------------------------------------------
+VstForxResourceManager::Url VstForxResourceManager::getPath(const Url &url) const {
+    return url;
 }
 } // namespace(s)

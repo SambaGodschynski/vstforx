@@ -68,8 +68,8 @@ const string Settings::NAME = "vstforx";
 const string Settings::VENDOR = "samba godschynski";
 const string Settings::PLUG_LOAD_LOGFILE = "init_plug.log";
 const string Settings::CONFIG_FILE = NAME + ".conf" ;
-const string Settings::FX_BUNDLE_ID = "com.samba_godschynski.VSTForx";
-const string Settings::I_BUNDLE_ID = "com.samba_godschynski.iVSTForx";
+const string Settings::FX_BUNDLE_ID = "com.samba_godschynski.frx.VSTForx";
+const string Settings::I_BUNDLE_ID = "com.samba_godschynski.frx.iVSTForx";
 const string Settings::SCAN_REPORT_FILENAME = "scanReport.txt";
 static size_t KILO = 1000;
 //------------------------------------------------------------------------------------------------------------
@@ -223,15 +223,26 @@ void Settings::saveConfigFile() {  // TODO: use boost::Program_options
 	f<<SKIP_SCAN<<"="<<isFastScan();
 	f.close();
 }
-//--------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 void Settings::setIsDemo(bool val) {
 	_isDemo = val;
 }
-//--------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
+void Settings::setIsInstrument(bool val) {
+	_isInstrument = val;
+}
+//------------------------------------------------------------------------------------------------------------
+const std::string & Settings::getBundleId() const {
+	if (isInstrument()) {
+		return I_BUNDLE_ID;
+	}
+	return FX_BUNDLE_ID;
+}
+//------------------------------------------------------------------------------------------------------------
 string Settings::versionToString() const {
 	return STR_VERSION + (isDemo() ? " DEMO VERSION" : "");
 }
-//--------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 bool Settings::getBooleanValue(const std::string &key) const {
 	if (key == "fastScan") {
 		return fastScan;
@@ -240,7 +251,7 @@ bool Settings::getBooleanValue(const std::string &key) const {
 		"Key: " + key + " not found.");
 	return false; 
 }
-//--------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 void Settings::setBooleanValue(const std::string &key, bool val) {
 	if (key == "fastScan") {
 		fastScan = val;
@@ -249,7 +260,7 @@ void Settings::setBooleanValue(const std::string &key, bool val) {
 	SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
 		"Key: " + key + " not found.");
 }
-//--------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 std::string Settings::getStringValue(const std::string &key) const {
 	if (key=="version") {
 		return versionToString();
@@ -258,12 +269,12 @@ std::string Settings::getStringValue(const std::string &key) const {
 		"Key: " + key + " not found.");
 	return "";
 }
-//--------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 void Settings::setStringValue(const std::string &key, const std::string &val) {
 	SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
 		"Key: " + key + " not found.");
 }
-//--------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 int Settings::getIntegerValue(const std::string &key) const {
 	if (key == "editorWidth") {
 		return windowWidth;
@@ -275,7 +286,7 @@ int Settings::getIntegerValue(const std::string &key) const {
 		"Key: " + key + " not found.");
 	return 0;
 }
-//--------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
 void Settings::setIntegerValue(const std::string &key, int val) {
 	if (key == "editorWidth") {
 		windowWidth = val;

@@ -24,6 +24,7 @@ IF(APPLE)
 	add_definitions(-DFRX_OS_MAC)
 	add_definitions(-DDISCO_USE_COCOA)	
 	FIND_LIBRARY(COCOA_LIBRARY Cocoa)	
+	FIND_LIBRARY(CARBON_LIBRARY Carbon)
 ELSEIF(UNIX)
 	find_package(X11 REQUIRED)
 	include_directories(${X11_INCLUDE_DIRS})
@@ -91,7 +92,9 @@ SET (FRX_CLIBS ${FRX_CLIBS}
 IF(APPLE)
 	set (FRX_CLIBS ${FRX_CLIBS}
 		${ICONV_LIBRARY_DIRS}/${LIBICONV}
-		${COCOA_LIBRARY}		
+		${COCOA_LIBRARY}
+                ${CARBON_LIBRARY}			
+
 	)
 ELSEIF(UNIX)
 	set (FRX_CLIBS ${FRX_CLIBS}

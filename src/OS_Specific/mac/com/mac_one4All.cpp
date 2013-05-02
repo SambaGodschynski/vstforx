@@ -10,9 +10,7 @@
 // ONE4ALL MAC
 #include "mac_one4All.h"
 #include "com/one4All.h"
-//#include "CoreFoundation/CoreFoundation.h"
-//#include "cfileselector.h"
-//#include "CFUserNotification.h"
+#include "CoreFoundation/CoreFoundation.h"
 #include <sstream>
 
 namespace com {
@@ -29,7 +27,6 @@ bool isDirectory ( const string &filename ) {
 } 	
 //------------------------------------------------------------------------------------------------------------
 MessageBoxReturn osMessageBox ( const string &title, const string &text, const MessageBoxType &type ) {
-/*	TODO: //convert the strings from char* to CFStringRef
     CFStringRef header_ref = CFStringCreateWithCString( NULL, title.c_str(), title.length() );
     CFStringRef message_ref = CFStringCreateWithCString( NULL, text.c_str(), text.length() );
     CFStringRef btn01 = NULL;
@@ -77,7 +74,7 @@ MessageBoxReturn osMessageBox ( const string &title, const string &text, const M
 		else
 			return MSG_RET_NO;
 	}
-	return MSG_RET_NONE;*/
+	return MSG_RET_NONE;
 }
 //------------------------------------------------------------------------------------------------------------
 std::string osSelectDirectory ( const std::string &wndTitle, const std::string &startPath)

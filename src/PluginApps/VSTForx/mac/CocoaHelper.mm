@@ -4,13 +4,45 @@
  *  Created on: Thu Apr 25 13:33:51 2013
  *      Author: Johannes Unger
  */
-
 #include "CocoaHelper.hpp"
+#import <Cocoa/Cocoa.h>
+#import <objc/runtime.h>
+#import <objc/message.h>
+#import <com/Settings.h>
 
-namespace sambag { namespace com {
+namespace {
+	std::string toString(NSString *str) {
+		if (!str) {
+			return "";
+		}
+		return std::string([str UTF8String]);
+	}
+}
+
+namespace frx { namespace com { 
+//============================================================================= 
+// class CocoaHelper.
 //=============================================================================
-//  Class CocoaHelper
-//=============================================================================
+std::string CocoaHelper::getResourceLocation(const std::string &path) {
+	const std::string & idstr = ::com::getSettings().getBundleId();
+	NSString *_id = [NSString stringWithUTF8String:idstr.c_str()];
+	NSString *_path = [NSString stringWithUTF8String:path.c_str()];
+	
+	NSBundle* myBundle = [NSBundle bundleWithIdentifier: _id];
+	if (!myBundle) {
+		return "";
+	}
+	NSString* res = [myBundle pathForResource:_path ofType:nil];
+	return toString(res);
+}
 //-----------------------------------------------------------------------------
-
-}} // namespace(s)
+std::string CocoaHelper::getBundleLocation() {
+	const std::string & idstr = ::com::getSettings().getBundleId();
+	NSString *_id = [NSString stringWithUTF8String:idstr.c_str()];
+	NSBundle* myBundle = [NSBundle bundleWithIdentifier: _id];
+	if (!myBundle) {
+		return "";
+	}
+	return toString([myBundle bundlePath]);
+}
+}}

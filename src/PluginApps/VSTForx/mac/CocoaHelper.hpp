@@ -8,6 +8,7 @@
 #ifndef SAMBAG_COCOAHELPER_H
 #define SAMBAG_COCOAHELPER_H
 
+#include <string>
 
 namespace frx { namespace com { 
 //=============================================================================
@@ -17,6 +18,13 @@ namespace frx { namespace com {
 class CocoaHelper {
 //=============================================================================
 public:
+	//-------------------------------------------------------------------------
+	static std::string getBundleLocation();
+	//-------------------------------------------------------------------------
+	/**
+	 * @return full path of resource file
+	 */
+	static std::string getResourceLocation(const std::string &path);
 }; // CocoaHelper
 }} // namespace(s)
 

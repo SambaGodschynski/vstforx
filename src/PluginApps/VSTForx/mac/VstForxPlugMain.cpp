@@ -8,7 +8,8 @@
 #include <com/one4All.h>
 #include <sambag/disco/components/WindowToolkit.hpp>
 #include <exception>
-
+#include "VstForxResourceManager.hpp"
+#include "CocoaHelper.hpp"
 
 std::string getHomeDirectory();
 
@@ -27,16 +28,14 @@ enum { FRX_UID = '_frx' + _FRX_IS_INSTRUMENT + _FRX_IS_DEMO };
 
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
-	//std::cout<<"XXXXXX VSTForx XXXXXXX"<<std::endl;
 	// init resourceManager
 	try {
-		//frx::VstForxResourceManager &rm = frx::VstForxResourceManager::instance();
-		//rm.initMap((HINSTANCE)hInstance);
-		//sambag::disco::installResourceManager(rm);
+		frx::VstForxResourceManager &rm = frx::VstForxResourceManager::instance();
+		sambag::disco::installResourceManager(rm);
 	} catch (const std::exception &ex) {
 		std::stringstream ss;
 		ss<<"Initiation of plugin instance failed: "<<ex.what();
-		com::osMessageBox("Error", 
+		com::osMessageBox("Error",
 			ss.str(), com::MSG_ALERT);
 		return NULL;
 	} catch(...) {
@@ -47,6 +46,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 	// init settings
 	::com::initSettings(getHomeDirectory());
 	com::getSettings().setIsDemo((bool)_FRX_IS_DEMO);
+	com::getSettings().setIsInstrument((bool)_FRX_IS_INSTRUMENT);
 	sambag::disco::components::getWindowToolkit()->useWithoutMainloop();
 	
 	// load plugin
@@ -57,8 +57,8 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 		FRX_UID, // uid
 		sambag::dsp::StdPluginTraits<
 			2,2,_FRX_IS_INSTRUMENT,::com::Settings::PROGRAM_PARAMETER
-		>//,
-		//frx::gui::components::CreateVstForxEditor
+		>
+		,frx::gui::components::CreateVstForxEditor
 	> Plugin;
 	// create plugin
 	try {
@@ -82,7 +82,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 }
 //-----------------------------------------------------------------------------
 std::string getHomeDirectory() {
-	return ".";
+	return frx::com::CocoaHelper::getBundleLocation();
 }
 
 

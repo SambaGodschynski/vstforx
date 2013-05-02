@@ -49,6 +49,7 @@ fi
 
 echo "
 Steps to do (for all plugin targets):
+ - build: change compiler to LLVM GCC4.2
  - build: change MACH-O type to bundle
  - build: change wrapper extension to vst
  - properties: set executable name

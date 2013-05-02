@@ -33,6 +33,7 @@ ELSEIF(APPLE)
       ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp
    )
   SET_SOURCE_FILES_PROPERTIES(${FRX_RESOURCES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+  set_source_files_properties(PluginApps/VSTForx/mac/CocoaHelper.mm PROPERTIES COMPILE_FLAGS "-x objective-c++")
 ENDIF(WIN32)
 
 

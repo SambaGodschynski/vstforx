@@ -22,9 +22,13 @@ class VstForxResourceManager : public sd::FileResourceManager {
 //=============================================================================
 friend struct Loki::CreateUsingNew<VstForxResourceManager>;
 public:
+	//-------------------------------------------------------------------------
+	typedef sd::FileResourceManager Super;
 protected:
 	//-------------------------------------------------------------------------
 	VstForxResourceManager();
+    //-------------------------------------------------------------------------
+    virtual Url getPath(const Url &url) const;
 private:
 public:
 	//-------------------------------------------------------------------------
