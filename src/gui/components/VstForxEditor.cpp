@@ -210,24 +210,15 @@ void VstForxEditor::open() {
 	clientWindow->open();
 }
 //-----------------------------------------------------------------------------
-bool VstForxEditor::open( void *ptr ) {
+void VstForxEditor::_open( void *ptr ) {
 	if (isOpen()) {
-		return true;
+		return;
 	}
 	using namespace sambag::com;
 	using namespace sambag::disco;
 	AEffEditor::open(ptr);
 	sd::Dimension size = getEditorSize();
 	sambag::disco::Rectangle bounds( 0, 0, size.width(), size.height() );
-    
-    
-   /* sdc::getWindowToolkit()->invokeLater(
-        boost::bind( &VstForxEditor::createMainWindow, this, bounds)
-    );
-    
-    return true;*/
-    
-    
     
     try {
 		SAMBAG_BEGIN_SYNCHRONIZED(mutex)
@@ -239,16 +230,27 @@ bool VstForxEditor::open( void *ptr ) {
 		std::stringstream ss;
 		ss<<"Could'nt create main view: "<<ex.what();
 		errorMessage(ss.str());
-		return false;
+		return;
 	}
 	catch (...) {
 		std::stringstream ss;
 		ss<<"Could'nt create main view: unkown error.";
 		errorMessage(ss.str());
-		return false;
+		return;
 	}
 	nestedWindow->validate();
-	return true;
+	return;
+}
+//-----------------------------------------------------------------------------
+bool VstForxEditor::open( void *ptr ) {
+    if (isOpen()) {
+        return true;
+    }
+    
+    sdc::getWindowToolkit()->invokeLater(
+        boost::bind(&VstForxEditor::_open,this,ptr)
+    );
+    return true;
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::close() {

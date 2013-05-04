@@ -73,6 +73,11 @@ protected:
 	FrxCircuidViewPtr createView(sdc::Window::Ptr win);
 	//-------------------------------------------------------------------------
 	void setCircuidView(FrxCircuidViewPtr view);
+	//-------------------------------------------------------------------------
+	/**
+	 * later invoked.
+	 */
+	void _open(void *ptr);
 public:
 	//-------------------------------------------------------------------------
 	void setEditorSize(int width, int height);
