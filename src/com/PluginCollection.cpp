@@ -381,6 +381,17 @@ void PluginCollection::checkFile( const PluginCollection::Path &path, const Plug
 	// . update OnLoad listeners:
 	EventSender<OnLoadFile>::notifyEventListeners ( this, OnLoadFile ( path.string() ) );
 
+	// . nicht in db aber auf schwarzer liste?
+	if ( contains<Filenames> ( blackList, path.string() ) ) {
+		PluginInfo info;
+		info.location  = path.string();
+		info.timestamp = last_write_time ( path );
+		info.access = PluginInfo::FAILED;
+		insertPlug ( folder, info );
+		EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), info ) );
+		return;
+	}
+    
 	// . datei schon in db ?
 	PluginInfo tmp = getPlugInfo ( path );
 	if ( tmp.isValid() ) { // ja, schon vorhanden!
@@ -392,17 +403,6 @@ void PluginCollection::checkFile( const PluginCollection::Path &path, const Plug
 		updatePlugScanStamp(tmp);
 		EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
 		return; // already in db => return
-	}
-	
-	// . nicht in db aber auf schwarzer liste?
-	if ( contains<Filenames> ( blackList, path.string() ) ) {
-		PluginInfo info;
-		info.location  = path.string();
-		info.timestamp = last_write_time ( path );
-		info.access = PluginInfo::FAILED;
-		insertPlug ( folder, info );
-		EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), info ) );
-		return;
 	}
 	//
 	PluginInfo info = insertPlug ( folder, path ); // opens plugin and inserts into db

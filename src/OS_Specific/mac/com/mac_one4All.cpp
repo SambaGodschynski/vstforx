@@ -12,6 +12,8 @@
 #include "com/one4All.h"
 #include "CoreFoundation/CoreFoundation.h"
 #include <sstream>
+#include "OS_Specific/mac/CocoaImpl.h"
+
 
 namespace com {
 //------------------------------------------------------------------------------------------------------------
@@ -79,8 +81,7 @@ MessageBoxReturn osMessageBox ( const string &title, const string &text, const M
 //------------------------------------------------------------------------------------------------------------
 std::string osSelectDirectory ( const std::string &wndTitle, const std::string &startPath)
 {
-	// TODO: implement
-	return "";
+	return frx::com::CocoaImpl::selectDirectory(wndTitle, startPath);
 }
 } // namespace com
 

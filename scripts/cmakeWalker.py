@@ -6,6 +6,13 @@ import re
 inDir = "../src/"
 
 add = """
+
+IF(APPLE)
+  SET(FRX_SOURCES ${FRX_SOURCES} ${FRX_MMSOURCES} )
+ENDIF(APPLE)
+
+add_library(frx_core ${FRX_SOURCES} ${VSTSDKSOURCE})
+
 SET ( FRX_STANDALONE
         PluginApps/GuiStandalone/Main.cpp
 )
@@ -26,7 +33,7 @@ IF(WIN32)
       PluginApps/VSTForx/win/resources.rc
    )
 ELSEIF(APPLE)
-  SET (PlugSources ${PlugSources} ${FRX_MMSOURCES} ${FRX_RESOURCES}
+  SET (PlugSources ${PlugSources} ${FRX_RESOURCES}
       PluginApps/VSTForx/mac/VstForxPlugMain.cpp
       PluginApps/VSTForx/mac/VstForxResourceManager.cpp
       PluginApps/VSTForx/mac/CocoaHelper.mm
@@ -91,7 +98,6 @@ class Walker():
         self.writeList("FRX_MMSOURCES", self.mmsource)
         self.writeList("FRX_RESOURCES", self.resources)
         self.writeList("FRX_TESTSOURCES",self.testSource)
-        self.writeLine("add_library(frx_core ${FRX_SOURCES} ${VSTSDKSOURCE})")
         self.writeLine(add)
         self.fHandler.close()
 

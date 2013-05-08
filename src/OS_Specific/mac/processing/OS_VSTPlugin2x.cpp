@@ -40,7 +40,6 @@ AEffect * getAEffect( Module module ) {
 }
 //------------------------------------------------------------------------------------------------------------
 static void loadModule ( const char *filename, Module *module, AEffect **aEff ) {
-	TOLOG ("::loadModule()");
 	*module = NULL;
 	*aEff = NULL;
 	// build carbon string
@@ -51,7 +50,6 @@ static void loadModule ( const char *filename, Module *module, AEffect **aEff ) 
 	CFRelease (fileNameString);
 	if (url == 0) return;
 	// get bundle ref
-	TOLOG ("getBundleRef");
 	*module = CFBundleCreate (NULL, url);
 	CFRelease (url);
 	if (*module) {
@@ -66,7 +64,6 @@ static void loadModule ( const char *filename, Module *module, AEffect **aEff ) 
 		return;
 	}
 
-	TOLOG ("getAEffect()");
 	*aEff = getAEffect ( *module );
 	
 	if ( *aEff ) {
