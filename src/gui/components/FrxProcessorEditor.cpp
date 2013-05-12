@@ -6,6 +6,7 @@
  */
 
 #include "FrxProcessorEditor.hpp"
+#include <com/one4All.h>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -22,15 +23,41 @@ void FrxProcessorEditor::setControl(IFrxProcessorEditorCtrl::Ptr ctrl) {
 //-----------------------------------------------------------------------------
 void FrxProcessorEditor::onOpeningWindow(void *src, const sdc::OnOpenEvent &ev)
 {
-	if (ctrl)
-		ctrl->open(getPtr());
+    if (!ctrl) {
+        return;
+    }
+    try {
+        ctrl->open(getPtr());
+    } catch(const std::exception &ex) {
+        close();
+        ::com::osMessageBox("Error:", "opening editor failed: " +
+                            std::string(ex.what()), ::com::MSG_ALERT);
+        return;
+	} catch (...) {
+        close();
+		::com::osMessageBox("Error:", "opening editor failed: unkown error.",
+                            ::com::MSG_ALERT);
+        return;
+	}
+		
 }
 //-----------------------------------------------------------------------------
 void FrxProcessorEditor::onClosingWindow(void *src, const sdc::OnCloseEvent &ev)
 {
-	if (ctrl)
-		ctrl->close(getPtr());
-}
+    if (!ctrl) {
+        return;
+    }
+    try {
+        ctrl->close(getPtr());
+    } catch(const std::exception &ex) {
+        ::com::osMessageBox("Error:", "closing editor failed: " +
+                            std::string(ex.what()), ::com::MSG_ALERT);
+        return;
+	} catch (...) {
+		::com::osMessageBox("Error:", "closing editor failed: unkown error.",
+                            ::com::MSG_ALERT);
+        return;
+	}}
 //-----------------------------------------------------------------------------
 void FrxProcessorEditor::installListener() {
 	addTrackedOnOpenEventListener(

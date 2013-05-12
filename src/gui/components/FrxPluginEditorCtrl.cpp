@@ -15,7 +15,8 @@ namespace frx { namespace gui { namespace components {
 void FrxPluginEditorCtrl::open(sdc::WindowPtr win) {
 	if (!plugin)
 		return;
-	plugin->openEditor(win);
+	
+    plugin->openEditor(win);
 	idleTimer = sdc::Timer::create(10);
 	idleTimer->setNumRepetitions(-1);
 	idleTimer->sce::EventSender<sdc::TimerEvent>::addTrackedEventListener(
@@ -31,7 +32,9 @@ void FrxPluginEditorCtrl::close(sdc::WindowPtr win) {
 		return;
 	__isOpen = false;
 	plugin->closeEditor(win);
-	idleTimer->stop();
+    if (idleTimer) {
+        idleTimer->stop();
+    }
 }
 //-----------------------------------------------------------------------------
 void FrxPluginEditorCtrl::setPlugin(Plugin::Ptr plugin) {

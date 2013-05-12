@@ -58,7 +58,7 @@ function getDetails($details) {
 	$em = $details->ipn_data['payer_email'];
 	$dt = $details->ipn_data['payment_date'];
 	return "Product: $name 
-Price: $am 
+Price: $am EUR
 Payment Date: $dt
 Payer EMail: $em
 Paypal Transaction ID: $tx
@@ -140,14 +140,16 @@ if ($p->validate_ipn()) {
 				`email` ,
 				`amount` ,
 				`productid`,
-				`rquest`
+				`rquest`,
+				`date`
 				) VALUES (
 					" . (int)$p->ipn_data['custom'] . ",
 					" . $db->quote($p->ipn_data['txn_id'], $link). ",
 					" . $db->quote($p->ipn_data['payer_email'], $link). ",
 					" . (float)$amount . ",
 					" . $db->quote($p->ipn_data['item_number'], $link). ",
-					" . $db->quote(http_build_query($_POST), $link). "
+					" . $db->quote(http_build_query($_POST), $link). ",
+					CURRENT_TIMESTAMP
 				);";
 	query($db, $query);
 	sendEmailAndUpdateUser((int)$p->ipn_data['custom'], $p->ipn_data['item_number'], $p);

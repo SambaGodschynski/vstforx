@@ -466,7 +466,13 @@ void VSTPlugin::openEditor(void *window) {
 	if ( size ) {
 		onPlugRequestWindowResize(size->right, size->bottom);
 	}
-	aEff->dispatcher ( aEff, effEditOpen, 0, 0, window, 0);
+	int res =
+        aEff->dispatcher ( aEff, effEditOpen, 0, 0, window, 0);
+    if (!res) {
+        SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+            "effEditOpen failed.");
+
+    }
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::closeEditor(void *window) {

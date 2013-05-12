@@ -928,14 +928,14 @@ void FrxControl::openClosePluginEditor(fgc::FrxCircuidViewPtr view,
 		return;
 	}
 	// else: create editor
-	ed = createPluginEditor(view, c);
+    ed = createPluginEditor(view, c);
 	addWindow(ed);
 	c->putClientProperty("plugin.editor", FrxPluginEditor::WPtr(ed));
 	installBrowserListeners(ed, view, c);
 	FrxPluginEditorCtrl::Ptr pluginCtrl = FrxPluginEditorCtrl::create();
 	pluginCtrl->setPlugin(plugin);
 	ed->setControl(pluginCtrl);
-	ed->open();
+    ed->open();
 }
 //-----------------------------------------------------------------------------
 void FrxControl::addParamterCnOp(fgc::FrxCircuidViewPtr view, 
