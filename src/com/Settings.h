@@ -67,12 +67,12 @@ private:
 	void loadConfigFile();
 	//--------------------------------------------------------------------------------------------------------
 	void setWindowWidth ( int w ) { 
-		if ( w < MIN_WINDOW_WIDTH ) return;
+		if ( w < (int)MIN_WINDOW_WIDTH ) return;
 		windowWidth = w; 
 	}
 	//--------------------------------------------------------------------------------------------------------
 	void setWindowHeight ( int h ) { 
-		if ( h < MIN_WINDOW_HEIGHT ) return;
+		if ( h < (int)MIN_WINDOW_HEIGHT ) return;
 		windowHeight = h; 
 	}
 	//--------------------------------------------------------------------------------------------------------

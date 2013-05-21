@@ -453,7 +453,7 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::onPlugRequestWindowResize (size_t w, size_t h) {
-	EventSender<ResizeEditorEvent>::notifyEventListeners( this, ResizeEditorEvent(w,h) );
+	com::EventSender<ResizeEditorEvent>::notifyEventListeners( this, ResizeEditorEvent(w,h) );
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::openEditor(void *window) {
@@ -464,10 +464,10 @@ void VSTPlugin::openEditor(void *window) {
 	aEff->dispatcher ( aEff, effEditGetRect, 0, 0, &size, 0);
 	// set size
 	if ( size ) {
-		onPlugRequestWindowResize(size->right, size->bottom);
+        onPlugRequestWindowResize(size->right - size->left, size->bottom - size->top);
 	}
-	int res =
-        aEff->dispatcher ( aEff, effEditOpen, 0, 0, window, 0);
+	int res = 1;
+       aEff->dispatcher ( aEff, effEditOpen, 0, 0, window, 0);
     if (!res) {
         SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
             "effEditOpen failed.");
@@ -482,7 +482,7 @@ void VSTPlugin::closeEditor(void *window) {
 }
 //--------------------------------------------------------------------------------------------------------
 void VSTPlugin::onEditorIdle() {
-	aEff->dispatcher ( aEff, effEditIdle, 0, 0, 0, 0);
+	//aEff->dispatcher ( aEff, effEditIdle, 0, 0, 0, 0);
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::getShellPluginInfos(ShellPluginInfos &out) {
