@@ -14,9 +14,15 @@ define( 'DS', DIRECTORY_SEPARATOR );
 require_once ( JPATH_BASE.DS.'includes'.DS.'defines.php' );
 require_once ( JPATH_BASE.DS.'includes'.DS.'framework.php' );  	
 defined('_JEXEC') OR defined('_VALID_MOS') OR die( "Direct Access Is Not Allowed" );
+// piwik
+require_once "FrxPiwikTracker.php";
+PiwikTracker::$URL = 'http://www.4divisions.com/piwik';
 
 
-//require_once 'database.php';
+function trackDownload($file) {
+	$piwikTracker = new PiwikTracker( $idSite = 1, PiwikTracker::$URL );
+	$piwikTracker->doTrackAction(urlencode($file), 'download');
+}
 
 /**
  * @param 2=old beta
@@ -98,6 +104,7 @@ try {
 	$rq=getFilename($downloads_id);
 	$path.=$rq[0];
 	$file= $rq[1];
+	trackDownload("http://vstforx.de/downloads/".$file);
 } catch (Exception $e) {
 	echo "Exception: ". $e->getMessage();
 	die();
@@ -111,7 +118,6 @@ if ( !file_exists($path.$file) ) {
     die();
 }
 
-//$name = "dateiname.zip"; // Name, unter welchem die Datei an den Browser geschickt wird
 
 header("Content-type: application/octet-stream");
 
