@@ -18,6 +18,9 @@ define( 'DS', DIRECTORY_SEPARATOR );
 require_once ( JPATH_BASE.DS.'includes'.DS.'defines.php' );
 require_once ( JPATH_BASE.DS.'includes'.DS.'framework.php' );  	
 defined('_JEXEC') OR defined('_VALID_MOS') OR die( "Direct Access Is Not Allowed" );
+// piwik
+require_once "../FrxPiwikTracker.php";
+PiwikTracker::$URL = 'http://www.4divisions.com/piwik';
 
 $p = new paypal_class;
 /**
@@ -28,10 +31,13 @@ $p = new paypal_class;
 //$p->paypal_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
 $p->paypal_url = 'https://www.paypal.com/cgi-bin/webscr';
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // END CONFIG
 ////////////////////////////////////////////////////////////////////////////////
+function trackGoal($revenue) {
+	$piwikTracker = new PiwikTracker( $idSite = 1, PiwikTracker::$URL );
+	$piwikTracker->doTrackGoal(4, $revenue);
+}
 
 function getDB() {
 	$mainframe =& JFactory::getApplication('site');
@@ -153,6 +159,7 @@ if ($p->validate_ipn()) {
 				);";
 	query($db, $query);
 	sendEmailAndUpdateUser((int)$p->ipn_data['custom'], $p->ipn_data['item_number'], $p);
+	trackGoal((float)$amount);
 }
 
 

@@ -15,7 +15,7 @@ require_once ( JPATH_BASE.DS.'includes'.DS.'defines.php' );
 require_once ( JPATH_BASE.DS.'includes'.DS.'framework.php' );  	
 defined('_JEXEC') OR defined('_VALID_MOS') OR die( "Direct Access Is Not Allowed" );
 // piwik
-require_once "FrxPiwikTracker.php";
+require_once "../FrxPiwikTracker.php";
 PiwikTracker::$URL = 'http://www.4divisions.com/piwik';
 
 
