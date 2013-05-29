@@ -102,14 +102,15 @@ $downloads_id = $_POST['dst'];
 try {
 	save_user($downloads_id);
 	$rq=getFilename($downloads_id);
+	if (!$rq) {
+		trackDownload("http://vstforx.de/illegal/".$downloads_id);
+		die();
+	}
 	$path.=$rq[0];
 	$file= $rq[1];
 	trackDownload("http://vstforx.de/downloads/".$file);
 } catch (Exception $e) {
 	echo "Exception: ". $e->getMessage();
-	die();
-}
-if (!$file) {
 	die();
 }
 

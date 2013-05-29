@@ -107,6 +107,7 @@ void FrxCircuidMouseListener::endSpanning(const sdc::events::MouseEvent &ev) {
 //-----------------------------------------------------------------------------
 void FrxCircuidMouseListener::mousePressed(const sdc::events::MouseEvent &ev) {
 	clickLoc = ev.getLocation();
+    std::cout<<clickLoc<<std::endl;
 	clickLocScreen = ev.getLocationOnScreen();
 	if (ev.getButtons() == sdc::events::MouseEvent::DISCO_BTN1)
 		beginSpanning(ev);
