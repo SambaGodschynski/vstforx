@@ -372,8 +372,8 @@ void FrxNodeUI::mouseWheelMoved(const sdc::events::MouseEvent &ev) {
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::onMouse(void *src, const sdc::events::MouseEvent &ev) {
-	sdc::events::MouseEventSwitch<>::
-		delegate(ev, *this);
+	enum {F=sdce::MouseEvent::ALL_EVENTS & ~sdce::MouseEvent::DISCO_MOUSE_WHEEL};
+	sdc::events::MouseEventSwitch<F>::delegate(ev, *this);
 }
 //-----------------------------------------------------------------------------
 namespace {

@@ -146,7 +146,8 @@ void FrxCircuidMouseListener::mouseWheelMoved(const sdc::events::MouseEvent &ev)
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidMouseListener::onMouse(void *src, const sdc::events::MouseEvent &ev) {
-	sdc::events::MouseEventSwitch<>::
+	enum {F=sdce::MouseEvent::ALL_EVENTS & ~sdce::MouseEvent::DISCO_MOUSE_WHEEL};
+	sdc::events::MouseEventSwitch<F>::
 		delegate(ev, *this);
 }
 }}}} // namespace(s)

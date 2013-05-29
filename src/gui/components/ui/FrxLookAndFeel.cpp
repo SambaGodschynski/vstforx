@@ -163,6 +163,7 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("Entry.radius", RADIUS_LARGE);
 	m.putProperty("Exit.radius", RADIUS_LARGE);
 	m.putProperty("StdKnob.radius", RADIUS_SMALL); // affects hit range only
+	m.putProperty("Knob.wheelIncrement", (double)0.01);
 	m.putProperty("ProcessorIO.stateActiveRadius",  RADIUS_SMALL * 1.7);
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	m.putProperty("FrxConnection.hitDistance", Coordinate(10.));
@@ -265,6 +266,7 @@ void FrxLookAndFeel::installDefaults() {
 	rManager->registerImage("FrxBrowser.parameter.image", "images/knob.png");
 	rManager->registerImage("FrxBrowser.pluginInstrument.image", "images/iplug.png");
 	rManager->registerImage("FrxBrowser.addContent.image", "images/plus.png");
+	resetUIPorpertyCache();
 }	
 
 }}}} // namespace(s)
