@@ -52,14 +52,18 @@ void onSelectionPathChanged(void *src,
 	FrxMainBrowser::Ptr mbrowser = 
 		boost::shared_dynamic_cast<FrxMainBrowser>(browser);
 
-	if (!bNode.isFolder()) {
-		if (mbrowser) {
-			mbrowser->getBtnAdd()->setEnabled(true);
-		}
+	if (!mbrowser) {
+		return;
+	}
+	if (!bNode.instantPerform) {
+		mbrowser->getBtnAdd()->setEnabled(true);
 	} else {
-		if (mbrowser) {
-			mbrowser->getBtnAdd()->setEnabled(false);
-		}
+		mbrowser->getBtnAdd()->setEnabled(false);	
+	}
+	if (bNode.actionText!="") {
+		mbrowser->getBtnAdd()->setText(bNode.actionText);	
+	}
+	if (bNode.instantPerform) {
 		bNode.accept();
 	}
 }
@@ -428,6 +432,30 @@ FrxMainBrowserCtrl::createParameterNode(BrowserNode &out,
 		boost::bind(&FrxMainBrowserCtrl::parameterLabelChanged, this, _1, wObj);
 }
 //-----------------------------------------------------------------------------
+namespace {
+BrowserNode::ResultPtr _setPreset(processing::IProcessor::WPtr obj, 
+	int presetIndex) 
+{
+	processing::IProcessor::Ptr pr = obj.lock();
+	if (!pr) {
+		return BrowserNode::ResultPtr();
+	}
+	pr->setPreset(presetIndex);
+	return BrowserNode::ResultPtr();
+}
+} // namespace(s)
+void FrxMainBrowserCtrl::createPresetNode(BrowserNode &out,
+	const std::string &name,
+	processing::IProcessor::Ptr obj,
+	int presetIndex)
+{
+	out.name = name;
+	out.type = BrowserConstants::FRX_BROWSER_PRESET;
+	processing::IProcessor::WPtr pr = obj;
+	out.f = boost::bind(&_setPreset, pr, presetIndex);
+	out.instantPerform = true;
+}
+//-----------------------------------------------------------------------------
 void 
 FrxMainBrowserCtrl::createProcessorNode(BrowserNode &out, 
 	const std::string &name,
@@ -779,6 +807,37 @@ _addModelObjectParameter(FrxComponentWPtr c, Tree::Node parent)
 	return BrowserNode::ResultPtr();
 }
 //-----------------------------------------------------------------------------
+void FrxMainBrowserCtrl::addPresets(FrxComponentPtr c, const Tree::Node &parent)
+{
+	using frx::processing::IProcessor;
+	FrxCircuidViewPtr view = wView.lock();
+	if (!view || ! c)
+		return;
+	frx::processing::IModelController::Ptr ctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(ctrl, map) = getControllerAndMap(view);
+	IProcessor::Ptr pr = boost::shared_dynamic_cast<IProcessor>
+		(map->getModelObject(c));
+	if (!pr)
+		return;
+	size_t numPresets = pr->getNumPresets();
+	if (numPresets==0) {
+		return;
+	}
+	typedef FrxColumnBrowser::BrowserImpl Tree;
+	FrxColumnBrowserPtr browser = this->browser.lock();
+	Tree::Ptr tree = browser->getBrowserImpl();
+	Tree::Node presets = tree->addNode(parent, BrowserNode("presets", true));
+	for (size_t i=0; i<numPresets; ++i) {
+		BrowserNode node;
+		createPresetNode(node, pr->getPresetName(i), pr, i);
+		tree->addNode(
+			presets, 
+			node
+		);
+	}
+}
+//-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::
 addModelObjectParameter(FrxComponentPtr c,
 		const Tree::Node &parent)
@@ -805,7 +864,7 @@ addModelObjectParameter(FrxComponentPtr c,
 	using frx::processing::IParameter;
 	frx::processing::ModelObject::ParameterGroupKeys keys;
 	pr->getParameterGroupKeys(keys);
-	// create browser nodes
+	// create parameter nodes
 	BOOST_FOREACH(const IProcessor::ParameterGroupKey &key, keys) {
 		Tree::Node parameterParent;
 		if (key==".") {
@@ -832,5 +891,6 @@ addModelObjectParameter(FrxComponentPtr c,
 			);
 		}
 	}
+	addPresets(c, parent);
 }
 }}} // namespace(s)

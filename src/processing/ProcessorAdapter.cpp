@@ -246,6 +246,17 @@ bool ProcessorAdapter::requestRemove() {
 	return res && Super::requestRemove();
 }
 //-----------------------------------------------------------------------------
+size_t ProcessorAdapter::getNumPresets() const {
+	return 0;
+}
+//-----------------------------------------------------------------------------
+std::string ProcessorAdapter::getPresetName(size_t i) const {
+	return "";
+}
+//-----------------------------------------------------------------------------
+void ProcessorAdapter::setPreset(int i) {
+}
+//-----------------------------------------------------------------------------
 ProcessorAdapter::IOChangedEventSender::Connection ProcessorAdapter::
 addIOChangedListener(const IOChangedEventSender::EventFunction &f)
 {
