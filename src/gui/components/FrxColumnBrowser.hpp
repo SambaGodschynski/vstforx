@@ -18,12 +18,14 @@
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <sambag/disco/components/BorderLayout.hpp>
 #include <sambag/disco/components/Panel.hpp>
+#include <sambag/disco/components/Label.hpp>
 #include <boost/function.hpp>
 #include <string>
 #include "IFrxColumnBrowserCtrl.hpp"
 #include "Forward.hpp"
 #include <gui/components/FrxParameterLabel.hpp>
 #include <sambag/com/ArbitraryType.hpp>
+#include "FrxStatusBar.hpp"
 #include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
@@ -221,6 +223,8 @@ protected:
 	virtual void createMainBtns() {}
 	//-------------------------------------------------------------------------
 	IFrxColumnBrowserCtrl::Ptr ctrl;
+	//-------------------------------------------------------------------------
+	FrxStatusBar::Ptr statusBar;
 private:
 	//-------------------------------------------------------------------------
 	sdc::AContainerPtr buttonPane;
@@ -245,6 +249,26 @@ public:
 	virtual IFrxColumnBrowserCtrl::Ptr getCtrl() const;
 	//-------------------------------------------------------------------------
 	virtual void initTree(FrxCircuidViewPtr view);
+	//-------------------------------------------------------------------------
+	/**
+	 * will show text as status bar hint message
+	 */
+	void hintMessage(const std::string &str);
+	//-------------------------------------------------------------------------
+	/**
+	 * will show text as status bar message
+	 */
+	void message(const std::string &str);
+	//-------------------------------------------------------------------------
+	/**
+	 * will show warning as status bar warning
+	 */
+	void warnMessage(const std::string &str);
+	//-------------------------------------------------------------------------
+	/**
+	 * will show error as message box
+	 */
+	void errorMessage(const std::string &str);
 }; // FrxColumnBrowser
 }}} // namespace(s)
 

@@ -28,6 +28,7 @@
 #include <sambag/disco/components/Viewport.hpp>
 #include <sambag/disco/components/Panel.hpp>
 #include <gui/HandyNamespaces.hpp>
+#include "FrxStatusBar.hpp"
 
 namespace frx { namespace gui { namespace components {
 struct FrxCircuidViewEvent {
@@ -95,7 +96,7 @@ public:
 	typedef boost::function<void(int width, int height)> EditorResizeHandler;
 protected:
 	//-------------------------------------------------------------------------
-	void initStatusBar();
+	FrxStatusBar::Ptr statusBar;
 	//-------------------------------------------------------------------------
 	sdc::Panel::Ptr content;
 	//-------------------------------------------------------------------------
@@ -104,8 +105,6 @@ protected:
 	FrxCircuidView();
 	//-------------------------------------------------------------------------
 	virtual void postConstructor();
-	//-------------------------------------------------------------------------
-	void setStatusMessage(const std::string &txt, const std::string &iconname);
 private:
 	//-------------------------------------------------------------------------
 	void fireViewEvent(FrxCircuidViewEvent::Type, 
@@ -116,8 +115,6 @@ private:
 	std::string usrMsg;
 	//-------------------------------------------------------------------------
 	sdc::Viewport::Ptr viewPort;
-	//-------------------------------------------------------------------------
-	sdc::LabelPtr statusMessage;
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
 	//-------------------------------------------------------------------------
@@ -202,10 +199,6 @@ public:
 	//-------------------------------------------------------------------------
 	sdc::Viewport::Ptr getViewport() {
 		return viewPort;
-	}
-	//-------------------------------------------------------------------------
-	sdc::LabelPtr getStatusMessageLabel() const {
-		return statusMessage;
 	}
 	//-------------------------------------------------------------------------
 	/**

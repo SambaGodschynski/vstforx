@@ -27,6 +27,7 @@
 
 namespace frx { namespace gui { namespace components {
 namespace {
+const std::string ADDED_TO_SCENE = " added to scene.";
 //-----------------------------------------------------------------------------
 // boost::tuples::tuple<std::string, FolderID>
 typedef ::com::PluginCollection::Folder DBFolderType;
@@ -264,6 +265,10 @@ BrowserNode::ResultPtr FrxMainBrowserCtrl::addPlugin(::processing::PluginInfo pI
 	if (!pr)
 		return BrowserNode::ResultPtr();
 	getFrxControl(view).addProcessorToView(view, pr);
+	FrxColumnBrowser::Ptr browser = this->browser.lock();
+	if (browser) {
+		browser->message(pr->getName() + ADDED_TO_SCENE);
+	}
 	return BrowserNode::ResultPtr();
 }
 //-----------------------------------------------------------------------------
@@ -279,6 +284,10 @@ addProcessor(IFrxComponentFactory::ProcessorCreator f)
 	if (!pr)
 		return BrowserNode::ResultPtr();
 	getFrxControl(view).addProcessorToView(view, pr);
+	FrxColumnBrowser::Ptr browser = this->browser.lock();
+	if (browser) {
+		browser->message(pr->getName() + ADDED_TO_SCENE);
+	}
 	return BrowserNode::ResultPtr();
 }
 //-----------------------------------------------------------------------------
@@ -294,6 +303,10 @@ addFreeKnob(IFrxComponentFactory::FreeParameterCreator f)
 	if (!pr)
 		return BrowserNode::ResultPtr();
 	getFrxControl(view).addParameterToView(view, pr);
+	FrxColumnBrowser::Ptr browser = this->browser.lock();
+	if (browser) {
+		browser->message(pr->getName() + ADDED_TO_SCENE);
+	}
 	return BrowserNode::ResultPtr();
 }
 //-----------------------------------------------------------------------------
@@ -309,6 +322,10 @@ addHostKnob( IFrxComponentFactory::HostParameterCreator f, int id)
 	if (!pr)
 		return BrowserNode::ResultPtr();
 	getFrxControl(view).addParameterToView(view, pr);
+	FrxColumnBrowser::Ptr browser = this->browser.lock();
+	if (browser) {
+		browser->message(pr->getName() + ADDED_TO_SCENE);
+	}
 	return BrowserNode::ResultPtr();
 }
 //-----------------------------------------------------------------------------
@@ -322,7 +339,10 @@ addRelatedKnobToView(FrxComponentWPtr _c, processing::IParameter::WPtr _par)
 		return BrowserNode::ResultPtr();
 	FrxComponentPtr knob = 
 		getFrxControl(view).addRelatedKnobToView(view, c, par);
-	
+	FrxColumnBrowser::Ptr browser = this->browser.lock();
+	if (browser) {
+		browser->message(par->getName() + ADDED_TO_SCENE);
+	}
 	return BrowserNode::ResultPtr();
 }
 //-----------------------------------------------------------------------------
@@ -394,6 +414,7 @@ void FrxMainBrowserCtrl::parameterLabelChanged(float value,
 	if (!brws || !p)
 		return;
 	p->setValue(value);
+	brws->message(p->getName() + ": " + p->getDisplay());
 }
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::parameterLabelRedraw( sdc::AComponentPtr c,
@@ -433,7 +454,9 @@ FrxMainBrowserCtrl::createParameterNode(BrowserNode &out,
 }
 //-----------------------------------------------------------------------------
 namespace {
-BrowserNode::ResultPtr _setPreset(processing::IProcessor::WPtr obj, 
+BrowserNode::ResultPtr _setPreset(
+	FrxColumnBrowser::WPtr brws,
+	processing::IProcessor::WPtr obj, 
 	int presetIndex) 
 {
 	processing::IProcessor::Ptr pr = obj.lock();
@@ -441,6 +464,10 @@ BrowserNode::ResultPtr _setPreset(processing::IProcessor::WPtr obj,
 		return BrowserNode::ResultPtr();
 	}
 	pr->setPreset(presetIndex);
+	FrxColumnBrowser::Ptr browser = brws.lock();
+	if (browser) {
+		browser->message("set " + pr->getPresetName(presetIndex) + ".");
+	}
 	return BrowserNode::ResultPtr();
 }
 } // namespace(s)
@@ -452,7 +479,7 @@ void FrxMainBrowserCtrl::createPresetNode(BrowserNode &out,
 	out.name = name;
 	out.type = BrowserConstants::FRX_BROWSER_PRESET;
 	processing::IProcessor::WPtr pr = obj;
-	out.f = boost::bind(&_setPreset, pr, presetIndex);
+	out.f = boost::bind(&_setPreset, browser, pr, presetIndex);
 	out.instantPerform = true;
 }
 //-----------------------------------------------------------------------------
@@ -740,7 +767,11 @@ void FrxMainBrowserCtrl::addToSceneTree(FrxComponentPtr c, Reason reason) {
 		boost::bind(&FrxMainBrowserCtrl::onRemovingFromScene, this, _1, _2, res),
 		self
 	);
-	Tree::Ptr tree = browser.lock()->getBrowserImpl();
+	FrxColumnBrowser::Ptr browser = this->browser.lock();
+	if (!browser) {
+		return;
+	}
+	Tree::Ptr tree = browser->getBrowserImpl();
 	tree->updateLists();
 }
 //-----------------------------------------------------------------------------
