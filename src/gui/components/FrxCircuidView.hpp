@@ -344,6 +344,9 @@ namespace {
 		int operator()( sdc::AComponent::Ptr p ) {
 			if (!p)
 				return 0;
+			if (!p->isVisible()) {
+				return 0;
+			}
 			ZOrder z = FLT_MIN;
 			p->getClientProperty(FrxCircuidView::PROPERTY_ZORDER, z);
 			if (z > end)

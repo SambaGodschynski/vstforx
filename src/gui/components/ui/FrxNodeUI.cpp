@@ -77,6 +77,7 @@ void FrxNodeUI::installDefaults(sdc::AComponent::Ptr c) {
 
 	// connection stuff
 	toConnect = Line::create();
+	toConnect->setName("connector");
 	sdsg::Line::Ptr line = toConnect->getObject();
 	line->getP0().x().setType(sd::svg::units::Unit::PX);
 	line->getP0().y().setType(sd::svg::units::Unit::PX);

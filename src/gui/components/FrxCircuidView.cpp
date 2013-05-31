@@ -355,6 +355,9 @@ namespace {
 		int operator()( sdc::AComponent::Ptr p ) {
 			if (!p)
 				return 0;
+			if (!p->isVisible()) {
+				return 0;
+			}
 			if (loc==NULL_POINT2D) {
 				return -1;
 			}
