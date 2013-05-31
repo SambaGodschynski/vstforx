@@ -44,6 +44,9 @@ function getDownloads($user) {
 	if (!$user->guest) {
 		$userid = $user->id;	
 	}
+	$squery = "SELECT productid FROM frx_selled WHERE frx_selled.juser=". $db->quote($userid) ."		
+			OR frx_selled.juser=". $db->quote($default_user);
+
 	$query = "SELECT frx_products.id AS pr_id,
               frx_downloads.name AS version, 
 			  frx_product_os.name AS os, 
@@ -55,9 +58,10 @@ function getDownloads($user) {
 		JOIN frx_products       ON frx_products.id = frx_downloads.productid
 		JOIN frx_product_os     ON frx_product_os.id = frx_downloads.osid
 		JOIN frx_download_notes ON frx_downloads.noteid = frx_download_notes.id
-		WHERE productid IN (
-			SELECT productid FROM frx_selled WHERE frx_selled.juser=". $db->quote($userid) ."		
-			OR frx_selled.juser=". $db->quote($default_user) ."
+		WHERE productid IN (". $squery .") OR productid IN
+		(
+		 	SELECT frx_product_addition.add_productid 
+                        FROM frx_product_addition WHERE productid IN (". $squery .")
 		)
 		ORDER BY frx_downloads.date DESC;
 	";
@@ -89,6 +93,19 @@ function showDwnlBtn($download_id) {
 
 function showProducts(&$map) {
 	$c = 0;
+	/*echo '<ul class="nav nav-list">';
+
+	foreach ( $map as $key => $value ) { // contents
+		$info = getProductInfo($key);
+		if (count($info) == 0) {
+			continue;		
+		}
+		$info = $info[0];
+		echo "<li>";
+		echo '<a href="#prod' .  $info[2] . '">' . $info[0] . "</a>";
+		echo '</li>';		
+	}
+	echo '</ul>';*/
 	foreach ( $map as $key => $value ) {
 		$info = getProductInfo($key);
 		if (count($info) == 0) {
