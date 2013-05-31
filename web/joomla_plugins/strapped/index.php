@@ -154,7 +154,7 @@ endif;
 <div class="navbar-wrapper">
   <!-- Wrap the .navbar in .container to center it within the absolutely positioned parent. -->
   <div class="container">
-    <div class="navbar navbar-inverse">
+    <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container<?php echo $template_width; ?>"> 
           <?php if($this->countModules('top-menu')) : ?>
@@ -164,7 +164,7 @@ endif;
             <span class="icon-bar"></span> 
           </a>
           <?php endif; ?>
-          <?php echo $custom_logo; ?>
+          <!--?php echo $custom_logo; ?-->
           <?php if($this->countModules('top-menu')) : ?>
           <div class="nav-collapse">
             <jdoc:include type="modules" name="top-menu" style="none" />
@@ -215,8 +215,6 @@ endif;
   <!-- Content
   ================================================== -->
   <div id="content">
-    <jdoc:include type="message" />
-    
     <?php if($this->countModules('breadcrumbs')) : ?>
     <div id="breadcrumbs" class="row<?php echo $template_width; ?>">
       <jdoc:include type="modules" name="breadcrumbs" style="xhtml" />
@@ -242,6 +240,7 @@ endif;
           <?php if($this->countModules('above-content')) : ?>
           <!-- Above Content Module Position -->  
           <div id="above-content">
+	    <jdoc:include type="message" />
             <jdoc:include type="modules" name="above-content" style="xhtml" />  
           </div>
           <hr />
