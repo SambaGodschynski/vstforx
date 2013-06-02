@@ -1,5 +1,5 @@
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	                            VSTForx.PreRelease
+	                            VSTForx
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
@@ -8,9 +8,9 @@ Install VSTForx
     - just extract the whole zip file content into your VST directory.
       
       after that your VST Folder should contain:
-			\VSTForx.beta              <- VSTForx folder
-			\VSTForx.beta\vstforx.dll  <- VSTForx FX plugin file
-			\VSTForx.beta\vstforxInstrument.dll <- VSTForx instrument plugin file
+			\VSTForx              <- VSTForx folder
+			\VSTForx\vstforx.dll  <- VSTForx FX plugin file
+			\VSTForx\vstforxInstrument.dll <- VSTForx instrument plugin file
 
 Configure VSTForx
 -----------------
