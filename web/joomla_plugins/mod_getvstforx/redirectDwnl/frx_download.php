@@ -40,13 +40,16 @@ function getFilename($downloads_id) {
 	if (!$user->guest) {
 		$userid = $user->id;	
 	}
+	$squery = "SELECT productid FROM frx_selled WHERE frx_selled.juser=". $db->quote($userid) ."		
+			OR frx_selled.juser=". $db->quote($default_user);
+
 	$query = "SELECT frx_downloads.path, frx_downloads.filename
 		FROM frx_downloads
-		WHERE productid IN (
-			SELECT productid FROM frx_selled WHERE frx_selled.juser=". $db->quote($userid) ."		
-			OR frx_selled.juser=". $db->quote($default_user) ."
-		) AND id=". $db->quote($downloads_id) ."
-	";
+		WHERE (productid IN (". $squery .") OR productid IN
+		(
+		 SELECT frx_product_addition.add_productid 
+                 FROM frx_product_addition WHERE productid IN (". $squery .")
+		)) AND id=". $db->quote($downloads_id) . ";";
 	$db->setQuery($query);
 	if ( !$db->query() ) {
 		throw new Exception( "Database query failed."); //  : " . $db->getErrorMsg() );	
