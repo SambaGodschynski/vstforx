@@ -23,6 +23,7 @@ require_once "../FrxPiwikTracker.php";
 PiwikTracker::$URL = 'http://www.4divisions.com/piwik';
 
 $p = new paypal_class;
+
 /**
  * !!!!!!!!!!
  * consider line 186 in paypal.class.php before switching into realmode
@@ -57,6 +58,10 @@ function query($db, $q) {
 }
 
 function getDetails($details) {
+	if ($details == null) {
+		error("getDetails(null).");
+		return "No details available. This is an unexpected error please contact: admin@vstforx.de";	
+	}
 	$name = $details->ipn_data['item_name'];
 	$am = $details->ipn_data['mc_gross'];
 	$tx = $details->ipn_data['txn_id'];
@@ -101,19 +106,20 @@ function updateUser($user) {
 }
 
 function sendEmailAndUpdateUser($juser, $prodid, $details) {
+	$db = getDB(); // first of all: indirect init of JoomlaApp
+	$user =& JFactory::getUser($juser);
+	updateUser($user);
+	// send email
 	$db = getDB();
 	$q = "SELECT * FROM frx_selled_response_mail 
 		  WHERE frx_selled_response_mail.productid = " . $db->quote($prodid) . "
 	;";
 	$res = query($db, $q);
 	if (sizeof($res)==0) {
-		//echo "no content here.";
+		error('Error sending email to juser_id(' . $juser . ') no response_mail content found.');
 		return;	
 	}
 	$res = $res[0];
-	
-	$user =& JFactory::getUser($juser);
-	updateUser($user);
 	$body = str_replace('$USER', $user->name, $res["text"]);
 	$body = str_replace('$DETAILS', getDetails($details), $body);
 	$recipient = $user->email;

@@ -6,7 +6,6 @@
  */
 
 #include "FrxCircuidMouseListener.hpp"
-
 #include <gui/components/FrxComponent.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/components/FrxSelection.hpp>
@@ -16,6 +15,7 @@
 #include <sambag/disco/Dash.hpp>
 #include <boost/assign.hpp>
 #include <vector>
+
 namespace frx { namespace gui {
 namespace components { namespace ui { 
 //=============================================================================
@@ -107,7 +107,6 @@ void FrxCircuidMouseListener::endSpanning(const sdc::events::MouseEvent &ev) {
 //-----------------------------------------------------------------------------
 void FrxCircuidMouseListener::mousePressed(const sdc::events::MouseEvent &ev) {
 	clickLoc = ev.getLocation();
-    std::cout<<clickLoc<<std::endl;
 	clickLocScreen = ev.getLocationOnScreen();
 	if (ev.getButtons() == sdc::events::MouseEvent::DISCO_BTN1)
 		beginSpanning(ev);
