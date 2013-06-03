@@ -77,6 +77,7 @@ void FrxNodeUI::installDefaults(sdc::AComponent::Ptr c) {
 
 	// connection stuff
 	toConnect = Line::create();
+	toConnect->setName("connector");
 	sdsg::Line::Ptr line = toConnect->getObject();
 	line->getP0().x().setType(sd::svg::units::Unit::PX);
 	line->getP0().y().setType(sd::svg::units::Unit::PX);
@@ -372,8 +373,8 @@ void FrxNodeUI::mouseWheelMoved(const sdc::events::MouseEvent &ev) {
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::onMouse(void *src, const sdc::events::MouseEvent &ev) {
-	sdc::events::MouseEventSwitch<>::
-		delegate(ev, *this);
+	enum {F=sdce::MouseEvent::ALL_EVENTS & ~sdce::MouseEvent::DISCO_MOUSE_WHEEL};
+	sdc::events::MouseEventSwitch<F>::delegate(ev, *this);
 }
 //-----------------------------------------------------------------------------
 namespace {

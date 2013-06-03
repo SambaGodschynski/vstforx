@@ -88,6 +88,8 @@ protected:
 	void addModelObjectParameter(FrxComponentPtr c,
 		const Tree::Node &parent);
 	//-------------------------------------------------------------------------
+	void addPresets(FrxComponentPtr c, const Tree::Node &parent);
+	//-------------------------------------------------------------------------
 	// wrapper for BrowserNode Accepted function
 	BrowserNode::ResultPtr _addModelObjectParameter(FrxComponentWPtr c,
 		Tree::Node parent);
@@ -169,6 +171,11 @@ public:
 	void createPluginNode(BrowserNode &out,
 		const std::string &name,
 		processing::IProcessor::Ptr obj = processing::IProcessor::Ptr());
+	//-------------------------------------------------------------------------
+	void createPresetNode(BrowserNode &out,
+		const std::string &name,
+		processing::IProcessor::Ptr obj = processing::IProcessor::Ptr(),
+		int presetIndex = 0);
 	//-------------------------------------------------------------------------
 	virtual void initListeners(FrxColumnBrowserPtr brws);
 	//-------------------------------------------------------------------------

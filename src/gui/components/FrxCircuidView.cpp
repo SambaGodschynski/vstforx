@@ -26,7 +26,6 @@
 #include <sambag/disco/components/Window.hpp>
 #include <sambag/disco/components/SolidBorder.hpp>
 #include <sambag/disco/svg/StyleParser.hpp>
-#include <sambag/disco/components/ui/UIManager.hpp>
 #include <sambag/math/Matrix.hpp>
 #include <com/Settings.h>
 
@@ -57,23 +56,6 @@ public:
 		bool includeSelf);
 	SAMBAG_STD_STATIC_COMPONENT_CREATOR(BgPane)
 	virtual void drawComponent(sd::IDrawContext::Ptr cn);
-};
-//-----------------------------------------------------------------------------
-class StatusLabel : public sdc::Label {
-public:
-	typedef boost::shared_ptr<StatusLabel> Ptr;
-	typedef sdc::Label Super;
-protected:
-	StatusLabel(){
-		setOpaque(true);
-	}
-public:
-	SAMBAG_STD_STATIC_COMPONENT_CREATOR(StatusLabel)
-	virtual sd::Dimension getPreferredSize() {
-		sd::Dimension sz = Super::getMinimumSize();
-		sz.height( sz.height() + 10. );
-		return sz; 
-	}
 };
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
@@ -310,44 +292,6 @@ FrxCircuidView::createComponentUI(sdcu::ALookAndFeelPtr laf) const
 	return laf->getUI<FrxCircuidView>();
 }
 //-----------------------------------------------------------------------------
-void FrxCircuidView::setStatusMessage(const std::string &txt, 
-	const std::string &iconname) 
-{
-	statusMessage->setText(txt);
-	if (iconname == "") {
-		statusMessage->setIcon(sd::ISurface::Ptr());
-		return;
-	}
-	sd::ISurface::Ptr icon = 
-		sd::getResourceManager().getImage("StatusMessage.icon." + iconname);
-	statusMessage->setIcon(icon);
-
-	sdc::AComponentPtr stc = statusMessage->getParent();
-	if (!stc)
-		return;
-	stc->revalidate();
-	stc->redraw();
-}
-//-----------------------------------------------------------------------------
-void FrxCircuidView::initStatusBar() {
-	using sd::svg::graphicElements::Style;
-	sdc::Panel::Ptr panel = sdc::Panel::create();
-	// border
-	sdc::SolidBorder::Ptr border = sdc::SolidBorder::create();
-	Style statusStyle = 
-		createStyle("stroke-width: 1; stroke: black;font-size: 13; font-family: arial");
-	sdc::ui::getUIManager().getProperty("StatusMessage.style", statusStyle);
-	border->setStyle(statusStyle);
-	panel->setBorder(border);
-	// layout
-	panel->setLayout(sdc::FlowLayout::create(sdc::FlowLayout::LEFT, 0, 0));
-	statusMessage = StatusLabel::create();
-	statusMessage->setFont( statusStyle.font());
-	panel->add(statusMessage);
-	Super::add(panel, sdc::BorderLayout::SOUTH, -1);
-	setStatusMessage("Ready", "hint");
-}
-//-----------------------------------------------------------------------------
 void FrxCircuidView::postConstructor() {
 	Super::setLayout(sdc::BorderLayout::create());
 	// init mainview
@@ -363,7 +307,8 @@ void FrxCircuidView::postConstructor() {
 	add(selection, Z_InteractiveStuff);
 	selection->setVisible(false);
 	viewPort->setViewPosition(sd::Point2D(FRX_MAX_VIEW/2., FRX_MAX_VIEW/2.));
-	initStatusBar();
+	statusBar = FrxStatusBar::create();
+	Super::add(statusBar, sdc::BorderLayout::SOUTH, -1);
 }
 //-----------------------------------------------------------------------------
 int FrxCircuidView::getIndexOf(ZOrder order) const {
@@ -410,6 +355,9 @@ namespace {
 		int operator()( sdc::AComponent::Ptr p ) {
 			if (!p)
 				return 0;
+			if (!p->isVisible()) {
+				return 0;
+			}
 			if (loc==NULL_POINT2D) {
 				return -1;
 			}
@@ -447,21 +395,21 @@ sdc::AComponentPtr FrxCircuidView::findComponentOnPoint(const sd::Point2D &p,
 }
 //-----------------------------------------------------------------------------
 std::string FrxCircuidView::getStatusMessage() const {
-	return statusMessage->getText();
+	return statusBar->getStatusLabel()->getText();
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::hintMessage(const std::string &str) {
 	if (usrMsg.length() > 0)
 		return;
-	setStatusMessage(str, "hint");
+	statusBar->setStatusMessage(str, "hint");
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::message(const std::string &str) {
-	setStatusMessage(str, "default");
+	statusBar->setStatusMessage(str, "default");
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::warnMessage(const std::string &str) {
-	setStatusMessage(str, "warning");
+	statusBar->setStatusMessage(str, "warning");
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::errorMessage(const std::string &str) {
@@ -471,7 +419,7 @@ void FrxCircuidView::errorMessage(const std::string &str) {
 void FrxCircuidView::setUserMessage(const std::string &txt, 
 		const std::string &icon) 
 {
-	setStatusMessage(txt, icon);
+	statusBar->setStatusMessage(txt, icon);
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::requestEditorResize(const sd::Dimension &size) {

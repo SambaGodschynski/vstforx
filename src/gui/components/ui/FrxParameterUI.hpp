@@ -76,7 +76,7 @@ public:
 	//-------------------------------------------------------------------------
 	void mouseDragged(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
-	void mouseWheelMoved(const sdc::events::MouseEvent &ev);
+	void mouseWheelRotated(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
 	void onMouse(void *src, const sdc::events::MouseEvent &ev) {
 		sdc::events::MouseEventSwitch<>::
@@ -158,6 +158,7 @@ void FrxParameterUI<PT>::installListeners(sdc::AComponentPtr c) {
 		boost::bind(&ThisClass::onKnobStateChanged, this, _1, _2),
 		getPtr()
 	);
+	ctrl->setMouseWheelEventsEnabled(true);
 }
 //-----------------------------------------------------------------------------
 template <class PT>
@@ -225,7 +226,7 @@ void FrxParameterUI<PT>::mouseReleased(const sdc::events::MouseEvent &ev) {
 		return;
 	// knob used and mouse is outside of corona now:
 	sdc::events::MouseEvent nEv = ev;
-	nEv.updateSoure(src->getParent());
+	nEv.updateSource(src->getParent());
 	Super::mouseExited(nEv);
 	// endEdit
 	src->putClientProperty("Parameter.edit", (bool)false);
@@ -262,7 +263,7 @@ void FrxParameterUI<PT>::mouseDragged(const sdc::events::MouseEvent &ev) {
 }
 //-----------------------------------------------------------------------------
 template <class PT>
-void FrxParameterUI<PT>::mouseWheelMoved(const sdc::events::MouseEvent &ev) {
+void FrxParameterUI<PT>::mouseWheelRotated(const sdc::events::MouseEvent &ev) {
 }
 }}}} // namespace(s)
 

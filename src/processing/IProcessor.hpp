@@ -75,6 +75,21 @@ public:
 	 */
 	virtual INode::Ptr addInput() = 0;
 	//-------------------------------------------------------------------------
+	/**
+	 * @return the number of presets
+	 */
+	virtual size_t getNumPresets() const = 0;
+	//-------------------------------------------------------------------------
+	/**
+	 * @return the preset name on index i.
+	 */
+	virtual std::string getPresetName(size_t i) const = 0;
+	//-------------------------------------------------------------------------
+	/**
+	 * set the preset on index i.
+	 */
+	virtual void setPreset(int i) = 0;
+	//-------------------------------------------------------------------------
 	///////////////////////////////////////////////////////////////////////////
 	// Events
 	struct IOChangedEvent{

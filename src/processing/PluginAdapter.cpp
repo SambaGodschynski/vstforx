@@ -97,4 +97,19 @@ bool PluginAdapter::isSynth() const {
 	Adaptee::Ptr plug = getPlugin();
 	return plug->isSynth();
 }
+//-----------------------------------------------------------------------------
+size_t PluginAdapter::getNumPresets() const {
+	Adaptee::Ptr plug = getPlugin();
+	return plug->getNumPrograms();
+}
+//-----------------------------------------------------------------------------
+std::string PluginAdapter::getPresetName(size_t i) const {
+	Adaptee::Ptr plug = getPlugin();
+	return plug->getProgramName(i);
+}
+//-----------------------------------------------------------------------------
+void PluginAdapter::setPreset(int i) {
+	Adaptee::Ptr plug = getPlugin();
+	plug->setProgram(i);
+}
 }} // namespace(s)

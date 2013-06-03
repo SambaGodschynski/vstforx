@@ -1,5 +1,5 @@
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-	                            VSTForx
+	                       VSTForx **DEMO VERSION**
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 
@@ -9,8 +9,8 @@ Install VSTForx
       
       after that your VST Folder should contain:
 			\VSTForx              <- VSTForx folder
-			\VSTForx\vstforx.dll  <- VSTForx FX plugin file
-			\VSTForx\vstforxInstrument.dll <- VSTForx instrument plugin file
+			\VSTForx\vstforxDEMO.dll  <- VSTForx FX plugin file
+			\VSTForx\vstforxInstrumentDEMO.dll <- VSTForx instrument plugin file
 
 Configure VSTForx
 -----------------
@@ -21,6 +21,8 @@ Configure VSTForx
     - press Ok.
     - don't forget to repeat this procedure when your directory content has changed !
 
-
+Demo Restrictions:
+------------------
+	- the maximum count of modules/plugins per instance is limited.
 
 Checkout "http://www.vstforx.de" for new versions. 

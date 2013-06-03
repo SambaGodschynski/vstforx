@@ -7,6 +7,7 @@
 
 #include "FrxColumnBrowser.hpp"
 #include <sambag/disco/IResourceManager.hpp>
+#include <sambag/disco/components/BorderLayout.hpp>
 
 namespace frx { namespace gui { namespace components { 
 //=============================================================================
@@ -16,6 +17,7 @@ namespace frx { namespace gui { namespace components {
 const std::string BrowserConstants::FRX_BROWSER_FOLDER = "folder";
 const std::string BrowserConstants::FRX_BROWSER_DEFAULT = "default";
 const std::string BrowserConstants::FRX_BROWSER_PLUGIN = "plugin";
+const std::string BrowserConstants::FRX_BROWSER_PRESET = "preset";
 const std::string BrowserConstants::FRX_BROWSER_PROCESSOR = "processor";
 const std::string BrowserConstants::FRX_BROWSER_PARAMETER = "parameter"; 
 const std::string BrowserConstants::FRX_BROWSER_ADD_CONTENT_FOLDER = "addContent"; 
@@ -42,8 +44,16 @@ void FrxColumnBrowser::postConstructor() {
 	);
 	browser = BrowserImpl::create();
 	getContentPane()->add(browser);
+	
+	sdc::Panel::Ptr pane = sdc::Panel::create();
 	buttonPane = sdc::Panel::create();
-	getContentPane()->add(buttonPane, sdc::BorderLayout::SOUTH, -1);
+	pane->setLayout( sdc::BorderLayout::create() );
+	statusBar = FrxStatusBar::create();
+	statusBar->setBorder(sdc::IBorder::Ptr());
+	pane->add(statusBar, sdc::BorderLayout::SOUTH, -1);
+	pane->add(buttonPane);
+
+	getContentPane()->add(pane, sdc::BorderLayout::SOUTH, -1);
 }
 //-----------------------------------------------------------------------------
 void FrxColumnBrowser::setCtrl(IFrxColumnBrowserCtrl::Ptr ctrl) {
@@ -61,5 +71,21 @@ void FrxColumnBrowser::initTree(FrxCircuidViewPtr view) {
 	if (!ctrl)
 		return;
 	ctrl->initTree(view, getPtr());
+}
+//-----------------------------------------------------------------------------
+void FrxColumnBrowser::hintMessage(const std::string &str) {
+	statusBar->setStatusMessage(str, "hint");
+}
+//-----------------------------------------------------------------------------
+void FrxColumnBrowser::message(const std::string &str) {
+	statusBar->setStatusMessage(str, "default");
+}
+//-----------------------------------------------------------------------------
+void FrxColumnBrowser::warnMessage(const std::string &str) {
+	statusBar->setStatusMessage(str, "warning");
+}
+//-----------------------------------------------------------------------------
+void FrxColumnBrowser::errorMessage(const std::string &str) {
+	statusBar->setStatusMessage(str, "warning");
 }
 }}} // namespace(s)

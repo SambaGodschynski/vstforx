@@ -139,6 +139,21 @@ public:
 	getParameters(const ParameterGroupKey &key, Parameters &out) const;
 	//-------------------------------------------------------------------------
 	virtual bool requestRemove();
+	//-------------------------------------------------------------------------
+	/**
+	 * @return the number of presets
+	 */
+	virtual size_t getNumPresets() const;
+	//-------------------------------------------------------------------------
+	/**
+	 * @return the preset name on index i.
+	 */
+	virtual std::string getPresetName(size_t i) const;
+	//-------------------------------------------------------------------------
+	/**
+	 * set the preset on index i.
+	 */
+	virtual void setPreset(int i);
 	///////////////////////////////////////////////////////////////////////////
 	// Events
 	//-------------------------------------------------------------------------

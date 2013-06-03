@@ -18,12 +18,14 @@
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <sambag/disco/components/BorderLayout.hpp>
 #include <sambag/disco/components/Panel.hpp>
+#include <sambag/disco/components/Label.hpp>
 #include <boost/function.hpp>
 #include <string>
 #include "IFrxColumnBrowserCtrl.hpp"
 #include "Forward.hpp"
 #include <gui/components/FrxParameterLabel.hpp>
 #include <sambag/com/ArbitraryType.hpp>
+#include "FrxStatusBar.hpp"
 #include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
@@ -36,6 +38,7 @@ struct BrowserConstants {
 	static const std::string FRX_BROWSER_DEFAULT;
 	static const std::string FRX_BROWSER_PLUGIN;
 	static const std::string FRX_BROWSER_PLUGIN_INSTRUMENT;
+	static const std::string FRX_BROWSER_PRESET;
 	static const std::string FRX_BROWSER_PROCESSOR;
 	static const std::string FRX_BROWSER_PARAMETER; 
 	static sd::ISurface::Ptr getIcon(const std::string &type);
@@ -77,20 +80,26 @@ struct BrowserNode : public BrowserConstants {
 	typedef boost::function<ResultPtr()> AcceptedFunction;
 	AcceptedFunction f;
 	std::string type; // specify node type for rendering 
+	std::string actionText; // eg. for browser button
+	std::string tooltipText;
+	bool instantPerform; // perform action when selecting instantly
 	BrowserNode(const std::string &name, bool isFolder = false,
 		const AcceptedFunction &f = AcceptedFunction()
-	) : name(name), f(f)
+	) : name(name), f(f), actionText("add to scene")
 	{
 		type = isFolder ? FRX_BROWSER_FOLDER : FRX_BROWSER_DEFAULT;
+		instantPerform = this->isFolder();
 	}
 	BrowserNode(const std::string &name, const std::string &type,
 		const AcceptedFunction &f = AcceptedFunction()
-	) : name(name), f(f), type(type)
+	) : name(name), f(f), type(type), actionText("add to scene")
 	{
+		instantPerform = this->isFolder();
 	}
 	BrowserNode(const char *name = "") : name(name), 
-		type(FRX_BROWSER_DEFAULT)
+		type(FRX_BROWSER_DEFAULT), actionText("add to scene")
 	{
+		instantPerform = this->isFolder();
 	}
 	bool operator==(const BrowserNode &n) const { 
 		return name==n.name && type==n.type
@@ -214,6 +223,8 @@ protected:
 	virtual void createMainBtns() {}
 	//-------------------------------------------------------------------------
 	IFrxColumnBrowserCtrl::Ptr ctrl;
+	//-------------------------------------------------------------------------
+	FrxStatusBar::Ptr statusBar;
 private:
 	//-------------------------------------------------------------------------
 	sdc::AContainerPtr buttonPane;
@@ -238,6 +249,26 @@ public:
 	virtual IFrxColumnBrowserCtrl::Ptr getCtrl() const;
 	//-------------------------------------------------------------------------
 	virtual void initTree(FrxCircuidViewPtr view);
+	//-------------------------------------------------------------------------
+	/**
+	 * will show text as status bar hint message
+	 */
+	void hintMessage(const std::string &str);
+	//-------------------------------------------------------------------------
+	/**
+	 * will show text as status bar message
+	 */
+	void message(const std::string &str);
+	//-------------------------------------------------------------------------
+	/**
+	 * will show warning as status bar warning
+	 */
+	void warnMessage(const std::string &str);
+	//-------------------------------------------------------------------------
+	/**
+	 * will show error as message box
+	 */
+	void errorMessage(const std::string &str);
 }; // FrxColumnBrowser
 }}} // namespace(s)
 

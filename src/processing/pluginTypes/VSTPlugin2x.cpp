@@ -202,6 +202,11 @@ std::string VSTPlugin::getProgramName( size_t index ) {
 void VSTPlugin::setProgram(size_t index) {
 	if ( index > getNumPrograms() ) return;
 	aEff->dispatcher ( aEff, effSetProgram, 0, index, NULL, 0.0f );
+
+	//update parameter
+	for ( size_t i=0; i<param.size(); i++ ){
+		param[i]->setValue ( aEff->getParameter ( aEff, i ) );
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::hostBaseConfigChanged() {

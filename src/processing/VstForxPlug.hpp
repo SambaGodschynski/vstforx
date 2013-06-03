@@ -168,6 +168,21 @@ public:
 	int setChunk(void *data, int byteSize);
 	//-------------------------------------------------------------------------
 	int getLatency() const;
+	//-------------------------------------------------------------------------
+	template <class String> 
+	void getVendor(String &outStr) const {
+		outStr="www.vstforx.de";
+	}
+	//-------------------------------------------------------------------------
+	template <class String> 
+	void getProductName(String &outStr) const {
+		outStr = "VSTForx";
+	} 
+	//-------------------------------------------------------------------------
+	int getProductVersion() const { 
+		//TODO (maybe via cmake)
+		return 0; 
+	}
 };
 }} // namespace
 

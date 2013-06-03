@@ -62,6 +62,12 @@ public:
 	virtual std::string getStatusMessage() const;
 	//-------------------------------------------------------------------------
 	virtual std::string getName() const;
+	//-------------------------------------------------------------------------
+	virtual size_t getNumPresets() const;
+	//-------------------------------------------------------------------------
+	virtual std::string getPresetName(size_t i) const;
+	//-------------------------------------------------------------------------
+	virtual void setPreset(int i);
 }; // PluginAdapter
 }} // namespace(s)
 
