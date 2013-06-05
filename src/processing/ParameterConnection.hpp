@@ -56,6 +56,8 @@ private:
 		ar & cn;
 	}
 public:
+    //-------------------------------------------------------------------------
+    void initConnectionParameter();
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
 		return boost::shared_dynamic_cast<ParameterConnection>( self.lock() );

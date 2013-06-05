@@ -16,11 +16,15 @@
 #include "processing/pluginTypes/VstShellPlugin.hpp"
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 
+void forDebug() {
+    
+}
+
 #define DB_QUERY(x)											\
 	try {x}													\
 	catch ( ::sambag::cpsqlite::DataBaseQueryFailed &ex ) { \
 		TOLOG(ex.errorMessage + " => " + ex.query );		\
-	    throw;												\
+	    forDebug(); throw;									\
 	}
 
 namespace com {
@@ -381,19 +385,25 @@ void PluginCollection::checkFile( const PluginCollection::Path &path, const Plug
 	// . update OnLoad listeners:
 	EventSender<OnLoadFile>::notifyEventListeners ( this, OnLoadFile ( path.string() ) );
 
-	// . nicht in db aber auf schwarzer liste?
+    
+    // . datei schon in db ?
+	PluginInfo tmp = getPlugInfo ( path );
+
+    // auf schwarzer liste?
 	if ( contains<Filenames> ( blackList, path.string() ) ) {
-		PluginInfo info;
-		info.location  = path.string();
-		info.timestamp = last_write_time ( path );
-		info.access = PluginInfo::FAILED;
-		insertPlug ( folder, info );
-		EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), info ) );
+        if ( tmp.isValid() ) {
+            tmp.access = PluginInfo::FAILED;
+            updatePlug ( tmp );
+        } else {
+            tmp.location  = path.string();
+            tmp.timestamp = last_write_time ( path );
+            tmp.access = PluginInfo::FAILED;
+            insertPlug ( folder, tmp );
+        }
+		EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
 		return;
 	}
     
-	// . datei schon in db ?
-	PluginInfo tmp = getPlugInfo ( path );
 	if ( tmp.isValid() ) { // ja, schon vorhanden!
 		if ( tmp.hasChanged ( last_write_time (path) )  ) { // hatt sich geaendert
 			updatePlug ( tmp );
@@ -404,6 +414,7 @@ void PluginCollection::checkFile( const PluginCollection::Path &path, const Plug
 		EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
 		return; // already in db => return
 	}
+
 	//
 	PluginInfo info = insertPlug ( folder, path ); // opens plugin and inserts into db
 	// notify listeners
@@ -707,7 +718,9 @@ void PluginCollection::updatePlug ( processing::PluginInfo &pi ) {
 	if ( !pi.isValid() ) return;
 	
 	//get pluginfo by open plugin
-	peekFile ( pi, tmpHostInfo.lock() );
+    if (pi.access != processing::PluginInfo::FAILED) { // already known as FAILED?
+        peekFile ( pi, tmpHostInfo.lock() );
+    }
 	ParameterList pL;
 	DataBase::Executer::Ptr exec = database->getExecuter(); 
 	string query = TblPlugins::updatePlugin ( pi.location, 

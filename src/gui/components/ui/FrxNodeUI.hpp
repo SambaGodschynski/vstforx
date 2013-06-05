@@ -116,7 +116,7 @@ private:
 	sambag::com::ArithmeticWrapper<bool> inside;
 	//-------------------------------------------------------------------------
 	template <class T>
-	struct CoronaAlpha {
+	struct CoronaAlpha : sdc::BasicUpdater<T> {
 		T alpha;
 		sdc::AComponent::WPtr _component;
 		void update(const T& val){

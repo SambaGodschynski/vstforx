@@ -27,6 +27,7 @@ ParameterConnection::createConnection(IParameter::Ptr _a,
 	res->dst = b;
 	res->cn = ::processing::parameter::ParameterConnection::create(
 		a->getAdaptee(), b->getAdaptee());
+    res->initConnectionParameter();
 	b->setValue(a->getValue());
 	return res;
 }
@@ -67,6 +68,20 @@ namespace {
 void ParameterConnection::getParameterCnOpTypeIds(ParameterCnOpTypeIds &out) {
 	out.reserve( Loki::TL::Length<ConnectionOps>::value );
 	getCopIds<ConnectionOps>(out);
+}
+//-----------------------------------------------------------------------------
+void ParameterConnection::initConnectionParameter() {
+    using namespace ::processing::parameter;
+	HasParameter::Ptr hp = boost::shared_dynamic_cast<HasParameter>(cn);
+	if (!hp) {
+		return;
+	}
+	size_t num = hp->getNumParameter();
+	for (size_t i=0; i<num; ++i) {
+		Parameter::Ptr p;
+		p = hp->getParameter(i);
+		parameters.insert(std::make_pair(".", ParameterAdapter::create(p)));
+	}
 }
 //-----------------------------------------------------------------------------
 void ParameterConnection::

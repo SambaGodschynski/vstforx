@@ -12,7 +12,6 @@
 #include "com/Serialization.h"
 #include <math.h>
 
-
 namespace processing{
 namespace parameter {
 //============================================================================================================
@@ -23,7 +22,6 @@ class OffsetConnection;
 class ExpConnection;
 class LogConnection;
 class RelativeConnection;
-
 } //namespace parameter 
 } //namespace processing
 
