@@ -14,7 +14,7 @@
 #include <gui/components/Forward.hpp>
 #include "FrxComponentUI.hpp"
 #include <sambag/disco/components/Animation.hpp>
-#include <sambag/disco/components/Tweens.hpp>
+#include <sambag/disco/Tweens.hpp>
 #include <sambag/disco/components/events/MouseEvent.hpp>
 #include <sambag/disco/svg/graphicElements/Line.hpp>
 #include <sambag/disco/components/ComponentWrapper.hpp>

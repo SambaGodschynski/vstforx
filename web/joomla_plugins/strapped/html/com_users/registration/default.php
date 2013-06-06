@@ -9,10 +9,11 @@
 
 defined('_JEXEC') or die;
 
+/*
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
-?>
+
 
 <style type="text/css">
 label.invalid {
@@ -68,4 +69,8 @@ input.invalid:focus, select.invalid:focus, textarea.invalid:focus {
 			<input type="hidden" name="task" value="registration.register" />
 			<?php echo JHtml::_('form.token');?> </div>
 	</form>
+</div>*/
+?>
+<div class="alert alert-error">
+  <strong>Registration</strong> is currently not available, please try it again later!
 </div>

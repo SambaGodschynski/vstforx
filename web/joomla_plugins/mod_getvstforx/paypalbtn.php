@@ -38,11 +38,11 @@ function showPaypalBtn07($usr) {
 
 function showPaypalBtn($user, $productid) {
 	switch($productid) {
-		case 3 : showPaypalBtn03($user); return;
-		case 7 : showPaypalBtn07($user); return;
+		/*case 3 : showPaypalBtn03($user); return;
+		case 7 : showPaypalBtn07($user); return;*/
 	}
 ?>
-	unavailable
+	<strong>Payment</strong> is currently not available, please try it again later!
 <?php
 }
 

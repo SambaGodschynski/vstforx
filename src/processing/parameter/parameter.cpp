@@ -7,7 +7,7 @@
 #include <limits> 
 #include "parameter.h" 
 #include <sambag/disco/components/Animation.hpp>
-#include <sambag/disco/components/Tweens.hpp>
+#include <sambag/disco/Tweens.hpp>
 #include <sambag/com/Exception.hpp>
 
 namespace processing {
