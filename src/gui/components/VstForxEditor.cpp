@@ -201,12 +201,16 @@ void VstForxEditor::open() {
 		clientWindow->addOnOpenEventListener(
 			boost::bind(&VstForxEditor::onHostWindowOpen, this, _1, _2)
 		);
-	}
+	} else {
+        fWin = boost::shared_dynamic_cast<sdc::FramedWindow>(clientWindow);
+    }
 	clientWindow->setWindowBounds(
 		sd::Rectangle(0,0,::com::getSettings().getWindowWidth(), 
 		::com::getSettings().getWindowHeight())
 	);
-	fWin->setTitle("VSTForx " + com::getSettings().versionToString());
+    if (fWin) {
+        fWin->setTitle("VSTForx " + com::getSettings().versionToString());
+    }
 	clientWindow->open();
 }
 //-----------------------------------------------------------------------------
@@ -275,6 +279,7 @@ void VstForxEditor::close() {
 		errorMessage(ss.str());
 	}
 	getPlugin()->unRegisterView(circView);
+    nestedWindow->close();
 	nestedWindow.reset();
 	circView.reset();
 	if (clientWindow) {

@@ -87,7 +87,7 @@ void ParameterConnection::onOperatorParameterChanged(void *src, const VstNumber 
 }
 //------------------------------------------------------------------------------------------------------------
 void ParameterConnection::update(ParameterPtr p, const VstNumber &newValue) {
-    Tween::Ptr tween;
+  /*  Tween::Ptr tween;
     if (!_tween) {
         _tween = tween = Tween::create();
         tween->setRefreshRate(20.);
@@ -106,7 +106,7 @@ void ParameterConnection::update(ParameterPtr p, const VstNumber &newValue) {
         tween->dst = p;
     }
     tween->start();
-    //p->setValue(newValue);
+    //p->setValue(newValue);*/
 }
 //------------------------------------------------------------------------------------------------------------
 void ParameterConnection::onChangedA(void *src, const VstNumber &newValue) {
