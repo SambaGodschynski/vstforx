@@ -162,7 +162,7 @@ VstForxPlug::~VstForxPlug() {
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::process(float **in, float **out, int numSamples) {
-	TRY_TO_LOCK_TIMED2 ( processingLoadLock, 10 );
+	TRY_TO_LOCK_TIMED2 (processingLoadLock, 120);
 	if ( !graph ) 
 		return;
 	::processing::Frames fr ( in, numSamples ); 
