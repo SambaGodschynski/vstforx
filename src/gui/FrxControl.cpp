@@ -754,13 +754,22 @@ void FrxControl::removeComponent(FrxCircuidViewPtr _view, FrxComponentPtr _c)
 	IViewModelMap::Ptr map;
 	boost::tie(ctrl, map) = getControllerAndMap(view);
 	frx::processing::ModelObject::Ptr mObj = map->getModelObject(c);
-	if (mObj) {
-		mObj->remove(ctrl);
+    try {
+        if (mObj) {
+            mObj->remove(ctrl);
+        }
+        map->remove(c, mObj);
+        view->remove(c);
+        view->AContainer::redraw();
+	} catch(const std::exception &ex) {
+        std::stringstream ss;
+        ss<<"removing of " << c->getName() << " failed: " << ex.what();
+		view->errorMessage(ss.str());
+	} catch (...) {
+        std::stringstream ss;
+        ss<<"removing of " << c->getName() << " failed: unkown error";
+		view->errorMessage(ss.str());
 	}
-
-	map->remove(c, mObj);
-	view->remove(c);
-	view->AContainer::redraw();
 }
 //-----------------------------------------------------------------------------
 sdc::PopupMenuPtr FrxControl::getCircuidViewPopup(FrxCircuidViewPtr c) {

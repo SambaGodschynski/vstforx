@@ -33,7 +33,11 @@ namespace {
 	const int FRX_OPENCLOSE_WORKAROUND_WAIT=700;
 	///////////////////////////////////////////////////////////////////////////
 	// FrxFunction impl.
-	#define FRX_START_SCRIPTCALL ctrl->startScriptCall(std::string(name()));
+	#define FRX_START_SCRIPTCALL ctrl->startScriptCall(std::string(name())); 
+    
+    /*\
+    boost::this_thread::sleep(boost::posix_time::milliseconds(FRX_OPENCLOSE_WORKAROUND_WAIT));*/
+    
 	#define FRX_GET_PLUG frx::processing::VstForxPlug * plug = ctrl->getPlugin();
 	#define FRX_GET_EDITOR frx::gui::components::VstForxEditor * editor = ctrl->getEditor();
 	///////////////////////////////////////////////////////////////////////////
@@ -749,6 +753,7 @@ void FrxOpenEditor::process(Ctrl *ctrl) {
 		boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 	}
 	evcn.disconnect();
+    boost::this_thread::sleep(boost::posix_time::milliseconds(FRX_OPENCLOSE_WORKAROUND_WAIT));
 }
 //-----------------------------------------------------------------------------
 void onEditorClose(void *src, const sambag::disco::components::OnCloseEvent &ev, bool *isClose) 
@@ -773,6 +778,7 @@ void FrxCloseEditor::process(Ctrl *ctrl) {
 		boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 	}
 	evcn.disconnect();
+    boost::this_thread::sleep(boost::posix_time::milliseconds(FRX_OPENCLOSE_WORKAROUND_WAIT));
 }
 //-----------------------------------------------------------------------------
 void FrxWait::process(int millis, Ctrl *ctrl) {
