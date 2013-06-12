@@ -468,39 +468,41 @@ sdc::AContainerPtr SetupWindow::createWindowSizePane() {
 	sdc::Panel::Ptr pane = sdc::Panel::create();
 	pane->setOpaque(false);
 	sdc::Panel::Ptr labelpane = sdc::Panel::create();
-	labelpane->setOpaque(false);
 	sdc::Panel::Ptr btnpane = sdc::Panel::create();
-	btnpane->setOpaque(false);
 	rszBtnHandler = ResizeBtnHandler::create(this);
 	
 	sdc::TitledBorder::Ptr border = sdc::TitledBorder::create();
-	pane->setOpaque(false);
 	ueberpane->setName("Window Size:");
 	ueberpane->setBorder(border);
 	ueberpane->add(pane);
 	
 	btnpane->setLayout(sdc::GridLayout::create(0,2,2,5));
+    btnpane->setBackground(getContentPane()->getBackground());
 	// ed-w
 	sdc::Button::Ptr btn = sdc::Button::create();
 	rszBtnHandler->registerBtn(btn, EdMinusW);
 	btn->setText("-");
+    btn->putClientProperty("Button.cornerRadius", sd::Coordinate(0.));
 	btnpane->add(btn);
 
 	// ed+w
 	btn = sdc::Button::create();
 	btn->setText("+");
+    btn->putClientProperty("Button.cornerRadius", sd::Coordinate(0.));
 	rszBtnHandler->registerBtn(btn, EdPlusW);
 	btnpane->add(btn);
 	
 	// ed-h
 	btn = sdc::Button::create();
 	btn->setText("-");
+    btn->putClientProperty("Button.cornerRadius", sd::Coordinate(0.));
 	rszBtnHandler->registerBtn(btn, EdMinusH);
 	btnpane->add(btn);
 
 	// ed+h
 	btn = sdc::Button::create();
 	btn->setText("+");
+    btn->putClientProperty("Button.cornerRadius", sd::Coordinate(0.));
 	rszBtnHandler->registerBtn(btn, EdPlusH);
 	btnpane->add(btn);
 	// label
@@ -522,7 +524,7 @@ sdc::AContainerPtr SetupWindow::createWindowSizePane() {
 //-----------------------------------------------------------------------------
 sdc::AContainerPtr SetupWindow::createDirListBtnPane() {
 	dirListBtnPane = sdc::Panel::create();
-	dirListBtnPane->setOpaque(false);
+	dirListBtnPane->setBackground(getContentPane()->getBackground());
 	dirListBtnPane->setLayout(sdc::GridLayout::create(4,0,0,5.));
 	sdc::Button::Ptr btn =
 		createBtn(&SetupWindow::onBtnAddDirPressed, "add directory");
@@ -545,7 +547,7 @@ sdc::AContainerPtr SetupWindow::createDirListBtnPane() {
 //-----------------------------------------------------------------------------
 sdc::AContainerPtr SetupWindow::createMainBtnPane() {
 	mainBtnPane = sdc::Panel::create();
-	mainBtnPane->setOpaque(false);
+    mainBtnPane->setBackground(getContentPane()->getBackground());
 	sdc::Button::Ptr btn = createBtn(&SetupWindow::onBtnOkPressed, "OK");
 	mainBtnPane->add(btn);
 	
