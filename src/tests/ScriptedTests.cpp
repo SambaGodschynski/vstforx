@@ -114,7 +114,7 @@ onScriptEnd(void *src, const frx::scripts::ScriptEnded &ev) {
 	frx::gui::components::VstForxEditor *ed =
 		scriptCtrl->getEditor();
 	if (ed->isOpen()) {
-		ed->close();
+		ed->close();load(
 	}
 	sambag::disco::components::getWindowToolkit()->quit();
 }

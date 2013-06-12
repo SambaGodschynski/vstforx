@@ -15,6 +15,7 @@
 #include <gui/components/FrxCircuidView.hpp>
 #include <sambag/disco/components/Window.hpp>
 #include <com/one4All.h>
+#include <sambag/com/Thread.hpp>
 
 namespace com {
 extern std::string osSelectDirectory(const std::string &wndTitle, 
@@ -72,6 +73,7 @@ void SetupCtrl::saveSettings() {
 //-----------------------------------------------------------------------------
 namespace {
 boost::thread scanThread;
+sambag::com::Mutex mutex;
 typedef SetupCtrl::NotifyFileFunc FileEvF;
 typedef SetupCtrl::ScanCompletedFunc ScanComplF;
 typedef SetupCtrl::ScanFailedFunc ScanFailedFunc;
@@ -107,6 +109,10 @@ void startScanImpl(const FileEvF &f,
 	typedef LoadingEvSender::EventConnection LoadEvConnection;
 	typedef LoadedEvSender::EventConnection LoadedEvConnection;
 	
+    boost::unique_lock<boost::timed_mutex> lock( mutex, boost::try_to_lock);
+	if (!lock.owns_lock()) {
+        return;
+    }
 	::com::PluginCollection *db = NULL;
 	try {
 		 db = &(::com::getPluginCollection());

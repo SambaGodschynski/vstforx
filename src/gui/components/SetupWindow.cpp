@@ -90,8 +90,10 @@ public:
 		neu->initWindow();
 		return neu;															
 	}
-	//-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
 	void startScan(SetupCtrl::Ptr ctrl);
+    //-------------------------------------------------------------------------
+    void onClose(void *, const sdc::OnCloseEvent &ev);
 	//-------------------------------------------------------------------------
 	void onBtnOk(void *, const sdc::events::ActionEvent& ev);
 	//-------------------------------------------------------------------------
@@ -534,7 +536,7 @@ sdc::AContainerPtr SetupWindow::createDirListBtnPane() {
 		createBtn(&SetupWindow::onBtnRemoveDirPressed, "remove directory");
 	dirListBtnPane->add(btn);
 
-	btn = 
+	rescanBtn = btn =
 		createBtn(&SetupWindow::onBtnRescanPressed, "rescan");
 	dirListBtnPane->add(btn);
 
@@ -574,20 +576,34 @@ sdc::ButtonPtr SetupWindow::createBtn(BtnActionFunc f, const std::string &txt) {
 }
 //-----------------------------------------------------------------------------
 namespace {
-	ScanningDialog::Ptr scanningDlg;
+	ScanningDialog::Ptr __scanningDlg;
 	void onScanningDlgClose(void *, const sdc::OnCloseEvent &ev) {
-		scanningDlg.reset();
+		__scanningDlg.reset();
+    }
+    void resetBtn(void *, const sdc::OnCloseEvent &ev, sdc::Button::WPtr _btn)
+    {
+        sdc::Button::Ptr btn = _btn.lock();
+        if (btn) {
+            btn->setEnabled(true);
+        }
 	}
 }
 //-----------------------------------------------------------------------------
 void SetupWindow::openScanningDialog() {
-	if (scanningDlg) // already open
-		return;
-	scanningDlg = ScanningDialog::create();
-	scanningDlg->validate();
-	scanningDlg->pack();
-	scanningDlg->addOnCloseEventListener(&onScanningDlgClose);
-	scanningDlg->open();
+	if (!__scanningDlg) {
+        __scanningDlg = ScanningDialog::create();
+        __scanningDlg->validate();
+        __scanningDlg->pack();
+        __scanningDlg->addOnCloseEventListener(&onScanningDlgClose);
+        __scanningDlg->open();
+        __scanningDlg->startScan(ctrl);
+    }
+    rescanBtn->setEnabled(false);
+    sdc::Button::WPtr btn = rescanBtn;
+     __scanningDlg->addTrackedOnCloseEventListener(
+        boost::bind(&resetBtn,_1,_2,btn),
+        getPtr()
+    );
 }
 //-----------------------------------------------------------------------------
 void SetupWindow::onBtnOkPressed(void *, const sdc::events::ActionEvent &ev) {
@@ -611,7 +627,6 @@ void SetupWindow::onBtnOkPressed(void *, const sdc::events::ActionEvent &ev) {
 		return;
 	}
 	openScanningDialog();
-	scanningDlg->startScan(ctrl);
 }
 //-----------------------------------------------------------------------------
 void SetupWindow::onBtnRescanPressed(void *, const sdc::events::ActionEvent &ev) 
@@ -632,7 +647,7 @@ void SetupWindow::onBtnRescanPressed(void *, const sdc::events::ActionEvent &ev)
 	if (!ctrl)
 		return;
 	openScanningDialog();
-	scanningDlg->startScan(ctrl);
+	__scanningDlg->startScan(ctrl);
 }	
 //-----------------------------------------------------------------------------
 void SetupWindow::onBtnCancelPressed(void *, const sdc::events::ActionEvent &ev) 

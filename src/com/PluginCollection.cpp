@@ -95,6 +95,10 @@ ScanVisitor::ScanVisitor ( PluginCollection *client ) :
 {
 }
 //------------------------------------------------------------------------------------------------------------
+ScanVisitor::~ScanVisitor () {
+
+}
+//------------------------------------------------------------------------------------------------------------
 bool ScanVisitor::changeDirectory ( const ScanVisitor::Path & path ) {
 	
 	// ausnahme macosx: .vst/.app == ordner => wie datei behandeln
@@ -214,7 +218,10 @@ void PluginCollection::scanDirectory ( const ScanVisitor::Path &path, ScanVisito
 }
 //------------------------------------------------------------------------------------------------------------
 void PluginCollection::update(  frx::processing::IHostInfo::Ptr hostInfo ) {
-	TRY_TO_LOCK_TIMED (mutex);
+    boost::unique_lock<boost::timed_mutex> lock( mutex, boost::try_to_lock);
+	if (!lock.owns_lock()) {
+        return;
+    }
 	TOLOG ( "update plugin collection." );
 	processScanLogFile();
 	appendLog ( "plugin init log:" );
@@ -222,11 +229,10 @@ void PluginCollection::update(  frx::processing::IHostInfo::Ptr hostInfo ) {
 	Settings::PathnameSet const &pathSet = settings.getPluginDirectoryList();
 	//!!
 	tmpHostInfo = hostInfo;
-	
-	updateScanStamp();
 	//!!
 	// scan setted directories
 	try {
+        updateScanStamp();
 		if ( pathSet.empty() ) {
 			removeUnusedFolders();
 		} else scanDirectories( pathSet );
