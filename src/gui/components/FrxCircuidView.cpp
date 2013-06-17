@@ -254,7 +254,6 @@ FrxCircuidView::FrxCircuidView() {
 }
 //-----------------------------------------------------------------------------
 FrxCircuidView::~FrxCircuidView() {
-    std::cout<<"CircuidView"<<std::endl;
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::open() {
