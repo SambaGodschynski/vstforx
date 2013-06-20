@@ -22,7 +22,7 @@ function parse()
     done
 }
 parse $*
-sh $sambag/build.sh $*
+sh $sambag/build.sh "$@"
 
 
 
