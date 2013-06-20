@@ -63,7 +63,7 @@ ELSEIF(APPLE)
   ADD_EXECUTABLE(vstforx MACOSX_BUNDLE ${PlugSources})
   target_link_libraries (vstforx frx_core ${FRX_CLIBS})
   SET_TARGET_PROPERTIES(vstforx PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/vstforx.plist")
-  
+  SET_TARGET_PROPERTIES(vstforx PROPERTIES LINK_FLAGS "-bundle")
 ENDIF(WIN32)
 """
 
