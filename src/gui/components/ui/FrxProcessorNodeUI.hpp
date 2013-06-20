@@ -126,13 +126,13 @@ bool FrxProcessorNodeUI<CT>::contains(sdc::AComponentPtr c, const sd::Point2D &p
 template <class CT>
 void FrxProcessorNodeUI<CT>::installUI(sdc::AComponentPtr c) {
 	Super::installUI(c);
-	FrxProcessorNode::Ptr pr = boost::shared_dynamic_cast<FrxProcessorNode>(c);
+	FrxProcessorNode::Ptr pr = boost::dynamic_pointer_cast<FrxProcessorNode>(c);
 	SAMBAG_ASSERT(pr);
 }
 //-----------------------------------------------------------------------------
 template <class CT>
 void FrxProcessorNodeUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
-	FrxProcessorNode::Ptr node = boost::shared_dynamic_cast<FrxProcessorNode>(c);
+	FrxProcessorNode::Ptr node = boost::dynamic_pointer_cast<FrxProcessorNode>(c);
 	Super::draw(cn, c);
 	if (hasImage()) {
 		/*cn->setFillColor(c->getBackground());
@@ -155,7 +155,7 @@ void installSpecificDefs(sdc::AComponentPtr c)
 template <>
 inline void installSpecificDefs<FrxPluginNode::ProcessorType>(sdc::AComponentPtr _c)
 {
-	FrxComponent::Ptr c = boost::shared_dynamic_cast<FrxComponent>(_c);
+	FrxComponent::Ptr c = boost::dynamic_pointer_cast<FrxComponent>(_c);
 	if (!c) {
 		return;
 	}
@@ -258,7 +258,7 @@ void FrxProcessorNodeUI<CT>::createPopupmenuEntries(sdc::PopupMenuPtr menu,
 	IViewModelMap::Ptr map = getViewModelMap(view);
 	
 	frx::processing::IProcessor::Ptr processor =
-		boost::shared_dynamic_cast<frx::processing::IProcessor>(
+		boost::dynamic_pointer_cast<frx::processing::IProcessor>(
 			map->getModelObject(c)
 		);
 	if (!processor)

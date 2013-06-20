@@ -49,7 +49,7 @@ void FrxSelectionMouseListener::translateSelection(FrxSelectionPtr sel,
 //-----------------------------------------------------------------------------
 void FrxSelectionMouseListener::moveSelection(const sdc::events::MouseEvent &ev) {
 	sdc::AComponent::Ptr c = ev.getSource();
-	FrxSelection::Ptr sel = boost::shared_dynamic_cast<FrxSelection>(c);
+	FrxSelection::Ptr sel = boost::dynamic_pointer_cast<FrxSelection>(c);
 	FrxCircuidView::Ptr circ = sel->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
 	sd::Point2D distance = circ->getLocationOnComponent(ev.getLocationOnScreen());

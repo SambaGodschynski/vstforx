@@ -158,7 +158,7 @@ namespace {
 template <class CIO>
 void FrxIOUI<CIO>::drawActiveState(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) 
 {
-	FrxIO::Ptr node = boost::shared_dynamic_cast<FrxIO>(c);
+	FrxIO::Ptr node = boost::dynamic_pointer_cast<FrxIO>(c);
 	if (!node) {
 		return;
 	}
@@ -196,7 +196,7 @@ void FrxIOUI<CIO>::drawDisplay(sd::IDrawContext::Ptr cn, FrxIO::Ptr c)
 template <class CIO>
 void FrxIOUI<CIO>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	Super::draw(cn, c);
-	FrxIO::Ptr io = boost::shared_dynamic_cast<FrxIO>(c);
+	FrxIO::Ptr io = boost::dynamic_pointer_cast<FrxIO>(c);
 	if (hasImage()) {
 		drawImage(cn, c);
 		drawActiveState(cn,c);

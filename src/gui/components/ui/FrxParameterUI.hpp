@@ -139,7 +139,7 @@ void FrxParameterUI<PT>::installUI(sdc::AComponentPtr c) {
 template <class PT>
 void FrxParameterUI<PT>::installListeners(sdc::AComponentPtr c) {
 	Super::installListeners(c);
-	FrxParameter::Ptr parameter = boost::shared_dynamic_cast<FrxParameter>(c);
+	FrxParameter::Ptr parameter = boost::dynamic_pointer_cast<FrxParameter>(c);
 	SAMBAG_ASSERT(parameter);
 	_parameter = parameter; 
 	sdc::AComponent::Ptr ctrl = parameter->getEncapsulatedCtrl();
@@ -150,7 +150,7 @@ void FrxParameterUI<PT>::installListeners(sdc::AComponentPtr c) {
 	);
 
 	sdc::DefaultBoundedRangeModel::Ptr ctrlModel = 
-		boost::shared_dynamic_cast<sdc::DefaultBoundedRangeModel>(ctrl);
+		boost::dynamic_pointer_cast<sdc::DefaultBoundedRangeModel>(ctrl);
 	if (!ctrlModel) {
 		return;
 	}

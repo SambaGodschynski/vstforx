@@ -352,11 +352,11 @@ FrxGetEntryExit::EntryExit FrxGetEntryExit::process(Ctrl *ctrl) {
 	BOOST_FOREACH(AComponentPtr c, comps) {
 		if (!entry) {
 			entry = 
-				boost::shared_dynamic_cast<FrxEntryNode>(c);
+				boost::dynamic_pointer_cast<FrxEntryNode>(c);
 		}
 		if (!exit) {
 			exit = 
-				boost::shared_dynamic_cast<FrxExitNode>(c);
+				boost::dynamic_pointer_cast<FrxExitNode>(c);
 		}
 		if (entry && exit) {
 			break;
@@ -372,7 +372,7 @@ FrxGetProcessorInputs::process(LuaPtr luaobj, Ctrl *ctrl)
 	FRX_GET_EDITOR
 	using namespace frx::gui::components; 
 	Components res;
-	FrxProcessorNode::Ptr pr = boost::shared_dynamic_cast<FrxProcessorNode>(
+	FrxProcessorNode::Ptr pr = boost::dynamic_pointer_cast<FrxProcessorNode>(
 		ctrl->getFrxComponent(luaobj)
 	);
 	if (!pr) {
@@ -392,7 +392,7 @@ FrxGetProcessorOutputs::process(LuaPtr luaobj, Ctrl *ctrl)
 	FRX_GET_EDITOR
 	using namespace frx::gui::components; 
 	Components res;
-	FrxProcessorNode::Ptr pr = boost::shared_dynamic_cast<FrxProcessorNode>(
+	FrxProcessorNode::Ptr pr = boost::dynamic_pointer_cast<FrxProcessorNode>(
 		ctrl->getFrxComponent(luaobj)
 	);
 	if (!pr) {
@@ -420,7 +420,7 @@ FrxGetProcessorsOnView::Components FrxGetProcessorsOnView::process(Ctrl *ctrl) {
 	res.reserve(comps.size());
 	BOOST_FOREACH(AComponentPtr c, comps) {
 		FrxNode::Ptr fc = 
-			boost::shared_dynamic_cast<FrxProcessorNode>(c);
+			boost::dynamic_pointer_cast<FrxProcessorNode>(c);
 		if (!fc) {
 			continue;
 		}
@@ -470,7 +470,7 @@ FrxGetViewNodes::Components FrxGetViewNodes::process(Ctrl *ctrl) {
 	res.reserve(comps.size());
 	BOOST_FOREACH(AComponentPtr c, comps) {
 		FrxNode::Ptr fc = 
-			boost::shared_dynamic_cast<FrxNode>(c);
+			boost::dynamic_pointer_cast<FrxNode>(c);
 		if (!fc) {
 			continue;
 		}
@@ -487,10 +487,10 @@ Bool FrxConnectComponents::process(LuaPtr a, LuaPtr b, Ctrl *ctrl) {
 	using namespace frx::processing;
 	FrxCircuidViewPtr view = editor->getCircuidView();
 	IFrxControl &frxctrl = getFrxControl(view);
-	FrxNode::Ptr fa = boost::shared_dynamic_cast<FrxNode>(
+	FrxNode::Ptr fa = boost::dynamic_pointer_cast<FrxNode>(
 		ctrl->getFrxComponent(a)
 	);
-	FrxNode::Ptr fb = boost::shared_dynamic_cast<FrxNode>(
+	FrxNode::Ptr fb = boost::dynamic_pointer_cast<FrxNode>(
 		ctrl->getFrxComponent(b)
 	);
 	if (!fa || !fb) {
@@ -516,7 +516,7 @@ std::string FrxGetComponentName::process(LuaPtr objId, Ctrl *ctrl) {
 	if (fxobj) {
 		return fxobj->getName();
 	}
-	IParameter::Ptr par = boost::shared_dynamic_cast<IParameter>(mobj);
+	IParameter::Ptr par = boost::dynamic_pointer_cast<IParameter>(mobj);
 	if (par) {
 		return par->getName();
 	}
@@ -587,7 +587,7 @@ void FrxAddComponentParameter::process(LuaPtr component, LuaPtr par, Ctrl *ctrl)
 		);
 	}
 	IParameter::Ptr ipar = 
-		boost::shared_dynamic_cast<IParameter>(mobj);
+		boost::dynamic_pointer_cast<IParameter>(mobj);
 	if (!ipar) {
 		return;
 	}
@@ -689,7 +689,7 @@ FrxGetViewComponents::Components FrxGetViewComponents::process(Ctrl *ctrl) {
 	res.reserve(comps.size());
 	BOOST_FOREACH(AComponentPtr c, comps) {
 		FrxComponent::Ptr fc = 
-			boost::shared_dynamic_cast<FrxComponent>(c);
+			boost::dynamic_pointer_cast<FrxComponent>(c);
 		if (!fc) {
 			continue;
 		}

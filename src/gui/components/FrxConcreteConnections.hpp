@@ -53,7 +53,7 @@ private:
 public:
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::shared_dynamic_cast<
+		return boost::dynamic_pointer_cast<
 			FrxConcreteConnection<ConnectionType>
 		>(Super::getPtr());
 	}

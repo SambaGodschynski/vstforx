@@ -159,7 +159,7 @@ public:
 	virtual bool contains(sdc::AComponentPtr c, const sd::Point2D &p);
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::shared_dynamic_cast<FrxNodeUI>(Super::getPtr());
+		return boost::dynamic_pointer_cast<FrxNodeUI>(Super::getPtr());
 	}
 	//-------------------------------------------------------------------------
 	virtual bool usesCorona() const { return true; }

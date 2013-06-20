@@ -50,7 +50,7 @@ void FrxSelectionUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 namespace {
 	void clearSelection(void *src, const sdce::ActionEvent &ev, sdc::AComponentWPtr c) 
 	{
-		FrxSelection::Ptr sel = boost::shared_dynamic_cast<FrxSelection> (c.lock());
+		FrxSelection::Ptr sel = boost::dynamic_pointer_cast<FrxSelection> (c.lock());
 		if (!sel) {
 			return;
 		}
@@ -61,7 +61,7 @@ namespace {
 		IFrxControl &ctrl = getFrxControl(view);
 		typedef FrxSelection::ContentContainer C;
 		BOOST_FOREACH(C::value_type v, sel->getContent()) {
-			FrxComponentPtr cmp = boost::shared_dynamic_cast<FrxComponent>(v.lock());
+			FrxComponentPtr cmp = boost::dynamic_pointer_cast<FrxComponent>(v.lock());
 			if (!cmp) {
 				continue;
 			}

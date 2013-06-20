@@ -36,7 +36,7 @@ void FrxFlagUI::postConstructor(Ptr self) {
 //-----------------------------------------------------------------------------
 void FrxFlagUI::installDefaults(sdc::AComponentPtr c) {
 	Super::installDefaults(c);
-	FrxFlag::Ptr flag = boost::shared_dynamic_cast<FrxFlag>(c);
+	FrxFlag::Ptr flag = boost::dynamic_pointer_cast<FrxFlag>(c);
 	flag->putClientProperty("FrxCircuidView.inactive", (bool)true);
 	SAMBAG_ASSERT(flag);
 	_flag = flag;
@@ -149,7 +149,7 @@ void FrxFlagUI::installTargetListeners(FrxComponent::Ptr c) {
 		boost::bind(&FrxFlagUI::onTargetPropertyChanged, this, _1, _2),
 		self
 	);
-	FrxComponent::Ptr fc = boost::shared_dynamic_cast<FrxComponent>(c);
+	FrxComponent::Ptr fc = boost::dynamic_pointer_cast<FrxComponent>(c);
 	if (!fc) {
 		return;
 	}
@@ -191,7 +191,7 @@ void FrxFlagUI::onMouse(void *, const sdce::MouseEvent &ev) {
 void FrxFlagUI::installListeners(sdc::AComponentPtr c) {
 	Super::installListeners(c);
 	firstDraw = true;
-	FrxFlag::Ptr flag = boost::shared_dynamic_cast<FrxFlag>(c);
+	FrxFlag::Ptr flag = boost::dynamic_pointer_cast<FrxFlag>(c);
 	SAMBAG_ASSERT(flag);
 	flag->sce::EventSender<sce::PropertyChanged>::addTrackedEventListener(
 		boost::bind(&FrxFlagUI::onFlagPropertyChanged, this, _1, _2),
@@ -220,7 +220,7 @@ FrxFlagUI::Ptr FrxFlagUI::create() {
 void FrxFlagUI::clip(FrxFlag::Ptr flag, 
 	sd::IDrawContext::Ptr cn) const
 {
-	FrxNode::Ptr a = boost::shared_dynamic_cast<FrxNode>( flag->getTarget() );
+	FrxNode::Ptr a = boost::dynamic_pointer_cast<FrxNode>( flag->getTarget() );
 	if (!a) {
 		return;
 	}

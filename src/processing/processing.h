@@ -730,7 +730,7 @@ public:
 	 */
 	ProcessAdapter::Ptr getProcessAdapter() { 
 		ProcessAdapter::Ptr p = 
-			boost::shared_dynamic_cast< ProcessAdapter, PObject >( parent->getPtr() );
+			boost::dynamic_pointer_cast< ProcessAdapter, PObject >( parent->getPtr() );
 		return p;
 	}
 };
@@ -795,7 +795,7 @@ public:
 	 */
 	ProcessAdapter::Ptr getProcessAdapter() { 
 		ProcessAdapter::Ptr p = 
-			boost::shared_dynamic_cast< ProcessAdapter, PObject >( parent->getPtr() );
+			boost::dynamic_pointer_cast< ProcessAdapter, PObject >( parent->getPtr() );
 		return p;
 	}
 };

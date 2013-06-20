@@ -85,7 +85,7 @@ protected:
 public:
 	//-------------------------------------------------------------------------
 	virtual IProcessor::Ptr getPtr() const {
-		return boost::shared_dynamic_cast<IProcessor>( self.lock() );
+		return boost::dynamic_pointer_cast<IProcessor>( self.lock() );
 	}
 	//-------------------------------------------------------------------------
 	static Ptr create(Adaptee::Ptr a = Adaptee::Ptr()) {

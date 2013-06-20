@@ -51,7 +51,7 @@ void onSelectionPathChanged(void *src,
 	const BrowserNode &bNode = tree->getNodeData(path.back());
 
 	FrxMainBrowser::Ptr mbrowser = 
-		boost::shared_dynamic_cast<FrxMainBrowser>(browser);
+		boost::dynamic_pointer_cast<FrxMainBrowser>(browser);
 
 	if (!mbrowser) {
 		return;
@@ -162,7 +162,7 @@ void FrxMainBrowserCtrl::
 onShellPluginSelected(void*, const sdc::events::ActionEvent &ev)
 {
 	ShellPluginSelection::Ptr shlsl =
-		boost::shared_dynamic_cast<ShellPluginSelection>(ev.getSource());
+		boost::dynamic_pointer_cast<ShellPluginSelection>(ev.getSource());
 	if (!shlsl)
 		return;
 	const ::processing::PluginInfo &pI
@@ -182,7 +182,7 @@ FrxMainBrowserCtrl::fillPluginFolder(TreeNode parent, DBFolderID dbFolderId)
 	FrxCircuidViewPtr view = wView.lock();
 	SAMBAG_ASSERT(brws && view);
 	FrxMainBrowserCtrl::Ptr ctrl = 
-		boost::shared_dynamic_cast<FrxMainBrowserCtrl>(brws->getCtrl());
+		boost::dynamic_pointer_cast<FrxMainBrowserCtrl>(brws->getCtrl());
 	SAMBAG_ASSERT(ctrl);
 	Tree::Ptr tree = brws->getBrowserImpl();
 	if (tree->getNumChildren(parent) > 0)
@@ -348,7 +348,7 @@ addRelatedKnobToView(FrxComponentWPtr _c, processing::IParameter::WPtr _par)
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::initListeners(FrxColumnBrowserPtr brws) {
 	FrxMainBrowser::Ptr browser = 
-		boost::shared_dynamic_cast<FrxMainBrowser>(brws);
+		boost::dynamic_pointer_cast<FrxMainBrowser>(brws);
 	if (!browser)
 		return;
 	// add btnOk listener
@@ -423,7 +423,7 @@ void FrxMainBrowserCtrl::parameterLabelRedraw( sdc::AComponentPtr c,
 {
 	processing::IParameter::Ptr p = _p.lock();
 	FrxParameterLabel::Ptr label = 
-		boost::shared_dynamic_cast<FrxParameterLabel>(c);
+		boost::dynamic_pointer_cast<FrxParameterLabel>(c);
 	if (!label || !p)
 		return;
 	label->setText(label->getText() + ":" + p->getDisplay());
@@ -597,7 +597,7 @@ void FrxMainBrowserCtrl::onSceneIOChanged(void*,
 	if (!brws || !view || !map)
 		return;
 	Tree::Ptr tree = brws->getBrowserImpl();
-	FrxComponentPtr c = boost::shared_dynamic_cast<FrxComponent> (
+	FrxComponentPtr c = boost::dynamic_pointer_cast<FrxComponent> (
 		map->getViewObject(ev.src)
 	);
 	if (!c)
@@ -620,7 +620,7 @@ addPluginToSceneTree(FrxComponentPtr c, Reason reason)
 	FrxCircuidViewPtr view = wView.lock();
 
 	FrxProcessorNode::Ptr pr = 
-		boost::shared_dynamic_cast<FrxProcessorNode>(c);
+		boost::dynamic_pointer_cast<FrxProcessorNode>(c);
 	FrxColumnBrowserPtr browser = this->browser.lock();
 	if (!pr || !browser) {
 		return Tree::NULL_NODE;
@@ -645,7 +645,7 @@ Tree::Node FrxMainBrowserCtrl::addProcessorToSceneTree(FrxComponentPtr c, Reason
 	
 	FrxCircuidViewPtr view = wView.lock();
 	FrxProcessorNode::Ptr pr = 
-		boost::shared_dynamic_cast<FrxProcessorNode>(c);
+		boost::dynamic_pointer_cast<FrxProcessorNode>(c);
 	FrxColumnBrowserPtr browser = this->browser.lock();
 	if (!pr || !browser) {
 		return Tree::NULL_NODE;
@@ -659,7 +659,7 @@ Tree::Node FrxMainBrowserCtrl::addProcessorToSceneTree(FrxComponentPtr c, Reason
 	// install io changed event sender
 	IViewModelMap::Ptr map = getViewModelMap(view);
 	frx::processing::IProcessor::Ptr primpl = 
-		boost::shared_dynamic_cast<frx::processing::IProcessor>(
+		boost::dynamic_pointer_cast<frx::processing::IProcessor>(
 			map->getModelObject(pr)
 		);
 	SAMBAG_ASSERT(primpl);
@@ -676,7 +676,7 @@ Tree::Node FrxMainBrowserCtrl::addParameterToSceneTree(FrxComponentPtr c, Reason
 {
 	FrxCircuidViewPtr view = wView.lock();
 	FrxParameter::Ptr parComp = 
-		boost::shared_dynamic_cast<FrxParameter>(c);
+		boost::dynamic_pointer_cast<FrxParameter>(c);
 	FrxColumnBrowserPtr browser = this->browser.lock();
 	if (!parComp || !browser) {
 		return Tree::NULL_NODE;
@@ -685,7 +685,7 @@ Tree::Node FrxMainBrowserCtrl::addParameterToSceneTree(FrxComponentPtr c, Reason
 	IViewModelMap::Ptr map;
 	boost::tie(ctrl, map) = getControllerAndMap(view);
 	frx::processing::IParameter::Ptr prPar = 
-		boost::shared_dynamic_cast<frx::processing::IParameter> (
+		boost::dynamic_pointer_cast<frx::processing::IParameter> (
 			map->getModelObject(parComp)
 		);
 	if (!prPar)
@@ -733,7 +733,7 @@ Tree::Node FrxMainBrowserCtrl::addConnectionToSceneTree(FrxComponentPtr c, Reaso
 	}
 	FrxCircuidViewPtr view = wView.lock();
 	FrxConnection::Ptr pr = 
-		boost::shared_dynamic_cast<FrxConnection>(c);
+		boost::dynamic_pointer_cast<FrxConnection>(c);
 	FrxColumnBrowserPtr browser = this->browser.lock();
 	if (!pr || !browser) {
 		return Tree::NULL_NODE;
@@ -797,7 +797,7 @@ BrowserNode::ResultPtr FrxMainBrowserCtrl::createSceneTree(const Tree::Node &par
 	// collect components
 	BOOST_FOREACH(sdc::AComponentPtr c, components) {
 		FrxComponentPtr fc = 
-			boost::shared_dynamic_cast<FrxComponent>(c);
+			boost::dynamic_pointer_cast<FrxComponent>(c);
 		if (!fc) {
 			continue;
 		}
@@ -847,7 +847,7 @@ void FrxMainBrowserCtrl::addPresets(FrxComponentPtr c, const Tree::Node &parent)
 	frx::processing::IModelController::Ptr ctrl;
 	IViewModelMap::Ptr map;
 	boost::tie(ctrl, map) = getControllerAndMap(view);
-	IProcessor::Ptr pr = boost::shared_dynamic_cast<IProcessor>
+	IProcessor::Ptr pr = boost::dynamic_pointer_cast<IProcessor>
 		(map->getModelObject(c));
 	if (!pr)
 		return;

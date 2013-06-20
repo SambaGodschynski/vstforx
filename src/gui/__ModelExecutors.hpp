@@ -112,8 +112,8 @@ inline connectModelObjects<IOCn>(fp::IModelController::Ptr ctrl,
 	fp::ModelObject::Ptr src,
 	fp::ModelObject::Ptr dst) 
 {
-	fp::INode::Ptr nsrc = boost::shared_dynamic_cast<fp::INode>(src);
-	fp::INode::Ptr ndst = boost::shared_dynamic_cast<fp::INode>(dst);
+	fp::INode::Ptr nsrc = boost::dynamic_pointer_cast<fp::INode>(src);
+	fp::INode::Ptr ndst = boost::dynamic_pointer_cast<fp::INode>(dst);
 	SAMBAG_ASSERT(nsrc && ndst);
 	return ctrl->connect(nsrc, ndst);
 }
@@ -124,8 +124,8 @@ inline connectModelObjects<ParameterCn>(fp::IModelController::Ptr ctrl,
 	fp::ModelObject::Ptr src,
 	fp::ModelObject::Ptr dst) 
 {
-	fp::IParameter::Ptr nsrc = boost::shared_dynamic_cast<fp::IParameter>(src);
-	fp::IParameter::Ptr ndst = boost::shared_dynamic_cast<fp::IParameter>(dst);
+	fp::IParameter::Ptr nsrc = boost::dynamic_pointer_cast<fp::IParameter>(src);
+	fp::IParameter::Ptr ndst = boost::dynamic_pointer_cast<fp::IParameter>(dst);
 	SAMBAG_ASSERT(nsrc && ndst);
 	return ctrl->connect(nsrc, ndst);
 }

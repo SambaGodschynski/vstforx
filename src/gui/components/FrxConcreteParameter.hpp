@@ -69,7 +69,7 @@ public:
 	}
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::shared_dynamic_cast<ThisClass>(Super::getPtr());
+		return boost::dynamic_pointer_cast<ThisClass>(Super::getPtr());
 	}
 	//-------------------------------------------------------------------------
 	static Ptr create() {

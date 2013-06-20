@@ -129,7 +129,7 @@ private:
 	template <typename Archive> 
 	void serializeSelfPtr(Archive &ar, const unsigned int version) {
 		if (Archive::is_saving::value) {
-			tmpSelf = boost::shared_dynamic_cast<FrxCircuidView>(self.lock());
+			tmpSelf = boost::dynamic_pointer_cast<FrxCircuidView>(self.lock());
 		}
 		ar & tmpSelf;
 		if (Archive::is_loading::value) {
@@ -381,7 +381,7 @@ void FrxCircuidView::collectFrxComponentInfo(FrxComponentInfoContainer &out) con
 {
 	BOOST_FOREACH(AComponent::Ptr c, getContentPane()->getComponents()) {
 		FrxComponentPtr frxC = 
-			boost::shared_dynamic_cast<FrxComponent>(c);
+			boost::dynamic_pointer_cast<FrxComponent>(c);
 		if (!frxC)
 			continue;
 		ZOrder z = Z_Default;

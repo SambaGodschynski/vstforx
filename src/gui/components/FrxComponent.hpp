@@ -75,7 +75,7 @@ private:
 	template <typename Archive> 
 	void serializeSelfPtr(Archive &ar, const unsigned int version) {
 		if (Archive::is_saving::value) {
-			tmpSelf = boost::shared_dynamic_cast<FrxComponent>(self.lock());
+			tmpSelf = boost::dynamic_pointer_cast<FrxComponent>(self.lock());
 		}
 		ar & boost::serialization::base_object<ViewObject>(*this); 
 		ar & tmpSelf;

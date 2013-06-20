@@ -233,7 +233,7 @@ private:
 public:
 	//-------------------------------------------------------------------------
 	Ptr getPtr() {
-		return boost::shared_dynamic_cast<FrxColumnBrowser>(AComponent::getPtr());
+		return boost::dynamic_pointer_cast<FrxColumnBrowser>(AComponent::getPtr());
 	}
 	//-------------------------------------------------------------------------
 	sdc::AContainerPtr getButtonPane() const {

@@ -140,7 +140,7 @@ void ProcessorAdapter::updateParameters() {
 	using ::processing::parameter::HasParameter;
 	using ::processing::MidiEventProcessor;
 	HasParameter::Ptr hp =
-		boost::shared_dynamic_cast<HasParameter>(processor);
+		boost::dynamic_pointer_cast<HasParameter>(processor);
 	if (!hp) {
 		return;
 	}
@@ -171,7 +171,7 @@ void ProcessorAdapter::initParameter() {
 	using ::processing::parameter::HasParameter;
 	using ::processing::MidiEventProcessor;
 	HasParameter::Ptr hp =
-		boost::shared_dynamic_cast<HasParameter>(processor);
+		boost::dynamic_pointer_cast<HasParameter>(processor);
 	if (hp) {
 		size_t num = hp->getNumParameter();
 		for (size_t i=0; i<num; ++i) {
@@ -187,7 +187,7 @@ void ProcessorAdapter::initParameter() {
 	using ::processing::parameter::HasOutParameter;
 	using ::processing::MidiEventProcessor;
 	HasOutParameter::Ptr hpo =
-		boost::shared_dynamic_cast<HasOutParameter>(processor);
+		boost::dynamic_pointer_cast<HasOutParameter>(processor);
 	if (hpo) {
 		size_t num = hpo->getNumOutParameter();
 		for (size_t i=0; i<num; ++i) {

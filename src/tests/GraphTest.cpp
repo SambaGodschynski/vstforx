@@ -316,7 +316,7 @@ typedef boost::tuple <
 ProcessorNodeExpection getNodeExpectionInfo ( processing::ProcessorNode *nPtr ) {
 	using namespace processing;
 	ProcessorNode::Ptr n = 
-		boost::shared_dynamic_cast< ProcessorNode, PObject> ( nPtr->getPtr() );
+		boost::dynamic_pointer_cast< ProcessorNode, PObject> ( nPtr->getPtr() );
 	return ProcessorNodeExpection ( n , n->isActive(), n->getNumActiveChildren() );
 }
 //.............................................................................

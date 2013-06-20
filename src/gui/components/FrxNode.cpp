@@ -31,7 +31,7 @@ sdcu::AComponentUIPtr FrxNode::createComponentUI(sdcu::ALookAndFeelPtr laf) cons
 }
 //-----------------------------------------------------------------------------
 sambag::com::Number FrxNode::getRadius() const {
-	ui::FrxNodeUI::Ptr ui = boost::shared_dynamic_cast<ui::FrxNodeUI>(getUI());
+	ui::FrxNodeUI::Ptr ui = boost::dynamic_pointer_cast<ui::FrxNodeUI>(getUI());
 	if (!ui) {
 		return 0.;
 	}

@@ -572,8 +572,8 @@ public:
 	 * @return SUCCEED / FAILED
 	 */
 	State connectNodes( ProcessorNode *parent, ProcessorNode *child) {
-		ProcessorNode::Ptr p = boost::shared_dynamic_cast< ProcessorNode, PObject > ( parent->getPtr() );
-		ProcessorNode::Ptr c = boost::shared_dynamic_cast< ProcessorNode, PObject > ( child->getPtr() );
+		ProcessorNode::Ptr p = boost::dynamic_pointer_cast< ProcessorNode, PObject > ( parent->getPtr() );
+		ProcessorNode::Ptr c = boost::dynamic_pointer_cast< ProcessorNode, PObject > ( child->getPtr() );
 		if ( !p || !c ) return FAILED;
 		return connectNodes( p, c );
 	}
@@ -596,8 +596,8 @@ public:
 	 * @return SUCCEED / FAILED
 	 */
 	State removeConnection( ProcessorNode *parent, ProcessorNode *child) {
-		ProcessorNode::Ptr p = boost::shared_dynamic_cast< ProcessorNode, PObject > ( parent->getPtr() );
-		ProcessorNode::Ptr c = boost::shared_dynamic_cast< ProcessorNode, PObject > ( child->getPtr() );
+		ProcessorNode::Ptr p = boost::dynamic_pointer_cast< ProcessorNode, PObject > ( parent->getPtr() );
+		ProcessorNode::Ptr c = boost::dynamic_pointer_cast< ProcessorNode, PObject > ( child->getPtr() );
 		if ( !p || !c ) return FAILED;
 		return removeConnection( p, c );
 	}

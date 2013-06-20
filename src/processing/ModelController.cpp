@@ -210,8 +210,8 @@ IProcessor::Ptr ModelController::createMIDIReceiver() {
 IConnection::Ptr ModelController::connect(INode::Ptr out, INode::Ptr in) {
 	if (!graph)
 		return IConnection::Ptr();
-	NodeAdapter::Ptr src = boost::shared_dynamic_cast<NodeAdapter>(out);
-	NodeAdapter::Ptr dst = boost::shared_dynamic_cast<NodeAdapter>(in);
+	NodeAdapter::Ptr src = boost::dynamic_pointer_cast<NodeAdapter>(out);
+	NodeAdapter::Ptr dst = boost::dynamic_pointer_cast<NodeAdapter>(in);
 	if (!src || !dst)
 		return IConnection::Ptr();
 	typedef ::processing::Graph::Janitor Janitor; 
@@ -247,7 +247,7 @@ bool ModelController::removeConnection(IConnection::Ptr cn) {
 	if (!graph)
 		return false;
 	NodeConnection::Ptr connection = 
-		boost::shared_dynamic_cast<NodeConnection>(cn);
+		boost::dynamic_pointer_cast<NodeConnection>(cn);
 	if (connection)
 		return removeConnection(connection);
 	return false;
@@ -257,7 +257,7 @@ bool ModelController::removeProcessor(IProcessor::Ptr cn) {
 	if (!graph)
 		return false;
 	ProcessorAdapter::Ptr pr = 
-		boost::shared_dynamic_cast<ProcessorAdapter>(cn);
+		boost::dynamic_pointer_cast<ProcessorAdapter>(cn);
 	SAMBAG_ASSERT(pr);
 	typedef ::processing::Graph::Janitor Janitor; 
 	Janitor::Ptr jan = graph->getJanitor();
@@ -329,7 +329,7 @@ IParameter::Ptr ModelController::createFreeParameter() {
 }
 //-----------------------------------------------------------------------------
 bool ModelController::removeParameter(IParameter::Ptr p) {
-	ParameterAdapter::Ptr ada = boost::shared_dynamic_cast<ParameterAdapter>(p);
+	ParameterAdapter::Ptr ada = boost::dynamic_pointer_cast<ParameterAdapter>(p);
 	if (ada->isHostParameter()) {
 		return true;
 	}
@@ -362,13 +362,13 @@ INode::Ptr ModelController::addInputTo(IProcessor::Ptr pr) {
 	// add i/o to processor
 	INode::Ptr res = pr->addInput();
 	NodeAdapter::Ptr src =
-		boost::shared_dynamic_cast<NodeAdapter>(res);
+		boost::dynamic_pointer_cast<NodeAdapter>(res);
 	if (!src)
 		return INode::Ptr();
 	
 	// get concrete node (adaptee)
 	::processing::ProcessAdapter::InputNode::Ptr atom = 
-		boost::shared_dynamic_cast< ::processing::ProcessAdapter::InputNode >(
+		boost::dynamic_pointer_cast< ::processing::ProcessAdapter::InputNode >(
 			src->getAdaptee()
 		);
 	// add concrete node to graph
@@ -385,14 +385,14 @@ INode::Ptr ModelController::addOutputTo(IProcessor::Ptr pr) {
 	// add i/o to processor
 	INode::Ptr res = pr->addOutput();
 	NodeAdapter::Ptr src =
-		boost::shared_dynamic_cast<NodeAdapter>(res);
+		boost::dynamic_pointer_cast<NodeAdapter>(res);
 	if (!src)
 		return INode::Ptr();
 	
 	// get concrete node (adaptee)
 	typedef ::processing::Graph::Janitor Janitor; 
 	::processing::ProcessAdapter::OutputNode::Ptr atom = 
-		boost::shared_dynamic_cast< ::processing::ProcessAdapter::OutputNode >(
+		boost::dynamic_pointer_cast< ::processing::ProcessAdapter::OutputNode >(
 			src->getAdaptee()
 		);
 	// add concrete node to graph
@@ -410,7 +410,7 @@ void ModelController::
 addParameterCnOp(IConnection::Ptr cn, const ParameterCnOpTypeId &opId) 
 {
 	ParameterConnection::Ptr pcn =
-		boost::shared_dynamic_cast<ParameterConnection>(cn);
+		boost::dynamic_pointer_cast<ParameterConnection>(cn);
 	if (!pcn) {
 		return;
 	}

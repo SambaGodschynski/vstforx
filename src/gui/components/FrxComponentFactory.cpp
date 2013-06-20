@@ -126,7 +126,7 @@ FrxProcessorNodePtr createPlugin(FrxCircuidViewPtr circ, ::processing::PluginInf
 	flag->setTarget(viewObj);
 	circ->add(flag, FrxCircuidView::Z_Flags, true);
 	frx::processing::IPluginAdapter::Ptr plAd = 
-		boost::shared_dynamic_cast<frx::processing::IPluginAdapter>(mObj);
+		boost::dynamic_pointer_cast<frx::processing::IPluginAdapter>(mObj);
 	if (plAd) {
 		viewObj->setName(plAd->getName());
 		viewObj->setUpperFlagText(plAd->getName());

@@ -101,7 +101,7 @@ sdc::PopupMenuPtr FrxComponentUI::createPopupmenu(FrxComponentPtr c,
 }
 //-----------------------------------------------------------------------------
 void FrxComponentUI::installDefaults(sdc::AComponentPtr c) {
-	FrxComponent::Ptr frxC = boost::shared_dynamic_cast<FrxComponent>(c);
+	FrxComponent::Ptr frxC = boost::dynamic_pointer_cast<FrxComponent>(c);
 	FrxCircuidView::Ptr view = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(frxC && view);
 	menuLabelStyle = sdsg::Style::DEFAULT_STYLE;

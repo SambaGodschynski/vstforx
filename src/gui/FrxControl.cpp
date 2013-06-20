@@ -169,7 +169,7 @@ bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj, FrxCircuidViewWPtr _view)
 		return true;
 	}
 	
-	FrxComponent::Ptr c = boost::shared_dynamic_cast<FrxComponent>(obj);
+	FrxComponent::Ptr c = boost::dynamic_pointer_cast<FrxComponent>(obj);
 	map->remove(c, mObj);
 	view->remove(c);
 	view->AContainer::redraw();
@@ -190,7 +190,7 @@ typename ModelType::Ptr getModelObject(FrxCircuidViewPtr view, FrxComponent::Ptr
 			"related modelobject == NULL");
 	}
 	typename ModelType::Ptr modelObj = 
-		boost::shared_dynamic_cast<ModelType>(mObj);
+		boost::dynamic_pointer_cast<ModelType>(mObj);
 	if (!modelObj) {
 		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
 			"accessing to model object failed.");
@@ -498,7 +498,7 @@ namespace {
 	void _castSwitch(fgc::FrxCircuidViewPtr view, FrxComponentPtr c) {	
 		typedef typename TypeList::Head T;
 		typename T::Ptr ptr = 
-			boost::shared_dynamic_cast<T>(c);
+			boost::dynamic_pointer_cast<T>(c);
 		if (ptr) {
 			registerOnView(view, ptr);
 		}
@@ -567,7 +567,7 @@ FrxComponentPtr FrxControl::addProcessorInput(fgc::FrxCircuidViewPtr view,
 		fgc::FrxComponentPtr c)
 {
 	FrxProcessorNode::Ptr proV = 
-		boost::shared_dynamic_cast<FrxProcessorNode>(c);
+		boost::dynamic_pointer_cast<FrxProcessorNode>(c);
 	if (!proV) {
 		return FrxComponentPtr();
 	}
@@ -576,7 +576,7 @@ FrxComponentPtr FrxControl::addProcessorInput(fgc::FrxCircuidViewPtr view,
 	IViewModelMap::Ptr map;
 	boost::tie(ctrl, map) = getControllerAndMap(view);
 	frx::processing::IProcessor::Ptr proM =
-		boost::shared_dynamic_cast<frx::processing::IProcessor> (
+		boost::dynamic_pointer_cast<frx::processing::IProcessor> (
 			map->getModelObject(c)
 		);
 	if (!proM)
@@ -605,7 +605,7 @@ FrxComponentPtr FrxControl::addProcessorOutput(fgc::FrxCircuidViewPtr view,
 		fgc::FrxComponentPtr c)
 {
 	FrxProcessorNode::Ptr proV = 
-		boost::shared_dynamic_cast<FrxProcessorNode>(c);
+		boost::dynamic_pointer_cast<FrxProcessorNode>(c);
 	if (!proV) {
 		return FrxComponentPtr();
 	}
@@ -614,7 +614,7 @@ FrxComponentPtr FrxControl::addProcessorOutput(fgc::FrxCircuidViewPtr view,
 	IViewModelMap::Ptr map;
 	boost::tie(ctrl, map) = getControllerAndMap(view);
 	frx::processing::IProcessor::Ptr proM =
-		boost::shared_dynamic_cast<frx::processing::IProcessor> (
+		boost::dynamic_pointer_cast<frx::processing::IProcessor> (
 			map->getModelObject(c)
 		);
 	if (!proM)
@@ -921,7 +921,7 @@ void FrxControl::openClosePluginEditor(fgc::FrxCircuidViewPtr view,
 	IViewModelMap::Ptr map;
 	boost::tie(ctrl, map) = getControllerAndMap(view);
 	typedef frx::processing::IPluginAdapter Plugin;
-	Plugin::Ptr plugin = boost::shared_dynamic_cast<Plugin>(
+	Plugin::Ptr plugin = boost::dynamic_pointer_cast<Plugin>(
 		map->getModelObject(c)
 	);
 	if (!plugin)
@@ -955,7 +955,7 @@ void FrxControl::addParamterCnOp(fgc::FrxCircuidViewPtr view,
 	boost::tie(mctrl, map) = getControllerAndMap(view);
 	using frx::processing::IConnection;
 	IConnection::Ptr cn =
-		boost::shared_dynamic_cast<IConnection> (map->getModelObject(c));
+		boost::dynamic_pointer_cast<IConnection> (map->getModelObject(c));
 	if (!cn)
 		return;
 	mctrl->addParameterCnOp(cn, id);

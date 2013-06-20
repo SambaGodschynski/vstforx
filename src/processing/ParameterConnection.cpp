@@ -20,8 +20,8 @@ ParameterConnection::Ptr
 ParameterConnection::createConnection(IParameter::Ptr _a, 
 	IParameter::Ptr _b)
 {
-	ParameterAdapter::Ptr a = boost::shared_dynamic_cast<ParameterAdapter>(_a);
-	ParameterAdapter::Ptr b = boost::shared_dynamic_cast<ParameterAdapter>(_b);
+	ParameterAdapter::Ptr a = boost::dynamic_pointer_cast<ParameterAdapter>(_a);
+	ParameterAdapter::Ptr b = boost::dynamic_pointer_cast<ParameterAdapter>(_b);
 	Ptr res = create();
 	res->src = a;
 	res->dst = b;
@@ -72,7 +72,7 @@ void ParameterConnection::getParameterCnOpTypeIds(ParameterCnOpTypeIds &out) {
 //-----------------------------------------------------------------------------
 void ParameterConnection::initConnectionParameter() {
     using namespace ::processing::parameter;
-	HasParameter::Ptr hp = boost::shared_dynamic_cast<HasParameter>(cn);
+	HasParameter::Ptr hp = boost::dynamic_pointer_cast<HasParameter>(cn);
 	if (!hp) {
 		return;
 	}
@@ -91,7 +91,7 @@ addParameterCnOp(const ParameterCnOpTypeId &opId)
 	ConnectionOperator::Ptr op = createCOp<ConnectionOps>(opId);
 	cn->addOperator(op);
 	HasParameter::Ptr hp = 
-		boost::shared_dynamic_cast<HasParameter>(op);
+		boost::dynamic_pointer_cast<HasParameter>(op);
 	if (!hp) {
 		return;
 	}

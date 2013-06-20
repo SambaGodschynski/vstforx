@@ -310,8 +310,8 @@ template <class CT>
 void FrxConnectionUI<CT>::clipEndNodes(ConcreteConnectionPtr c, 
 	sd::IDrawContext::Ptr cn) const
 {
-	FrxNode::Ptr a = boost::shared_dynamic_cast<FrxNode>( c->getSrcComponent() );
-	FrxNode::Ptr b = boost::shared_dynamic_cast<FrxNode>( c->getDstComponent() );
+	FrxNode::Ptr a = boost::dynamic_pointer_cast<FrxNode>( c->getSrcComponent() );
+	FrxNode::Ptr b = boost::dynamic_pointer_cast<FrxNode>( c->getDstComponent() );
 	if (!a && !b) {
 		return;
 	}
@@ -331,7 +331,7 @@ template <class CT>
 void FrxConnectionUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	//Super::draw(cn, c);
 	typename _ConcreteConnection::Ptr ccn = 
-		boost::shared_dynamic_cast<_ConcreteConnection>(c);
+		boost::dynamic_pointer_cast<_ConcreteConnection>(c);
 	SAMBAG_ASSERT(ccn);
 	
 	std::pair<sd::Point2D, sd::Point2D> points = getConnectionPoints(ccn);
@@ -378,7 +378,7 @@ bool FrxConnectionUI<CT>::contains(sdc::AComponentPtr c, const sd::Point2D &p) {
 	sd::Coordinate distance = 
 		sdc::ui::getUIPropertyCached<FrxConnectionHitDistance>(sd::Coordinate(10.));
 	typename _ConcreteConnection::Ptr ccn = 
-		boost::shared_dynamic_cast<_ConcreteConnection>(c);
+		boost::dynamic_pointer_cast<_ConcreteConnection>(c);
 	typedef sambag::math::VectorN<Number, 2> Vector2D;
 	std::pair<sd::Point2D, sd::Point2D> points = getConnectionPoints(ccn);
 	Vector2D p1 = sambag::math::createVector((Number)points.first.x(), 

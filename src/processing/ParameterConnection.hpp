@@ -60,7 +60,7 @@ public:
     void initConnectionParameter();
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::shared_dynamic_cast<ParameterConnection>( self.lock() );
+		return boost::dynamic_pointer_cast<ParameterConnection>( self.lock() );
 	}
 	//-------------------------------------------------------------------------
 	virtual ~ParameterConnection() {

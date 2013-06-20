@@ -81,7 +81,7 @@ public:
 	virtual const std::string & getName() const;
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::shared_dynamic_cast<FrxConnection>(Super::getPtr());
+		return boost::dynamic_pointer_cast<FrxConnection>(Super::getPtr());
 	}
 	//-------------------------------------------------------------------------
 	void setSrcComponent(FrxComponent::Ptr a);

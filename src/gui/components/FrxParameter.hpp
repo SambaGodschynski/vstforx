@@ -69,7 +69,7 @@ public:
 	sdc::AComponent::Ptr getEncapsulatedCtrl() const { return ctrl; }
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::shared_dynamic_cast<FrxParameter>(Super::getPtr());
+		return boost::dynamic_pointer_cast<FrxParameter>(Super::getPtr());
 	}
 
 }; // FrxParameter

@@ -52,7 +52,7 @@ private:
 public:
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::shared_dynamic_cast<NodeConnection>( self.lock() );
+		return boost::dynamic_pointer_cast<NodeConnection>( self.lock() );
 	}
 	//-------------------------------------------------------------------------
 	static Ptr create() {

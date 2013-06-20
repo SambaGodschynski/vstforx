@@ -35,7 +35,7 @@ bool FrxNodeUI::contains(sdc::AComponentPtr c, const sd::Point2D &p) {
 }
 //-----------------------------------------------------------------------------
 bool FrxNodeUI::hitsCorona(sdc::AComponentPtr c, const sd::Point2D &p) const {
-	FrxComponent::Ptr node = boost::shared_dynamic_cast<FrxComponent>(c);
+	FrxComponent::Ptr node = boost::dynamic_pointer_cast<FrxComponent>(c);
 	sd::Coordinate x = p.x() - node->getPivot().x();
 	sd::Coordinate y = p.y() - node->getPivot().y();
 	sd::Coordinate radius = getCoronaRadius(c);
@@ -43,7 +43,7 @@ bool FrxNodeUI::hitsCorona(sdc::AComponentPtr c, const sd::Point2D &p) const {
 }
 //-----------------------------------------------------------------------------
 bool FrxNodeUI::hitsCore(sdc::AComponentPtr c, const sd::Point2D &p) const {
-	FrxComponent::Ptr node = boost::shared_dynamic_cast<FrxComponent>(c);
+	FrxComponent::Ptr node = boost::dynamic_pointer_cast<FrxComponent>(c);
 	sd::Coordinate x = p.x() - node->getPivot().x();
 	sd::Coordinate y = p.y() - node->getPivot().y();
 	sd::Coordinate radius = getCoreRadius(c);
@@ -57,7 +57,7 @@ void FrxNodeUI::installListeners(sdc::AComponent::Ptr c) {
 		getPtr()
 	);
 	sdc::AContainer::Ptr cont = 
-		boost::shared_dynamic_cast<sdc::AContainer>(c);
+		boost::dynamic_pointer_cast<sdc::AContainer>(c);
 	if (!cont) {
 		return;
 	}
@@ -119,7 +119,7 @@ void FrxNodeUI::drawCorona(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	sd::ColorRGBA coronaCol = 
 		sdcu::getUIPropertyCached<FrxNodeCoronaPropertyTag>(sd::ColorRGBA());
 	coronaCol.setA(getCoronaAlpha());
-	FrxComponent::Ptr node = boost::shared_dynamic_cast<FrxComponent>(c);
+	FrxComponent::Ptr node = boost::dynamic_pointer_cast<FrxComponent>(c);
 	sd::Point2D loc = node->getPivot();
 	double rCore = getCoreRadius(c), rCorona = getCoronaRadius(c);
 	// clip
@@ -164,7 +164,7 @@ void FrxNodeUI::beginConnecting(const sdc::events::MouseEvent &ev) {
 	if (!circ->containsComponent(toConnect))
 		circ->add(toConnect, FrxCircuidView::Z_InteractiveStuff);
 	// setline coord.
-	FrxComponent::Ptr frxC = boost::shared_dynamic_cast<FrxComponent>(c);
+	FrxComponent::Ptr frxC = boost::dynamic_pointer_cast<FrxComponent>(c);
 	SAMBAG_ASSERT(frxC);
 	sd::Point2D loc = frxC->getPivot();
 	boost::geometry::add_point(loc, frxC->getLocation());
@@ -226,11 +226,11 @@ FrxNodeUI::getConnectingComponents(const sdc::events::MouseEvent &ev)
 	if (!circ)
 		return res;
 	// uset usr message
-	boost::get<0>(res) = boost::shared_dynamic_cast<FrxNode>(c);
+	boost::get<0>(res) = boost::dynamic_pointer_cast<FrxNode>(c);
 	const sd::Point2D &loc = 
 		circ->getViewport()->getView()->getLocationOnComponent(ev.getLocationOnScreen());
 	
-	boost::get<1>(res) = boost::shared_dynamic_cast<FrxNode>(
+	boost::get<1>(res) = boost::dynamic_pointer_cast<FrxNode>(
 		circ->findComponentOnPoint(loc, 
 		FrxCircuidView::ZArea_BeginNodes, 
 		FrxCircuidView::ZArea_EndNodes)

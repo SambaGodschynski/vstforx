@@ -39,7 +39,7 @@ private:
 protected:
 	//-------------------------------------------------------------------------
 	Adaptee::Ptr getPlugin() const {
-		return boost::shared_dynamic_cast<Adaptee>(getAdaptee());
+		return boost::dynamic_pointer_cast<Adaptee>(getAdaptee());
 	}
 private:
 public:

@@ -59,7 +59,7 @@ public:
 	}
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::shared_dynamic_cast<ParameterAdapter>( self.lock() );
+		return boost::dynamic_pointer_cast<ParameterAdapter>( self.lock() );
 	}
 	//-------------------------------------------------------------------------
 	void setAdaptee(Adaptee::Ptr p) {

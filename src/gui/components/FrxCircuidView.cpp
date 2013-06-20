@@ -71,7 +71,7 @@ namespace {
 	}
 	void _getViewportRect(sdc::AComponentPtr view, sd::Rectangle &res) {
 		sdc::Viewport::Ptr v =
-			boost::shared_dynamic_cast<sdc::Viewport>(view->getParent());
+			boost::dynamic_pointer_cast<sdc::Viewport>(view->getParent());
 		if (!v) {
 			return;
 		}
@@ -165,7 +165,7 @@ sdc::AComponentPtr BgPane::findComponentAt(const sd::Point2D &p,
 					continue;
 				}
 				sdc::AContainer::Ptr con = 
-					boost::shared_dynamic_cast<sdc::AContainer>(comp);
+					boost::dynamic_pointer_cast<sdc::AContainer>(comp);
 				if (con) {
 					sdc::AComponent::Ptr deeper = con->findComponentAt(
 						trP,
@@ -237,7 +237,7 @@ void FrxCircuidView::add(sdc::AComponentPtr comp, ZOrder zord, bool normalize)
 		content->add(comp);
 	}
 	FrxComponent::Ptr frxC =
-		boost::shared_dynamic_cast<FrxComponent>(comp);
+		boost::dynamic_pointer_cast<FrxComponent>(comp);
 	if (!frxC)
 		return;
 
@@ -273,7 +273,7 @@ void FrxCircuidView::fireViewEvent(FrxCircuidViewEvent::Type type, FrxComponentP
 //-----------------------------------------------------------------------------
 void FrxCircuidView::remove(sdc::AComponentPtr comp) {
 	SAMBAG_BEGIN_SYNCHRONIZED(getTreeLock())
-	FrxComponent::Ptr frxC = boost::shared_dynamic_cast<FrxComponent>(comp);
+	FrxComponent::Ptr frxC = boost::dynamic_pointer_cast<FrxComponent>(comp);
 	if (frxC) { // fire removing event
 		frxC->sce::EventSender<OnRemoving>::notifyListeners(frxC.get(),
 			OnRemoving(getPtr()));

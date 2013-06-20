@@ -98,7 +98,7 @@ void FrxConnection::resetBounds() {
 	);
 	// adjust bounds (considering line style)
 	ui::FrxConnectionUIBase::Ptr ui = 
-		boost::shared_dynamic_cast<ui::FrxConnectionUIBase>(getUI());
+		boost::dynamic_pointer_cast<ui::FrxConnectionUIBase>(getUI());
 	if (ui)
 		ui->adjustBoundingRect(r, getPtr());
 

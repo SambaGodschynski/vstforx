@@ -49,7 +49,7 @@ private:
 public:
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::shared_dynamic_cast<NodeAdapter>( self.lock() );
+		return boost::dynamic_pointer_cast<NodeAdapter>( self.lock() );
 	}
 	//-------------------------------------------------------------------------
 	static Ptr create(Adaptee::Ptr a = Adaptee::Ptr()) {
