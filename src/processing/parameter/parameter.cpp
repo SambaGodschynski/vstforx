@@ -36,7 +36,7 @@ struct Updater {
 };
 typedef Animation<double, DynamicTween, Updater> Tween;
 Tween::Ptr getTweenPtr(boost::shared_ptr<void> t) {
-    return boost::shared_static_cast<Tween>(t);
+    return boost::static_pointer_cast<Tween>(t);
 }
 //------------------------------------------------------------------------------------------------------------
 ParameterConnection::ParameterConnection(ParameterPtr a, ParameterPtr b) : 

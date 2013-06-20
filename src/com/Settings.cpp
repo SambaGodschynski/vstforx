@@ -24,7 +24,7 @@ static const string WINDOW_WIDTH = "window_width";
 static const string WINDOW_HEIGHT = "window_height";
 static const string MAX_LOGSIZE = "max_logfile_sizeKB";
 static const string SKIP_SCAN = "fast_scan";
-static const string STR_VERSION = "1.0.0";
+static const string STR_VERSION = "1.0.1";
 
 //------------------------------------------------------------------------------------------------------------
 static inline void parseConfigLine( ifstream &f, com::MyString &token, com::MyString &content ) {
