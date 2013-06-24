@@ -205,7 +205,7 @@ void VstForxEditor::open() {
         fWin = boost::dynamic_pointer_cast<sdc::FramedWindow>(clientWindow);
     }
 	clientWindow->setWindowBounds(
-		sd::Rectangle(0,0,::com::getSettings().getWindowWidth(), 
+		sd::Rectangle(0,100,::com::getSettings().getWindowWidth(),
 		::com::getSettings().getWindowHeight())
 	);
     if (fWin) {
