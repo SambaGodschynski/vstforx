@@ -3,6 +3,18 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{CLIBS}/sambag)
 
 project (vstforx)
 
+SET(FRX_VERSION_MAJOR 1)
+SET(FRX_VERSION_MINOR 0)
+SET(FRX_VERSION_MICRO 1)
+execute_process(COMMAND git log --pretty=format:%h -n 1
+                OUTPUT_VARIABLE FRX_VERSION_BUILD)
+SET(SAMBAG_VERSION_BUILD $ENV{SAMBAG_BUILD})
+
+CONFIGURE_FILE(
+  "${PROJECT_SOURCE_DIR}/src/com/FrxConfig.h.in"
+  "${PROJECT_BINARY_DIR}/src/com/FrxConfig.h"
+)
+
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 add_definitions(-DBOOST_UBLAS_TYPE_CHECK=0)
 add_definitions(-DBOOST_FILESYSTEM_VERSION=3)

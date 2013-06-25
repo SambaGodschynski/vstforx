@@ -17,6 +17,7 @@
 #include "com/PPIError.h"
 #include <sambag/disco/FileResourceManager.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
+#include "FrxConfig.h"
 
 static const string SEPARATOR = "=";
 static const string IN_DIR = "in_dir";
@@ -24,7 +25,6 @@ static const string WINDOW_WIDTH = "window_width";
 static const string WINDOW_HEIGHT = "window_height";
 static const string MAX_LOGSIZE = "max_logfile_sizeKB";
 static const string SKIP_SCAN = "fast_scan";
-static const string STR_VERSION = "1.0.1";
 
 //------------------------------------------------------------------------------------------------------------
 static inline void parseConfigLine( ifstream &f, com::MyString &token, com::MyString &content ) {
@@ -240,7 +240,10 @@ const std::string & Settings::getBundleId() const {
 }
 //------------------------------------------------------------------------------------------------------------
 string Settings::versionToString() const {
-	return STR_VERSION + (isDemo() ? " DEMO VERSION" : "");
+	std::stringstream ss;
+	ss<<FRX_VERSION_MAJOR<<"."<<FRX_VERSION_MINOR<<"."<<FRX_VERSION_MICRO<<" - "<<FRX_VERSION_BUILD;
+	ss<<":"<<SAMBAG_VERSION_BUILD;
+	return ss.str() + (isDemo() ? " DEMO VERSION" : "");
 }
 //------------------------------------------------------------------------------------------------------------
 bool Settings::getBooleanValue(const std::string &key) const {
