@@ -12,10 +12,10 @@ function __nameWorkaround() {
 function build() {
   ORG=$(pwd)
   cd ~/workspace/sambag
-  sh build.sh -i ~/clibs -g "Unix Makefiles" -f "-DCMAKE_OSX_ARCHITECTURES=i386"
+  sh build.sh -i ~/clibs -g "Unix Makefiles" -f "-DCMAKE_OSX_ARCHITECTURES=i386" $@
   make
   cd ~/workspace/vstforx
-  sh build.sh -i ~/clibs -g "Unix Makefiles" -f "-DCMAKE_OSX_ARCHITECTURES=i386"
+  sh build.sh -i ~/clibs -g "Unix Makefiles" -f "-DCMAKE_OSX_ARCHITECTURES=i386" $@
   make
   cd src
   __nameWorkaround vstforx.app vstforx.vst
