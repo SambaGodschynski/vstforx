@@ -37,6 +37,10 @@ IF(APPLE)
 	add_definitions(-DDISCO_USE_COCOA)	
 	FIND_LIBRARY(COCOA_LIBRARY Cocoa)	
 	FIND_LIBRARY(CARBON_LIBRARY Carbon)
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O1") #problems with llvm optimization > O1
+                                                                      #see minDep branch->testsuite
+        set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O1")
+        set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -O1")	
 	set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvmgcc42")
 ELSEIF(UNIX)
 	find_package(X11 REQUIRED)
