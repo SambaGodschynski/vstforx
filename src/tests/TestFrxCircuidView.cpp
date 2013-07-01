@@ -14,6 +14,13 @@
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::TestFrxCircuidView );
 
+frx::gui::components::FrxPluginNode::Ptr createTestPlugin() {
+    using namespace frx::gui::components;
+    FrxPluginNode::Ptr res = FrxPluginNode::create();
+    res->setName("Plugin");
+    return res;
+}
+
 namespace tests {
 //=============================================================================
 //  Class TestFrxCircuidView
@@ -24,17 +31,17 @@ void TestFrxCircuidView::testZOrder() {
 	using namespace sambag::disco::components;
 	FrxCircuidView::Ptr circ = FrxCircuidView::create();
 	const AContainer::Components &comps = circ->getContentPane()->getComponents();
-	FrxPluginNode::Ptr p01 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p02 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p025 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p03 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p04 = FrxPluginNode::create();
+	FrxPluginNode::Ptr p01 = createTestPlugin();
+	FrxPluginNode::Ptr p02 = createTestPlugin();
+	FrxPluginNode::Ptr p025 = createTestPlugin();
+	FrxPluginNode::Ptr p03 = createTestPlugin();
+	FrxPluginNode::Ptr p04 = createTestPlugin();
 	circ->add(p01, 4.f);
 	circ->add(p02, 3.f);
 	circ->add(p025, 3.5f);
 	circ->add(p03, 1.f);
 	circ->add(p04, 2.f);
-	std::string expStr("{FrxSelection[1], FrxPlugin[1], FrxPlugin[2], FrxPlugin[3], FrxPlugin[3.5], FrxPlugin[4]}");
+	std::string expStr("{FrxSelection[1], Plugin[1], Plugin[2], Plugin[3], Plugin[3.5], Plugin[4]}");
 	CPPUNIT_ASSERT_EQUAL(expStr, circ->componentsToString());
 }
 namespace {
@@ -61,10 +68,10 @@ void TestFrxCircuidView::testFindComponentsFiltered() {
 	using namespace frx::gui::components;
 	using namespace sambag::disco::components;
 	FrxCircuidView::Ptr circ = FrxCircuidView::create();
-	FrxPluginNode::Ptr p01 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p02 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p03 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p04 = FrxPluginNode::create();
+	FrxPluginNode::Ptr p01 = createTestPlugin();
+	FrxPluginNode::Ptr p02 = createTestPlugin();
+	FrxPluginNode::Ptr p03 = createTestPlugin();
+	FrxPluginNode::Ptr p04 = createTestPlugin();
 	circ->add(p01, 4.f);
 	circ->add(p02, 3.f);
 	circ->add(p03, 99.f);
@@ -93,10 +100,10 @@ void TestFrxCircuidView::testFindComponentsInArea() {
 	using namespace sambag::disco;
 	using namespace sambag::disco::components;
 	FrxCircuidView::Ptr circ = FrxCircuidView::create();
-	FrxPluginNode::Ptr p01 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p02 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p03 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p04 = FrxPluginNode::create();
+	FrxPluginNode::Ptr p01 = createTestPlugin();
+	FrxPluginNode::Ptr p02 = createTestPlugin();
+	FrxPluginNode::Ptr p03 = createTestPlugin();
+	FrxPluginNode::Ptr p04 = createTestPlugin();
 	circ->add(p01, 1.f);
 	p01->setSize(Dimension(15,15));
 	p01->setLocation(0,0); // outside
@@ -135,10 +142,10 @@ void TestFrxCircuidView::testFindAllComponents() {
 	using namespace sambag::disco;
 	using namespace sambag::disco::components;
 	FrxCircuidView::Ptr circ = FrxCircuidView::create();
-	FrxPluginNode::Ptr p01 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p02 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p03 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p04 = FrxPluginNode::create();
+	FrxPluginNode::Ptr p01 = createTestPlugin();
+	FrxPluginNode::Ptr p02 = createTestPlugin();
+	FrxPluginNode::Ptr p03 = createTestPlugin();
+	FrxPluginNode::Ptr p04 = createTestPlugin();
 	circ->add(p01, 1.f);
 	p01->setSize(Dimension(15,15));
 	p01->setLocation(0,0);
@@ -175,14 +182,14 @@ void TestFrxCircuidView::testGetIndexOf() {
 	using namespace sambag::disco::components;
 	FrxCircuidView::Ptr circ = FrxCircuidView::create();
 	const AContainer::Components &comps = circ->getContentPane()->getComponents();
-	FrxPluginNode::Ptr p01 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p02 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p025 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p03 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p04 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p05 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p06 = FrxPluginNode::create();
-	FrxPluginNode::Ptr p07 = FrxPluginNode::create();
+	FrxPluginNode::Ptr p01 = createTestPlugin();
+	FrxPluginNode::Ptr p02 = createTestPlugin();
+	FrxPluginNode::Ptr p025 = createTestPlugin();
+	FrxPluginNode::Ptr p03 = createTestPlugin();
+	FrxPluginNode::Ptr p04 = createTestPlugin();
+	FrxPluginNode::Ptr p05 = createTestPlugin();
+	FrxPluginNode::Ptr p06 = createTestPlugin();
+	FrxPluginNode::Ptr p07 = createTestPlugin();
 	circ->add(p01, 0.f);
 	circ->add(p02, 3.f);
 	circ->add(p025, 3.5f);
@@ -194,7 +201,7 @@ void TestFrxCircuidView::testGetIndexOf() {
 	//std::fstream f("outp.txt", std::fstream::out);
 	//f<<circ->componentsToString();
 	//f.close();
-	std::string ist("{FrxPlugin[0], FrxSelection[1], FrxPlugin[1], FrxPlugin[2], FrxPlugin[3], FrxPlugin[3.5], FrxPlugin[5], FrxPlugin[6], FrxPlugin[7]}");
+	std::string ist("{Plugin[0], FrxSelection[1], Plugin[1], Plugin[2], Plugin[3], Plugin[3.5], Plugin[5], Plugin[6], Plugin[7]}");
 	CPPUNIT_ASSERT_EQUAL(ist, circ->componentsToString());
 	CPPUNIT_ASSERT_EQUAL((int)0, circ->getIndexOf(0.));
 	CPPUNIT_ASSERT_EQUAL((int)1, circ->getIndexOf(0.5));
