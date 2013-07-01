@@ -32,9 +32,7 @@ class ParameterListener;
 class HasParameter;
 class Parameter;
 class ConnectionOperator;
-class Inertia;
 typedef boost::shared_ptr<Parameter> ParameterPtr;
-typedef boost::shared_ptr<Inertia> InertiaPtr;
 } // namespace parameter
 } // namespace processing
 
@@ -145,7 +143,7 @@ public:
  * @class ParameterConnection.
  * Repraesentiert Parameter-Verbindung.
  */
-class ParameterConnection : public HasParameter {
+class ParameterConnection {
 //============================================================================================================
 friend class boost::serialization::access;
 public:
@@ -160,8 +158,6 @@ private:
 	 * !NUR AUFRUFEN WENN self-Ptr valid!
 	 */
 	void initListener();
-    //--------------------------------------------------------------------------------------------------------
-    void initInertiaParameter();
 	//--------------------------------------------------------------------------------------------------------
 	void initListener(ConnectionOperator::Ptr op);
 	//--------------------------------------------------------------------------------------------------------
@@ -178,23 +174,12 @@ private:
 		ar & b;
 		ar & ops;
 		ar & self;
-        if (version > 0) {
-            ar & inertiaDuration;
-            ar & inertiaType;
-        } else {
-            initInertiaParameter();
-        }
 		if (Archive::is_loading::value) {
 			initListener();
 		}
 	}
-    //--------------------------------------------------------------------------------------------------------
-    typedef boost::shared_ptr<void> TweenPtr;
-    TweenPtr _tween;
 	//--------------------------------------------------------------------------------------------------------
 	ParameterPtr a, b;
-    //--------------------------------------------------------------------------------------------------------
-    ParameterPtr inertiaDuration, inertiaType;
 	//--------------------------------------------------------------------------------------------------------
 	ParameterConnection() : updateLock(false) {}
 	//--------------------------------------------------------------------------------------------------------
@@ -219,12 +204,6 @@ private:
 	 * @param
 	 */
 	void onChangedB(void *src, const VstNumber &newValue);
-    //--------------------------------------------------------------------------------------------------------
-    void update(ParameterPtr p, const VstNumber &newValue);
-	//--------------------------------------------------------------------------------------------------------
-	void onInertiaDurationChanged(void *src, const float &value);
-    //--------------------------------------------------------------------------------------------------------
-	void onInertiaTypeChanged(void *src, const float &value);
 public:
 	//--------------------------------------------------------------------------------------------------------
 	Ptr getPtr() const {
@@ -277,24 +256,8 @@ public:
 	ParameterPtr getParameterB() const {
 		return b;
 	}
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * @param index
-	 */
-	virtual ParameterPtr getParameter ( size_t index ) const;
-    //--------------------------------------------------------------------------------------------------------
-	/**
-	 * @return 1
-	 */
-	virtual size_t getNumParameter () const;
-
 	
 };
-}} // namespace(s)
-
-BOOST_CLASS_VERSION(processing::parameter::ParameterConnection, 1)
-    
-namespace processing { namespace parameter {
 //============================================================================================================
 /**
  *  @class ParameterConnectionComparator.
@@ -461,8 +424,6 @@ friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<Parameter> Ptr;
-	//--------------------------------------------------------------------------------------------------------
-	typedef boost::weak_ptr<Parameter> WPtr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	typedef Parameter* U; //verbundener Parameter
