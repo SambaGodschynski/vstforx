@@ -243,6 +243,7 @@ void VstForxEditor::_open( void *ptr ) {
 		return;
 	}
 	nestedWindow->validate();
+    sce::EventSender<ViewIsReadyEvent>::notifyListeners(this, ViewIsReadyEvent());
 	return;
 }
 //-----------------------------------------------------------------------------

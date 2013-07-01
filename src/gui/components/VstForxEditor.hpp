@@ -19,10 +19,12 @@ namespace frx { namespace processing {
 }} // namespace(s)
 
 namespace frx { namespace gui { namespace components {
+struct ViewIsReadyEvent {};
 //=============================================================================
 class VstForxEditor : 
 	public AEffEditor,
-	public sambag::dsp::IEditor
+	public sambag::dsp::IEditor,
+    public sce::EventSender<ViewIsReadyEvent>
 {
 //=============================================================================
 friend class frx::processing::VstForxPlug;

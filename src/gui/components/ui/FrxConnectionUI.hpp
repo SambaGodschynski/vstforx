@@ -303,7 +303,7 @@ void FrxConnectionUI<CT>::clipNode(ConcreteConnectionPtr c, FrxNode::Ptr node,
 	boost::geometry::subtract_point(loc, c->getLocation());
 	
 	cn->arc(loc, node->getRadius());
-	cn->clip();
+    cn->clip();
 }
 //-----------------------------------------------------------------------------
 template <class CT>
@@ -330,7 +330,7 @@ void FrxConnectionUI<CT>::clipEndNodes(ConcreteConnectionPtr c,
 template <class CT>
 void FrxConnectionUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	//Super::draw(cn, c);
-	typename _ConcreteConnection::Ptr ccn = 
+    typename _ConcreteConnection::Ptr ccn =
 		boost::dynamic_pointer_cast<_ConcreteConnection>(c);
 	SAMBAG_ASSERT(ccn);
 	
@@ -339,7 +339,7 @@ void FrxConnectionUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	boost::geometry::subtract_point(points.second, ccn->getLocation());
 
 	setStyleToContext(cn);
-	clipEndNodes(ccn, cn);
+	//clipEndNodes(ccn, cn);
 	cn->moveTo(points.first);
 	cn->lineTo(points.second);
 	cn->stroke();

@@ -24,6 +24,7 @@
 #include <sambag/lua/LuaSequence.hpp>
 #include <gui/IViewModelMap.hpp>
 #include <gui/components/FrxConcreteIO.hpp>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace scripts {
 namespace {
@@ -731,7 +732,7 @@ void FrxClosePlugin::process(Ctrl *ctrl) {
 	boost::this_thread::sleep(boost::posix_time::milliseconds(FRX_OPENCLOSE_WORKAROUND_WAIT));
 }
 //-----------------------------------------------------------------------------
-void onEditorOpen(void *src, const sambag::disco::components::OnOpenEvent &ev, bool *isOpen) 
+void onEditorOpen(void *src, const frx::gui::components::ViewIsReadyEvent &ev, bool *isOpen) 
 {
 	*isOpen = true;
 }
@@ -745,8 +746,9 @@ void FrxOpenEditor::process(Ctrl *ctrl) {
 		return;
 	}
 	bool isOpen = false;
-	sambag::disco::components::Window::OnOpenEventSender::Connection evcn = 
-		editor->getHostWindow()->addOnOpenEventListener(
+    using frx::gui::components::ViewIsReadyEvent;
+	sdc::Window::OnOpenEventSender::Connection evcn =
+        editor->sce::EventSender<ViewIsReadyEvent>::addEventListener(
 			boost::bind(&onEditorOpen, _1, _2, &isOpen)
 		);
 	while (!isOpen) {
