@@ -251,7 +251,7 @@ void FrxFlagUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	if (!target) {
 		return;
 	}
-	//clip(flag, cn);
+	clip(flag, cn);
 	sambag::com::Number fs = flagStyle.fontSize();
 	flagStyle.intoContext(cn);
 	

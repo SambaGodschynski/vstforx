@@ -810,10 +810,15 @@ LuaPtr FrxAddProcessor::process(std::string _name, Ctrl *ctrl) {
 	FRX_GET_EDITOR
 	using namespace frx::gui;
 	using namespace frx::gui::components;
-	FrxCircuidViewPtr view = editor->getCircuidView();
+    FrxCircuidViewPtr view = editor->getCircuidView();
 	IFrxComponentFactory &fac = getComponentFactory(view);
 	IFrxControl &frxctrl = getFrxControl(view);
-	FrxProcessorNodePtr res = fac.getProcessorCreator(_name)(view);
+	FrxProcessorNodePtr res;
+    try {
+        res = fac.getProcessorCreator(_name)(view);
+    } catch (...) {
+        res = FrxProcessorNodePtr();
+    }
 	if (!res) {
 		return NULL_LUAPTR;
 	}

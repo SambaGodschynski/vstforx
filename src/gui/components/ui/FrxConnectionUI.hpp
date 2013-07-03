@@ -301,7 +301,6 @@ void FrxConnectionUI<CT>::clipNode(ConcreteConnectionPtr c, FrxNode::Ptr node,
 	sd::Point2D loc = node->getLocation();
 	boost::geometry::add_point(loc, node->getPivot());
 	boost::geometry::subtract_point(loc, c->getLocation());
-	
 	cn->arc(loc, node->getRadius());
     cn->clip();
 }
@@ -315,15 +314,14 @@ void FrxConnectionUI<CT>::clipEndNodes(ConcreteConnectionPtr c,
 	if (!a && !b) {
 		return;
 	}
-	
 	cn->setFillRule(sd::IDrawContext::FILL_RULE_EVEN_ODD);
 	if (a) {
 		cn->rect(sd::Rectangle(0, 0, c->getWidth(), c->getHeight()));
-		clipNode(c, a, cn);	
+		clipNode(c, a, cn);
 	}
 	if (b) {
 		cn->rect(sd::Rectangle(0, 0, c->getWidth(), c->getHeight()));
-		clipNode(c, b, cn);	
+		clipNode(c, b, cn);
 	}
 }
 //-----------------------------------------------------------------------------
@@ -338,11 +336,11 @@ void FrxConnectionUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	boost::geometry::subtract_point(points.first, ccn->getLocation());
 	boost::geometry::subtract_point(points.second, ccn->getLocation());
 
-	setStyleToContext(cn);
-	//clipEndNodes(ccn, cn);
+	clipEndNodes(ccn, cn);
 	cn->moveTo(points.first);
 	cn->lineTo(points.second);
-	cn->stroke();
+	setStyleToContext(cn);
+    cn->stroke();
 }
 //-----------------------------------------------------------------------------
 SAMBAG_PROPERTY_TAG(FrxConnectionHitDistance, "FrxConnection.hitDistance");

@@ -97,7 +97,7 @@ void VstForxPlug::registerView(fgc::FrxCircuidViewPtr view) {
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::unRegisterView(fgc::FrxCircuidViewPtr view) {
-	PlugMap::left_map::iterator it = plugMap.left.find(view);
+    PlugMap::left_map::iterator it = plugMap.left.find(view);
 	if (it == plugMap.left.end())
 		return;
 	plugMap.left.erase(it);
