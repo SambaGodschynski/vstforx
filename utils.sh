@@ -2,13 +2,13 @@
 
 function samba_loop() 
 {
-	for x in $(seq $2)
+	for (( c=1; c<=$2; c++ ))
 	do
-		echo run $x:
+		echo run $c:
 		echo "<<<<<<<<<<>>>>>>>>>>"
 		$1
 	done
 }
 
 export -f samba_loop
-echo samba_loop() exported
+echo "samba_loop() exported"
