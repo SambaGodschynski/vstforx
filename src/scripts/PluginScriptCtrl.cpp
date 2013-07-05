@@ -943,7 +943,13 @@ void PluginScriptCtrl::runThread() {
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::startScriptCall(const std::string &fname) {
 	if (fname!="" && verbose) {
-		sambag::com::log("call " + fname);
+        if (fname == "frxOpenEditor" ||
+            fname == "frxOpenPlugin" ||
+            fname == "frxCloseEditor" ||
+            fname == "frxClosePlugin")
+        {
+            sambag::com::log("call " + fname);
+        }
 	}
 	lastCall = fname;
 }

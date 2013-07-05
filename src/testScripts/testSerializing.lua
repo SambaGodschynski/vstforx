@@ -1,5 +1,7 @@
 -- ### BEGIN FUNCTIONS
 
+--frxVerbose(frxTrue())
+
 function clearView()
     frxClearView()
     num = getNumElements()
@@ -55,7 +57,8 @@ function doSequenceAssertElements(seq, numElements)
 end
 -- ### END FUNCTIONS
 
---frxVerbose(frxTrue())
+
+--for ccc = 1, 100,1 do
 
 doSequence({OP, OE})
 
@@ -77,7 +80,6 @@ for i, x in pairs(c) do
  		-- frxAddComponentParameter(x ,y)
 	end
 end
-
 
 
 numElements = getNumElements()
@@ -123,4 +125,4 @@ stream = frxSerializePlugin()
 doSequenceAssertElements({CE, CP, OE, OP}, numElements)
 doSequence({CV})
 
-
+--end

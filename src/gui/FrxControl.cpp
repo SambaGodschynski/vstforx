@@ -62,6 +62,9 @@
 
 
 namespace frx { namespace gui {
+SAMBAG_DERIVATED_EXCEPTION_CLASS(
+        sambag::com::exceptions::IllegalStateException, __ControllerMapEx
+);
 using namespace components;
 //------------------------------------------------------------------------------
 boost::tuple<
@@ -74,13 +77,11 @@ getControllerAndMap(FrxCircuidViewPtr circ)
 	frx::processing::IModelController::Ptr ctrl = 
 		frx::processing::getModelController(circ);
 	if (!ctrl) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"IModelController == NULL");
+		SAMBAG_THROW(__ControllerMapEx, "IModelController == NULL");
 	}
 	IViewModelMap::Ptr map = getViewModelMap(circ);
 	if (!map) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"IViewModelMap == NULL");
+		SAMBAG_THROW(__ControllerMapEx, "IViewModelMap == NULL");
 	}
 	return boost::make_tuple(ctrl, map);
 }
@@ -153,7 +154,8 @@ void parameterChanged(void *src, float value,
 	);
 }
 //-----------------------------------------------------------------------------
-bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj, FrxCircuidViewWPtr _view)
+bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj,
+                          FrxCircuidViewWPtr _view)
 {
 	fp::ModelObject::Ptr mObj = _mObj.lock();
 	FrxCircuidViewPtr view = _view.lock();
@@ -163,7 +165,13 @@ bool onModelObjectRemoved(fp::ModelObject::WPtr _mObj, FrxCircuidViewWPtr _view)
 	// get view obj.
 	frx::processing::IModelController::Ptr ctrl;
 	IViewModelMap::Ptr map;
-	boost::tie(ctrl, map) = getControllerAndMap(view);
+    try {
+        boost::tie(ctrl, map) = getControllerAndMap(view);
+    } catch (const __ControllerMapEx &ex) {
+        // happens randomly when FrxCircuidView (which is object for signal
+        // tracker) dissapears to late, and so an old signal was called
+        return true;
+    }
 	ViewObject::Ptr obj = map->getViewObject(mObj);
 	if (!obj) { // nothing to do anymore
 		return true;
@@ -252,7 +260,9 @@ void processorPropertyChanged(void *src,
 //-----------------------------------------------------------------------------
 void registerOnView(FrxCircuidViewPtr view, FrxProcessorNode::Ptr viewObj) 
 {
-
+    
+    //std::cout<<std::hex<<"s "<<viewObj->getName()<<"("<<viewObj.get()<<")"<<": "<<view.get()<<std::endl;
+    
 	frx::processing::IProcessor::Ptr modelObj = 
 		getModelObject<frx::processing::IProcessor>(view, viewObj);
 
@@ -294,7 +304,9 @@ void registerOnView(FrxCircuidViewPtr view, FrxParameter::Ptr knob) {
 	par->getEventSender().addTrackedValueChangedListener(
 		boost::bind(&parameterChanged, _1, _2, _par, _knob), knob
 	);
-	par->addRemoveRequestExecuter( // make sure that knob will be removed
+    using frx::processing::ModelObject;
+    ModelObject::Connection cn = par->addRemoveRequestExecuter(
+                                   // make sure that knob will be removed
 								   // when related model object does.
 		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
 	);
@@ -495,17 +507,17 @@ namespace {
 		return FrxConnection::Ptr();
 	}
 	template<class TypeList>
-	void _castSwitch(fgc::FrxCircuidViewPtr view, FrxComponentPtr c) {	
+	void _registerIfType(fgc::FrxCircuidViewPtr view, FrxComponentPtr c) {	
 		typedef typename TypeList::Head T;
 		typename T::Ptr ptr = 
 			boost::dynamic_pointer_cast<T>(c);
 		if (ptr) {
 			registerOnView(view, ptr);
 		}
-		_castSwitch<typename TypeList::Tail>(view, c);
+		_registerIfType<typename TypeList::Tail>(view, c);
 	}
 	template<>
-	void _castSwitch<Loki::NullType>(fgc::FrxCircuidViewPtr view, FrxComponentPtr c) 
+	void _registerIfType<Loki::NullType>(fgc::FrxCircuidViewPtr view, FrxComponentPtr c) 
 	{	
 	}
 }
@@ -515,7 +527,7 @@ void FrxControl::registerComponent(fgc::FrxCircuidViewPtr view, FrxComponentPtr 
 	typedef LOKI_TYPELIST_2( FrxParameter,
 		FrxProcessorNode
 	) Types;
-	_castSwitch<Types>(view, c);
+	_registerIfType<Types>(view, c);
 }
 //-----------------------------------------------------------------------------
 fgc::FrxComponentPtr FrxControl::_addRelatedKnobToView(fgc::FrxCircuidViewPtr view, 
@@ -682,7 +694,8 @@ void addOutParameter(fgc::FrxCircuidViewPtr view,
 		out.push_back(knob);
 	}
 }
-void initExtraMap() 
+
+void _initExtraMap()
 {
 	using namespace boost::assign;
 	extraMap = map_list_of
@@ -690,12 +703,17 @@ void initExtraMap()
 		(Loki::TypeInfo(typeid(FrxADSRNode)), &addOutParameter)
 	;
 }
+    
+/**
+ * returns type related objects which should added to view
+ * besides the main object.
+ */
 void addExtraContent(fgc::FrxCircuidViewPtr view, 
 	std::list<sdc::AComponentPtr> &out, 
 	FrxProcessorNodePtr pr)
 {
 	if (extraMap.empty()) {
-		initExtraMap();
+		_initExtraMap();
 	}
 	ExtraMap::const_iterator it = extraMap.find(
 		typeid(*(pr.get()))
@@ -709,20 +727,27 @@ void addExtraContent(fgc::FrxCircuidViewPtr view,
 void FrxControl::addProcessorToView(fgc::FrxCircuidViewPtr view, 
 		FrxProcessorNodePtr pr)
 {
-	// add to view
-	view->add(pr, FrxCircuidView::Z_ProcessorNodes);
-	pr->resetIOLocation();
-	// register
-	registerComponent(view, pr);
-	// hover
-	FrxSelection::Ptr sel = view->getSelection();
-	sel->setVisible(true);
-	Components toAdd;
-	toAdd.push_back(pr);
-	addExtraContent(view, toAdd, pr);
-	toAdd.insert(toAdd.end(), pr->getInputs().begin(), pr->getInputs().end());
-	toAdd.insert(toAdd.end(), pr->getOutputs().begin(), pr->getOutputs().end());
-	sel->addElements(toAdd);
+    sdc::AComponent::Ptr root = view->getTopLevelRootPane();
+    if (!root) {
+        return;
+    }
+    //std::cout<<std::hex<<"a "<<pr->getName()<<"("<<pr.get()<<")"<<": "<<view.get()<<std::endl;
+    SAMBAG_BEGIN_SYNCHRONIZED( root->getTreeLock() )
+        // add to view
+        view->add(pr, FrxCircuidView::Z_ProcessorNodes);
+        pr->resetIOLocation();
+        // register
+        registerComponent(view, pr);
+        // hover
+        FrxSelection::Ptr sel = view->getSelection();
+        sel->setVisible(true);
+        Components toAdd;
+        toAdd.push_back(pr);
+        addExtraContent(view, toAdd, pr);
+        toAdd.insert(toAdd.end(), pr->getInputs().begin(), pr->getInputs().end());
+        toAdd.insert(toAdd.end(), pr->getOutputs().begin(), pr->getOutputs().end());
+        sel->addElements(toAdd);
+    SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 FrxControl::FrxControl() {
@@ -742,34 +767,44 @@ namespace {
 //-----------------------------------------------------------------------------
 void FrxControl::removeComponent(FrxCircuidViewPtr _view, FrxComponentPtr _c)
 {
-	FrxCircuidViewPtr view(_view);
+    FrxCircuidViewPtr view(_view);
 	FrxComponentPtr c(_c);
 	if (!_isRemovable(c)) {
 		return;
 	}
 	if (!c || !view)
 		return;
-	// get model obj.
-	frx::processing::IModelController::Ptr ctrl;
-	IViewModelMap::Ptr map;
-	boost::tie(ctrl, map) = getControllerAndMap(view);
-	frx::processing::ModelObject::Ptr mObj = map->getModelObject(c);
-    try {
-        if (mObj) {
-            mObj->remove(ctrl);
+	
+    sdc::AComponent::Ptr root = view->getTopLevelRootPane();
+    if (!root) {
+        return;
+    }
+    //std::cout<<std::hex<<"r "<<c->getName()<<"("<<c.get()<<")"<<": "<<view.get()<<std::endl;
+    SAMBAG_BEGIN_SYNCHRONIZED( root->getTreeLock() )
+    
+        // get model obj.
+        frx::processing::IModelController::Ptr ctrl;
+        IViewModelMap::Ptr map;
+        boost::tie(ctrl, map) = getControllerAndMap(view);
+        frx::processing::ModelObject::Ptr mObj = map->getModelObject(c);
+        try {
+            if (mObj) {
+                mObj->remove(ctrl);
         }
-        map->remove(c, mObj);
-        view->remove(c);
-        view->AContainer::redraw();
-	} catch(const std::exception &ex) {
-        std::stringstream ss;
-        ss<<"removing of " << c->getName() << " failed: " << ex.what();
-		view->errorMessage(ss.str());
-	} catch (...) {
-        std::stringstream ss;
-        ss<<"removing of " << c->getName() << " failed: unkown error";
-		view->errorMessage(ss.str());
-	}
+            map->remove(c, mObj);
+            view->remove(c);
+            view->AContainer::redraw();
+        } catch(const std::exception &ex) {
+            std::stringstream ss;
+            ss<<"removing of " << c->getName() << " failed: " << ex.what();
+            view->errorMessage(ss.str());
+        } catch (...) {
+            std::stringstream ss;
+            ss<<"removing of " << c->getName() << " failed: unkown error";
+            view->errorMessage(ss.str());
+        }
+    
+    SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 sdc::PopupMenuPtr FrxControl::getCircuidViewPopup(FrxCircuidViewPtr c) {
@@ -859,7 +894,7 @@ void FrxControl::executeCtrlCommand(void *src,
 	FrxComponentPtr comp = c.lock(); // can be null
 	SAMBAG_ASSERT(view);
 	try {
-		cmd(view,comp);
+        cmd(view,comp);
 	} catch(const std::exception &ex) {
 		view->errorMessage("operation failed: " + std::string(ex.what()));
 	} catch (...) {

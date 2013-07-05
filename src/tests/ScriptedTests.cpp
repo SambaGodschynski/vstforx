@@ -69,6 +69,9 @@ void ScriptedTests::setUp() {
 	plug = createPlug();
 	scriptCtrl = new frx::scripts::PluginScriptCtrl();
 	scriptCtrl->setPlugin(plug);
+    
+    //scriptCtrl->setVerbose(true);
+    
 	scriptCtrl->sce::EventSender<frx::scripts::ScriptExeFailedEvent>::addEventListener(
 		boost::bind(&ScriptedTests::onScriptExeFailed, this, _1, _2)
 	);
