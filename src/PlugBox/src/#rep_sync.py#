@@ -1,0 +1,188 @@
+"""
+downloads and install plugins automatically according to 
+repository input file. 
+"""
+
+import urllib
+import urllib2
+import os
+import re
+import time
+import xml.etree.ElementTree as xt
+import HTMLParser
+
+HEADER = { 'User-Agent' : 'user' }
+_CACHING_ON = True 
+_CACHE_PATH = ".Tmp"
+
+
+def _download(url, post_txt="downloading"):
+    """
+    downloads url with statusbar output: post_txt filename: [n%]
+    """
+    file_name = url.split('/')[-1]
+    u = urllib2.urlopen(url)
+    f = open(file_name, 'wb')
+    meta = u.info()
+    file_size = int(meta.getheaders("Content-Length")[0])
+    file_size_dl = 0
+    block_sz = 8192
+    while True:
+        buffer = u.read(block_sz)
+        if not buffer:
+            break
+        file_size_dl += len(buffer)
+        f.write(buffer)
+        status = r"%s %s: %10d [%3.2f%%]" % (post_txt, file_name, file_size_dl, file_size_dl * 100. / file_size)
+        status = status + chr(8)*(len(status)+1)
+        print status,
+    f.close()
+
+def _log(str):
+    print str
+
+def _norm_str(x):
+    x = x.strip()
+    x = re.sub(r"<.*?>", " ", x)
+    x = re.sub(r"[^\w]", "-", x)
+    return x
+
+def _norm_url(url, **values):
+    url = url.lower().replace("http://","")
+    url = _norm_str(url)
+    for x,y in values.items():
+        url = url + '-' + re.sub("[^\w]", "-", y)
+    return url
+
+def _req_GET(_url, **values):
+    if not os.path.exists(_CACHE_PATH):
+        os.makedirs(_CACHE_PATH)
+    cache_path = _CACHE_PATH + '/' + "tmp_"+_norm_url(_url, **values)
+    if _CACHING_ON == True and os.path.exists(cache_path):
+        _log("** CACHING ON: using local file %s **" % cache_path)
+        f = open(cache_path, 'rb')
+        res = f.read();
+        f.close()
+        return res
+        
+    if len(values) != 0:
+        data = urllib.urlencode(values)
+        url=_url+'?'+data
+    req = urllib2.Request(url, None, HEADER)
+    try:
+        response = urllib2.urlopen(req)
+        res = response.read()
+    except Exception, ex:
+        print "req: %s failed!: %s" % (url, ex) 
+        return ""
+    time.sleep(1)
+    if _CACHING_ON == True:
+        f = open(cache_path, 'wb')
+        f.write(res)
+        f.close()
+    return res
+
+def _save_data(path, data):
+    f = open(path, 'wb')
+    f.write(data)
+    f.close()
+
+def _is_localfile(url):
+    if url.find("http://") < 0:
+        return True
+    return False
+
+class RepSync:
+    urls=["http://public.plugbox.vstforx.de"]
+    dst_path="."
+    install_loc=""
+    __filter=None
+        
+    def __init__(self):
+        pass
+
+    def __unpack_commasep(self, x):
+        x = x.lower()
+        x = x.split(",")
+        x = map(lambda v: v.strip(), x)
+        return x
+    
+    def __filter_attr_values(self, filter_values, element_values):
+         f_v = self.__unpack_commasep(filter_values)
+         e_v = self.__unpack_commasep(element_values)
+         for x in f_v:
+             if x in e_v:
+                 return True
+         return False
+
+    def __pass_filter(self, el):
+        """
+        return attrib( x | y | z ) && attrib ( x | y | z )
+        """
+        res = True
+        if self.__filter==None:
+            return True
+        for key in self.__filter:
+            if el.attrib.has_key(key):
+                res = res & self.__filter_attr_values(self.__filter[key], el.attrib[key])
+               
+        return res
+
+    def __download(self, url):
+        pass
+
+    def __process_pluginpack(self, el):
+        self.install_loc = "%s/%s" % (self.install_loc, el.attrib["install-loc"])
+        for x in el.iter("file"):
+            if not self.__pass_filter(x):
+                continue
+            url = HTMLParser.HTMLParser().unescape(x.text)
+            self.__download(url)
+            
+    def __process_vendor(self, el):
+        print "  fetching '%s':" % el.attrib['name']
+        self.install_loc = "%s/%s" % (self.install_loc, el.attrib["install-loc"])
+        for x in el.iter('plugin-package'):
+            self.__process_pluginpack(x)
+            
+    def __process_tree(self, root):
+        if root.tag != "plugin-repository":
+            raise StandardError("invalid repository file")
+        print "fetching '%s' by '%s'" % (root.attrib["name"], root.attrib["author"])
+        print "tags: %s" % root.attrib['tags']
+        self.install_loc = "%s/%s" % (self.dst_path, root.attrib["install-loc"])
+        for x in root.iter('vendor'):
+            self.__process_vendor(x)
+        
+    def __load_repository(self, url):
+        if _is_localfile(url):
+            f = open(url, "r")
+            data = f.read()
+            f.close()
+        else:
+            data = _req_GET(url)
+        root = xt.XML(data)
+        self.__process_tree(root)
+        
+    def sync(self, **_filter):
+        """
+        downloads and install plugins
+          filter:
+            os, arch, format
+        """
+        self.__filter = _filter
+        for x in self.urls:
+            self.__load_repository(x)
+            
+    def __unpack_file(self, path):
+        if os.path.splitext(path) == ".zip":
+            self.__unzip_file(path)
+            
+    def add_file(self, path, url, **attr):
+        
+
+if __name__ == "__main__":
+    rs = RepSync()
+    rs.urls=["../testrep.xml"]
+    rs.sync(plattform="Windows, Mac", arch="x64")
+    
