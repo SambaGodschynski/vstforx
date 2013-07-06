@@ -39,7 +39,7 @@ class TestRepSync(unittest.TestCase):
     def test_download(self):
         global _last_downloads
         tc = self.testClass
-        tc.urls=["testfile.xml"]
+        tc.url="testfile.xml"
         tc.sync()
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip" in _last_downloads)
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_ub.zip" in _last_downloads)
@@ -64,8 +64,6 @@ class TestRepSync(unittest.TestCase):
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip" not in _last_downloads)
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_ub.zip" not in _last_downloads)
         _last_downloads=[]
-        
-        
         
 
 if __name__ == '__main__':

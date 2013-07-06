@@ -10,10 +10,20 @@ import re
 import time
 import xml.etree.ElementTree as xt
 import HTMLParser
+import zipfile as zip
+import hashlib
 
 HEADER = { 'User-Agent' : 'user' }
 _CACHING_ON = True 
 _CACHE_PATH = ".tmp"
+
+
+def _hashfile(f, hasher, blocksize=65536):
+    buf = f.read(blocksize)
+    while len(buf) > 0:
+        hasher.update(buf)
+        buf = f.read(blocksize)
+    return hasher.digest().encode('hex_codec')
 
 
 def _download(url, post_txt="downloading"):
@@ -93,7 +103,7 @@ def _is_localfile(url):
     return False
 
 class RepSync:
-    urls=["http://public.plugbox.vstforx.de"]
+    url="http://public.plugbox.vstforx.de"
     dst_path="."
     install_loc=""
     __filter=None
@@ -161,8 +171,8 @@ class RepSync:
             f.close()
         else:
             data = _req_GET(url)
-        root = xt.XML(data)
-        self.__process_tree(root)
+        self.root = xt.XML(data)
+        
         
     def sync(self, **_filter):
         """
@@ -171,18 +181,74 @@ class RepSync:
             os, arch, format
         """
         self.__filter = _filter
-        for x in self.urls:
-            self.__load_repository(x)
-            
+        self.__load_repository(self.url)
+        self.__process_tree(self.root)
+    
+    def __get_zip_content(self, path):
+        res=[]
+        with zip.ZipFile(path, 'r') as z:
+            for x in z.namelist():
+                f = z.open(x, "r")
+                md5 = _hashfile(f, hashlib.md5())
+                f.close()
+                res.append((x, md5))
+        return res
+
     def __unpack_file(self, path):
-        if os.path.splitext(path) == ".zip":
-            self.__unzip_file(path)
-            
-    def add_file(self, path, url, **attr):
         pass
+        #if os.path.splitext(path)[1] == ".zip":
+            #self.__unzip_file(path)
+            
+    def __get_archive_content(self, path):
+        """return list with filenames and md5 values"""
+        if os.path.splitext(path)[1] == ".zip":
+            return self.__get_zip_content(path)
+
+
+    def add_vendor(self, parent, **vendorinfo):
+        """adds a new vendor and return new element 
+        or if exists returns existing vendor element.
+        if vendorinfo None or without useful information
+        parent will be returned."""
+        if vendorinfo == None:
+            return parent
+        if not vendorinfo.has_key('name'):
+            return parent
+        for x in parent.iter("vendor"):
+            if x.attrib['name'] == vendorinfo['name']:
+                return x
+        node = xt.SubElement(parent, "vendor", vendorinfo)
+        return node
+
+    def add_package(self, parent, **pkginf):
+        """adds a new package and return new element 
+        or if exists returns existing package element.
+        if package None or without useful information
+        the parent will be returned."""
+        if pkginf == None:
+            return parent
+        if not pkginf.has_key('name'):
+            return parent
+        for x in parent.iter("plugin-package"):
+            if x.attrib['name'] == pkginf['name']:
+                return x
+        node = xt.SubElement(parent, "plugin-package", pkginf)
+        return node
+
+    def add_file(self, path, url, vendorinfo, pluginpackage, **attr):
+        if not _is_localfile(self.url):
+            raise StandardError("repository url has to be a local file.")
+        self.__load_repository(self.url)
+        a_cnt = self.__get_archive_content(path)
+
+        v = self.add_vendor(self.root, **vendorinfo)
+        v = self.add_package(v, **pluginpackage)
+        n = xt.SubElement(v, "file", attr)
+        n.text=url
 
 if __name__ == "__main__":
     rs = RepSync()
-    rs.urls=["../testrep.xml"]
-    rs.sync(plattform="Windows, Mac", arch="x64")
+    rs.url="../testrep.xml"
+    rs.add_file("pb.zip", "http://www.vstforx.de/pb.zip", {'name': 'smartelectronix'}, {'name':'sonstwas'}, arch="i386")
+    print xt.tostring(rs.root)
     
