@@ -396,9 +396,6 @@ def _sync(args):
     print args
 
 def _add_default_args(parser):
-    parser.add_argument('-url', '--url', help="specifies an url")
-    parser.add_argument('-v', '--vendor', help="specifies a vendor")
-    parser.add_argument('--author', help="specifies an author")
     parser.add_argument('--name', help="specifies a name")
     parser.add_argument('-t', '--tags', help="specifies tags")  
     parser.add_argument('--location', help="specifies deployment location")  
@@ -424,6 +421,7 @@ if __name__ == "__main__":
     
     rvp = subparsers.add_parser('remove-vendor')
     rvp.add_argument('name', help="the vendor name")
+    rvp.add_argument('--url', help="specifies an url")
     rvp.set_defaults(func=_remove_vendor)
 
     app = subparsers.add_parser('add-plugin')
@@ -446,6 +444,7 @@ if __name__ == "__main__":
     afp.add_argument('--plattform', help="specifies a plattform")
     afp.add_argument('--arch', help="specifies a architecture")
     afp.add_argument('--format', help="specifies a plugin format")
+    afp.add_argument('--version', help="specifies the plugin version")
     afp.set_defaults(func=_add_file)
 
     rfp = subparsers.add_parser('remove-file')
@@ -455,6 +454,9 @@ if __name__ == "__main__":
     rfp.set_defaults(func=_remove_file)
     
     gip = subparsers.add_parser('init')
+    gip.add_argument('--author', help="specifies an author")
+    gip.add_argument('--url', help="the repository related source url")
+
     _add_default_args(gip)
     gip.set_defaults(func=_init)
     
