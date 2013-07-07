@@ -18,6 +18,10 @@ _CACHING_ON = True
 _CACHE_PATH = ".tmp"
 
 
+def _is_plugfile(f):
+    ext = os.path.splitext(f)[1]
+    return ext==".dll" or ext==".vst"
+
 def _hashfile(f, hasher, blocksize=65536):
     buf = f.read(blocksize)
     while len(buf) > 0:
@@ -107,6 +111,8 @@ class RepSync:
     dst_path="."
     install_loc=""
     __filter=None
+    to_download = []
+    element_map={}
         
     def __init__(self):
         pass
@@ -141,19 +147,20 @@ class RepSync:
     def __download(self, url):
         pass
 
-    def __process_pluginpack(self, el):
+    def __process_plugin(self, el):
         self.install_loc = "%s/%s" % (self.install_loc, el.attrib["install-loc"])
         for x in el.iter("file"):
             if not self.__pass_filter(x):
                 continue
             url = HTMLParser.HTMLParser().unescape(x.text)
-            self.__download(url)
-            
+            self.to_download.append(url)
+            self.element_map[url] = x
+
     def __process_vendor(self, el):
         print "  fetching '%s':" % el.attrib['name']
         self.install_loc = "%s/%s" % (self.install_loc, el.attrib["install-loc"])
-        for x in el.iter('plugin-package'):
-            self.__process_pluginpack(x)
+        for x in el.iter('plugin'):
+            self.__process_plugin(x)
             
     def __process_tree(self, root):
         if root.tag != "plugin-repository":
@@ -174,15 +181,18 @@ class RepSync:
         self.root = xt.XML(data)
         
         
-    def sync(self, **_filter):
+    def load_rep(self, **_filter):
         """
         downloads and install plugins
-          filter:
-            os, arch, format
+        filter:
+           os, arch, format
         """
         self.__filter = _filter
         self.__load_repository(self.url)
         self.__process_tree(self.root)
+
+    def sync(self):
+        pass
     
     def __get_zip_content(self, path):
         res=[]
@@ -220,35 +230,30 @@ class RepSync:
         node = xt.SubElement(parent, "vendor", vendorinfo)
         return node
 
-    def add_package(self, parent, **pkginf):
-        """adds a new package and return new element 
-        or if exists returns existing package element.
-        if package None or without useful information
+    def add_plugin(self, parent, **pkginf):
+        """adds a new plugin and return new element 
+        or if exists returns existing plugin element.
+        if plugin None or without useful information
         the parent will be returned."""
         if pkginf == None:
             return parent
         if not pkginf.has_key('name'):
             return parent
-        for x in parent.iter("plugin-package"):
+        for x in parent.iter("plugin"):
             if x.attrib['name'] == pkginf['name']:
                 return x
-        node = xt.SubElement(parent, "plugin-package", pkginf)
+        node = xt.SubElement(parent, "plugin", pkginf)
         return node
 
-    def add_file(self, path, url, vendorinfo, pluginpackage, **attr):
+    def add_file(self, path, url, vendorinfo, plugin, **attr):
         if not _is_localfile(self.url):
             raise StandardError("repository url has to be a local file.")
-        self.__load_repository(self.url)
         a_cnt = self.__get_archive_content(path)
-
         v = self.add_vendor(self.root, **vendorinfo)
-        v = self.add_package(v, **pluginpackage)
+        v = self.add_plugin(v, **plugin)
         n = xt.SubElement(v, "file", attr)
         n.text=url
 
 if __name__ == "__main__":
-    rs = RepSync()
-    rs.url="../testrep.xml"
-    rs.add_file("pb.zip", "http://www.vstforx.de/pb.zip", {'name': 'smartelectronix'}, {'name':'sonstwas'}, arch="i386")
-    print xt.tostring(rs.root)
+    pass
     
