@@ -15,11 +15,11 @@ _TEST_REP = """
 </plugin-repository>
 """
 
-class TestRepSync(unittest.TestCase):
+class TestPlugBox(unittest.TestCase):
     testClass = None
 
     def setUp(self):
-        rep = imp.load_source('rep_sync', '../rep_sync.py')
+        rep = imp.load_source('rep_sync', '../plugBox.py')
         self.testClass = rep.RepSync()
         f = open("testfile.xml", "w")
         f.write(_TEST_REP)
