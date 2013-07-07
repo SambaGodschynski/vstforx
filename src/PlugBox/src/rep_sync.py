@@ -18,6 +18,23 @@ _CACHING_ON = True
 _CACHE_PATH = ".tmp"
 
 
+def _filter_attr(x):
+    """removes entries which are not str"""
+    l=[]
+    a = x.copy()
+    for x in a:
+        if not isinstance(a[x], str):
+            l.append(x)
+    for x in l:
+        a.pop(x)
+    return a
+
+def _unpack_commasep(x):
+    x = x.lower()
+    x = x.split(",")
+    x = map(lambda v: v.strip(), x)
+    return x
+
 def _is_plugfile(f):
     ext = os.path.splitext(f)[1]
     return ext==".dll" or ext==".vst"
@@ -107,6 +124,8 @@ def _is_localfile(url):
     return False
 
 class RepSync:
+    class RepError(StandardError):
+        pass
     url="http://public.plugbox.vstforx.de"
     dst_path="."
     install_loc=""
@@ -116,16 +135,10 @@ class RepSync:
         
     def __init__(self):
         pass
-
-    def __unpack_commasep(self, x):
-        x = x.lower()
-        x = x.split(",")
-        x = map(lambda v: v.strip(), x)
-        return x
     
     def __filter_attr_values(self, filter_values, element_values):
-         f_v = self.__unpack_commasep(filter_values)
-         e_v = self.__unpack_commasep(element_values)
+         f_v = _unpack_commasep(filter_values)
+         e_v = _unpack_commasep(element_values)
          for x in f_v:
              if x in e_v:
                  return True
@@ -164,7 +177,7 @@ class RepSync:
             
     def __process_tree(self, root):
         if root.tag != "plugin-repository":
-            raise StandardError("invalid repository file")
+            raise self.RepError("invalid repository file")
         print "fetching '%s' by '%s'" % (root.attrib["name"], root.attrib["author"])
         print "tags: %s" % root.attrib['tags']
         self.install_loc = "%s/%s" % (self.dst_path, root.attrib["install-loc"])
@@ -181,15 +194,13 @@ class RepSync:
         self.root = xt.XML(data)
         
         
-    def load_rep(self, **_filter):
-        """
-        downloads and install plugins
-        filter:
-           os, arch, format
-        """
+    def __load_rep_if_neccesary(self, **_filter):
         self.__filter = _filter
         self.__load_repository(self.url)
-        self.__process_tree(self.root)
+        self.__process_tree(self.root)   
+        
+    def load_rep(self, **_filter):
+        self.__load_rep_if_neccesary(**_filter)
 
     def sync(self):
         pass
@@ -214,8 +225,22 @@ class RepSync:
         if os.path.splitext(path)[1] == ".zip":
             return self.__get_zip_content(path)
 
+    def __get_binarylist(self, path):
+        """ return list of filenames and md5 values """
+        if _is_plugfile(path):
+            f = open(path, "rb")
+            md5 = _hashfile(f, hashlib.md5())
+            f.close
+            return [(os.path.basename(path), md5)]
+        return filter(lambda x: _is_plugfile(x[0]), self.__get_archive_content(path))
 
-    def add_vendor(self, parent, **vendorinfo):
+    def __add_binaries(self, element, binarylist):
+        for x in binarylist:
+            n = xt.SubElement(element, "binary")
+            n.attrib['md5'] = x[1]
+            n.text = x[0]
+
+    def __add_vendor(self, parent,  **vendorinfo):
         """adds a new vendor and return new element 
         or if exists returns existing vendor element.
         if vendorinfo None or without useful information
@@ -229,6 +254,10 @@ class RepSync:
                 return x
         node = xt.SubElement(parent, "vendor", vendorinfo)
         return node
+        
+    def add_vendor(self, **vendorinfo):
+        self.__load_rep_if_neccesary()
+        self.__add_vendor(self.root, **vendorinfo)
 
     def add_plugin(self, parent, **pkginf):
         """adds a new plugin and return new element 
@@ -247,13 +276,114 @@ class RepSync:
 
     def add_file(self, path, url, vendorinfo, plugin, **attr):
         if not _is_localfile(self.url):
-            raise StandardError("repository url has to be a local file.")
-        a_cnt = self.__get_archive_content(path)
-        v = self.add_vendor(self.root, **vendorinfo)
+            raise self.RepError("repository url has to be a local file.")
+        binaries = self.__get_binarylist(path)
+        v = self.__add_vendor(self.root, **vendorinfo)
         v = self.add_plugin(v, **plugin)
         n = xt.SubElement(v, "file", attr)
         n.text=url
+        self.__add_binaries(n, binaries)
 
+    def init_rep(self, **attr):
+        if not _is_localfile(self.url):
+            raise self.RepError("repository has to be a local file")
+        if os.path.exists(self.url):
+            raise self.RepError("repository file already exists")
+        self.root = xt.Element("plugin-repository", attr)
+
+    def save(self):
+        tree = xt.ElementTree(self.root)
+        tree.write(self.url)
+
+def _add_vendor(rep, attr):
+    rep.add_vendor(**attr)
+    rep.save()
+
+def _change_vendor(rep, attr):
+    print attr
+
+def _remove_vendor(rep, attr):
+    print attr
+
+def _add_file(rep, attr):
+    print attr
+
+def _remove_file(rep, attr):
+    print attr
+
+def _init(rep, attr):
+    rep.init_rep( **attr )
+    rep.save()
+        
+    
+
+def _sync(args):
+    print args
+
+def _add_default_args(parser):
+    parser.add_argument('-url', '--url', help="specifies an url")
+    parser.add_argument('-v', '--vendor', help="specifies a vendor")
+    parser.add_argument('-pt', '--plattform', help="specifies a plattform")
+    parser.add_argument('-ar', '--arch', help="specifies a architecture")
+    parser.add_argument('-fm', '--format', help="specifies a plugin format")
+    parser.add_argument('--author', help="specifies an author")
+    parser.add_argument('-t', '--tags', help="specifies tags")  
+    parser.add_argument('--location', help="specifies deploy target location")  
+    
 if __name__ == "__main__":
-    pass
+    from argparse import *
+    parser = ArgumentParser(description="Welcome to PlugBox! I manage your plugins")
+    parser.add_argument('repository', help="the repository, can be a local file or an url")
+  
+
+    txt="""valid subcommands are: 
+        general: init, sync
+        vendor: add-vendor, remove-vendor, change-vendor
+        pluginfile: add-file, remove-file 
+    """
+
+    subparsers = parser.add_subparsers(title='vendor commands',
+                                       description=txt)
+    avp = subparsers.add_parser('add-vendor')
+    avp.add_argument('name', help="the vendor name")
+    _add_default_args(avp)
+    avp.set_defaults(func=_add_vendor)
+    
+    cvp = subparsers.add_parser('change-vendor')
+    cvp.add_argument('name', help="the vendor name")
+    _add_default_args(cvp)
+    cvp.set_defaults(func=_change_vendor)
+
+    rvp = subparsers.add_parser('remove-vendor')
+    rvp.add_argument('name', help="the vendor name")
+    _add_default_args(rvp)
+    rvp.set_defaults(func=_remove_vendor)
+
+    afp = subparsers.add_parser('add-file')
+    afp.add_argument('name', help="the file path")
+    _add_default_args(afp)
+    afp.set_defaults(func=_add_file)
+
+    rfp = subparsers.add_parser('remove-file')
+    rfp.add_argument('name', help="the file path")
+    _add_default_args(rfp)
+    rfp.set_defaults(func=_add_file)
+
+    gip = subparsers.add_parser('init')
+    _add_default_args(gip)
+    gip.set_defaults(func=_init)
+    
+    gsp = subparsers.add_parser('sync')
+    _add_default_args(gsp)
+    gsp.set_defaults(func=_sync)
+
+    args=parser.parse_args()
+
+    try:
+        rep = RepSync()
+        rep.url = args.repository
+        attr = _filter_attr(vars(args))
+        args.func(rep, attr)
+    except RepSync.RepError, ex:
+        print ex
     

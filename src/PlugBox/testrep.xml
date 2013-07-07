@@ -1,9 +1,0 @@
-<plugin-repository name="testrep" author="samba godschynski" install-loc="testrep" 
-	tags="Windows, Mac, VST, i386, x64">
-  <vendor name="smartelectronix" url="www.smartelectronix.com" install-loc="smart_electronix">
-    <plugin-package name="mda plugins" install-loc="mda">
-      <file plattform="windows" arch="i386" format="vst">http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip</file>
-      <file plattform="mac" arch="i386, x64, ppc" format="vst">http://mda.smartelectronix.com/vst/mda_vst_ub.zip</file>
-    </plugin-package>
-  </vendor>
-</plugin-repository>

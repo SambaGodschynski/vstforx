@@ -64,15 +64,27 @@ class TestRepSync(unittest.TestCase):
         tc.add_file("TAL-Vocoder-2.zip", 
                     "http://kunz.corrupt.ch/downloads/plugins/TAL-Vocoder-2.zip", 
                     {'name':'Togu Audio Line', 'url':'http://kunz.corrupt.ch/'},
-                    {'name':'TAL-Vocoder'})
+                    {'name':'TAL-Vocoder'},
+                    plattform="windows", arch="i386")
         
         tc.add_file("Saro.dll", 
                     "http://www.smartelectronix.com/~antti/Saro.dll", 
                     {'name':'smartelectronix'},
-                    {'name':'Saro'})
+                    {'name':'Saro'},
+                    plattform="windows", arch="i386")
         
-        print tx.tostring(tc.root)
+        res =  tx.tostring(tc.root)
+
+        soll="""<plugin-repository author="samba godschynski" install-loc="testrep" name="testrep" tags="Windows, Mac, VST, i386, x64">
+  <vendor install-loc="smart_electronix" name="smartelectronix" url="www.smartelectronix.com">
+    <plugin install-loc="mda" name="mda plugins">
+      <file arch="i386" format="vst" plattform="windows">http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip</file>
+      <file arch="i386, x64, ppc" format="vst" plattform="mac">http://mda.smartelectronix.com/vst/mda_vst_ub.zip</file>
+    </plugin>
+  <plugin name="Saro"><file arch="i386" plattform="windows">http://www.smartelectronix.com/~antti/Saro.dll<binary md5="ac69ed900c6c60df6591454d13e2fe58">Saro.dll</binary></file></plugin></vendor>
+<vendor name="Togu Audio Line" url="http://kunz.corrupt.ch/"><plugin name="TAL-Vocoder"><file arch="i386" plattform="windows">http://kunz.corrupt.ch/downloads/plugins/TAL-Vocoder-2.zip<binary md5="4a95d635143e50cc0466e140a6f05f02">TAL-Vocoder-2.dll</binary></file></plugin></vendor></plugin-repository>"""
         
+        self.assertEqual(res,soll)
 
 if __name__ == '__main__':
     unittest.main()
