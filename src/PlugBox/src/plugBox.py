@@ -1,3 +1,4 @@
+#!/usr/bin/python
 """
 downloads and install plugins automatically according to 
 repository input file. 
@@ -13,10 +14,25 @@ import HTMLParser
 import zipfile as zip
 import hashlib
 
-HEADER = { 'User-Agent' : 'user' }
+HEADER = { 'User-Agent' : 'PlugBox' }
 _CACHING_ON = True 
 _CACHE_PATH = ".tmp"
 
+
+def _prettify(elem):
+    return xt.tostring(elem)
+
+    #TODO doesn't work:
+    """Return a pretty-printed XML string for the Element.
+       sources: http://stackoverflow.com/questions/749796/pretty-printing-xml-in-python
+                http://doughellmann.com/2010/03/pymotw-creating-xml-documents-with-elementtree.html
+    """
+    from xml.dom import minidom
+    rough_string = xt.tostring(elem, 'utf-8')
+    reparsed = minidom.parseString(rough_string)
+    uglyXml = reparsed.toprettyxml(indent="  ")
+    text_re = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)    
+    return text_re.sub('>\g<1></', uglyXml)
 
 def _filter_attr(x):
     """removes entries which are not str"""
@@ -191,6 +207,7 @@ class RepSync:
             f.close()
         else:
             data = _req_GET(url)
+            data = data.replace("\n", "").replace(" ", "")
         self.root = xt.XML(data)
         
         
@@ -225,6 +242,7 @@ class RepSync:
         """return list with filenames and md5 values"""
         if os.path.splitext(path)[1] == ".zip":
             return self.__get_zip_content(path)
+        return []
 
     def __get_binarylist(self, path):
         """ return list of filenames and md5 values """
@@ -241,66 +259,100 @@ class RepSync:
             n.attrib['md5'] = x[1]
             n.text = x[0]
 
-    def __add_vendor(self, parent,  **vendorinfo):
-        """adds a new vendor and return new element 
-        or if exists returns existing vendor element.
-        if vendorinfo None or without useful information
-        parent will be returned."""
-        if vendorinfo == None:
-            return parent
-        if not vendorinfo.has_key('name'):
-            return parent
-        for x in parent.iter("vendor"):
-            if x.attrib['name'] == vendorinfo['name']:
-                return x
-        node = xt.SubElement(parent, "vendor", vendorinfo)
-        return node
-        
     def add_vendor(self, **vendorinfo):
         self.__load_rep_if_neccessary()
-        self.__add_vendor(self.root, **vendorinfo)
+        if self.find_vendor(vendorinfo['name'])!=None:
+            raise self.RepError("vendor already exists")
+        xt.SubElement(self.root, "vendor", vendorinfo)
+
+    def find_vendor(self, vendor):
+        for x in self.root.iter("vendor"):
+            if x.attrib['name'] == vendor:
+                return x
+        return None
 
     def remove_vendor(self, vendor):
         self.__load_rep_if_neccessary()
-        for x in self.root.iter("vendor"):
-            if x.attrib['name'] == vendor:
-                self.root.remove(x)
+        v = self.find_vendor(vendor)
+        if v==None:
+            return
+        self.root.remove(v)
         
-    def add_plugin(self, parent, **pkginf):
-        """adds a new plugin and return new element 
-        or if exists returns existing plugin element.
-        if plugin None or without useful information
-        the parent will be returned."""
-        if pkginf == None:
-            return parent
-        if not pkginf.has_key('name'):
-            return parent
-        for x in parent.iter("plugin"):
-            if x.attrib['name'] == pkginf['name']:
-                return x
-        node = xt.SubElement(parent, "plugin", pkginf)
-        return node
+    def add_plugin(self, vendor, **pkginf):
+        self.__load_rep_if_neccessary()
+        v = self.find_vendor(vendor)
+        if v == None:
+            raise self.RepError("unknown vendor")
+        if self.find_plugin(v, pkginf['name']) != None:
+            raise self.RepError("plugin already exists")
+        xt.SubElement(v, "plugin", **pkginf)
 
-    def add_file(self, path, url, vendorinfo, plugin, **attr):
-        if not _is_localfile(self.url):
-            raise self.RepError("repository url has to be a local file.")
+    def find_plugin(self, vendorel, plugin):
+        if vendorel == None:
+            raise self.RepError("invalid vendor")
+        for x in vendorel:
+            if x.attrib['name'] == plugin:
+                return x
+        return None
+
+    def remove_plugin(self, plugin, vendor):
+        self.__load_rep_if_neccessary()
+        
+        v = self.find_vendor(vendor)
+        if v==None:
+            raise self.RepError("vendor not found")
+            
+
+        n = self.find_plugin(v, plugin)
+        if n == None:
+            raise self.RepError("plugin not found")
+        v.remove(n)
+
+    def add_file(self, path, url, vendor, plugin, **attr):
+        self.__load_rep_if_neccessary()
         binaries = self.__get_binarylist(path)
-        v = self.__add_vendor(self.root, **vendorinfo)
-        v = self.add_plugin(v, **plugin)
-        n = xt.SubElement(v, "file", attr)
+        if len(binaries) == 0:
+            raise self.RepError("%s contains no pluginfiles" % path)
+        v = self.find_vendor(vendor)
+        p = self.find_plugin(v, plugin)
+        if p == None:
+            raise self.RepError("plugin not found")
+        if self.find_file(p, url) != None:
+            raise self.RepError("url already exists")
+        n = xt.SubElement(p, "file", attr)
         n.text=url
         self.__add_binaries(n, binaries)
+    
+    def find_file(self,  pluginel, url):
+        for x in pluginel:
+            if x.text == url:
+                return x
+        return None
+
+    def remove_file(self, url, vendor, plugin):
+        self.__load_rep_if_neccessary()
+        v = self.find_vendor(vendor)
+        p = self.find_plugin(v, plugin)
+        if p == None:
+            raise self.RepError("plugin not found")
+        f = self.find_file(p, url)
+        if f==None:
+             raise self.RepError("url not found")
+        p.remove(f)
 
     def init_rep(self, **attr):
-        if not _is_localfile(self.url):
-            raise self.RepError("repository has to be a local file")
         if os.path.exists(self.url):
             raise self.RepError("repository file already exists")
         self.root = xt.Element("plugin-repository", attr)
 
     def save(self):
-        tree = xt.ElementTree(self.root)
-        tree.write(self.url)
+        if not _is_localfile(self.url):
+            raise self.RepError("repository has to be a local file")
+        txt = _prettify(self.root)
+        f = open(self.url, "w")
+        f.write(txt)
+        f.close()
+        
 
 def _add_vendor(rep, attr):
     rep.add_vendor(**attr)
@@ -310,11 +362,29 @@ def _remove_vendor(rep, attr):
     rep.remove_vendor(attr['name'])
     rep.save()
 
+def _add_plugin(rep, attr):
+    vendor = attr.pop("vendor")
+    rep.add_plugin(vendor, **attr)
+    rep.save()
+
+def _remove_plugin(rep, attr):
+    rep.remove_plugin(attr['name'], attr['vendor'])
+    rep.save()
+
 def _add_file(rep, attr):
-    print attr
+    path = attr.pop('path')
+    url = attr.pop('url')
+    vendor = attr.pop('vendor')
+    plugin = attr.pop('plugin')
+    rep.add_file(path, url, vendor, plugin, **attr)
+    rep.save()
 
 def _remove_file(rep, attr):
-    print attr
+    url = attr.pop('url')
+    vendor = attr.pop('vendor')
+    plugin = attr.pop('plugin')
+    rep.remove_file(url, vendor, plugin)
+    rep.save()
 
 def _init(rep, attr):
     rep.init_rep( **attr )
@@ -328,12 +398,10 @@ def _sync(args):
 def _add_default_args(parser):
     parser.add_argument('-url', '--url', help="specifies an url")
     parser.add_argument('-v', '--vendor', help="specifies a vendor")
-    parser.add_argument('-pt', '--plattform', help="specifies a plattform")
-    parser.add_argument('-ar', '--arch', help="specifies a architecture")
-    parser.add_argument('-fm', '--format', help="specifies a plugin format")
     parser.add_argument('--author', help="specifies an author")
+    parser.add_argument('--name', help="specifies a name")
     parser.add_argument('-t', '--tags', help="specifies tags")  
-    parser.add_argument('--location', help="specifies deploy target location")  
+    parser.add_argument('--location', help="specifies deployment location")  
     
 if __name__ == "__main__":
     from argparse import *
@@ -344,7 +412,7 @@ if __name__ == "__main__":
     txt="""valid subcommands are: 
         general: init, sync
         vendor: add-vendor, remove-vendor
-        pluginfile: add-file, remove-file 
+        plugin: add-plugin, remove-plugin, add-file, remove-file 
     """
 
     subparsers = parser.add_subparsers(title='vendor commands',
@@ -356,19 +424,36 @@ if __name__ == "__main__":
     
     rvp = subparsers.add_parser('remove-vendor')
     rvp.add_argument('name', help="the vendor name")
-    _add_default_args(rvp)
     rvp.set_defaults(func=_remove_vendor)
 
+    app = subparsers.add_parser('add-plugin')
+    app.add_argument('name', help="the plugin name")
+    app.add_argument('vendor', help="the plugin vendor")
+    _add_default_args(app)
+    app.set_defaults(func=_add_plugin)
+
+    rpp = subparsers.add_parser('remove-plugin')
+    rpp.add_argument('name', help="the plugin name")
+    rpp.add_argument('vendor', help="the plugin vendor")
+    rpp.set_defaults(func=_remove_plugin)
+    
+    
     afp = subparsers.add_parser('add-file')
-    afp.add_argument('name', help="the file path")
-    _add_default_args(afp)
+    afp.add_argument('path', help="the file path")
+    afp.add_argument('url', help="the file related source url")
+    afp.add_argument('vendor', help="the file related vendor")
+    afp.add_argument('plugin', help="the file related plugin")
+    afp.add_argument('--plattform', help="specifies a plattform")
+    afp.add_argument('--arch', help="specifies a architecture")
+    afp.add_argument('--format', help="specifies a plugin format")
     afp.set_defaults(func=_add_file)
 
     rfp = subparsers.add_parser('remove-file')
-    rfp.add_argument('name', help="the file path")
-    _add_default_args(rfp)
-    rfp.set_defaults(func=_add_file)
-
+    rfp.add_argument('url', help="the file related source url")
+    rfp.add_argument('vendor', help="the file related vendor")
+    rfp.add_argument('plugin', help="the file related plugin")
+    rfp.set_defaults(func=_remove_file)
+    
     gip = subparsers.add_parser('init')
     _add_default_args(gip)
     gip.set_defaults(func=_init)

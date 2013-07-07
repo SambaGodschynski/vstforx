@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import unittest
 import imp
 import os
@@ -55,25 +56,34 @@ class TestPlugBox(unittest.TestCase):
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip" not in tc.to_download)
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_ub.zip" not in tc.to_download)
         tc.to_download=[]
-        
-    def test_add_zip(self):
+    
+    def test_add_remove(self):
+        import xml.etree.ElementTree as xt
         tc = self.testClass
         tc.url="testfile.xml"
-        tc.sync()
+        tc.add_vendor(name = "heimat")
+        tc.save()
+        tc.add_plugin("heimat", name="ppi")
+        tc.save()
+        tc.add_file("TAL-Vocoder-2.zip", "http://www.vstforx.de/tal.zip", "heimat", "ppi")
+        tc.save()
+        tc.add_file("Saro.dll", "http://www.vstforx.de/saro.dll", "heimat", "ppi")
+        tc.save()
+        soll = """plugin-repository author="samba godschynski" install-loc="testrep" name="testrep" tags="Windows, Mac, VST, i386, x64">
+  <vendor install-loc="smart_electronix" name="smartelectronix" url="www.smartelectronix.com">
+    <plugin install-loc="mda" name="mda plugins">
+      <file arch="i386" format="vst" plattform="windows">http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip</file>
+      <file arch="i386, x64, ppc" format="vst" plattform="mac">http://mda.smartelectronix.com/vst/mda_vst_ub.zip</file>
+    </plugin>
+  </vendor>
+<vendor name="heimat"><plugin name="ppi"><file>http://www.vstforx.de/tal.zip<binary md5="4a95d635143e50cc0466e140a6f05f02">TAL-Vocoder-2.dll</binary></file><file>http://www.vstforx.de/saro.dll<binary md5="ac69ed900c6c60df6591454d13e2fe58">Saro.dll</binary></file></plugin></vendor></plugin-repository>"""
+        self.assertTrue(soll, tx.tostring(tc.root))
         
-        tc.add_file("TAL-Vocoder-2.zip", 
-                    "http://kunz.corrupt.ch/downloads/plugins/TAL-Vocoder-2.zip", 
-                    {'name':'Togu Audio Line', 'url':'http://kunz.corrupt.ch/'},
-                    {'name':'TAL-Vocoder'},
-                    plattform="windows", arch="i386")
-        
-        tc.add_file("Saro.dll", 
-                    "http://www.smartelectronix.com/~antti/Saro.dll", 
-                    {'name':'smartelectronix'},
-                    {'name':'Saro'},
-                    plattform="windows", arch="i386")
-        
-        res =  tx.tostring(tc.root)
+        tc.remove_file("http://www.vstforx.de/saro.dll", "heimat", "ppi")
+        tc.save()
+
+        tc.remove_file("http://www.vstforx.de/tal.zip", "heimat", "ppi")
+        tc.save()
 
         soll="""<plugin-repository author="samba godschynski" install-loc="testrep" name="testrep" tags="Windows, Mac, VST, i386, x64">
   <vendor install-loc="smart_electronix" name="smartelectronix" url="www.smartelectronix.com">
@@ -81,10 +91,37 @@ class TestPlugBox(unittest.TestCase):
       <file arch="i386" format="vst" plattform="windows">http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip</file>
       <file arch="i386, x64, ppc" format="vst" plattform="mac">http://mda.smartelectronix.com/vst/mda_vst_ub.zip</file>
     </plugin>
-  <plugin name="Saro"><file arch="i386" plattform="windows">http://www.smartelectronix.com/~antti/Saro.dll<binary md5="ac69ed900c6c60df6591454d13e2fe58">Saro.dll</binary></file></plugin></vendor>
-<vendor name="Togu Audio Line" url="http://kunz.corrupt.ch/"><plugin name="TAL-Vocoder"><file arch="i386" plattform="windows">http://kunz.corrupt.ch/downloads/plugins/TAL-Vocoder-2.zip<binary md5="4a95d635143e50cc0466e140a6f05f02">TAL-Vocoder-2.dll</binary></file></plugin></vendor></plugin-repository>"""
+  </vendor>
+<vendor name="heimat"><plugin name="ppi" /></vendor></plugin-repository>"""
+        self.assertTrue(soll, tx.tostring(tc.root))
+
+        tc.remove_plugin("ppi", "heimat")
+        tc.save()
         
-        self.assertEqual(res,soll)
+        soll="""<plugin-repository author="samba godschynski" install-loc="testrep" name="testrep" tags="Windows, Mac, VST, i386, x64">
+  <vendor install-loc="smart_electronix" name="smartelectronix" url="www.smartelectronix.com">
+    <plugin install-loc="mda" name="mda plugins">
+      <file arch="i386" format="vst" plattform="windows">http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip</file>
+      <file arch="i386, x64, ppc" format="vst" plattform="mac">http://mda.smartelectronix.com/vst/mda_vst_ub.zip</file>
+    </plugin>
+  </vendor>
+<vendor name="heimat"></vendor></plugin-repository>"""
+        self.assertTrue(soll, tx.tostring(tc.root))
+        
+        tc.remove_vendor("heimat")
+        tc.save()
+        
+        soll="""<plugin-repository author="samba godschynski" install-loc="testrep" name="testrep" tags="Windows, Mac, VST, i386, x64">
+  <vendor install-loc="smart_electronix" name="smartelectronix" url="www.smartelectronix.com">
+    <plugin install-loc="mda" name="mda plugins">
+      <file arch="i386" format="vst" plattform="windows">http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip</file>
+      <file arch="i386, x64, ppc" format="vst" plattform="mac">http://mda.smartelectronix.com/vst/mda_vst_ub.zip</file>
+    </plugin>
+  </vendor>
+</plugin-repository>"""
+        self.assertTrue(soll, tx.tostring(tc.root))
+
+        #print xt.tostring(tc.root)
 
 if __name__ == '__main__':
     unittest.main()
