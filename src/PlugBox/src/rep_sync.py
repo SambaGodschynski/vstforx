@@ -194,16 +194,17 @@ class RepSync:
         self.root = xt.XML(data)
         
         
-    def __load_rep_if_neccesary(self, **_filter):
+    def __load_rep_if_neccessary(self, **_filter):
         self.__filter = _filter
         self.__load_repository(self.url)
-        self.__process_tree(self.root)   
+         
         
     def load_rep(self, **_filter):
-        self.__load_rep_if_neccesary(**_filter)
-
-    def sync(self):
-        pass
+        self.__load_rep_if_neccessary(**_filter)
+        
+    def sync(self, **filter):
+        self.__load_rep_if_neccessary(**filter)
+        self.__process_tree(self.root)  
     
     def __get_zip_content(self, path):
         res=[]
@@ -256,9 +257,15 @@ class RepSync:
         return node
         
     def add_vendor(self, **vendorinfo):
-        self.__load_rep_if_neccesary()
+        self.__load_rep_if_neccessary()
         self.__add_vendor(self.root, **vendorinfo)
 
+    def remove_vendor(self, vendor):
+        self.__load_rep_if_neccessary()
+        for x in self.root.iter("vendor"):
+            if x.attrib['name'] == vendor:
+                self.root.remove(x)
+        
     def add_plugin(self, parent, **pkginf):
         """adds a new plugin and return new element 
         or if exists returns existing plugin element.
@@ -299,11 +306,9 @@ def _add_vendor(rep, attr):
     rep.add_vendor(**attr)
     rep.save()
 
-def _change_vendor(rep, attr):
-    print attr
-
 def _remove_vendor(rep, attr):
-    print attr
+    rep.remove_vendor(attr['name'])
+    rep.save()
 
 def _add_file(rep, attr):
     print attr
@@ -338,7 +343,7 @@ if __name__ == "__main__":
 
     txt="""valid subcommands are: 
         general: init, sync
-        vendor: add-vendor, remove-vendor, change-vendor
+        vendor: add-vendor, remove-vendor
         pluginfile: add-file, remove-file 
     """
 
@@ -349,11 +354,6 @@ if __name__ == "__main__":
     _add_default_args(avp)
     avp.set_defaults(func=_add_vendor)
     
-    cvp = subparsers.add_parser('change-vendor')
-    cvp.add_argument('name', help="the vendor name")
-    _add_default_args(cvp)
-    cvp.set_defaults(func=_change_vendor)
-
     rvp = subparsers.add_parser('remove-vendor')
     rvp.add_argument('name', help="the vendor name")
     _add_default_args(rvp)
@@ -381,8 +381,8 @@ if __name__ == "__main__":
 
     try:
         rep = RepSync()
-        rep.url = args.repository
         attr = _filter_attr(vars(args))
+        rep.url = attr.pop("repository")
         args.func(rep, attr)
     except RepSync.RepError, ex:
         print ex

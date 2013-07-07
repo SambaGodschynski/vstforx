@@ -31,27 +31,27 @@ class TestRepSync(unittest.TestCase):
     def test_download(self):
         tc = self.testClass
         tc.url="testfile.xml"
-        tc.load_rep()
+        tc.sync()
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip" in tc.to_download)
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_ub.zip" in tc.to_download)
         tc.to_download=[]
         
-        tc.load_rep(plattform="windows")
+        tc.sync(plattform="windows")
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip" in tc.to_download)
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_ub.zip" not in tc.to_download)
         tc.to_download=[]
         
-        tc.load_rep(plattform="windows, mac")
+        tc.sync(plattform="windows, mac")
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip" in tc.to_download)
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_ub.zip" in tc.to_download)
         tc.to_download=[]
 
-        tc.load_rep(plattform="windows, mac", arch="x64")
+        tc.sync(plattform="windows, mac", arch="x64")
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip" not in tc.to_download)
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_ub.zip" in tc.to_download)
         tc.to_download=[]
 
-        tc.load_rep(plattform="windows", arch="x64")
+        tc.sync(plattform="windows", arch="x64")
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip" not in tc.to_download)
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_ub.zip" not in tc.to_download)
         tc.to_download=[]
@@ -59,7 +59,7 @@ class TestRepSync(unittest.TestCase):
     def test_add_zip(self):
         tc = self.testClass
         tc.url="testfile.xml"
-        tc.load_rep()
+        tc.sync()
         
         tc.add_file("TAL-Vocoder-2.zip", 
                     "http://kunz.corrupt.ch/downloads/plugins/TAL-Vocoder-2.zip", 
