@@ -201,6 +201,7 @@ class RepSync:
             url = HTMLParser.HTMLParser().unescape(x.text)
             self.to_download[url] = v = {}
             v['element'] = el
+            v['install_loc'] = self.install_loc
             
     def __process_vendor(self, el):
         self.__print("  fetching '%s':" % el.attrib['name'])
