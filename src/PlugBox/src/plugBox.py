@@ -262,7 +262,7 @@ class RepSync:
     def __process_tree(self, root):
         if root.tag != "plugin-repository":
             raise self.RepError("invalid repository file")
-            self.__update_install_loc(root)
+        self.__update_install_loc(root)
         for x in root.iter('vendor'):
             self.__process_vendor(x)
         
@@ -284,19 +284,26 @@ class RepSync:
         self.__load_repository(self.url)
          
         
+    def _load_to_download(self, **filter):
+        """for test purpose"""
+        self.__filter = filter
+        self.__load_rep_if_neccessary()
+        self.__process_tree(self.root)
+        
     def load_rep(self, force_reload=False):
         if force_reload:
             self.root = None
         self.__load_rep_if_neccessary()
+        self.__process_tree(self.root)
         
     def sync(self, **filter):
         self.__print("start syncing:")
         self.__filter = filter
         self.__load_rep_if_neccessary()
         self.__process_tree(self.root)
-        
         if len(self.to_download)==0:
             raise self.RepError("no matching downloads found")
+        
         self.__process_downloads()
         ss = "%i installations succeed" % len(self.succeed)
         sf = "%i installations failed" % len(self.failed)

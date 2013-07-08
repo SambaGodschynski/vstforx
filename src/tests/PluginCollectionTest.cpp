@@ -99,9 +99,6 @@ void PluginCollectionTest::eventHandler( void *src, const com::ScanComplete &ev 
    \testVstFolder\B\B1\B1_1 <- textfile
    \testVstFolder\B\B2		<- mda collection but overdrive == PLUGIN_LOACTION_1 => renamed
    \testVstFolder\B\B3      <- no plug files
-
-	
-	Testplugins = mda PluginCollection = win(31)/mac(36) plugins 
 */
 
 

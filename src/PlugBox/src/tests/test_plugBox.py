@@ -9,8 +9,8 @@ _TEST_REP = """
 	tags="Windows, Mac, VST, i386, x64">
   <vendor name="smartelectronix" url="www.smartelectronix.com" install-loc="smart_electronix">
     <plugin name="mda plugins" install-loc="mda">
-      <file plattform="windows" arch="i386" format="vst">http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip</file>
-      <file plattform="mac" arch="i386, x64, ppc" format="vst">http://mda.smartelectronix.com/vst/mda_vst_ub.zip</file>
+      <file plattform="windows" arch="i386" format="vst" filename="mda_vst_fx_win.zip">http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip</file>
+      <file plattform="mac" arch="i386, x64, ppc" format="vst" filename="mda_vst_ub.zip">http://mda.smartelectronix.com/vst/mda_vst_ub.zip</file>
     </plugin>
   </vendor>
 </plugin-repository>
@@ -32,27 +32,27 @@ class TestPlugBox(unittest.TestCase):
     def test_download(self):
         tc = self.testClass
         tc.url="testfile.xml"
-        tc.sync()
+        tc._load_to_download()
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip" in tc.to_download)
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_ub.zip" in tc.to_download)
         tc.to_download={}
         
-        tc.sync(plattform="windows")
+        tc._load_to_download(plattform="windows")
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip" in tc.to_download)
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_ub.zip" not in tc.to_download)
         tc.to_download={}
         
-        tc.sync(plattform="windows, mac")
+        tc._load_to_download(plattform="windows, mac")
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip" in tc.to_download)
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_ub.zip" in tc.to_download)
         tc.to_download={}
 
-        tc.sync(plattform="windows, mac", arch="x64")
+        tc._load_to_download(plattform="windows, mac", arch="x64")
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip" not in tc.to_download)
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_ub.zip" in tc.to_download)
         tc.to_download={}
 
-        tc.sync(plattform="windows", arch="x64")
+        tc._load_to_download(plattform="windows", arch="x64")
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip" not in tc.to_download)
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_ub.zip" not in tc.to_download)
         tc.to_download={}
@@ -73,7 +73,7 @@ class TestPlugBox(unittest.TestCase):
     </plugin>
   </vendor>
 <vendor name="heimat"><plugin name="ppi"><file>http://www.vstforx.de/tal.zip<binary md5="4a95d635143e50cc0466e140a6f05f02">TAL-Vocoder-2.dll</binary></file><file>http://www.vstforx.de/saro.dll<binary md5="ac69ed900c6c60df6591454d13e2fe58">Saro.dll</binary></file></plugin></vendor></plugin-repository>"""
-        self.assertTrue(soll, tx.tostring(tc.root))
+        self.assertEqual(soll, tx.tostring(tc.root))
         tc.remove_file("http://www.vstforx.de/saro.dll", "heimat", "ppi")
         tc.remove_file("http://www.vstforx.de/tal.zip", "heimat", "ppi")
         
@@ -85,7 +85,7 @@ class TestPlugBox(unittest.TestCase):
     </plugin>
   </vendor>
 <vendor name="heimat"><plugin name="ppi" /></vendor></plugin-repository>"""
-        self.assertTrue(soll, tx.tostring(tc.root))
+        self.assertEqual(soll, tx.tostring(tc.root))
 
         tc.remove_plugin("ppi", "heimat")
                 
@@ -97,7 +97,7 @@ class TestPlugBox(unittest.TestCase):
     </plugin>
   </vendor>
 <vendor name="heimat"></vendor></plugin-repository>"""
-        self.assertTrue(soll, tx.tostring(tc.root))
+        self.assertEqual(soll, tx.tostring(tc.root))
         
         tc.remove_vendor("heimat")
                 
@@ -109,7 +109,7 @@ class TestPlugBox(unittest.TestCase):
     </plugin>
   </vendor>
 </plugin-repository>"""
-        self.assertTrue(soll, tx.tostring(tc.root))
+        self.assertEqual(soll, tx.tostring(tc.root))
 
         #print xt.tostring(tc.root)
 
