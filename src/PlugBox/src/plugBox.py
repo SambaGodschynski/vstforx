@@ -211,16 +211,21 @@ class RepSync:
         self.root = xt.XML(data)
         
         
-    def __load_rep_if_neccessary(self, **_filter):
-        self.__filter = _filter
+    def __load_rep_if_neccessary(self):
+        if vars(self).has_key('root'):
+            if self.root != None:
+                return
         self.__load_repository(self.url)
          
         
-    def load_rep(self, **_filter):
-        self.__load_rep_if_neccessary(**_filter)
+    def load_rep(self, force_reload=False):
+        if force_reload:
+            self.root = None
+        self.__load_rep_if_neccessary()
         
     def sync(self, **filter):
-        self.__load_rep_if_neccessary(**filter)
+        self.__filter = filter
+        self.__load_rep_if_neccessary()
         self.__process_tree(self.root)  
     
     def __get_zip_content(self, path):
@@ -266,6 +271,7 @@ class RepSync:
         xt.SubElement(self.root, "vendor", vendorinfo)
 
     def find_vendor(self, vendor):
+        self.__load_rep_if_neccessary()
         for x in self.root.iter("vendor"):
             if x.attrib['name'] == vendor:
                 return x
@@ -288,6 +294,7 @@ class RepSync:
         xt.SubElement(v, "plugin", **pkginf)
 
     def find_plugin(self, vendorel, plugin):
+        self.__load_rep_if_neccessary()
         if vendorel == None:
             raise self.RepError("invalid vendor")
         for x in vendorel:
@@ -324,6 +331,7 @@ class RepSync:
         self.__add_binaries(n, binaries)
     
     def find_file(self,  pluginel, url):
+        self.__load_rep_if_neccessary()
         for x in pluginel:
             if x.text == url:
                 return x

@@ -62,13 +62,9 @@ class TestPlugBox(unittest.TestCase):
         tc = self.testClass
         tc.url="testfile.xml"
         tc.add_vendor(name = "heimat")
-        tc.save()
         tc.add_plugin("heimat", name="ppi")
-        tc.save()
         tc.add_file("TAL-Vocoder-2.zip", "http://www.vstforx.de/tal.zip", "heimat", "ppi")
-        tc.save()
         tc.add_file("Saro.dll", "http://www.vstforx.de/saro.dll", "heimat", "ppi")
-        tc.save()
         soll = """plugin-repository author="samba godschynski" install-loc="testrep" name="testrep" tags="Windows, Mac, VST, i386, x64">
   <vendor install-loc="smart_electronix" name="smartelectronix" url="www.smartelectronix.com">
     <plugin install-loc="mda" name="mda plugins">
@@ -78,13 +74,9 @@ class TestPlugBox(unittest.TestCase):
   </vendor>
 <vendor name="heimat"><plugin name="ppi"><file>http://www.vstforx.de/tal.zip<binary md5="4a95d635143e50cc0466e140a6f05f02">TAL-Vocoder-2.dll</binary></file><file>http://www.vstforx.de/saro.dll<binary md5="ac69ed900c6c60df6591454d13e2fe58">Saro.dll</binary></file></plugin></vendor></plugin-repository>"""
         self.assertTrue(soll, tx.tostring(tc.root))
-        
         tc.remove_file("http://www.vstforx.de/saro.dll", "heimat", "ppi")
-        tc.save()
-
         tc.remove_file("http://www.vstforx.de/tal.zip", "heimat", "ppi")
-        tc.save()
-
+        
         soll="""<plugin-repository author="samba godschynski" install-loc="testrep" name="testrep" tags="Windows, Mac, VST, i386, x64">
   <vendor install-loc="smart_electronix" name="smartelectronix" url="www.smartelectronix.com">
     <plugin install-loc="mda" name="mda plugins">
@@ -96,8 +88,7 @@ class TestPlugBox(unittest.TestCase):
         self.assertTrue(soll, tx.tostring(tc.root))
 
         tc.remove_plugin("ppi", "heimat")
-        tc.save()
-        
+                
         soll="""<plugin-repository author="samba godschynski" install-loc="testrep" name="testrep" tags="Windows, Mac, VST, i386, x64">
   <vendor install-loc="smart_electronix" name="smartelectronix" url="www.smartelectronix.com">
     <plugin install-loc="mda" name="mda plugins">
@@ -109,8 +100,7 @@ class TestPlugBox(unittest.TestCase):
         self.assertTrue(soll, tx.tostring(tc.root))
         
         tc.remove_vendor("heimat")
-        tc.save()
-        
+                
         soll="""<plugin-repository author="samba godschynski" install-loc="testrep" name="testrep" tags="Windows, Mac, VST, i386, x64">
   <vendor install-loc="smart_electronix" name="smartelectronix" url="www.smartelectronix.com">
     <plugin install-loc="mda" name="mda plugins">
