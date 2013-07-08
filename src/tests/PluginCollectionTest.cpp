@@ -14,8 +14,9 @@
 #include <iostream>
 #include <boost/assign/list_of.hpp>
 #include <map>
-#include <boost/timer/timer.hpp>
+#include <processing/dspTools.h>
 #include "com/PluginCollectionSQL.h"
+#include <iostream>
 
 #if WIN32
 #define VSTPLUG_EXT ".dll"
@@ -23,11 +24,29 @@
 #define VSTPLUG_EXT ".vst"
 #endif
 
-#define FAST_SCAN_TIME 12.0 //seconds
+#define FAST_SCAN_TIME 15.0 //seconds
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::PluginCollectionTest );
 
+//              folder       subfolder
+typedef multimap< std::string, std::string > ExcpectedFolderMap;
+
+
+static std::ostream & operator<<(std::ostream &os, const ExcpectedFolderMap& m)
+{
+    if (m.empty()) {
+        os<<"{}";
+        return os;
+    }
+    ExcpectedFolderMap::const_iterator it = m.begin();
+    os<<"{"<<std::endl;
+    for(; it!=m.end(); ++it) {
+        os<<it->first<<" : " <<it->second<<", "<<std::endl;
+    }
+    os<<"}";
+    return os;
+}
 
 namespace tests {
 //=============================================================================
@@ -85,28 +104,7 @@ void PluginCollectionTest::eventHandler( void *src, const com::ScanComplete &ev 
 //=============================================================================
 }
 
-/* 
-	07-12-2011 Changed because bug: 0000084
-	caused by SQL Exception ( ' character in filenames )
-
-   Ordner Struktur:
-   ----------------
-   \testVstFolder           <- no plugs
-   \testVstFolder\A         <- mda collection
-   \testVstFolder\B         <- mda collection + no plug files 
-   \testVstFolder\C'		<- one plug that filename has special character
-   \testVstFolder\B\B1
-   \testVstFolder\B\B1\B1_1 <- textfile
-   \testVstFolder\B\B2		<- mda collection but overdrive == PLUGIN_LOACTION_1 => renamed
-   \testVstFolder\B\B3      <- no plug files
-*/
-
-
 static const size_t NUM_PLUG_COLLECTION = 31;
-
-
-//              folder       subfolder
-typedef multimap< std::string, std::string > ExcpectedFolderMap; 
 
 //=============================================================================
 // after call with ROOT_FOLDER exp has to be empty.
@@ -172,7 +170,7 @@ void checkTree( ::com::PluginCollection *pC, ExcpectedFolderMap &exp )
 //=============================================================================
 	using namespace com;
 	_checkTree( pC, pC->getRootFolder(), exp );
-	CPPUNIT_ASSERT( exp.empty() );
+	CPPUNIT_ASSERT_EQUAL( ExcpectedFolderMap(), exp );
 }
 
 //=============================================================================
@@ -211,9 +209,9 @@ void PluginCollectionTest::testScan() {
 	CPPUNIT_ASSERT_EQUAL ( (size_t)0, pC->getNumNotChecked() );
 	CPPUNIT_ASSERT ( pC->isAllScanned() );
 	//>>>>>>>>>>>>>>>>rescan, excpect fast execute because plugs already in db
-	boost::timer::cpu_timer timer;
+	Timer timer;
 	pC->update( graph->getHostInfo() );
-	CPPUNIT_ASSERT ( timer.elapsed().user < FAST_SCAN_TIME );
+	CPPUNIT_ASSERT ( !timer.isElapsed(FAST_SCAN_TIME) );
 }
 //=============================================================================
 void PluginCollectionTest::testFastScan() {
@@ -236,9 +234,9 @@ void PluginCollectionTest::testFastScan() {
 	sambag::com::Location path =  boost::filesystem::absolute("testVstFolder");
 	settings->addVSTFolder( path.string() );
 	// start scan
-	boost::timer::cpu_timer timer; 
+	Timer timer;
 	pC->update( graph->getHostInfo() );
-	CPPUNIT_ASSERT ( timer.elapsed().user < FAST_SCAN_TIME ); 
+	CPPUNIT_ASSERT ( !timer.isElapsed(FAST_SCAN_TIME) );
 	settings->fastScan = false;
 	//checkTree ( pC );
 	// compare scanned tree with ExpMap
@@ -301,10 +299,10 @@ void PluginCollectionTest::testFolderIntegrity1(){
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	settings->clearVSTFolders();
 	settings->addVSTFolder( pathB.string() );
-	boost::timer::cpu_timer t;
+	Timer t;
 	pC->update( graph->getHostInfo() );
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION, pC->getNumSucceed() );
-	CPPUNIT_ASSERT ( t.elapsed().user < FAST_SCAN_TIME ); 
+	CPPUNIT_ASSERT ( !t.isElapsed(FAST_SCAN_TIME) );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan testVstFolder/ instead testVstFolder
 	pathA =  boost::filesystem::absolute("testVstFolder/");
 	settings->clearVSTFolders();
@@ -532,9 +530,9 @@ void PluginCollectionTest::testMultipleDirectories() {
 	settings->addVSTFolder( pathB1.string() );
 	CPPUNIT_ASSERT ( !pC->isAllScanned() );
 	// start scan
-	boost::timer::cpu_timer timer;
+	Timer timer;
 	pC->update( graph->getHostInfo() );
-	CPPUNIT_ASSERT ( timer.elapsed().user < FAST_SCAN_TIME ); 
+	CPPUNIT_ASSERT ( !timer.isElapsed(FAST_SCAN_TIME) ); 
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION, pC->getNumSucceed() );
 	CPPUNIT_ASSERT ( pC->isAllScanned() );
 	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add A
