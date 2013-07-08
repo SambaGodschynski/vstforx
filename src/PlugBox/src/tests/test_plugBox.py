@@ -35,27 +35,27 @@ class TestPlugBox(unittest.TestCase):
         tc.sync()
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip" in tc.to_download)
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_ub.zip" in tc.to_download)
-        tc.to_download=[]
+        tc.to_download={}
         
         tc.sync(plattform="windows")
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip" in tc.to_download)
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_ub.zip" not in tc.to_download)
-        tc.to_download=[]
+        tc.to_download={}
         
         tc.sync(plattform="windows, mac")
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip" in tc.to_download)
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_ub.zip" in tc.to_download)
-        tc.to_download=[]
+        tc.to_download={}
 
         tc.sync(plattform="windows, mac", arch="x64")
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip" not in tc.to_download)
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_ub.zip" in tc.to_download)
-        tc.to_download=[]
+        tc.to_download={}
 
         tc.sync(plattform="windows", arch="x64")
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_fx_win.zip" not in tc.to_download)
         self.assertTrue("http://mda.smartelectronix.com/vst/mda_vst_ub.zip" not in tc.to_download)
-        tc.to_download=[]
+        tc.to_download={}
     
     def test_add_remove(self):
         import xml.etree.ElementTree as xt

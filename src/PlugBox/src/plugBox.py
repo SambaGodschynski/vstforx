@@ -152,9 +152,14 @@ class RepSync:
     dst_path="."
     install_loc=""
     __filter=None
-    to_download = []
-    element_map={}
-        
+    to_download = {}
+    verbose = False
+
+    def __print(self, str):
+        if not self.verbose:
+            return
+        print (str)
+    
     def __init__(self):
         pass
     
@@ -181,28 +186,33 @@ class RepSync:
 
     def __download(self, url):
         pass
+        
+        
+    def __update_install_loc(self, el):
+        if not el.attrib.has_key("install-loc"):
+            return
+        self.install_loc = "%s/%s" % (self.install_loc, el.attrib["install-loc"])
 
     def __process_plugin(self, el):
-        self.install_loc = "%s/%s" % (self.install_loc, el.attrib["install-loc"])
+        self.__update_install_loc(el)
         for x in el.iter("file"):
             if not self.__pass_filter(x):
                 continue
             url = HTMLParser.HTMLParser().unescape(x.text)
-            self.to_download.append(url)
-            self.element_map[url] = x
-
+            self.to_download[url] = v = {}
+            v['element'] = el
+            
     def __process_vendor(self, el):
-        print "  fetching '%s':" % el.attrib['name']
-        self.install_loc = "%s/%s" % (self.install_loc, el.attrib["install-loc"])
+        self.__print("  fetching '%s':" % el.attrib['name'])
+        self.__update_install_loc(el)
         for x in el.iter('plugin'):
             self.__process_plugin(x)
             
     def __process_tree(self, root):
         if root.tag != "plugin-repository":
             raise self.RepError("invalid repository file")
-        print "fetching '%s' by '%s'" % (root.attrib["name"], root.attrib["author"])
-        print "tags: %s" % root.attrib['tags']
-        self.install_loc = "%s/%s" % (self.dst_path, root.attrib["install-loc"])
+        self.__print("fetching '%s'" % self.url)
+        self.__update_install_loc(root)
         for x in root.iter('vendor'):
             self.__process_vendor(x)
         
@@ -230,10 +240,10 @@ class RepSync:
         self.__load_rep_if_neccessary()
         
     def sync(self, **filter):
-        print "start syncing:"
         self.__filter = filter
         self.__load_rep_if_neccessary()
         self.__process_tree(self.root)
+        print self.to_download
         
     
     def __get_zip_content(self, path):
@@ -408,8 +418,8 @@ def _init(rep, attr):
         
     
 
-def _sync(rep, args):
-    rep.sync(**args)
+def _sync(rep, attr):
+    rep.sync(**attr)
 
 def _add_default_args(parser):
     parser.add_argument('--name', help="specifies a name")
