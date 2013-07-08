@@ -53,7 +53,13 @@ def _unpack_commasep(x):
 
 def _is_plugfile(f):
     ext = os.path.splitext(f)[1]
-    return ext==".dll" or ext==".vst"
+    if ext==".dll" or ext==".vst": #.vst means vst3 not mac vst
+        return True
+    #Mac vst == directory
+    if re.match(".*?.vst/Contents/MacOS/.*$", f):
+        return True
+    return False
+    
 
 def _hashfile(f, hasher, blocksize=65536):
     buf = f.read(blocksize)
@@ -224,9 +230,11 @@ class RepSync:
         self.__load_rep_if_neccessary()
         
     def sync(self, **filter):
+        print "start syncing:"
         self.__filter = filter
         self.__load_rep_if_neccessary()
-        self.__process_tree(self.root)  
+        self.__process_tree(self.root)
+        
     
     def __get_zip_content(self, path):
         res=[]
@@ -400,13 +408,18 @@ def _init(rep, attr):
         
     
 
-def _sync(args):
-    print args
+def _sync(rep, args):
+    rep.sync(**args)
 
 def _add_default_args(parser):
     parser.add_argument('--name', help="specifies a name")
     parser.add_argument('-t', '--tags', help="specifies tags")  
-    parser.add_argument('--location', help="specifies deployment location")  
+    parser.add_argument('-l', '--location', help="specifies deployment location")  
+    
+def _add_filter_args(parser):
+    parser.add_argument('--plattform', help="specifies a plattform")
+    parser.add_argument('--arch', help="specifies a architecture")
+    parser.add_argument('--format', help="specifies a plugin format")
     
 if __name__ == "__main__":
     from argparse import *
@@ -424,12 +437,12 @@ if __name__ == "__main__":
                                        description=txt)
     avp = subparsers.add_parser('add-vendor')
     avp.add_argument('name', help="the vendor name")
+    avp.add_argument('--url', help="the file related source url")
     _add_default_args(avp)
     avp.set_defaults(func=_add_vendor)
     
     rvp = subparsers.add_parser('remove-vendor')
     rvp.add_argument('name', help="the vendor name")
-    rvp.add_argument('--url', help="specifies an url")
     rvp.set_defaults(func=_remove_vendor)
 
     app = subparsers.add_parser('add-plugin')
@@ -449,11 +462,10 @@ if __name__ == "__main__":
     afp.add_argument('url', help="the file related source url")
     afp.add_argument('vendor', help="the file related vendor")
     afp.add_argument('plugin', help="the file related plugin")
-    afp.add_argument('--plattform', help="specifies a plattform")
-    afp.add_argument('--arch', help="specifies a architecture")
-    afp.add_argument('--format', help="specifies a plugin format")
     afp.add_argument('--version', help="specifies the plugin version")
+    _add_filter_args(afp)
     afp.set_defaults(func=_add_file)
+
 
     rfp = subparsers.add_parser('remove-file')
     rfp.add_argument('url', help="the file related source url")
@@ -464,12 +476,11 @@ if __name__ == "__main__":
     gip = subparsers.add_parser('init')
     gip.add_argument('--author', help="specifies an author")
     gip.add_argument('--url', help="the repository related source url")
-
     _add_default_args(gip)
     gip.set_defaults(func=_init)
     
     gsp = subparsers.add_parser('sync')
-    _add_default_args(gsp)
+    _add_filter_args(gsp)
     gsp.set_defaults(func=_sync)
 
     args=parser.parse_args()
