@@ -1,7 +1,23 @@
 #!/usr/bin/python
 """
-downloads and install plugins automatically according to 
+downloads and install audio plugins automatically according to 
 repository input file. 
+
+Copyright (C) 2013 saba godschynski, www.vstforx.de
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ 
 """
 
 import urllib
@@ -13,10 +29,9 @@ import xml.etree.ElementTree as xt
 import HTMLParser
 import zipfile as zip
 import hashlib
+import shutil
 
 HEADER = { 'User-Agent' : 'PlugBox' }
-_CACHING_ON = True 
-_CACHE_PATH = ".tmp"
 
 
 def _prettify(elem):
@@ -56,7 +71,7 @@ def _is_plugfile(f):
     if ext==".dll" or ext==".vst": #.vst means vst3 not mac vst
         return True
     #Mac vst == directory
-    if re.match(".*?.vst/Contents/MacOS/.*$", f):
+    if re.match(".*?.vst/Contents/MacOS/.+$", f):
         return True
     return False
     
@@ -68,12 +83,17 @@ def _hashfile(f, hasher, blocksize=65536):
         buf = f.read(blocksize)
     return hasher.digest().encode('hex_codec')
 
+def _get_hash(path):
+    f = open(path, "rb")
+    hash = _hashfile(f, hashlib.md5())
+    f.close()
+    return hash
 
-def _download(url, post_txt="downloading"):
+
+def _download(url, file_name, post_txt="downloading"):
     """
     downloads url with statusbar output: post_txt filename: [n%]
     """
-    file_name = url.split('/')[-1]
     u = urllib2.urlopen(url)
     f = open(file_name, 'wb')
     meta = u.info()
@@ -86,7 +106,7 @@ def _download(url, post_txt="downloading"):
             break
         file_size_dl += len(buffer)
         f.write(buffer)
-        status = r"%s %s: %10d [%3.2f%%]" % (post_txt, file_name, file_size_dl, file_size_dl * 100. / file_size)
+        status = r"%s %10d [%3.2f%%]" % (post_txt, file_size_dl, file_size_dl * 100. / file_size)
         status = status + chr(8)*(len(status)+1)
         print status,
     f.close()
@@ -107,34 +127,6 @@ def _norm_url(url, **values):
         url = url + '-' + re.sub("[^\w]", "-", y)
     return url
 
-def _req_GET(_url, **values):
-    if not os.path.exists(_CACHE_PATH):
-        os.makedirs(_CACHE_PATH)
-    cache_path = _CACHE_PATH + '/' + "tmp_"+_norm_url(_url, **values)
-    if _CACHING_ON == True and os.path.exists(cache_path):
-        _log("** CACHING ON: using local file %s **" % cache_path)
-        f = open(cache_path, 'rb')
-        res = f.read();
-        f.close()
-        return res
-        
-    if len(values) != 0:
-        data = urllib.urlencode(values)
-        url=_url+'?'+data
-    req = urllib2.Request(url, None, HEADER)
-    try:
-        response = urllib2.urlopen(req)
-        res = response.read()
-    except Exception, ex:
-        print "req: %s failed!: %s" % (url, ex) 
-        return ""
-    time.sleep(1)
-    if _CACHING_ON == True:
-        f = open(cache_path, 'wb')
-        f.write(res)
-        f.close()
-    return res
-
 def _save_data(path, data):
     f = open(path, 'wb')
     f.write(data)
@@ -149,19 +141,21 @@ class RepSync:
     class RepError(StandardError):
         pass
     url="http://public.plugbox.vstforx.de"
-    dst_path="."
     install_loc=""
     __filter=None
     to_download = {}
-    verbose = False
-
+    verbose = True
+    download_path = ".tmp"
+    failed = []
+    succeed = []
     def __print(self, str):
         if not self.verbose:
             return
         print (str)
     
     def __init__(self):
-        pass
+        if not os.path.exists(self.download_path):
+            os.makedirs(self.download_path)
     
     def __filter_attr_values(self, filter_values, element_values):
          f_v = _unpack_commasep(filter_values)
@@ -184,14 +178,69 @@ class RepSync:
                
         return res
 
-    def __download(self, url):
-        pass
-        
-        
-    def __update_install_loc(self, el):
-        if not el.attrib.has_key("install-loc"):
+    def __download(self, url, dst_path):
+        fname = os.path.basename(dst_path)
+        if os.path.exists(dst_path):
+            self.__print("        %s downloaded already" % fname)
             return
-        self.install_loc = "%s/%s" % (self.install_loc, el.attrib["install-loc"])
+        _download(url, dst_path, "        downloading %s:" % fname)
+        
+
+    def __deploy(self, src, dst):
+        self.__print("        deploying into %s" %dst)
+        if _is_plugfile(src):
+            shutil.copy(src, dst)
+            return
+        ext = os.path.splitext(src)[1]
+        if ext==".zip":
+            with zip.ZipFile(src, 'r') as z:
+                z.extractall(dst)
+            
+        
+
+    def __install(self, pluginfo):
+        fname = "%s/%s" % (self.download_path, pluginfo[1]['filename'])
+        self.__print("    installing %s" % pluginfo[0])
+        self.__download(pluginfo[0], fname)
+        self.__deploy(fname, pluginfo[1]['install_loc'])
+
+    def __need_to_update(self, x):
+        path = x['install_loc']
+        for v in x['binaries']:
+            f = path + '/' + v[0]
+            if not os.path.exists(f):
+                return True
+            if _get_hash(f) != v[1]:
+                return True
+        return False
+        
+
+    def __process_downloads(self):
+        for x in self.to_download.items():
+            loc = x[1]['install_loc']
+            if not os.path.exists(loc):
+                os.makedirs(loc)
+            if not self.__need_to_update(x[1]):
+                self.__print("    %s is up to date." % x[0])
+                self.succeed.append(x)
+                continue
+            self.__install(x)
+            if self.__need_to_update(x[1]):
+                self.failed.append(x)
+                self.__print("    %s: installation failed !!" % x[0])
+            else:
+                self.succeed.append(x)
+                
+    def __update_install_loc(self, el):
+        if not el.attrib.has_key("location"):
+            return
+        self.install_loc = "%s/%s" % (self.install_loc, el.attrib["location"])
+
+        
+    def __process_binaries(self, el, out_dict):
+        out_dict['binaries'] = l = []
+        for x in el.iter("binary"):
+            l.append((HTMLParser.HTMLParser().unescape(x.text), x.attrib['md5']))
 
     def __process_plugin(self, el):
         self.__update_install_loc(el)
@@ -200,11 +249,12 @@ class RepSync:
                 continue
             url = HTMLParser.HTMLParser().unescape(x.text)
             self.to_download[url] = v = {}
-            v['element'] = el
+            v['element'] = x
             v['install_loc'] = self.install_loc
-            
+            v['filename'] = x.attrib['filename']
+            self.__process_binaries(x, v)
+
     def __process_vendor(self, el):
-        self.__print("  fetching '%s':" % el.attrib['name'])
         self.__update_install_loc(el)
         for x in el.iter('plugin'):
             self.__process_plugin(x)
@@ -212,8 +262,7 @@ class RepSync:
     def __process_tree(self, root):
         if root.tag != "plugin-repository":
             raise self.RepError("invalid repository file")
-        self.__print("fetching '%s'" % self.url)
-        self.__update_install_loc(root)
+            self.__update_install_loc(root)
         for x in root.iter('vendor'):
             self.__process_vendor(x)
         
@@ -241,10 +290,21 @@ class RepSync:
         self.__load_rep_if_neccessary()
         
     def sync(self, **filter):
+        self.__print("start syncing:")
         self.__filter = filter
         self.__load_rep_if_neccessary()
         self.__process_tree(self.root)
-        print self.to_download
+        
+        if len(self.to_download)==0:
+            raise self.RepError("no matching downloads found")
+        self.__process_downloads()
+        ss = "%i installations succeed" % len(self.succeed)
+        sf = "%i installations failed" % len(self.failed)
+        self.__print("- " * (max(len(sf), len(ss)) / 2))
+        self.__print(ss)
+        self.__print(sf)
+        
+        
         
     
     def __get_zip_content(self, path):
@@ -271,9 +331,7 @@ class RepSync:
     def __get_binarylist(self, path):
         """ return list of filenames and md5 values """
         if _is_plugfile(path):
-            f = open(path, "rb")
-            md5 = _hashfile(f, hashlib.md5())
-            f.close
+            md5 = _get_hash(path)
             return [(os.path.basename(path), md5)]
         return filter(lambda x: _is_plugfile(x[0]), self.__get_archive_content(path))
 
@@ -403,6 +461,7 @@ def _add_file(rep, attr):
     url = attr.pop('url')
     vendor = attr.pop('vendor')
     plugin = attr.pop('plugin')
+    attr['filename'] = os.path.basename(path)
     rep.add_file(path, url, vendor, plugin, **attr)
     rep.save()
 
@@ -420,6 +479,8 @@ def _init(rep, attr):
     
 
 def _sync(rep, attr):
+    t = attr.pop('target')
+    rep.install_loc = t
     rep.sync(**attr)
 
 def _add_default_args(parser):
@@ -492,6 +553,7 @@ if __name__ == "__main__":
     
     gsp = subparsers.add_parser('sync')
     _add_filter_args(gsp)
+    gsp.add_argument('target', help="specifies the target path")
     gsp.set_defaults(func=_sync)
 
     args=parser.parse_args()
