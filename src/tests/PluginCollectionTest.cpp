@@ -20,7 +20,7 @@
 
 #if WIN32
 #define VSTPLUG_EXT ".dll"
-#else __APPLE_CC__
+#else
 #define VSTPLUG_EXT ".vst"
 #endif
 
