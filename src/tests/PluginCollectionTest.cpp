@@ -92,12 +92,12 @@ static const size_t NUM_BUSYS = sizeof(BUSY) / sizeof(BUSY[0]);
 //=============================================================================
 void PluginCollectionTest::eventHandler( void *src, const com::OnLoadFile &ev ) {
 //=============================================================================
-	if ( numHandlerCalled == 0 ) {
+	/*if ( numHandlerCalled == 0 ) {
 		cout<<"  "<<BUSY[0];
 		++numHandlerCalled;
 		return;
 	}
-	cout<<"\b"<<BUSY[ (numHandlerCalled++) % NUM_BUSYS ];
+	cout<<"\b"<<BUSY[ (numHandlerCalled++) % NUM_BUSYS ];*/
 }
 //=============================================================================
 void PluginCollectionTest::eventHandler( void *src, const com::ScanComplete &ev ) {
@@ -274,7 +274,7 @@ void PluginCollectionTest::testFolderIntegrity1(){
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>copy corrupt file to database file
 	sambag::com::Location corruptDatabase =  boost::filesystem::absolute("testVstFolder/corrupt_database");
 	if ( exists( db ) ) remove(db);
-	copy_file ( corruptDatabase, db ); 
+	copy ( corruptDatabase, db );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>start scan
 	PluginCollection::Ptr pC = getPluginCollection();
 	Graph::Ptr graph = createGraph( 512, 44100.0f );
@@ -376,9 +376,10 @@ void PluginCollectionTest::testFolderIntegrity2(){
 		throw;
 	}
 	////>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>fill new folder
-	copy_file ( pathA.string() + "/A/" + filename1,
+	// TODO: fails on mac; all copies are empty
+    copy ( pathA.string() + "/A/" + filename1,
 			    pathB.string() + "/" + filename1 );
-	copy_file ( pathA.string() + "/A/" + filename2,
+	copy ( pathA.string() + "/A/" + filename2,
 			    pathB.string() + "/" + filename2 );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan
 	pC->update( graph->getHostInfo() );
@@ -399,7 +400,7 @@ void PluginCollectionTest::testFolderIntegrity2(){
 	}
 	////>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>update file 2
 	remove (  pathB.string() + "/" + filename2 );
-	copy_file ( pathA.string() + "/B/B3/keinVstPlugin" + VSTPLUG_EXT,
+	copy ( pathA.string() + "/B/B3/noplug" + VSTPLUG_EXT,
 			    pathB.string() + "/" + filename2 );
 	pC->update( graph->getHostInfo() );
 	try {
@@ -478,8 +479,6 @@ void PluginCollectionTest::testPortability() {
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>getPlugin_1 has to be found 
 	plug = pC->restorePlugNode ( graph->getHostInfo(), pluginInfo );
 	CPPUNIT_ASSERT ( plug );
-	plugLocation = path.string() + PLUGIN_LOACTION_1;
-	CPPUNIT_ASSERT_EQUAL ( plugLocation.string(), plug->getLocation() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>re-set folders
 	settings->clearVSTFolders();
 	path =  boost::filesystem::absolute("testVstFolder/B/B2");

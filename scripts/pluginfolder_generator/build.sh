@@ -1,15 +1,5 @@
 #!/bin/sh
 
-#   \testVstFolder          <- no plugs
-#   \testVstFolder\A        <- mda collection
-#   \testVstFolder\B        <- mda collection + no plug files 
-#   \testVstFolder\C'	    <- one plug that filename has special character
-#   \testVstFolder\B\B1
-#   \testVstFolder\B\B1\B1_1 <- textfile
-#   \testVstFolder\B\B2	     <- mda collection but overdrive == PLUGIN_LOACTION_1 => renamed
-#   \testVstFolder\B\B3      <- no plug files
-
-
 export PATH=$PATH:"$(pwd)/../../src/PlugBox/src"
 
 src=testVstFolder
@@ -70,7 +60,7 @@ cp -r $src $dst
 mv  $dst/mda $dst/A
 cp -r $dst/A $dst/B
 cp -r $dst/A $dst/B/B2
-mv  "$dst/B/B2/mda Overdrive.$ex" "$dst/B/B2/mda Overdrive_Renamed.$ex"
+mv  "$dst/B/B2/mda Overdrive.$ex" "$dst/B/B2/mda Overdrive_renamed.$ex"
 cp -r noplug.$ex $dst/B/noplug01.$ex
 #cp -r noplug.$ex $dst/B/noplug02.$ex
 mkdir "$dst/C'"
