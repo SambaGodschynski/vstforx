@@ -29,5 +29,10 @@ string PPIError::src2String() const {
 void PPIError::showMessage() {
 	com::osMessageBox ( "Error!", error, MSG_ALERT ); 
 };
+//------------------------------------------------------------------------------------------------------------
+const char* PPIError::what() const throw() {
+    tmp = toString();
+    return tmp.c_str();
+}
 } //namespace ppiError
 } //namespace com

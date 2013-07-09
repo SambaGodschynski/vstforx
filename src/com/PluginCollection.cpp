@@ -15,16 +15,13 @@
 #include "processing/pluginTypes/VSTPlugin2x.h"
 #include "processing/pluginTypes/VstShellPlugin.hpp"
 #include <sambag/com/exceptions/IllegalStateException.hpp>
-
-void forDebug() {
-    
-}
+#include <sambag/com/Thread.hpp>
 
 #define DB_QUERY(x)											\
 	try {x}													\
 	catch ( ::sambag::cpsqlite::DataBaseQueryFailed &ex ) { \
 		TOLOG(ex.errorMessage + " => " + ex.query );		\
-	    forDebug(); throw;									\
+	    throw;                                              \
 	}
 
 namespace com {
@@ -118,16 +115,6 @@ void ScanVisitor::file ( const ScanVisitor::Path &loc ) {
 	if ( folder == PluginCollection::NULL_FOLDER ) throw InvalidPathEx();
 	client->checkFile ( loc, folder );
 }
-PluginCollection & getPluginCollection() {
-	typedef Loki::SingletonHolder<PluginCollection> FactoryHolder;
-	return FactoryHolder::Instance();
-}
-//============================================================================================================
-// Klasse PluginCollection : <Singleton>
-// Datenbank fuer Plugin Files.
-// Die festgelegten root verzeichnisse werden iteriert und alle vorhandenen Plugins gesammelt.
-// Die angesammelten daten werden auf HD gespeichert und nur bei verzeichniss aenderung aktualisiert.
-//============================================================================================================
 //============================================================================================================
 const PluginCollection::FolderID PluginCollection::NULL_FOLDER_ID = 0;
 //------------------------------------------------------------------------------------------------------------
@@ -824,5 +811,18 @@ bool PluginCollection::isAllScanned() const {
 		exec->execute( query, pL, res );
 	)
 	return res.size() == l.size();
+}
+//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+PluginCollection::Ptr getPluginCollection() {
+    static boost::weak_ptr<PluginCollection> instance;
+    static sambag::com::RecursiveMutex lock;
+    PluginCollection::Ptr res;
+    SAMBAG_BEGIN_SYNCHRONIZED(lock)
+        res = instance.lock();
+        if (!res) {
+            instance = res = PluginCollection::Ptr( new PluginCollection() );
+        }
+    SAMBAG_END_SYNCHRONIZED
+    return res;
 }
 } //namespace com 

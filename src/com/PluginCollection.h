@@ -23,7 +23,6 @@
 #include "processing/Plugin.h"
 #include "boost/tuple/tuple.hpp"
 #include "boost/tuple/tuple_comparison.hpp"
-#include <loki/Singleton.h>
 
 namespace com {
 using namespace events;
@@ -149,7 +148,7 @@ public:
 
 //============================================================================================================
 /**
- * @class PluginCollection <Singleton>.
+ * @class PluginCollection
  * Bietet Methoden zum Zugriff auf Konkrete Datenbank.
  */
 //============================================================================================================
@@ -161,7 +160,7 @@ class PluginCollection :
 	public EventSender<ScanInterrupted>
 {
 friend class ScanVisitor;
-friend struct Loki::CreateUsingNew<PluginCollection>;
+friend boost::shared_ptr<PluginCollection> getPluginCollection();
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef com::EventSender<OnLoadFile> OnLoadFileSender;
@@ -467,7 +466,7 @@ public:
 	virtual ~PluginCollection();
 };
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-extern PluginCollection & getPluginCollection();
+extern PluginCollection::Ptr getPluginCollection();
 } // namespace com
 
 #endif

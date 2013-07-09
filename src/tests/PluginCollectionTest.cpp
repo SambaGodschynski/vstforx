@@ -85,7 +85,7 @@ void PluginCollectionTest::testConstructor() {
 	using namespace com;
 	using namespace processing;
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> std constr.
-	PluginCollection *pC( &getPluginCollection() );
+    PluginCollection::Ptr pC = getPluginCollection();
 }
 static const char BUSY[] = { '/','-','\\','|' };
 static const size_t NUM_BUSYS = sizeof(BUSY) / sizeof(BUSY[0]);
@@ -113,7 +113,7 @@ void resetPluginCollection( processing::Graph::Ptr graph )
 	using namespace com;
 	using namespace processing;
 	Settings * settings = &getSettings();
-	PluginCollection *pC = &getPluginCollection();
+	PluginCollection::Ptr pC = getPluginCollection();
 	Settings::PathnameSet tmp = settings->getPluginDirectoryList();
 	settings->clearVSTFolders();
 	// scan:
@@ -130,7 +130,7 @@ void resetPluginCollection( processing::Graph::Ptr graph )
 //=============================================================================
 
 //=============================================================================
-void _checkTree( ::com::PluginCollection *pC, 
+void _checkTree( ::com::PluginCollection::Ptr pC, 
 			    ::com::PluginCollection::Folder currFolder,
 				ExcpectedFolderMap &exp ) 
 {
@@ -165,7 +165,7 @@ void _checkTree( ::com::PluginCollection *pC,
 }
 //=============================================================================
 // after call with ROOT_FOLDER, exp has to be empty.
-void checkTree( ::com::PluginCollection *pC, ExcpectedFolderMap &exp ) 
+void checkTree( ::com::PluginCollection::Ptr pC, ExcpectedFolderMap &exp ) 
 {
 //=============================================================================
 	using namespace com;
@@ -186,7 +186,7 @@ void PluginCollectionTest::testScan() {
 	sambag::com::Location path = boost::filesystem::absolute("testVstFolder");
 	settings->addVSTFolder( path.string() );
 	// start scan
-	PluginCollection *pC = &getPluginCollection();
+	PluginCollection::Ptr pC = getPluginCollection();
 	CPPUNIT_ASSERT ( !pC->isAllScanned() );
 	Graph::Ptr graph = createGraph( 512, 44100.0f );
 	pC->EventSender<com::OnLoadFile>::addEventListener( this );
@@ -222,7 +222,7 @@ void PluginCollectionTest::testFastScan() {
 	using namespace boost::assign;
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan empty folders expect 0 plugins
 	// setup folders
-	PluginCollection *pC = &getPluginCollection();
+	PluginCollection::Ptr pC = getPluginCollection();
 	Graph::Ptr graph = createGraph( 512, 44100.0f );
 	pC->EventSender<com::OnLoadFile>::addEventListener( this );
 	pC->EventSender<com::ScanComplete>::addEventListener( this );
@@ -276,7 +276,7 @@ void PluginCollectionTest::testFolderIntegrity1(){
 	if ( exists( db ) ) remove(db);
 	copy_file ( corruptDatabase, db ); 
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>start scan
-	PluginCollection *pC = &getPluginCollection();
+	PluginCollection::Ptr pC = getPluginCollection();
 	Graph::Ptr graph = createGraph( 512, 44100.0f );
 	pC->EventSender<com::OnLoadFile>::addEventListener( this );
 	pC->EventSender<com::ScanComplete>::addEventListener( this );
@@ -339,7 +339,7 @@ void PluginCollectionTest::testFolderIntegrity2(){
 	using namespace com;
 	using namespace processing;
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>reset PluginCollection
-	PluginCollection *pC = &getPluginCollection();
+	PluginCollection::Ptr pC = getPluginCollection();
 	Graph::Ptr graph = createGraph( 512, 44100.0f );
 	resetPluginCollection( graph );
 	pC->EventSender<com::OnLoadFile>::addEventListener( this );
@@ -447,7 +447,7 @@ void PluginCollectionTest::testPortability() {
 	sambag::com::Location plugLocation = path.string() + PLUGIN_LOACTION_1;
 	settings->addVSTFolder( path.string() );
 	// start scan
-	PluginCollection *pC = &getPluginCollection();
+	PluginCollection::Ptr pC = getPluginCollection();
 	Graph::Ptr graph = createGraph( 512, 44100.0f );
 	pC->EventSender<com::OnLoadFile>::addEventListener( this );
 	pC->EventSender<com::ScanComplete>::addEventListener( this );
@@ -505,7 +505,7 @@ void PluginCollectionTest::testMultipleDirectories() {
     // 2. testVstFolder\B\B1 ( empty folder scanning should be fast )
 	// 2. testVstFolder\A    ( mda coll. )
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>prepare pluginCollection
-	PluginCollection *pC = &getPluginCollection();
+	PluginCollection::Ptr pC = getPluginCollection();
 	Graph::Ptr graph = createGraph( 512, 44100.0f );
 	pC->EventSender<com::OnLoadFile>::addEventListener( this );
 	pC->EventSender<com::ScanComplete>::addEventListener( this );

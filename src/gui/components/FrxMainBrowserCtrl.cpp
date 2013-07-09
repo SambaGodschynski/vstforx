@@ -187,9 +187,9 @@ FrxMainBrowserCtrl::fillPluginFolder(TreeNode parent, DBFolderID dbFolderId)
 	Tree::Ptr tree = brws->getBrowserImpl();
 	if (tree->getNumChildren(parent) > 0)
 		return BrowserNode::ResultPtr();
-	::com::PluginCollection *db = NULL;
+	::com::PluginCollection::Ptr db;
 	try {
-		db = &(::com::getPluginCollection());
+		db = ::com::getPluginCollection();
 	} catch (...) {
 		return BrowserNode::ResultPtr();
 	}

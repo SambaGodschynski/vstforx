@@ -395,8 +395,8 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 
 	try {
 		// restore/update via db
-		com::PluginCollection &pC = com::getPluginCollection();
-		pC.restorePluginInfo ( hostInfo.lock(), plugInfo );
+		com::PluginCollection::Ptr pC = com::getPluginCollection();
+		pC->restorePluginInfo ( hostInfo.lock(), plugInfo );
 	} catch(...) {
 		aEff = &nullAEff;
 	}

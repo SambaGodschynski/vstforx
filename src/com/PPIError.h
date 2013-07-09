@@ -10,6 +10,7 @@
 
 #include <string>
 #include "Events.h"
+#include <exception>
 
 using namespace std;
 
@@ -57,10 +58,11 @@ namespace ppiError{
 
 #define UKWNSRC "unkown source."
 
-class PPIError{
+class PPIError : public std::exception {
 public:
 	string error;
 	string src;
+    mutable string tmp;
 	long linenumber;
 	//--------------------------------------------------------------------------------------------------------
 	string src2String() const; 
@@ -72,6 +74,12 @@ public:
 	PPIError(string err="unkown error.", string source=UKWNSRC, long line=-1);
 	//--------------------------------------------------------------------------------------------------------
 	void showMessage();
+    //-------------------------------------------------------------------------------------------------------
+	virtual const char* what() const throw();
+	//-------------------------------------------------------------------------------------------------------
+	virtual ~PPIError() throw()
+	{
+	}
 };
 //============================================================================================================
 // Klasse: StackUnderflow.

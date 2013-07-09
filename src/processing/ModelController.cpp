@@ -293,9 +293,9 @@ IProcessor::Ptr ModelController::createPlugin(const ::processing::PluginInfo &pI
 {
 	
 	::processing::Plugin::Ptr plugin;
-	::com::PluginCollection *pC = NULL;
+	::com::PluginCollection::Ptr pC;
 	try {
-		pC = &(::com::getPluginCollection());
+		pC = ::com::getPluginCollection();
 	} catch (...) {
 		return IProcessor::Ptr();
 	}

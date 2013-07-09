@@ -577,4 +577,6 @@ if __name__ == "__main__":
         args.func(rep, attr)
     except RepSync.RepError, ex:
         print ex
+    except IOError, ex:
+        print ex
     

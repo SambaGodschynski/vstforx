@@ -113,9 +113,9 @@ void startScanImpl(const FileEvF &f,
 	if (!lock.owns_lock()) {
         return;
     }
-	::com::PluginCollection *db = NULL;
+	::com::PluginCollection::Ptr db;
 	try {
-		 db = &(::com::getPluginCollection());
+		 db = ::com::getPluginCollection();
 	} catch (...) {
 		failed("database access failed.");
 		return;
@@ -152,8 +152,8 @@ void SetupCtrl::startScan(const NotifyFileFunc &fileEventF,
 //-----------------------------------------------------------------------------
 bool SetupCtrl::isAllScanned() const {
 	try {
-		::com::PluginCollection &db = ::com::getPluginCollection();
-		return db.isAllScanned();
+		::com::PluginCollection::Ptr db = ::com::getPluginCollection();
+		return db->isAllScanned();
 	} catch (...) {
 		return false;
 	}
@@ -165,8 +165,8 @@ void SetupCtrl::joinScan() {
 //-----------------------------------------------------------------------------
 void SetupCtrl::stopScanning() {
 	try {
-		::com::PluginCollection &db = ::com::getPluginCollection();
-		db.stopScanning();
+		::com::PluginCollection::Ptr db = ::com::getPluginCollection();
+		db->stopScanning();
 	} catch(...) {
 		// what should I do? ...
 		return; // ... die
