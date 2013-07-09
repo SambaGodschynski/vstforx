@@ -226,7 +226,7 @@ class RepSync:
                 continue
             try:
                 self.__install(x)
-            except StandardError, ex:
+            except Exception, ex:
                 self.__print("    installation failed: '%s'" % ex)
                 self.failed.append(x)
                 continue
@@ -237,10 +237,11 @@ class RepSync:
                 self.succeed.append(x)
                 
     def __update_install_loc(self, el):
+        tmp = self.install_loc
         if not el.attrib.has_key("location"):
-            return
+            return tmp
         self.install_loc = "%s/%s" % (self.install_loc, el.attrib["location"])
-
+        return tmp
         
     def __process_binaries(self, el, out_dict):
         out_dict['binaries'] = l = []
@@ -248,7 +249,7 @@ class RepSync:
             l.append((HTMLParser.HTMLParser().unescape(x.text), x.attrib['md5']))
 
     def __process_plugin(self, el):
-        self.__update_install_loc(el)
+        tmp = self.__update_install_loc(el)
         for x in el.iter("file"):
             if not self.__pass_filter(x):
                 continue
@@ -258,18 +259,21 @@ class RepSync:
             v['install_loc'] = self.install_loc
             v['filename'] = x.attrib['filename']
             self.__process_binaries(x, v)
+        self.install_loc = tmp
 
     def __process_vendor(self, el):
-        self.__update_install_loc(el)
+        tmp = self.__update_install_loc(el)
         for x in el.iter('plugin'):
             self.__process_plugin(x)
-            
+        self.install_loc = tmp
+
     def __process_tree(self, root):
         if root.tag != "plugin-repository":
             raise self.RepError("invalid repository file")
-        self.__update_install_loc(root)
+        tmp = self.__update_install_loc(root)
         for x in root.iter('vendor'):
             self.__process_vendor(x)
+        self.install_loc = tmp
         
     def __load_repository(self, url):
         if _is_localfile(url):
