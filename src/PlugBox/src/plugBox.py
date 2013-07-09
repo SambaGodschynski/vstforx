@@ -224,7 +224,12 @@ class RepSync:
                 self.__print("    %s is up to date." % x[0])
                 self.succeed.append(x)
                 continue
-            self.__install(x)
+            try:
+                self.__install(x)
+            except StandardError, ex:
+                self.__print("    installation failed: '%s'" % ex)
+                self.failed.append(x)
+                continue
             if self.__need_to_update(x[1]):
                 self.failed.append(x)
                 self.__print("    %s: installation failed !!" % x[0])
