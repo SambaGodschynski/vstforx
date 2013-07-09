@@ -72,6 +72,6 @@ cp -r noplug.$ex $dst/B/B3/noplug02.$ex
 cp -r "$src/mda/mda Overdrive.$ex" "$dst/C'/'\".$ex"
 cp vstforx_plugin_db_dump $dst/corrupt_database
 
-rm -r $src
+#rm -r $src
 rm -r noplug.$ex
 #mda BeatBox.vst

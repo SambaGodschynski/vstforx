@@ -377,9 +377,9 @@ void PluginCollectionTest::testFolderIntegrity2(){
 	}
 	////>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>fill new folder
 	// TODO: fails on mac; all copies are empty
-    copy ( pathA.string() + "/A/" + filename1,
+    copy_file ( pathA.string() + "/A/" + filename1,
 			    pathB.string() + "/" + filename1 );
-	copy ( pathA.string() + "/A/" + filename2,
+	copy_file ( pathA.string() + "/A/" + filename2,
 			    pathB.string() + "/" + filename2 );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan
 	pC->update( graph->getHostInfo() );
@@ -400,7 +400,7 @@ void PluginCollectionTest::testFolderIntegrity2(){
 	}
 	////>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>update file 2
 	remove (  pathB.string() + "/" + filename2 );
-	copy ( pathA.string() + "/B/B3/noplug" + VSTPLUG_EXT,
+	copy_file ( pathA.string() + "/B/B3/noplug" + VSTPLUG_EXT,
 			    pathB.string() + "/" + filename2 );
 	pC->update( graph->getHostInfo() );
 	try {
