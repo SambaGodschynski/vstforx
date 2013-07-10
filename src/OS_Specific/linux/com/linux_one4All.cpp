@@ -31,7 +31,7 @@ MessageBoxReturn osMessageBox ( const std::string &title, const std::string &tex
 	return MSG_RET_NONE;
 }
 //------------------------------------------------------------------------------------------------------------
-std::string osSelectDirectory ( const std::string &wndTitle, const std::string &startPath)
+std::string osSelectDirectory ( const std::string &wndTitle, const std::string &startPath, void *parentWindow)
 {
 	return "";
 }

@@ -15,6 +15,9 @@
 #include "Forward.hpp"
 #include <processing/IHostInfo.h>
 #include <sambag/disco/Geometry.hpp>
+#include <gui/HandyNamespaces.hpp>
+#include <sambag/disco/components/Forward.hpp>
+
 namespace frx { namespace gui { namespace components {
 //=============================================================================
 /** 
@@ -81,7 +84,8 @@ public:
 	 */
 	void joinScan();
 	//-------------------------------------------------------------------------
-	std::string selectDirectory(const std::string &startDir="") const;
+	std::string selectDirectory(const std::string &startDir, 
+		sdc::WindowPtr parent) const;
 	//-------------------------------------------------------------------------
 	bool addPluginFolder(const std::string &path);
 	//-------------------------------------------------------------------------
