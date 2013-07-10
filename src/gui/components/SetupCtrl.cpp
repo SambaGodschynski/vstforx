@@ -19,7 +19,8 @@
 
 namespace com {
 extern std::string osSelectDirectory(const std::string &wndTitle, 
-						    const std::string &startPath);
+						    const std::string &startPath,
+							void *parentWindow);
 } // namespace com
 
 namespace frx { namespace gui { namespace components {
@@ -31,8 +32,11 @@ void SetupCtrl::setHostInfo(::frx::processing::IHostInfo::Ptr hI) {
 	hostInfo = hI;
 }
 //-----------------------------------------------------------------------------
-std::string SetupCtrl::selectDirectory(const std::string &startDir) const {
-	return ::com::osSelectDirectory("select directory", startDir);
+std::string SetupCtrl::selectDirectory(const std::string &startDir,
+	sdc::Window::Ptr parent) const 
+{
+	void *p = ((bool)parent) ? parent->getWindowImpl()->getSystemHandle() : NULL; 
+	return ::com::osSelectDirectory("select directory", startDir, p);
 }
 //-----------------------------------------------------------------------------
 bool SetupCtrl::addPluginFolder(const std::string &path) {

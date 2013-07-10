@@ -186,6 +186,23 @@ class RepSync:
         _download(url, dst_path, "        downloading %s:" % fname)
         
 
+    def __unzip(self,file,destdir):
+        z = zip.ZipFile(open(file, "rb"))
+        for f in z.namelist():
+            if os.sep == "\\" and "/" in f:
+                destfile = os.path.join(destdir,f.replace("/","\\"))
+            else:
+                destfile = os.path.join(destdir,f)
+            if destfile.endswith(os.sep):
+                if not os.path.exists(destfile):
+                    os.makedirs(destfile)
+            else:
+                file = open(destfile,"wb")
+                file.write(z.read(f))
+                file.close()
+        z.close()
+    
+
     def __deploy(self, src, dst):
         self.__print("        deploying into %s" %dst)
         if _is_plugfile(src):
@@ -193,9 +210,8 @@ class RepSync:
             return
         ext = os.path.splitext(src)[1]
         if ext==".zip":
-            with zip.ZipFile(src, 'r') as z:
-                z.extractall(dst)
-            
+            self.__unzip(src, dst)
+                
         
 
     def __install(self, pluginfo):
@@ -232,7 +248,7 @@ class RepSync:
                 continue
             if self.__need_to_update(x[1]):
                 self.failed.append(x)
-                self.__print("    %s: installation failed !!" % x[0])
+                self.__print("    %s: installation failed" % x[0])
             else:
                 self.succeed.append(x)
                 

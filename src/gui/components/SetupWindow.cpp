@@ -662,7 +662,7 @@ void SetupWindow::onBtnAddDirPressed(void *, const sdc::events::ActionEvent &ev)
 {
 	if (!ctrl)
 		return;
-	std::string dir = ctrl->selectDirectory();
+	std::string dir = ctrl->selectDirectory("", getPtr());
 	if (dir=="") {
 		return;
 	}
@@ -681,7 +681,7 @@ void SetupWindow::onBtnChangeDirPressed(void *, const sdc::events::ActionEvent &
 	if (index<0)
 		return;
 	const std::string &old = dirList->get(index);
-	std::string dir = ctrl->selectDirectory(old);
+	std::string dir = ctrl->selectDirectory(old, getPtr());
 	if (dir=="") {
 		return;
 	}

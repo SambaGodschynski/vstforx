@@ -78,13 +78,15 @@ int CALLBACK BrowseCallbackProc(
 }
 //--------------------------------------------------------------------------------------------------------
 std::string osSelectDirectory ( const std::string &wndTitle, 
-						    const std::string &startPath)
+						    const std::string &startPath,
+							void *parentWindow)
 {
 	string ret;
 	BROWSEINFO bi = { 0 };
 	bi.lpfn = &BrowseCallbackProc;
 	bi.lpszTitle = ( wndTitle.c_str() );
-	bi.hwndOwner = NULL;
+	bi.hwndOwner = (HWND)parentWindow;
+	bi.ulFlags = BIF_USENEWUI;
     _startPath = startPath;
 	LPITEMIDLIST pidl = SHBrowseForFolder ( &bi );
     if ( pidl != 0 )
@@ -102,7 +104,6 @@ std::string osSelectDirectory ( const std::string &wndTitle,
             imalloc->Release ( );
         }
     }
-
 	return ret;
 }
 } // namespace com

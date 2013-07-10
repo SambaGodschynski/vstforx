@@ -79,7 +79,7 @@ MessageBoxReturn osMessageBox ( const string &title, const string &text, const M
 	return MSG_RET_NONE;
 }
 //------------------------------------------------------------------------------------------------------------
-std::string osSelectDirectory ( const std::string &wndTitle, const std::string &startPath)
+std::string osSelectDirectory ( const std::string &wndTitle, const std::string &startPath, void *parentWindow)
 {
 	return frx::com::CocoaImpl::selectDirectory(wndTitle, startPath);
 }
