@@ -21,6 +21,7 @@
 #include <gui/FrxControl.hpp>
 #include <processing/VstForxPlug.hpp>
 
+
 extern void* hInstance;
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -251,10 +252,18 @@ bool VstForxEditor::open( void *ptr ) {
     if (isOpen()) {
         return true;
     }
-    
+    /*
+     using cocoa: the editor appears but the parent window is invisble.
+     It has something to do with the windowRef message on NSWindow.
+     The window disappears ritht after calling this message.
+     */
+#ifdef DISCO_USE_COCOA
     sdc::getWindowToolkit()->invokeLater(
         boost::bind(&VstForxEditor::_open,this,ptr)
     );
+#else
+    _open(ptr);
+#endif
     return true;
 }
 //-----------------------------------------------------------------------------
