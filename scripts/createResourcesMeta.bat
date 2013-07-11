@@ -1,1 +1,1 @@
-python createResources.py -i ../src/images -o ../src/PluginApps/VSTForx
+python createResources.py -i ../src/images -o ../src/PluginApps/VSTForx/win
