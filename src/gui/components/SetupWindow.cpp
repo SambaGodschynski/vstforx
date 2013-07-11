@@ -39,6 +39,8 @@ public:
 	typedef sdc::FramedWindow Super;
 protected:
 	//-------------------------------------------------------------------------
+	void syncEntries();
+	//-------------------------------------------------------------------------
 	sambag::com::RecursiveMutex mutex;
 	//-------------------------------------------------------------------------
 	// for future impl. with own listcell renderer:
@@ -81,6 +83,8 @@ protected:
 	sdc::Timer::Ptr timer;
 	//-------------------------------------------------------------------------
 	sambag::com::ArithmeticWrapper<bool> scanFailed;
+	//-------------------------------------------------------------------------
+	void __onScanCompleted(int succeed, int failed, int skipped);
 public:
 	//-------------------------------------------------------------------------
 	static Ptr create(sdc::Window::Ptr parent = sdc::Window::Ptr()) { 																		
@@ -203,10 +207,10 @@ void ScanningDialog::onFileEvent(const std::string &file, SetupCtrl::FileStatus 
 	SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
-void ScanningDialog::onScanCompleted(int succeed, int failed, int skipped) {
-	timer->stop();
+void ScanningDialog::__onScanCompleted(int succeed, int failed, int skipped) {
 	btnOk->setEnabled(true);
 	btnCancel->setEnabled(false);
+	syncEntries();
 	list->addElement("=====================================================");
 	list->addElement("Scan complete.");
 	list->addElement("Succeed: " + sambag::com::toString(succeed) + ".");
@@ -222,6 +226,21 @@ void ScanningDialog::onScanCompleted(int succeed, int failed, int skipped) {
 	list->redraw();
 }
 //-----------------------------------------------------------------------------
+void ScanningDialog::onScanCompleted(int succeed, int failed, int skipped) {
+	timer->stop();
+	
+	sdc::Timer::Ptr t = sdc::Timer::create(50);
+	t->sce::EventSender<sdc::TimerEvent>::addTrackedEventListener(
+		boost::bind(&ScanningDialog::__onScanCompleted, 
+				this,  
+				succeed, 
+				failed, 
+				skipped),
+		getPtr()
+	);
+	t->start();
+}
+//-----------------------------------------------------------------------------
 void ScanningDialog::onScanFailed(const std::string msg) {
 	scanFailed = true;
 	timer->stop();
@@ -231,10 +250,7 @@ void ScanningDialog::onScanFailed(const std::string msg) {
 	list->redraw();
 }
 //-----------------------------------------------------------------------------
-void ScanningDialog::onRefresh(void *, const sdc::TimerEvent &ev) {
-	if (tmpEntries.empty()) {
-		return;
-	}
+void ScanningDialog::syncEntries() {
 	SAMBAG_BEGIN_SYNCHRONIZED(mutex)
 		while(!tmpEntries.empty()) {
 			const std::string &file = tmpEntries.front().first;
@@ -255,6 +271,10 @@ void ScanningDialog::onRefresh(void *, const sdc::TimerEvent &ev) {
 	list->ensureIndexIsVisible(i);
 	list->revalidate();
 	list->redraw();
+}
+//-----------------------------------------------------------------------------
+void ScanningDialog::onRefresh(void *, const sdc::TimerEvent &ev) {
+	syncEntries();
 }
 //=============================================================================
 // SetupWindow::ResizeBtnHandler
@@ -662,7 +682,11 @@ void SetupWindow::onBtnAddDirPressed(void *, const sdc::events::ActionEvent &ev)
 {
 	if (!ctrl)
 		return;
+	
+	setEnabled(false);
 	std::string dir = ctrl->selectDirectory("", getPtr());
+	setEnabled(true);
+
 	if (dir=="") {
 		return;
 	}
@@ -681,7 +705,11 @@ void SetupWindow::onBtnChangeDirPressed(void *, const sdc::events::ActionEvent &
 	if (index<0)
 		return;
 	const std::string &old = dirList->get(index);
+
+	setEnabled(false);
 	std::string dir = ctrl->selectDirectory(old, getPtr());
+	setEnabled(true);
+	
 	if (dir=="") {
 		return;
 	}

@@ -33,7 +33,7 @@ fi
 
 dst="../../src/$src"
 
-plugBox.py testplugs.xml sync . --plattform $platt
+#plugBox.py testplugs.xml sync . --plattform $platt
 
 if [ "$platt" = "mac" ] 
 then
