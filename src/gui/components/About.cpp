@@ -19,6 +19,7 @@
 #include <sambag/disco/IDiscoFactory.hpp>
 #include <sambag/disco/components/Timer.hpp>
 #include <math.h>
+
 #include <boost/version.hpp>
 #include <cairo-version.h>
 #include <sqlite3.h>
@@ -100,6 +101,7 @@ void About::getTextLines( Lines &out ) {
 	std::string sqll_version = ss.str();
 	out = boost::assign::list_of
 		( com::getSettings().versionToString() )
+		("www.vstforx.de")
 		("(c)Samba Godschynski")
 		("external libs:")
 		("boost-"+boost_version)
@@ -128,7 +130,7 @@ void About::initView() {
 		Image::Ptr img = Image::create();
 		img->setMouseEventsEnabled(false);
 		img->getObject()->getOutline().x0().x().setType(sds::units::Unit::PERCENT);
-		img->getObject()->getOutline().x0().x().setValue(30);
+		img->getObject()->getOutline().x0().x().setValue(50);
 		img->getObject()->getOutline().x0().y().setType(sds::units::Unit::PERCENT);
 		img->getObject()->getOutline().x0().y().setValue(10);
 

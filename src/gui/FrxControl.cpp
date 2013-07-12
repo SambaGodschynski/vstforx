@@ -349,6 +349,7 @@ typename Browser::Ptr openDetailsBrowser(fgc::FrxCircuidViewPtr view,
 	browser = Browser::create( view->getLastContainer<sdc::Window>() );
 	browser->validate();
 	browser->pack();
+	browser->positionWindow();
 	browser->open();
 	return browser;
 }
@@ -415,6 +416,7 @@ FrxColumnBrowser::Ptr openMainBrowser(fgc::FrxCircuidViewPtr view,
 	browser->setCtrl(ctrl);
 	browser->setTitle("Scene Browser:");
 	browser->setWindowSize(sd::Dimension(800,400));
+	browser->positionWindow();
 	browser->open();
 	browser->initTree(view);
 	return browser;
@@ -434,6 +436,7 @@ void openSetup(fgc::FrxCircuidViewPtr view,
 	}
 	setup->setCtrl(ctrl);
 	setup->validate();
+	setup->positionWindow();
 	setup->open();
 }
 //-----------------------------------------------------------------------------
@@ -1004,6 +1007,7 @@ void FrxControl::openClosePluginEditor(fgc::FrxCircuidViewPtr view,
 	FrxPluginEditorCtrl::Ptr pluginCtrl = FrxPluginEditorCtrl::create();
 	pluginCtrl->setPlugin(plugin);
 	ed->setControl(pluginCtrl);
+	ed->positionWindow();
     ed->open();
 }
 //-----------------------------------------------------------------------------
