@@ -68,8 +68,6 @@ const string Settings::NAME = "vstforx";
 const string Settings::VENDOR = "samba godschynski";
 const string Settings::PLUG_LOAD_LOGFILE = "init_plug.log";
 const string Settings::CONFIG_FILE = NAME + ".conf" ;
-const string Settings::FX_BUNDLE_ID = "com.samba_godschynski.frx.VSTForx";
-const string Settings::I_BUNDLE_ID = "com.samba_godschynski.frx.iVSTForx";
 const string Settings::SCAN_REPORT_FILENAME = "scanReport.txt";
 static size_t KILO = 1000;
 //------------------------------------------------------------------------------------------------------------
@@ -230,13 +228,6 @@ void Settings::setIsDemo(bool val) {
 //------------------------------------------------------------------------------------------------------------
 void Settings::setIsInstrument(bool val) {
 	_isInstrument = val;
-}
-//------------------------------------------------------------------------------------------------------------
-const std::string & Settings::getBundleId() const {
-	if (isInstrument()) {
-		return I_BUNDLE_ID;
-	}
-	return FX_BUNDLE_ID;
 }
 //------------------------------------------------------------------------------------------------------------
 string Settings::versionToString() const {

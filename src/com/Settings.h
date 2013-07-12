@@ -108,8 +108,6 @@ public:
 	static const string NAME; 
 	static const string VENDOR;
 	static const string SCAN_REPORT_FILENAME;
-	static const string FX_BUNDLE_ID; // osx bundleID effect
-	static const string I_BUNDLE_ID;  // osx bundleID Instrument
 	// dateinamen
 	static const string PLUG_LOAD_LOGFILE; 
 	static const string CONFIG_FILE;
@@ -121,8 +119,6 @@ public:
 	string getConfFilename() const;
 	//--------------------------------------------------------------------------------------------------------
 	string getPlugInitLogFilename() const;
-	//--------------------------------------------------------------------------------------------------------
-	const std::string & getBundleId() const;
 	//--------------------------------------------------------------------------------------------------------
 	bool addVSTFolder ( const string &path );
 	//--------------------------------------------------------------------------------------------------------

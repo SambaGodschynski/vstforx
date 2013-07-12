@@ -39,7 +39,7 @@ std::string CocoaHelper::getResourceLocation(const std::string &path) {
 }
 //-----------------------------------------------------------------------------
 std::string CocoaHelper::getBundleLocation() {
-	const std::string & idstr = ::com::getSettings().getBundleId();
+	const std::string & idstr = FRX_BNDL_ID;
 	NSString *_id = [NSString stringWithUTF8String:idstr.c_str()];
 	NSBundle* myBundle = [NSBundle bundleWithIdentifier: _id];
 	if (!myBundle) {
