@@ -59,7 +59,7 @@
 #include "components/FrxIO.hpp"
 #include "TimedUpdater.hpp"
 #include <gui/components/FrxFlag.hpp>
-
+#include <gui/components/About.hpp>
 
 namespace frx { namespace gui {
 SAMBAG_DERIVATED_EXCEPTION_CLASS(
@@ -349,6 +349,7 @@ typename Browser::Ptr openDetailsBrowser(fgc::FrxCircuidViewPtr view,
 	browser = Browser::create( view->getLastContainer<sdc::Window>() );
 	browser->validate();
 	browser->pack();
+	browser->positionWindow();
 	browser->open();
 	return browser;
 }
@@ -415,6 +416,7 @@ FrxColumnBrowser::Ptr openMainBrowser(fgc::FrxCircuidViewPtr view,
 	browser->setCtrl(ctrl);
 	browser->setTitle("Scene Browser:");
 	browser->setWindowSize(sd::Dimension(800,400));
+	browser->positionWindow();
 	browser->open();
 	browser->initTree(view);
 	return browser;
@@ -434,7 +436,31 @@ void openSetup(fgc::FrxCircuidViewPtr view,
 	}
 	setup->setCtrl(ctrl);
 	setup->validate();
+	setup->positionWindow();
 	setup->open();
+}
+//-----------------------------------------------------------------------------
+void __onViewMouse(void *src, const sdce::MouseEvent &ev, About::WPtr _about) {
+	if (ev.getType() == sdce::MouseEvent::DISCO_MOUSE_CLICKED) {
+		About::Ptr about = _about.lock();
+		if (about) {
+			about->close();
+		}
+	}
+}
+void openAbout(fgc::FrxCircuidViewPtr view, 
+		fgc::FrxComponentPtr c)
+{
+	About::Ptr about = About::create( view->getLastContainer<sdc::Window>() );
+	getFrxControl(view).addWindow(about, "FrxControl.extraWindow");
+	about->validate();
+	about->positionWindow();
+	about->open();
+	view->getContentPane()->sce::EventSender<sdce::MouseEvent>::addTrackedEventListener
+	(
+		boost::bind(&__onViewMouse, _1, _2, About::WPtr(about)),
+		about
+	);
 }
 ////////////////////////////////////////////////////////////////////////////////
 // Menu Entries
@@ -448,6 +474,8 @@ void createMainMenuEntries(Entries &out) {
 		boost::bind(&openMainBrowser, _1, _2)));
 	out.push_back( Entry("Open Setup Dialog...",
 		boost::bind(&openSetup, _1, _2)));
+	out.push_back( Entry("About...",
+		boost::bind(&openAbout, _1, _2)));
 }
 //-----------------------------------------------------------------------------
 sdc::PopupMenuPtr createPopupMenu(FrxCircuidViewPtr view, 
@@ -979,6 +1007,7 @@ void FrxControl::openClosePluginEditor(fgc::FrxCircuidViewPtr view,
 	FrxPluginEditorCtrl::Ptr pluginCtrl = FrxPluginEditorCtrl::create();
 	pluginCtrl->setPlugin(plugin);
 	ed->setControl(pluginCtrl);
+	ed->positionWindow();
     ed->open();
 }
 //-----------------------------------------------------------------------------

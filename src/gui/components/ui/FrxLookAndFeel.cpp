@@ -267,6 +267,8 @@ void FrxLookAndFeel::installDefaults() {
 	rManager->registerImage("FrxBrowser.parameter.image", "images/knob.png");
 	rManager->registerImage("FrxBrowser.pluginInstrument.image", "images/iplug.png");
 	rManager->registerImage("FrxBrowser.addContent.image", "images/plus.png");
+	rManager->registerImage("About.logo", "images/logo.png");
+	rManager->registerImage("About.bg", "images/disco-floor.png");
 	resetUIPorpertyCache();
 }	
 

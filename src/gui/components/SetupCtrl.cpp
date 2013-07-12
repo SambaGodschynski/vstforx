@@ -35,6 +35,14 @@ void SetupCtrl::setHostInfo(::frx::processing::IHostInfo::Ptr hI) {
 std::string SetupCtrl::selectDirectory(const std::string &startDir,
 	sdc::Window::Ptr parent) const 
 {
+	// get main view window
+	while (true && parent) {
+		sdc::Window::Ptr p = parent->getParentWindow();
+		if (!p) {
+			break;
+		}
+		parent = p;
+	}
 	void *p = ((bool)parent) ? parent->getWindowImpl()->getSystemHandle() : NULL; 
 	return ::com::osSelectDirectory("select directory", startDir, p);
 }
