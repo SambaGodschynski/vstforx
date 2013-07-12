@@ -19,6 +19,9 @@ function build() {
   make
   cd src
   __nameWorkaround vstforx.app vstforx.vst
+  __nameWorkaround vstforxInstrument.app vstforxInstrument.vst
+  __nameWorkaround vstforxDEMO.app vstforxDEMO.vst
+  __nameWorkaround vstforxInstrumentDEMO.app vstforxInstrumentDEMO.vst
   cd $ORG
 }
 export -f __nameWorkaround

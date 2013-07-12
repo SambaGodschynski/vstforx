@@ -9,6 +9,7 @@
 #import <objc/runtime.h>
 #import <objc/message.h>
 #import <com/Settings.h>
+#include <iostream>
 
 namespace {
 	std::string toString(NSString *str) {
@@ -24,7 +25,7 @@ namespace frx { namespace com {
 // class CocoaHelper.
 //=============================================================================
 std::string CocoaHelper::getResourceLocation(const std::string &path) {
-	const std::string & idstr = ::com::getSettings().getBundleId();
+	const std::string & idstr = FRX_BNDL_ID;
 	NSString *_id = [NSString stringWithUTF8String:idstr.c_str()];
 	NSString *_path = [NSString stringWithUTF8String:path.c_str()];
 	
@@ -33,6 +34,7 @@ std::string CocoaHelper::getResourceLocation(const std::string &path) {
 		return "";
 	}
 	NSString* res = [myBundle pathForResource:_path ofType:nil];
+    std::cout<<toString(res)<<std::endl;
 	return toString(res);
 }
 //-----------------------------------------------------------------------------

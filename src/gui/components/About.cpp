@@ -82,9 +82,9 @@ void About::postConstructor() {
 	sdc::ui::UIManager::instance().installLookAndFeel(getRootPane(),
 		ui::FrxLookAndFeel::create()
 	);
-	setWindowSize(sd::Dimension(320., 230.));
+	setWindowSize(sd::Dimension(320., 240.));
 	windowImpl->setFlag(sdc::WindowFlags::WND_ALWAYS_ON_TOP, true);
-	windowImpl->setFlag(sdc::WindowFlags::WND_RESIZEABLE, true);
+	windowImpl->setFlag(sdc::WindowFlags::WND_RESIZEABLE, false);
 
 	initView();
 }
