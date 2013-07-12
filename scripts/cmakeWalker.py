@@ -64,6 +64,25 @@ ELSEIF(APPLE)
   target_link_libraries (vstforx frx_core ${FRX_CLIBS})
   SET_TARGET_PROPERTIES(vstforx PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/vstforx.plist")
   SET_TARGET_PROPERTIES(vstforx PROPERTIES LINK_FLAGS "-bundle")
+
+  ADD_EXECUTABLE(vstforxInstrument MACOSX_BUNDLE ${PlugSources})
+  target_link_libraries (vstforxInstrument frx_core ${FRX_CLIBS})
+  SET_TARGET_PROPERTIES(vstforxInstrument PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/ivstforx.plist")
+  SET_TARGET_PROPERTIES(vstforxInstrument PROPERTIES LINK_FLAGS "-bundle")
+  set_target_properties(vstforxInstrument PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DFRX_IS_INSTRUMENT")
+
+  ADD_EXECUTABLE(vstforxDEMO MACOSX_BUNDLE ${PlugSources})
+  target_link_libraries (vstforxDEMO frx_core ${FRX_CLIBS})
+  SET_TARGET_PROPERTIES(vstforxDEMO PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/vstforxDemo.plist")
+  SET_TARGET_PROPERTIES(vstforxDEMO PROPERTIES LINK_FLAGS "-bundle")
+  set_target_properties(vstforxDEMO PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DFRX_IS_DEMO")
+
+  ADD_EXECUTABLE(vstforxInstrumentDEMO MACOSX_BUNDLE ${PlugSources})
+  target_link_libraries (vstforxInstrumentDEMO frx_core ${FRX_CLIBS})
+  SET_TARGET_PROPERTIES(vstforxInstrumentDEMO PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/ivstforxDemo.plist")
+  SET_TARGET_PROPERTIES(vstforxInstrumentDEMO PROPERTIES LINK_FLAGS "-bundle")
+  set_target_properties(vstforxInstrumentDEMO PROPERTIES COMPILE_FLAGS "${COMPILE_FLAGS} -DFRX_IS_INSTRUMENT -DFRX_IS_DEMO")
+
 ENDIF(WIN32)
 """
 
