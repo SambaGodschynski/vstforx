@@ -6,6 +6,7 @@ function __nameWorkaround() {
     rm -r $2 
   fi
   mv $1 $2
+  echo "BNDL????" > $2/Contents/PkgInfo
 }
 
 
