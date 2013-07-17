@@ -255,7 +255,7 @@ bool VstForxEditor::open( void *ptr ) {
     /*
      using cocoa: the editor appears but the parent window is invisble.
      It has something to do with the windowRef message on NSWindow.
-     The window disappears ritht after calling this message.
+     The window disappears right after calling this message.
      */
 #ifdef DISCO_USE_COCOA
     sdc::getWindowToolkit()->invokeLater(

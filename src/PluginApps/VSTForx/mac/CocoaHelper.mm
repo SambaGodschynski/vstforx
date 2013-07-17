@@ -34,7 +34,6 @@ std::string CocoaHelper::getResourceLocation(const std::string &path) {
 		return "";
 	}
 	NSString* res = [myBundle pathForResource:_path ofType:nil];
-    std::cout<<toString(res)<<std::endl;
 	return toString(res);
 }
 //-----------------------------------------------------------------------------
