@@ -70,7 +70,8 @@ private:
 		}
 		___size_ = size;
 		for ( Int i=0; i<CHANNELS; ++i ) {
-			data[i] = (T*) realloc ( data[i], sizeof (T)*getSize() );
+            delete[] data[i];
+			data[i] = new T[size]; 
 		}
 	}
 public:
