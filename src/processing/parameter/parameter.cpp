@@ -9,6 +9,7 @@
 #include <sambag/disco/components/Animation.hpp>
 #include <sambag/disco/Tweens.hpp>
 #include <sambag/com/Exception.hpp>
+#include <sambag/com/BoostTimer2.hpp>
 
 namespace processing {
 namespace parameter {
@@ -34,7 +35,7 @@ struct Updater {
         dst = Parameter::Ptr();
     }
 };
-typedef Animation<double, DynamicTween, Updater> Tween;
+typedef Animation<double, DynamicTween, Updater, sambag::com::BoostTimer2> Tween;
 Tween::Ptr getTweenPtr(boost::shared_ptr<void> t) {
     return boost::static_pointer_cast<Tween>(t);
 }
@@ -98,7 +99,7 @@ void ParameterConnection::update(ParameterPtr p, const VstNumber &newValue) {
     if (tween->dst.lock() && tween->dst.lock() != p) {
         return;
     }
-    tween->stop();
+    //tween->stop();
     tween->setStartValue(p->getValue());
     tween->setEndValue(newValue);
     tween->setDuration(1000);
