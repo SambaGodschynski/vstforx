@@ -437,6 +437,7 @@ class RepSync:
             raise self.RepError("url already exists")
         n = xt.SubElement(p, "file", attr)
         n.text=url
+        n.attrib['size'] = str(os.path.getsize(path))
         self.__add_binaries(n, binaries)
     
     def find_file(self,  pluginel, url):
