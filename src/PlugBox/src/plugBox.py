@@ -30,6 +30,7 @@ import HTMLParser
 import zipfile as zip
 import hashlib
 import shutil
+import stat
 
 HEADER = { 'User-Agent' : 'PlugBox' }
 
@@ -200,6 +201,16 @@ class RepSync:
                 file = open(destfile,"wb")
                 file.write(z.read(f))
                 file.close()
+                ext = os.path.splitext(destfile)
+                if len(ext) <= 1:
+                    continue
+                if ext[1] != '.dll':
+                    continue
+                # .dll files are'nt loadable in windows
+                # using cygwin fix:
+                os.chmod(destfile, stat.S_IWRITE |
+                         stat.S_IREAD | 
+                         stat.S_IEXEC)
         z.close()
     
 
