@@ -24,6 +24,11 @@ function pb_add_vendor()
     plugBox.py $PB_REP add-vendor "$1" --url "$2" --location "$1"
 }             
 
+function pb_use_vendor()
+{
+    export PB_VENDOR=$1
+}
+
 function pb_add_plugin() 
 {
     if [ -z "$PB_VENDOR" ]
@@ -34,6 +39,11 @@ function pb_add_plugin()
     export PB_PLUGIN=$1
     echo adding "$1" to "$PB_VENDOR"
     plugBox.py $PB_REP add-plugin "$1" "$PB_VENDOR"
+}
+
+function pb_use_plugin()
+{
+  export PB_PLUGIN=$1
 }
 
 function pb_add_vst_file() 
@@ -85,8 +95,14 @@ echo pb_use_rep exported
 export -f pb_add_vendor
 echo pb_add_vendor exported
 
+export -f pb_use_vendor
+echo pb_use_vendor exported
+
 export -f pb_add_plugin
 echo pb_add_plugin exported
+
+export -f pb_use_plugin
+echo pb_use_plugin_exported
 
 export -f  pb_add_vst_file
 echo pb_add_vst_file exported
