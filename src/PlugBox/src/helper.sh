@@ -83,11 +83,13 @@ function pb_add_vst_file()
     cd $$
     curl -O $1
     cd ..
+    echo add $1 to "$PB_PLUGIN@$PB_VENDOR"
     plugBox.py $PB_REP add-file $$/* "$1" "$PB_VENDOR" "$PB_PLUGIN" $pb_flags
     rm -r $$
     pb_flags=""
-    echo $1 added to "$PB_PLUGIN@$PB_VENDOR"
 }
+
+export PATH=$PATH:$(pwd)
 
 export -f pb_use_rep
 echo pb_use_rep exported

@@ -74,6 +74,8 @@ def _is_plugfile(f):
     #Mac vst == directory
     if re.match(".*?.vst/Contents/MacOS/.+$", f):
         return True
+    if re.match(".*?.component/Contents/MacOS/.+$", f):
+        return True
     return False
     
 
@@ -98,7 +100,10 @@ def _download(url, file_name, post_txt="downloading"):
     u = urllib2.urlopen(url)
     f = open(file_name, 'wb')
     meta = u.info()
-    file_size = int(meta.getheaders("Content-Length")[0])
+    try:
+        file_size = int(meta.getheaders("Content-Length")[0])
+    except:
+        file_size = float('inf')
     file_size_dl = 0
     block_sz = 8192
     while True:
@@ -121,6 +126,11 @@ def _norm_str(x):
     x = re.sub(r"[^\w]", "-", x)
     return x
 
+def _norm_filename(x):
+    x = x.strip()
+    x = re.sub(r"[^\w.]", "-",x)
+    return x
+
 def _norm_url(url, **values):
     url = url.lower().replace("http://","")
     url = _norm_str(url)
@@ -138,6 +148,20 @@ def _is_localfile(url):
         return True
     return False
 
+
+class DefaultPostProcessor:
+    def dll(self, filename):
+        # .dll files are'nt loadable in windows
+        # using cygwin fix:
+        os.chmod(filename, stat.S_IWRITE | stat.S_IREAD | stat.S_IEXEC)
+        
+    def component(self, filename):
+        try:
+            n, e = os.path.splitext(filename)
+            os.rename(filename, n + '.vst')
+        except:
+            pass
+
 class RepSync:
     class RepError(StandardError):
         pass
@@ -145,14 +169,18 @@ class RepSync:
     install_loc=""
     __filter=None
     to_download = {}
-    verbose = True
     download_path = ".tmp"
     failed = []
     succeed = []
-    def __print(self, str):
-        if not self.verbose:
-            return
-        print (str)
+    verbose_level = True
+    post_processor = DefaultPostProcessor()
+    #verbose levels
+    NORMAL = 1
+    DETAIL = 2
+    verbose_level = 2
+    def __print(self, str, level=1):
+        if level <= self.verbose_level:
+            print (str)
     
     def __init__(self):
         if not os.path.exists(self.download_path):
@@ -187,31 +215,42 @@ class RepSync:
         _download(url, dst_path, "        downloading %s:" % fname)
         
 
+    def __post_process(self, filename):
+        if self.post_processor == None:
+            return
+        #get ext
+        ext = os.path.splitext(filename)
+        if len(ext) <= 1:
+            ext=""
+        else:
+            ext=ext[1]
+        ext = ext.replace('.', '')
+        ext = _norm_str(ext)
+        if hasattr(self.post_processor, ext):
+            getattr(self.post_processor, ext)(filename)
+
     def __unzip(self,file,destdir):
         z = zip.ZipFile(open(file, "rb"))
+        created_dirs = []
         for f in z.namelist():
+            #get destfile
             if os.sep == "\\" and "/" in f:
                 destfile = os.path.join(destdir,f.replace("/","\\"))
             else:
                 destfile = os.path.join(destdir,f)
+            #is dir?
             if destfile.endswith(os.sep):
                 if not os.path.exists(destfile):
                     os.makedirs(destfile)
-            else:
+                    created_dirs.append(destfile)
+            else: #is file!
                 file = open(destfile,"wb")
                 file.write(z.read(f))
                 file.close()
-                ext = os.path.splitext(destfile)
-                if len(ext) <= 1:
-                    continue
-                if ext[1] != '.dll':
-                    continue
-                # .dll files are'nt loadable in windows
-                # using cygwin fix:
-                os.chmod(destfile, stat.S_IWRITE |
-                         stat.S_IREAD | 
-                         stat.S_IEXEC)
+            self.__post_process(destfile)
         z.close()
+        for x in created_dirs:
+            self.__post_process(x[0:-1])
     
 
     def __deploy(self, src, dst):
@@ -254,12 +293,11 @@ class RepSync:
             try:
                 self.__install(x)
             except Exception, ex:
+                import traceback
+                self.__print(traceback.format_exc(), self.DETAIL)
                 self.__print("    installation failed: '%s'" % ex)
                 self.failed.append(x)
                 continue
-            if self.__need_to_update(x[1]):
-                self.failed.append(x)
-                self.__print("    %s: installation failed" % x[0])
             else:
                 self.succeed.append(x)
                 
@@ -449,6 +487,7 @@ class RepSync:
         n = xt.SubElement(p, "file", attr)
         n.text=url
         n.attrib['size'] = str(os.path.getsize(path))
+        n.attrib['filename'] = _norm_filename(os.path.basename(path))
         self.__add_binaries(n, binaries)
     
     def find_file(self,  pluginel, url):
@@ -505,7 +544,6 @@ def _add_file(rep, attr):
     url = attr.pop('url')
     vendor = attr.pop('vendor')
     plugin = attr.pop('plugin')
-    attr['filename'] = os.path.basename(path)
     rep.add_file(path, url, vendor, plugin, **attr)
     rep.save()
 
