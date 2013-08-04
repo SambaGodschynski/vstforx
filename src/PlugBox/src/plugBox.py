@@ -162,6 +162,57 @@ class DefaultPostProcessor:
         except:
             pass
 
+class DefaultArchiveHandler:
+    class __prototype_:
+        def get_filelist(self, path):
+            # returns a list of (filename, md5)
+            pass
+        def unpack(self, path, dst):
+            # unpacks archive content to dst
+            # returns a list of created files/directories
+            pass
+
+    class zip:
+        def get_filelist(self, path):
+            res=[]
+            with zip.ZipFile(path, 'r') as z:
+                for x in z.namelist():
+                    f = z.open(x, "r")
+                    md5 = _hashfile(f, hashlib.md5())
+                    f.close()
+                    res.append((x, md5))
+            return res
+
+        def unpack(self, file, destdir):
+            z = zip.ZipFile(open(file, "rb"))
+            created = []
+            for f in z.namelist():
+                #get destfile
+                if os.sep == "\\" and "/" in f:
+                    destfile = os.path.join(destdir,f.replace("/","\\"))
+                else:
+                    destfile = os.path.join(destdir,f)
+                #create dir?
+                dirname = os.path.dirname(destfile)
+                if not os.path.exists(dirname):
+                    os.makedirs(dirname)
+                    created.append(dirname)
+                if destfile.endswith(os.sep):
+                    #is dir
+                    continue
+                file = open(destfile,"wb")
+                file.write(z.read(f))
+                file.close()
+                created.append(destfile)
+                    
+            z.close()
+            return created
+    class dmg:
+        def get_filelist(self, path):
+            pass
+        def unpack(self, path, dst):
+            pass
+
 class RepSync:
     class RepError(StandardError):
         pass
@@ -174,6 +225,7 @@ class RepSync:
     succeed = []
     verbose_level = True
     post_processor = DefaultPostProcessor()
+    archive_handler = DefaultArchiveHandler()
     #verbose levels
     NORMAL = 1
     DETAIL = 2
@@ -229,41 +281,17 @@ class RepSync:
         if hasattr(self.post_processor, ext):
             getattr(self.post_processor, ext)(filename)
 
-    def __unzip(self,file,destdir):
-        z = zip.ZipFile(open(file, "rb"))
-        created_dirs = []
-        for f in z.namelist():
-            #get destfile
-            if os.sep == "\\" and "/" in f:
-                destfile = os.path.join(destdir,f.replace("/","\\"))
-            else:
-                destfile = os.path.join(destdir,f)
-            #is dir?
-            if destfile.endswith(os.sep):
-                if not os.path.exists(destfile):
-                    os.makedirs(destfile)
-                    created_dirs.append(destfile)
-            else: #is file!
-                file = open(destfile,"wb")
-                file.write(z.read(f))
-                file.close()
-            self.__post_process(destfile)
-        z.close()
-        for x in created_dirs:
-            self.__post_process(x[0:-1])
-    
-
     def __deploy(self, src, dst):
         self.__print("        deploying into %s" %dst)
         if _is_plugfile(src):
             shutil.copy(src, dst)
             return
         ext = os.path.splitext(src)[1]
-        if ext==".zip":
-            self.__unzip(src, dst)
+        hnd = self.__get_archive_handler(src)
+        created = hnd.unpack(src, dst)
+        for x in created:
+            self.__post_process(x[0:-1])
                 
-        
-
     def __install(self, pluginfo):
         fname = "%s/%s" % (self.download_path, pluginfo[1]['filename'])
         self.__print("    installing %s" % pluginfo[0])
@@ -386,28 +414,22 @@ class RepSync:
         self.__print(sf)
         
         
-        
-    
-    def __get_zip_content(self, path):
-        res=[]
-        with zip.ZipFile(path, 'r') as z:
-            for x in z.namelist():
-                f = z.open(x, "r")
-                md5 = _hashfile(f, hashlib.md5())
-                f.close()
-                res.append((x, md5))
-        return res
+    def __get_archive_handler(self, path):
+        ah = self.archive_handler
+        if ah == None:
+            raise self.RepError("unsupported archive format")
+        ext = os.path.splitext(path)
+        if len(ext)<2:
+            raise self.RepError("unsupported archive format")
+        ext = ext[1][1:]
+        if not hasattr(ah, ext):
+            raise self.RepError("unsupported archive format")
+        return getattr(ah, ext)()
 
-    def __unpack_file(self, path):
-        pass
-        #if os.path.splitext(path)[1] == ".zip":
-            #self.__unzip_file(path)
-            
     def __get_archive_content(self, path):
         """return list with filenames and md5 values"""
-        if os.path.splitext(path)[1] == ".zip":
-            return self.__get_zip_content(path)
-        return []
+        hnd = self.__get_archive_handler(path)
+        return hnd.get_filelist(path)
 
     def __get_binarylist(self, path):
         """ return list of filenames and md5 values """
