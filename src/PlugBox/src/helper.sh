@@ -55,19 +55,19 @@ function pb_add_vst_file()
     fi
     case $2 in
 	win32)
-	    pb_flags="--plattform windows --arch i386"
+	    pb_flags="--platform windows --arch i386"
 	    ;;
 	win64)
-	    pb_flags="--plattform windows --arch x64"
+	    pb_flags="--platform windows --arch x64"
 	    ;;
 	mac32)
-	    pb_flags="--plattform mac --arch i386"
+	    pb_flags="--platform mac --arch i386"
 	    ;;
 	mac64)
-	    pb_flags="--plattform mac --arch x64"
+	    pb_flags="--platform mac --arch x64"
 	    ;;
 	macUni)
-	    pb_flags="--plattform mac --arch i386,x64"
+	    pb_flags="--platform mac --arch i386,x64"
     esac
     if [ -z "$pb_flags" ]
     then

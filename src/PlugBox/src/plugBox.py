@@ -31,7 +31,7 @@ import zipfile as zip
 import hashlib
 import shutil
 import stat
-
+import sys
 HEADER = { 'User-Agent' : 'PlugBox' }
 
 
@@ -208,8 +208,29 @@ class DefaultArchiveHandler:
             z.close()
             return created
     class dmg:
+        __mount_point = "./dmg"
+        def __mount(self, path):
+            wd = os.path.dirname(sys.argv[0])
+            self.__mount_point = _norm_str(path)
+            os.system( "sh %s/mount_dmg.sh %s %s" %(wd, path, self.__mount_point) )      
+        
+        def __unmount(self):
+            wd = os.path.dirname(sys.argv[0])
+            os.system( "sh %s/unmount_dmg.sh %s" %(wd, self.__mount_point) )
+            
+        def __del__(self):
+            self.__unmount()
+
         def get_filelist(self, path):
-            pass
+            self.__mount(path)
+            l = []
+            for _dir, dirs, files in os.walk(self.__mount_point):
+                for f in files:
+                    d = os.path.relpath(_dir, self.__mount_point)
+                    f = d + "/" + f
+                    l.append(f)
+            return l
+            
         def unpack(self, path, dst):
             pass
 
@@ -593,7 +614,7 @@ def _add_default_args(parser):
     parser.add_argument('-l', '--location', help="specifies deployment location")  
     
 def _add_filter_args(parser):
-    parser.add_argument('--plattform', help="specifies a plattform")
+    parser.add_argument('--platform', help="specifies a platform")
     parser.add_argument('--arch', help="specifies a architecture")
     parser.add_argument('--format', help="specifies a plugin format")
     

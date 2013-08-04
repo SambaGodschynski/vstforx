@@ -13,7 +13,7 @@ function usage()
 #passing arguments
 while [ "$1" != "" ]; do
     case $1 in
-        -p | --plattform )      shift
+        -p | --platform )      shift
                                 platt=$1
                                 ;;
         -a | --arch )           shift
@@ -27,13 +27,13 @@ done
 
 if [ -z $platt ] 
 then
-	echo no plattform specifcied
+	echo no platform specifcied
 	exit 1
 fi
 
 dst="../../src/$src"
 
-#plugBox.py testplugs.xml sync . --plattform $platt
+plugBox.py testplugs.xml sync . --platform $platt
 
 if [ "$platt" = "mac" ] 
 then

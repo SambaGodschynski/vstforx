@@ -1,3 +1,3 @@
 #!/bin/sh
-hdiutil unmount $1
+hdiutil unmount $1 -quiet
 
