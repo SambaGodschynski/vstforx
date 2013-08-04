@@ -240,6 +240,8 @@ class DefaultArchiveHandler:
                 rpath = os.path.relpath(_dir, self.__mount_point)
                 rpath.replace("./", "")
                 for x in files:
+                    if x.find(".DS_Store") >= 0:
+                        continue
                     dstpath = dst+"/"+rpath
                     if not os.path.exists(dstpath):
                         os.makedirs(dstpath)
@@ -313,6 +315,17 @@ class RepSync:
         ext = _norm_str(ext)
         if hasattr(self.post_processor, ext):
             getattr(self.post_processor, ext)(filename)
+
+    def __start_post_process(self):
+        tmp = self.__update_install_loc(self.root)
+        for _dir, dirs, files in os.walk(self.install_loc):
+            rpath = os.path.relpath(_dir, ".")
+            rpath.replace("./", "")
+            for x in dirs:
+                self.__post_process(rpath + "/" + x)
+            for x in files:
+                self.__post_process(rpath + "/" + x)
+        self.install_loc = tmp
 
     def __deploy(self, src, dst):
         self.__print("        deploying into %s" %dst)
@@ -438,12 +451,13 @@ class RepSync:
             raise self.RepError("no matching downloads found")
         
         self.__process_downloads()
+        self.__print("start post processing.")
+        self.__start_post_process()        
         ss = "%i installations succeed" % len(self.succeed)
         sf = "%i installations failed" % len(self.failed)
         self.__print("- " * (max(len(sf), len(ss)) / 2))
         self.__print(ss)
         self.__print(sf)
-        
         
     def __get_archive_handler(self, path):
         ah = self.archive_handler
