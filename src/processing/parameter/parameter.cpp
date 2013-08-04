@@ -6,6 +6,10 @@
  */
 #include <limits> 
 #include "parameter.h" 
+#include <sambag/disco/components/Animation.hpp>
+#include <sambag/disco/Tweens.hpp>
+#include <sambag/com/Exception.hpp>
+#include <sambag/com/BoostTimer2.hpp>
 
 namespace processing {
 namespace parameter {
@@ -15,10 +19,38 @@ namespace parameter {
 //============================================================================================================
 // Klasse: ParameterConnection.
 //============================================================================================================
+using sambag::disco::components::Animation;
+using sambag::disco::components::defaultTweens::DynamicTween;
+template <class T>
+struct Updater {
+    Parameter::WPtr dst;
+    void update(const T& val){
+        Parameter::Ptr p = dst.lock();
+        if (!p) {
+            return;
+        }
+        p->setValue(val);
+    }
+    void finished(const T& val){
+        dst = Parameter::Ptr();
+    }
+};
+typedef Animation<double, DynamicTween, Updater, sambag::com::BoostTimer2> Tween;
+Tween::Ptr getTweenPtr(boost::shared_ptr<void> t) {
+    return boost::static_pointer_cast<Tween>(t);
+}
 //------------------------------------------------------------------------------------------------------------
 ParameterConnection::ParameterConnection(ParameterPtr a, ParameterPtr b) : 
 	updateLock(false), a(a), b(b) 
 {
+    initInertiaParameter();
+}
+//------------------------------------------------------------------------------------------------------------
+void ParameterConnection::initInertiaParameter() {
+    inertiaDuration = Parameter::create();
+    inertiaDuration->setName("Inertia Duration");
+    inertiaType = Parameter::create();
+    inertiaType->setName("Inertia Type");
 }
 //------------------------------------------------------------------------------------------------------------
 void ParameterConnection::initListener(ConnectionOperator::Ptr op) {
@@ -43,7 +75,7 @@ void ParameterConnection::initListener() {
 		self
 	);
 	BOOST_FOREACH(ConnectionOperator::Ptr op, ops) {
-		initListener(op);
+	}
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -55,28 +87,62 @@ void ParameterConnection::onOperatorParameterChanged(void *src, const VstNumber 
 	a->setValue(*a);
 }
 //------------------------------------------------------------------------------------------------------------
-void ParameterConnection::onChangedA(void *src, const VstNumber &newValue) {
-	if (updateLock) // wichtig sonst: StackOverflow
-		return;
+void ParameterConnection::update(ParameterPtr p, const VstNumber &newValue) {
+    Tween::Ptr tween;
+    if (!_tween) {
+        _tween = tween = Tween::create();
+        tween->setRefreshRate(20.);
+    } else {
+        tween = getTweenPtr(_tween);
+        SAMBAG_ASSERT(tween);
+    }
+    if (tween->dst.lock() && tween->dst.lock() != p) {
+        return;
+    }
+    //tween->stop();
+    tween->setStartValue(p->getValue());
+    tween->setEndValue(newValue);
+    tween->setDuration(1000);
+    if (!tween->dst.lock()) {
+        tween->dst = p;
+    }
+    tween->start();
+    //p->setValue(newValue);*/
+}
+//------------------------------------------------------------------------------------------------------------
 	updateLock = true;
 	VstNumber t = newValue;
 	BOOST_FOREACH(ConnectionOperator::Ptr op, ops) {
 		t = op->operate(t);
-	}
-	b->setValue(t);
+	update(b, t);
 	updateLock = false;
 }
 //------------------------------------------------------------------------------------------------------------
-void ParameterConnection::onChangedB(void *src, const VstNumber &newValue) {
-	if (updateLock) // wichtig sonst: StackOverflow
-		return;
 	updateLock = true;
 	VstNumber t = newValue;
 	BOOST_FOREACH(ConnectionOperator::Ptr op, ops) {
 		t = op->operateInverse(t);
-	}
-	a->setValue(t);
+	update(a, t);
 	updateLock = false;
+//------------------------------------------------------------------------------------------------------------
+Parameter::Ptr ParameterConnection::getParameter ( size_t index ) const {
+    switch(index) {
+        case 0: return inertiaDuration;
+        case 1: return inertiaType;
+    }
+    return Parameter::Ptr();
+}
+//------------------------------------------------------------------------------------------------------------
+size_t ParameterConnection::getNumParameter () const {
+    return 2;
+}
+//------------------------------------------------------------------------------------------------------------
+void ParameterConnection::onInertiaDurationChanged(void *src, const float &value)
+{
+}
+//------------------------------------------------------------------------------------------------------------
+void ParameterConnection::onInertiaTypeChanged(void *src, const float &value) {
+}
 }
 //============================================================================================================
 // Klasse: Parameter.
