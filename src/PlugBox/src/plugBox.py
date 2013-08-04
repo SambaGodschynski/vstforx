@@ -105,7 +105,7 @@ def _download(url, file_name, post_txt="downloading"):
     except:
         file_size = float('inf')
     file_size_dl = 0
-    block_sz = 8192
+    block_sz = 512
     while True:
         buffer = u.read(block_sz)
         if not buffer:
