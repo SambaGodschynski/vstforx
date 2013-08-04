@@ -169,7 +169,6 @@ class DefaultArchiveHandler:
             pass
         def unpack(self, path, dst):
             # unpacks archive content to dst
-            # returns a list of created files/directories
             pass
 
     class zip:
@@ -185,7 +184,6 @@ class DefaultArchiveHandler:
 
         def unpack(self, file, destdir):
             z = zip.ZipFile(open(file, "rb"))
-            created = []
             for f in z.namelist():
                 #get destfile
                 if os.sep == "\\" and "/" in f:
@@ -196,17 +194,14 @@ class DefaultArchiveHandler:
                 dirname = os.path.dirname(destfile)
                 if not os.path.exists(dirname):
                     os.makedirs(dirname)
-                    created.append(dirname)
                 if destfile.endswith(os.sep):
                     #is dir
                     continue
                 file = open(destfile,"wb")
                 file.write(z.read(f))
                 file.close()
-                created.append(destfile)
-                    
             z.close()
-            return created
+
     class dmg:
         __mount_point = "./dmg"
         def __mount(self, path):
@@ -218,6 +213,10 @@ class DefaultArchiveHandler:
             wd = os.path.dirname(sys.argv[0])
             os.system( "sh %s/unmount_dmg.sh %s" %(wd, self.__mount_point) )
             
+        def __init__(self):
+            if sys.platform != "darwin":
+                raise StandardError("system platform '%s' does not support dmg unpacking." % sys.platform)
+
         def __del__(self):
             self.__unmount()
 
@@ -225,15 +224,27 @@ class DefaultArchiveHandler:
             self.__mount(path)
             l = []
             for _dir, dirs, files in os.walk(self.__mount_point):
-                for f in files:
+                for x in files:
                     d = os.path.relpath(_dir, self.__mount_point)
-                    f = d + "/" + f
-                    l.append(f)
+                    d.replace("./", "")
+                    filename = d + "/" + x
+                    f = open(self.__mount_point+"/"+filename, "r")
+                    md5 = _hashfile(f, hashlib.md5())
+                    f.close()
+                    l.append((filename, md5))
             return l
             
         def unpack(self, path, dst):
-            pass
-
+            self.__mount(path)
+            for _dir, dirs, files in os.walk(self.__mount_point):
+                rpath = os.path.relpath(_dir, self.__mount_point)
+                rpath.replace("./", "")
+                for x in dirs:
+                    os.makedirs(rpath+"/"+x)
+                for x in files:
+                    shutil.copy("%s/%s/%s" % (self.__mount_point,rpath,x), "%s/%s/%s" %(dst,rpath,x) )
+                    
+            
 class RepSync:
     class RepError(StandardError):
         pass
@@ -309,10 +320,8 @@ class RepSync:
             return
         ext = os.path.splitext(src)[1]
         hnd = self.__get_archive_handler(src)
-        created = hnd.unpack(src, dst)
-        for x in created:
-            self.__post_process(x[0:-1])
-                
+        hnd.unpack(src, dst)
+                        
     def __install(self, pluginfo):
         fname = "%s/%s" % (self.download_path, pluginfo[1]['filename'])
         self.__print("    installing %s" % pluginfo[0])
@@ -445,13 +454,16 @@ class RepSync:
         ext = ext[1][1:]
         if not hasattr(ah, ext):
             raise self.RepError("unsupported archive format")
-        return getattr(ah, ext)()
+        try:
+            return getattr(ah, ext)()
+        except StandardError, ex:
+            raise self.RepError( str(ex) )
 
     def __get_archive_content(self, path):
         """return list with filenames and md5 values"""
         hnd = self.__get_archive_handler(path)
         return hnd.get_filelist(path)
-
+            
     def __get_binarylist(self, path):
         """ return list of filenames and md5 values """
         if _is_plugfile(path):
