@@ -206,7 +206,7 @@ class DefaultArchiveHandler:
         __mount_point = "./dmg"
         def __mount(self, path):
             wd = os.path.dirname(sys.argv[0])
-            self.__mount_point = _norm_str(path)
+            self.__mount_point = path.replace(os.sep, "")
             os.system( "sh %s/mount_dmg.sh %s %s" %(wd, path, self.__mount_point) )      
         
         def __unmount(self):
@@ -239,9 +239,10 @@ class DefaultArchiveHandler:
             for _dir, dirs, files in os.walk(self.__mount_point):
                 rpath = os.path.relpath(_dir, self.__mount_point)
                 rpath.replace("./", "")
-                for x in dirs:
-                    os.makedirs(rpath+"/"+x)
                 for x in files:
+                    dstpath = dst+"/"+rpath
+                    if not os.path.exists(dstpath):
+                        os.makedirs(dstpath)
                     shutil.copy("%s/%s/%s" % (self.__mount_point,rpath,x), "%s/%s/%s" %(dst,rpath,x) )
                     
             
