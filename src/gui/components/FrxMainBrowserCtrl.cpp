@@ -72,28 +72,6 @@ void onSelectionPathChanged(void *src,
 //=============================================================================
 //  Class FrxMainBrowserCtrl
 //=============================================================================
-namespace {
-	template<class T>
-	Loki::TypeInfo _type() {
-		return Loki::TypeInfo(typeid(T));
-	}
-}
-void FrxMainBrowserCtrl::initAdderMap() {
-	handlerMap = boost::assign::map_list_of
-	(_type<FrxPluginNode>(), boost::bind(&FrxMainBrowserCtrl::addPluginToSceneTree, this, _1, _2))
-	(_type<FrxVolumeNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
-	(_type<FrxPanNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
-	(_type<FrxInStepNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
-	(_type<FrxOutStepNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
-	(_type<FrxInSwitchNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
-	(_type<FrxOutSwitchNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
-	(_type<FrxADSRNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
-	(_type<FrxPeakTrackerNode>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
-	(_type<FrxMIDIReceiver>(), boost::bind(&FrxMainBrowserCtrl::addProcessorToSceneTree, this, _1, _2))
-	(_type<FrxStdKnob>(), boost::bind(&FrxMainBrowserCtrl::addParameterToSceneTree, this, _1, _2))
-	(_type<ParameterCn>(), boost::bind(&FrxMainBrowserCtrl::addConnectionToSceneTree, this, _1, _2));
-	
-}
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::onBrowserOk(void *src,
 	const sdc::events::ActionEvent &ev)
@@ -749,18 +727,38 @@ Tree::Node FrxMainBrowserCtrl::addConnectionToSceneTree(FrxComponentPtr c, Reaso
 	return newNode;
 }
 //-----------------------------------------------------------------------------
+FrxMainBrowserCtrl::AddComponentHandler
+FrxMainBrowserCtrl::getAddComponentHandler(FrxComponentPtr c)
+{
+    // processors:
+    if ( dynamic_cast<FrxPluginNode*>(c.get()) ) {
+        return &FrxMainBrowserCtrl::addPluginToSceneTree;
+    } else if ( dynamic_cast<FrxProcessorNode*>(c.get()) ) {
+        return &FrxMainBrowserCtrl::addProcessorToSceneTree;
+    }
+    
+    // parameters
+    if ( dynamic_cast<FrxStdKnob*>(c.get()) ) {
+        return &FrxMainBrowserCtrl::addParameterToSceneTree;
+    }
+    
+    // connections:
+    if ( dynamic_cast<ParameterCn*>(c.get()) ) {
+        return &FrxMainBrowserCtrl::addConnectionToSceneTree;
+    }
+    
+    // default:
+    return NULL;
+}
+//-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::addToSceneTree(FrxComponentPtr c, Reason reason) {
 	if (!sceneTreeInit) 
 		return;
-	if (handlerMap.empty()) {
-		initAdderMap();
-	}
-	HandlerMap::const_iterator it = handlerMap.find(
-		Loki::TypeInfo(typeid(*(c.get())))
-	);
-	if (it==handlerMap.end())
-		return;
-	Tree::Node res = it->second(c, reason);
+    AddComponentHandler hnd = getAddComponentHandler(c);
+    if (!hnd) {
+        return;
+    }
+	Tree::Node res = (this->*hnd)(c, reason);
 	if (res==Tree::NULL_NODE)
 		return;
 	c->sce::EventSender<OnRemoving>::addTrackedEventListener(

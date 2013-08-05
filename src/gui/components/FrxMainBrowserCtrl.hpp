@@ -137,12 +137,12 @@ private:
 	//-------------------------------------------------------------------------
 	enum Reason { Add, Update };
 	typedef boost::function<Tree::Node(FrxComponentPtr, Reason)> 
-		SceneTreeEventHandler;
-	typedef std::map<Loki::TypeInfo, SceneTreeEventHandler> HandlerMap;
-	HandlerMap handlerMap;
+        SceneTreeEventHandler;
 	//-------------------------------------------------------------------------
-	void initAdderMap();
-	//-------------------------------------------------------------------------
+    typedef Tree::Node (FrxMainBrowserCtrl::* AddComponentHandler)
+        (FrxComponentPtr c, Reason reason);
+    AddComponentHandler getAddComponentHandler(FrxComponentPtr c);
+    //-------------------------------------------------------------------------
 	Tree::Node addPluginToSceneTree(FrxComponentPtr c, Reason reason);
 	//-------------------------------------------------------------------------
 	Tree::Node addProcessorToSceneTree(FrxComponentPtr c, Reason reason);
