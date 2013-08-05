@@ -13,6 +13,10 @@
 
 namespace processing {
 namespace parameter {
+namespace {
+    const double MAX_INERTIA_DURATION = 1000.; // ms
+    const double INERTIA_REFRESH_RATE = 20.; // ms
+}
 //============================================================================================================
 // Schnitstelle: ConnectionOperator.
 //============================================================================================================
@@ -36,8 +40,15 @@ struct Updater {
     }
 };
 typedef Animation<double, DynamicTween, Updater, sambag::com::BoostTimer2> Tween;
-Tween::Ptr getTweenPtr(boost::shared_ptr<void> t) {
-    return boost::static_pointer_cast<Tween>(t);
+Tween::Ptr getTween(boost::shared_ptr<void> t) {
+    Tween::Ptr res;
+    if (!t) {
+        res = Tween::create();
+        res->setRefreshRate(INERTIA_REFRESH_RATE);
+        return res;
+    } else {
+        return boost::static_pointer_cast<Tween>(t);
+    }
 }
 //------------------------------------------------------------------------------------------------------------
 ParameterConnection::ParameterConnection(ParameterPtr a, ParameterPtr b) : 
@@ -49,8 +60,11 @@ ParameterConnection::ParameterConnection(ParameterPtr a, ParameterPtr b) :
 void ParameterConnection::initInertiaParameter() {
     inertiaDuration = Parameter::create();
     inertiaDuration->setName("Inertia Duration");
+    inertiaDuration->setDisplay( "0 ms" );
+    inertiaDuration->setLabel("ms");
     inertiaType = Parameter::create();
     inertiaType->setName("Inertia Type");
+    inertiaType->setDisplay( "lin" );
 }
 //------------------------------------------------------------------------------------------------------------
 void ParameterConnection::initListener(ConnectionOperator::Ptr op) {
@@ -74,8 +88,16 @@ void ParameterConnection::initListener() {
 		boost::bind(&ParameterConnection::onChangedB, this, _1, _2 ),
 		self
 	);
+	inertiaDuration->addTrackedValueChangedListener( 
+		boost::bind(&ParameterConnection::onInertiaDurationChanged, this, _1, _2),
+		self
+	);
+	inertiaType->addTrackedValueChangedListener(
+		boost::bind(&ParameterConnection::onInertiaTypeChanged, this, _1, _2 ),
+		self
+	);
 	BOOST_FOREACH(ConnectionOperator::Ptr op, ops) {
-	}
+		initListener(op);
 	}
 }
 //------------------------------------------------------------------------------------------------------------
@@ -89,41 +111,56 @@ void ParameterConnection::onOperatorParameterChanged(void *src, const VstNumber 
 //------------------------------------------------------------------------------------------------------------
 void ParameterConnection::update(ParameterPtr p, const VstNumber &newValue) {
     Tween::Ptr tween;
-    if (!_tween) {
-        _tween = tween = Tween::create();
-        tween->setRefreshRate(20.);
-    } else {
-        tween = getTweenPtr(_tween);
-        SAMBAG_ASSERT(tween);
-    }
+    _tween = tween = getTween(_tween);
     if (tween->dst.lock() && tween->dst.lock() != p) {
+        // tween is currently in use
         return;
     }
-    //tween->stop();
-    tween->setStartValue(p->getValue());
-    tween->setEndValue(newValue);
-    tween->setDuration(1000);
     if (!tween->dst.lock()) {
         tween->dst = p;
     }
+    tween->setStartValue(p->getValue());
+    tween->setEndValue(newValue);
+    tween->setDuration(*inertiaDuration * MAX_INERTIA_DURATION);
     tween->start();
-    //p->setValue(newValue);*/
 }
 //------------------------------------------------------------------------------------------------------------
-	updateLock = true;
+void ParameterConnection::onChangedA(void *src, const VstNumber &newValue) {
 	VstNumber t = newValue;
 	BOOST_FOREACH(ConnectionOperator::Ptr op, ops) {
 		t = op->operate(t);
-	update(b, t);
-	updateLock = false;
+	}
+    if (*inertiaDuration!=0.) {
+        update(b, t);
+        return;
+    }
+    
+    if (updateLock) {
+        return;
+    }
+    updateLock = true;
+    b->setValue(t);
+    updateLock = false;
+	
 }
 //------------------------------------------------------------------------------------------------------------
-	updateLock = true;
+void ParameterConnection::onChangedB(void *src, const VstNumber &newValue) {
 	VstNumber t = newValue;
 	BOOST_FOREACH(ConnectionOperator::Ptr op, ops) {
 		t = op->operateInverse(t);
-	update(a, t);
-	updateLock = false;
+	}
+    if (*inertiaDuration!=0.) {
+        update(a, t);
+        return;
+    }
+    
+    if (updateLock) {
+        return;
+    }
+    updateLock = true;
+    a->setValue(t);
+    updateLock = false;
+}
 //------------------------------------------------------------------------------------------------------------
 Parameter::Ptr ParameterConnection::getParameter ( size_t index ) const {
     switch(index) {
@@ -139,10 +176,19 @@ size_t ParameterConnection::getNumParameter () const {
 //------------------------------------------------------------------------------------------------------------
 void ParameterConnection::onInertiaDurationChanged(void *src, const float &value)
 {
+    inertiaDuration->setDisplay( sambag::com::toString(value*MAX_INERTIA_DURATION) + " ms" );
 }
 //------------------------------------------------------------------------------------------------------------
-void ParameterConnection::onInertiaTypeChanged(void *src, const float &value) {
-}
+void ParameterConnection::onInertiaTypeChanged(void *src, const float &value)
+{
+    Tween::Ptr tween;
+    _tween = tween = getTween(_tween);
+    if (!tween) {
+        return;
+    }
+    int n = ::com::mapInteger(value, Tween::TweenPolicy::NUM_TYPES);
+    tween->TweenPolicy::setTweenType( (Tween::TweenPolicy::Type)n );
+    inertiaType->setDisplay( tween->TweenPolicy::toString() );
 }
 //============================================================================================================
 // Klasse: Parameter.
