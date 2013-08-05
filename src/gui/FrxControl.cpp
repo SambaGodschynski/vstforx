@@ -336,8 +336,8 @@ bool perfomConnect(FrxCircuidView::Ptr view,
 	typename ConnectionType::Ptr cn = ConnectionType::create();
 	cn->setSrcComponent(src);
 	cn->setDstComponent(dst);
+    map->registerObjects(cn, mcnt);
 	view->add(cn, FrxCircuidView::Z_Wires);
-	map->registerObjects(cn, mcnt);
 	return true;
 }
 //-----------------------------------------------------------------------------
