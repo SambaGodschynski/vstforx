@@ -606,9 +606,6 @@ public:
 	 * @param v
 	 */
 	void setValue( VstNumber v ){
-        if (v==value) {
-            return;
-        }
 		if ( updateLock ) return;
 		// avoid NaN. problems with serialize and deserialize
 		// see: issue #113
@@ -659,7 +656,7 @@ public:
 	/**
 	 * @return Parameter-Maximum
 	 */
-	virtual VstNumber getMax() { return _max; }
+	VstNumber getMax() { return _max; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return true if parameter isReadOnly

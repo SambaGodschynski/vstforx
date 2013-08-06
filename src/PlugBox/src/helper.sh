@@ -9,7 +9,7 @@
 # pb_add_vst_file url os [install loc]  : downloads file and adds file to previous 
 #                                     added plugin
 #                                     valid os args are : 
-#                                     win32, win64, mac32, mac64, macUni
+#                                     win32, win64, mac32, mac64, macUni, multi
 ################################################################################
 
 function pb_use_rep() 
@@ -68,6 +68,10 @@ function pb_add_vst_file()
 	    ;;
 	macUni)
 	    pb_flags="--platform mac --arch i386,x64"
+	    ;;
+        multi)
+	    pb_flags="--platform windows,mac --arch i386,x64"
+	    ;;
     esac
     if [ -z "$pb_flags" ]
     then
