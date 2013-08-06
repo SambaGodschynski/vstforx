@@ -6,6 +6,9 @@
  */
 #include "PeakTracker.h"
 
+namespace {
+    const long FRX_REFRESH_RATE = 30;
+}
 
 namespace processing{
 //============================================================================================================
@@ -24,19 +27,35 @@ PeakTracker::PeakTracker( frx::processing::IHostInfo::Ptr hostInfo ) : ProcessAd
 	offset->setName ("offset");
 }
 //------------------------------------------------------------------------------------------------------------
+void PeakTracker::timerCallback(void*, const Timer::Event &ev) {
+    *out = signalAverage + *offset;
+}
+//------------------------------------------------------------------------------------------------------------
+void PeakTracker::initTimerIfNeeded() {
+    if (!timer) {
+        timer = Timer::create(FRX_REFRESH_RATE);
+        timer->setNumRepetitions(-1);
+        timer->addTrackedEventListener(
+            boost::bind(&PeakTracker::timerCallback, this, _1, _2),
+            getPtr()
+        );
+        timer->start();
+    }
+}
+//------------------------------------------------------------------------------------------------------------
 void PeakTracker::processAdapter( Processor::Int numSamples ) {
+    initTimerIfNeeded();
 	Frames *frame = getInputNode(0)->popFrame();
 	int i = numSamples;
 	VstNumber *r = (*frame)[0];
 	VstNumber *l = (*frame)[1];
-	VstNumber average = 0.0f;
+    signalAverage = 0.f;
 	while ( --i >= 0 ){
-		average += fabs( ( *(r) + *(l) )/2.0f );
+		signalAverage += fabs( ( *(r) + *(l) )/2.0f );
 		*(r++) = 0.0f;
 		*(l++) = 0.0f;
 	}
-	average = average / (float)frame->getSize();
-	*out = average + *offset;
+	signalAverage = signalAverage / (float)frame->getSize();
 	outputNodes[0]->pushAndCopy(frame, numSamples);
 }
 }// namespace processing

@@ -597,7 +597,7 @@ public:
 	/**
 	 * @return Parameterwert
 	 */
-	virtual VstNumber getValue() const { 
+	VstNumber getValue() const { 
 		return value;
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -605,7 +605,10 @@ public:
 	 * setzt Parameterwert.
 	 * @param v
 	 */
-	virtual void setValue( VstNumber v ){
+	void setValue( VstNumber v ){
+        if (v==value) {
+            return;
+        }
 		if ( updateLock ) return;
 		// avoid NaN. problems with serialize and deserialize
 		// see: issue #113
@@ -640,18 +643,18 @@ public:
 	 * setzt Minimalwert den Parameter annehmen kann
 	 * @param v
 	 */
-	virtual void setMin ( VstNumber v ){ _min = v; }
+	void setMin ( VstNumber v ){ _min = v; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * setzt Maximalwert den Parameter annehmen kann
 	 * @param v
 	 */
-	virtual void setMax ( VstNumber v ){ _max = v; }
+	void setMax ( VstNumber v ){ _max = v; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Parameter-Minimum
 	 */
-	virtual VstNumber getMin() { return _min; }
+	VstNumber getMin() { return _min; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Parameter-Maximum

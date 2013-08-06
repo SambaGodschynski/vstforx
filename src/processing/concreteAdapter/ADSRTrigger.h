@@ -11,6 +11,7 @@
 #include "processing/parameter/parameter.h"
 #include "com/Serialization.h"
 #include "processing/dspTools.h"
+#include <sambag/com/BoostTimer2.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -22,7 +23,8 @@ using namespace parameter;
 class ADSRTrigger : public ProcessAdapter, 
 	public HasParameter,
 	public HasOutParameter,
-	public Serializable {
+	public Serializable
+{
 //============================================================================================================
 friend class boost::serialization::access;
 public:
@@ -45,6 +47,11 @@ private:
 	ADSRTrigger (){}
 	//--------------------------------------------------------------------------------------------------------
 	ADSR *adsr;
+    //--------------------------------------------------------------------------------------------------------
+    typedef sambag::com::BoostTimer2 Timer;
+    Timer::Ptr timer;
+    void initTimerIfNeeded();
+    void timerCallback(void*, const Timer::Event &ev);
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	ADSRTrigger ( frx::processing::IHostInfo::Ptr hostInfo );

@@ -15,7 +15,7 @@ namespace processing {
 namespace parameter {
 namespace {
     const double MAX_INERTIA_DURATION = 1000.; // ms
-    const double INERTIA_REFRESH_RATE = 20.; // ms
+    const double INERTIA_REFRESH_RATE = 30.; // ms
 }
 //============================================================================================================
 // Schnitstelle: ConnectionOperator.

@@ -10,7 +10,7 @@
 #include "processing/processing.h"
 #include "processing/parameter/parameter.h"
 #include "com/Serialization.h"
-
+#include <sambag/com/BoostTimer2.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -46,6 +46,13 @@ private:
 	PeakTracker (){}
 	//--------------------------------------------------------------------------------------------------------
 	Parameter::Ptr offset;
+    //--------------------------------------------------------------------------------------------------------
+    VstNumber signalAverage;
+    //--------------------------------------------------------------------------------------------------------
+    typedef sambag::com::BoostTimer2 Timer;
+    Timer::Ptr timer;
+    void initTimerIfNeeded();
+    void timerCallback(void*, const Timer::Event &ev);
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	PeakTracker ( frx::processing::IHostInfo::Ptr hostInfo );
