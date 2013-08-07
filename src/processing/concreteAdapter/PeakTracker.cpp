@@ -7,7 +7,9 @@
 #include "PeakTracker.h"
 
 namespace {
-    const long FRX_REFRESH_RATE = 30;
+    // check if inertia parameter connection is working after
+    // changing this value
+    const unsigned int FRX_REFRESHING_SAMPLES = 2048;
 }
 
 namespace processing{
@@ -15,7 +17,9 @@ namespace processing{
 //PeakTracker
 //Tranformiert Signal Lautstaerke in Parameter wert.
 //============================================================================================================
-PeakTracker::PeakTracker( frx::processing::IHostInfo::Ptr hostInfo ) : ProcessAdapter(hostInfo,1,1) {
+PeakTracker::PeakTracker( frx::processing::IHostInfo::Ptr hostInfo ) :
+    ProcessAdapter(hostInfo,1,1), sampleCounter(0)
+{
 	setName ("PeakTracker");
 	inputNodes[0]->setName  ( getName() + " InputNode");
 	outputNodes[0]->setName ( getName() + " OutputNode");
@@ -27,35 +31,23 @@ PeakTracker::PeakTracker( frx::processing::IHostInfo::Ptr hostInfo ) : ProcessAd
 	offset->setName ("offset");
 }
 //------------------------------------------------------------------------------------------------------------
-void PeakTracker::timerCallback(void*, const Timer::Event &ev) {
-    *out = signalAverage + *offset;
-}
-//------------------------------------------------------------------------------------------------------------
-void PeakTracker::initTimerIfNeeded() {
-    if (!timer) {
-        timer = Timer::create(FRX_REFRESH_RATE);
-        timer->setNumRepetitions(-1);
-        timer->addTrackedEventListener(
-            boost::bind(&PeakTracker::timerCallback, this, _1, _2),
-            getPtr()
-        );
-        timer->start();
-    }
-}
-//------------------------------------------------------------------------------------------------------------
 void PeakTracker::processAdapter( Processor::Int numSamples ) {
-    initTimerIfNeeded();
 	Frames *frame = getInputNode(0)->popFrame();
 	int i = numSamples;
 	VstNumber *r = (*frame)[0];
 	VstNumber *l = (*frame)[1];
-    signalAverage = 0.f;
+    VstNumber signalAverage = 0.f;
 	while ( --i >= 0 ){
 		signalAverage += fabs( ( *(r) + *(l) )/2.0f );
 		*(r++) = 0.0f;
 		*(l++) = 0.0f;
+        ++sampleCounter;
 	}
 	signalAverage = signalAverage / (float)frame->getSize();
+    if (sampleCounter >= FRX_REFRESHING_SAMPLES) {
+        sampleCounter = 0;
+        *out = signalAverage + *offset;
+    }
 	outputNodes[0]->pushAndCopy(frame, numSamples);
 }
 }// namespace processing

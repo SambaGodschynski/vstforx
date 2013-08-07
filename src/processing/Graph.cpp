@@ -14,7 +14,6 @@
 #include "OS_Specific/OS_com.h"
 #include "OS_Specific/OS_processing.h"
 
-
 namespace processing {
 
 using namespace parameter;
@@ -143,6 +142,7 @@ bool Graph::contains ( PObject::Ptr obj ) const {
 }
 //------------------------------------------------------------------------------------------------------------
 void Graph::processGraph( float **outputs, Processor::Int numSamples ) {
+
 	if ( endNode->isActive() ) {
 		SignalProcessPath::iterator it = signalProcessPath.begin();
 		for ( ; it!=signalProcessPath.end(); ++it ) { // process path

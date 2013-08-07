@@ -7,8 +7,11 @@
 #include "ADSRTrigger.h"
 
 namespace {
-    const long FRX_REFRESH_RATE = 30;
+    // check if inertia parameter connection is working after
+    // changing this value
+    const unsigned int FRX_REFRESHING_SAMPLES = 2048;
 }
+
 
 namespace processing{
 //============================================================================================================
@@ -16,24 +19,9 @@ namespace processing{
 //============================================================================================================
 const string states[] = {"_a", "_d", "_s", "_r"};
 //------------------------------------------------------------------------------------------------------------
-void ADSRTrigger::timerCallback(void*, const Timer::Event &ev) {
-	*out = com::getMin<VstNumber>( 1.0f, com::getMax<VstNumber> ( 0.0f, adsr->process() ) );
-	out->setLabel ( states[ adsr->getState() ] );
-}
-//------------------------------------------------------------------------------------------------------------
-void ADSRTrigger::initTimerIfNeeded() {
-    if (!timer) {
-        timer = Timer::create(FRX_REFRESH_RATE);
-        timer->setNumRepetitions(-1);
-        timer->addTrackedEventListener(
-            boost::bind(&ADSRTrigger::timerCallback, this, _1, _2),
-            getPtr()
-        );
-        timer->start();
-    }
-}
-//------------------------------------------------------------------------------------------------------------
-ADSRTrigger::ADSRTrigger( frx::processing::IHostInfo::Ptr hostInfo ) : ProcessAdapter(hostInfo) {
+ADSRTrigger::ADSRTrigger( frx::processing::IHostInfo::Ptr hostInfo ) :
+    ProcessAdapter(hostInfo), sampleCounter(0)
+{
 	setName ( "ADSRTrigger" );
 	inputNodes[0]->setName  ( getName() + " InputNode");
 	outputNodes[0]->setName ( getName() + " OutputNode");
@@ -45,7 +33,6 @@ ADSRTrigger::ADSRTrigger( frx::processing::IHostInfo::Ptr hostInfo ) : ProcessAd
 }
 //------------------------------------------------------------------------------------------------------------
 void ADSRTrigger::processAdapter( Processor::Int numSamples ) {
-    initTimerIfNeeded();
 	Frames *frame = getInputNode(0)->popFrame();
 	int i = numSamples;
 	VstNumber *r = (*frame)[0];
@@ -56,9 +43,17 @@ void ADSRTrigger::processAdapter( Processor::Int numSamples ) {
 		*(r++) = 0.0f;
 		*(l++) = 0.0f;
 		adsr->process();
+        ++sampleCounter;
 	}
 	signalAverage = signalAverage / (float)frame->getSize();
     adsr->setInput ( signalAverage );
+    
+    if (sampleCounter >= FRX_REFRESHING_SAMPLES) {
+        sampleCounter = 0;
+        *out = com::getMin<VstNumber>( 1.0f, com::getMax<VstNumber> ( 0.0f, adsr->process() ) );
+        out->setLabel ( states[ adsr->getState() ] );
+    }
+    
 	// outputnode
 	outputNodes[0]->pushAndCopy(frame, numSamples);
 }
