@@ -10,11 +10,6 @@ execute_process(COMMAND git log --pretty=format:%h -n 1
                 OUTPUT_VARIABLE FRX_VERSION_BUILD)
 SET(SAMBAG_VERSION_BUILD $ENV{SAMBAG_BUILD})
 
-CONFIGURE_FILE(
-  "${PROJECT_SOURCE_DIR}/src/com/FrxConfig.h.in"
-  "${PROJECT_BINARY_DIR}/src/com/FrxConfig.h"
-)
-
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 add_definitions(-DBOOST_UBLAS_TYPE_CHECK=0)
 add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
@@ -42,16 +37,19 @@ IF(APPLE)
         set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O1")
         set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -O1")	
 	set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvmgcc42")
+	SET(FRX_ASYNC_DSP_TIMER "FRX_TOOLKIT_TIMER")
 ELSEIF(UNIX)
 	find_package(X11 REQUIRED)
 	include_directories(${X11_INCLUDE_DIRS})
 	add_definitions(-DDISCO_USE_X11)
 	add_definitions(-D__cdecl=__attribute__\(\(__cdecl__\)\)) #aeffect.h: unarm __cdecl
 	add_definitions(-DFRX_OS_LINUX)
+	SET(FRX_ASYNC_DSP_TIMER "FRX_TOOLKIT_TIMER")
 ELSEIF(WIN32)
         add_definitions(-DDISCO_USE_WIN32)
 	add_definitions(-DFRX_OS_WINDOWS)
 	set(CMAKE_CXX_FLAGS_DEBUG "/MTd /ZI")
+	SET(FRX_ASYNC_DSP_TIMER "FRX_BOOST_TIMER")
 ENDIF(APPLE)
 
 find_package(Cairo REQUIRED)
@@ -107,6 +105,12 @@ set (VSTSDKSOURCE ${VSTSDKSOURCE}
       ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/audioeffect.cpp
       ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/audioeffectx.cpp
       #${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp now part of target sources
+)
+
+
+CONFIGURE_FILE(
+  "${PROJECT_SOURCE_DIR}/src/com/FrxConfig.h.in"
+  "${PROJECT_BINARY_DIR}/src/com/FrxConfig.h"
 )
 
 add_subdirectory(src)

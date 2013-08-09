@@ -17,7 +17,7 @@
 #include <gui/components/VstForxEditor.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <gui/components/FrxSerializationRegister.hpp>
-#include <sambag/com/BoostTimerImpl2.hpp>
+#include <processing/FrxAsyncDSPTimer.hpp>
 
 namespace frx { namespace processing {
 namespace {
@@ -71,7 +71,7 @@ namespace {
 
 
 	int _instances = 0;
-	sambag::com::BoostTimerImpl2::WorkerThreadHolder _timerThreadHolder;
+	FrxAsyncDSPTimer::WorkerThreadHolder _timerThreadHolder;
 
 } // namespace
 //=============================================================================
@@ -87,7 +87,7 @@ sampleRate(0.f)
 {
 	if (_instances++ == 0) {
 		_timerThreadHolder = 
-			sambag::com::BoostTimerImpl2::startWorkerThread();
+			FrxAsyncDSPTimer::startWorkerThread();
 	}
 }
 //-----------------------------------------------------------------------------
@@ -173,7 +173,7 @@ VstForxPlug::~VstForxPlug() {
 
 	if (--_instances == 0) {
 		// stop timer worker thread
-		sambag::com::BoostTimerImpl2::closeAllTimer();
+		FrxAsyncDSPTimer::closeAllTimer();
 		_timerThreadHolder.reset();
 	}
 

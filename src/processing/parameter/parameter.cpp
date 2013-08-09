@@ -9,7 +9,7 @@
 #include <sambag/disco/components/Animation.hpp>
 #include <sambag/disco/Tweens.hpp>
 #include <sambag/com/Exception.hpp>
-#include <sambag/com/BoostTimer2.hpp>
+#include <processing/FrxAsyncDSPTimer.hpp>
 
 namespace processing {
 namespace parameter {
@@ -39,7 +39,7 @@ struct Updater {
         dst = Parameter::Ptr();
     }
 };
-typedef Animation<double, DynamicTween, Updater, sambag::com::BoostTimer2> Tween;
+typedef Animation<double, DynamicTween, Updater, frx::processing::FrxAsyncDSPTimer> Tween;
 Tween::Ptr getTween(boost::shared_ptr<void> t) {
     Tween::Ptr res;
     if (!t) {
