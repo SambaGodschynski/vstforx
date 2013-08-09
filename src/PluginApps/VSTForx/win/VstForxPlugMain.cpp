@@ -52,7 +52,7 @@ Console console;
 	enum { _FRX_IS_DEMO = 0 };
 #endif
 
-enum { FRX_UID = '_frx' + _FRX_IS_INSTRUMENT + _FRX_IS_DEMO };
+enum { FRX_UID = '_frx' << (_FRX_IS_INSTRUMENT * 2) << (_FRX_IS_DEMO*3) };
 
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
