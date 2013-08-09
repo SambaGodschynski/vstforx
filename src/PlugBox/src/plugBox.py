@@ -31,7 +31,11 @@ import zipfile as zip
 import hashlib
 import shutil
 import stat
+<<<<<<< HEAD
 import sys
+=======
+
+>>>>>>> 533f44f2ff5693f5e3892f6a9cbeddc1519584bf
 HEADER = { 'User-Agent' : 'PlugBox' }
 
 
@@ -302,6 +306,7 @@ class RepSync:
         _download(url, dst_path, "        downloading %s:" % fname)
         
 
+<<<<<<< HEAD
     def __post_process(self, filename):
         if self.post_processor == None:
             return
@@ -326,6 +331,34 @@ class RepSync:
             for x in files:
                 self.__post_process(rpath + "/" + x)
         self.install_loc = tmp
+=======
+    def __unzip(self,file,destdir):
+        z = zip.ZipFile(open(file, "rb"))
+        for f in z.namelist():
+            if os.sep == "\\" and "/" in f:
+                destfile = os.path.join(destdir,f.replace("/","\\"))
+            else:
+                destfile = os.path.join(destdir,f)
+            if destfile.endswith(os.sep):
+                if not os.path.exists(destfile):
+                    os.makedirs(destfile)
+            else:
+                file = open(destfile,"wb")
+                file.write(z.read(f))
+                file.close()
+                ext = os.path.splitext(destfile)
+                if len(ext) <= 1:
+                    continue
+                if ext[1] != '.dll':
+                    continue
+                # .dll files are'nt loadable in windows
+                # using cygwin fix:
+                os.chmod(destfile, stat.S_IWRITE |
+                         stat.S_IREAD | 
+                         stat.S_IEXEC)
+        z.close()
+    
+>>>>>>> 533f44f2ff5693f5e3892f6a9cbeddc1519584bf
 
     def __deploy(self, src, dst):
         self.__print("        deploying into %s" %dst)
