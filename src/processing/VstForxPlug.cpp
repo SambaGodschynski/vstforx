@@ -17,6 +17,7 @@
 #include <gui/components/VstForxEditor.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <gui/components/FrxSerializationRegister.hpp>
+#include <sambag/com/BoostTimerImpl2.hpp>
 
 namespace frx { namespace processing {
 namespace {
@@ -67,6 +68,11 @@ namespace {
 			return NULL;
 		return it->second;
 	}
+
+
+	int _instances = 0;
+	sambag::com::BoostTimerImpl2::WorkerThreadHolder _timerThreadHolder;
+
 } // namespace
 //=============================================================================
 // class VstForxPlug 
@@ -79,6 +85,10 @@ chunkData(NULL),
 blockSize(0),
 sampleRate(0.f)
 {
+	if (_instances++ == 0) {
+		_timerThreadHolder = 
+			sambag::com::BoostTimerImpl2::startWorkerThread();
+	}
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::onGraphDelayChanged(void *src, const ::processing::GraphDelayChanged &ev)
@@ -160,6 +170,13 @@ VstForxPlug::~VstForxPlug() {
 		delete chunkData;
 		chunkData = NULL;
 	}
+
+	if (--_instances == 0) {
+		// stop timer worker thread
+		sambag::com::BoostTimerImpl2::closeAllTimer();
+		_timerThreadHolder.reset();
+	}
+
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::process(float **in, float **out, int numSamples) {
