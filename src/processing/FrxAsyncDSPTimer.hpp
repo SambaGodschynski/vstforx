@@ -11,10 +11,9 @@
 #include <com/FrxConfig.h>
 
 #if FRX_ASYNC_DSP_TIMER == FRX_BOOST_TIMER
-
+#include <sambag/com/BoostTimer2.hpp>
 namespace frx { namespace processing {
-    #include <sambag/com/BoostTimerImpl2.hpp>
-    struct FrxAsyncDSPTimer : public sambag::com::BoostTimerImpl2
+    struct FrxAsyncDSPTimer : public sambag::com::BoostTimer2
     {
     };
 }} // namespace(s)
