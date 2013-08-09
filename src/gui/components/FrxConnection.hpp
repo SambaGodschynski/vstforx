@@ -47,6 +47,11 @@ private:
 		ar & boost::serialization::base_object<Super>(*this);
 		ar & src;
 		ar & dst;
+        
+        if (version>=1) {
+            ar & tmpName;
+        }
+        
 		if (Archive::is_loading::value) {
 			installComponentListeners(src);
 			installComponentListeners(dst);
@@ -93,5 +98,7 @@ public:
 	FrxComponent::Ptr getDstComponent() const { return dst; }
 }; // FrxConnection
 }}} // namespace(s)
+
+BOOST_CLASS_VERSION(frx::gui::components::FrxConnection, 1)
 
 #endif /* SAMBAG_FRXCONNECTION_H */

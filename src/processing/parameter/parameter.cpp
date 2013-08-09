@@ -14,7 +14,7 @@
 namespace processing {
 namespace parameter {
 namespace {
-    const double MAX_INERTIA_DURATION = 1000.; // ms
+    const double MAX_INERTIA_DURATION = 2000.; // ms
     const double INERTIA_REFRESH_RATE = 30.; // ms
 }
 //============================================================================================================
@@ -40,11 +40,12 @@ struct Updater {
     }
 };
 typedef Animation<double, DynamicTween, Updater, frx::processing::FrxAsyncDSPTimer> Tween;
-Tween::Ptr getTween(boost::shared_ptr<void> t) {
+Tween::Ptr getTween(boost::shared_ptr<void> t, long duration) {
     Tween::Ptr res;
     if (!t) {
         res = Tween::create();
         res->setRefreshRate(INERTIA_REFRESH_RATE);
+        res->setDuration(duration);
         return res;
     } else {
         return boost::static_pointer_cast<Tween>(t);
@@ -111,7 +112,7 @@ void ParameterConnection::onOperatorParameterChanged(void *src, const VstNumber 
 //------------------------------------------------------------------------------------------------------------
 void ParameterConnection::update(ParameterPtr p, const VstNumber &newValue) {
     Tween::Ptr tween;
-    _tween = tween = getTween(_tween);
+    _tween = tween = getTween(_tween, (Tween::Milliseconds)(*inertiaDuration)*MAX_INERTIA_DURATION);
     if (tween->dst.lock() && tween->dst.lock() != p) {
         // tween is currently in use
         return;
@@ -120,9 +121,11 @@ void ParameterConnection::update(ParameterPtr p, const VstNumber &newValue) {
         tween->dst = p;
     }
     tween->setStartValue(p->getValue());
+    double diff = fabs(tween->getEndValue() - newValue);
     tween->setEndValue(newValue);
-    tween->setDuration(*inertiaDuration * MAX_INERTIA_DURATION);
-    tween->start();
+    if (diff>0.) {
+        tween->start();
+    }
 }
 //------------------------------------------------------------------------------------------------------------
 void ParameterConnection::onChangedA(void *src, const VstNumber &newValue) {
@@ -130,6 +133,9 @@ void ParameterConnection::onChangedA(void *src, const VstNumber &newValue) {
 	BOOST_FOREACH(ConnectionOperator::Ptr op, ops) {
 		t = op->operate(t);
 	}
+    if (t==b->getValue()) {
+        return;
+    }
     if (*inertiaDuration!=0.) {
         update(b, t);
         return;
@@ -149,6 +155,9 @@ void ParameterConnection::onChangedB(void *src, const VstNumber &newValue) {
 	BOOST_FOREACH(ConnectionOperator::Ptr op, ops) {
 		t = op->operateInverse(t);
 	}
+    if (t==a->getValue()) {
+        return;
+    }
     if (*inertiaDuration!=0.) {
         update(a, t);
         return;
@@ -182,7 +191,7 @@ void ParameterConnection::onInertiaDurationChanged(void *src, const float &value
 void ParameterConnection::onInertiaTypeChanged(void *src, const float &value)
 {
     Tween::Ptr tween;
-    _tween = tween = getTween(_tween);
+    _tween = tween = getTween(_tween, (Tween::Milliseconds)(*inertiaDuration)*MAX_INERTIA_DURATION);
     if (!tween) {
         return;
     }

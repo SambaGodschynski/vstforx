@@ -9,7 +9,7 @@
 namespace {
     // check if inertia parameter connection is working after
     // changing this value
-    const unsigned int FRX_REFRESHING_SAMPLES = 2048;
+    const unsigned int FRX_REFRESHING_SAMPLES = 1024;
 }
 
 namespace processing{

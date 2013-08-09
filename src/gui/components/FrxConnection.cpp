@@ -75,18 +75,21 @@ void FrxConnection::setDstComponent(FrxComponent::Ptr b) {
 void FrxConnection::onComponentsPropertyChanged(void*, 
 	const sce::PropertyChanged &ev) 
 {
-	if (ev.getPropertyName() == sdc::AComponent::PROPERTY_BOUNDS)
+	if (ev.getPropertyName() == sdc::AComponent::PROPERTY_BOUNDS) {
 		resetBounds();
+    }
 }
 //-----------------------------------------------------------------------------
 void FrxConnection::setBounds(const sd::Rectangle &r) {
+    sd::Rectangle tmp = r;
 	this->bounds = r;
 	redrawParentIfNeeded(r);
+    firePropertyChanged(sdc::AComponent::PROPERTY_BOUNDS, tmp, r);
 }
 //-----------------------------------------------------------------------------
 void FrxConnection::resetBounds() {
 	if ( !src || !dst )
-		return; 
+		return;
 	sd::Rectangle r = getBounds();
 	sd::Point2D aLoc = src->getLocation();
 	boost::geometry::add_point(aLoc, src->getPivot());
