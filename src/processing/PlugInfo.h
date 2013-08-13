@@ -64,8 +64,14 @@ public:
 		return location != "";
 	}
 	//--------------------------------------------------------------------------------------------------------
-	PluginInfo() : 
-	access (NOT_CHECKED), isSynth(0), pluginType(UNKNOWN), uid(0), timestamp(0) {}
+	PluginInfo() : pluginType(UNKNOWN),
+        isSynth(0),
+        uid(0),
+        timestamp(0),
+        access (NOT_CHECKED),
+        id(-1)
+    {
+    }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return String-Repraesentation

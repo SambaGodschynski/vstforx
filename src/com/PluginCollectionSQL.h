@@ -434,6 +434,8 @@ struct TblPlugins {
 //============================================================================================================
 struct TblHistory {
 //============================================================================================================
+    //--------------------------------------------------------------------------------------------------------
+    static string timestamp() { return "timestamp"; } 
 	//--------------------------------------------------------------------------------------------------------
 	static string create () {
 		return string ("CREATE TABLE IF NOT EXISTS history ( ") +
@@ -455,6 +457,24 @@ struct TblHistory {
 		pL.push_back( IntParameter::create( index++, plugId ) );
 		pL.push_back( Int64Parameter::create( index++, timestamp ) );
 		return q;
+	}
+    //--------------------------------------------------------------------------------------------------------
+	static string getHistory ()
+	{
+		using namespace sambag::cpsqlite;
+		std::stringstream ss;
+        ss<<"SELECT plugins.*, history.timestamp FROM plugins JOIN history";
+        ss<<" ON plugins.id = history.plugId ORDER BY history.timestamp DESC;";
+		return ss.str();
+	}
+    //--------------------------------------------------------------------------------------------------------
+    static string getFavourites ()
+	{
+		using namespace sambag::cpsqlite;
+		std::stringstream ss;
+        ss<<"SELECT plugins.*, COUNT(*) AS count, plugId FROM history JOIN plugins";
+        ss<<" ON history.plugId = plugins.id GROUP BY plugId ORDER BY count DESC;";
+		return ss.str();
 	}
 };
 

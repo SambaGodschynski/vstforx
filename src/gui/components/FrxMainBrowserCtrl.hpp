@@ -83,7 +83,7 @@ protected:
 	void initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws);
 	//-------------------------------------------------------------------------
 	Tree::Node add, add_plugins, add_processors, add_knobs, scene, scene_processors,
-		scene_plugins, scene_parameter, scene_connections;
+		scene_plugins, scene_parameter, scene_connections, his_recent, his_favourite;
 	//-------------------------------------------------------------------------
 	void addModelObjectParameter(FrxComponentPtr c,
 		const Tree::Node &parent);
@@ -118,6 +118,10 @@ protected:
 	//-------------------------------------------------------------------------
 	BrowserNode::ResultPtr 
 	fillPluginFolder(TreeNode parent, DBFolderID dbFolderId);
+	//-------------------------------------------------------------------------
+	enum HistoryType{ Recent, Favourite };
+    BrowserNode::ResultPtr
+	fillHistoryFolder(TreeNode parent, HistoryType type);
 	//-------------------------------------------------------------------------
 	void showShellSelection(const ::processing::PluginInfo &plugin, 
 		const ::processing::ShellPluginInfos &infos);

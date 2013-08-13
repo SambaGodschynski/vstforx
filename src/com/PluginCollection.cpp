@@ -424,7 +424,9 @@ namespace {
 	using namespace sqlcommands;
 	using namespace processing;
 	typedef list<PluginInfo> PluginInfoList;
-	bool extractAndAdd ( const DataBase::Results &results, PluginInfoList &pL ) {
+    typedef boost::function<void(int, DataBase::Result::Ptr)> _EntryF;
+	bool extractAndAdd ( const DataBase::Results &results, PluginInfoList &pL, _EntryF entryCallback=NULL)
+    {
 		if ( results.empty() ) return false;
 		for ( size_t i=0; i<results.size(); ++i) {
 			DataBase::Result::Ptr res = results[i];
@@ -439,6 +441,9 @@ namespace {
 			info.isSynth    = res->getConv<bool>( TblPlugins::isSynth() );
 			info.pluginType = (PluginInfo::PluginType)res->getConv<int>( TblPlugins::pluginType() );
 			pL.push_back( info );
+            if (entryCallback) {
+                entryCallback(i, res);
+            }
 		}
 		return true;
 	}
@@ -830,10 +835,58 @@ void PluginCollection::addToHistory ( const processing::PluginInfo &pI ) {
 	)
 }
 //------------------------------------------------------------------------------------------------------------
-void PluginCollection::getRecentPlugins ( PluginInfoList &outList ) {
+static void _addTimeStamp(int, DataBase::Result::Ptr res, std::vector<std::string> *details)
+{
+    time_t t = res->getConv<time_t>( TblHistory::timestamp() );
+    struct tm *tmp;
+    tmp = localtime(&t);
+    enum {_MAX_C=50};
+    char str[_MAX_C];
+    strftime(&str[0], _MAX_C, "[%D, %R]", tmp);
+    
+    details->push_back( std::string(&str[0]) );
+}
+void PluginCollection::getRecentPlugins ( PluginInfoList &outList, std::vector<std::string> &details ) {
+    if (outList.size()!=details.size()) {
+        return;
+    }
+    using namespace sambag::cpsqlite;
+	DataBase::Executer::Ptr exec = database->getExecuter(); 
+	DataBase::Results results;
+	
+	DB_QUERY (
+            exec->execute(
+            sqlcommands::TblHistory::getHistory(),
+            results
+		);
+	)
+	extractAndAdd ( results, outList, boost::bind(&_addTimeStamp, _1, _2, &details) );
+    SAMBAG_ASSERT( res.size() == details.size() );
 }
 //------------------------------------------------------------------------------------------------------------
-void PluginCollection::getFavouritePlugins ( PluginInfoList &outList ) {
+static void _addCount(int, DataBase::Result::Ptr res, std::vector<std::string> *details)
+{
+    int c = res->getConv<int>("count");
+    std::stringstream ss;
+    ss<<"["<<c<<"]"<<std::endl;
+    details->push_back(ss.str());
+}
+void PluginCollection::getFavouritePlugins ( PluginInfoList &outList, std::vector<std::string> &details ) {
+    if (outList.size()!=details.size()) {
+        return;
+    }
+    using namespace sambag::cpsqlite;
+	DataBase::Executer::Ptr exec = database->getExecuter(); 
+	DataBase::Results results;
+	
+	DB_QUERY (
+            exec->execute(
+            sqlcommands::TblHistory::getFavourites(),
+            results
+		);
+	)
+	extractAndAdd ( results, outList, boost::bind(&_addCount, _1, _2, &details) );
+    SAMBAG_ASSERT( res.size() == details.size() );
 }
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 PluginCollection::Ptr getPluginCollection() {

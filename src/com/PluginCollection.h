@@ -269,18 +269,6 @@ private:
 	bool searchPlugin ( processing::PluginInfo &pI );
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 *
-	 * @param the outgoing plugininfo list
-	 */
-	void getRecentPlugins ( PluginInfoList &outList );
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 *
-	 * @param the outgoing plugininfo list
-	 */
-	void getFavouritePlugins ( PluginInfoList &outList );
-	//--------------------------------------------------------------------------------------------------------
-	/**
 	 * @param id
 	 * @return Folder-Objekt zu FolderID
 	 */
@@ -295,6 +283,22 @@ public:
 	 */
 	void addToHistory ( const processing::PluginInfo &pI );
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 *
+	 * @param the outgoing plugininfo list
+     * @param outgoing list with details
+     * @note len(details) isAlways len(outList)
+	 */
+	void getRecentPlugins ( PluginInfoList &outList, std::vector<std::string> &details );
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 *
+	 * @param the outgoing plugininfo list
+     * @param outgoing list with details
+     * @note len(details) isAlways len(outList)
+	 */
+	void getFavouritePlugins ( PluginInfoList &outList, std::vector<std::string> &details );
+    //--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param loc
 	 * @return Folder-Objekt zu Pfad-String

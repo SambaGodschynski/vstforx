@@ -225,6 +225,56 @@ FrxMainBrowserCtrl::fillPluginFolder(TreeNode parent, DBFolderID dbFolderId)
 	return BrowserNode::ResultPtr();
 }
 //-----------------------------------------------------------------------------
+BrowserNode::ResultPtr FrxMainBrowserCtrl::fillHistoryFolder(TreeNode parent,
+    HistoryType type)
+{
+	FrxColumnBrowserPtr brws = this->browser.lock();
+	FrxCircuidViewPtr view = wView.lock();
+	SAMBAG_ASSERT(brws && view);
+	FrxMainBrowserCtrl::Ptr ctrl = 
+		boost::dynamic_pointer_cast<FrxMainBrowserCtrl>(brws->getCtrl());
+	SAMBAG_ASSERT(ctrl);
+    Tree::Ptr tree = brws->getBrowserImpl();
+	::com::PluginCollection::Ptr db;
+    ::com::PluginCollection::PluginInfoList plugs;
+    std::vector<std::string> details;
+	try {
+		db = ::com::getPluginCollection();
+        if (type == Recent) {
+            db->getRecentPlugins(plugs, details);
+        } else if(type == Favourite) {
+            db->getFavouritePlugins(plugs, details);
+        }
+	} catch (...) {
+		return BrowserNode::ResultPtr();
+	}
+    int c=0;
+ 	BOOST_FOREACH(const ::processing::PluginInfo &pI, plugs) { 
+		TreeNode plug = 
+			tree->addNode(parent);
+
+		std::string name =
+			boost::filesystem::path(pI.location).filename().string();
+		if (pI.access == ::processing::PluginInfo::FAILED) {
+			name+="<FAILED>";
+		}
+        name+=" "+details[c++];
+		BrowserNode node;
+		ctrl->createPluginNode(node, name);
+		node.f = 
+			boost::bind(&FrxMainBrowserCtrl::addPlugin, 
+			this,
+			pI			 // plugin info
+		);
+		node.type = pI.isSynth ? BrowserConstants::FRX_BROWSER_PLUGIN_INSTRUMENT :
+			BrowserConstants::FRX_BROWSER_PLUGIN;
+		tree->setNodeData(plug, node);
+	}
+
+	tree->updateLists();
+	return BrowserNode::ResultPtr();
+}
+//-----------------------------------------------------------------------------
 BrowserNode::ResultPtr FrxMainBrowserCtrl::addPlugin(::processing::PluginInfo pI) 
 {
 	FrxCircuidViewPtr view = wView.lock();
@@ -561,6 +611,20 @@ void FrxMainBrowserCtrl::initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr br
 		::com::PluginCollection::ROOT_FOLDER_ID // parent db-folderid
 	);
 	tree->setNodeData(add_plugins, node);
+    
+    // history
+    his_recent = tree->addNode(scene_plugins);
+    node = BrowserNode("History", BrowserConstants::FRX_BROWSER_FOLDER);
+	node.f = 
+		boost::bind(&FrxMainBrowserCtrl::fillHistoryFolder, this, his_recent, Recent);
+	tree->setNodeData(his_recent, node);
+
+    his_favourite = tree->addNode(his_recent);
+    node = BrowserNode("Favourites", BrowserConstants::FRX_BROWSER_FOLDER);
+	node.f = 
+		boost::bind(&FrxMainBrowserCtrl::fillHistoryFolder, this, his_favourite, Favourite);
+	tree->setNodeData(his_favourite, node);
+
 
 	// add_processors
 	add_processors = 
