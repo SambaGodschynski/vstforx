@@ -431,6 +431,33 @@ struct TblPlugins {
 	}
 };
 
+//============================================================================================================
+struct TblHistory {
+//============================================================================================================
+	//--------------------------------------------------------------------------------------------------------
+	static string create () {
+		return string ("CREATE TABLE IF NOT EXISTS history ( ") +
+		"id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+		"plugId INTEGER NOT NULL, " +
+		"timestamp INTEGER NOT NULL, " + 
+		"FOREIGN KEY(plugId) REFERENCES plugins(id) ON UPDATE CASCADE  ON DELETE CASCADE);"
+        ;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	static string addPlugin ( const Int &plugId,
+                              const time_t &timestamp,
+                              sambag::cpsqlite::ParameterList &pL ) 
+	{
+		using namespace sambag::cpsqlite;
+		string q = string("INSERT INTO history(plugId, timestamp)");
+		q += " VALUES (?,?);";
+		size_t index = 1;
+		pL.push_back( IntParameter::create( index++, plugId ) );
+		pL.push_back( Int64Parameter::create( index++, timestamp ) );
+		return q;
+	}
+};
+
 } // namespace
 } // namespace
 

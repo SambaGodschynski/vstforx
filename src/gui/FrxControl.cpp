@@ -61,6 +61,11 @@
 #include <gui/components/FrxFlag.hpp>
 #include <gui/components/About.hpp>
 
+
+namespace {
+    const long FRX_REFRESH_PARAMETER=30;
+}
+
 namespace frx { namespace gui {
 SAMBAG_DERIVATED_EXCEPTION_CLASS(
         sambag::com::exceptions::IllegalStateException, __ControllerMapEx
@@ -149,7 +154,7 @@ void parameterChanged(void *src, float value,
 		return;
 	}
 	TimedUpdater<ParameterRefreshInfo,
-		RefreshParameter, 25>::instance().update(
+		RefreshParameter, FRX_REFRESH_PARAMETER>::instance().update(
 		std::make_pair(_par, _knob)
 	);
 }

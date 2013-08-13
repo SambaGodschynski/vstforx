@@ -430,6 +430,7 @@ namespace {
 			DataBase::Result::Ptr res = results[i];
 			PluginInfo info;
 			PluginCollection::Path p = res->get( TblPlugins::location() );
+            info.id         = res->getConv<int>( TblPlugins::id() );
 		    info.location   = p.string();
 	        info.name       = res->get( TblPlugins::name() );
 	        info.timestamp  = res->getConv<time_t>( TblPlugins::timestamp() );
@@ -513,7 +514,8 @@ void PluginCollection::initDB() {
 		// create tables ( if not exsits ): // throws DataBaseQueryFailed, DataBaseQueryTimeout
 		exec->execute( TblFolder::create() ); 
 		exec->execute( TblPlugins::create() ); 
-		exec->execute( TblLastScan::create() ); 
+		exec->execute( TblLastScan::create() );
+        exec->execute( TblHistory::create() );
 		sambag::cpsqlite::ParameterList pL;
 		string q = TblFolder::getFolder( TblFolder::root(), pL );
 		exec->execute ( q, pL, res );
@@ -811,6 +813,27 @@ bool PluginCollection::isAllScanned() const {
 		exec->execute( query, pL, res );
 	)
 	return res.size() == l.size();
+}
+//------------------------------------------------------------------------------------------------------------
+void PluginCollection::addToHistory ( const processing::PluginInfo &pI ) {
+    using namespace sambag::cpsqlite;
+	using namespace sqlcommands;
+	using namespace processing;
+	
+	ParameterList pL;
+	DataBase::Executer::Ptr exec = database->getExecuter();
+	string query = TblHistory::addPlugin ( pI.id,
+                                           ::time(NULL),
+                                           pL);
+	DB_QUERY (
+		exec->execute( query, pL );
+	)
+}
+//------------------------------------------------------------------------------------------------------------
+void PluginCollection::getRecentPlugins ( PluginInfoList &outList ) {
+}
+//------------------------------------------------------------------------------------------------------------
+void PluginCollection::getFavouritePlugins ( PluginInfoList &outList ) {
 }
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 PluginCollection::Ptr getPluginCollection() {

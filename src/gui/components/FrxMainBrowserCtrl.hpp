@@ -101,6 +101,8 @@ protected:
 	BrowserNode::ResultPtr createSceneTree(const Tree::Node &parent);
 	//-------------------------------------------------------------------------
 	BrowserNode::ResultPtr addPlugin(::processing::PluginInfo pI);
+    //-------------------------------------------------------------------------
+	void addPluginToHistory(::processing::PluginInfo pI);
 	//-------------------------------------------------------------------------
 	BrowserNode::ResultPtr 
 	addProcessor(IFrxComponentFactory::ProcessorCreator f);

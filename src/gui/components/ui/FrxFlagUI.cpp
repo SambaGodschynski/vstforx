@@ -11,7 +11,7 @@
 #include <gui/components/FrxCircuidView.hpp>
 #include <boost/algorithm/string.hpp>
 #include <gui/components/FrxNode.hpp>
-#include <sambag/disco/FontCache.hpp>
+#include <gui/components/FrxFontCache.hpp>
 
 namespace frx { namespace gui { namespace components { namespace ui {
 //=============================================================================
@@ -86,9 +86,8 @@ void FrxFlagUI::updateText() {
 	flagStyle.intoContext(cn);
 	cn->setStrokeWidth(0.0);
 
-	sd::FontCache &fc = sd::FontCache::instance();
-	Rectangle ta = fc.getTextBounds( cn, tg->getUpperFlagText() );
-	Rectangle tb = fc.getTextBounds( cn, tg->getLowerFlagText() );
+	Rectangle ta = getTextBounds( cn, tg->getUpperFlagText() );
+	Rectangle tb = getTextBounds( cn, tg->getLowerFlagText() );
 
 
 	tb.width( std::max(ta.width(), tb.width()) );
@@ -256,7 +255,6 @@ void FrxFlagUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	flagStyle.intoContext(cn);
 	
 	sd::Rectangle r(0,0,c->getWidth(), c->getHeight());
-	sd::FontCache &fc = sd::FontCache::instance();
 
 	// draw lines
 	cn->moveTo(sd::Point2D(0, r.height()));
@@ -267,10 +265,9 @@ void FrxFlagUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	// draw text
 	cn->setStrokeWidth(0.0);
 	cn->moveTo(sd::Point2D(distance.x(), fs/2. - 2.));
-	//cn->textPath(target->getUpperFlagText());
-	fc.drawText(cn ,target->getUpperFlagText());
-	cn->moveTo(sd::Point2D(distance.x(), fs+hGap + 2.));
-	//cn->textPath(target->getLowerFlagText());
-	fc.drawText(cn ,target->getLowerFlagText());
+	drawText(cn, target->getUpperFlagText());
+    
+    cn->moveTo(sd::Point2D(distance.x(), fs+hGap + 2.));
+	drawText(cn ,target->getLowerFlagText());
 }
 }}}} // namespace(s)

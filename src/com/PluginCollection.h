@@ -266,7 +266,19 @@ private:
 	 * @return true, wenn zu PluginInfo gehoeriges Plugin in Datenbank enthalten
 	 * @throw sambag::cpsqlite::DataBaseQueryFailed
 	 */
-	bool searchPlugin ( processing::PluginInfo &pI ); 
+	bool searchPlugin ( processing::PluginInfo &pI );
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 *
+	 * @param the outgoing plugininfo list
+	 */
+	void getRecentPlugins ( PluginInfoList &outList );
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 *
+	 * @param the outgoing plugininfo list
+	 */
+	void getFavouritePlugins ( PluginInfoList &outList );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param id
@@ -276,6 +288,12 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	bool abortScan;
 public:
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 *
+	 * @param the plugininfo object
+	 */
+	void addToHistory ( const processing::PluginInfo &pI );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param loc

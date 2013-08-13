@@ -237,17 +237,32 @@ BrowserNode::ResultPtr FrxMainBrowserCtrl::addPlugin(::processing::PluginInfo pI
 	try {
 		pr = fac.getPluginCreator()(view, pI);
 	} catch(const ::processing::ShellPluginException &ex) {
+        // select plugin and calls addPlugin again
 		showShellSelection(pI, ex.content);
 		return BrowserNode::ResultPtr();
 	}
 	if (!pr)
 		return BrowserNode::ResultPtr();
 	getFrxControl(view).addProcessorToView(view, pr);
-	FrxColumnBrowser::Ptr browser = this->browser.lock();
+	
+    addPluginToHistory(pI);
+    
+    FrxColumnBrowser::Ptr browser = this->browser.lock();
 	if (browser) {
 		browser->message(pr->getName() + ADDED_TO_SCENE);
 	}
 	return BrowserNode::ResultPtr();
+}
+//-----------------------------------------------------------------------------
+void FrxMainBrowserCtrl::addPluginToHistory(::processing::PluginInfo pI) {
+    ::com::PluginCollection::Ptr db;
+	try {
+		db = ::com::getPluginCollection();
+	} catch (...) {
+		SAMBAG_LOG_ERR<<"adding plugin to history failed.";
+        return;
+	}
+    db->addToHistory(pI);
 }
 //-----------------------------------------------------------------------------
 BrowserNode::ResultPtr FrxMainBrowserCtrl::

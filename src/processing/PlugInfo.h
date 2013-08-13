@@ -41,6 +41,10 @@ private:
 		ar & timestamp;
 		ar & access;
 		ar & uid;
+        
+        if (version>=1) {
+            ar & id;
+        }
 	}
 	//--------------------------------------------------------------------------------------------------------
 public:
@@ -51,6 +55,7 @@ public:
 	int uid;
 	time_t timestamp;
 	AccessState access; // konnte geladen werden?
+    int id; // database id
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return true, wenn valides PluginInfo-Objekt
@@ -85,5 +90,7 @@ public:
 	}
 };
 } // namespace
+
+BOOST_CLASS_VERSION(processing::PluginInfo, 1)
 
 #endif

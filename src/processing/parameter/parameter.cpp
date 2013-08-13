@@ -14,8 +14,8 @@
 namespace processing {
 namespace parameter {
 namespace {
-    const double MAX_INERTIA_DURATION = 2000.; // ms
-    const double INERTIA_REFRESH_RATE = 30.; // ms
+    const double MAX_INERTIA_DURATION = 2000.; // ms TODO: problems with values above 2000
+    const long INERTIA_REFRESH_RATE = 30; // ms
 }
 //============================================================================================================
 // Schnitstelle: ConnectionOperator.
@@ -50,6 +50,9 @@ Tween::Ptr getTween(boost::shared_ptr<void> t, long duration) {
     } else {
         return boost::static_pointer_cast<Tween>(t);
     }
+}
+static Tween::Milliseconds _getDuration(double val) {
+    return (Tween::Milliseconds)(val * MAX_INERTIA_DURATION);
 }
 //------------------------------------------------------------------------------------------------------------
 ParameterConnection::ParameterConnection(ParameterPtr a, ParameterPtr b) : 
@@ -112,7 +115,7 @@ void ParameterConnection::onOperatorParameterChanged(void *src, const VstNumber 
 //------------------------------------------------------------------------------------------------------------
 void ParameterConnection::update(ParameterPtr p, const VstNumber &newValue) {
     Tween::Ptr tween;
-    _tween = tween = getTween(_tween, (Tween::Milliseconds)(*inertiaDuration)*MAX_INERTIA_DURATION);
+    _tween = tween = getTween(_tween, _getDuration(*inertiaDuration));
     if (tween->dst.lock() && tween->dst.lock() != p) {
         // tween is currently in use
         return;
@@ -185,13 +188,19 @@ size_t ParameterConnection::getNumParameter () const {
 //------------------------------------------------------------------------------------------------------------
 void ParameterConnection::onInertiaDurationChanged(void *src, const float &value)
 {
-    inertiaDuration->setDisplay( sambag::com::toString(value*MAX_INERTIA_DURATION) + " ms" );
+    Tween::Ptr tween;
+    _tween = tween = getTween(_tween, _getDuration(*inertiaDuration));
+    if (!tween) {
+        return;
+    }
+    tween->setDuration(_getDuration(*inertiaDuration));
+    inertiaDuration->setDisplay( sambag::com::toString(_getDuration(*inertiaDuration)) + " ms" );
 }
 //------------------------------------------------------------------------------------------------------------
 void ParameterConnection::onInertiaTypeChanged(void *src, const float &value)
 {
     Tween::Ptr tween;
-    _tween = tween = getTween(_tween, (Tween::Milliseconds)(*inertiaDuration)*MAX_INERTIA_DURATION);
+    _tween = tween = getTween(_tween, _getDuration(*inertiaDuration));
     if (!tween) {
         return;
     }

@@ -14,7 +14,7 @@
 #include <gui/HandyNamespaces.hpp>
 #include <sambag/disco/IDiscoFactory.hpp>
 #include <sambag/disco/svg/graphicElements/Style.hpp>
-#include <sambag/disco/FontCache.hpp>
+#include <gui/components/FrxFontCache.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -182,14 +182,13 @@ void FrxIOUI<CIO>::drawDisplay(sd::IDrawContext::Ptr cn, FrxIO::Ptr c)
 	if (txt=="") {
 		return;
 	}
-	sd::FontCache &fc = sd::FontCache::instance();
 	displayStyle.intoContext(cn);
-	sd::Rectangle r = fc.getTextBounds( cn, txt );
+	sd::Rectangle r = getTextBounds( cn, txt );
 	cn->moveTo(sd::Point2D(
 		c->getWidth()/2. - r.width()/2.,
 		c->getHeight()/2. - r.height()/2
 	));
-	fc.drawText(cn , txt);
+	drawText(cn , txt);
 	cn->fill();
 }
 //-----------------------------------------------------------------------------

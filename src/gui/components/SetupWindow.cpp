@@ -85,6 +85,10 @@ protected:
 	sambag::com::ArithmeticWrapper<bool> scanFailed;
 	//-------------------------------------------------------------------------
 	void __onScanCompleted(int succeed, int failed, int skipped);
+    //-------------------------------------------------------------------------
+    void startRefreshingTimerIfNecessary();
+    //-------------------------------------------------------------------------
+    void stopRefreshingTimer();
 public:
 	//-------------------------------------------------------------------------
 	static Ptr create(sdc::Window::Ptr parent = sdc::Window::Ptr()) { 																		
@@ -130,7 +134,7 @@ void ScanningDialog::postConstructor() {
 sdc::AContainerPtr ScanningDialog::createListPane() {
 	list = sdc::StringList::create();
 	dirListScrollPane = sdc::ScrollPane::create(list);
-	dirListScrollPane->setPreferredSize(sd::Dimension(450., 300.));
+	dirListScrollPane->setPreferredSize(sd::Dimension(730., 300.));
 	return dirListScrollPane;
 }
 //-----------------------------------------------------------------------------
@@ -167,6 +171,26 @@ void ScanningDialog::onBtnCancel(void *, const sdc::events::ActionEvent &ev)
 	close();
 }
 //-----------------------------------------------------------------------------
+void ScanningDialog::startRefreshingTimerIfNecessary() {
+    if (timer) {
+        return;
+    }
+    timer = sdc::Timer::create(100);
+	timer->sce::EventSender<sdc::TimerEvent>::addTrackedEventListener(
+		boost::bind(&ScanningDialog::onRefresh, this, _1, _2),
+		getPtr()
+	);
+	timer->setNumRepetitions(-1);
+	timer->start();
+}
+//-----------------------------------------------------------------------------
+void ScanningDialog::stopRefreshingTimer() {
+    if (!timer) {
+        return;
+    }
+    timer->stop();
+}
+//-----------------------------------------------------------------------------
 void ScanningDialog::startScan(SetupCtrl::Ptr ctrl) {
 	this->ctrl = ctrl;
 	if (!ctrl)
@@ -177,17 +201,11 @@ void ScanningDialog::startScan(SetupCtrl::Ptr ctrl) {
 		boost::bind(&ScanningDialog::onScanCompleted, this, _1, _2, _3),
 		boost::bind(&ScanningDialog::onScanFailed, this, _1)
 	);
-	timer = sdc::Timer::create(100);
-	timer->sce::EventSender<sdc::TimerEvent>::addTrackedEventListener(
-		boost::bind(&ScanningDialog::onRefresh, this, _1, _2),
-		getPtr()
-	);
-	timer->setNumRepetitions(-1);
-	timer->start();
 }
 //-----------------------------------------------------------------------------
 void ScanningDialog::onFileEvent(const std::string &file, SetupCtrl::FileStatus fst) 
 {
+    startRefreshingTimerIfNecessary();
 	SAMBAG_BEGIN_SYNCHRONIZED(mutex)
 		/**
 		 * do not invoke any redrawing stuff inhere: concurrency prolems!
@@ -227,8 +245,8 @@ void ScanningDialog::__onScanCompleted(int succeed, int failed, int skipped) {
 }
 //-----------------------------------------------------------------------------
 void ScanningDialog::onScanCompleted(int succeed, int failed, int skipped) {
-	timer->stop();
-	
+	stopRefreshingTimer();
+    
 	sdc::Timer::Ptr t = sdc::Timer::create(50);
 	t->sce::EventSender<sdc::TimerEvent>::addTrackedEventListener(
 		boost::bind(&ScanningDialog::__onScanCompleted, 
@@ -238,6 +256,7 @@ void ScanningDialog::onScanCompleted(int succeed, int failed, int skipped) {
 				skipped),
 		getPtr()
 	);
+    t->setNumRepetitions(0);
 	t->start();
 }
 //-----------------------------------------------------------------------------
@@ -613,9 +632,10 @@ namespace {
 //-----------------------------------------------------------------------------
 void SetupWindow::openScanningDialog() {
 	if (!__scanningDlg) {
-        __scanningDlg = ScanningDialog::create();
+        __scanningDlg = ScanningDialog::create(getPtr());
         __scanningDlg->validate();
         __scanningDlg->pack();
+        __scanningDlg->positionWindow();
         __scanningDlg->addOnCloseEventListener(&onScanningDlgClose);
         __scanningDlg->open();
         __scanningDlg->startScan(ctrl);
