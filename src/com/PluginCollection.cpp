@@ -16,6 +16,7 @@
 #include "processing/pluginTypes/VstShellPlugin.hpp"
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <sambag/com/Thread.hpp>
+#include <boost/date_time.hpp>
 
 #define DB_QUERY(x)											\
 	try {x}													\
@@ -838,13 +839,11 @@ void PluginCollection::addToHistory ( const processing::PluginInfo &pI ) {
 static void _addTimeStamp(int, DataBase::Result::Ptr res, std::vector<std::string> *details)
 {
     time_t t = res->getConv<time_t>( TblHistory::timestamp() );
-    struct tm *tmp;
-    tmp = localtime(&t);
-    enum {_MAX_C=50};
-    char str[_MAX_C];
-    strftime(&str[0], _MAX_C, "[%D, %R]", tmp);
+	std::stringstream ss;
+	boost::posix_time::ptime pt = boost::posix_time::from_time_t(t);
+	ss<<"["<<boost::posix_time::to_simple_string(pt).c_str()<<"]";
+	details->push_back(ss.str());
     
-    details->push_back( std::string(&str[0]) );
 }
 void PluginCollection::getRecentPlugins ( PluginInfoList &outList, std::vector<std::string> &details ) {
     if (outList.size()!=details.size()) {
@@ -861,14 +860,14 @@ void PluginCollection::getRecentPlugins ( PluginInfoList &outList, std::vector<s
 		);
 	)
 	extractAndAdd ( results, outList, boost::bind(&_addTimeStamp, _1, _2, &details) );
-    SAMBAG_ASSERT( res.size() == details.size() );
+    SAMBAG_ASSERT( results.size() == details.size() );
 }
 //------------------------------------------------------------------------------------------------------------
 static void _addCount(int, DataBase::Result::Ptr res, std::vector<std::string> *details)
 {
     int c = res->getConv<int>("count");
     std::stringstream ss;
-    ss<<"["<<c<<"]"<<std::endl;
+    ss<<"["<<c<<"]";
     details->push_back(ss.str());
 }
 void PluginCollection::getFavouritePlugins ( PluginInfoList &outList, std::vector<std::string> &details ) {
@@ -886,7 +885,7 @@ void PluginCollection::getFavouritePlugins ( PluginInfoList &outList, std::vecto
 		);
 	)
 	extractAndAdd ( results, outList, boost::bind(&_addCount, _1, _2, &details) );
-    SAMBAG_ASSERT( res.size() == details.size() );
+    SAMBAG_ASSERT( results.size() == details.size() );
 }
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 PluginCollection::Ptr getPluginCollection() {

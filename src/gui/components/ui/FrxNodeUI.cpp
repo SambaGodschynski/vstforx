@@ -322,9 +322,25 @@ void FrxNodeUI::mouseReleased(const sdc::events::MouseEvent &ev)  {
 FrxNodeUI::~FrxNodeUI() {
 }
 //-----------------------------------------------------------------------------
-void FrxNodeUI::mouseEntered(const sdc::events::MouseEvent &ev)  {
-	if (inside)
+void FrxNodeUI::ensureToBeTheSingleCoronaOnView() {
+	static FadeAnimation::WPtr _lastCoronaAni;
+	FadeAnimation::Ptr lastCoronaAni = _lastCoronaAni.lock();
+	if (!lastCoronaAni) {
+		_lastCoronaAni = fadeAnimation;
 		return;
+	}
+	if (lastCoronaAni==fadeAnimation) {
+		std::cout<<"?"<<std::endl;
+		return;
+	}
+	lastCoronaAni->UpdatePolicy::update(0.);
+	_lastCoronaAni = fadeAnimation;
+}
+//-----------------------------------------------------------------------------
+void FrxNodeUI::mouseEntered(const sdc::events::MouseEvent &ev)  {
+	if (inside) {
+		return;
+	}
 	/* Problem: timer lock. The timer dosen't stop (under win32)
 	   immediately. The best solution (for now) is to ignore it.
 	if (fadeAnimation->isRunning()) {
@@ -337,8 +353,9 @@ void FrxNodeUI::mouseEntered(const sdc::events::MouseEvent &ev)  {
 }
 //-----------------------------------------------------------------------------
 void FrxNodeUI::mouseExited(const sdc::events::MouseEvent &ev) {
-	if (!inside)
+	if (!inside) {
 		return;
+	}
 	/*if (fadeAnimation->isRunning()) {
 		fadeAnimation->stop();
 	}*/

@@ -117,6 +117,7 @@ private:
 	//-------------------------------------------------------------------------
 	template <class T>
 	struct CoronaAlpha : sdc::BasicUpdater<T> {
+		typedef CoronaAlpha<T> ThisClass;
 		T alpha;
 		sdc::AComponent::WPtr _component;
 		void update(const T& val){
@@ -126,6 +127,9 @@ private:
 			}
 			alpha = val;
 			component->redraw();
+		}
+		void finished(const T& val){
+			update(val);
 		}
 		CoronaAlpha() : alpha( T() ) {}
 		void setComponent(sdc::AComponent::Ptr c) {
@@ -138,6 +142,8 @@ private:
 	typedef sdc::Animation<double, sdc::defaultTweens::DynamicTween, CoronaAlpha>
 		FadeAnimation; 
 	FadeAnimation::Ptr fadeAnimation;
+	//-------------------------------------------------------------------------
+	void ensureToBeTheSingleCoronaOnView();
 public:
 	//-------------------------------------------------------------------------
 	double getCoronaAlpha() const {
