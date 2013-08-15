@@ -243,7 +243,7 @@ template <class PT>
 void FrxParameterUI<PT>::mouseExited(const sdc::events::MouseEvent &ev) {
 	/*sdc::events::MouseEvent nEv = ev;
 	nEv.updateSoure(ev.getSource()->getParent());*/
-	//Super::mouseExited(ev);
+	Super::mouseExited(ev);
 }
 //-----------------------------------------------------------------------------
 template <class PT>
