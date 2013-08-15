@@ -342,10 +342,10 @@ void FrxNodeUI::mouseEntered(const sdc::events::MouseEvent &ev)  {
 		return;
 	}
 	/* Problem: timer lock. The timer dosen't stop (under win32)
-	   immediately. The best solution (for now) is to ignore it.
-	if (fadeAnimation->isRunning()) {
-		fadeAnimation->stop();
-	}*/
+	   immediately. The best solution (for now) is to ignore it.*/
+	//if (fadeAnimation->isRunning()) {
+	//	fadeAnimation->stop();
+	//}
 	fadeAnimation->setStartValue(getCoronaAlpha());
 	fadeAnimation->setEndValue(FINAL_ALPHA);
 	fadeAnimation->start();
@@ -356,9 +356,11 @@ void FrxNodeUI::mouseExited(const sdc::events::MouseEvent &ev) {
 	if (!inside) {
 		return;
 	}
-	/*if (fadeAnimation->isRunning()) {
-		fadeAnimation->stop();
-	}*/
+	/* Problem: timer lock. The timer dosen't stop (under win32)
+	   immediately. The best solution (for now) is to ignore it.*/
+	//if (fadeAnimation->isRunning()) {
+	//	fadeAnimation->stop();
+	//}
 	fadeAnimation->setStartValue(getCoronaAlpha());
 	fadeAnimation->setEndValue(0.);
 	fadeAnimation->start();

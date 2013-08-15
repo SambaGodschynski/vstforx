@@ -126,7 +126,7 @@ void ParameterConnection::update(ParameterPtr p, const VstNumber &newValue) {
     tween->setStartValue(p->getValue());
     double diff = fabs(tween->getEndValue() - newValue);
     tween->setEndValue(newValue);
-    if (diff>0.) {
+	if (diff>0.) {
         tween->start();
     }
 }
