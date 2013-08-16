@@ -260,6 +260,7 @@ void FrxLookAndFeel::installDefaults() {
 	rManager->registerImage("Entry.image", "images/entry.png");
 	rManager->registerImage("Exit.image", "images/exit.png");
 	rManager->registerImage("FrxBrowser.folder.image", "images/folder.png");
+    rManager->registerImage("FrxBrowser.historyFolder.image", "images/hfolder.png");
 	rManager->registerImage("FrxBrowser.default.image", "images/disco-floor.png");
 	rManager->registerImage("FrxBrowser.plugin.image", "images/plugin.png");
 	rManager->registerImage("FrxBrowser.processor.image", "images/processor.png");

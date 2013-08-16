@@ -487,7 +487,7 @@ void VSTPlugin::closeEditor(void *window) {
 }
 //--------------------------------------------------------------------------------------------------------
 void VSTPlugin::onEditorIdle() {
-	//aEff->dispatcher ( aEff, effEditIdle, 0, 0, 0, 0);
+	aEff->dispatcher ( aEff, effEditIdle, 0, 0, 0, 0);
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::getShellPluginInfos(ShellPluginInfos &out) {

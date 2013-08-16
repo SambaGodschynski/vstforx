@@ -28,11 +28,16 @@ public:
 	//-------------------------------------------------------------------------
 	virtual void closeEditor(sdc::WindowPtr win) = 0;
 	//-------------------------------------------------------------------------
+	virtual bool hasEditor() const = 0;
+	//-------------------------------------------------------------------------
 	virtual void onEditorIdle() = 0;
 	//-------------------------------------------------------------------------
 	virtual bool isSynth() const = 0;
 	//-------------------------------------------------------------------------
-	virtual std::string getStatusMessage() const = 0;
+	/**
+     * @return error message if exists othwerise an empty string
+     */
+    virtual std::string getStatusMessage() const = 0;
 	//-------------------------------------------------------------------------
 	virtual std::string getName() const = 0;
 }; // IPluginAdapter

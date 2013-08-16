@@ -994,7 +994,10 @@ void FrxControl::openClosePluginEditor(fgc::FrxCircuidViewPtr view,
 	);
 	if (!plugin)
 		return;
-	// check editor is open
+    if (!plugin->hasEditor()) {
+        return;
+    }
+    // check editor is open
 	FrxPluginEditor::Ptr ed;
 	FrxPluginEditor::WPtr wed;
 	c->getClientProperty("plugin.editor", wed);

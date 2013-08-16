@@ -614,7 +614,7 @@ void FrxMainBrowserCtrl::initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr br
     
     // history
     his_recent = tree->addNode(scene_plugins);
-    node = BrowserNode("History", BrowserConstants::FRX_BROWSER_FOLDER);
+    node = BrowserNode("History", BrowserConstants::FRX_BROWSER_HISTORY_FOLDER);
 	node.f = 
 		boost::bind(&FrxMainBrowserCtrl::fillHistoryFolder, this, his_recent, Recent);
 	tree->setNodeData(his_recent, node);

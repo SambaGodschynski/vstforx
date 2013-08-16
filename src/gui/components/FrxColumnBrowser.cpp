@@ -15,6 +15,7 @@ namespace frx { namespace gui { namespace components {
 //=============================================================================
 //-----------------------------------------------------------------------------
 const std::string BrowserConstants::FRX_BROWSER_FOLDER = "folder";
+const std::string BrowserConstants::FRX_BROWSER_HISTORY_FOLDER = "historyFolder";
 const std::string BrowserConstants::FRX_BROWSER_DEFAULT = "default";
 const std::string BrowserConstants::FRX_BROWSER_PLUGIN = "plugin";
 const std::string BrowserConstants::FRX_BROWSER_PRESET = "preset";

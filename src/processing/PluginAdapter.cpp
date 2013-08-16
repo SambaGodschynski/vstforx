@@ -76,6 +76,14 @@ void PluginAdapter::closeEditor(sdc::WindowPtr win) {
 	plug->closeEditor(winImpl->getSystemHandle());
 }
 //-----------------------------------------------------------------------------
+bool PluginAdapter::hasEditor() const {
+    Adaptee::Ptr plug = getPlugin();
+    if (!plug) {
+        return false;
+    }
+    return plug->hasEditor();
+}
+//-----------------------------------------------------------------------------
 void PluginAdapter::onEditorIdle() {
 	Adaptee::Ptr plug = getPlugin();
 	if (!plug)
