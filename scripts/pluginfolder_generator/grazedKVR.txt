@@ -3,3 +3,4 @@ http://www.kvraudio.com/q.php?search=1&os[]=win32&os[]=mac32&pr[]=f&start=700
 http://www.kvraudio.com/q.php?search=1&os[]=win32&os[]=mac32&pr[]=f&start=800
 http://www.kvraudio.com/q.php?search=1&os[]=win32&os[]=mac32&pr[]=f&start=900
 http://www.kvraudio.com/q.php?search=1&os[]=win32&os[]=mac32&pr[]=f&start=1150
+http://www.kvraudio.com/q.php?search=1&os[]=win32&os[]=mac32&pr[]=f&start=1200
