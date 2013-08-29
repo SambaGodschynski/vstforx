@@ -56,7 +56,8 @@ ELSEIF(WIN32)
         IF (MSVC)
  	   IF (CMAKE_CL_64)
     	     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-           ENDIF(CMAKE_CL_64)
+             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4267")
+	   ENDIF(CMAKE_CL_64)
 	ENDIF(MSVC)
 
 
