@@ -1,3 +1,7 @@
+#ifndef FRX_CONFIG_H
+#define FRX_CONFIG_H 
+
+
 // following values will be set automatically.
 #define FRX_VERSION_MAJOR @FRX_VERSION_MAJOR@
 #define FRX_VERSION_MINOR @FRX_VERSION_MINOR@
@@ -10,3 +14,6 @@
 #define FRX_TOOLKIT_TIMER 0
 #define FRX_BOOST_TIMER 1
 #define FRX_ASYNC_DSP_TIMER @FRX_ASYNC_DSP_TIMER@
+
+
+#endif // FRX_CONFIG_H

@@ -238,13 +238,13 @@ void VSTPlugin::valueChanged(void *src, const float &v) {
 	// hole Parameter name
 	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
 	aEff->dispatcher ( aEff, effGetParamName, index, NULL, &bff[0], NULL );
-	param->setName ( MyString(bff) );
+	param->setName ( MyString(&bff[0]) );
 	// hole Parameter label
 	aEff->dispatcher ( aEff, effGetParamLabel, index, NULL, &bff[0], NULL );
-	param->setLabel ( MyString(bff) );
+	param->setLabel ( MyString(&bff[0]) );
 	// hole Parameter Display
 	aEff->dispatcher ( aEff, effGetParamDisplay, index, NULL, &bff[0], NULL );
-	param->setDisplay( MyString(bff) );
+	param->setDisplay( MyString(&bff[0]) );
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::initParameter(){
