@@ -17,6 +17,7 @@
 #include "com/PPIError.h"
 #include <sambag/disco/FileResourceManager.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <sambag/com/Config.h>
 #include "FrxConfig.h"
 
 static const string SEPARATOR = "=";

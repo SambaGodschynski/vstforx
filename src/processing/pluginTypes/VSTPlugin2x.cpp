@@ -18,7 +18,6 @@
 
 typedef AEffect* (*PluginEntryProc) (audioMasterCallback audioMaster);
 
-
 namespace processing{
 //------------------------------------------------------------------------------------------------------------
 boost::unordered_map < AEffect*, VSTPlugin* > VSTPlugin::relatedPlugNode;
@@ -471,8 +470,8 @@ void VSTPlugin::openEditor(void *window) {
 	if ( size ) {
         onPlugRequestWindowResize(size->right - size->left, size->bottom - size->top);
 	}
-	int res = 1;
-       aEff->dispatcher ( aEff, effEditOpen, 0, 0, window, 0);
+	int res =
+        aEff->dispatcher ( aEff, effEditOpen, 0, 0, window, 0);
     if (!res) {
         SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
             "effEditOpen failed.");

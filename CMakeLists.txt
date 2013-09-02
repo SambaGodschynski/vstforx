@@ -6,9 +6,9 @@ project (vstforx)
 SET(FRX_VERSION_MAJOR 1)
 SET(FRX_VERSION_MINOR 0)
 SET(FRX_VERSION_MICRO 2)
+
 execute_process(COMMAND git log --pretty=format:%h -n 1
                 OUTPUT_VARIABLE FRX_VERSION_BUILD)
-SET(SAMBAG_VERSION_BUILD $ENV{SAMBAG_BUILD})
 
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 add_definitions(-DBOOST_UBLAS_TYPE_CHECK=0)
