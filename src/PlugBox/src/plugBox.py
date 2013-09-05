@@ -31,11 +31,8 @@ import zipfile as zip
 import hashlib
 import shutil
 import stat
-<<<<<<< HEAD
 import sys
-=======
 
->>>>>>> 533f44f2ff5693f5e3892f6a9cbeddc1519584bf
 HEADER = { 'User-Agent' : 'PlugBox' }
 
 
@@ -306,7 +303,6 @@ class RepSync:
         _download(url, dst_path, "        downloading %s:" % fname)
         
 
-<<<<<<< HEAD
     def __post_process(self, filename):
         if self.post_processor == None:
             return
@@ -331,7 +327,7 @@ class RepSync:
             for x in files:
                 self.__post_process(rpath + "/" + x)
         self.install_loc = tmp
-=======
+
     def __unzip(self,file,destdir):
         z = zip.ZipFile(open(file, "rb"))
         for f in z.namelist():
@@ -358,7 +354,6 @@ class RepSync:
                          stat.S_IEXEC)
         z.close()
     
->>>>>>> 533f44f2ff5693f5e3892f6a9cbeddc1519584bf
 
     def __deploy(self, src, dst):
         self.__print("        deploying into %s" %dst)

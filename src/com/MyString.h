@@ -14,6 +14,8 @@
 #include <sstream>
 #include "PPIError.h"
 #include "Serialization.h"
+#include <boost/type_traits.hpp>
+#include <boost/static_assert.hpp>
 
 using namespace std;
 namespace com {
@@ -48,8 +50,12 @@ public:
 	enum ShortenStyle { kCenter, kLeft, kRight };
 	//--------------------------------------------------------------------------------------------------------
 	MyString ( const string &str = string() ) : string (str){}
+    //--------------------------------------------------------------------------------------------------------
+	MyString ( const MyString &str ) : string(str) {}
 	//--------------------------------------------------------------------------------------------------------
 	MyString ( const char * s ) : string ( s ){}
+	//--------------------------------------------------------------------------------------------------------
+	MyString ( char * s ) : string ( s ){}
 	//--------------------------------------------------------------------------------------------------------
 	MyString trim() const;
 	//--------------------------------------------------------------------------------------------------------
@@ -62,39 +68,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	MyString operator * ( int c ) const; // python style: a*4 = aaaa
 	//--------------------------------------------------------------------------------------------------------
-	MyString ( int integer ) {
-		std::ostringstream os;
-		os<<integer;
-		*this = string (os.str());
-	}
-	//--------------------------------------------------------------------------------------------------------
-	MyString ( unsigned int integer ) {
-		std::ostringstream os;
-		os<<integer;
-		*this = string (os.str());
-	}
-	//--------------------------------------------------------------------------------------------------------
 	MyString ( bool b ) : string( b ? "true" : "false" ) {}
-	//--------------------------------------------------------------------------------------------------------
-	MyString ( unsigned long integer ) {
-		std::ostringstream os;
-		os<<integer;
-		*this = string (os.str());
-	}
-	//--------------------------------------------------------------------------------------------------------
-	MyString ( float flt ) {
-		std::ostringstream os;
-		os.precision (3);
-		os<< std::fixed << flt;
-		*this = string ( os.str() );
-	}
-	//--------------------------------------------------------------------------------------------------------
-	MyString ( double dbl ) {
-		std::ostringstream os;
-		os.precision (3);
-		os<< std::fixed << dbl;
-		*this = string (os.str());
-	}
 	//--------------------------------------------------------------------------------------------------------
 	// Kopiert MyString nach bereits allozoiertem c_str ptr.
 	void copyToC_Str ( char *data ){
@@ -110,6 +84,21 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	// kuerzt string aus der mitte: "laaaaanng...eeees"
 	MyString shorten( int max, ShortenStyle type = kCenter, const string & space = "..." ) const;
+    //--------------------------------------------------------------------------------------------------------
+	template <typename T>
+	MyString(const T &val) {
+        BOOST_STATIC_ASSERT(
+            boost::is_integral<T>::value || boost::is_float<T>::value
+        );
+		std::ostringstream os;
+        if (boost::is_float<T>::value) {
+			os.precision (3);
+			os << std::fixed;
+		}
+		os << val;
+		*this = std::string ( os.str() );
+
+	}
 };
 } //namespace com
 
