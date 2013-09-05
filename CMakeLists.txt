@@ -116,6 +116,31 @@ set (VSTSDKSOURCE ${VSTSDKSOURCE}
 )
 
 
+IF(APPLE)
+	SET(PLIST_VERSION "${FRX_VERSION_MAJOR}.${FRX_VERSION_MINOR}.${FRX_VERSION_MICRO}")
+	SET(PLIST_PROD VSTForx)
+	CONFIGURE_FILE(
+  	  "${PROJECT_SOURCE_DIR}/src/PluginApps/VSTForx/mac/vstforx.plist.in"
+  	  "${PROJECT_BINARY_DIR}/src/PluginApps/VSTForx/mac/vstforx.plist"
+	)	
+	SET(PLIST_PROD VSTForxInstrument)
+	CONFIGURE_FILE(
+  	  "${PROJECT_SOURCE_DIR}/src/PluginApps/VSTForx/mac/vstforx.plist.in"
+  	  "${PROJECT_BINARY_DIR}/src/PluginApps/VSTForx/mac/ivstforx.plist"
+	)	
+	SET(PLIST_PROD VSTForxDEMO)
+	CONFIGURE_FILE(
+  	  "${PROJECT_SOURCE_DIR}/src/PluginApps/VSTForx/mac/vstforx.plist.in"
+  	  "${PROJECT_BINARY_DIR}/src/PluginApps/VSTForx/mac/vstforxDemo.plist"
+	)	
+	SET(PLIST_PROD VSTForxInstrumentDEMO)
+	CONFIGURE_FILE(
+  	  "${PROJECT_SOURCE_DIR}/src/PluginApps/VSTForx/mac/vstforx.plist.in"
+  	  "${PROJECT_BINARY_DIR}/src/PluginApps/VSTForx/mac/ivstforxDEMO.plist"
+	)	
+ENDIF(APPLE)
+
+
 CONFIGURE_FILE(
   "${PROJECT_SOURCE_DIR}/src/com/FrxConfig.h.in"
   "${PROJECT_BINARY_DIR}/src/com/FrxConfig.h"
