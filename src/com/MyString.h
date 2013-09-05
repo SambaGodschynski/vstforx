@@ -50,8 +50,12 @@ public:
 	enum ShortenStyle { kCenter, kLeft, kRight };
 	//--------------------------------------------------------------------------------------------------------
 	MyString ( const string &str = string() ) : string (str){}
+    //--------------------------------------------------------------------------------------------------------
+	MyString ( const MyString &str ) : string(str) {}
 	//--------------------------------------------------------------------------------------------------------
 	MyString ( const char * s ) : string ( s ){}
+	//--------------------------------------------------------------------------------------------------------
+	MyString ( char * s ) : string ( s ){}
 	//--------------------------------------------------------------------------------------------------------
 	MyString trim() const;
 	//--------------------------------------------------------------------------------------------------------
@@ -80,24 +84,14 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	// kuerzt string aus der mitte: "laaaaanng...eeees"
 	MyString shorten( int max, ShortenStyle type = kCenter, const string & space = "..." ) const;
-	//--------------------------------------------------------------------------------------------------------
-private:
-	enum ConvType{ 
-		Integral = 1 << 1,
-		Float    = 1 << 2
-	};
-public:
-	//--------------------------------------------------------------------------------------------------------
+    //--------------------------------------------------------------------------------------------------------
 	template <typename T>
 	MyString(const T &val) {
-		enum { 
-			CType = 1 << (boost::is_integral<T>::value * 1)
-			          << (boost::is_float<T>::value * 2)
-		};
-		BOOST_STATIC_ASSERT_MSG(CType==Integral || 
-			                    CType==Float, "frx::MyString Invalid conversions type.");
+        BOOST_STATIC_ASSERT(
+            boost::is_integral<T>::value || boost::is_float<T>::value
+        );
 		std::ostringstream os;
-		if (CType == Float) {
+        if (boost::is_float<T>::value) {
 			os.precision (3);
 			os << std::fixed;
 		}

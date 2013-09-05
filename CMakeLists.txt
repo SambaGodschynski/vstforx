@@ -5,10 +5,10 @@ project (vstforx)
 
 SET(FRX_VERSION_MAJOR 1)
 SET(FRX_VERSION_MINOR 0)
-SET(FRX_VERSION_MICRO 2)
+SET(FRX_VERSION_MICRO 3)
+
 execute_process(COMMAND git log --pretty=format:%h -n 1
                 OUTPUT_VARIABLE FRX_VERSION_BUILD)
-SET(SAMBAG_VERSION_BUILD $ENV{SAMBAG_BUILD})
 
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 add_definitions(-DBOOST_UBLAS_TYPE_CHECK=0)
@@ -32,10 +32,6 @@ IF(APPLE)
 	add_definitions(-DDISCO_USE_COCOA)	
 	FIND_LIBRARY(COCOA_LIBRARY Cocoa)	
 	FIND_LIBRARY(CARBON_LIBRARY Carbon)
-	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O1") #problems with llvm optimization > O1
-                                                                      #see minDep branch->testsuite
-        set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O1")
-        set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -O1")	
 	set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvmgcc42")
 	SET(FRX_ASYNC_DSP_TIMER "FRX_TOOLKIT_TIMER")
 	SET(FRX_USE_FONTCACHE "0")

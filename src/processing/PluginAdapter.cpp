@@ -9,6 +9,13 @@
 #include "NodeAdapter.hpp"
 #include "ParameterAdapter.hpp"
 #include <sambag/disco/components/Window.hpp>
+#include <sambag/disco/components/WindowToolkit.hpp>
+
+/**
+ * get the apropriate handler from a window.
+ * HWND, WindowRef or NSView
+ */
+extern void * __getHandlerForVstPlugins_(void*);
 
 namespace frx { namespace processing {
 namespace {
@@ -61,7 +68,9 @@ void PluginAdapter::openEditor(sdc::WindowPtr win) {
 		win
 	);
 
-	plug->openEditor(winImpl->getSystemHandle());
+	plug->openEditor(
+        ::__getHandlerForVstPlugins_(winImpl->getSystemHandle())
+    );
 }
 //-----------------------------------------------------------------------------
 void PluginAdapter::closeEditor(sdc::WindowPtr win) {
