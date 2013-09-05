@@ -20,6 +20,7 @@
 #include <com/Settings.h>
 #include <gui/FrxControl.hpp>
 #include <processing/VstForxPlug.hpp>
+#include <sambag/com/Config.h>
 
 extern void * __getHandlerForVstPlugins_(void *ptr);
 extern void* hInstance;
