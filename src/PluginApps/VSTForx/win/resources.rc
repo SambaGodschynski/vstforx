@@ -1,7 +1,7 @@
 /**
  * resources.rc
  *
- *  Created on: Thu Jul 11 23:50:10 2013
+ *  Created on: Fri Aug 16 10:42:28 2013
  *      Author: createResources.py
  */
 
@@ -24,8 +24,9 @@
 260	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/sand.png"
 270	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/warning_icon.png"
 280	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/plus.png"
-290	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/iplug.png"
-300	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/oSwitch.png"
-310	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/inf_icon.png"
-320	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/vstPlugNode.png"
+290	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/hfolder.png"
+300	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/iplug.png"
+310	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/oSwitch.png"
+320	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/inf_icon.png"
+330	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/vstPlugNode.png"
 
