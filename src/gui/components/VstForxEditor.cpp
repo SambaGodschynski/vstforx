@@ -259,13 +259,13 @@ bool VstForxEditor::open( void *ptr ) {
      It has something to do with the windowRef message on NSWindow.
      The window disappears right after calling this message.
      */
-//#ifdef DISCO_USE_COCOA
-//    sdc::getWindowToolkit()->invokeLater(
-//        boost::bind(&VstForxEditor::_open,this,ptr)
-//    );
-//#else
+#if defined DISCO_USE_COCOA && defined SAMBAG_32
+    sdc::getWindowToolkit()->invokeLater(
+        boost::bind(&VstForxEditor::_open,this,ptr)
+    );
+#else
     _open(ptr);
-//#endif
+#endif
     return true;
 }
 //-----------------------------------------------------------------------------
