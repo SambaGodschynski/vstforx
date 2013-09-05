@@ -21,7 +21,7 @@
 #include <gui/FrxControl.hpp>
 #include <processing/VstForxPlug.hpp>
 
-
+extern void * __getHandlerForVstPlugins_(void *ptr);
 extern void* hInstance;
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -190,7 +190,9 @@ FrxCircuidViewPtr VstForxEditor::createView(sdc::Window::Ptr win) {
 //-----------------------------------------------------------------------------
 void VstForxEditor::onHostWindowOpen(void *src, const sdc::OnOpenEvent &ev)
 {
-	open( clientWindow->getWindowImpl()->getSystemHandle() );
+	open(
+        __getHandlerForVstPlugins_(clientWindow->getWindowImpl()->getSystemHandle())
+    );
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::open() {
@@ -257,13 +259,13 @@ bool VstForxEditor::open( void *ptr ) {
      It has something to do with the windowRef message on NSWindow.
      The window disappears right after calling this message.
      */
-#ifdef DISCO_USE_COCOA
-    sdc::getWindowToolkit()->invokeLater(
-        boost::bind(&VstForxEditor::_open,this,ptr)
-    );
-#else
+//#ifdef DISCO_USE_COCOA
+//    sdc::getWindowToolkit()->invokeLater(
+//        boost::bind(&VstForxEditor::_open,this,ptr)
+//    );
+//#else
     _open(ptr);
-#endif
+//#endif
     return true;
 }
 //-----------------------------------------------------------------------------

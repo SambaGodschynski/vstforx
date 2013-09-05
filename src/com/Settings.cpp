@@ -233,8 +233,11 @@ void Settings::setIsInstrument(bool val) {
 //------------------------------------------------------------------------------------------------------------
 string Settings::versionToString() const {
 	std::stringstream ss;
-	ss<<FRX_VERSION_MAJOR<<"."<<FRX_VERSION_MINOR<<"."<<FRX_VERSION_MICRO<<" - "<<FRX_VERSION_BUILD;
-	ss<<":"<<SAMBAG_VERSION_BUILD;
+	ss<<FRX_VERSION_MAJOR<<"."<<FRX_VERSION_MINOR<<"."<<FRX_VERSION_MICRO;
+    #ifdef SAMBAG_64
+        ss<<" - "<<"x86_64";
+    #endif
+	ss<<" - "<<FRX_VERSION_BUILD<<":"<<SAMBAG_VERSION_BUILD;
 	return ss.str() + (isDemo() ? " DEMO VERSION" : "");
 }
 //------------------------------------------------------------------------------------------------------------
