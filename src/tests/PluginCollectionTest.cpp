@@ -17,6 +17,8 @@
 #include <processing/dspTools.h>
 #include "com/PluginCollectionSQL.h"
 #include <iostream>
+#include <boost/assign.hpp>
+#include <boost/foreach.hpp>
 
 #if WIN32
 #define VSTPLUG_EXT ".dll"
@@ -124,7 +126,7 @@ void resetPluginCollection( processing::Graph::Ptr graph )
 	// insert saved directories
 	Settings::PathnameSet::const_iterator it = tmp.begin();
 	for ( ; it!=tmp.end(); ++it ) {
-		settings->addVSTFolder( *it );
+		settings->addPluginFolder( *it );
 	}
 }
 //=============================================================================
@@ -184,7 +186,7 @@ void PluginCollectionTest::testScan() {
 	// setup folders
 	settings->clearVSTFolders();
 	sambag::com::Location path = boost::filesystem::absolute("testVstFolder");
-	settings->addVSTFolder( path.string() );
+	settings->addPluginFolder( path.string() );
 	// start scan
 	PluginCollection::Ptr pC = getPluginCollection();
 	CPPUNIT_ASSERT ( !pC->isAllScanned() );
@@ -232,7 +234,7 @@ void PluginCollectionTest::testFastScan() {
 	settings->clearVSTFolders();
 	settings->fastScan = true;
 	sambag::com::Location path =  boost::filesystem::absolute("testVstFolder");
-	settings->addVSTFolder( path.string() );
+	settings->addPluginFolder( path.string() );
 	// start scan
 	Timer timer;
 	pC->update( graph->getHostInfo() );
@@ -281,14 +283,14 @@ void PluginCollectionTest::testFolderIntegrity1(){
 	pC->EventSender<com::OnLoadFile>::addEventListener( this );
 	pC->EventSender<com::ScanComplete>::addEventListener( this );
 	settings->clearVSTFolders();
-	settings->addVSTFolder( pathA.string() );
+	settings->addPluginFolder( pathA.string() );
 	pC->update( graph->getHostInfo() );
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 1, pC->getNumSucceed() );
 	//>>>>>>>>>>>>>>>>has to throw something like "given folder == sub folder"
 	sambag::com::Location pathB =  boost::filesystem::absolute("testVstFolder/A");
-	settings->addVSTFolder( pathA.string() );
+	settings->addPluginFolder( pathA.string() );
 	CPPUNIT_ASSERT_THROW ( 
-		settings->addVSTFolder( pathB.string() ), 
+		settings->addPluginFolder( pathB.string() ), 
 		com::ppiError::SettingsException 
 	);
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>detected bug during port. test:
@@ -298,7 +300,7 @@ void PluginCollectionTest::testFolderIntegrity1(){
 	// of given folder => given folder also removed ( foreign key )
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	settings->clearVSTFolders();
-	settings->addVSTFolder( pathB.string() );
+	settings->addPluginFolder( pathB.string() );
 	Timer t;
 	pC->update( graph->getHostInfo() );
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION, pC->getNumSucceed() );
@@ -306,7 +308,7 @@ void PluginCollectionTest::testFolderIntegrity1(){
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan testVstFolder/ instead testVstFolder
 	pathA =  boost::filesystem::absolute("testVstFolder/");
 	settings->clearVSTFolders();
-	settings->addVSTFolder( pathA.string() );
+	settings->addPluginFolder( pathA.string() );
 	pC->update( graph->getHostInfo() );
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION * 3 + 1, pC->getNumSucceed() );
 	CPPUNIT_ASSERT_EQUAL ( (size_t)2, pC->getNumFailed() );
@@ -353,7 +355,7 @@ void PluginCollectionTest::testFolderIntegrity2(){
 	string filename1  = string("mda Delay")  + VSTPLUG_EXT;
 	string filename2  = string("mda Detune") + VSTPLUG_EXT;
 	string filename3  = string("mda Dither") + VSTPLUG_EXT;
-	settings->addVSTFolder( pathA.string() );
+	settings->addPluginFolder( pathA.string() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	// bug 07-15-2011 :
 	// rootfolder not visible: 
@@ -446,7 +448,7 @@ void PluginCollectionTest::testPortability() {
 	settings->clearVSTFolders();
 	sambag::com::Location path =  boost::filesystem::absolute("testVstFolder/A");
 	sambag::com::Location plugLocation = path.string() + PLUGIN_LOACTION_1;
-	settings->addVSTFolder( path.string() );
+	settings->addPluginFolder( path.string() );
 	// start scan
 	PluginCollection::Ptr pC = getPluginCollection();
 	Graph::Ptr graph = createGraph( 512, 44100.0f );
@@ -471,7 +473,7 @@ void PluginCollectionTest::testPortability() {
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>re-set folders
 	settings->clearVSTFolders();
 	path =  boost::filesystem::absolute("testVstFolder/B");
-	settings->addVSTFolder( path.string() );
+	settings->addPluginFolder( path.string() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan folder(B). 
 	pC->EventSender<com::OnLoadFile>::addEventListener( this );
 	pC->EventSender<com::ScanComplete>::addEventListener( this );
@@ -482,7 +484,7 @@ void PluginCollectionTest::testPortability() {
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>re-set folders
 	settings->clearVSTFolders();
 	path =  boost::filesystem::absolute("testVstFolder/B/B2");
-	settings->addVSTFolder( path.string() );
+	settings->addPluginFolder( path.string() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan folder(B2). 
 	pC->EventSender<com::OnLoadFile>::addEventListener( this );
 	pC->EventSender<com::ScanComplete>::addEventListener( this );
@@ -519,14 +521,14 @@ void PluginCollectionTest::testMultipleDirectories() {
 	// path comparisation in isAllScanned failed because db saves "/" 
 	// and isAllScanned searchs for "\".
 	// directory_string returns windows path style (when runing in windows)
-	settings->addVSTFolder( pathB2.string() );
+	settings->addPluginFolder( pathB2.string() );
 	CPPUNIT_ASSERT ( !pC->isAllScanned() );
 	// start scan
 	pC->update( graph->getHostInfo() );
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION, pC->getNumSucceed() );
 	CPPUNIT_ASSERT ( pC->isAllScanned() );
 	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add B1
-	settings->addVSTFolder( pathB1.string() );
+	settings->addPluginFolder( pathB1.string() );
 	CPPUNIT_ASSERT ( !pC->isAllScanned() );
 	// start scan
 	Timer timer;
@@ -535,7 +537,7 @@ void PluginCollectionTest::testMultipleDirectories() {
 	CPPUNIT_ASSERT_EQUAL ( NUM_PLUG_COLLECTION, pC->getNumSucceed() );
 	CPPUNIT_ASSERT ( pC->isAllScanned() );
 	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add A
-	settings->addVSTFolder( pathA.string() );
+	settings->addPluginFolder( pathA.string() );
 	CPPUNIT_ASSERT ( !pC->isAllScanned() );
 	// start scan
 	pC->update( graph->getHostInfo() );
@@ -547,5 +549,68 @@ void PluginCollectionTest::testMultipleDirectories() {
 	CPPUNIT_ASSERT ( !pC->isAllScanned() );
 	pC->update( graph->getHostInfo() );
 	CPPUNIT_ASSERT ( pC->isAllScanned() );
+}
+//=============================================================================
+// #416: Plugin folders hierarchy misinterpreted.
+void PluginCollectionTest::testIssue416() {
+//=============================================================================
+	using namespace std;
+	using namespace com;
+	using namespace processing;
+	std::list<std::string> dos = boost::assign::list_of
+        ("VSTPlugins-32")
+        ("VSTPlugins-32-only")
+        ("VSTPlugins-32-only_JBto-64")
+        ("VSTPlugins-32-Waves")
+        ("VSTPlugins-64")
+        ("VSTPlugins-64-JBto-32")
+        ("VSTPlugins-64-Waves")
+        ("VSTPlugins-REMOVED")
+        ("VSTPlugins_Special")
+        //
+        ("workspace/vsts")
+        ("workspace/vsts2")
+        ;
+
+	std::list<std::string> donts = boost::assign::list_of
+        ("VSTPlugins-32/subfolder")
+        //
+        ("workspace/vsts/extra3")
+        ("workspace")
+        ("workspace/")
+        ;
+
+	std::list<std::string> ignores = boost::assign::list_of
+        ("VSTPlugins-32")
+        ("workspace/vsts")
+        ("")
+        ;
+
+
+   
+    BOOST_FOREACH( const std::string &path, dos ) {
+        boost::filesystem::create_directories(path);
+        CPPUNIT_ASSERT(settings->addPluginFolder(path));
+    }
+    
+    
+    BOOST_FOREACH( const std::string &path, donts ) {
+        boost::filesystem::create_directories(path);
+        CPPUNIT_ASSERT_THROW_MESSAGE (
+            path + " should raise an error.",
+            settings->addPluginFolder( path ),
+            com::ppiError::SettingsException 
+        );
+    }
+
+    BOOST_FOREACH( const std::string &path, ignores ) {
+        CPPUNIT_ASSERT ( !settings->addPluginFolder(path) );
+    }
+    
+    // clean up
+    BOOST_FOREACH( const std::string &path, dos ) {
+        boost::filesystem::remove_all(path);
+        settings->removePluginFolder(path);
+    }
 }
 } // namespace tests

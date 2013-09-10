@@ -17,3 +17,22 @@ I did tests, and I'm waiting for final version.
 Hard to believe it can do all this for less than $20. I noticed it can generate "parameter" values from audio signals. Does anyone know if it can generate MIDI output based on these parameters? With only one input and output, it seems without it, only self-modulation is possible. I am definitely going to check this out.
 ----
 Wow, that looks really good, and I noticed another use for it - when it goes 64 bit it will be able to load both 32 and 64 bit plugs - instant bit bridge replacement! Think I might invest in that later tonight.
+
+
+
+
+http://www.kvraudio.com/forum/viewtopic.php?t=391201	     // 09-09-2013
+#############################################################
+
+I am putting this in instruments, but it could have gone into effects and maybe even hosts, too. 
+
+I just bought VSTForx, because it is now available in 64 bit. It is everything that I loved about the chaining abilities in EnergyXT, but it also offers really interesting parameter modulations for every parameter in your plugin. I have created some really interesting fx chains out of plugins that I had been bored with. 
+
+It is not completely intuitive, especially some of the parameter to processor chaining, but there is a very good manual included. The dev, Johannes is very responsive, too. Question were answered in under a couple of hours. 
+
+Plus it was only $20. I have no connection to the dev, but I was just very impressed with the plugin and the dev himself. 
+
+www.VSTForx.de
+----
+If not now, when? 
+http://soundcloud.com/abergman

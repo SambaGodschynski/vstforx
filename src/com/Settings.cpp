@@ -72,6 +72,11 @@ const string Settings::CONFIG_FILE = NAME + ".conf" ;
 const string Settings::SCAN_REPORT_FILENAME = "scanReport.txt";
 static size_t KILO = 1000;
 //------------------------------------------------------------------------------------------------------------
+bool Settings::PathComparator::operator() (const Pathname& lhs, const Pathname& rhs) const {
+    using namespace boost::filesystem;
+    return lhs<rhs;
+}
+//------------------------------------------------------------------------------------------------------------
 Settings::Settings() : 
 windowWidth(MIN_WINDOW_WIDTH), 
 windowHeight(MIN_WINDOW_HEIGHT),
@@ -118,32 +123,42 @@ void Settings::init(const std::string &homeDirectory) {
 	plugCollectionDumpFile = name + "_plugin_db_dump";
 }
 //------------------------------------------------------------------------------------------------------------
-bool Settings::addVSTFolder ( const string &path ) {
-	
+bool Settings::addPluginFolder ( const string &path ) {
+	if (path.empty()) {
+        return false;
+    }
 	// testen ob path == unterverz. von schon vorhandenen pfad
 	PathnameSet::iterator it = pluginDirectories.begin();
 	for ( ; it!=pluginDirectories.end(); ++it ) {
 		if ( isSubDirectory( sambag::com::Location(*it), sambag::com::Location(path) ) ) {
 			throw ppiError::SettingsException ( 
-				"given folder is subfolder of " + *it,
+				path + " is subfolder of " + *it,
 				__FILE__,
 				__LINE__
 			);
 		}
 		if ( isSubDirectory( sambag::com::Location(path), sambag::com::Location(*it) ) ) {
 			throw ppiError::SettingsException ( 
-				"given folder is parent folder of " + *it,
+				path + " is parent folder of " + *it,
 				__FILE__,
 				__LINE__
 			);
 		}
 	}
-
+    // no need to test for equality because we use a set
 	return pluginDirectories.insert(path).second;
 }
 //------------------------------------------------------------------------------------------------------------
-bool Settings::removeVSTFolder ( const string &path ) {
+bool Settings::addVSTFolder ( const string &path ) {
+    return addPluginFolder(path);
+}
+//------------------------------------------------------------------------------------------------------------
+bool Settings::removePluginFolder ( const string &path ) {
 	return pluginDirectories.erase(path) > 0;
+}
+//------------------------------------------------------------------------------------------------------------
+bool Settings::removeVSTFolder ( const string &path ) {
+	return removePluginFolder(path);
 }
 //------------------------------------------------------------------------------------------------------------
 void Settings::loadConfigFile() { // TODO: use boost::Program_options

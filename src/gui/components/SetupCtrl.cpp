@@ -49,10 +49,15 @@ std::string SetupCtrl::selectDirectory(const std::string &startDir,
 //-----------------------------------------------------------------------------
 bool SetupCtrl::addPluginFolder(const std::string &path) {
 	try {
-		return ::com::getSettings().addVSTFolder(path);
+		return ::com::getSettings().addPluginFolder(path);
 	} catch (const ::com::ppiError::PPIError &ex) {
 		::com::osMessageBox ( 
 			"Error", std::string("adding folder failed: ") + ex.error, ::com::MSG_ALERT 
+		);
+		return false;
+	} catch (const std::exception &ex) {
+		::com::osMessageBox ( 
+			"Error", std::string("adding folder failed: ") + ex.what(), ::com::MSG_ALERT
 		);
 		return false;
 	}
@@ -64,7 +69,7 @@ void SetupCtrl::setView(FrxCircuidViewPtr view) {
 }
 //-----------------------------------------------------------------------------
 bool SetupCtrl::removePluginFolder(const std::string &path) {
-	return ::com::getSettings().removeVSTFolder(path);
+	return ::com::getSettings().removePluginFolder(path);
 }
 //-----------------------------------------------------------------------------
 size_t SetupCtrl::getNumPluginFolder() const {

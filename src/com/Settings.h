@@ -39,8 +39,12 @@ friend struct Loki::CreateUsingNew<Settings>;
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef string Pathname;
+    //--------------------------------------------------------------------------------------------------------
+    struct PathComparator {
+        bool operator() (const Pathname& lhs, const Pathname& rhs) const;
+    };
 	//--------------------------------------------------------------------------------------------------------
-	typedef set<Pathname> PathnameSet;
+	typedef set<Pathname, PathComparator> PathnameSet;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	std::string homeDir;
@@ -120,9 +124,19 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	string getPlugInitLogFilename() const;
 	//--------------------------------------------------------------------------------------------------------
-	bool addVSTFolder ( const string &path );
+	/**
+     * @deprecated use addPluginFolder() instead.
+     */
+    bool addVSTFolder ( const string &path );
 	//--------------------------------------------------------------------------------------------------------
-	bool removeVSTFolder ( const string &path );
+	bool addPluginFolder ( const string &path );
+	//--------------------------------------------------------------------------------------------------------
+	/**
+     * @deprecated use removePluginFolder() instead.
+     */
+    bool removeVSTFolder ( const string &path );
+	//--------------------------------------------------------------------------------------------------------
+	bool removePluginFolder ( const string &path );
 	//--------------------------------------------------------------------------------------------------------
 	void clearVSTFolders () {
 		pluginDirectories.clear();

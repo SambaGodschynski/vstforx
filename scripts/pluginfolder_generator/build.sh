@@ -7,7 +7,7 @@ src=testVstFolder
 
 function usage() 
 {
-	echo $1 --plattform #--arch
+	echo $1 --platform #--arch
 }
 
 #passing arguments

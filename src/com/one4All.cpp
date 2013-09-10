@@ -13,11 +13,21 @@
 
 namespace com {
 //============================================================================================================
-bool isSubDirectory ( const sambag::com::Location &parent,  const sambag::com::Location &sub ) {
-	string p = parent.string();
-	string s = sub.string();
-	if ( p==s ) return false;
-	return s.find (p) != string::npos;
+bool isSubDirectory ( const sambag::com::Location &a,  const sambag::com::Location &b )
+    throw(boost::filesystem::filesystem_error)
+{
+    using namespace boost::filesystem;
+    if (equivalent(a, b)) {
+        return false;
+    }
+    boost::filesystem::path path = b;
+    while (!path.empty()) {
+        if (equivalent(path, a)) {
+            return true;
+        }
+        path = path.parent_path();
+    }
+    return false;
 }
 //------------------------------------------------------------------------------------------------------------
 std::pair<std::string, int> extractVSTPluginFilename(const std::string &filename) {
