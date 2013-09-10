@@ -6,7 +6,6 @@ import re
 inDir = "../src/"
 
 add = """
-
 IF(APPLE)
   SET(FRX_SOURCES ${FRX_SOURCES} ${FRX_MMSOURCES} )
 ENDIF(APPLE)
@@ -59,6 +58,8 @@ IF (WIN32)
   add_library(vstforxInstrumentDEMO SHARED ${PlugSources})
   target_link_libraries (vstforxInstrumentDEMO frx_core ${FRX_CLIBS})
   target_compile_definitions(vstforxInstrumentDEMO PUBLIC "FRX_IS_INSTRUMENT" PUBLIC "FRX_IS_DEMO")
+
+
 ELSEIF(APPLE)
   ADD_EXECUTABLE(vstforx MACOSX_BUNDLE ${PlugSources})
   target_link_libraries (vstforx frx_core ${FRX_CLIBS})
@@ -89,6 +90,9 @@ ELSEIF(APPLE)
                                                    PUBLIC "FRX_BNDL_ID=\\"com.sambagodschynski.frx.VSTForxInstrumentDEMO\\"")
 
 ENDIF(WIN32)
+
+add_subdirectory(PluginApps/FrxPlugins)
+
 """
 
 ignoreDirs = (
@@ -97,6 +101,7 @@ ignoreDirs = (
     #".*test.*",
     ".*GuiStandaloneApp",
      ".*PluginApps",
+    ".*frxPluginDK"
 )
 ignoreFiles = (
     ".*win_Window.cpp",
