@@ -25,6 +25,7 @@ class PluginCollectionTest : public CPPUNIT_NS::TestFixture,
 	CPPUNIT_TEST( testFolderIntegrity2 );
 	CPPUNIT_TEST( testPortability );
 	CPPUNIT_TEST( testMultipleDirectories );
+    CPPUNIT_TEST( testIssue416 );
 	CPPUNIT_TEST_SUITE_END();
 private:
 	processing::DummyFX::Ptr dummyFX;
@@ -40,7 +41,8 @@ public:
 	void tearDown(){}
 	void testScan();
 	void testFastScan();
-	void testFolderIntegrity1();
+	void testIssue416();
+    void testFolderIntegrity1();
 	void testFolderIntegrity2();
 	void testMultipleDirectories();
 	void testPortability();

@@ -169,7 +169,8 @@ namespace com {
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::function< void ( const Filename& ) > FileFoundFuncPtr;
 	//========================================================================================================
-	bool isSubDirectory ( const sambag::com::Location &parent, const sambag::com::Location &sub );
+	bool isSubDirectory ( const sambag::com::Location &parent, const sambag::com::Location &sub )
+        throw(boost::filesystem::filesystem_error);
 	//========================================================================================================
 	//	Klasse IHasState:
 	//========================================================================================================
