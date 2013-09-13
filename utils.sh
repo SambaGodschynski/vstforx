@@ -8,7 +8,7 @@ function samba_loop()
 		$1
 		if [ $? -ne 0 ]
 		then
-			echo !abort
+			echo "aborted after $c'th run"
 			break
 		fi
 	done
