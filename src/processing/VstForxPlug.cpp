@@ -362,7 +362,7 @@ int VstForxPlug::setChunk(void *data, int byteSize) {
 //-----------------------------------------------------------------------------
 void VstForxPlug::saveEditor(::com::oArchive &ar) {
 	using frx::gui::components::VstForxEditor;
-	VstForxEditor * editor = dynamic_cast<VstForxEditor*>(
+	VstForxEditor * editor = static_cast<VstForxEditor*>(
 		host->getEditor()
 	);
 	if (!editor) {
@@ -399,7 +399,7 @@ void VstForxPlug::saveEditor(::com::oArchive &ar) {
 //-----------------------------------------------------------------------------
 void VstForxPlug::loadEditor(::com::iArchive &ar) {
 	using frx::gui::components::VstForxEditor;
-	VstForxEditor * editor = dynamic_cast<VstForxEditor*>(
+	VstForxEditor * editor = static_cast<VstForxEditor*>(
 		host->getEditor()
 	);
 	if (!editor) {
@@ -458,7 +458,7 @@ void VstForxPlug::load(std::istream &is) {
 	initHostParameter();
 }
 //-----------------------------------------------------------------------------
-sambag::dsp::IEditor * VstForxPlug::getEditor() {
+void * VstForxPlug::getEditor() {
 	return host->getEditor();
 }
 //-----------------------------------------------------------------------------

@@ -5,15 +5,15 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>vstforxInstrumentDEMO</string>
+	<string>remoteChannel</string>
 	<key>CFBundleIconFile</key>
 	<string></string>
 	<key>CFBundleIdentifier</key>
-	<string>com.sambagodschynski.frx.VSTForxInstrumentDEMO</string>
+	<string>com.sambagodschynski.frx.RemoteChannel</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>VSTForxInstrumentDEMO</string>
+	<string>RemoteChannel</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
