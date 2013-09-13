@@ -6,7 +6,7 @@
 #include <exception>
 #include <com/one4All.h>
 
-enum {RC_UID='frxRC'};
+enum {RC_UID='fxRC'};
 
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
