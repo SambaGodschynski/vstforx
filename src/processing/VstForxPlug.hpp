@@ -20,7 +20,7 @@
 #include <iostream>
 #include <com/Serialization.h>
 #include <sambag/com/Thread.hpp>
-
+#include <com/FrxConfig.h>
 
 namespace frx { namespace processing {
 namespace sce=sambag::com::events;
@@ -102,7 +102,7 @@ public:
 	//-------------------------------------------------------------------------
 	void close();
 	//-------------------------------------------------------------------------
-	sambag::dsp::IEditor * getEditor();
+	void * getEditor();
 	//-------------------------------------------------------------------------
 	bool requestEditorResize(int width, int height);
 	//-------------------------------------------------------------------------
@@ -180,8 +180,7 @@ public:
 	} 
 	//-------------------------------------------------------------------------
 	int getProductVersion() const { 
-		//TODO (maybe via cmake)
-		return 0; 
+		return FRX_VERSION_MAJOR*1000 + FRX_VERSION_MINOR*100 + FRX_VERSION_MICRO;
 	}
 };
 }} // namespace

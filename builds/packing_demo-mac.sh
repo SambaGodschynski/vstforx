@@ -8,8 +8,8 @@ vstr=VSTForxDEMO-$1-mac
 dst=mac/$vstr
 folder=VSTForx/
 mkdir -p $dst/$folder
-cp -r ../src/vstforxDEMO.vst $dst/$folder
-cp -r ../src/vstforxInstrumentDEMO.vst $dst/$folder
+cp -r ../src/PluginApps/vstforxDEMO.vst $dst/$folder
+cp -r ../src/PluginApps/vstforxInstrumentDEMO.vst $dst/$folder
 cp license.txt $dst/$folder
 cp readme_demo-mac.txt $dst/$folder/readme.txt
 cp ../Documents/manual/vstforx.EN/main.pdf $dst/$folder/manual.pdf

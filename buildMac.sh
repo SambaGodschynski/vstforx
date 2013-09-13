@@ -18,7 +18,7 @@ function build() {
   cd ~/workspace/vstforx
   sh build.sh -i ~/clibs -g "Unix Makefiles" -f "-DCMAKE_OSX_ARCHITECTURES=x86_64;i386" $@
   make
-  cd src
+  cd src/PluginApps
   __nameWorkaround vstforx.app vstforx.vst
   __nameWorkaround vstforxInstrument.app vstforxInstrument.vst
   __nameWorkaround vstforxDEMO.app vstforxDEMO.vst

@@ -8,8 +8,8 @@ vstr=VSTForx-$1-win
 dst=win/$vstr
 folder=VSTForx/
 mkdir -p $dst/$folder
-cp ../src/Release/vstforx.dll $dst/$folder
-cp ../src/Release/vstforxInstrument.dll $dst/$folder
+cp ../src/PluginApps/Release/vstforx.dll $dst/$folder
+cp ../src/PluginApps/Release/vstforxInstrument.dll $dst/$folder
 cp license.txt $dst/$folder
 cp readme-win.txt $dst/$folder/readme.txt
 cp ../Documents/manual/vstforx.EN/main.pdf $dst/$folder/manual.pdf

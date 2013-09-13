@@ -890,7 +890,7 @@ void PluginScriptCtrl::setPlugin(frx::processing::VstForxPlug *plug) {
 	this->plug = plug;
 	using namespace sambag::disco::components;
 	editor =
-		dynamic_cast<frx::gui::components::VstForxEditor*>(plug->getEditor());
+		static_cast<frx::gui::components::VstForxEditor*>(plug->getEditor());
 	if (!editor) {
 		SAMBAG_THROW(
 			sambag::com::exceptions::IllegalStateException,
