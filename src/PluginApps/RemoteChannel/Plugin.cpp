@@ -8,6 +8,9 @@
 #include "Plugin.hpp"
 #include <stdlib.h>
 #include <sstream>
+#include <processing/interprocess/RemoteChannelManager.hpp>
+#include <boost/tuple/tuple.hpp>
+#include <sambag/com/Common.hpp>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -31,6 +34,9 @@ Plugin::~Plugin() {
 }
 //-----------------------------------------------------------------------------
 void Plugin::process(float **in, float **out, int numSamples) {
+    if (!stream) {
+        return;
+    }
 }
 //-----------------------------------------------------------------------------
 void Plugin::processEvents(sambag::dsp::IMidiEvents *ev) {
@@ -47,6 +53,23 @@ void Plugin::setSampleRate(float sampleRate)  {
 }
 //-----------------------------------------------------------------------------
 void Plugin::updateConfiguration() {
+    if (blockSize==0) {
+        return;
+    }
+    if (stream) {
+        stream->resize(blockSize, this->getHost()->getNumOutputs());
+    }
+    using namespace interprocess;
+    RemoteChannelManager &rm = RemoteChannelManager::instance();
+    std::string name = rm.getUniqueName();
+    stream = interprocess::Stream::create(name,
+        blockSize,
+        this->getHost()->getNumOutputs()
+    );
+    rm.addChannel(
+        "RemoteChannel " + sambag::com::toString(rm.getNumChannels()),
+        boost::make_tuple(name)
+    );
 }
 //-----------------------------------------------------------------------------
 void Plugin::setParameterValue(int index, float value) {

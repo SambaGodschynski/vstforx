@@ -15,6 +15,10 @@ add_library(frx_core ${FRX_SOURCES} ${VSTSDKSOURCE})
 add_executable(unit_tests ${FRX_TESTSOURCES})
 target_link_libraries (unit_tests frx_core ${FRX_CLIBS})
 
+add_executable(remoteChannelCounterpart tests/RemoteChannelCounterpart.cpp)
+target_link_libraries (remoteChannelCounterpart frx_core ${FRX_CLIBS})
+
+
 add_subdirectory(PluginApps)
 
 """
@@ -29,7 +33,8 @@ ignoreDirs = (
 )
 ignoreFiles = (
     ".*win_Window.cpp",
-    ".*Command.cpp"
+    ".*Command.cpp",
+    ".*RemoteChannelCounterpart"
 )
 
 class Walker():

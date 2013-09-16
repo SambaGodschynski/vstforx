@@ -11,6 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include <sambag/dsp/DspPlugin.hpp>
 #include <com/FrxConfig.h>
+#include <processing/interprocess/Stream.hpp>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -24,6 +25,8 @@ private:
 	int blockSize;
 	//-------------------------------------------------------------------------
 	float sampleRate;
+    //-------------------------------------------------------------------------
+    interprocess::Stream::Ptr stream;
 protected:
 	//-------------------------------------------------------------------------
 	/**
