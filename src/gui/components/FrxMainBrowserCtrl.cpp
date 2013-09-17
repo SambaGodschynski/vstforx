@@ -24,6 +24,9 @@
 #include <gui/components/ShellPluginSelection.hpp>
 #include "FrxCircuidView.hpp"
 #include <gui/TimedUpdater.hpp>
+#include <processing/interprocess/RemoteChannelManager.hpp>
+
+static const int REMOTE_CHANNEL_POLL_TIME_MS = 3 * 1000;
 
 namespace frx { namespace gui { namespace components {
 namespace {
@@ -275,6 +278,53 @@ BrowserNode::ResultPtr FrxMainBrowserCtrl::fillHistoryFolder(TreeNode parent,
 	return BrowserNode::ResultPtr();
 }
 //-----------------------------------------------------------------------------
+BrowserNode::ResultPtr FrxMainBrowserCtrl::fillRemoteFolder() {
+    updateRemoteFolder();
+    
+    if (!remotePoll) {
+        remotePoll = sdc::Timer::create(REMOTE_CHANNEL_POLL_TIME_MS);
+        remotePoll->setNumRepetitions(-1);
+        remotePoll->sdc::EventSender<sdc::TimerEvent>::addTrackedEventListener(
+            boost::bind(&FrxMainBrowserCtrl::onRemotePoll, this, _1, _2),
+            self
+        );
+        remotePoll->start();
+    }
+    
+    return BrowserNode::ResultPtr();
+}
+//-----------------------------------------------------------------------------
+void FrxMainBrowserCtrl::onRemotePoll(void *, const sdc::TimerEvent &ev) {
+    updateRemoteFolder();
+}
+//-----------------------------------------------------------------------------
+void FrxMainBrowserCtrl::updateRemoteFolder() {
+    using namespace frx::processing::interprocess;
+    RemoteChannelManager &rm = RemoteChannelManager::instance();
+    if (rm.getLastChangedTime() == remotesChangedTimestamp ) {
+        // nothing to do
+        return;
+    }
+    remotesChangedTimestamp = (int)rm.getLastChangedTime();
+    //clear previous entries
+    FrxColumnBrowserPtr brws = browser.lock();
+	if (!brws)
+		return;
+	Tree::Ptr tree = brws->getBrowserImpl();
+	tree->removeAllChildren(remotes);
+    // fill folder
+    std::list<RemoteChannelManager::RCId> channels;
+    rm.getChannels(channels);
+    BOOST_FOREACH(const RemoteChannelManager::RCId &x, channels) {
+        TreeNode n = tree->addNode(remotes);
+        BrowserNode data;
+        createRemoteNode(data, x);
+        tree->setNodeData(n, data);
+    }
+    // update browser
+    tree->updateLists();
+}
+//-----------------------------------------------------------------------------
 BrowserNode::ResultPtr FrxMainBrowserCtrl::addPlugin(::processing::PluginInfo pI) 
 {
 	FrxCircuidViewPtr view = wView.lock();
@@ -496,6 +546,14 @@ FrxMainBrowserCtrl::createParameterNode(BrowserNode &out,
 		boost::bind(&FrxMainBrowserCtrl::parameterLabelChanged, this, _1, wObj);
 }
 //-----------------------------------------------------------------------------
+void FrxMainBrowserCtrl::createRemoteNode(BrowserNode &out,
+		const std::string &rcId)
+{
+    using namespace frx::processing::interprocess;
+    RemoteChannelManager &rm = RemoteChannelManager::instance();
+    out.name = rm.getName(rcId);
+}
+//-----------------------------------------------------------------------------
 namespace {
 BrowserNode::ResultPtr _setPreset(
 	FrxColumnBrowser::WPtr brws,
@@ -631,6 +689,14 @@ void FrxMainBrowserCtrl::initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr br
 		tree->addNode(scene_processors, BrowserNode("Add Processor", 
 			BrowserConstants::FRX_BROWSER_ADD_CONTENT_FOLDER));
 	addMainProcessors();
+    
+    // remote channels
+    remotes = tree->addNode(scene);
+    node = BrowserNode("Remote Channels", BrowserConstants::FRX_BROWSER_FOLDER);
+    node.f = boost::bind(
+        &FrxMainBrowserCtrl::fillRemoteFolder, this);
+	tree->setNodeData(remotes, node);
+    
 }
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::

@@ -39,13 +39,13 @@ void TestRemoteChannelManager::testAddGetChannels() {
     using namespace frx::processing::interprocess;
     
     RemoteChannelManager &rm = RemoteChannelManager::instance();
-    rm.addChannel("RemoteChannel1", boost::make_tuple("stream_1"));
-    rm.addChannel("RemoteChannel2", boost::make_tuple("stream_2"));
-    rm.addChannel("RemoteChannel3", boost::make_tuple("stream_3"));
+    rm.__addChannel_("RemoteChannel1", boost::make_tuple("stream_1"));
+    rm.__addChannel_("RemoteChannel2", boost::make_tuple("stream_2"));
+    rm.__addChannel_("RemoteChannel3", boost::make_tuple("stream_3"));
     
     std::vector< RemoteChannelManager::RCId > res;
     rm.getChannels(res);
-    
+    CPPUNIT_ASSERT_EQUAL((size_t)3, res.size());
     std::stringstream ss;
     ss<<res[0]<<res[1]<<res[2];
     CPPUNIT_ASSERT_EQUAL(std::string("RemoteChannel1RemoteChannel2RemoteChannel3"), ss.str());
@@ -65,9 +65,9 @@ void TestRemoteChannelManager::testRemoteChannelManager() {
     RemoteChannelManager &rm = RemoteChannelManager::instance();
     CPPUNIT_ASSERT_EQUAL((size_t)0, rm.getNumChannels());
     
-    std::string name = rm.getUniqueName();
+    std::string name = rm.createUniqueName();
     Stream::Ptr stream = Stream::create(name,512,2);
-    rm.addChannel(
+    rm.__addChannel_(
         "RemoteChannel 1",
         boost::make_tuple(name)
     );

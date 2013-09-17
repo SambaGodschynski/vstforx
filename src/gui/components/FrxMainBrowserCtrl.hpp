@@ -22,6 +22,7 @@
 #include "FrxComponent.hpp"
 #include <processing/pluginTypes/VstShellPlugin.hpp>
 #include <sambag/disco/components/events/ActionEvent.hpp>
+#include <sambag/disco/components/Timer.hpp>
 #include <boost/unordered_map.hpp>
 
 namespace frx { namespace gui { namespace components {
@@ -83,7 +84,8 @@ protected:
 	void initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws);
 	//-------------------------------------------------------------------------
 	Tree::Node add, add_plugins, add_processors, add_knobs, scene, scene_processors,
-		scene_plugins, scene_parameter, scene_connections, his_recent, his_favourite;
+		scene_plugins, scene_parameter, scene_connections, his_recent, his_favourite,
+        remotes;
 	//-------------------------------------------------------------------------
 	void addModelObjectParameter(FrxComponentPtr c,
 		const Tree::Node &parent);
@@ -104,21 +106,45 @@ protected:
     //-------------------------------------------------------------------------
 	void addPluginToHistory(::processing::PluginInfo pI);
 	//-------------------------------------------------------------------------
-	BrowserNode::ResultPtr 
+	/**
+     * Browser entry callback:
+     * add processor to view 
+     */
+    BrowserNode::ResultPtr
 	addProcessor(IFrxComponentFactory::ProcessorCreator f);
 	//-------------------------------------------------------------------------
+	/**
+     * Browser entry callback:
+     * add free knob to view 
+     */
 	BrowserNode::ResultPtr 
 	addFreeKnob(IFrxComponentFactory::FreeParameterCreator f);
 	//-------------------------------------------------------------------------
+    /**
+     * Browser entry callback:
+     * add hostknob to view 
+     */
 	BrowserNode::ResultPtr 
 	addHostKnob(IFrxComponentFactory::HostParameterCreator f, int id);
 	//-------------------------------------------------------------------------
+	/**
+     * Browser entry callback:
+     * add processor related knob to view 
+     */
 	BrowserNode::ResultPtr 
 	addRelatedKnobToView(FrxComponentWPtr _c, frx::processing::IParameter::WPtr _par);
 	//-------------------------------------------------------------------------
+	/**
+     * Browser entry callback:
+     * when clicked on plugin folder: fill folder
+     */
 	BrowserNode::ResultPtr 
 	fillPluginFolder(TreeNode parent, DBFolderID dbFolderId);
 	//-------------------------------------------------------------------------
+	/**
+     * Browser entry callback:
+     * when clicked on plugin history folder: fill folder
+     */
 	enum HistoryType{ Recent, Favourite };
     BrowserNode::ResultPtr
 	fillHistoryFolder(TreeNode parent, HistoryType type);
@@ -127,7 +153,22 @@ protected:
 		const ::processing::ShellPluginInfos &infos);
 	//-------------------------------------------------------------------------
 	void onShellPluginSelected(void*, const sdc::events::ActionEvent &ev);
+	//-------------------------------------------------------------------------
+	/**
+     * Browser entry callback:
+     * when clicked on remote folder: fill folder
+     */
+    sambag::com::ArithmeticWrapper<int, -1> remotesChangedTimestamp;
+	BrowserNode::ResultPtr fillRemoteFolder();
+    //-------------------------------------------------------------------------
+    /**
+     * updates remote folders content
+     */
+    void updateRemoteFolder();
+    void onRemotePoll(void *src, const sdc::TimerEvent &ev);
 private:
+    //-------------------------------------------------------------------------
+    sdc::Timer::Ptr remotePoll;
 	//-------------------------------------------------------------------------
 	typedef long int Id;
 	enum { NoId = INT_MAX };
@@ -177,6 +218,9 @@ public:
 	void createPluginNode(BrowserNode &out,
 		const std::string &name,
 		processing::IProcessor::Ptr obj = processing::IProcessor::Ptr());
+	//-------------------------------------------------------------------------
+	void createRemoteNode(BrowserNode &out,
+		const std::string &rcId);
 	//-------------------------------------------------------------------------
 	void createPresetNode(BrowserNode &out,
 		const std::string &name,

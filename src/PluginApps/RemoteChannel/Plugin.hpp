@@ -11,9 +11,10 @@
 #include <boost/shared_ptr.hpp>
 #include <sambag/dsp/DspPlugin.hpp>
 #include <com/FrxConfig.h>
+#include <processing/interprocess/RemoteChannelManager.hpp>
 #include <processing/interprocess/Stream.hpp>
 
-namespace frx { namespace processing {
+namespace frx { namespace processing { namespace remoteChannel {
 //=============================================================================
 class Plugin : public sambag::dsp::PluginProcessorBase {
 //=============================================================================
@@ -27,6 +28,8 @@ private:
 	float sampleRate;
     //-------------------------------------------------------------------------
     interprocess::Stream::Ptr stream;
+    //-------------------------------------------------------------------------
+    interprocess::RemoteChannelManager::RCId channelId;
 protected:
 	//-------------------------------------------------------------------------
 	/**
@@ -79,6 +82,6 @@ public:
 		return FRX_VERSION_MAJOR*1000 + FRX_VERSION_MINOR*100 + FRX_VERSION_MICRO;
 	}
 };
-}} // namespace
+}}} // namespace
 
 #endif /* SAMBAG_VSTFORXPLUG_H */

@@ -14,6 +14,7 @@
 #include <sambag/com/Interprocess.hpp>
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include <boost/foreach.hpp>
+#include <processing/FrxAsyncDSPTimer.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 typedef sambag::com::interprocess::String::Class IPString;
@@ -32,6 +33,9 @@ public:
     //-------------------------------------------------------------------------
     typedef std::string RCId;
     //-------------------------------------------------------------------------
+    /**
+     * tuple(streamId)
+     */
     typedef boost::tuple<std::string> RCData;
 private:
     //-------------------------------------------------------------------------
@@ -39,12 +43,15 @@ private:
     //-------------------------------------------------------------------------
     typedef SHM_String SHM_RCId;
     //-------------------------------------------------------------------------
-    // name, streamId
     typedef boost::tuple<SHM_String> SHM_RCData;
     //-------------------------------------------------------------------------
     typedef si::Map<SHM_RCId, SHM_RCData> RemoteChannels;
     //-------------------------------------------------------------------------
     time_t *changed;
+    //-------------------------------------------------------------------------
+    time_t *totmann_time;
+    //-------------------------------------------------------------------------
+    size_t *references;
     //-------------------------------------------------------------------------
     typedef boost::interprocess::interprocess_mutex Mutex;
     //-------------------------------------------------------------------------
@@ -53,14 +60,30 @@ private:
     RemoteChannels::Class *channels;
     //-------------------------------------------------------------------------
     si::SharedMemoryHolder shmh;
-    RemoteChannelManager() : changed(NULL), mutex(NULL), channels(NULL) {}
+    //-------------------------------------------------------------------------
+    RemoteChannelManager();
+    //-------------------------------------------------------------------------
+    FrxAsyncDSPTimer::Ptr totmannTimer;
 protected:
     //-------------------------------------------------------------------------
-    void initManager();
+    void doTotmann();
+    //-------------------------------------------------------------------------
+    void initManager(int tries=0);
+    //-------------------------------------------------------------------------
+    void destroyShm();
 public:
+    //-------------------------------------------------------------------------
+    /**
+     * @return the number of running RemoteChannelManager instances.
+     */
+    size_t getNumReferences() const {
+        return *references;
+    }
     //-------------------------------------------------------------------------
     std::string getStreamId(const RCData &data) const;
 	//-------------------------------------------------------------------------
+	virtual ~RemoteChannelManager();
+    //-------------------------------------------------------------------------
 	static RemoteChannelManager & instance();
     //-------------------------------------------------------------------------
     /**
@@ -92,13 +115,20 @@ public:
     //-------------------------------------------------------------------------
     // Sender stuff
     //-------------------------------------------------------------------------
-    void addChannel(const RCId &hnd, const RCData &data);
+    /**
+     * public access for test purpose only.
+     */
+    void __addChannel_(const RCId &hnd, const RCData &data);
+    //-------------------------------------------------------------------------
+    RCId addChannel(const RCData &data);
     //-------------------------------------------------------------------------
     void removeChannel(const RCId &hnd);
     //-------------------------------------------------------------------------
-    std::string getUniqueName() const;
+    std::string createUniqueName() const;
     //-------------------------------------------------------------------------
     void removeAllChannels();
+    //-------------------------------------------------------------------------
+    std::string getName(const RCId &id);
 }; // RemoteChannelManager
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------

@@ -14,7 +14,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 	using namespace sambag::dsp::vst;
 	// settingup plugin
 	typedef VST2xPluginWrapper<
-		frx::processing::Plugin, // Processor
+		frx::processing::remoteChannel::Plugin, // Processor
 		RC_UID, // uid
 		sambag::dsp::StdPluginTraits<
 			2,2,false,::com::Settings::PROGRAM_PARAMETER

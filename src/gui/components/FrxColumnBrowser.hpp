@@ -56,6 +56,8 @@ struct BrowserConstants {
  *                                     because the default list impl. (rubber
  *                                     stamp rendering) dosent support component
  *                                     mouse event processing.
+ *
+ * TODO: name is a bit confusing, BrowserNodeData would be better.
  */
 struct BrowserNode : public BrowserConstants {
 //=============================================================================

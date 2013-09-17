@@ -8,11 +8,10 @@
 #include "Plugin.hpp"
 #include <stdlib.h>
 #include <sstream>
-#include <processing/interprocess/RemoteChannelManager.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <sambag/com/Common.hpp>
 
-namespace frx { namespace processing {
+namespace frx { namespace processing { namespace remoteChannel {
 //=============================================================================
 // class Plugin 
 //=============================================================================
@@ -27,6 +26,9 @@ void Plugin::open() {
 }	
 //-----------------------------------------------------------------------------
 void Plugin::close() {
+    using namespace interprocess;
+    RemoteChannelManager &rm = RemoteChannelManager::instance();
+    rm.removeChannel(channelId);
 }
 //-----------------------------------------------------------------------------
 Plugin::~Plugin() {
@@ -58,18 +60,16 @@ void Plugin::updateConfiguration() {
     }
     if (stream) {
         stream->resize(blockSize, this->getHost()->getNumOutputs());
+        return;
     }
     using namespace interprocess;
     RemoteChannelManager &rm = RemoteChannelManager::instance();
-    std::string name = rm.getUniqueName();
+    std::string name = rm.createUniqueName();
     stream = interprocess::Stream::create(name,
         blockSize,
         this->getHost()->getNumOutputs()
     );
-    rm.addChannel(
-        "RemoteChannel " + sambag::com::toString(rm.getNumChannels()),
-        boost::make_tuple(name)
-    );
+    channelId = rm.addChannel( boost::make_tuple(name) );
 }
 //-----------------------------------------------------------------------------
 void Plugin::setParameterValue(int index, float value) {
@@ -94,4 +94,4 @@ int Plugin::setChunk(void *data, int byteSize) {
 int Plugin::getLatency() const {
     return 0;
 }
-}} // namespace(s)
+}}} // namespace(s)
