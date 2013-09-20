@@ -38,6 +38,7 @@ void register_types_impl( Archive &ar ) {
 	ar.template register_type<FrxADSRNode>();
 	ar.template register_type<FrxPeakTrackerNode>();
 	ar.template register_type<FrxMIDIReceiver>();
+    ar.template register_type<FrxRemoteChReceiver>();
 	ar.template register_type<FrxInputNode>();
 	ar.template register_type<FrxOutputNode>();
 	ar.template register_type<FrxEntryNode>();

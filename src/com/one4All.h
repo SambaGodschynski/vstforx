@@ -129,6 +129,15 @@ namespace com {
 		x = y;
 		y = tmp;
 	}
+    //========================================================================================================
+    /**
+     * maps form number of channels to number of in/output:
+     * 1xstereo = 2 channels -> 1 in/output
+     * 1xstereo+1xmono = 3 channels -> 2 in/output
+     */
+    inline size_t numChannels2Xputs(size_t numChannel) {
+        return numChannel/2 + numChannel%2;
+    }
 	//========================================================================================================
 	// returns true if flag setted in flags.
 	inline bool isFlag ( int flag, int flags ) {

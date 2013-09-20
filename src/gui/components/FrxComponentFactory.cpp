@@ -19,6 +19,7 @@
 #include <boost/foreach.hpp>
 #include <processing/IModelController.hpp>
 #include <com/Settings.h>
+#include <processing/interprocess/RemoteChannelManager.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace {
@@ -202,6 +203,44 @@ FrxParameterPtr createHostParameter(FrxCircuidViewPtr circ, int id) {
 	return viewObj;
 }
 //-----------------------------------------------------------------------------
+FrxProcessorNodePtr createRemoteChannel(FrxCircuidViewPtr circ, std::string &rcId)
+{
+	if (!circ) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"tried to create a remote channel with FrxCircuidViewPtr == NULL");
+	}
+    // create model obj.
+	frx::processing::IModelController::Ptr ctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(ctrl, map) = getControllerAndMap(circ);
+
+	frx::processing::IProcessor::Ptr mObj =
+        ctrl->createRemoteChannelReceiver(rcId);
+	if (!mObj) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"could'nt access remote channel: " + rcId);
+	}
+	// create view obj.
+	FrxProcessorNodePtr viewObj = FrxRemoteChReceiver::create();
+	checkDemoConstraints(viewObj);
+	if (!viewObj) {
+		return FrxProcessorNodePtr();
+	}
+    
+	// flag
+	FrxFlag::Ptr flag = FrxFlag::create();
+	flag->setTarget(viewObj);
+	circ->add(flag, FrxCircuidView::Z_Flags, true);
+    namespace fpi = frx::processing::interprocess;
+    std::string name = fpi::RemoteChannelManager::instance().getName(rcId);
+    viewObj->setName(name);
+    viewObj->setUpperFlagText(name);
+	viewObj->configIO(mObj->getNumInputs(), mObj->getNumOutputs());
+	registerProcessor(map, viewObj, mObj);
+	return viewObj;
+    
+}
+//-----------------------------------------------------------------------------
 template <class ConcreteProcessor>
 FrxComponentFactory::ProcessorCreator getCreator(int numIns, int numOuts) 
 {
@@ -262,6 +301,14 @@ FrxComponentFactory::HostParameterCreator
 FrxComponentFactory::getHostParameterCreator() const 
 {
 	return HostParameterCreator(&createHostParameter);
+}
+//-----------------------------------------------------------------------------
+FrxComponentFactory::ProcessorCreator
+FrxComponentFactory::getRemoteChannelCreator(const std::string &rcId) const
+{
+    return ProcessorCreator(
+        boost::bind(&createRemoteChannel, _1, std::string(rcId))
+    );
 }
 ///////////////////////////////////////////////////////////////////////////////
 IFrxComponentFactory & getComponentFactory(FrxCircuidViewPtr view) {

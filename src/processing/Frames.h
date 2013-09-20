@@ -13,6 +13,7 @@
 #include <assert.h>
 #include <vector>
 #include <boost/shared_ptr.hpp>
+#include <memory>
 
 // TODO: durch ErrorKlassen ersetzen 
 #define SIZE_ERROR "size_error"
@@ -30,7 +31,6 @@ namespace processing {
 // Klasse Frames:
 //============================================================================================================
 class Frames {
-friend class DCStream;
 public:
 	ONLY_FOR_FORX_TEST( 
 		static size_t num_copyintos;
@@ -229,13 +229,19 @@ public:
 //  - ist lesevorgang abgeschlossen wird buffer auf 0 gesetzt und 
 //    startpos+=frameSize
 //============================================================================================================
-class DCStream {
+template <
+    typename T,
+    template <class> class _Allocator=std::allocator
+>
+class GenericDCStream {
 public:
-	//--------------------------------------------------------------------------------------------------------
-	typedef Frames::T T;
+    //--------------------------------------------------------------------------------------------------------
+    typedef _Allocator<T> Allocator;
 	//--------------------------------------------------------------------------------------------------------
 	typedef Frames::Int Int;
 private:
+    //--------------------------------------------------------------------------------------------------------
+    Allocator allocator;
 	//--------------------------------------------------------------------------------------------------------
 	Int norm( Int i ) { return i%getBufferSize(); }
 	//--------------------------------------------------------------------------------------------------------
@@ -247,33 +253,47 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	void zeroBuff() {
 		for ( Int j=0; j<getBufferSize(); ++j ) {
-			for ( Int i=0; i<CHANNELS; ++i ) {
+			for ( Int i=0; i<getNumChannels(); ++i ) {
 				buff[i][j] = 0;
 			}
 		}
 	}
+    //--------------------------------------------------------------------------------------------------------
+    inline bool bufferAllocated() const {
+        return buff != NULL;
+    }
+    //--------------------------------------------------------------------------------------------------------
+    inline void setBufferNull() {
+        buff = NULL;
+    }
 	//--------------------------------------------------------------------------------------------------------
 	void alloc ( Int size ) {
-		if ( size == 0 && buff!=NULL ) {
+		if ( size == 0 && bufferAllocated() ) {
 			releaseBuffer();
 			return;
 		}
-		buff = new T*[CHANNELS];
-		for ( Int i=0; i<CHANNELS; ++i ) buff[i] = new T[size];
-		
+        typedef _Allocator<T*> PtrAllocator;
+        PtrAllocator pAlloc(allocator);
+        buff = pAlloc.allocate(getNumChannels());
+		for ( Int i=0; i<getNumChannels(); ++i ) {
+            buff[i] = allocator.allocate(size);
+        }
 	}
 	//--------------------------------------------------------------------------------------------------------
 	void reAlloc ( Int size ) {
-		if ( !buff ) {
+		if ( !bufferAllocated() ) {
 			alloc ( size );
 			return;
 		}
+        releaseBuffer();
 		if ( size == 0 ) {
-			releaseBuffer();
 			return;
 		}
-		for ( Int i=0; i<CHANNELS; ++i ) {
-			buff[i] = (T*) realloc ( buff[i], sizeof (T)*size );
+        typedef _Allocator<T*> PtrAllocator;
+        PtrAllocator pAlloc(allocator);
+        buff = pAlloc.allocate(getNumChannels());
+		for ( Int i=0; i<getNumChannels(); ++i ) {
+			buff[i] = allocator.allocate(size);
 		}
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -287,9 +307,13 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	void releaseBuffer() { 
 		if ( !buff ) return;
-		for ( Int i=0; i<CHANNELS; ++i ) delete[] buff [i];
-		delete[] buff ;
-		buff = NULL;
+		for ( Int i=0; i<getNumChannels(); ++i ) {
+            allocator.deallocate(buff[i], getBufferSize());
+        }
+        typedef _Allocator<T*> PtrAllocator;
+        PtrAllocator pAlloc(allocator);
+        pAlloc.deallocate(buff, getNumChannels());
+		setBufferNull();
 	}
 public:
 	//--------------------------------------------------------------------------------------------------------
@@ -298,31 +322,45 @@ public:
 	Int getMaxDelay() const { return maxDelay; }
 	//--------------------------------------------------------------------------------------------------------
 	void setSize ( Int frameSize, Int maxDelay ) {
-		if ( getBufferSize() != frameSize + maxDelay ) reAlloc ( frameSize + maxDelay );
-		DCStream::frameSize = frameSize;
-		DCStream::maxDelay = maxDelay;
-		if ( buff ) zeroBuff();
+		if ( getBufferSize() != frameSize + maxDelay ) {
+            reAlloc ( frameSize + maxDelay );
+        }
+		this->frameSize = frameSize;
+		this->maxDelay = maxDelay;
+		if ( bufferAllocated() ) {
+            zeroBuff();
+        }
 	}
 	//--------------------------------------------------------------------------------------------------------
 	void setMaxDelay(Int maxDelay) {
 		setSize(frameSize, maxDelay);
 	}
 	//--------------------------------------------------------------------------------------------------------
-	T ** getBuffer() { return buff; }
+	T ** getBuffer() { return &buff[0]; }
 	//--------------------------------------------------------------------------------------------------------
-	DCStream ( Int frameSize = 0, Int maxDelay = 0 ) : frameSize(frameSize), maxDelay(maxDelay), cursor(0) {
-		buff = NULL;
+	GenericDCStream ( Int frameSize = 0, Int maxDelay = 0, const Allocator &_alloc = Allocator(), bool _zeroBuff = true ) :
+        allocator(_alloc),
+        frameSize(frameSize),
+        maxDelay(maxDelay),
+        cursor(0)
+    {
+		setBufferNull();
 		alloc ( frameSize + maxDelay );
-		if ( buff ) zeroBuff();
+		if ( bufferAllocated() ) {
+            if (_zeroBuff) {
+                zeroBuff();
+            }
+        }
 	}
 	//--------------------------------------------------------------------------------------------------------
-	virtual ~DCStream () {
+	virtual ~GenericDCStream () {
 		releaseBuffer();
 	}
 	//--------------------------------------------------------------------------------------------------------
-	Int getNumChannels() const { return CHANNELS; }
+	inline Int getNumChannels() const { return CHANNELS; }
 	//--------------------------------------------------------------------------------------------------------
-	void addFrame ( Frames *frames, Int numSamples, Int delay ) {
+	template <typename U>
+    void add ( U **frames, Int numSamples, Int delay ) {
 		assert ( delay <= maxDelay );
 		Int s = cursor + delay;
 		Int e = cursor + numSamples + delay;
@@ -330,28 +368,61 @@ public:
 		Int n = 0;
 		for ( Int i=s; i<e; ++i ) {
 			n = norm(i);
-			for ( Int j=0; j<CHANNELS; ++j ) {
-				buff[j][n] += (*frames)[j][c];
+			for ( Int j=0; j<getNumChannels(); ++j ) {
+				buff[j][n] += (T)frames[j][c];
 			}
 			++c;
 		}
 	}
+
 	//--------------------------------------------------------------------------------------------------------
-	void flush( Int numSamples, T **data = NULL ) {
+	void addFrame ( Frames *frames, Int numSamples, Int delay ) {
+		add(frames->getData(), numSamples, delay);
+	}
+	//--------------------------------------------------------------------------------------------------------
+	template <typename U>
+    void flush(Int numSamples, U **data) {
 		Int s = cursor;
 		Int e = cursor + numSamples;
 		Int c = 0;
 		Int n = 0;
 		for ( Int i=s; i<e; ++i ) {
 			n = norm(i);
-			for ( Int j=0; j<CHANNELS; ++j ) {
-				if ( data ) data[j][c] = buff[j][n];
-				buff[j][n] = 0;
+			for ( Int j=0; j<getNumChannels(); ++j ) {
+				if ( data ) {
+                    data[j][c] = (T)buff[j][n];
+                }
+				buff[j][n] = (T)0;
+			}
+			++c;
+		}
+		incrCursor( numSamples );
+	}
+    //--------------------------------------------------------------------------------------------------------
+	void flush(Int numSamples) {
+		flush<T>(numSamples, NULL);
+	}
+	//--------------------------------------------------------------------------------------------------------
+	template <typename U>
+    void read(Int numSamples, U **data) {
+		Int s = cursor;
+		Int e = cursor + numSamples;
+		Int c = 0;
+		Int n = 0;
+		for ( Int i=s; i<e; ++i ) {
+			n = norm(i);
+			for ( Int j=0; j<getNumChannels(); ++j ) {
+				if ( data ) {
+                    data[j][c] = (T)buff[j][n];
+                }
 			}
 			++c;
 		}
 		incrCursor( numSamples );
 	}
 };
+
+typedef GenericDCStream< Frames::T > DCStream;
+
 } // processing
 #endif

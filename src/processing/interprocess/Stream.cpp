@@ -8,7 +8,8 @@
 #include "Stream.hpp"
 #include <sambag/com/exceptions/IllegalArgumentException.hpp>
 #include <sambag/com/Interprocess.hpp>
-
+#include <boost/functional/hash.hpp>
+#include <boost/tuple/tuple.hpp>
 
 namespace {
 void createSharedMemoryObject(SharedMemoryObject &shm, const char * name) {
@@ -19,21 +20,32 @@ void findSharedMemoryObject(SharedMemoryObject &shm, const char * name) {
     using namespace boost::interprocess;
     shm = SharedMemoryObject(open_only, name, read_write);
 }
-void * ipMalloc(SharedMemoryObject &shm, MappedRegion &mp, size_t size)
+boost::tuple<void*, size_t>
+ipMalloc(SharedMemoryObject &shm, MappedRegion &mp, size_t size)
 {
     using namespace boost::interprocess;
     if (size==0) {
         return NULL;
     }
-    shm.truncate(size);
+    shm.truncate(size+sizeof(int));
     mp = MappedRegion(shm, read_write);
-    return mp.get_address();
+    void *res = mp.get_address();
+    
+    int *memorySize = (int*)res;
+    *memorySize = size;
+    res = memorySize+1;
+    return boost::make_tuple(res, size);
 }
-void * ipOpen(SharedMemoryObject &shm, MappedRegion &mp)
+
+boost::tuple<void*, size_t>
+ipOpen(SharedMemoryObject &shm, MappedRegion &mp)
 {
     using namespace boost::interprocess;
     mp = MappedRegion(shm, read_write);
-    return mp.get_address();
+    void *res =  mp.get_address();
+    int *memorySize = (int*)res;
+    res = memorySize+1;
+    return boost::make_tuple(res, *memorySize);
 }
 
 void ipFree(const char *name)
@@ -42,6 +54,33 @@ void ipFree(const char *name)
     shared_memory_object::remove(name);
 }
 
+
+
+std::string toString(size_t blockSize, size_t numChannels, double **a)
+{
+    std::stringstream ss;
+    ss<<"{";
+    for (size_t i=0; i<numChannels; ++i) {
+        ss<<"{";
+        for (size_t j=0; j<blockSize; ++j ) {
+            ss<<a[i][j]<<", ";
+        }
+        ss<<"}, ";
+    }
+    ss<<"}"<<std::endl;
+    return ss.str();
+}
+
+size_t checksum(void *ptr, size_t bytesize) {
+    unsigned char *c = (unsigned char*)ptr;
+    std::stringstream ss;
+    while (bytesize-- > 0) {
+        ss<<*c;
+        ++c;
+    }
+    boost::hash<std::string> stringHash;
+    return stringHash(ss.str());
+}
 
 } // namespace(s)
 
@@ -54,8 +93,7 @@ namespace frx { namespace processing { namespace interprocess {
 Stream::Stream() :
     blockSize_ist(NULL),
     numChannels_ist(NULL),
-    num_references(NULL),
-    buffer(NULL)
+    num_references(NULL)
 {
 }
 //-----------------------------------------------------------------------------
@@ -64,85 +102,80 @@ Stream::~Stream() {
     if (num_references==NULL) {
         return;
     }
-    delete[] buffer;
-    
     if (--(*num_references)==0) {
         ipFree(id.c_str());
     }
 }
 //-----------------------------------------------------------------------------
+size_t Stream::getNeededSize(size_t blockSize, size_t numChannel) const {
+    return  sizeof(int) +
+            sizeof(size_t)*2 +
+            sizeof(Mutex)  +
+            sizeof(double)*blockSize*numChannel +
+            sizeof(float*)*2 +
+            6400;
+}
+//-----------------------------------------------------------------------------
+void Stream::assignMemory(sambag::com::interprocess::PointerIterator &pIt,
+    size_t numChannel, size_t numBlockSize)
+{
+    using namespace ::sambag::com::interprocess;
+    typedef PlacementAlloc<double> Allocator;
+    Allocator alloc(pIt);
+
+    num_references = Allocator::rebind<int>::other(alloc).allocate(1);
+    blockSize_ist = Allocator::rebind<size_t>::other(alloc).allocate(1);
+    numChannels_ist = Allocator::rebind<size_t>::other(alloc).allocate(1);
+    mutex = Allocator::rebind<Mutex>::other(alloc).allocate(1);
+    
+    size_t nc = numChannel?numChannel:*numChannels_ist;
+    size_t bs = numBlockSize?numBlockSize:*blockSize_ist;
+    
+    buffer = Allocator::rebind<double*>::other(alloc).allocate(nc);
+    for (size_t i=0; i<nc; ++i) {
+        buffer[i] = alloc.allocate(bs);
+    }
+}
+//-----------------------------------------------------------------------------
 void Stream::createBuffer(size_t blockSize_soll, size_t numChannels_soll) {
+    if (numChannels_soll > 2) {
+        SAMBAG_THROW(sambag::com::exceptions::IllegalArgumentException,
+        "interprocess::Stream multichannel not supported yet.");
+    }
 
     if (blockSize_soll==0 || numChannels_soll==0) {
         SAMBAG_THROW(sambag::com::exceptions::IllegalArgumentException,
         "creating interprocess::Stream with illegal arguments.");
     }
 
-
     using namespace ::sambag::com::interprocess;
     createSharedMemoryObject(shm, id.c_str());
-    void *raw = ipMalloc( shm, mapped_region,
-        sizeof(int) +
-        sizeof(size_t) +
-        sizeof(size_t) +
-        sizeof(double)*blockSize_soll*numChannels_soll
-    );
-    // get num references
-    num_references = (int*)raw;
+    size_t byteSize = getNeededSize(blockSize_soll, numChannels_soll);
+    void *raw;
+    boost::tie(raw, memorySize) = ipMalloc( shm, mapped_region, byteSize );
+    memory_ptr = raw;
+    pIt.setPointer(raw, memorySize);
+    
+    assignMemory(pIt, numChannels_soll, blockSize_soll);
     ++(*num_references);
-    raw = num_references + 1;
-    
-    blockSize_ist = (size_t*)raw;
     (*blockSize_ist) = blockSize_soll;
-    raw = blockSize_ist + 1;
-    
-    numChannels_ist = (size_t*)raw;
     *numChannels_ist = numChannels_soll;
-    raw = numChannels_ist + 1;
-    
-    
-     // map raw memory to buffer[]
-    double *dPtr = (double*)(raw);
-    buffer = new double*[numChannels_soll];
-    for (size_t i=0; i<numChannels_soll; ++i) {
-        buffer[i] = dPtr;
-        dPtr+=blockSize_soll;
-    }
+    new(mutex) Mutex();
 }
 //-----------------------------------------------------------------------------
 void Stream::openBuffer() {
-
-  
     using namespace ::sambag::com::interprocess;
     findSharedMemoryObject(shm, id.c_str());
-    void *raw = ipOpen( shm, mapped_region );
-    // get num references
-    num_references = (int*)raw;
+    void *raw;
+    boost::tie(raw, memorySize) = ipOpen( shm, mapped_region );
+    memory_ptr = raw;
+    pIt.setPointer(raw, memorySize);
+    assignMemory(pIt);
     ++(*num_references);
-    raw = num_references + 1;
-    
-    blockSize_ist = (size_t*)raw;
-    raw = blockSize_ist + 1;
-    
-    numChannels_ist = (size_t*)raw;
-    raw = numChannels_ist + 1;
-    
-    
-     // map raw memory to buffer[]
-    double *dPtr = (double*)(raw);
-    size_t n = getNumChannels();
-    size_t bs = getBlockSize();
-    
-    if (n==0 || bs==0) {
-        SAMBAG_THROW(sambag::com::exceptions::IllegalArgumentException,
-        "open interprocess::Stream; illegal arguments.");
-    }
-    
-    buffer = new double*[n];
-    for (size_t i=0; i<n; ++i) {
-        buffer[i] = dPtr;
-        dPtr+=bs;
-    }
+}
+//-----------------------------------------------------------------------------
+double ** Stream::getBuffer() const {
+    return buffer;
 }
 //-----------------------------------------------------------------------------
 Stream::Ptr Stream::create(const std::string &id,   
@@ -166,31 +199,32 @@ Stream::Ptr Stream::open(const std::string &id)
     return res;
 }
 //-----------------------------------------------------------------------------
-void Stream::write(double **data) {
-    size_t nC = getNumChannels();
-    size_t bC = getBlockSize();
-    for (size_t i=0; i<nC; ++i) {
-        for (size_t j=0; j<bC; ++j ) {
-            buffer[i][j] = data[i][j];
-        }
-    }
-}
-//-----------------------------------------------------------------------------
-void Stream::read(double **data) {
-    size_t nC = getNumChannels();
-    size_t bC = getBlockSize();
-    for (size_t i=0; i<nC; ++i) {
-        for (size_t j=0; j<bC; ++j ) {
-            data[i][j] = buffer[i][j];
-        }
-    }
-}
-//-----------------------------------------------------------------------------
 void Stream::resize(size_t blockSize, size_t numChannels) {
     #ifdef NDEBUG
     #error "implement me befor release!";
     #endif
 }
+//-----------------------------------------------------------------------------
+size_t Stream::getMemoryChecksum() {
+    return checksum(memory_ptr, memorySize);
+}
+//-------------------------------------------------------------------------
+void Stream::lockToWrite() {
+        //mutex->lock();
+}
+//-------------------------------------------------------------------------
+void Stream::lockToRead() {
+    //mutex->lock_sharable();
+}
+//-------------------------------------------------------------------------
+void Stream::unlockWrite() {
+       // mutex->unlock();
+}
+//-------------------------------------------------------------------------
+void Stream::unlockRead() {
+    // mutex->unlock_sharable();
+}
+
 
 
 

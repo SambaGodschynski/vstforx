@@ -12,6 +12,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <sambag/com/Common.hpp>
+#include <math.h>
 
 namespace {
     const int RC_MAX_MEM_SIZE = 64000;
@@ -32,18 +33,26 @@ RemoteChannelManager::RemoteChannelManager() :
     initManager();
 }
 //-----------------------------------------------------------------------------
+bool RemoteChannelManager::isTotmann() {
+    int diff = ::abs( ::time(NULL) - *totmann_time );
+    if ( *references > 0 &&
+         diff  > (TOTMANN_UPDATE_INTERVAL_SEC+1))
+    {
+        return true;
+    }
+    return false;
+}
+//-----------------------------------------------------------------------------
 void RemoteChannelManager::initManager(int tries) {
     shmh.initMemory("VSTForx.RemoteChannelManager", RC_MAX_MEM_SIZE);
     changed = shmh.get().find_or_construct<time_t>("changedTimestamp")();
     mutex = shmh.get().find_or_construct<Mutex>("mutex")();
     channels = RemoteChannels::findOrCreate("channelData", shmh.get());
-    totmann_time = shmh.get().find_or_construct<time_t>("totmanntime")();
+    totmann_time = shmh.get().find_or_construct<time_t>("totmanntime")(::time(NULL));
     references = shmh.get().find_or_construct<size_t>("references")();
     
     // dead man found, clear up
-    if ( *references > 0 &&
-       (::time(NULL) - *totmann_time)  > TOTMANN_UPDATE_INTERVAL_SEC*3)
-    {
+    if (isTotmann()) {
         if (tries>100) {
             SAMBAG_THROW(
                 sambag::com::exceptions::IllegalStateException,

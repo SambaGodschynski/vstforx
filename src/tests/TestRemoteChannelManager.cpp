@@ -38,6 +38,7 @@ void TestRemoteChannelManager::tearDown() {
 void TestRemoteChannelManager::testAddGetChannels() {
     using namespace frx::processing::interprocess;
     
+    // ** Consider: Managers totmann timer isn't running here **
     RemoteChannelManager &rm = RemoteChannelManager::instance();
     rm.__addChannel_("RemoteChannel1", boost::make_tuple("stream_1"));
     rm.__addChannel_("RemoteChannel2", boost::make_tuple("stream_2"));
@@ -62,6 +63,8 @@ void TestRemoteChannelManager::testAddGetChannels() {
 void TestRemoteChannelManager::testRemoteChannelManager() {
     using namespace frx::processing::interprocess;
     
+    
+    // ** Consider: Managers totmann timer isn't running here **
     RemoteChannelManager &rm = RemoteChannelManager::instance();
     CPPUNIT_ASSERT_EQUAL((size_t)0, rm.getNumChannels());
     

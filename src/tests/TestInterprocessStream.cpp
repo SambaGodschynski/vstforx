@@ -34,7 +34,7 @@ namespace {
     bool compare(size_t blockSize, size_t numChannels, double **a, double **b) {
         for (size_t i=0; i<numChannels; ++i) {
             for (size_t j=0; j<blockSize; ++j ) {
-                //std::cout<<a[i][j]<<", "<<b[i][j]<<std::endl;
+                //std::cout<<a[i][j]<<", "<<b[i][j]<<std::endl<<std::flush;
                 if ( a[i][j] != b[i][j] ) {
                     return false;
                 }
@@ -81,6 +81,35 @@ void TestInterprocessStream::testStreamConstruction() {
     }
 }
 //-----------------------------------------------------------------------------
+void TestInterprocessStream::testChecksum() {
+    using namespace frx::processing::interprocess;
+    static const size_t BLOCK_SIZE = 512,
+                        NUM_CHANNELS = 2;
+    
+    Stream::Ptr stream = Stream::create("ts1", BLOCK_SIZE, NUM_CHANNELS);
+    double **data = createTestBuffer(BLOCK_SIZE, NUM_CHANNELS);
+    fillTestBuffer(BLOCK_SIZE, NUM_CHANNELS, data);
+    stream->write(data);
+    
+    size_t sum1 = stream->getMemoryChecksum();
+    size_t sum2 = stream->getMemoryChecksum();
+
+    CPPUNIT_ASSERT( sum1 == sum2 );
+    
+    stream->getBuffer()[0][0] = 1;
+    
+    sum2 = stream->getMemoryChecksum();
+    CPPUNIT_ASSERT( sum1 != sum2 );
+    
+    stream->read(data);
+    
+    sum1 = stream->getMemoryChecksum();
+    CPPUNIT_ASSERT( sum1 == sum2 );
+    
+    freeTestBuffer(data, NUM_CHANNELS);
+}
+
+//-----------------------------------------------------------------------------
 void TestInterprocessStream::testReadWrite() {
     using namespace frx::processing::interprocess;
     static const size_t BLOCK_SIZE = 512,
@@ -92,7 +121,11 @@ void TestInterprocessStream::testReadWrite() {
    
     double **data = createTestBuffer(BLOCK_SIZE, NUM_CHANNELS);
     fillTestBuffer(BLOCK_SIZE, NUM_CHANNELS, data);
+    double **check = createTestBuffer(BLOCK_SIZE, NUM_CHANNELS);
     stream->write(data);
+    std::cout<<"!"<<toString(10, 2, stream->getBuffer())<<std::endl;
+    stream->read(check);
+    CPPUNIT_ASSERT(compare(BLOCK_SIZE, NUM_CHANNELS, data, check));
     {
         Stream::Ptr stream2 = Stream::open("ts1");
         CPPUNIT_ASSERT_EQUAL(BLOCK_SIZE, stream2->getBlockSize());
@@ -102,17 +135,19 @@ void TestInterprocessStream::testReadWrite() {
         
         CPPUNIT_ASSERT(!compare(BLOCK_SIZE, NUM_CHANNELS, data, res));
         stream2->read(res);
+        stream2->read(res);
         CPPUNIT_ASSERT(compare(BLOCK_SIZE, NUM_CHANNELS, data, res));
         
         freeTestBuffer(res, NUM_CHANNELS);
     }
-
+    // TODO: chrash here: std::cout<<toString(10, 2, stream->getBuffer())<<std::endl;
     {
         Stream::Ptr stream2 = Stream::create("ts1", BLOCK_SIZE, NUM_CHANNELS);
         double **res = createTestBuffer(BLOCK_SIZE, NUM_CHANNELS);
         
         CPPUNIT_ASSERT(!compare(BLOCK_SIZE, NUM_CHANNELS, data, res));
         stream2->read(res);
+        std::cout<<toString(10, 2, res)<<std::endl;
         CPPUNIT_ASSERT(compare(BLOCK_SIZE, NUM_CHANNELS, data, res));
         
         freeTestBuffer(res, NUM_CHANNELS);
@@ -121,7 +156,7 @@ void TestInterprocessStream::testReadWrite() {
     // open empty stream
     CPPUNIT_ASSERT( !Stream::open("NULL-STREAM") );
     
-    
+    freeTestBuffer(check, NUM_CHANNELS);
     freeTestBuffer(data, NUM_CHANNELS);
 }
 } //namespace

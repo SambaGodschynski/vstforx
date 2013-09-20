@@ -550,8 +550,12 @@ void FrxMainBrowserCtrl::createRemoteNode(BrowserNode &out,
 		const std::string &rcId)
 {
     using namespace frx::processing::interprocess;
+    IFrxComponentFactory &fac = getComponentFactory( wView.lock() );
     RemoteChannelManager &rm = RemoteChannelManager::instance();
     out.name = rm.getName(rcId);
+    IFrxComponentFactory::ProcessorCreator f = fac.getRemoteChannelCreator(rcId);
+    out.f = boost::bind(&FrxMainBrowserCtrl::addProcessor, this, f);
+    out.type = BrowserConstants::FRX_BROWSER_PROCESSOR;
 }
 //-----------------------------------------------------------------------------
 namespace {

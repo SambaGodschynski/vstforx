@@ -18,10 +18,13 @@ private:
 	CPPUNIT_TEST_SUITE( TestInterprocessStream );
 	CPPUNIT_TEST( testStreamConstruction );
     CPPUNIT_TEST( testReadWrite );
+    CPPUNIT_TEST( testChecksum );
 	CPPUNIT_TEST_SUITE_END();
 public:
 	void testStreamConstruction();
     void testReadWrite();
+    void testChecksum();
+    
 };
 
 } // namespace

@@ -89,6 +89,8 @@ void FrxLookAndFeel::installComponents() {
 		fgcu::FrxProcessorNodeUI<FrxPeakTrackerNode::ProcessorType> >();
 	registerComponentUI<fgc::FrxMIDIReceiver, 
 		fgcu::FrxProcessorNodeUI<FrxMIDIReceiver::ProcessorType> >();
+	registerComponentUI<fgc::FrxRemoteChReceiver,
+		fgcu::FrxProcessorNodeUI<FrxRemoteChReceiver::ProcessorType> >();
 	// parameter components
 	registerComponentUI<fgc::FrxStdKnob, 
 		FrxParameterUI<FrxStdKnob::ControllerType> >();
@@ -254,6 +256,7 @@ void FrxLookAndFeel::installDefaults() {
 	rManager->registerImage("FrxADSR.image", "images/adsr_trigger.png");
 	rManager->registerImage("FrxPeakTracker.image", "images/peak_tracker.png");
 	rManager->registerImage("FrxMidiReceiver.image", "images/midiReceiver.png");
+    rManager->registerImage("FrxRemoteChReceiver.image", "images/remoteChReceiver.png");
 	
 	//rManager->registerImage("ProcessorInput.image", "w3c.svg");
 	//rManager->registerImage("ProcessorOutput.image", "w3c.svg");

@@ -39,6 +39,13 @@ void Plugin::process(float **in, float **out, int numSamples) {
     if (!stream) {
         return;
     }
+    stream->lockToWrite();
+    stream->write(in);
+    for (int i=0; i<numSamples; ++i) {
+        out[0][i] = in[0][i];
+        out[1][i] = in[1][i];
+    }
+    stream->unlockWrite();
 }
 //-----------------------------------------------------------------------------
 void Plugin::processEvents(sambag::dsp::IMidiEvents *ev) {
