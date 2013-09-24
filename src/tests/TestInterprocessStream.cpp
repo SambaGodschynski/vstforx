@@ -123,7 +123,6 @@ void TestInterprocessStream::testReadWrite() {
     fillTestBuffer(BLOCK_SIZE, NUM_CHANNELS, data);
     double **check = createTestBuffer(BLOCK_SIZE, NUM_CHANNELS);
     stream->write(data);
-    std::cout<<"!"<<toString(10, 2, stream->getBuffer())<<std::endl;
     stream->read(check);
     CPPUNIT_ASSERT(compare(BLOCK_SIZE, NUM_CHANNELS, data, check));
     {
@@ -140,14 +139,14 @@ void TestInterprocessStream::testReadWrite() {
         
         freeTestBuffer(res, NUM_CHANNELS);
     }
-    // TODO: chrash here: std::cout<<toString(10, 2, stream->getBuffer())<<std::endl;
+    // here was formerely a crash, so leave the line
+    toString(10, 2, stream->getBuffer());
     {
         Stream::Ptr stream2 = Stream::create("ts1", BLOCK_SIZE, NUM_CHANNELS);
         double **res = createTestBuffer(BLOCK_SIZE, NUM_CHANNELS);
         
         CPPUNIT_ASSERT(!compare(BLOCK_SIZE, NUM_CHANNELS, data, res));
         stream2->read(res);
-        std::cout<<toString(10, 2, res)<<std::endl;
         CPPUNIT_ASSERT(compare(BLOCK_SIZE, NUM_CHANNELS, data, res));
         
         freeTestBuffer(res, NUM_CHANNELS);

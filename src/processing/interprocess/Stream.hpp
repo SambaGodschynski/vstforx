@@ -5,8 +5,8 @@
  *      Author: Johannes Unger
  */
 
-#ifndef SAMBAG_STREAM_H
-#define SAMBAG_STREAM_H
+#ifndef SAMBAG_INTERPROCESS_STREAM_H
+#define SAMBAG_INTERPROCESS_STREAM_H
 
 #include <boost/shared_ptr.hpp>
 #include <string>
@@ -15,6 +15,8 @@
 #include <boost/interprocess/sync/interprocess_upgradable_mutex.hpp>
 #include <processing/Frames.h>
 #include <sambag/com/Interprocess.hpp>
+#include <processing/AsyncBuffer.hpp>
+#include <sambag/com/ArithmeticWrapper.hpp>
 
 typedef boost::interprocess::shared_memory_object SharedMemoryObject;
 typedef boost::interprocess::mapped_region MappedRegion;
@@ -52,9 +54,15 @@ private:
     //-------------------------------------------------------------------------
     size_t *blockSize_ist, *numChannels_ist;
     //-------------------------------------------------------------------------
+    sambag::com::ArithmeticWrapper<int> numBlocksRead;
+    //-------------------------------------------------------------------------
     int *num_references;
     //-------------------------------------------------------------------------
-    double **buffer;
+    typedef AsyncBuffer<double,
+        2,
+        sambag::com::interprocess::PlacementAlloc
+    > Buffer;
+    Buffer *buffer;
     //-------------------------------------------------------------------------
     void createBuffer(size_t blockSize_soll, size_t numChannels_soll);
     //-------------------------------------------------------------------------
@@ -117,29 +125,17 @@ public:
 template <typename T>
 void Stream::write(T **data) {
     lockToWrite();
-    size_t nc = getNumChannels();
-    size_t bs = getBlockSize();
-    for (size_t i=0; i<nc; ++i) {
-        for (size_t j=0; j<bs; ++j) {
-            buffer[i][j] = (T)data[i][j];
-        }
-    }
+    buffer->writeBlock(data);
     unlockWrite();
 }
 //-----------------------------------------------------------------------------
 template <typename T>
 void Stream::read(T **out) {
     lockToRead();
-    size_t nc = getNumChannels();
-    size_t bs = getBlockSize();
-    for (size_t i=0; i<nc; ++i) {
-        for (size_t j=0; j<bs; ++j) {
-            out[i][j] = (T)buffer[i][j];
-        }
-    }
+    numBlocksRead = buffer->readLastWrittenBlock(out, numBlocksRead);
     unlockRead();
 }
 
 }}} // namespace(s)
 
-#endif /* SAMBAG_STREAM_H */
+#endif /* SAMBAG_INTERPROCESS_STREAM_H */

@@ -93,7 +93,8 @@ namespace frx { namespace processing { namespace interprocess {
 Stream::Stream() :
     blockSize_ist(NULL),
     numChannels_ist(NULL),
-    num_references(NULL)
+    num_references(NULL),
+    buffer(NULL)
 {
 }
 //-----------------------------------------------------------------------------
@@ -111,8 +112,9 @@ size_t Stream::getNeededSize(size_t blockSize, size_t numChannel) const {
     return  sizeof(int) +
             sizeof(size_t)*2 +
             sizeof(Mutex)  +
-            sizeof(double)*blockSize*numChannel +
+            sizeof(double)*blockSize*numChannel*2 +
             sizeof(float*)*2 +
+            sizeof(Buffer) +
             6400;
 }
 //-----------------------------------------------------------------------------
@@ -127,14 +129,8 @@ void Stream::assignMemory(sambag::com::interprocess::PointerIterator &pIt,
     blockSize_ist = Allocator::rebind<size_t>::other(alloc).allocate(1);
     numChannels_ist = Allocator::rebind<size_t>::other(alloc).allocate(1);
     mutex = Allocator::rebind<Mutex>::other(alloc).allocate(1);
+    buffer = Allocator::rebind<Buffer>::other(alloc).allocate(1);
     
-    size_t nc = numChannel?numChannel:*numChannels_ist;
-    size_t bs = numBlockSize?numBlockSize:*blockSize_ist;
-    
-    buffer = Allocator::rebind<double*>::other(alloc).allocate(nc);
-    for (size_t i=0; i<nc; ++i) {
-        buffer[i] = alloc.allocate(bs);
-    }
 }
 //-----------------------------------------------------------------------------
 void Stream::createBuffer(size_t blockSize_soll, size_t numChannels_soll) {
@@ -161,6 +157,12 @@ void Stream::createBuffer(size_t blockSize_soll, size_t numChannels_soll) {
     (*blockSize_ist) = blockSize_soll;
     *numChannels_ist = numChannels_soll;
     new(mutex) Mutex();
+    
+    using namespace ::sambag::com::interprocess;
+    typedef PlacementAlloc<Buffer> Allocator;
+    Allocator alloc(pIt);
+    new(buffer) Buffer(alloc);
+    buffer->allocate(blockSize_soll, numChannels_soll);
 }
 //-----------------------------------------------------------------------------
 void Stream::openBuffer() {
@@ -175,7 +177,7 @@ void Stream::openBuffer() {
 }
 //-----------------------------------------------------------------------------
 double ** Stream::getBuffer() const {
-    return buffer;
+    return buffer->getBuffer();
 }
 //-----------------------------------------------------------------------------
 Stream::Ptr Stream::create(const std::string &id,   
