@@ -44,7 +44,7 @@ bool RemoteChannelManager::isTotmann() {
 }
 //-----------------------------------------------------------------------------
 void RemoteChannelManager::initManager(int tries) {
-    shmh.initMemory("VSTForx.RemoteChannelManager", RC_MAX_MEM_SIZE);
+    shmh.initMemory("VSTForx.RemoteChannelManager5", RC_MAX_MEM_SIZE);
     changed = shmh.get().find_or_construct<time_t>("changedTimestamp")();
     mutex = shmh.get().find_or_construct<Mutex>("mutex")();
     channels = RemoteChannels::findOrCreate("channelData", shmh.get());

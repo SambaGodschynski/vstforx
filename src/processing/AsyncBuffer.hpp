@@ -24,45 +24,46 @@ namespace frx { namespace processing {
   * @class AsyncBuffer.
   * A buffer optimized for async reading and writing.
   *   - assumes that reader and write use the same blocksize
-  *   - reader gets always the last written block
   */
 template <
     typename T,
-    int _NumBlocks = 2, //<< Buffersize min 2.
+    int _NumBlocks  = 2, //<< Buffersize min 2.
+    int _NumChannels = 2, //<< Buffersize min 1.
     template <class> class _Allocator = std::allocator
 >
 class AsyncBuffer {
 //=============================================================================
 BOOST_STATIC_ASSERT(_NumBlocks>=2);
+BOOST_STATIC_ASSERT(_NumChannels>=1);
 public:
     //-------------------------------------------------------------------------
-    enum { NumBlocks = _NumBlocks };
+    enum { NumBlocks = _NumBlocks, NumChannels = _NumChannels };
     //-------------------------------------------------------------------------
     typedef T ValueType;
     //-------------------------------------------------------------------------
     typedef _Allocator<T> Allocator;
     //-------------------------------------------------------------------------
-    typedef size_t Samples;
+    static const size_t InvalidSamplePos = UINT_MAX;
     //-------------------------------------------------------------------------
-    static const Samples InvalidSamplePos = UINT_MAX;
+    static const size_t UndefinedNumBlocks = UINT_MAX;
 protected:
     //-------------------------------------------------------------------------
-    void copy(T *from, T *to, Samples size) const {
+    /*TODO: test void copy(T *from, T *to, Samples size) const {
         memcpy(to, from, sizeof(T)*size);
-    }
+    }*/
     //-------------------------------------------------------------------------
     template <typename U, typename V>
-    void copy(U *from, V *to, Samples size) const {
-        for (Samples i=0; i<size; ++i) {
+    void copy(U *from, V *to, size_t size) const {
+        for (size_t i=0; i<size; ++i) {
             to[i] = (V)from[i];
         }
     }
     //-------------------------------------------------------------------------
     void deallocate();
     //-------------------------------------------------------------------------
-    T **buffer;
+    T *buffer[NumChannels];
     //-------------------------------------------------------------------------
-    size_t blocksWritten, blockSize, numChannels;
+    size_t blocksWritten, blockSize;
     //-------------------------------------------------------------------------
     Allocator allocator;
     //-------------------------------------------------------------------------
@@ -72,18 +73,32 @@ protected:
         if (blocksWritten==0) {
             return -1;
         }
-        int x=blocksWritten%NumBlocks;
+        int x=toBufferBlocks(blocksWritten);
         if (x==0) {
             return NumBlocks-1;
         };
         return x-1;
     }
     //-------------------------------------------------------------------------
-    inline int getCurrentBlockNumber() const {
-        return blocksWritten%NumBlocks;
+    /**
+     * offset to lastwritten block
+     */
+    inline int blockOffset(size_t readBlocks) const {
+        return readBlocks-blocksWritten+1;
     }
     //-------------------------------------------------------------------------
-    inline Samples toSamplePos(int numBlocks) const {
+    /**
+     * concernes the buffer bounds
+     */
+    inline int toBufferBlocks(size_t blocks) const {
+        return blocks%NumBlocks;
+    }
+    //-------------------------------------------------------------------------
+    inline int getCurrentBlockNumber() const {
+        return toBufferBlocks(blocksWritten);
+    }
+    //-------------------------------------------------------------------------
+    inline size_t toSamplePos(int numBlocks) const {
         if (numBlocks<0 || numBlocks>=NumBlocks) {
             return InvalidSamplePos;
         }
@@ -91,11 +106,27 @@ protected:
     }
 public:
     //-------------------------------------------------------------------------
+    /** @return 0 no missing blocks.
+     *          negative values: x blocks to late
+     *          positive values: x blocks to early
+     */
+    inline int missingBlocks(size_t readBlocks) const {
+        int bo=blockOffset(readBlocks);
+        if (bo>=0) {
+            return bo;
+        }
+        bo+=NumBlocks-1;
+        if (bo<0) {
+            return bo;
+        }
+        return 0;
+    }
+    //-------------------------------------------------------------------------
     virtual ~AsyncBuffer();
     //-------------------------------------------------------------------------
     AsyncBuffer(const Allocator &alloc = Allocator());
     //-------------------------------------------------------------------------
-    void allocate(size_t blockSize, size_t numChannels);
+    void allocate(size_t blockSize);
     //-------------------------------------------------------------------------
     template <typename U>
     void writeBlock(U **data);
@@ -103,29 +134,31 @@ public:
     /**
      * @return the number of samples of one block
      */
-    inline Samples getBlockSize() const {
+    inline size_t getBlockSize() const {
         return blockSize;
     }
     //-------------------------------------------------------------------------
     /**
      * @return the number of samples of the whole buffer = blockSize*NumBlocks 
      */
-    inline Samples getSize() const {
+    inline size_t getSize() const {
         return blockSize*NumBlocks;
     }
     //-------------------------------------------------------------------------
     inline size_t getNumChannels() const {
-        return numChannels;
+        return NumChannels;
     }
     //-------------------------------------------------------------------------
     /**
-     * copies last writen block to out.
-     * @param allocated out data
-     * @param number blocks which was already read by reader 
-     * @return blocksRead+1 when reading was successfull otherwise blocksRead.
+     * @param the allocated out container
+     * @param [in/out] the number of the already read blocks, increments value when
+     *        reading was successfull
+     * @return 0 when reading was successfull, otherwise the number of missing blocks. 
+     *         negative values: x blocks to late
+     *         positive values: x blocks to early
      */
     template <typename U>
-    size_t readLastWrittenBlock(U **out, size_t blocksRead) const;
+    int readBlock(U **out, size_t &blocksRead) const;
     //-------------------------------------------------------------------------
     Allocator & getAllocator() {
         return allocator;
@@ -135,58 +168,49 @@ public:
         return allocator;
     }
     //-------------------------------------------------------------------------
-    T ** getBuffer() const {
-        return buffer;
+    T * operator[](size_t channel) const {
+        return buffer[channel];
     }
 }; // AsyncBuffer
 ///////////////////////////////////////////////////////////////////////////////
-template < typename T, int I, template <class> class A >
-AsyncBuffer<T, I, A>::AsyncBuffer(const Allocator &allocator) :
-    buffer(NULL),
+template < typename T, int I, int J, template <class> class A >
+AsyncBuffer<T, I, J, A>::AsyncBuffer(const Allocator &allocator) :
     blocksWritten(0),
     blockSize(0),
-    numChannels(0),
     allocator(allocator)
 {
 }
 //-----------------------------------------------------------------------------
-template < typename T, int I, template <class> class A >
-AsyncBuffer<T, I, A>::~AsyncBuffer()
+template < typename T, int I, int J, template <class> class A >
+AsyncBuffer<T, I, J, A>::~AsyncBuffer()
 {
     deallocate();
 }
 //-----------------------------------------------------------------------------
-template < typename T, int I, template <class> class A >
-void AsyncBuffer<T, I, A>::allocate(size_t blockSize, size_t numChannels)
+template < typename T, int I, int J, template <class> class A >
+void AsyncBuffer<T, I, J, A>::allocate(size_t blockSize)
 {
-    typename Allocator:: template rebind<T*>::other ptrAlloc(allocator);
-    buffer = ptrAlloc.allocate(numChannels);
-    for (size_t i = 0; i<numChannels; ++i) {
+    for (size_t i = 0; i<getNumChannels(); ++i) {
         buffer[i] = allocator.allocate(blockSize*NumBlocks);
         for (size_t j=0; j<blockSize*NumBlocks; ++j) {
             buffer[i][j] = 0;
         }
     }
     this->blockSize = blockSize;
-    this->numChannels = numChannels;
 }
 //-----------------------------------------------------------------------------
-template < typename T, int I, template <class> class A >
-void AsyncBuffer<T, I, A>::deallocate()
+template < typename T, int I, int J, template <class> class A >
+void AsyncBuffer<T, I, J, A>::deallocate()
 {
-    typename Allocator:: template rebind<T*>::other ptrAlloc(allocator);
-    for (size_t i = 0; i<numChannels; ++i) {
+    for (size_t i = 0; i<getNumChannels(); ++i) {
         allocator.deallocate(buffer[i], getSize());
     }
-    ptrAlloc.deallocate(buffer, numChannels);
     this->blockSize = 0;
-    this->numChannels = 0;
-    buffer = NULL;
 }
 //-----------------------------------------------------------------------------
-template < typename T, int I, template <class> class A >
+template < typename T, int I, int J, template <class> class A >
 template < typename U>
-void AsyncBuffer<T, I, A>::writeBlock(U **data)
+void AsyncBuffer<T, I, J, A>::writeBlock(U **data)
 {    
     for (size_t i=0; i<getNumChannels(); ++i) {
         T *ptr = buffer[i];
@@ -196,20 +220,30 @@ void AsyncBuffer<T, I, A>::writeBlock(U **data)
     ++blocksWritten;
 }
 //-----------------------------------------------------------------------------
-template < typename T, int I, template <class> class A >
+template < typename T, int I, int J, template <class> class A >
 template < typename U>
-size_t
-AsyncBuffer<T, I, A>::readLastWrittenBlock(U **out, size_t blocksRead) const
+int
+AsyncBuffer<T, I, J, A>::readBlock(U **out, size_t &blocksRead) const
 {
-    if ((blocksRead+1)>blocksWritten) {
-        return blocksRead;
+    if (blocksRead==UndefinedNumBlocks) {
+        if (blocksWritten>0) {
+            // set blocksread
+            blocksRead=blocksWritten-1;
+        } else {
+            return 1;
+        }
+    }
+    if (missingBlocks(blocksRead)!=0) {
+        // out of sync
+        return missingBlocks(blocksRead);
     }
     for (size_t i=0; i<getNumChannels(); ++i) {
         T *ptr = buffer[i];
-        ptr+=toSamplePos(getLastWrittenBlockNumber());
+        ptr+=toSamplePos(toBufferBlocks(blocksRead));
         copy(ptr, out[i], getBlockSize());
     }
-    return blocksRead+1;
+    ++blocksRead;
+    return 0;
 }
 }} // namespace(s)
 

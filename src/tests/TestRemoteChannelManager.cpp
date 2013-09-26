@@ -93,15 +93,15 @@ void TestRemoteChannelManager::testRemoteChannelManager() {
         in[0][i] = i+1;
         in[1][i] = i+2;
     }
-    stream->write(&in[0]);
-    
-    *opc="sum";
-    CPPUNIT_ASSERT_EQUAL((int) 0, std::system(COUNTERPART_EXEC));
-    CPPUNIT_ASSERT_EQUAL(
-        std::string("131328, 131840, "),
-        std::string(result->c_str())
-    );
-
+    for (size_t i=0; i<10; ++i) {
+        stream->write(&in[0]);
+        *opc="sum";
+        CPPUNIT_ASSERT_EQUAL((int) 0, std::system(COUNTERPART_EXEC));
+        CPPUNIT_ASSERT_EQUAL(
+            std::string("131328, 131840, "),
+            std::string(result->c_str())
+        );
+    }
 }
 
 } //namespace

@@ -268,8 +268,10 @@ private:
     }
 	//--------------------------------------------------------------------------------------------------------
 	void alloc ( Int size ) {
-		if ( size == 0 && bufferAllocated() ) {
-			releaseBuffer();
+		if ( size == 0 ) {
+            if (bufferAllocated()) {
+                releaseBuffer();
+            }
 			return;
 		}
         typedef _Allocator<T*> PtrAllocator;
@@ -401,24 +403,6 @@ public:
     //--------------------------------------------------------------------------------------------------------
 	void flush(Int numSamples) {
 		flush<T>(numSamples, NULL);
-	}
-	//--------------------------------------------------------------------------------------------------------
-	template <typename U>
-    void read(Int numSamples, U **data) {
-		Int s = cursor;
-		Int e = cursor + numSamples;
-		Int c = 0;
-		Int n = 0;
-		for ( Int i=s; i<e; ++i ) {
-			n = norm(i);
-			for ( Int j=0; j<getNumChannels(); ++j ) {
-				if ( data ) {
-                    data[j][c] = (T)buff[j][n];
-                }
-			}
-			++c;
-		}
-		incrCursor( numSamples );
 	}
 };
 

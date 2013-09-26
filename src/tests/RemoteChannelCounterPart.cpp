@@ -49,7 +49,7 @@ std::string sum() {
     memset(dblResult,0,sizeof(double)*nc);
     for (size_t i=0; i<stream->getBlockSize(); ++i) {
         for (size_t j=0; j<nc; ++j) {
-            dblResult[j] += stream->getBuffer()[j][i];
+            dblResult[j] += (*stream)[j][i];
         }
     }
     std::stringstream ss;

@@ -43,7 +43,8 @@ namespace {
         return true;
     }
     
-    std::string toString(size_t blockSize, size_t numChannels, double **a)
+    template <typename T>
+    std::string toString(size_t blockSize, size_t numChannels, const T &a)
     {
         std::stringstream ss;
         ss<<"{";
@@ -96,12 +97,13 @@ void TestInterprocessStream::testChecksum() {
 
     CPPUNIT_ASSERT( sum1 == sum2 );
     
-    stream->getBuffer()[0][0] = 1;
+    (*stream)[0][0] = 1;
     
     sum2 = stream->getMemoryChecksum();
     CPPUNIT_ASSERT( sum1 != sum2 );
     
-    stream->read(data);
+    size_t blocksRead=0;
+    stream->read(data, blocksRead);
     
     sum1 = stream->getMemoryChecksum();
     CPPUNIT_ASSERT( sum1 == sum2 );
@@ -123,7 +125,8 @@ void TestInterprocessStream::testReadWrite() {
     fillTestBuffer(BLOCK_SIZE, NUM_CHANNELS, data);
     double **check = createTestBuffer(BLOCK_SIZE, NUM_CHANNELS);
     stream->write(data);
-    stream->read(check);
+    size_t blocksRead = Stream::UndefinedNumBlocks;
+    CPPUNIT_ASSERT_EQUAL(0, stream->read(check, blocksRead));
     CPPUNIT_ASSERT(compare(BLOCK_SIZE, NUM_CHANNELS, data, check));
     {
         Stream::Ptr stream2 = Stream::open("ts1");
@@ -133,24 +136,53 @@ void TestInterprocessStream::testReadWrite() {
         double **res = createTestBuffer(BLOCK_SIZE, NUM_CHANNELS);
         
         CPPUNIT_ASSERT(!compare(BLOCK_SIZE, NUM_CHANNELS, data, res));
-        stream2->read(res);
-        stream2->read(res);
+        
+        blocksRead=Stream::UndefinedNumBlocks;
+        CPPUNIT_ASSERT_EQUAL(0, stream2->read(res, blocksRead));
+        
+        blocksRead=Stream::UndefinedNumBlocks;
+        CPPUNIT_ASSERT_EQUAL(0, stream2->read(res, blocksRead));
+        
         CPPUNIT_ASSERT(compare(BLOCK_SIZE, NUM_CHANNELS, data, res));
         
         freeTestBuffer(res, NUM_CHANNELS);
     }
-    // here was formerely a crash, so leave the line
-    toString(10, 2, stream->getBuffer());
+    // here was formerly a crash so leave this line although it makes no sense
+    toString(10, 2, *stream);
     {
-        Stream::Ptr stream2 = Stream::create("ts1", BLOCK_SIZE, NUM_CHANNELS);
+        Stream::Ptr stream2 = Stream::open("ts1");
         double **res = createTestBuffer(BLOCK_SIZE, NUM_CHANNELS);
         
         CPPUNIT_ASSERT(!compare(BLOCK_SIZE, NUM_CHANNELS, data, res));
-        stream2->read(res);
+        
+        blocksRead=Stream::UndefinedNumBlocks;
+        CPPUNIT_ASSERT_EQUAL(0, stream2->read(res, blocksRead));
         CPPUNIT_ASSERT(compare(BLOCK_SIZE, NUM_CHANNELS, data, res));
         
         freeTestBuffer(res, NUM_CHANNELS);
     }
+    
+    
+    stream->write(data);
+    blocksRead = 1;
+    // check sync
+    CPPUNIT_ASSERT_EQUAL(0, stream->read(check, blocksRead));
+    CPPUNIT_ASSERT_EQUAL((size_t)2,blocksRead);
+    stream->write(data);
+    CPPUNIT_ASSERT_EQUAL(0, stream->read(check, blocksRead));
+    CPPUNIT_ASSERT_EQUAL((size_t)3,blocksRead);
+    stream->write(data);
+    CPPUNIT_ASSERT_EQUAL(0, stream->read(check, blocksRead));
+    CPPUNIT_ASSERT_EQUAL((size_t)4,blocksRead);
+    stream->write(data);
+    CPPUNIT_ASSERT_EQUAL(0, stream->read(check, blocksRead));
+    CPPUNIT_ASSERT_EQUAL((size_t)5,blocksRead);
+    // try to read more than written
+    CPPUNIT_ASSERT_EQUAL( 1, stream->read(check, blocksRead));
+    // try to read a block from the past
+    blocksRead = 0;
+    CPPUNIT_ASSERT_EQUAL(-4, stream->read(check, blocksRead));
+    
     
     // open empty stream
     CPPUNIT_ASSERT( !Stream::open("NULL-STREAM") );

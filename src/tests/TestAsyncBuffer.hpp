@@ -20,12 +20,14 @@ private:
     CPPUNIT_TEST( testAsyncBufferCyclicWriting );
     CPPUNIT_TEST( testAsyncBufferCyclicWriting2 );
     CPPUNIT_TEST( testReading );
+    CPPUNIT_TEST( testMissingBlocks );
 	CPPUNIT_TEST_SUITE_END();
 public:
     void testAsyncBufferAlloc();
 	void testAsyncBufferCyclicWriting();
     void testAsyncBufferCyclicWriting2();
     void testReading();
+    void testMissingBlocks();
 };
 
 } // namespace

@@ -39,7 +39,7 @@ namespace {
         return true;
     }
     template <typename T>
-    std::string toString(size_t blockSize, size_t numChannels, T **a)
+    std::string toString(size_t blockSize, size_t numChannels, const T &a)
     {
         std::stringstream ss;
         ss<<"{";
@@ -53,11 +53,12 @@ namespace {
         ss<<"}"<<std::endl;
         return ss.str();
     }
-    template<class Buffer>
+    template <class Buffer>
     std::string toString(const Buffer &bff)
     {
-        return toString(bff.getSize(), bff.getNumChannels(), bff.getBuffer());
+        return toString(bff.getSize(), bff.getNumChannels(), bff);
     }
+
     void freeTestBuffer(double **data, size_t numChannels) {
         for (size_t i=0; i<numChannels; ++i) {
             delete[] data[i];
@@ -75,12 +76,12 @@ void TestAsyncBuffer::testAsyncBufferAlloc() {
     using namespace frx::processing;
     {
         AsyncBuffer<double> bff;
-        bff.allocate(512, 2);
+        bff.allocate(512);
         CPPUNIT_ASSERT_EQUAL((size_t)512*2, bff.getSize());
     }
     {
         AsyncBuffer<double,3> bff;
-        bff.allocate(512, 2);
+        bff.allocate(512);
         CPPUNIT_ASSERT_EQUAL((size_t)512*3, bff.getSize());
     }
     {
@@ -92,7 +93,7 @@ void TestAsyncBuffer::testAsyncBufferAlloc() {
 void TestAsyncBuffer::testAsyncBufferCyclicWriting() {
     using namespace frx::processing;
     AsyncBuffer<double> bff;
-    bff.allocate(10, 2);
+    bff.allocate(10);
     
       CPPUNIT_ASSERT_EQUAL(
     std::string("{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, }, {0\
@@ -129,7 +130,7 @@ void TestAsyncBuffer::testAsyncBufferCyclicWriting() {
 void TestAsyncBuffer::testAsyncBufferCyclicWriting2() {
     using namespace frx::processing;
     AsyncBuffer<float, 3> bff; //btw. test conversion float/double
-    bff.allocate(10, 2);
+    bff.allocate(10);
     
       CPPUNIT_ASSERT_EQUAL(
     std::string("{{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,\
@@ -178,18 +179,83 @@ void TestAsyncBuffer::testAsyncBufferCyclicWriting2() {
     freeTestBuffer(data, 2);
 }
 //-----------------------------------------------------------------------------
+void TestAsyncBuffer::testMissingBlocks() {
+    using namespace frx::processing;
+    {
+        typedef AsyncBuffer<double> Buffer;
+        Buffer bff;
+        bff.allocate(10);
+        double **data = createTestBuffer(40, 2);
+        CPPUNIT_ASSERT_EQUAL(1, bff.missingBlocks(0));
+        CPPUNIT_ASSERT_EQUAL(12, bff.missingBlocks(11));
+        bff.writeBlock(data); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<write 1
+        CPPUNIT_ASSERT_EQUAL(0, bff.missingBlocks(0));
+        bff.writeBlock(data); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<write 2
+        CPPUNIT_ASSERT_EQUAL(0, bff.missingBlocks(0));
+        bff.writeBlock(data); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<write 3
+        CPPUNIT_ASSERT_EQUAL(-1, bff.missingBlocks(0));
+        bff.writeBlock(data); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<write 4
+        CPPUNIT_ASSERT_EQUAL(-2, bff.missingBlocks(0));
+        freeTestBuffer(data, 2);
+    }
+    {
+        typedef AsyncBuffer<double,3> Buffer;
+        Buffer bff;
+        bff.allocate(10);
+        double **data = createTestBuffer(40, 2);
+        CPPUNIT_ASSERT_EQUAL(1, bff.missingBlocks(0));
+        CPPUNIT_ASSERT_EQUAL(12, bff.missingBlocks(11));
+        bff.writeBlock(data); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<write 1
+        CPPUNIT_ASSERT_EQUAL(0, bff.missingBlocks(0));
+        bff.writeBlock(data); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<write 2
+        CPPUNIT_ASSERT_EQUAL(0, bff.missingBlocks(0));
+        bff.writeBlock(data); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<write 3
+        CPPUNIT_ASSERT_EQUAL(0, bff.missingBlocks(0));
+        bff.writeBlock(data); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<write 4
+        CPPUNIT_ASSERT_EQUAL(-1, bff.missingBlocks(0));
+        bff.writeBlock(data); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<write 5
+        CPPUNIT_ASSERT_EQUAL(-2, bff.missingBlocks(0));
+
+        freeTestBuffer(data, 2);
+    }
+    {
+        typedef AsyncBuffer<double,4> Buffer;
+        Buffer bff;
+        bff.allocate(10);
+        double **data = createTestBuffer(40, 2);
+        CPPUNIT_ASSERT_EQUAL(1, bff.missingBlocks(0));
+        CPPUNIT_ASSERT_EQUAL(12, bff.missingBlocks(11));
+        bff.writeBlock(data); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<write 1
+        CPPUNIT_ASSERT_EQUAL(0, bff.missingBlocks(0));
+        bff.writeBlock(data); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<write 2
+        CPPUNIT_ASSERT_EQUAL(0, bff.missingBlocks(0));
+        bff.writeBlock(data); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<write 3
+        CPPUNIT_ASSERT_EQUAL(0, bff.missingBlocks(0));
+        bff.writeBlock(data); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<write 4
+        CPPUNIT_ASSERT_EQUAL(0, bff.missingBlocks(0));
+        bff.writeBlock(data); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<write 5
+        CPPUNIT_ASSERT_EQUAL(-1, bff.missingBlocks(0));
+        bff.writeBlock(data); //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<write 6
+        CPPUNIT_ASSERT_EQUAL(-2, bff.missingBlocks(0));
+
+        freeTestBuffer(data, 2);
+    }
+}
+//-----------------------------------------------------------------------------
 void TestAsyncBuffer::testReading() {
     using namespace frx::processing;
-    AsyncBuffer<double> bff;
-    bff.allocate(10, 2);
+    typedef AsyncBuffer<double, 4> Buffer;
+    Buffer bff;
+    bff.allocate(10);
     
-    double **data = createTestBuffer(40, 2);
+    double **data = createTestBuffer(50, 2);
     double **res = createTestBuffer(10, 29);
-    fillTestBuffer(40, 2, data);
+    fillTestBuffer(50, 2, data);
     double *it[] = {data[0], data[1]};
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<1
     bff.writeBlock(&it[0]);
-    size_t blocksRead= bff.readLastWrittenBlock(res, 0);
+    size_t blocksRead=Buffer::UndefinedNumBlocks;
+    CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
     CPPUNIT_ASSERT_EQUAL((size_t)1, blocksRead);
     CPPUNIT_ASSERT_EQUAL(
     std::string("{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, }, {0, 2, 4, 6, 8, 10, 12, 14, 16, \
@@ -199,17 +265,39 @@ void TestAsyncBuffer::testReading() {
     it[0]+=10;
     it[1]+=10;
     bff.writeBlock(&it[0]);
-    blocksRead= bff.readLastWrittenBlock(res, blocksRead);
+    CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
     CPPUNIT_ASSERT_EQUAL((size_t)2, blocksRead);
     CPPUNIT_ASSERT_EQUAL(
     std::string("{{10, 11, 12, 13, 14, 15, 16, 17, 18, 19, }, {20, 22, 24, 26, 28, 3\
 0, 32, 34, 36, 38, }, }\n"),
     toString(10, 2, res));
+    
+    { //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< read again
+        size_t blocksRead = 1;
+        CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
+        CPPUNIT_ASSERT_EQUAL((size_t)2, blocksRead);
+        CPPUNIT_ASSERT_EQUAL(
+        std::string("{{10, 11, 12, 13, 14, 15, 16, 17, 18, 19, }, {20, 22, 24, 26, 28, 3\
+0, 32, 34, 36, 38, }, }\n"),
+        toString(10, 2, res));
+
+    }
+    { //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< read older block again
+        size_t blocksRead = 0;
+        CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
+        CPPUNIT_ASSERT_EQUAL((size_t)1, blocksRead);
+        CPPUNIT_ASSERT_EQUAL(
+        std::string("{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, }, {0, 2, 4, 6, 8, 10, 12, 14, 16, \
+18, }, }\n"),
+        toString(10, 2, res));
+
+    }
+
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<3
     it[0]+=10;
     it[1]+=10;
     bff.writeBlock(&it[0]);
-    blocksRead= bff.readLastWrittenBlock(res, blocksRead);
+    CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
     CPPUNIT_ASSERT_EQUAL((size_t)3, blocksRead);
     CPPUNIT_ASSERT_EQUAL(
     std::string("{{20, 21, 22, 23, 24, 25, 26, 27, 28, 29, }, {40, 42, 44, 46, 48, 5\
@@ -219,18 +307,65 @@ void TestAsyncBuffer::testReading() {
     it[0]+=10;
     it[1]+=10;
     bff.writeBlock(&it[0]);
-    blocksRead= bff.readLastWrittenBlock(res, blocksRead);
+    CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
     CPPUNIT_ASSERT_EQUAL((size_t)4, blocksRead);
     CPPUNIT_ASSERT_EQUAL(
     std::string("{{30, 31, 32, 33, 34, 35, 36, 37, 38, 39, }, {60, 62, 64, 66, 68, 7\
 0, 72, 74, 76, 78, }, }\n"),
     toString(10, 2, res));
-    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<5!
-    size_t before=blocksRead;
-    blocksRead= bff.readLastWrittenBlock(res, blocksRead);
-    CPPUNIT_ASSERT_EQUAL(before, blocksRead);
-    freeTestBuffer(data, 2);
-    freeTestBuffer(res, 2);
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<5
+    it[0]+=10;
+    it[1]+=10;
+    bff.writeBlock(&it[0]);
+    CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
+    CPPUNIT_ASSERT_EQUAL((size_t)5, blocksRead);
+    CPPUNIT_ASSERT_EQUAL(
+    std::string("{{40, 41, 42, 43, 44, 45, 46, 47, 48, 49, }, {80, 82, 84, 86, 88, 9\
+0, 92, 94, 96, 98, }, }\n"),
+    toString(10, 2, res));
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< read older blocks
+    {
+        size_t blocksRead = 1;
+        CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
+        CPPUNIT_ASSERT_EQUAL((size_t)2, blocksRead);
+        CPPUNIT_ASSERT_EQUAL(
+        std::string("{{10, 11, 12, 13, 14, 15, 16, 17, 18, 19, }, {20, 22, 24, 26, 28, 3\
+0, 32, 34, 36, 38, }, }\n"),
+        toString(10, 2, res));
+
+    }
+    { 
+        size_t blocksRead = 2;
+        CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
+        CPPUNIT_ASSERT_EQUAL((size_t)3, blocksRead);
+        CPPUNIT_ASSERT_EQUAL(
+        std::string("{{20, 21, 22, 23, 24, 25, 26, 27, 28, 29, }, {40, 42, 44, 46, 48, 5\
+0, 52, 54, 56, 58, }, }\n"),
+        toString(10, 2, res));
+
+    }
+    { 
+        size_t blocksRead = 3;
+        CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
+        CPPUNIT_ASSERT_EQUAL((size_t)4, blocksRead);
+        CPPUNIT_ASSERT_EQUAL(
+        std::string("{{30, 31, 32, 33, 34, 35, 36, 37, 38, 39, }, {60, 62, 64, 66, 68, 7\
+0, 72, 74, 76, 78, }, }\n"),
+        toString(10, 2, res));
+
+    }
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< try to access, and fail
+    {
+        size_t blocksRead = 0;
+        CPPUNIT_ASSERT_EQUAL(-1, bff.readBlock(res, blocksRead));
+        CPPUNIT_ASSERT_EQUAL((size_t)0, blocksRead);
+    }
+    {
+        size_t blocksRead = 5;
+        CPPUNIT_ASSERT_EQUAL(1, bff.readBlock(res, blocksRead));
+        CPPUNIT_ASSERT_EQUAL((size_t)5, blocksRead);
+    }
+
 }
 
 
