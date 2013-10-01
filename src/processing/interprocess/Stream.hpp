@@ -18,11 +18,49 @@
 #include <boost/interprocess/offset_ptr.hpp>
 #include <processing/Frames.h>
 #include <sambag/com/Interprocess.hpp>
+#include <processing/AsyncBuffer.hpp>
+#include <boost/static_assert.hpp>
 
 typedef boost::interprocess::shared_memory_object SharedMemoryObject;
 typedef boost::interprocess::mapped_region MappedRegion;
 
 namespace frx { namespace processing { namespace interprocess {
+using sambag::com::interprocess::Integer;
+using sambag::com::interprocess::UInteger;
+//=============================================================================
+/**
+ * @class IPMemoryPolicy
+ */
+ template <typename T, int BlockSize, int NumChannels>
+ struct IPMemoryPolicy :
+    public DefaultMemoryPolicy<T, BlockSize, NumChannels>
+//=============================================================================
+{
+    typedef DefaultMemoryPolicy<T, BlockSize, NumChannels> Super;
+    typedef boost::interprocess::offset_ptr<T> ValuePtr;
+    typedef ::sambag::com::interprocess::PlacementAlloc<T> Allocator;
+    Allocator *allocator;
+    ValuePtr buffer[NumChannels];
+    void allocate(UInteger blockSize)
+    {
+        Super::allocateImpl(*allocator, buffer, blockSize);
+        Super::blockSize = blockSize;
+    }
+    void deallocate()
+    {
+        // no need for deallocating
+    }
+    inline T * operator[](UInteger channel) const
+    {
+        return buffer[channel].get();
+    }
+    void setAllocator(Allocator *alloc) {
+        this->allocator=alloc;
+    }
+    void setZero() {
+        Super::setZeroImpl(buffer);
+    }
+};
 //=============================================================================
 /** 
   * @class Stream.
@@ -36,20 +74,21 @@ public:
     //-------------------------------------------------------------------------
     typedef float ValueType;
     //-------------------------------------------------------------------------
-    static const size_t UndefinedNumBlocks = UINT_MAX;
+    static const UInteger UndefinedNumBlocks =
+        boost::integer_traits<UInteger>::const_max;
 protected:
     //-------------------------------------------------------------------------
     Stream();
     //-------------------------------------------------------------------------
-    size_t getNeededSize(size_t blockSize, size_t numChannel) const;
+    UInteger getNeededSize(UInteger blockSize, UInteger numChannel) const;
     //-------------------------------------------------------------------------
     void assignMemory(sambag::com::interprocess::PointerIterator &pIt,
-                      size_t numChannel=0, size_t numBlockSize=0);
+                      UInteger numChannel=0, UInteger numBlockSize=0);
 private:
     //-------------------------------------------------------------------------
     void *memory_ptr;
     //-------------------------------------------------------------------------
-    size_t memorySize;
+    UInteger memorySize;
     //-------------------------------------------------------------------------
     sambag::com::interprocess::PointerIterator pIt;
     //-------------------------------------------------------------------------
@@ -57,15 +96,16 @@ private:
     //-------------------------------------------------------------------------
     Mutex *mutex;
     //-------------------------------------------------------------------------
-    size_t *blockSize_ist, *numChannels_ist, *blocksWritten;
+    UInteger *blockSize_ist, *numChannels_ist;
     //-------------------------------------------------------------------------
-    int *num_references;
+    Integer *num_references;
     //-------------------------------------------------------------------------
-    typedef boost::interprocess::offset_ptr<ValueType> ValuePtr;
+    typedef AsyncBuffer<float, 12, 2, IPMemoryPolicy> Buffer;
+    Buffer *buffer;
+    // ensure that size of value type dosen't changes with compiler/arch
+    BOOST_STATIC_ASSERT( sizeof(Buffer::ValueType) == 4 );
     //-------------------------------------------------------------------------
-    ValuePtr *buffer;
-    //-------------------------------------------------------------------------
-    void createBuffer(size_t blockSize_soll, size_t numChannels_soll);
+    void createBuffer(UInteger blockSize_soll, UInteger numChannels_soll);
     //-------------------------------------------------------------------------
     void openBuffer();
     //-------------------------------------------------------------------------
@@ -79,39 +119,32 @@ public:
      * @return checksum of the whole shared memory.
      * @note stream has to be opened or created befores
      */
-    size_t getMemoryChecksum();
+    UInteger getMemoryChecksum();
     //-------------------------------------------------------------------------
     virtual ~Stream();
     //-------------------------------------------------------------------------
-    static Ptr create(const std::string &id, size_t blockSize, size_t numChannels);
+    static Ptr create(const std::string &id, UInteger blockSize, UInteger numChannels);
     //-------------------------------------------------------------------------
     static Ptr open(const std::string &id);
     //-------------------------------------------------------------------------
     template <typename T>
     void write(T **data);
     //-------------------------------------------------------------------------
-    /**
-     * @param the allocated out container
-     * @param the number of the already read blocks, increments value when
-     *        reading was successfull
-     * @return 0 when reading was successfull, otherwise the number of 
-     *         missing blocks. (blocksWritten-blocksRead)+1
-     */
     template <typename T>
-    int read(T **out, size_t &inoutReadBlocks);
+    int read(T **out, UInteger &inoutReadBlocks);
     //-------------------------------------------------------------------------
-    void resize(size_t blockSize, size_t numChannels);
+    void resize(UInteger blockSize, UInteger numChannels);
     //-------------------------------------------------------------------------
-    ValueType * operator[](size_t channel) const;
+    ValueType * operator[](UInteger channel) const;
     //-------------------------------------------------------------------------
-    size_t getBlockSize() const {
+    UInteger getBlockSize() const {
         if (!blockSize_ist) {
             return 0;
         }
         return *blockSize_ist;
     }
     //-------------------------------------------------------------------------
-    size_t getNumChannels() const {
+    UInteger getNumChannels() const {
         if (!numChannels_ist) {
             return 0;
         }
@@ -127,46 +160,14 @@ template <typename T>
 void Stream::write(T **data) {
     using namespace boost::interprocess;
     scoped_lock<Mutex> lock(*mutex);
-    size_t nc = getNumChannels();
-    size_t bs = getBlockSize();
-    for (size_t i=0; i<nc; ++i) {
-        for (size_t j=0; j<bs; ++j) {
-            buffer[i][j] = (T)data[i][j];
-        }
-    }
-    ++(*blocksWritten);
+    buffer->writeBlock(data);
 }
 //-----------------------------------------------------------------------------
-namespace {
-    inline int missingBlocks(size_t wr, size_t rd) {
-        return rd-wr+1;
-    }
-}
 template <typename T>
-int Stream::read(T **out, size_t &blocksRead) {
+int Stream::read(T **out, UInteger &blocksRead) {
     using namespace boost::interprocess;
-    if (blocksRead==UndefinedNumBlocks) {
-        if ((*blocksWritten)>0) {
-            // set blocksread
-            blocksRead=(*blocksWritten)-1;
-        } else {
-            return 1;
-        }
-    }
-    if (missingBlocks(*blocksWritten, blocksRead)!=0) {
-        // out of sync
-        return missingBlocks(*blocksWritten, blocksRead);
-    }
     sharable_lock<Mutex> lock(*mutex);
-    size_t nc = getNumChannels();
-    size_t bs = getBlockSize();
-    for (size_t i=0; i<nc; ++i) {
-        for (size_t j=0; j<bs; ++j) {
-            out[i][j] = (T)buffer[i][j];
-        }
-    }
-    ++blocksRead;
-    return 0;
+    return buffer->readBlock(out, blocksRead);
 }
 
 }}} // namespace(s)

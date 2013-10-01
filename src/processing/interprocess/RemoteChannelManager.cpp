@@ -17,6 +17,7 @@
 namespace {
     const int RC_MAX_MEM_SIZE = 64000;
     const int TOTMANN_UPDATE_INTERVAL_SEC = 3;
+    const char * SHM_MANAGER_NAME = "VSTForx.RemoteChannelManager6";
 } //namespace(s)
 
 namespace frx { namespace processing { namespace interprocess {
@@ -28,12 +29,19 @@ typedef Loki::SingletonHolder<RemoteChannelManager> RemoteChannelManagerHolder;
 RemoteChannelManager::RemoteChannelManager() :
     changed(NULL),
     mutex(NULL),
-    channels(NULL)
+    channels(NULL),
+    shmh(NULL)
 {
     initManager();
 }
 //-----------------------------------------------------------------------------
 bool RemoteChannelManager::isTotmann() {
+    // XXX
+    return false;
+    
+    
+    
+    
     int diff = ::abs( ::time(NULL) - *totmann_time );
     if ( *references > 0 &&
          diff  > (TOTMANN_UPDATE_INTERVAL_SEC+1))
@@ -44,12 +52,12 @@ bool RemoteChannelManager::isTotmann() {
 }
 //-----------------------------------------------------------------------------
 void RemoteChannelManager::initManager(int tries) {
-    shmh.initMemory("VSTForx.RemoteChannelManager5", RC_MAX_MEM_SIZE);
-    changed = shmh.get().find_or_construct<time_t>("changedTimestamp")();
-    mutex = shmh.get().find_or_construct<Mutex>("mutex")();
-    channels = RemoteChannels::findOrCreate("channelData", shmh.get());
-    totmann_time = shmh.get().find_or_construct<time_t>("totmanntime")(::time(NULL));
-    references = shmh.get().find_or_construct<size_t>("references")();
+    shmh = new sambag::com::interprocess::SharedMemoryHolder(SHM_MANAGER_NAME, RC_MAX_MEM_SIZE);
+    changed = shmh->get().find_or_construct<UInteger>("changedTimestamp")();
+    mutex = shmh->get().find_or_construct<Mutex>("mutex")();
+    channels = RemoteChannels::findOrCreate("channelData", shmh->get());
+    totmann_time = shmh->get().find_or_construct<UInteger>("totmanntime")(::time(NULL));
+    references = shmh->get().find_or_construct<UInteger>("references")();
     
     // dead man found, clear up
     if (isTotmann()) {
@@ -60,11 +68,11 @@ void RemoteChannelManager::initManager(int tries) {
             );
         }
         SAMBAG_LOG_INFO<<"cleanup remote memory";
-        destroyShm();
-        shmh.initMemory("VSTForx.RemoteChannelManager", RC_MAX_MEM_SIZE);
-        totmann_time = shmh.get().find_or_construct<time_t>("totmanntime")();
-        *totmann_time = ::time(NULL);
-        initManager(tries+1);
+        //XXX destroyShm();
+        //shmh->initMemory(SHM_MANAGER_NAME, RC_MAX_MEM_SIZE);
+        //totmann_time = shmh->get().find_or_construct<UInteger>("totmanntime")();
+        //*totmann_time = ::time(NULL);
+        //initManager(tries+1);
         return;
     }
     bi::scoped_lock<Mutex> lock(*mutex);
@@ -72,10 +80,12 @@ void RemoteChannelManager::initManager(int tries) {
     
     //init totmann timer
     if (!totmannTimer) {
+        trackingDummy = TrackingDummyPtr(new Dummy);
         totmannTimer = FrxAsyncDSPTimer::create(TOTMANN_UPDATE_INTERVAL_SEC*1000);
         totmannTimer->setNumRepetitions(-1);
-        totmannTimer->addEventListener(
-            boost::bind(&RemoteChannelManager::doTotmann, this)
+        totmannTimer->addTrackedEventListener(
+            boost::bind(&RemoteChannelManager::doTotmann, this),
+            trackingDummy
         );
         totmannTimer->start();
     }
@@ -89,17 +99,19 @@ void RemoteChannelManager::doTotmann() {
 void RemoteChannelManager::destroyShm() {
     using namespace boost::interprocess;
     // DO WE NEED THIS, BECAUSE AT THE END WE REMOVE THE WHOLE MEMORY?
-    // shmh.get().destroy_ptr(changed);
-    // shmh.get().destroy_ptr(mutex);
-    // shmh.get().destroy_ptr(channels);
-    // shmh.get().destroy_ptr(references);
-    shared_memory_object::remove("VSTForx.RemoteChannelManager");
+    //shmh.get().destroy_ptr(changed);
+    //shmh.get().destroy_ptr(mutex);
+    //shmh.get().destroy_ptr(channels);
+    //shmh.get().destroy_ptr(references);
 }
 //-----------------------------------------------------------------------------
 RemoteChannelManager::~RemoteChannelManager() {
-   if (--(*references)<=0) {
+ /*  if (--(*references)<=0) {
         destroyShm();
-   }
+   }*/
+    if (shmh) {
+        delete shmh;
+    }
 }
 //-----------------------------------------------------------------------------
 RemoteChannelManager & RemoteChannelManager::instance() {
@@ -107,7 +119,7 @@ RemoteChannelManager & RemoteChannelManager::instance() {
     return res;
 }
 //-----------------------------------------------------------------------------
-size_t RemoteChannelManager::getNumChannels() const {
+UInteger RemoteChannelManager::getNumChannels() const {
     return channels->size();
 }
 //-----------------------------------------------------------------------------
@@ -125,7 +137,7 @@ void RemoteChannelManager::__addChannel_(const RCId &id, const RCData &data)
 {
 
     bi::scoped_lock<Mutex> lock(*mutex);
-    si::String::TheAllocator str_alloc( shmh.get().get_segment_manager() );
+    si::String::TheAllocator str_alloc( shmh->get().get_segment_manager() );
     channels->insert( std::make_pair(
         SHM_RCId(id.c_str(), str_alloc),
         boost::make_tuple(
@@ -146,7 +158,7 @@ void RemoteChannelManager::removeChannel(const RCId &id) {
 
     bi::scoped_lock<Mutex> lock(*mutex);
 
-    si::String::TheAllocator str_alloc( shmh.get().get_segment_manager() );
+    si::String::TheAllocator str_alloc( shmh->get().get_segment_manager() );
     channels->erase(SHM_String(id.c_str(), str_alloc));
     *changed = ::time(NULL);
     
@@ -166,7 +178,7 @@ std::string RemoteChannelManager::getName(const RCId &id) {
 RemoteChannelManager::RCData
 RemoteChannelManager::getChannelData(const RCId &id) const {
     bi::scoped_lock<Mutex> lock(*mutex);
-    si::String::TheAllocator str_alloc( shmh.get().get_segment_manager() );
+    si::String::TheAllocator str_alloc( shmh->get().get_segment_manager() );
     RemoteChannels::Class::const_iterator it = channels->find(SHM_String(id.c_str(), str_alloc));
     if (it==channels->end()) {
         return RCData();

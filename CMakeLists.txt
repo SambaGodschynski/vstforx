@@ -15,7 +15,7 @@ add_definitions(-DBOOST_UBLAS_TYPE_CHECK=0)
 add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
 add_definitions(-D_SCL_SECURE_NO_WARNINGS) #disable warning C4996: 'std::uninitialized_copy' caused by boost::ublas
 add_definitions(-D_CRT_SECURE_NO_WARNINGS) #disable strcpy warning in audioeffect.h
-#add_definitions(-DSAMBAG_USE_LOG) #BOOST_LOG FAILS WHEN CALLING FROM VST(.dll) SEE #332
+add_definitions(-DSAMBAG_USE_LOG) #BOOST_LOG FAILS WHEN CALLING FROM VST(.dll) SEE #332
 #add_definitions(-DSAMBA_WARN_MISSING_IMPL) #show xy not impl. warning
 
 #to avoid name conflicts with existing FindSomeLib.cmake scripts

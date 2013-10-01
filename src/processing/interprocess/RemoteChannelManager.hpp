@@ -20,6 +20,8 @@ namespace frx { namespace processing { namespace interprocess {
 typedef sambag::com::interprocess::String::Class IPString;
 namespace bi = boost::interprocess;
 namespace si = sambag::com::interprocess;
+using ::sambag::com::interprocess::Integer;
+using ::sambag::com::interprocess::UInteger;
 //=============================================================================
 /** 
   * @class RemoteChannelManager<Singleton>.
@@ -47,11 +49,11 @@ private:
     //-------------------------------------------------------------------------
     typedef si::Map<SHM_RCId, SHM_RCData> RemoteChannels;
     //-------------------------------------------------------------------------
-    time_t *changed;
+    UInteger *changed;
     //-------------------------------------------------------------------------
-    time_t *totmann_time;
+    UInteger *totmann_time;
     //-------------------------------------------------------------------------
-    size_t *references;
+    UInteger *references;
     //-------------------------------------------------------------------------
     typedef boost::interprocess::interprocess_mutex Mutex;
     //-------------------------------------------------------------------------
@@ -59,11 +61,15 @@ private:
     //-------------------------------------------------------------------------
     RemoteChannels::Class *channels;
     //-------------------------------------------------------------------------
-    si::SharedMemoryHolder shmh;
+    si::SharedMemoryHolder *shmh;
     //-------------------------------------------------------------------------
-    RemoteChannelManager();
+    //RemoteChannelManager();
     //-------------------------------------------------------------------------
     FrxAsyncDSPTimer::Ptr totmannTimer;
+    //-------------------------------------------------------------------------
+    struct Dummy {};
+    typedef boost::shared_ptr<Dummy> TrackingDummyPtr;
+    TrackingDummyPtr trackingDummy;
 protected:
     //-------------------------------------------------------------------------
     void doTotmann();
@@ -74,11 +80,12 @@ protected:
     //-------------------------------------------------------------------------
     void destroyShm();
 public:
+    RemoteChannelManager();
     //-------------------------------------------------------------------------
     /**
      * @return the number of running RemoteChannelManager instances.
      */
-    size_t getNumReferences() const {
+    UInteger getNumReferences() const {
         return *references;
     }
     //-------------------------------------------------------------------------
@@ -97,7 +104,7 @@ public:
      *
      * @return the recent timepoint when RemoteChannel was added or removed.
      */
-    time_t getLastChangedTime() const {
+    UInteger getLastChangedTime() const {
         if (!changed) {
             return 0;
         }
@@ -106,7 +113,7 @@ public:
     //-------------------------------------------------------------------------
     // Receiver stuff
     //-------------------------------------------------------------------------
-    size_t getNumChannels() const;
+    UInteger getNumChannels() const;
     //-------------------------------------------------------------------------
     template <class Container>
     void getChannels(Container &out) const;

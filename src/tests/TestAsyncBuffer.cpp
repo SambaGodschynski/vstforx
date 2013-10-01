@@ -8,28 +8,32 @@
 #include "TestAsyncBuffer.hpp"
 #include <cppunit/config/SourcePrefix.h>
 #include <processing/AsyncBuffer.hpp>
+#include <sambag/com/Interprocess.hpp>
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::TestAsyncBuffer );
 
+using sambag::com::interprocess::Integer;
+using sambag::com::interprocess::UInteger;
+
 namespace {
-    double ** createTestBuffer(size_t blockSize, size_t numChannels) {
+    double ** createTestBuffer(UInteger blockSize, UInteger numChannels) {
         double **data = new double*[numChannels];
-        for (size_t i=0; i<numChannels; ++i) {
+        for (UInteger i=0; i<numChannels; ++i) {
             data[i] = new double[blockSize];
         }
         return data;
     }
-    void fillTestBuffer(size_t blockSize, size_t numChannels, double **data) {
-        for (size_t i=0; i<numChannels; ++i) {
-            for (size_t j=0; j<blockSize; ++j ) {
+    void fillTestBuffer(UInteger blockSize, UInteger numChannels, double **data) {
+        for (UInteger i=0; i<numChannels; ++i) {
+            for (UInteger j=0; j<blockSize; ++j ) {
                 data[i][j] = (double)(i+1)*j;
             }
         }
     }
-    bool compare(size_t blockSize, size_t numChannels, double **a, double **b) {
-        for (size_t i=0; i<numChannels; ++i) {
-            for (size_t j=0; j<blockSize; ++j ) {
+    bool compare(UInteger blockSize, UInteger numChannels, double **a, double **b) {
+        for (UInteger i=0; i<numChannels; ++i) {
+            for (UInteger j=0; j<blockSize; ++j ) {
                 //std::cout<<a[i][j]<<", "<<b[i][j]<<std::endl<<std::flush;
                 if ( a[i][j] != b[i][j] ) {
                     return false;
@@ -39,13 +43,13 @@ namespace {
         return true;
     }
     template <typename T>
-    std::string toString(size_t blockSize, size_t numChannels, const T &a)
+    std::string toString(UInteger blockSize, UInteger numChannels, const T &a)
     {
         std::stringstream ss;
         ss<<"{";
-        for (size_t i=0; i<numChannels; ++i) {
+        for (UInteger i=0; i<numChannels; ++i) {
             ss<<"{";
-            for (size_t j=0; j<blockSize; ++j ) {
+            for (UInteger j=0; j<blockSize; ++j ) {
                 ss<<a[i][j]<<", ";
             }
             ss<<"}, ";
@@ -59,8 +63,8 @@ namespace {
         return toString(bff.getSize(), bff.getNumChannels(), bff);
     }
 
-    void freeTestBuffer(double **data, size_t numChannels) {
-        for (size_t i=0; i<numChannels; ++i) {
+    void freeTestBuffer(double **data, UInteger numChannels) {
+        for (UInteger i=0; i<numChannels; ++i) {
             delete[] data[i];
         }
         delete[] data;
@@ -77,12 +81,12 @@ void TestAsyncBuffer::testAsyncBufferAlloc() {
     {
         AsyncBuffer<double> bff;
         bff.allocate(512);
-        CPPUNIT_ASSERT_EQUAL((size_t)512*2, bff.getSize());
+        CPPUNIT_ASSERT_EQUAL((UInteger)512*2, bff.getSize());
     }
     {
         AsyncBuffer<double,3> bff;
         bff.allocate(512);
-        CPPUNIT_ASSERT_EQUAL((size_t)512*3, bff.getSize());
+        CPPUNIT_ASSERT_EQUAL((UInteger)512*3, bff.getSize());
     }
     {
         // Sould occur compiler error:
@@ -254,9 +258,9 @@ void TestAsyncBuffer::testReading() {
     double *it[] = {data[0], data[1]};
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<1
     bff.writeBlock(&it[0]);
-    size_t blocksRead=Buffer::UndefinedNumBlocks;
+    UInteger blocksRead=Buffer::UndefinedNumBlocks;
     CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
-    CPPUNIT_ASSERT_EQUAL((size_t)1, blocksRead);
+    CPPUNIT_ASSERT_EQUAL((UInteger)1, blocksRead);
     CPPUNIT_ASSERT_EQUAL(
     std::string("{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, }, {0, 2, 4, 6, 8, 10, 12, 14, 16, \
 18, }, }\n"),
@@ -266,16 +270,16 @@ void TestAsyncBuffer::testReading() {
     it[1]+=10;
     bff.writeBlock(&it[0]);
     CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
-    CPPUNIT_ASSERT_EQUAL((size_t)2, blocksRead);
+    CPPUNIT_ASSERT_EQUAL((UInteger)2, blocksRead);
     CPPUNIT_ASSERT_EQUAL(
     std::string("{{10, 11, 12, 13, 14, 15, 16, 17, 18, 19, }, {20, 22, 24, 26, 28, 3\
 0, 32, 34, 36, 38, }, }\n"),
     toString(10, 2, res));
     
     { //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< read again
-        size_t blocksRead = 1;
+        UInteger blocksRead = 1;
         CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
-        CPPUNIT_ASSERT_EQUAL((size_t)2, blocksRead);
+        CPPUNIT_ASSERT_EQUAL((UInteger)2, blocksRead);
         CPPUNIT_ASSERT_EQUAL(
         std::string("{{10, 11, 12, 13, 14, 15, 16, 17, 18, 19, }, {20, 22, 24, 26, 28, 3\
 0, 32, 34, 36, 38, }, }\n"),
@@ -283,9 +287,9 @@ void TestAsyncBuffer::testReading() {
 
     }
     { //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< read older block again
-        size_t blocksRead = 0;
+        UInteger blocksRead = 0;
         CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
-        CPPUNIT_ASSERT_EQUAL((size_t)1, blocksRead);
+        CPPUNIT_ASSERT_EQUAL((UInteger)1, blocksRead);
         CPPUNIT_ASSERT_EQUAL(
         std::string("{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, }, {0, 2, 4, 6, 8, 10, 12, 14, 16, \
 18, }, }\n"),
@@ -298,7 +302,7 @@ void TestAsyncBuffer::testReading() {
     it[1]+=10;
     bff.writeBlock(&it[0]);
     CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
-    CPPUNIT_ASSERT_EQUAL((size_t)3, blocksRead);
+    CPPUNIT_ASSERT_EQUAL((UInteger)3, blocksRead);
     CPPUNIT_ASSERT_EQUAL(
     std::string("{{20, 21, 22, 23, 24, 25, 26, 27, 28, 29, }, {40, 42, 44, 46, 48, 5\
 0, 52, 54, 56, 58, }, }\n"),
@@ -308,7 +312,7 @@ void TestAsyncBuffer::testReading() {
     it[1]+=10;
     bff.writeBlock(&it[0]);
     CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
-    CPPUNIT_ASSERT_EQUAL((size_t)4, blocksRead);
+    CPPUNIT_ASSERT_EQUAL((UInteger)4, blocksRead);
     CPPUNIT_ASSERT_EQUAL(
     std::string("{{30, 31, 32, 33, 34, 35, 36, 37, 38, 39, }, {60, 62, 64, 66, 68, 7\
 0, 72, 74, 76, 78, }, }\n"),
@@ -318,16 +322,26 @@ void TestAsyncBuffer::testReading() {
     it[1]+=10;
     bff.writeBlock(&it[0]);
     CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
-    CPPUNIT_ASSERT_EQUAL((size_t)5, blocksRead);
+    CPPUNIT_ASSERT_EQUAL((UInteger)5, blocksRead);
     CPPUNIT_ASSERT_EQUAL(
     std::string("{{40, 41, 42, 43, 44, 45, 46, 47, 48, 49, }, {80, 82, 84, 86, 88, 9\
 0, 92, 94, 96, 98, }, }\n"),
     toString(10, 2, res));
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<undefined blocks
+    {
+        UInteger blocksRead = Buffer::UndefinedNumBlocks;
+        CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
+        CPPUNIT_ASSERT_EQUAL((UInteger)5, blocksRead);
+        CPPUNIT_ASSERT_EQUAL(
+        std::string("{{40, 41, 42, 43, 44, 45, 46, 47, 48, 49, }, {80, 82, 84, 86, 88, 9\
+0, 92, 94, 96, 98, }, }\n"),
+        toString(10, 2, res));
+    }
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< read older blocks
     {
-        size_t blocksRead = 1;
+        UInteger blocksRead = 1;
         CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
-        CPPUNIT_ASSERT_EQUAL((size_t)2, blocksRead);
+        CPPUNIT_ASSERT_EQUAL((UInteger)2, blocksRead);
         CPPUNIT_ASSERT_EQUAL(
         std::string("{{10, 11, 12, 13, 14, 15, 16, 17, 18, 19, }, {20, 22, 24, 26, 28, 3\
 0, 32, 34, 36, 38, }, }\n"),
@@ -335,9 +349,9 @@ void TestAsyncBuffer::testReading() {
 
     }
     { 
-        size_t blocksRead = 2;
+        UInteger blocksRead = 2;
         CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
-        CPPUNIT_ASSERT_EQUAL((size_t)3, blocksRead);
+        CPPUNIT_ASSERT_EQUAL((UInteger)3, blocksRead);
         CPPUNIT_ASSERT_EQUAL(
         std::string("{{20, 21, 22, 23, 24, 25, 26, 27, 28, 29, }, {40, 42, 44, 46, 48, 5\
 0, 52, 54, 56, 58, }, }\n"),
@@ -345,9 +359,9 @@ void TestAsyncBuffer::testReading() {
 
     }
     { 
-        size_t blocksRead = 3;
+        UInteger blocksRead = 3;
         CPPUNIT_ASSERT_EQUAL(0, bff.readBlock(res, blocksRead));
-        CPPUNIT_ASSERT_EQUAL((size_t)4, blocksRead);
+        CPPUNIT_ASSERT_EQUAL((UInteger)4, blocksRead);
         CPPUNIT_ASSERT_EQUAL(
         std::string("{{30, 31, 32, 33, 34, 35, 36, 37, 38, 39, }, {60, 62, 64, 66, 68, 7\
 0, 72, 74, 76, 78, }, }\n"),
@@ -356,14 +370,14 @@ void TestAsyncBuffer::testReading() {
     }
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< try to access, and fail
     {
-        size_t blocksRead = 0;
+        UInteger blocksRead = 0;
         CPPUNIT_ASSERT_EQUAL(-1, bff.readBlock(res, blocksRead));
-        CPPUNIT_ASSERT_EQUAL((size_t)0, blocksRead);
+        CPPUNIT_ASSERT_EQUAL((UInteger)0, blocksRead);
     }
     {
-        size_t blocksRead = 5;
+        UInteger blocksRead = 5;
         CPPUNIT_ASSERT_EQUAL(1, bff.readBlock(res, blocksRead));
-        CPPUNIT_ASSERT_EQUAL((size_t)5, blocksRead);
+        CPPUNIT_ASSERT_EQUAL((UInteger)5, blocksRead);
     }
 
 }

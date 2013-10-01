@@ -34,7 +34,7 @@ public:
 	typedef boost::shared_ptr<RemoteChReceiver> Ptr;
 private:
     //-------------------------------------------------------------------------
-    size_t blocksRead;
+    sambag::com::interprocess::UInteger blocksRead;
     //-------------------------------------------------------------------------
     ::processing::Frames frames;
     //-------------------------------------------------------------------------

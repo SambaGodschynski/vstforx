@@ -12,6 +12,8 @@
 #include <sambag/com/Common.hpp>
 
 namespace frx { namespace processing { namespace remoteChannel {
+using namespace interprocess;
+
 //=============================================================================
 // class Plugin 
 //=============================================================================
@@ -28,11 +30,10 @@ void Plugin::open() {
 void Plugin::close() {
     using namespace interprocess;
     RemoteChannelManager &rm = RemoteChannelManager::instance();
-    rm.removeChannel(channelId);
+    //rm.removeChannel(channelId);
 }
 //-----------------------------------------------------------------------------
 Plugin::~Plugin() {
-
 }
 //-----------------------------------------------------------------------------
 void Plugin::process(float **in, float **out, int numSamples) {
@@ -67,14 +68,13 @@ void Plugin::updateConfiguration() {
         stream->resize(blockSize, this->getHost()->getNumOutputs());
         return;
     }
-    using namespace interprocess;
     RemoteChannelManager &rm = RemoteChannelManager::instance();
-    std::string name = rm.createUniqueName();
+   /* std::string name = rm.createUniqueName();
     stream = interprocess::Stream::create(name,
         blockSize,
         this->getHost()->getNumOutputs()
     );
-    channelId = rm.addChannel( boost::make_tuple(name) );
+    channelId = rm.addChannel( boost::make_tuple(name) );*/
 }
 //-----------------------------------------------------------------------------
 void Plugin::setParameterValue(int index, float value) {

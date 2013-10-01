@@ -17,8 +17,131 @@
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/interprocess/sync/sharable_lock.hpp>
 #include <sambag/com/Common.hpp>
+#include <sambag/com/Interprocess.hpp>
 
 namespace frx { namespace processing {
+using ::sambag::com::interprocess::Integer;
+using ::sambag::com::interprocess::UInteger;
+//=============================================================================
+/** 
+  * @class MemoryPolicy
+  * Since we need the AsyncBuffer for interprocess purpose, we need
+  * some special memory action moves.
+  */
+template <
+    typename T,
+    int _NumBlocks,
+    int _NumChannels
+>
+class DefaultMemoryPolicy {
+public:
+    //-------------------------------------------------------------------------
+    enum { NumBlocks = _NumBlocks, NumChannels = _NumChannels };
+    //-------------------------------------------------------------------------
+    typedef std::allocator<T> Allocator;
+protected:
+    //-------------------------------------------------------------------------
+    T *__buffer_[NumChannels];
+    //-------------------------------------------------------------------------
+    UInteger blockSize;
+public:
+    //-------------------------------------------------------------------------
+    DefaultMemoryPolicy() : blockSize(0) {}
+    //-------------------------------------------------------------------------
+    /*TODO: test void copy(T *from, T *to, Samples size) const {
+        memcpy(to, from, sizeof(T)*size);
+    }*/
+    //-------------------------------------------------------------------------
+    template <typename U, typename V>
+    inline void copy(U *from, V *to, UInteger size) const {
+        for (UInteger i=0; i<size; ++i) {
+            to[i] = (V)from[i];
+        }
+    }
+    //-------------------------------------------------------------------------
+    template <class Alloc, typename Buffer>
+    void deallocateImpl(Alloc &allocator, Buffer &buffer, UInteger size);
+    //-------------------------------------------------------------------------
+    void deallocate();
+    //-------------------------------------------------------------------------
+    template <class Alloc, typename Buffer>
+    void allocateImpl(Alloc &allocator, Buffer &buffer, UInteger blockSize);
+    //-------------------------------------------------------------------------
+    void allocate(UInteger blockSize);
+    //-------------------------------------------------------------------------
+    inline T * operator[](UInteger channel) const {
+        return __buffer_[channel];
+    }
+    //-------------------------------------------------------------------------
+    /**
+     * @return the number of samples of the whole buffer = blockSize*NumBlocks 
+     */
+    inline UInteger getSize() const {
+        return blockSize*NumBlocks;
+    }
+    //-------------------------------------------------------------------------
+    /**
+     * @return the number of samples of one block
+     */
+    inline UInteger getBlockSize() const {
+        return blockSize;
+    }
+    //-------------------------------------------------------------------------
+    template <class Buffer>
+    void setZeroImpl(Buffer &buffer) {
+        for (UInteger i = 0; i<NumChannels; ++i) {
+            // TODO: replace with memset
+            for (UInteger j=0; j<blockSize*NumBlocks; ++j) {
+                buffer[i][j] = 0;
+            }
+        } 
+    }
+    //-------------------------------------------------------------------------
+    void setZero() {
+        setZeroImpl(__buffer_);
+    }
+
+};
+///////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------
+template < typename T, int I, int J>
+template <class Alloc, typename Buffer>
+void DefaultMemoryPolicy<T, I, J>::allocateImpl(Alloc &allocator,
+    Buffer &buffer, UInteger blockSize)
+{
+    for (UInteger i = 0; i<NumChannels; ++i) {
+        buffer[i] = allocator.allocate(blockSize*NumBlocks);
+    } 
+}
+//-----------------------------------------------------------------------------
+template < typename T, int I, int J>
+void DefaultMemoryPolicy<T, I, J>::allocate(UInteger blockSize)
+{
+    Allocator allocator;
+    allocateImpl(allocator, __buffer_, blockSize);
+    this->blockSize = blockSize;
+    setZero();
+}
+//-----------------------------------------------------------------------------
+template < typename T, int I, int J>
+template <class Alloc, typename Buffer>
+void DefaultMemoryPolicy<T, I, J>::deallocateImpl(Alloc &allocator,
+    Buffer &buffer, UInteger size)
+{
+    for (UInteger i = 0; i<NumChannels; ++i) {
+        allocator.deallocate(buffer[i], size);
+    }
+}
+//-----------------------------------------------------------------------------
+template < typename T, int I, int J >
+void DefaultMemoryPolicy<T, I, J>::deallocate()
+{
+    Allocator allocator;
+    deallocateImpl(allocator, __buffer_, getSize());
+    this->blockSize = 0;
+}
+//=============================================================================
+
 //=============================================================================
 /** 
   * @class AsyncBuffer.
@@ -29,45 +152,29 @@ template <
     typename T,
     int _NumBlocks  = 2, //<< Buffersize min 2.
     int _NumChannels = 2, //<< Buffersize min 1.
-    template <class> class _Allocator = std::allocator
+    template <typename, int, int> class _MemoryPolicy = DefaultMemoryPolicy
 >
-class AsyncBuffer {
+class AsyncBuffer : public _MemoryPolicy<T, _NumBlocks, _NumChannels>
+{
 //=============================================================================
 BOOST_STATIC_ASSERT(_NumBlocks>=2);
 BOOST_STATIC_ASSERT(_NumChannels>=1);
 public:
     //-------------------------------------------------------------------------
-    enum { NumBlocks = _NumBlocks, NumChannels = _NumChannels };
-    //-------------------------------------------------------------------------
     typedef T ValueType;
     //-------------------------------------------------------------------------
-    typedef _Allocator<T> Allocator;
+    typedef _MemoryPolicy<T, _NumBlocks, _NumChannels> MemoryPolicy;
     //-------------------------------------------------------------------------
-    static const size_t InvalidSamplePos = UINT_MAX;
+    static const UInteger InvalidSamplePos =
+        boost::integer_traits<UInteger>::const_max;;
     //-------------------------------------------------------------------------
-    static const size_t UndefinedNumBlocks = UINT_MAX;
+    static const UInteger UndefinedNumBlocks =
+        boost::integer_traits<UInteger>::const_max;;
 protected:
     //-------------------------------------------------------------------------
-    /*TODO: test void copy(T *from, T *to, Samples size) const {
-        memcpy(to, from, sizeof(T)*size);
-    }*/
+    UInteger blocksWritten;
     //-------------------------------------------------------------------------
-    template <typename U, typename V>
-    void copy(U *from, V *to, size_t size) const {
-        for (size_t i=0; i<size; ++i) {
-            to[i] = (V)from[i];
-        }
-    }
-    //-------------------------------------------------------------------------
-    void deallocate();
-    //-------------------------------------------------------------------------
-    T *buffer[NumChannels];
-    //-------------------------------------------------------------------------
-    size_t blocksWritten, blockSize;
-    //-------------------------------------------------------------------------
-    Allocator allocator;
-    //-------------------------------------------------------------------------
-    inline size_t cyc_bounds( size_t i ) { return i%getSize(); }
+    inline UInteger cyc_bounds( UInteger i ) { return i%getSize(); }
     //-------------------------------------------------------------------------
     inline int getLastWrittenBlockNumber() const {
         if (blocksWritten==0) {
@@ -75,7 +182,7 @@ protected:
         }
         int x=toBufferBlocks(blocksWritten);
         if (x==0) {
-            return NumBlocks-1;
+            return MemoryPolicy::NumBlocks-1;
         };
         return x-1;
     }
@@ -83,23 +190,23 @@ protected:
     /**
      * offset to lastwritten block
      */
-    inline int blockOffset(size_t readBlocks) const {
+    inline int blockOffset(UInteger readBlocks) const {
         return readBlocks-blocksWritten+1;
     }
     //-------------------------------------------------------------------------
     /**
      * concernes the buffer bounds
      */
-    inline int toBufferBlocks(size_t blocks) const {
-        return blocks%NumBlocks;
+    inline int toBufferBlocks(UInteger blocks) const {
+        return blocks%MemoryPolicy::NumBlocks;
     }
     //-------------------------------------------------------------------------
     inline int getCurrentBlockNumber() const {
         return toBufferBlocks(blocksWritten);
     }
     //-------------------------------------------------------------------------
-    inline size_t toSamplePos(int numBlocks) const {
-        if (numBlocks<0 || numBlocks>=NumBlocks) {
+    inline UInteger toSamplePos(int numBlocks) const {
+        if (numBlocks<0 || numBlocks>=MemoryPolicy::NumBlocks) {
             return InvalidSamplePos;
         }
         return getBlockSize()*numBlocks;
@@ -110,12 +217,12 @@ public:
      *          negative values: x blocks to late
      *          positive values: x blocks to early
      */
-    inline int missingBlocks(size_t readBlocks) const {
+    inline int missingBlocks(UInteger readBlocks) const {
         int bo=blockOffset(readBlocks);
         if (bo>=0) {
             return bo;
         }
-        bo+=NumBlocks-1;
+        bo+=MemoryPolicy::NumBlocks-1;
         if (bo<0) {
             return bo;
         }
@@ -124,9 +231,7 @@ public:
     //-------------------------------------------------------------------------
     virtual ~AsyncBuffer();
     //-------------------------------------------------------------------------
-    AsyncBuffer(const Allocator &alloc = Allocator());
-    //-------------------------------------------------------------------------
-    void allocate(size_t blockSize);
+    AsyncBuffer();
     //-------------------------------------------------------------------------
     template <typename U>
     void writeBlock(U **data);
@@ -134,19 +239,19 @@ public:
     /**
      * @return the number of samples of one block
      */
-    inline size_t getBlockSize() const {
-        return blockSize;
+    inline UInteger getBlockSize() const {
+        return MemoryPolicy::getBlockSize();
     }
     //-------------------------------------------------------------------------
     /**
      * @return the number of samples of the whole buffer = blockSize*NumBlocks 
      */
-    inline size_t getSize() const {
-        return blockSize*NumBlocks;
+    inline UInteger getSize() const {
+        return MemoryPolicy::getSize();
     }
     //-------------------------------------------------------------------------
-    inline size_t getNumChannels() const {
-        return NumChannels;
+    inline UInteger getNumChannels() const {
+        return MemoryPolicy::NumChannels;
     }
     //-------------------------------------------------------------------------
     /**
@@ -158,72 +263,37 @@ public:
      *         positive values: x blocks to early
      */
     template <typename U>
-    int readBlock(U **out, size_t &blocksRead) const;
-    //-------------------------------------------------------------------------
-    Allocator & getAllocator() {
-        return allocator;
-    }
-    //-------------------------------------------------------------------------
-    const Allocator & getAllocator() const {
-        return allocator;
-    }
-    //-------------------------------------------------------------------------
-    T * operator[](size_t channel) const {
-        return buffer[channel];
-    }
+    int readBlock(U **out, UInteger &blocksRead) const;
 }; // AsyncBuffer
 ///////////////////////////////////////////////////////////////////////////////
-template < typename T, int I, int J, template <class> class A >
-AsyncBuffer<T, I, J, A>::AsyncBuffer(const Allocator &allocator) :
-    blocksWritten(0),
-    blockSize(0),
-    allocator(allocator)
+template < typename T, int I, int J, template <class, int, int> class A >
+AsyncBuffer<T, I, J, A>::AsyncBuffer() :
+    blocksWritten(0)
 {
 }
 //-----------------------------------------------------------------------------
-template < typename T, int I, int J, template <class> class A >
+template < typename T, int I, int J, template <class, int, int> class A >
 AsyncBuffer<T, I, J, A>::~AsyncBuffer()
 {
-    deallocate();
+    MemoryPolicy::deallocate();
 }
 //-----------------------------------------------------------------------------
-template < typename T, int I, int J, template <class> class A >
-void AsyncBuffer<T, I, J, A>::allocate(size_t blockSize)
-{
-    for (size_t i = 0; i<getNumChannels(); ++i) {
-        buffer[i] = allocator.allocate(blockSize*NumBlocks);
-        for (size_t j=0; j<blockSize*NumBlocks; ++j) {
-            buffer[i][j] = 0;
-        }
-    }
-    this->blockSize = blockSize;
-}
-//-----------------------------------------------------------------------------
-template < typename T, int I, int J, template <class> class A >
-void AsyncBuffer<T, I, J, A>::deallocate()
-{
-    for (size_t i = 0; i<getNumChannels(); ++i) {
-        allocator.deallocate(buffer[i], getSize());
-    }
-    this->blockSize = 0;
-}
-//-----------------------------------------------------------------------------
-template < typename T, int I, int J, template <class> class A >
+template < typename T, int I, int J, template <class, int, int> class A >
 template < typename U>
 void AsyncBuffer<T, I, J, A>::writeBlock(U **data)
 {    
-    for (size_t i=0; i<getNumChannels(); ++i) {
-        T *ptr = buffer[i];
+    for (UInteger i=0; i<getNumChannels(); ++i) {
+        T *ptr = (*this)[i];
         ptr+=toSamplePos(getCurrentBlockNumber());
-        copy(data[i], ptr, getBlockSize());
+        MemoryPolicy::copy(data[i], ptr, getBlockSize());
     }
     ++blocksWritten;
 }
 //-----------------------------------------------------------------------------
-template < typename T, int I, int J, template <class> class A >
+template < typename T, int I, int J, template <class, int, int> class A >
 template < typename U>
 int
-AsyncBuffer<T, I, J, A>::readBlock(U **out, size_t &blocksRead) const
+AsyncBuffer<T, I, J, A>::readBlock(U **out, UInteger &blocksRead) const
 {
     if (blocksRead==UndefinedNumBlocks) {
         if (blocksWritten>0) {
@@ -237,8 +307,8 @@ AsyncBuffer<T, I, J, A>::readBlock(U **out, size_t &blocksRead) const
         // out of sync
         return missingBlocks(blocksRead);
     }
-    for (size_t i=0; i<getNumChannels(); ++i) {
-        T *ptr = buffer[i];
+    for (UInteger i=0; i<getNumChannels(); ++i) {
+        T *ptr = (*this)[i];
         ptr+=toSamplePos(toBufferBlocks(blocksRead));
         copy(ptr, out[i], getBlockSize());
     }

@@ -13,6 +13,8 @@
 #include <cstring>
 
 namespace {
+using sambag::com::interprocess::Integer;
+using sambag::com::interprocess::UInteger;
 void createSharedMemoryObject(SharedMemoryObject &shm, const char * name) {
     using namespace boost::interprocess;
     shm = SharedMemoryObject(open_or_create, name, read_write);
@@ -21,8 +23,8 @@ void findSharedMemoryObject(SharedMemoryObject &shm, const char * name) {
     using namespace boost::interprocess;
     shm = SharedMemoryObject(open_only, name, read_write);
 }
-boost::tuple<void*, size_t>
-ipMalloc(SharedMemoryObject &shm, MappedRegion &mp, size_t size)
+boost::tuple<void*, UInteger>
+ipMalloc(SharedMemoryObject &shm, MappedRegion &mp, UInteger size)
 {
     using namespace boost::interprocess;
     if (size==0) {
@@ -32,19 +34,19 @@ ipMalloc(SharedMemoryObject &shm, MappedRegion &mp, size_t size)
     mp = MappedRegion(shm, read_write);
     void *res = mp.get_address();
     
-    int *memorySize = (int*)res;
+    UInteger *memorySize = (UInteger*)res;
     *memorySize = size;
     res = memorySize+1;
     return boost::make_tuple(res, size);
 }
 
-boost::tuple<void*, size_t>
+boost::tuple<void*, UInteger>
 ipOpen(SharedMemoryObject &shm, MappedRegion &mp)
 {
     using namespace boost::interprocess;
     mp = MappedRegion(shm, read_write);
     void *res =  mp.get_address();
-    int *memorySize = (int*)res;
+    UInteger *memorySize = (UInteger*)res;
     res = memorySize+1;
     return boost::make_tuple(res, *memorySize);
 }
@@ -57,7 +59,7 @@ void ipFree(const char *name)
 
 
 
-size_t checksum(void *ptr, size_t bytesize) {
+UInteger checksum(void *ptr, UInteger bytesize) {
     unsigned char *c = (unsigned char*)ptr;
     std::stringstream ss;
     while (bytesize-- > 0) {
@@ -93,38 +95,35 @@ Stream::~Stream() {
     }
 }
 //-----------------------------------------------------------------------------
-size_t Stream::getNeededSize(size_t blockSize, size_t numChannel) const {
-    return  sizeof(int) +
-            sizeof(size_t)*3 +
+UInteger Stream::getNeededSize(UInteger blockSize, UInteger numChannel) const {
+    return  sizeof(Integer) +
+            sizeof(UInteger)*3 +
             sizeof(Mutex)  +
-            sizeof(ValueType)*blockSize*numChannel +
-            sizeof(ValuePtr)*numChannel +
+            sizeof(ValueType)*blockSize*Buffer::NumChannels*Buffer::NumBlocks +
             6400;
 }
 //-----------------------------------------------------------------------------
 void Stream::assignMemory(sambag::com::interprocess::PointerIterator &pIt,
-    size_t numChannel, size_t numBlockSize)
+    UInteger numChannel, UInteger numBlockSize)
 {
     using namespace ::sambag::com::interprocess;
     typedef PlacementAlloc<ValueType> Allocator;
     Allocator alloc(pIt);
 
-    num_references = Allocator::rebind<int>::other(alloc).allocate(1);
-    blockSize_ist = Allocator::rebind<size_t>::other(alloc).allocate(1);
-    numChannels_ist = Allocator::rebind<size_t>::other(alloc).allocate(1);
-    blocksWritten = Allocator::rebind<size_t>::other(alloc).allocate(1);
+    num_references = Allocator::rebind<Integer>::other(alloc).allocate(1);
+    blockSize_ist = Allocator::rebind<UInteger>::other(alloc).allocate(1);
+    numChannels_ist = Allocator::rebind<UInteger>::other(alloc).allocate(1);
     mutex = Allocator::rebind<Mutex>::other(alloc).allocate(1);
     
-    size_t nc = numChannel?numChannel:*numChannels_ist;
-    size_t bs = numBlockSize?numBlockSize:*blockSize_ist;
+    // always at last, because the pointer iterator is alose used in createBuffer()
+    // ,for allocating buffer memory, but not in openBuffer().
+    // so after createBuffer or openBuffer the pointer iteraror points to
+    // different locations.
+    buffer = Allocator::rebind<Buffer>::other(alloc).allocate(1);
     
-    buffer = Allocator::rebind<ValuePtr>::other(alloc).allocate(nc);
-    for (size_t i=0; i<nc; ++i) {
-        buffer[i] = alloc.allocate(bs);
-    }
 }
 //-----------------------------------------------------------------------------
-void Stream::createBuffer(size_t blockSize_soll, size_t numChannels_soll) {
+void Stream::createBuffer(UInteger blockSize_soll, UInteger numChannels_soll) {
     if (numChannels_soll > 2) {
         SAMBAG_THROW(sambag::com::exceptions::IllegalArgumentException,
         "interprocess::Stream multichannel not supported yet.");
@@ -137,7 +136,7 @@ void Stream::createBuffer(size_t blockSize_soll, size_t numChannels_soll) {
 
     using namespace ::sambag::com::interprocess;
     createSharedMemoryObject(shm, id.c_str());
-    size_t byteSize = getNeededSize(blockSize_soll, numChannels_soll);
+    UInteger byteSize = getNeededSize(blockSize_soll, numChannels_soll);
     void *raw;
     boost::tie(raw, memorySize) = ipMalloc( shm, mapped_region, byteSize );
     memory_ptr = raw;
@@ -147,8 +146,14 @@ void Stream::createBuffer(size_t blockSize_soll, size_t numChannels_soll) {
     ++(*num_references);
     (*blockSize_ist) = blockSize_soll;
     *numChannels_ist = numChannels_soll;
-    *blocksWritten = 0;
     new(mutex) Mutex();
+    
+    typedef Buffer::Allocator Allocator;
+    Allocator alloc(pIt);
+    new(buffer) Buffer();
+    buffer->setAllocator(&alloc);
+    buffer->allocate(blockSize_soll);
+    buffer->setZero();
 }
 //-----------------------------------------------------------------------------
 void Stream::openBuffer() {
@@ -162,12 +167,12 @@ void Stream::openBuffer() {
     ++(*num_references);
 }
 //-----------------------------------------------------------------------------
-Stream::ValueType * Stream::operator[](size_t channel) const {
-    return &(buffer[channel][0]);
+Stream::ValueType * Stream::operator[](UInteger channel) const {
+    return (*buffer)[channel];
 }
 //-----------------------------------------------------------------------------
 Stream::Ptr Stream::create(const std::string &id,   
-    size_t blockSize, size_t numChannels)
+    UInteger blockSize, UInteger numChannels)
 {
     Ptr res = Ptr( new Stream() );
     res->id = id;
@@ -187,13 +192,13 @@ Stream::Ptr Stream::open(const std::string &id)
     return res;
 }
 //-----------------------------------------------------------------------------
-void Stream::resize(size_t blockSize, size_t numChannels) {
+void Stream::resize(UInteger blockSize, UInteger numChannels) {
     #ifdef NDEBUG
     #error "implement me befor release!";
     #endif
 }
 //-----------------------------------------------------------------------------
-size_t Stream::getMemoryChecksum() {
+UInteger Stream::getMemoryChecksum() {
     return checksum(memory_ptr, memorySize);
 }
 

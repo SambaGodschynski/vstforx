@@ -7,3 +7,6 @@
 
 #include "AsyncBuffer.hpp"
 
+namespace frx { namespace processing {
+
+}} // namespace(s)

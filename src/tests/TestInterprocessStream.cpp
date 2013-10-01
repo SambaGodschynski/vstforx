@@ -8,32 +8,36 @@
 #include "TestInterprocessStream.hpp"
 #include <cppunit/config/SourcePrefix.h>
 #include <processing/interprocess/Stream.hpp>
+#include <sambag/com/Interprocess.hpp>
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::TestInterprocessStream );
 
+using sambag::com::interprocess::Integer;
+using sambag::com::interprocess::UInteger;
+
 
 namespace {
     
-    double ** createTestBuffer(size_t blockSize, size_t numChannels) {
+    double ** createTestBuffer(UInteger blockSize, UInteger numChannels) {
         double **data = new double*[numChannels];
-        for (size_t i=0; i<numChannels; ++i) {
+        for (UInteger i=0; i<numChannels; ++i) {
             data[i] = new double[blockSize];
         }
         return data;
     }
 
-    void fillTestBuffer(size_t blockSize, size_t numChannels, double **data) {
-        for (size_t i=0; i<numChannels; ++i) {
-            for (size_t j=0; j<blockSize; ++j ) {
+    void fillTestBuffer(UInteger blockSize, UInteger numChannels, double **data) {
+        for (UInteger i=0; i<numChannels; ++i) {
+            for (UInteger j=0; j<blockSize; ++j ) {
                 data[i][j] = (double)(i+1)*j;
             }
         }
     }
 
-    bool compare(size_t blockSize, size_t numChannels, double **a, double **b) {
-        for (size_t i=0; i<numChannels; ++i) {
-            for (size_t j=0; j<blockSize; ++j ) {
+    bool compare(UInteger blockSize, UInteger numChannels, double **a, double **b) {
+        for (UInteger i=0; i<numChannels; ++i) {
+            for (UInteger j=0; j<blockSize; ++j ) {
                 //std::cout<<a[i][j]<<", "<<b[i][j]<<std::endl<<std::flush;
                 if ( a[i][j] != b[i][j] ) {
                     return false;
@@ -44,13 +48,13 @@ namespace {
     }
     
     template <typename T>
-    std::string toString(size_t blockSize, size_t numChannels, const T &a)
+    std::string toString(UInteger blockSize, UInteger numChannels, const T &a)
     {
         std::stringstream ss;
         ss<<"{";
-        for (size_t i=0; i<numChannels; ++i) {
+        for (UInteger i=0; i<numChannels; ++i) {
             ss<<"{";
-            for (size_t j=0; j<blockSize; ++j ) {
+            for (UInteger j=0; j<blockSize; ++j ) {
                 ss<<a[i][j]<<", ";
             }
             ss<<"}, ";
@@ -59,8 +63,8 @@ namespace {
         return ss.str();
     }
     
-    void freeTestBuffer(double **data, size_t numChannels) {
-        for (size_t i=0; i<numChannels; ++i) {
+    void freeTestBuffer(double **data, UInteger numChannels) {
+        for (UInteger i=0; i<numChannels; ++i) {
             delete[] data[i];
         }
         delete[] data;
@@ -84,7 +88,7 @@ void TestInterprocessStream::testStreamConstruction() {
 //-----------------------------------------------------------------------------
 void TestInterprocessStream::testChecksum() {
     using namespace frx::processing::interprocess;
-    static const size_t BLOCK_SIZE = 512,
+    static const UInteger BLOCK_SIZE = 512,
                         NUM_CHANNELS = 2;
     
     Stream::Ptr stream = Stream::create("ts1", BLOCK_SIZE, NUM_CHANNELS);
@@ -92,8 +96,8 @@ void TestInterprocessStream::testChecksum() {
     fillTestBuffer(BLOCK_SIZE, NUM_CHANNELS, data);
     stream->write(data);
     
-    size_t sum1 = stream->getMemoryChecksum();
-    size_t sum2 = stream->getMemoryChecksum();
+    UInteger sum1 = stream->getMemoryChecksum();
+    UInteger sum2 = stream->getMemoryChecksum();
 
     CPPUNIT_ASSERT( sum1 == sum2 );
     
@@ -102,7 +106,7 @@ void TestInterprocessStream::testChecksum() {
     sum2 = stream->getMemoryChecksum();
     CPPUNIT_ASSERT( sum1 != sum2 );
     
-    size_t blocksRead=0;
+    UInteger blocksRead=0;
     stream->read(data, blocksRead);
     
     sum1 = stream->getMemoryChecksum();
@@ -114,7 +118,7 @@ void TestInterprocessStream::testChecksum() {
 //-----------------------------------------------------------------------------
 void TestInterprocessStream::testReadWrite() {
     using namespace frx::processing::interprocess;
-    static const size_t BLOCK_SIZE = 512,
+    static const UInteger BLOCK_SIZE = 512,
                         NUM_CHANNELS = 2;
     
     Stream::Ptr stream = Stream::create("ts1", BLOCK_SIZE, NUM_CHANNELS);
@@ -125,7 +129,7 @@ void TestInterprocessStream::testReadWrite() {
     fillTestBuffer(BLOCK_SIZE, NUM_CHANNELS, data);
     double **check = createTestBuffer(BLOCK_SIZE, NUM_CHANNELS);
     stream->write(data);
-    size_t blocksRead = Stream::UndefinedNumBlocks;
+    UInteger blocksRead = Stream::UndefinedNumBlocks;
     CPPUNIT_ASSERT_EQUAL(0, stream->read(check, blocksRead));
     CPPUNIT_ASSERT(compare(BLOCK_SIZE, NUM_CHANNELS, data, check));
     {
@@ -167,21 +171,21 @@ void TestInterprocessStream::testReadWrite() {
     blocksRead = 1;
     // check sync
     CPPUNIT_ASSERT_EQUAL(0, stream->read(check, blocksRead));
-    CPPUNIT_ASSERT_EQUAL((size_t)2,blocksRead);
+    CPPUNIT_ASSERT_EQUAL((UInteger)2,blocksRead);
     stream->write(data);
     CPPUNIT_ASSERT_EQUAL(0, stream->read(check, blocksRead));
-    CPPUNIT_ASSERT_EQUAL((size_t)3,blocksRead);
+    CPPUNIT_ASSERT_EQUAL((UInteger)3,blocksRead);
     stream->write(data);
     CPPUNIT_ASSERT_EQUAL(0, stream->read(check, blocksRead));
-    CPPUNIT_ASSERT_EQUAL((size_t)4,blocksRead);
+    CPPUNIT_ASSERT_EQUAL((UInteger)4,blocksRead);
     stream->write(data);
     CPPUNIT_ASSERT_EQUAL(0, stream->read(check, blocksRead));
-    CPPUNIT_ASSERT_EQUAL((size_t)5,blocksRead);
+    CPPUNIT_ASSERT_EQUAL((UInteger)5,blocksRead);
     // try to read more than written
     CPPUNIT_ASSERT_EQUAL( 1, stream->read(check, blocksRead));
     // try to read a block from the past
     blocksRead = 0;
-    CPPUNIT_ASSERT_EQUAL(-4, stream->read(check, blocksRead));
+    CPPUNIT_ASSERT_EQUAL(-1/* steambuffer is 4x larger than blocksize*/, stream->read(check, blocksRead));
     
     
     // open empty stream

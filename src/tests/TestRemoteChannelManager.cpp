@@ -11,6 +11,10 @@
 #include <iostream>
 #include <boost/tuple/tuple.hpp>
 #include <boost/tuple/tuple_io.hpp>
+#include <sambag/com/Interprocess.hpp>
+
+using sambag::com::interprocess::Integer;
+using sambag::com::interprocess::UInteger;
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::TestRemoteChannelManager );
@@ -52,11 +56,11 @@ void TestRemoteChannelManager::testAddGetChannels() {
     CPPUNIT_ASSERT_EQUAL(std::string("RemoteChannel1RemoteChannel2RemoteChannel3"), ss.str());
     
     rm.removeChannel("RemoteChannel3");
-    CPPUNIT_ASSERT_EQUAL((size_t)2, rm.getNumChannels());
+    CPPUNIT_ASSERT_EQUAL((UInteger)2, rm.getNumChannels());
     rm.removeChannel("RemoteChannel2");
-    CPPUNIT_ASSERT_EQUAL((size_t)1, rm.getNumChannels());
+    CPPUNIT_ASSERT_EQUAL((UInteger)1, rm.getNumChannels());
     rm.removeChannel("RemoteChannel1");
-    CPPUNIT_ASSERT_EQUAL((size_t)0, rm.getNumChannels());
+    CPPUNIT_ASSERT_EQUAL((UInteger)0, rm.getNumChannels());
 
 }
 //-----------------------------------------------------------------------------
@@ -66,7 +70,7 @@ void TestRemoteChannelManager::testRemoteChannelManager() {
     
     // ** Consider: Managers totmann timer isn't running here **
     RemoteChannelManager &rm = RemoteChannelManager::instance();
-    CPPUNIT_ASSERT_EQUAL((size_t)0, rm.getNumChannels());
+    CPPUNIT_ASSERT_EQUAL((UInteger)0, rm.getNumChannels());
     
     std::string name = rm.createUniqueName();
     Stream::Ptr stream = Stream::create(name,512,2);
@@ -89,11 +93,11 @@ void TestRemoteChannelManager::testRemoteChannelManager() {
     double datal[512];
     double datar[512];
     double *in[2] = { &datar[0], &datal[0] };
-    for (size_t i=0; i<512; ++i) {
+    for (UInteger i=0; i<512; ++i) {
         in[0][i] = i+1;
         in[1][i] = i+2;
     }
-    for (size_t i=0; i<10; ++i) {
+    for (UInteger i=0; i<10; ++i) {
         stream->write(&in[0]);
         *opc="sum";
         CPPUNIT_ASSERT_EQUAL((int) 0, std::system(COUNTERPART_EXEC));

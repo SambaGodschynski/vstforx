@@ -18,6 +18,7 @@
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <gui/components/FrxSerializationRegister.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
+#include <sambag/com/Common.hpp>
 
 namespace frx { namespace processing {
 namespace {
@@ -290,7 +291,11 @@ void VstForxPlug::updateGraphBaseConfiguration() {
 		return;
 	if (sampleRate==0. || blockSize == 0)
 		return;
+    SAMBAG_LOG_INFO<<"update configuration: ...";
+    SAMBAG_LOG_INFO<<"  + set samplerate: "<<sampleRate;
+    SAMBAG_LOG_INFO<<"  + set blocksize: "<<blockSize;
 	graph->getJanitor()->hostBaseConfigChanged();
+    SAMBAG_LOG_INFO<<"update configuration: SUCCEED";
 }
 //-----------------------------------------------------------------------------
 bool VstForxPlug::requestEditorResize(int width, int height) {
@@ -302,6 +307,7 @@ int VstForxPlug::getChunk(void **data) {
 		open();
 	}
 	try {
+        SAMBAG_LOG_INFO<<"serialize vstforx: ...";
 		std::stringstream ss;
 		save(ss);
 		const std::string &datastr = ss.str();
@@ -319,13 +325,16 @@ int VstForxPlug::getChunk(void **data) {
 		memcpy(chunkData, datastr.c_str(), datasize);
 		*data = (void*)chunkData;
 		//std::cout<<datasize<<" bytes saved."<<std::endl;
+        SAMBAG_LOG_INFO<<"serialize vstforx: SUCCEED, ("<< datasize <<" bytes)";
 		return datasize;
 	} catch(const std::exception &ex) {
+        SAMBAG_LOG_ERR<<"serialize vstforx: FAILED, "<<ex.what();
 		std::stringstream ss;
-		ss<<"serialization failed: "<<ex.what();
+		ss<<"serialization vstforx: FAILED, "<<ex.what();
 		::com::osMessageBox("Error", ss.str(), ::com::MSG_ALERT);
 		return 0;
 	} catch(...) {
+        SAMBAG_LOG_ERR<<"serialize vstforx: FAILED, unknown error";
 		std::stringstream ss;
 		ss<<"serialization failed: unkown reason.";
 		::com::osMessageBox("Error", ss.str(), ::com::MSG_ALERT);
@@ -341,18 +350,22 @@ int VstForxPlug::setChunk(void *data, int byteSize) {
 		return 0;
 	}
 	try {
+        SAMBAG_LOG_INFO<<"deserialize vstforx: ..., ("<<byteSize<<" bytes)";
 		std::stringstream ss;
 		std::string dataStr((char*)data, byteSize);
 		ss<<dataStr;
 		load(ss);
 		//std::cout<<byteSize<<" bytes loaded."<<std::endl;
+        SAMBAG_LOG_INFO<<"deserialize vstforx: SUCCEED";
 		return byteSize;
 	} catch(const std::exception &ex) {
+        SAMBAG_LOG_ERR<<"deserialize vstforx: FAILED, "<<ex.what();
 		std::stringstream ss;
 		ss<<"serialization failed: "<<ex.what();
 		::com::osMessageBox("Error", ss.str(), ::com::MSG_ALERT);
 		return 0;
 	} catch(...) {
+        SAMBAG_LOG_ERR<<"deserialize vstforx: FAILED, unknown error";
 		std::stringstream ss;
 		ss<<"serialization failed: unkown reason.";
 		::com::osMessageBox("Error", ss.str(), ::com::MSG_ALERT);

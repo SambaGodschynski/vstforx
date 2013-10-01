@@ -11,36 +11,6 @@
 #include <fstream>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 
-namespace {
-    std::ostream & operator<<(std::ostream &os, const ::processing::Frames &f)
-    {
-        os.precision(2);
-        for (size_t i=0; i<f.getSize(); ++i) {
-            for (size_t j=0; j<f.getNumChannels(); ++j) {
-                os<<f[j][i]<<" ";
-            }
-        }
-        return os;
-    }
-
-    struct TestLog {
-        std::fstream fstr;
-        TestLog() {
-           fstr.open("rc_out.dat", std::fstream::out | std::fstream::trunc);
-        }
-        ~TestLog() {
-           fstr.flush();
-           fstr.close();
-        }
-        std::fstream & operator()() {
-            return fstr;
-        }
-    };
-
-    TestLog _log;
-
-}
-
 namespace frx { namespace processing { namespace interprocess {
 //=============================================================================
 //  Class RemoteChReceiver
@@ -80,7 +50,6 @@ void RemoteChReceiver::processAdapter( pr::Processor::Int numSamples ) {
     dcStream.addFrame(&frames, bs, bs*100);
     // read from dc stream
 	dcStream.flush(bs, data);
-    _log()<<frames;
     outputNodes[0]->pushAndCopy( &frames, numSamples );
 }
 //-----------------------------------------------------------------------------

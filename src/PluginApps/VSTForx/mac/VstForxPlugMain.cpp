@@ -10,6 +10,7 @@
 #include <exception>
 #include "VstForxResourceManager.hpp"
 #include "CocoaHelper.hpp"
+#include <sambag/com/Common.hpp>
 
 std::string getHomeDirectory();
 
@@ -28,17 +29,24 @@ enum { FRX_UID = '_frx' + (_FRX_IS_INSTRUMENT*2) + (_FRX_IS_DEMO*3) };
 
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
+    // setup logging:
+    ::sambag::com::addLogFile(getHomeDirectory() + "/VSTForx.log");
+    SAMBAG_LOG_INFO<<"wake up";
 	// init resourceManager
 	try {
+        SAMBAG_LOG_INFO<<"loading resources: ...";
 		frx::VstForxResourceManager &rm = frx::VstForxResourceManager::instance();
 		sambag::disco::installResourceManager(rm);
+        SAMBAG_LOG_INFO<<"loading resources: SUCCEED";
 	} catch (const std::exception &ex) {
+        SAMBAG_LOG_ERR<<"loading of resources: FAILED, "<<ex.what();
 		std::stringstream ss;
 		ss<<"Initiation of plugin instance failed: "<<ex.what();
 		com::osMessageBox("Error",
 			ss.str(), com::MSG_ALERT);
 		return NULL;
 	} catch(...) {
+        SAMBAG_LOG_ERR<<"loading of resources : FAILED, unknown error";
 		com::osMessageBox("Error", 
 			"Initiation of plugin instance failed: unkonwn reason.", com::MSG_ALERT);
 		return NULL;
@@ -62,18 +70,22 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 	> Plugin;
 	// create plugin
 	try {
+        SAMBAG_LOG_INFO<<"creating effect instance: ...";
 		Plugin *pl = new Plugin(audioMaster);
 		frx::processing::VstForxPlug &vpl = *pl;
 		vpl.setEffectPtr(pl);
 		vpl.setMasterCallback((void*)audioMaster);
+        SAMBAG_LOG_INFO<<"creating effect instance: SUCCEED";
 		return pl;
 	} catch (const std::exception &ex) {
+        SAMBAG_LOG_ERR<<"creating effect instance: FAILED, "<<ex.what();
 		std::stringstream ss;
 		ss<<"Creating of plugin instance failed: "<<ex.what();
 		com::osMessageBox("Error", 
 			ss.str(), com::MSG_ALERT);
 		return NULL;
 	} catch(...) {
+        SAMBAG_LOG_ERR<<"creating effect instance: FAILED";
 		com::osMessageBox("Error", 
 			"Creating of plugin instance failed: unkonwn reason.", com::MSG_ALERT);
 		return NULL;
