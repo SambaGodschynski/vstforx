@@ -31,7 +31,7 @@ enum { FRX_UID = '_frx' + (_FRX_IS_INSTRUMENT*2) + (_FRX_IS_DEMO*3) };
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
     // setup logging:
     ::sambag::com::addLogFile(getHomeDirectory() + "/VSTForx.log");
-    SAMBAG_LOG_INFO<<"wake up";
+    SAMBAG_LOG_INFO<<"woke up";
 	// init resourceManager
 	try {
         SAMBAG_LOG_INFO<<"loading resources: ...";

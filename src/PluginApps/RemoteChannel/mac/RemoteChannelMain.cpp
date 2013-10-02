@@ -13,7 +13,7 @@ enum {RC_UID='fxRC'};
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
     // setup logging:
     ::sambag::com::addLogFile("VSTForx.RemoteChannel.log");
-    SAMBAG_LOG_INFO<<"wake up";
+    SAMBAG_LOG_INFO<<"woke up";
 	// load plugin
 	using namespace sambag::dsp::vst;
 	// settingup plugin
