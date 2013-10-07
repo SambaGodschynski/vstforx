@@ -115,12 +115,11 @@ void Stream::assignMemory(sambag::com::interprocess::PointerIterator &pIt,
     numChannels_ist = Allocator::rebind<UInteger>::other(alloc).allocate(1);
     mutex = Allocator::rebind<Mutex>::other(alloc).allocate(1);
     
-    // always at last, because the pointer iterator is alose used in createBuffer()
-    // ,for allocating buffer memory, but not in openBuffer().
+    // always at last, because the pointer iterator is used in createBuffer(),
+    // for allocating buffer memory, but not in openBuffer().
     // so after createBuffer or openBuffer the pointer iteraror points to
     // different locations.
     buffer = Allocator::rebind<Buffer>::other(alloc).allocate(1);
-    
 }
 //-----------------------------------------------------------------------------
 void Stream::createBuffer(UInteger blockSize_soll, UInteger numChannels_soll) {
@@ -151,8 +150,7 @@ void Stream::createBuffer(UInteger blockSize_soll, UInteger numChannels_soll) {
     typedef Buffer::Allocator Allocator;
     Allocator alloc(pIt);
     new(buffer) Buffer();
-    buffer->setAllocator(&alloc);
-    buffer->allocate(blockSize_soll);
+    buffer->allocate(blockSize_soll, alloc);
     buffer->setZero();
 }
 //-----------------------------------------------------------------------------

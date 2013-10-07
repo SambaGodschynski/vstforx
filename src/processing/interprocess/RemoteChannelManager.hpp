@@ -41,13 +41,16 @@ public:
     typedef boost::tuple<std::string> RCData;
 private:
     //-------------------------------------------------------------------------
-    typedef si::String::Class SHM_String;
+    //since boost managed memory has a 32/64 communictaion bug, we
+    //need to use a workaround.
+    //typedef si::String::Class SHM_String;
     //-------------------------------------------------------------------------
-    typedef SHM_String SHM_RCId;
+    //typedef SHM_String SHM_RCId;
     //-------------------------------------------------------------------------
-    typedef boost::tuple<SHM_String> SHM_RCData;
+    //typedef boost::tuple<SHM_String> SHM_RCData;
     //-------------------------------------------------------------------------
-    typedef si::Map<SHM_RCId, SHM_RCData> RemoteChannels;
+    //typedef si::Map<SHM_RCId, SHM_RCData> RemoteChannels;
+    struct RemoteChannels;
     //-------------------------------------------------------------------------
     UInteger *changed;
     //-------------------------------------------------------------------------
@@ -59,9 +62,14 @@ private:
     //-------------------------------------------------------------------------
     Mutex *mutex;
     //-------------------------------------------------------------------------
-    RemoteChannels::Class *channels;
+    //RemoteChannels::Class *channels;
+    RemoteChannels *channels;
     //-------------------------------------------------------------------------
-    si::SharedMemoryHolder *shmh;
+    //typedef si::SharedMemoryHolder SHMH;
+    //typedef boost::shared_ptr<SHMH> SHMHPtr;
+    //SHMHPtr shmh;
+    SharedMemoryObject shm;
+    MappedRegion mapped_region;
     //-------------------------------------------------------------------------
     //RemoteChannelManager();
     //-------------------------------------------------------------------------
@@ -70,6 +78,8 @@ private:
     struct Dummy {};
     typedef boost::shared_ptr<Dummy> TrackingDummyPtr;
     TrackingDummyPtr trackingDummy;
+    //-------------------------------------------------------------------------
+    bool isStreamValid(const std::string &streamId) const;
 protected:
     //-------------------------------------------------------------------------
     void doTotmann();
@@ -115,8 +125,10 @@ public:
     //-------------------------------------------------------------------------
     UInteger getNumChannels() const;
     //-------------------------------------------------------------------------
-    template <class Container>
-    void getChannels(Container &out) const;
+    //template <class Container>
+    //void getChannels(Container &out) const;
+    void getChannels(std::vector<RCId> &out);
+    void getChannels(std::list<RCId> &out);
     //-------------------------------------------------------------------------
     RCData getChannelData(const RCId &id) const;
     //-------------------------------------------------------------------------
@@ -141,14 +153,13 @@ public:
 }; // RemoteChannelManager
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
-template <class Container>
+/*template <class Container>
 void RemoteChannelManager::getChannels(Container &out) const {
     BOOST_FOREACH(const RemoteChannels::Class::value_type &x, *channels)
     {
         out.push_back( std::string(x.first.c_str()) );
     }
-}
-
+}*/
 }}} // namespace(s)
 
 #endif /* SAMBAG_REMOTECHANNELMANAGER_H */

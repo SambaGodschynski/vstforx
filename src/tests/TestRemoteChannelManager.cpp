@@ -22,7 +22,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( tests::TestRemoteChannelManager );
 #ifdef WIN32
     const char * COUNTERPART_EXEC = "./remoteChannelCounterpart.exe";
 #else   
-    const char * COUNTERPART_EXEC = "./remoteChannelCounterpart";
+    const char * COUNTERPART_EXEC = "arch -32 ./remoteChannelCounterpart";
 #endif
 
 namespace tests {
@@ -47,26 +47,67 @@ void TestRemoteChannelManager::testAddGetChannels() {
     rm.__addChannel_("RemoteChannel1", boost::make_tuple("stream_1"));
     rm.__addChannel_("RemoteChannel2", boost::make_tuple("stream_2"));
     rm.__addChannel_("RemoteChannel3", boost::make_tuple("stream_3"));
+    CPPUNIT_ASSERT_EQUAL((size_t)3, (size_t)rm.getNumChannels());
     
-    std::vector< RemoteChannelManager::RCId > res;
-    rm.getChannels(res);
-    CPPUNIT_ASSERT_EQUAL((size_t)3, res.size());
-    std::stringstream ss;
-    ss<<res[0]<<res[1]<<res[2];
-    CPPUNIT_ASSERT_EQUAL(std::string("RemoteChannel1RemoteChannel2RemoteChannel3"), ss.str());
-    
+    {
+        std::vector< RemoteChannelManager::RCId > res;
+        rm.getChannels(res);
+        CPPUNIT_ASSERT_EQUAL((size_t)3, res.size());
+        std::stringstream ss;
+        ss<<res[0]<<res[1]<<res[2];
+        CPPUNIT_ASSERT_EQUAL(std::string("RemoteChannel1RemoteChannel2RemoteChannel3"), ss.str());
+    }
     rm.removeChannel("RemoteChannel3");
     CPPUNIT_ASSERT_EQUAL((UInteger)2, rm.getNumChannels());
-    rm.removeChannel("RemoteChannel2");
-    CPPUNIT_ASSERT_EQUAL((UInteger)1, rm.getNumChannels());
+    {
+        std::vector< RemoteChannelManager::RCId > res;
+        rm.getChannels(res);
+        CPPUNIT_ASSERT_EQUAL((size_t)2, res.size());
+        std::stringstream ss;
+        ss<<res[0]<<res[1];
+        CPPUNIT_ASSERT_EQUAL(std::string("RemoteChannel1RemoteChannel2"), ss.str());
+    }
+    
     rm.removeChannel("RemoteChannel1");
+    CPPUNIT_ASSERT_EQUAL((UInteger)1, rm.getNumChannels());
+    {
+        std::vector< RemoteChannelManager::RCId > res;
+        rm.getChannels(res);
+        CPPUNIT_ASSERT_EQUAL((size_t)1, res.size());
+        std::stringstream ss;
+        ss<<res[0];
+        CPPUNIT_ASSERT_EQUAL(std::string("RemoteChannel2"), ss.str());
+    }
+
+    rm.removeChannel("RemoteChannel2");
     CPPUNIT_ASSERT_EQUAL((UInteger)0, rm.getNumChannels());
+    {
+        std::vector< RemoteChannelManager::RCId > res;
+        rm.getChannels(res);
+        CPPUNIT_ASSERT_EQUAL((size_t)0, res.size());
+    }
+    
+    rm.__addChannel_("RemoteChannel4", boost::make_tuple("stream_1"));
+    rm.__addChannel_("RemoteChannel5", boost::make_tuple("stream_2"));
+    rm.__addChannel_("RemoteChannel6", boost::make_tuple("stream_3"));
+    {
+        std::vector< RemoteChannelManager::RCId > res;
+        rm.getChannels(res);
+        CPPUNIT_ASSERT_EQUAL((size_t)3, res.size());
+        std::stringstream ss;
+        ss<<res[0]<<res[1]<<res[2];
+        CPPUNIT_ASSERT_EQUAL(std::string("RemoteChannel4RemoteChannel5RemoteChannel6"), ss.str());
+    }
+    rm.removeAllChannels();
+    CPPUNIT_ASSERT_EQUAL((UInteger)0, rm.getNumChannels());
+
 
 }
 //-----------------------------------------------------------------------------
 void TestRemoteChannelManager::testRemoteChannelManager() {
     using namespace frx::processing::interprocess;
-    
+    using namespace boost::interprocess;
+    using namespace ::sambag::com::interprocess;
     
     // ** Consider: Managers totmann timer isn't running here **
     RemoteChannelManager &rm = RemoteChannelManager::instance();
@@ -79,17 +120,26 @@ void TestRemoteChannelManager::testRemoteChannelManager() {
         boost::make_tuple(name)
     );
     
-    si::SharedMemoryHolder shmh("RCC", 6400);
-    si::String::Class *opc = si::String::findOrCreate("opc", shmh.get());
-    *opc = "get_remote_channels";
+    SharedMemoryObject shm = SharedMemoryObject(open_or_create, "RCC", read_write);
+    shm.truncate(6400);
+    MappedRegion mapped_region = MappedRegion(shm, read_write);
+    void *ptr = mapped_region.get_address();
+    PointerIterator pIt(ptr, 6400);
+    typedef PlacementAlloc<char> Allocator;
+    Allocator alloc(pIt);
+    
+    char *opc = alloc.allocate(50);
+    char *result = alloc.allocate(255);
+    UInteger *checksum = Allocator::rebind<UInteger>::other(alloc).allocate(1);
+    strcpy(opc, "get_remote_channels");
+    
     CPPUNIT_ASSERT_EQUAL((int) 0, std::system(COUNTERPART_EXEC));
     
-    si::String::Class *result = si::String::findOrCreate("result", shmh.get());
     CPPUNIT_ASSERT_EQUAL(
         std::string("RemoteChannel 1 "),
-        std::string(result->c_str())
+        std::string(result)
     );
-    
+
     double datal[512];
     double datar[512];
     double *in[2] = { &datar[0], &datal[0] };
@@ -99,11 +149,12 @@ void TestRemoteChannelManager::testRemoteChannelManager() {
     }
     for (UInteger i=0; i<10; ++i) {
         stream->write(&in[0]);
-        *opc="sum";
+        *checksum = stream->getMemoryChecksum();
+        strcpy(opc, "sum");
         CPPUNIT_ASSERT_EQUAL((int) 0, std::system(COUNTERPART_EXEC));
         CPPUNIT_ASSERT_EQUAL(
             std::string("131328, 131840, "),
-            std::string(result->c_str())
+            std::string(result)
         );
     }
 }

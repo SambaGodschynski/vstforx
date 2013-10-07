@@ -31,18 +31,20 @@ std::string get_remote_channels() {
     BOOST_FOREACH(const std::string &x, res) {
         ss<<x<<" ";
     }
-    
     return ss.str();
-
 }
 
-std::string sum() {
+std::string sum(si::UInteger stream_checksum) {
     fi::RemoteChannelManager &rm = fi::RemoteChannelManager::instance();
     std::vector< fi::RemoteChannelManager::RCId > res;
     rm.getChannels(res);
     assert(res.size() == 1);
     fi::Stream::Ptr stream = rm.getStream( res[0] );
     assert(stream);
+    if (stream->getMemoryChecksum()!=stream_checksum) {
+        std::stringstream ss;
+        SAMBAG_LOG_WARN<<"checksum test failed: "<<stream_checksum<<"!="<<stream->getMemoryChecksum();
+    }
     size_t nc =stream->getNumChannels();
     assert(nc>0);
     double *dblResult = new double[nc];
@@ -62,23 +64,34 @@ std::string sum() {
 
 
 int main() {
-    si::SharedMemoryHolder shmh("RCC", 6400);
-    si::String::Class *opc = si::String::findOrCreate("opc", shmh.get());
+    using namespace frx::processing::interprocess;
+    using namespace boost::interprocess;
+    using namespace ::sambag::com::interprocess;
+    
+    SharedMemoryObject shm = SharedMemoryObject(open_or_create, "RCC", read_write);
+    shm.truncate(6400);
+    MappedRegion mapped_region = MappedRegion(shm, read_write);
+    void *ptr = mapped_region.get_address();
+    PointerIterator pIt(ptr, 6400);
+    typedef PlacementAlloc<char> Allocator;
+    Allocator alloc(pIt);
+    char *opc = alloc.allocate(50);
+    char *result = alloc.allocate(255);
+    UInteger *checksum = Allocator::rebind<UInteger>::other(alloc).allocate(1);
     std::string res="NO_OPC";
-    if (!opc) {
+    if (strlen(opc)==0) {
         std::cout<<"no opcode"<<std::endl;
         return 1;
     }
-    if (*opc=="get_remote_channels") {
+    if (strcmp(opc, "get_remote_channels") == 0) {
         res = get_remote_channels();
     }
-    if (*opc=="sum") {
-        res = sum();
+    if (strcmp(opc, "sum")==0) {
+        res = sum(*checksum);
     }
     if (res=="NO_OPC") {
         std::cout<<"unknown opcode"<<std::endl;
         return 1;
     }
-    si::String::Class *result = si::String::findOrCreate("result", shmh.get());
-    *result = res.c_str();
+    strcpy(result, res.c_str());
 }

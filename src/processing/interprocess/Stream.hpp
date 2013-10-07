@@ -33,18 +33,17 @@ using sambag::com::interprocess::UInteger;
  */
  template <typename T, int BlockSize, int NumChannels>
  struct IPMemoryPolicy :
-    public DefaultMemoryPolicy<T, BlockSize, NumChannels>
+    public MemoryPolicyBase<T, UInteger, BlockSize, NumChannels>
 //=============================================================================
 {
-    typedef DefaultMemoryPolicy<T, BlockSize, NumChannels> Super;
-    typedef boost::interprocess::offset_ptr<T> ValuePtr;
+    typedef MemoryPolicyBase<T, UInteger, BlockSize, NumChannels> Super;
+    typedef typename ::sambag::com::interprocess::OffsetPtr<T>::Class ValuePtr;
     typedef ::sambag::com::interprocess::PlacementAlloc<T> Allocator;
-    Allocator *allocator;
     ValuePtr buffer[NumChannels];
-    void allocate(UInteger blockSize)
+    void allocate(UInteger blockSize, Allocator &allocator)
     {
-        Super::allocateImpl(*allocator, buffer, blockSize);
-        Super::blockSize = blockSize;
+        Super::allocateImpl(allocator, buffer, blockSize);
+        Super::setBlockSize(blockSize);
     }
     void deallocate()
     {
@@ -53,9 +52,6 @@ using sambag::com::interprocess::UInteger;
     inline T * operator[](UInteger channel) const
     {
         return buffer[channel].get();
-    }
-    void setAllocator(Allocator *alloc) {
-        this->allocator=alloc;
     }
     void setZero() {
         Super::setZeroImpl(buffer);
@@ -69,6 +65,8 @@ using sambag::com::interprocess::UInteger;
 class Stream {
 //=============================================================================
 public:
+    //-------------------------------------------------------------------------
+    enum { MAX_BUFFER_BLOCKS = 12 };
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<Stream> Ptr;
     //-------------------------------------------------------------------------
@@ -100,7 +98,7 @@ private:
     //-------------------------------------------------------------------------
     Integer *num_references;
     //-------------------------------------------------------------------------
-    typedef AsyncBuffer<float, 12, 2, IPMemoryPolicy> Buffer;
+    typedef AsyncBuffer<ValueType, MAX_BUFFER_BLOCKS, 2, IPMemoryPolicy> Buffer;
     Buffer *buffer;
     // ensure that size of value type dosen't changes with compiler/arch
     BOOST_STATIC_ASSERT( sizeof(Buffer::ValueType) == 4 );
