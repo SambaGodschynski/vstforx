@@ -9,10 +9,14 @@
 #include <sambag/disco/components/WindowToolkit.hpp>
 #include <exception>
 #include "VstForxResourceManager.hpp"
-#include "CocoaHelper.hpp"
 #include <sambag/com/Common.hpp>
 
 std::string getHomeDirectory();
+
+namespace frx { namespace com {
+    extern std::string getResourceLocation(const std::string &path);
+    extern std::string getBundleLocation();
+}}
 
 #ifdef FRX_IS_INSTRUMENT
 	enum { _FRX_IS_INSTRUMENT = 1 };
@@ -94,7 +98,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 }
 //-----------------------------------------------------------------------------
 std::string getHomeDirectory() {
-	return frx::com::CocoaHelper::getBundleLocation();
+	return frx::com::getBundleLocation();
 }
 
 

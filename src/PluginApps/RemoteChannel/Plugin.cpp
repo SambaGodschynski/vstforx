@@ -69,7 +69,7 @@ void Plugin::updateConfiguration() {
         return;
     }
     RemoteChannelManager &rm = RemoteChannelManager::instance();
-   /* std::string name = rm.createUniqueName();
+    /*std::string name = rm.createUniqueName();
     stream = interprocess::Stream::create(name,
         blockSize,
         this->getHost()->getNumOutputs()

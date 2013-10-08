@@ -20,7 +20,7 @@ namespace {
     typedef boost::tuple<char[CH_MAX_CHAR], char[CH_MAX_CHAR]> ChannelData;
     const int RC_MAX_MEM_SIZE = sizeof(ChannelData)*MAX_CHANNELS + 6400;
     const int TOTMANN_UPDATE_INTERVAL_SEC = 3;
-    const char * SHM_MANAGER_NAME = "VSTForx.RemoteChannelManager10";
+    const char * SHM_MANAGER_NAME = "VSTForx.RemoteChannelManager";
     /*const char * FRX_LAST_CHANGED_TIMESTAMP = "changedTimestamp";
     const char * FRX_MANAGER_MUTEX = "manager_mutex";
     const char * FRX_CHANNEL_DATA = "channelData";
@@ -170,11 +170,7 @@ RemoteChannelManager::RemoteChannelManager() :
 {
    
     //shmh = SHMHPtr(new SHMH(SHM_MANAGER_NAME, RC_MAX_MEM_SIZE));
-    
-    using namespace boost::interprocess;
-    shm = SharedMemoryObject(open_or_create, SHM_MANAGER_NAME, read_write);
-    
-    initManager();
+    //initManager();
 }
 //-----------------------------------------------------------------------------
 bool RemoteChannelManager::isTotmann() {
@@ -205,9 +201,15 @@ void RemoteChannelManager::initManager(int tries) {
     
     using namespace boost::interprocess;
     using namespace ::sambag::com::interprocess;
-    shm.truncate(RC_MAX_MEM_SIZE);
-    mapped_region = MappedRegion(shm, read_write);
-    void *ptr = mapped_region.get_address();
+    shm = SharedMemoryObjectPtr(
+        new SharedMemoryObject(open_or_create, SHM_MANAGER_NAME, read_write)
+    );
+
+    shm->truncate(RC_MAX_MEM_SIZE);
+    mapped_region = MappedRegionPtr(
+        new MappedRegion(*(shm.get()), read_write)
+    );
+    void *ptr = mapped_region->get_address();
     
     PointerIterator pIt(ptr, RC_MAX_MEM_SIZE);
     typedef PlacementAlloc<Integer> Allocator;
@@ -271,6 +273,8 @@ void RemoteChannelManager::destroyShm() {
         shmh->get().destroy<RemoteChannels>(FRX_CHANNEL_DATA);
         shmh->get().destroy<UInteger>(FRX_TOTMANN_TIME);
         shmh->get().destroy<UInteger>(FRX_NUM_REFERENCES);*/
+        mapped_region.reset();
+        shm.reset();
         shared_memory_object::remove(SHM_MANAGER_NAME);
         SAMBAG_LOG_INFO<<"destroying RemoteChannelManager: SUCCEED";
     } catch (...) {
@@ -279,9 +283,9 @@ void RemoteChannelManager::destroyShm() {
 }
 //-----------------------------------------------------------------------------
 RemoteChannelManager::~RemoteChannelManager() {
-    if (--(*references)<=0) {
+    /*if (--(*references)<=0) {
         destroyShm();
-    }
+    }*/
 }
 //-----------------------------------------------------------------------------
 RemoteChannelManager & RemoteChannelManager::instance() {

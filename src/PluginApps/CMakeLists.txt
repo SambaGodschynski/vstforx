@@ -30,7 +30,7 @@ ELSEIF(APPLE)
   SET (PlugSources ${PlugSources} ${FRX_RESOURCES}
       VSTForx/mac/VstForxPlugMain.cpp
       VSTForx/mac/VstForxResourceManager.cpp
-      VSTForx/mac/CocoaHelper.mm
+      com/mac/CocoaHelper.mm
       ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp
    )
   SET_SOURCE_FILES_PROPERTIES(${FRX_RESOURCES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
@@ -39,10 +39,9 @@ ELSEIF(APPLE)
   #remote channel
   SET (RemoteSrc ${RemoteSrc}
         RemoteChannel/mac/RemoteChannelMain.cpp
-        ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp
+        com/mac/CocoaHelper.mm
+	${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp
    )
-
-
 ENDIF(WIN32)
 
 
@@ -102,6 +101,7 @@ ELSEIF(APPLE)
   target_link_libraries (remoteChannel frx_core ${FRX_CLIBS})
   SET_TARGET_PROPERTIES(remoteChannel PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/RemoteChannel/mac/remoteChannel.plist")
   SET_TARGET_PROPERTIES(remoteChannel PROPERTIES LINK_FLAGS "-bundle")
+  target_compile_definitions(remoteChannel PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.RemoteChannel\"")	
 
 ENDIF(WIN32)
 

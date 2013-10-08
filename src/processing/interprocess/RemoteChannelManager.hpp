@@ -68,8 +68,10 @@ private:
     //typedef si::SharedMemoryHolder SHMH;
     //typedef boost::shared_ptr<SHMH> SHMHPtr;
     //SHMHPtr shmh;
-    SharedMemoryObject shm;
-    MappedRegion mapped_region;
+    typedef boost::shared_ptr<SharedMemoryObject> SharedMemoryObjectPtr;
+    SharedMemoryObjectPtr shm;
+    typedef boost::shared_ptr<MappedRegion> MappedRegionPtr;
+    MappedRegionPtr mapped_region;
     //-------------------------------------------------------------------------
     //RemoteChannelManager();
     //-------------------------------------------------------------------------

@@ -9,10 +9,15 @@
 
 enum {RC_UID='fxRC'};
 
+namespace frx { namespace com { 
+    extern std::string getResourceLocation(const std::string &path);
+    extern std::string getBundleLocation();
+}}
+
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
     // setup logging:
-    ::sambag::com::addLogFile("VSTForx.RemoteChannel.log");
+    ::sambag::com::addLogFile(frx::com::getBundleLocation() + "/VSTForx.RemoteChannel.log");
     SAMBAG_LOG_INFO<<"woke up";
 	// load plugin
 	using namespace sambag::dsp::vst;

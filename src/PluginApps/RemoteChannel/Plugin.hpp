@@ -75,7 +75,7 @@ public:
 	//-------------------------------------------------------------------------
 	template <class String> 
 	void getProductName(String &outStr) const {
-		outStr = "VSTForx.RemoteChannel";
+		outStr = "VSTForx.RemoteChannel-testrun3";
 	} 
 	//-------------------------------------------------------------------------
 	int getProductVersion() const {
