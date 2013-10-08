@@ -165,12 +165,14 @@ getChannels(Container &out)
 //-----------------------------------------------------------------------------
 RemoteChannelManager::RemoteChannelManager() :
     changed(NULL),
+    totmann_time(NULL),
+    references(NULL),
     mutex(NULL),
     channels(NULL)
 {
    
     //shmh = SHMHPtr(new SHMH(SHM_MANAGER_NAME, RC_MAX_MEM_SIZE));
-    //initManager();
+    initManager();
 }
 //-----------------------------------------------------------------------------
 bool RemoteChannelManager::isTotmann() {
@@ -273,6 +275,13 @@ void RemoteChannelManager::destroyShm() {
         shmh->get().destroy<RemoteChannels>(FRX_CHANNEL_DATA);
         shmh->get().destroy<UInteger>(FRX_TOTMANN_TIME);
         shmh->get().destroy<UInteger>(FRX_NUM_REFERENCES);*/
+        
+        changed = NULL;
+        mutex = NULL;
+        channels = NULL;
+        totmann_time = NULL;
+        references = NULL;
+        
         mapped_region.reset();
         shm.reset();
         shared_memory_object::remove(SHM_MANAGER_NAME);
@@ -283,9 +292,9 @@ void RemoteChannelManager::destroyShm() {
 }
 //-----------------------------------------------------------------------------
 RemoteChannelManager::~RemoteChannelManager() {
-    /*if (--(*references)<=0) {
+    if (references && --(*references)<=0) {
         destroyShm();
-    }*/
+    }
 }
 //-----------------------------------------------------------------------------
 RemoteChannelManager & RemoteChannelManager::instance() {

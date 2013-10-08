@@ -23,6 +23,8 @@
 
 typedef boost::interprocess::shared_memory_object SharedMemoryObject;
 typedef boost::interprocess::mapped_region MappedRegion;
+typedef boost::shared_ptr<SharedMemoryObject> SharedMemoryObjectPtr;
+typedef boost::shared_ptr<MappedRegion> MappedRegionPtr;
 
 namespace frx { namespace processing { namespace interprocess {
 using sambag::com::interprocess::Integer;
@@ -78,11 +80,15 @@ protected:
     //-------------------------------------------------------------------------
     Stream();
     //-------------------------------------------------------------------------
-    UInteger getNeededSize(UInteger blockSize, UInteger numChannel) const;
+    UInteger getNeededSize(UInteger blockSize,
+    UInteger numChannel, UInteger numParameter) const;
     //-------------------------------------------------------------------------
     void assignMemory(sambag::com::interprocess::PointerIterator &pIt,
-                      UInteger numChannel=0, UInteger numBlockSize=0);
+                      UInteger numChannel=0, UInteger numBlockSize=0,
+                      UInteger numParameter=0);
 private:
+    //-------------------------------------------------------------------------
+    void destroyMemory();
     //-------------------------------------------------------------------------
     void *memory_ptr;
     //-------------------------------------------------------------------------
@@ -94,23 +100,26 @@ private:
     //-------------------------------------------------------------------------
     Mutex *mutex;
     //-------------------------------------------------------------------------
-    UInteger *blockSize_ist, *numChannels_ist;
+    UInteger *blockSize_ist, *numChannels_ist, *numParameter_ist;
     //-------------------------------------------------------------------------
     Integer *num_references;
     //-------------------------------------------------------------------------
-    typedef AsyncBuffer<ValueType, MAX_BUFFER_BLOCKS, 2, IPMemoryPolicy> Buffer;
-    Buffer *buffer;
-    // ensure that size of value type dosen't changes with compiler/arch
-    BOOST_STATIC_ASSERT( sizeof(Buffer::ValueType) == 4 );
+    ValueType *parameter;
     //-------------------------------------------------------------------------
-    void createBuffer(UInteger blockSize_soll, UInteger numChannels_soll);
+    typedef AsyncBuffer<ValueType, MAX_BUFFER_BLOCKS, 2, IPMemoryPolicy> AudioBuffer;
+    AudioBuffer *buffer;
+    // ensure that size of value type dosen't changes with compiler/arch
+    BOOST_STATIC_ASSERT( sizeof(AudioBuffer::ValueType) == 4 );
+    //-------------------------------------------------------------------------
+    void createBuffer(UInteger blockSize_soll,
+        UInteger numChannels_soll, UInteger numParameter_soll);
     //-------------------------------------------------------------------------
     void openBuffer();
     //-------------------------------------------------------------------------
     std::string id;
     //-------------------------------------------------------------------------
-    SharedMemoryObject shm;
-    MappedRegion mapped_region;
+    SharedMemoryObjectPtr shm;
+    MappedRegionPtr mapped_region;
 public:
     //-------------------------------------------------------------------------
     /**
@@ -121,7 +130,8 @@ public:
     //-------------------------------------------------------------------------
     virtual ~Stream();
     //-------------------------------------------------------------------------
-    static Ptr create(const std::string &id, UInteger blockSize, UInteger numChannels);
+    static Ptr create(const std::string &id, UInteger blockSize,
+        UInteger numChannels, UInteger numParameter);
     //-------------------------------------------------------------------------
     static Ptr open(const std::string &id);
     //-------------------------------------------------------------------------
@@ -147,6 +157,17 @@ public:
             return 0;
         }
         return *numChannels_ist;
+    }
+    //-------------------------------------------------------------------------
+    UInteger getNumParameter() const {
+        if (!numParameter_ist) {
+            return 0;
+        }
+        return *numParameter_ist;
+    }
+    //-------------------------------------------------------------------------
+    ValueType * getParameter() const {
+        return parameter;
     }
     //-------------------------------------------------------------------------
     const std::string & getId() const { return id; }

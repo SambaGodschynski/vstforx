@@ -15,40 +15,48 @@
 namespace {
 using sambag::com::interprocess::Integer;
 using sambag::com::interprocess::UInteger;
-void createSharedMemoryObject(SharedMemoryObject &shm, const char * name) {
+SharedMemoryObjectPtr createSharedMemoryObject(const char * name) {
     using namespace boost::interprocess;
-    shm = SharedMemoryObject(open_or_create, name, read_write);
+    return SharedMemoryObjectPtr(
+        new SharedMemoryObject(open_or_create, name, read_write)
+    );
 }
-void findSharedMemoryObject(SharedMemoryObject &shm, const char * name) {
+SharedMemoryObjectPtr findSharedMemoryObject(const char * name) {
     using namespace boost::interprocess;
-    shm = SharedMemoryObject(open_only, name, read_write);
+    return SharedMemoryObjectPtr(
+        new SharedMemoryObject(open_only, name, read_write)
+    );
 }
-boost::tuple<void*, UInteger>
-ipMalloc(SharedMemoryObject &shm, MappedRegion &mp, UInteger size)
+boost::tuple<void*, UInteger, MappedRegionPtr>
+ipMalloc(SharedMemoryObjectPtr shm, UInteger size)
 {
     using namespace boost::interprocess;
     if (size==0) {
         return NULL;
     }
-    shm.truncate(size+sizeof(int));
-    mp = MappedRegion(shm, read_write);
-    void *res = mp.get_address();
+    shm->truncate(size+sizeof(int));
+    MappedRegionPtr mp = MappedRegionPtr(
+        new MappedRegion(*(shm.get()), read_write)
+    );
+    void *res = mp->get_address();
     
     UInteger *memorySize = (UInteger*)res;
     *memorySize = size;
     res = memorySize+1;
-    return boost::make_tuple(res, size);
+    return boost::make_tuple(res, size, mp);
 }
 
-boost::tuple<void*, UInteger>
-ipOpen(SharedMemoryObject &shm, MappedRegion &mp)
+boost::tuple<void*, UInteger, MappedRegionPtr>
+ipOpen(SharedMemoryObjectPtr shm)
 {
     using namespace boost::interprocess;
-    mp = MappedRegion(shm, read_write);
-    void *res =  mp.get_address();
+    MappedRegionPtr mp = MappedRegionPtr(
+        new MappedRegion(*(shm.get()), read_write)
+    );
+    void *res =  mp->get_address();
     UInteger *memorySize = (UInteger*)res;
     res = memorySize+1;
-    return boost::make_tuple(res, *memorySize);
+    return boost::make_tuple(res, *memorySize, mp);
 }
 
 void ipFree(const char *name)
@@ -79,32 +87,44 @@ namespace frx { namespace processing { namespace interprocess {
 //=============================================================================
 //-----------------------------------------------------------------------------
 Stream::Stream() :
+    mutex(NULL),
     blockSize_ist(NULL),
     numChannels_ist(NULL),
+    numParameter_ist(NULL),
     num_references(NULL)
 {
 }
 //-----------------------------------------------------------------------------
+void Stream::destroyMemory() {
+    num_references = NULL;
+    blockSize_ist = NULL;
+    numParameter_ist = NULL;
+    numChannels_ist = NULL;
+    mutex = NULL;
+    mapped_region.reset();
+    shm.reset();
+    ipFree(id.c_str());
+}
+//-----------------------------------------------------------------------------
 Stream::~Stream() {
-    using namespace ::sambag::com::interprocess;
-    if (num_references==NULL) {
-        return;
-    }
-    if (--(*num_references)==0) {
-        ipFree(id.c_str());
+    if (num_references && --(*num_references)==0) {
+       destroyMemory();
     }
 }
 //-----------------------------------------------------------------------------
-UInteger Stream::getNeededSize(UInteger blockSize, UInteger numChannel) const {
+UInteger Stream::getNeededSize(UInteger blockSize,
+    UInteger numChannel, UInteger numParameter) const
+{
     return  sizeof(Integer) +
             sizeof(UInteger)*3 +
             sizeof(Mutex)  +
-            sizeof(ValueType)*blockSize*Buffer::NumChannels*Buffer::NumBlocks +
+            sizeof(ValueType)*blockSize*AudioBuffer::NumChannels*AudioBuffer::NumBlocks +
+            sizeof(ValueType)*numParameter+
             6400;
 }
 //-----------------------------------------------------------------------------
 void Stream::assignMemory(sambag::com::interprocess::PointerIterator &pIt,
-    UInteger numChannel, UInteger numBlockSize)
+    UInteger numChannel, UInteger numBlockSize, UInteger numParameter)
 {
     using namespace ::sambag::com::interprocess;
     typedef PlacementAlloc<ValueType> Allocator;
@@ -113,16 +133,27 @@ void Stream::assignMemory(sambag::com::interprocess::PointerIterator &pIt,
     num_references = Allocator::rebind<Integer>::other(alloc).allocate(1);
     blockSize_ist = Allocator::rebind<UInteger>::other(alloc).allocate(1);
     numChannels_ist = Allocator::rebind<UInteger>::other(alloc).allocate(1);
+    numParameter_ist = Allocator::rebind<UInteger>::other(alloc).allocate(1);
     mutex = Allocator::rebind<Mutex>::other(alloc).allocate(1);
+    
+    if (numParameter!=0) {
+        *numParameter_ist = numParameter;
+    }
+    
+    if (numParameter_ist>0) {
+        parameter = Allocator::rebind<ValueType>::other(alloc).allocate(*numParameter_ist);
+    }
     
     // always at last, because the pointer iterator is used in createBuffer(),
     // for allocating buffer memory, but not in openBuffer().
     // so after createBuffer or openBuffer the pointer iteraror points to
     // different locations.
-    buffer = Allocator::rebind<Buffer>::other(alloc).allocate(1);
+    buffer = Allocator::rebind<AudioBuffer>::other(alloc).allocate(1);
 }
 //-----------------------------------------------------------------------------
-void Stream::createBuffer(UInteger blockSize_soll, UInteger numChannels_soll) {
+void Stream::createBuffer(UInteger blockSize_soll,
+    UInteger numChannels_soll, UInteger numParameter_soll)
+{
     if (numChannels_soll > 2) {
         SAMBAG_THROW(sambag::com::exceptions::IllegalArgumentException,
         "interprocess::Stream multichannel not supported yet.");
@@ -134,31 +165,31 @@ void Stream::createBuffer(UInteger blockSize_soll, UInteger numChannels_soll) {
     }
 
     using namespace ::sambag::com::interprocess;
-    createSharedMemoryObject(shm, id.c_str());
-    UInteger byteSize = getNeededSize(blockSize_soll, numChannels_soll);
+    shm = createSharedMemoryObject(id.c_str());
+    UInteger byteSize = getNeededSize(blockSize_soll, numChannels_soll, numParameter_soll);
     void *raw;
-    boost::tie(raw, memorySize) = ipMalloc( shm, mapped_region, byteSize );
+    boost::tie(raw, memorySize, mapped_region) = ipMalloc( shm, byteSize );
     memory_ptr = raw;
     pIt.setPointer(raw, memorySize);
     
-    assignMemory(pIt, numChannels_soll, blockSize_soll);
+    assignMemory(pIt, numChannels_soll, blockSize_soll, numParameter_soll);
     ++(*num_references);
-    (*blockSize_ist) = blockSize_soll;
+    *blockSize_ist = blockSize_soll;
     *numChannels_ist = numChannels_soll;
     new(mutex) Mutex();
     
-    typedef Buffer::Allocator Allocator;
+    typedef AudioBuffer::Allocator Allocator;
     Allocator alloc(pIt);
-    new(buffer) Buffer();
+    new(buffer) AudioBuffer();
     buffer->allocate(blockSize_soll, alloc);
     buffer->setZero();
 }
 //-----------------------------------------------------------------------------
 void Stream::openBuffer() {
     using namespace ::sambag::com::interprocess;
-    findSharedMemoryObject(shm, id.c_str());
+    shm = findSharedMemoryObject(id.c_str());
     void *raw;
-    boost::tie(raw, memorySize) = ipOpen( shm, mapped_region );
+    boost::tie(raw, memorySize, mapped_region) = ipOpen( shm );
     memory_ptr = raw;
     pIt.setPointer(raw, memorySize);
     assignMemory(pIt);
@@ -170,11 +201,11 @@ Stream::ValueType * Stream::operator[](UInteger channel) const {
 }
 //-----------------------------------------------------------------------------
 Stream::Ptr Stream::create(const std::string &id,   
-    UInteger blockSize, UInteger numChannels)
+    UInteger blockSize, UInteger numChannels, UInteger numParameter)
 {
     Ptr res = Ptr( new Stream() );
     res->id = id;
-    res->createBuffer(blockSize, numChannels);
+    res->createBuffer(blockSize, numChannels, numParameter);
     return res;
 }
 //-----------------------------------------------------------------------------

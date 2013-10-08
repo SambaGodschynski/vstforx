@@ -63,10 +63,45 @@ IF (WIN32)
   target_compile_definitions(vstforxInstrumentDEMO PUBLIC "FRX_IS_INSTRUMENT" PUBLIC "FRX_IS_DEMO")
 
   #remote channel
-  add_library(remoteChannel SHARED ${RemoteSrc})
-  target_link_libraries (remoteChannel frx_core ${FRX_CLIBS})
+  add_library(remoteChannelSender SHARED ${RemoteSrc})
+  target_link_libraries (remoteChannelSender frx_core ${FRX_CLIBS})
 
+#process plistfiles
 ELSEIF(APPLE)
+	#vstforx
+	SET(PLIST_VERSION "${FRX_VERSION_MAJOR}.${FRX_VERSION_MINOR}.${FRX_VERSION_MICRO}")
+	SET(PLIST_PROD VSTForx)
+	SET(PLIST_EXEC vstforx)
+	CONFIGURE_FILE(
+  	  "tmpl.plist.in"
+  	  "VSTForx/mac/vstforx.plist"
+	)	
+	SET(PLIST_PROD VSTForxInstrument)
+	SET(PLIST_EXEC vstforxInstrument)
+	CONFIGURE_FILE(
+  	  "tmpl.plist.in"
+  	  "VSTForx/mac/ivstforx.plist"
+	)	
+	SET(PLIST_PROD VSTForxDEMO)
+	SET(PLIST_EXEC vstforxDEMO)
+	CONFIGURE_FILE(
+  	  "tmpl.plist.in"
+  	  "VSTForx/mac/vstforxDemo.plist"
+	)	
+	SET(PLIST_PROD VSTForxInstrumentDEMO)
+	SET(PLIST_EXEC vstforxInstrumentDEMO)
+	CONFIGURE_FILE(
+  	  "tmpl.plist.in"
+  	  "ivstforxDEMO.plist"
+	)
+	#remote channel
+	SET(PLIST_PROD RemoteChannelSender)
+	SET(PLIST_EXEC remoteChannelSender)
+	CONFIGURE_FILE(
+  	  "tmpl.plist.in"
+  	  "RemoteChannel/mac/remoteChannel.plist"
+	)		
+  #set executables
   #vstforx
   ADD_EXECUTABLE(vstforx MACOSX_BUNDLE ${PlugSources})
   target_link_libraries (vstforx frx_core ${FRX_CLIBS})
@@ -97,11 +132,11 @@ ELSEIF(APPLE)
 						   PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.VSTForxInstrumentDEMO\"")
 
   #remote channel
-  ADD_EXECUTABLE(remoteChannel MACOSX_BUNDLE ${RemoteSrc})
-  target_link_libraries (remoteChannel frx_core ${FRX_CLIBS})
-  SET_TARGET_PROPERTIES(remoteChannel PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/RemoteChannel/mac/remoteChannel.plist")
-  SET_TARGET_PROPERTIES(remoteChannel PROPERTIES LINK_FLAGS "-bundle")
-  target_compile_definitions(remoteChannel PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.RemoteChannel\"")	
+  ADD_EXECUTABLE(remoteChannelSender MACOSX_BUNDLE ${RemoteSrc})
+  target_link_libraries (remoteChannelSender frx_core ${FRX_CLIBS})
+  SET_TARGET_PROPERTIES(remoteChannelSender PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/RemoteChannel/mac/remoteChannel.plist")
+  SET_TARGET_PROPERTIES(remoteChannelSender PROPERTIES LINK_FLAGS "-bundle")
+  target_compile_definitions(remoteChannelSender PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.RemoteChannelSender\"")	
 
 ENDIF(WIN32)
 

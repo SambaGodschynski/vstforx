@@ -114,7 +114,7 @@ void TestRemoteChannelManager::testRemoteChannelManager() {
     CPPUNIT_ASSERT_EQUAL((UInteger)0, rm.getNumChannels());
     
     std::string name = rm.createUniqueName();
-    Stream::Ptr stream = Stream::create(name,512,2);
+    Stream::Ptr stream = Stream::create(name,512,2, 100);
     rm.__addChannel_(
         "RemoteChannel 1",
         boost::make_tuple(name)
@@ -147,13 +147,16 @@ void TestRemoteChannelManager::testRemoteChannelManager() {
         in[0][i] = i+1;
         in[1][i] = i+2;
     }
+    for (UInteger i=0; i<100; ++i) {
+        stream->getParameter()[i] = i+3;
+    }
     for (UInteger i=0; i<10; ++i) {
         stream->write(&in[0]);
         *checksum = stream->getMemoryChecksum();
         strcpy(opc, "sum");
         CPPUNIT_ASSERT_EQUAL((int) 0, std::system(COUNTERPART_EXEC));
         CPPUNIT_ASSERT_EQUAL(
-            std::string("131328, 131840, "),
+            std::string("136578, 137090, "),
             std::string(result)
         );
     }

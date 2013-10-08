@@ -80,18 +80,19 @@ namespace tests {
 //-----------------------------------------------------------------------------
 void TestInterprocessStream::testStreamConstruction() {
     using namespace frx::processing::interprocess;
-    Stream::Ptr stream = Stream::create("ts1", 512, 2);
+    Stream::Ptr stream = Stream::create("ts1", 512, 2, 4);
     {
-        Stream::Ptr stream2 = Stream::create("ts1", 512, 2);
+        Stream::Ptr stream2 = Stream::create("ts1", 512, 2, 4);
     }
 }
 //-----------------------------------------------------------------------------
 void TestInterprocessStream::testChecksum() {
     using namespace frx::processing::interprocess;
     static const UInteger BLOCK_SIZE = 512,
-                        NUM_CHANNELS = 2;
+                        NUM_CHANNELS = 2,
+                        NUM_PARAMETER = 12;
     
-    Stream::Ptr stream = Stream::create("ts1", BLOCK_SIZE, NUM_CHANNELS);
+    Stream::Ptr stream = Stream::create("ts1", BLOCK_SIZE, NUM_CHANNELS, NUM_PARAMETER);
     double **data = createTestBuffer(BLOCK_SIZE, NUM_CHANNELS);
     fillTestBuffer(BLOCK_SIZE, NUM_CHANNELS, data);
     stream->write(data);
@@ -127,11 +128,13 @@ void TestInterprocessStream::testChecksum() {
 void TestInterprocessStream::testReadWrite() {
     using namespace frx::processing::interprocess;
     static const UInteger BLOCK_SIZE = 512,
-                        NUM_CHANNELS = 2;
+                        NUM_CHANNELS = 2,
+                        NUM_PARAMETER = 12;
     
-    Stream::Ptr stream = Stream::create("ts1", BLOCK_SIZE, NUM_CHANNELS);
+    Stream::Ptr stream = Stream::create("ts1", BLOCK_SIZE, NUM_CHANNELS, NUM_PARAMETER);
     CPPUNIT_ASSERT_EQUAL(BLOCK_SIZE, stream->getBlockSize());
     CPPUNIT_ASSERT_EQUAL(NUM_CHANNELS, stream->getNumChannels());
+    CPPUNIT_ASSERT_EQUAL(NUM_PARAMETER, stream->getNumParameter());
    
     double **data = createTestBuffer(BLOCK_SIZE, NUM_CHANNELS);
     fillTestBuffer(BLOCK_SIZE, NUM_CHANNELS, data);
@@ -144,6 +147,7 @@ void TestInterprocessStream::testReadWrite() {
         Stream::Ptr stream2 = Stream::open("ts1");
         CPPUNIT_ASSERT_EQUAL(BLOCK_SIZE, stream2->getBlockSize());
         CPPUNIT_ASSERT_EQUAL(NUM_CHANNELS, stream2->getNumChannels());
+        CPPUNIT_ASSERT_EQUAL(NUM_PARAMETER, stream2->getNumParameter());
     
         double **res = createTestBuffer(BLOCK_SIZE, NUM_CHANNELS);
         

@@ -54,8 +54,6 @@ public:
 	//-------------------------------------------------------------------------
 	void processEvents(sambag::dsp::IMidiEvents *ev);
 	//-------------------------------------------------------------------------
-	void hostParameterChanged(void *src, float value, int index);
-	//-------------------------------------------------------------------------
 	Plugin();
 	//-------------------------------------------------------------------------
 	~Plugin();
@@ -75,7 +73,7 @@ public:
 	//-------------------------------------------------------------------------
 	template <class String> 
 	void getProductName(String &outStr) const {
-		outStr = "VSTForx.RemoteChannel-testrun3";
+		outStr = "VSTForx.RemoteChannel";
 	} 
 	//-------------------------------------------------------------------------
 	int getProductVersion() const {

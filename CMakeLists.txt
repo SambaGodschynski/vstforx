@@ -116,45 +116,6 @@ set (VSTSDKSOURCE ${VSTSDKSOURCE}
 )
 
 
-IF(APPLE)
-        #vstforx
-	SET(PLIST_VERSION "${FRX_VERSION_MAJOR}.${FRX_VERSION_MINOR}.${FRX_VERSION_MICRO}")
-	SET(PLIST_PROD VSTForx)
-	SET(PLIST_EXEC vstforx)
-	CONFIGURE_FILE(
-  	  "${PROJECT_SOURCE_DIR}/src/PluginApps/tmpl.plist.in"
-  	  "${PROJECT_BINARY_DIR}/src/PluginApps/VSTForx/mac/vstforx.plist"
-	)	
-	SET(PLIST_PROD VSTForxInstrument)
-	SET(PLIST_EXEC vstforxInstrument)
-	CONFIGURE_FILE(
-  	  "${PROJECT_SOURCE_DIR}/src/PluginApps/tmpl.plist.in"
-  	  "${PROJECT_BINARY_DIR}/src/PluginApps/VSTForx/mac/ivstforx.plist"
-	)	
-	SET(PLIST_PROD VSTForxDEMO)
-	SET(PLIST_EXEC vstforxDEMO)
-	CONFIGURE_FILE(
-  	  "${PROJECT_SOURCE_DIR}/src/PluginApps/tmpl.plist.in"
-  	  "${PROJECT_BINARY_DIR}/src/PluginApps/VSTForx/mac/vstforxDemo.plist"
-	)	
-	SET(PLIST_PROD VSTForxInstrumentDEMO)
-	SET(PLIST_EXEC vstforxInstrumentDEMO)
-	CONFIGURE_FILE(
-  	  "${PROJECT_SOURCE_DIR}/src/PluginApps/tmpl.plist.in"
-  	  "${PROJECT_BINARY_DIR}/src/PluginApps/VSTForx/mac/ivstforxDEMO.plist"
-	)
-
-
-	#remote channel
-	SET(PLIST_PROD RemoteChannel)
-	SET(PLIST_EXEC remoteChannel)
-	CONFIGURE_FILE(
-  	  "${PROJECT_SOURCE_DIR}/src/PluginApps/tmpl.plist.in"
-  	  "${PROJECT_BINARY_DIR}/src/PluginApps/RemoteChannel/mac/remoteChannel.plist"
-	)		
-ENDIF(APPLE)
-
-
 CONFIGURE_FILE(
   "${PROJECT_SOURCE_DIR}/src/com/FrxConfig.h.in"
   "${PROJECT_BINARY_DIR}/src/com/FrxConfig.h"

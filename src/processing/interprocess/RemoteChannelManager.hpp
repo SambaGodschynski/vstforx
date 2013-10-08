@@ -73,7 +73,7 @@ private:
     typedef boost::shared_ptr<MappedRegion> MappedRegionPtr;
     MappedRegionPtr mapped_region;
     //-------------------------------------------------------------------------
-    //RemoteChannelManager();
+    RemoteChannelManager();
     //-------------------------------------------------------------------------
     FrxAsyncDSPTimer::Ptr totmannTimer;
     //-------------------------------------------------------------------------
@@ -92,7 +92,6 @@ protected:
     //-------------------------------------------------------------------------
     void destroyShm();
 public:
-    RemoteChannelManager();
     //-------------------------------------------------------------------------
     /**
      * @return the number of running RemoteChannelManager instances.

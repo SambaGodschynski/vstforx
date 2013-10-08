@@ -15,6 +15,7 @@
 #include <com/Serialization.h>
 #include <processing/parameter/parameter.h>
 #include "Stream.hpp"
+#include <processing/FrxAsyncDSPTimer.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 namespace pr = ::processing;
@@ -34,7 +35,11 @@ public:
 	typedef boost::shared_ptr<RemoteChReceiver> Ptr;
 private:
     //-------------------------------------------------------------------------
+    FrxAsyncDSPTimer::Ptr parameterObserver;
+    //-------------------------------------------------------------------------
     sambag::com::interprocess::UInteger blocksRead;
+    //-------------------------------------------------------------------------
+    std::vector<prp::Parameter::Ptr> parameters;
     //-------------------------------------------------------------------------
     ::processing::Frames frames;
     //-------------------------------------------------------------------------
@@ -55,6 +60,7 @@ private:
 	template < typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ) {
 		ar & boost::serialization::base_object< pr::ProcessAdapter > ( *this );
+        ar & parameters;
 		if ( Archive::is_loading::value ) {
 			frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
 			if (!hI) {
@@ -68,6 +74,12 @@ private:
 	//-------------------------------------------------------------------------
 	RemoteChReceiver() : blocksRead(Stream::UndefinedNumBlocks) {}
 protected:
+    //-------------------------------------------------------------------------
+    void initParameterObserver();
+    //-------------------------------------------------------------------------
+    void initParameters(size_t num);
+    //-------------------------------------------------------------------------
+    void onParameterObserver();
 	//-------------------------------------------------------------------------
 	RemoteChReceiver(frx::processing::IHostInfo::Ptr hostInfo,
                      const std::string &rcId,
@@ -80,31 +92,31 @@ public:
 	 */
 	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo,
                        const std::string &rcId);
-    //--------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
 	/**
 	 * HostInfo(Samplerate/Blocksize) geaendert.
 	 */
 	virtual void hostBaseConfigChanged() {}
-	//--------------------------------------------------------------------------------------------------------
-	/**
+	//-------------------------------------------------------------------------
+    /**
 	 * Verarbeitet Samplemenge des Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
 	 * @param numSamples Anzahl der zu verarbeitenden Samples
 	 */
 	virtual void processAdapter( pr::Processor::Int numSamples );
-	//--------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------
 	/**
 	 *
 	 * @param index
 	 * @return parameter to index
 	 */
-	virtual prp::Parameter::Ptr getParameter ( size_t index = 0 ) const { return prp::Parameter::Ptr(); }
-	//--------------------------------------------------------------------------------------------------------
+	virtual prp::Parameter::Ptr getParameter ( size_t index = 0 ) const;
+	//-------------------------------------------------------------------------
 	/**
 	 *
 	 * @return 1
 	 */
-	virtual size_t getNumParameter () const { return 0; }
-	//--------------------------------------------------------------------------------------------------------
+	virtual size_t getNumParameter () const;
+	//-------------------------------------------------------------------------
 	virtual ~RemoteChReceiver() {}
 };
 }}} // namespace(s)

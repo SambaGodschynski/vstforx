@@ -54,6 +54,12 @@ std::string sum(si::UInteger stream_checksum) {
             dblResult[j] += (*stream)[j][i];
         }
     }
+    
+    for (size_t j=0; j<stream->getNumParameter(); ++j) {
+        dblResult[0] += stream->getParameter()[j];
+        dblResult[1] += stream->getParameter()[j];
+    }
+
     std::stringstream ss;
     for (size_t j=0; j<nc; ++j) {
         ss << dblResult[j] << ", ";

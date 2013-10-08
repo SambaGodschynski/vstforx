@@ -11,6 +11,10 @@
 #include <fstream>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 
+namespace {
+    const int PARAM_OBSERVER_INTERVAL_MS=30;
+}
+
 namespace frx { namespace processing { namespace interprocess {
 //=============================================================================
 //  Class RemoteChReceiver
@@ -31,7 +35,8 @@ RemoteChReceiver::RemoteChReceiver(frx::processing::IHostInfo::Ptr hostInfo,
     }
     frames.setSize( hostInfo->getBlockSize() );
     frames.setZero( hostInfo->getBlockSize() );
-    dcStream.setSize( hostInfo->getBlockSize(),  hostInfo->getBlockSize()*100);
+    dcStream.setSize( hostInfo->getBlockSize(),  0/*hostInfo->getBlockSize()*/);
+    initParameters(ipStream->getNumParameter());
 }
 //-----------------------------------------------------------------------------
 void RemoteChReceiver::processAdapter( pr::Processor::Int numSamples ) {
@@ -40,14 +45,12 @@ void RemoteChReceiver::processAdapter( pr::Processor::Int numSamples ) {
     float **data = frames.getData();
     int res = ipStream->read(data, blocksRead);
     if (res!=0) {
-        static int c=0;
-        std::cout<<++c<<": "<<res<<std::endl;
         blocksRead-=res;
         ipStream->read(data, blocksRead);
     }
     size_t bs = getHostInfo()->getBlockSize();
     // add ip data into dc stream
-    dcStream.addFrame(&frames, bs, bs*100);
+    dcStream.addFrame(&frames, bs, 0);
     // read from dc stream
 	dcStream.flush(bs, data);
     outputNodes[0]->pushAndCopy( &frames, numSamples );
@@ -70,6 +73,55 @@ RemoteChReceiver::create(frx::processing::IHostInfo::Ptr hostInfo,
     Ptr neu( new RemoteChReceiver(hostInfo, rcId, numOutputs) );
     neu->self = neu;
     neu->initListener();
+    neu->initParameterObserver();
     return neu;
+}
+//-----------------------------------------------------------------------------
+void RemoteChReceiver::initParameterObserver() {
+    parameterObserver = FrxAsyncDSPTimer::create(PARAM_OBSERVER_INTERVAL_MS);
+    parameterObserver->setNumRepetitions(-1);
+    parameterObserver->addTrackedEventListener(
+        boost::bind(&RemoteChReceiver::onParameterObserver, this),
+        getPtr()
+    );
+    parameterObserver->start();
+}
+//-----------------------------------------------------------------------------
+void RemoteChReceiver::onParameterObserver()
+{
+    if (!ipStream) {
+        return;
+    }
+    
+    SAMBAG_ASSERT(ipStream->getNumParameter()==parameters.size());
+    
+    Stream::ValueType *pvalue = ipStream->getParameter();
+    size_t n = ipStream->getNumParameter();
+    size_t i = 0;
+    while(n-- > 0) {
+        if (parameters[i]->getValue() != *pvalue) {
+            parameters[i]->setValue(*(pvalue));
+        }
+        ++i;
+        ++pvalue;
+    }
+}
+//-----------------------------------------------------------------------------
+void RemoteChReceiver::initParameters(size_t num) {
+    parameters.reserve(num);
+    for (size_t i=0; i<num; ++i) {
+        prp::Parameter::Ptr p = prp::Parameter::create();
+        p->setName("receiver.param"+sambag::com::toString(i+1));
+        parameters.push_back(p);
+    }
+}
+//-----------------------------------------------------------------------------
+prp::Parameter::Ptr RemoteChReceiver::getParameter (size_t index) const
+{
+    return parameters.at(index);
+}
+//-----------------------------------------------------------------------------
+size_t RemoteChReceiver::getNumParameter () const {
+    return parameters.size();
 }
 }}} // namespace(s)

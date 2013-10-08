@@ -29,8 +29,11 @@ void Plugin::open() {
 //-----------------------------------------------------------------------------
 void Plugin::close() {
     using namespace interprocess;
+    if (channelId.empty()) {
+        return;
+    }
     RemoteChannelManager &rm = RemoteChannelManager::instance();
-    //rm.removeChannel(channelId);
+    rm.removeChannel(channelId);
 }
 //-----------------------------------------------------------------------------
 Plugin::~Plugin() {
@@ -69,25 +72,40 @@ void Plugin::updateConfiguration() {
         return;
     }
     RemoteChannelManager &rm = RemoteChannelManager::instance();
-    /*std::string name = rm.createUniqueName();
+    std::string name = rm.createUniqueName();
     stream = interprocess::Stream::create(name,
         blockSize,
-        this->getHost()->getNumOutputs()
+        this->getHost()->getNumOutputs(),
+        this->getHost()->getNumParameter()
     );
-    channelId = rm.addChannel( boost::make_tuple(name) );*/
+    channelId = rm.addChannel( boost::make_tuple(name) );
 }
 //-----------------------------------------------------------------------------
 void Plugin::setParameterValue(int index, float value) {
+    if (!stream) {
+        return;
+    }
+    if (index >= (int)stream->getNumParameter()) {
+        return;
+    }
+    stream->getParameter()[index] = value;
 }
 //-----------------------------------------------------------------------------
 void Plugin::getParameterValue(int index, float &outValue) {
+    if (!stream) {
+        return;
+    }
+    if (index >= (int)stream->getNumParameter()) {
+        return;
+    }
+    outValue = (float)stream->getParameter()[index];
 }
 //-----------------------------------------------------------------------------
 void Plugin::getParameterName (int index, std::string &outStr) const
 {
-}
-//-----------------------------------------------------------------------------
-void Plugin::hostParameterChanged(void *src, float value, int index) {
+    std::stringstream ss;
+    ss<<"sender.param"<<index+1;
+    outStr = ss.str();
 }
 //-----------------------------------------------------------------------------
 int Plugin::getChunk(void **data) {

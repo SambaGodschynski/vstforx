@@ -17,7 +17,7 @@ namespace frx { namespace com {
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
     // setup logging:
-    ::sambag::com::addLogFile(frx::com::getBundleLocation() + "/VSTForx.RemoteChannel.log");
+    ::sambag::com::addLogFile(frx::com::getBundleLocation() + "/RemoteChannel.log");
     SAMBAG_LOG_INFO<<"woke up";
 	// load plugin
 	using namespace sambag::dsp::vst;
