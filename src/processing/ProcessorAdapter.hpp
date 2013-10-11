@@ -154,6 +154,11 @@ public:
 	 * set the preset on index i.
 	 */
 	virtual void setPreset(int i);
+    //-------------------------------------------------------------------------
+    /**
+     * @return status string such as "not available" if any.
+     */
+    virtual std::string getStatusMessage() const;
 	///////////////////////////////////////////////////////////////////////////
 	// Events
 	//-------------------------------------------------------------------------

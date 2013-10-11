@@ -253,13 +253,23 @@ void processorSwitchStateChanged(const StateData &data)
 }
 //-----------------------------------------------------------------------------
 void processorPropertyChanged(void *src, 
-	const sce::PropertyChanged &ev, FrxProcessorNode::WPtr pr) 
+	const sce::PropertyChanged &ev, FrxProcessorNode::WPtr pr)
 {
 	if (ev.getPropertyName() == "switch state") {
 		SwitchState old, _new;
 		ev.getOldValue(old);
 		ev.getNewValue(_new);
 		processorSwitchStateChanged(StateData(pr, old, _new));
+	}
+	if (ev.getPropertyName() == "status message") {
+        FrxProcessorNode::Ptr obj = pr.lock();
+        if (!obj) {
+            return;
+        }
+        std::string txt;
+        ev.getNewValue(txt);
+        SAMBAG_LOG_INFO<<obj->getName()<<" status: "<<txt;
+        obj->setLowerFlagText(txt);
 	}
 }
 //-----------------------------------------------------------------------------

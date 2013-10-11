@@ -611,6 +611,11 @@ protected:
 	 */
 	void process(Processor::Int numSamples);
 public:
+    //--------------------------------------------------------------------------------------------------------
+    /**
+     * @return status message or emtpy string
+     */
+    virtual std::string getStatusMessage() const { return ""; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * setted by adapternode. value is delay value of adapternode an represents the

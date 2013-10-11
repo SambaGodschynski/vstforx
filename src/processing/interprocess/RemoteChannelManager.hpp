@@ -137,10 +137,7 @@ public:
     //-------------------------------------------------------------------------
     // Sender stuff
     //-------------------------------------------------------------------------
-    /**
-     * public access for test purpose only.
-     */
-    void __addChannel_(const RCId &hnd, const RCData &data);
+    void addChannel(const RCId &hnd, const RCData &data);
     //-------------------------------------------------------------------------
     RCId addChannel(const RCData &data);
     //-------------------------------------------------------------------------

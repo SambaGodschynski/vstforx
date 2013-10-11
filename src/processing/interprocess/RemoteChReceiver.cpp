@@ -13,6 +13,7 @@
 
 namespace {
     const int PARAM_OBSERVER_INTERVAL_MS=30;
+    const int REOPEN_STREAM_INTERVAL_MS=2000;
 }
 
 namespace frx { namespace processing { namespace interprocess {
@@ -24,23 +25,87 @@ RemoteChReceiver::RemoteChReceiver(frx::processing::IHostInfo::Ptr hostInfo,
                                    const std::string &rcId,
                                    size_t numOutputs) :
     pr::ProcessAdapter( hostInfo, 0, numOutputs ),
-    blocksRead(Stream::UndefinedNumBlocks)
+    blocksRead(Stream::UndefinedNumBlocks),
+    streamId(rcId)
 {
-    setName ("RemoteChReceiver");
+    setName ("RemoteChannel.Receiver");
     RemoteChannelManager &rm = RemoteChannelManager::instance();
-    ipStream = rm.getStream(rcId);
-    if (ipStream->getBlockSize()!=(size_t)hostInfo->getBlockSize()) {
-        SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
-        "different blocksizes isn't supported yet.");
-    }
+    ipStream = rm.getStream(streamId);
+    
     frames.setSize( hostInfo->getBlockSize() );
     frames.setZero( hostInfo->getBlockSize() );
     dcStream.setSize( hostInfo->getBlockSize(),  0/*hostInfo->getBlockSize()*/);
+    
+    initStream();
     initParameters(ipStream->getNumParameter());
 }
 //-----------------------------------------------------------------------------
+void RemoteChReceiver::reOpenStream() {
+    if (ipStream) {
+        return;
+    }
+
+    frx::processing::IHostInfo::Ptr hostInfo = this->hostInfo.lock();
+    RemoteChannelManager &rm = RemoteChannelManager::instance();
+    
+    frames.setSize( hostInfo->getBlockSize() );
+    frames.setZero( hostInfo->getBlockSize() );
+    dcStream.setSize( hostInfo->getBlockSize(),  0/*hostInfo->getBlockSize()*/);
+    
+    ipStream = rm.getStream(streamId);
+    if (!ipStream) {
+        if (!openStreamTimer) {
+            openStreamTimer = FrxAsyncDSPTimer::create(REOPEN_STREAM_INTERVAL_MS);
+            openStreamTimer->addTrackedEventListener(
+                boost::bind(&RemoteChReceiver::reOpenStream, this),
+                getPtr()
+            );
+        }
+        openStreamTimer->stop();
+        openStreamTimer->start();
+        sce::EventSender<sce::PropertyChanged>::notifyListeners(
+            this, sce::PropertyChanged("status message", std::string(), getStatusMessage())
+        );
+        return; // come back later
+    } else {
+        if (openStreamTimer) {
+            openStreamTimer->stop();
+            openStreamTimer.reset();
+        }
+    }
+    initStream();
+    initParameterObserver();
+    sce::EventSender<sce::PropertyChanged>::notifyListeners(
+        this, sce::PropertyChanged("status message", std::string(), getStatusMessage())
+    );
+}
+//-----------------------------------------------------------------------------
+void RemoteChReceiver::initStream() {
+    if (!ipStream) {
+        SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+        "stream == NULL");
+    }
+    frx::processing::IHostInfo::Ptr hostInfo = this->hostInfo.lock();
+    size_t sBs = ipStream->getBlockSize();
+    size_t hBs = hostInfo->getBlockSize();
+    
+    if (sBs!=hBs) {
+        std::stringstream ss;
+        ss<<"RemoteChannel("<<sBs<<"), this instance("<<hBs<<") ";
+        ss<<"different blocksizes.";
+        SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+        ss.str());
+    }
+}
+
+//-----------------------------------------------------------------------------
 void RemoteChReceiver::processAdapter( pr::Processor::Int numSamples ) {
     using namespace ::processing;
+    if (!ipStream) {
+        frames.setZero(numSamples);
+        outputNodes[0]->pushAndCopy( &frames, numSamples );
+        return;
+    }
     // reading from ip stream
     float **data = frames.getData();
     int res = ipStream->read(data, blocksRead);
@@ -72,7 +137,6 @@ RemoteChReceiver::create(frx::processing::IHostInfo::Ptr hostInfo,
     size_t numOutputs = ::com::numChannels2Xputs(numChannels);
     Ptr neu( new RemoteChReceiver(hostInfo, rcId, numOutputs) );
     neu->self = neu;
-    neu->initListener();
     neu->initParameterObserver();
     return neu;
 }

@@ -10,6 +10,7 @@
 #include <sstream>
 #include <boost/tuple/tuple.hpp>
 #include <sambag/com/Common.hpp>
+#include <cstring>
 
 namespace frx { namespace processing { namespace remoteChannel {
 using namespace interprocess;
@@ -28,18 +29,25 @@ void Plugin::open() {
 }	
 //-----------------------------------------------------------------------------
 void Plugin::close() {
+    destroyStream();
+    chunk.reset();
+}
+//-----------------------------------------------------------------------------
+void Plugin::destroyStream() {
     using namespace interprocess;
     if (channelId.empty()) {
         return;
     }
     RemoteChannelManager &rm = RemoteChannelManager::instance();
     rm.removeChannel(channelId);
+    stream.reset();
 }
 //-----------------------------------------------------------------------------
 Plugin::~Plugin() {
 }
 //-----------------------------------------------------------------------------
 void Plugin::process(float **in, float **out, int numSamples) {
+    SAMBAG_TRY_TO_LOCK_TIMED(mutex);
     if (!stream) {
         return;
     }
@@ -78,7 +86,11 @@ void Plugin::updateConfiguration() {
         this->getHost()->getNumOutputs(),
         this->getHost()->getNumParameter()
     );
-    channelId = rm.addChannel( boost::make_tuple(name) );
+    if (channelId.empty()) {
+        channelId = rm.addChannel( boost::make_tuple(name) );
+    } else {
+        rm.addChannel( channelId, boost::make_tuple(name) );
+    }
 }
 //-----------------------------------------------------------------------------
 void Plugin::setParameterValue(int index, float value) {
@@ -109,9 +121,21 @@ void Plugin::getParameterName (int index, std::string &outStr) const
 }
 //-----------------------------------------------------------------------------
 int Plugin::getChunk(void **data) {
+    size_t size = channelId.length();
+    chunk = Chunk( new char[size] );
+    strcpy(chunk.get(), channelId.c_str());
+    *data = chunk.get();
+    SAMBAG_LOG_INFO<<"serialize id"<<channelId;
+    return size;
 }
 //-----------------------------------------------------------------------------
 int Plugin::setChunk(void *data, int byteSize) {
+    SAMBAG_TRY_TO_LOCK_TIMED(mutex);
+    destroyStream();
+    channelId = std::string((char*)data);
+    SAMBAG_LOG_INFO<<"deserialize id"<<channelId;
+    updateConfiguration();
+    return byteSize;
 }
 //-----------------------------------------------------------------------------
 int Plugin::getLatency() const {

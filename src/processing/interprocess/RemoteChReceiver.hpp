@@ -37,6 +37,8 @@ private:
     //-------------------------------------------------------------------------
     FrxAsyncDSPTimer::Ptr parameterObserver;
     //-------------------------------------------------------------------------
+    FrxAsyncDSPTimer::Ptr openStreamTimer;
+    //-------------------------------------------------------------------------
     sambag::com::interprocess::UInteger blocksRead;
     //-------------------------------------------------------------------------
     std::vector<prp::Parameter::Ptr> parameters;
@@ -46,11 +48,12 @@ private:
     ::processing::DCStream dcStream;
     //-------------------------------------------------------------------------
     Stream::Ptr ipStream;
+    //-------------------------------------------------------------------------
+    std::string streamId;
+    //-------------------------------------------------------------------------
+    void initStream();
 	//-------------------------------------------------------------------------
-	/**
-	 * Initalisiert Listener.
-	 */
-	void initListener(){}
+    void reOpenStream();
 	//-------------------------------------------------------------------------
 	/**
 	 * (De)Serialisiert Volume-Objekt
@@ -61,6 +64,7 @@ private:
 	void serialize ( Archive &ar, const unsigned int version ) {
 		ar & boost::serialization::base_object< pr::ProcessAdapter > ( *this );
         ar & parameters;
+        ar & streamId;
 		if ( Archive::is_loading::value ) {
 			frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
 			if (!hI) {
@@ -68,7 +72,7 @@ private:
 					"Hostinfo == NULL"
 				);
 			}
-			initListener();
+			reOpenStream();
 		}
 	}
 	//-------------------------------------------------------------------------
@@ -85,7 +89,14 @@ protected:
                      const std::string &rcId,
                      size_t numOutputs);
 public:
-	//-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
+    /**
+     * @override
+     */
+	virtual std::string getStatusMessage() const {
+        return ipStream ? "[connected]" : "[sender not available]";
+    }
+    //-------------------------------------------------------------------------
 	/**
 	 * @param hostInfo
 	 * @return neues Volume-Objekt

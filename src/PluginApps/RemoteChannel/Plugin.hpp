@@ -13,6 +13,8 @@
 #include <com/FrxConfig.h>
 #include <processing/interprocess/RemoteChannelManager.hpp>
 #include <processing/interprocess/Stream.hpp>
+#include <boost/shared_array.hpp>
+#include <sambag/com/Thread.hpp>
 
 namespace frx { namespace processing { namespace remoteChannel {
 //=============================================================================
@@ -22,6 +24,8 @@ public:
 	//-------------------------------------------------------------------------
 	typedef sambag::dsp::PluginProcessorBase Super;
 private:
+    //-------------------------------------------------------------------------
+    sambag::com::Mutex mutex;
 	//-------------------------------------------------------------------------
 	int blockSize;
 	//-------------------------------------------------------------------------
@@ -30,6 +34,9 @@ private:
     interprocess::Stream::Ptr stream;
     //-------------------------------------------------------------------------
     interprocess::RemoteChannelManager::RCId channelId;
+    //-------------------------------------------------------------------------
+    typedef boost::shared_array<char> Chunk;
+    Chunk chunk;
 protected:
 	//-------------------------------------------------------------------------
 	/**
@@ -46,6 +53,8 @@ protected:
 	void getParameterValue(int index, float &outValue);
 	//-------------------------------------------------------------------------
 	void getParameterName (int index, std::string &outStr) const;
+    //-------------------------------------------------------------------------
+    void destroyStream();
 public:
 	//-------------------------------------------------------------------------
 	void open();

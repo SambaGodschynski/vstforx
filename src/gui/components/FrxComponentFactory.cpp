@@ -131,7 +131,7 @@ FrxProcessorNodePtr createPlugin(FrxCircuidViewPtr circ, ::processing::PluginInf
 	if (plAd) {
 		viewObj->setName(plAd->getName());
 		viewObj->setUpperFlagText(plAd->getName());
-		viewObj->setLowerFlagText(plAd->getStatusMessage());
+		viewObj->setLowerFlagText(mObj->getStatusMessage());
 		viewObj->isSynth( plAd->isSynth() );
 	}
 	viewObj->configIO(mObj->getNumInputs(), mObj->getNumOutputs());
@@ -235,6 +235,7 @@ FrxProcessorNodePtr createRemoteChannel(FrxCircuidViewPtr circ, std::string &rcI
     std::string name = fpi::RemoteChannelManager::instance().getName(rcId);
     viewObj->setName(name);
     viewObj->setUpperFlagText(name);
+    viewObj->setLowerFlagText(mObj->getStatusMessage());
 	viewObj->configIO(mObj->getNumInputs(), mObj->getNumOutputs());
 	registerProcessor(map, viewObj, mObj);
 	return viewObj;

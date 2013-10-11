@@ -319,13 +319,12 @@ Stream::Ptr RemoteChannelManager::getStream(const RCId &rc) {
     RCData data = getChannelData(rc);
     const std::string &streamId = getStreamId(data);
     if (!isStreamValid(streamId)) {
-        SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
-        "RemoteChannelManager: invalid streamid");
+        return Stream::Ptr();
     }
     return Stream::open(streamId);
 }
 //-----------------------------------------------------------------------------
-void RemoteChannelManager::__addChannel_(const RCId &id, const RCData &data)
+void RemoteChannelManager::addChannel(const RCId &id, const RCData &data)
 {
 
     bi::scoped_lock<Mutex> lock(*mutex);
@@ -343,7 +342,7 @@ void RemoteChannelManager::__addChannel_(const RCId &id, const RCData &data)
 RemoteChannelManager::RCId RemoteChannelManager::addChannel(const RCData &data)
 {
     RCId id = createUniqueName();
-    __addChannel_(id, data);
+    addChannel(id, data);
     return id;
 }
 //-----------------------------------------------------------------------------
