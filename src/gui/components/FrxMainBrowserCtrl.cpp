@@ -695,11 +695,12 @@ void FrxMainBrowserCtrl::initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr br
 	addMainProcessors();
     
     // remote channels
+    /*
     remotes = tree->addNode(scene);
     node = BrowserNode("Remote Channel Receivers", BrowserConstants::FRX_BROWSER_FOLDER);
     node.f = boost::bind(
         &FrxMainBrowserCtrl::fillRemoteFolder, this);
-	tree->setNodeData(remotes, node);
+	tree->setNodeData(remotes, node);*/
     
 }
 //-----------------------------------------------------------------------------

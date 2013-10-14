@@ -26,27 +26,6 @@ namespace {
 typedef boost::weak_ptr<void> AnyWPtr;
 typedef boost::shared_ptr<void> AnyPtr;
 //-----------------------------------------------------------------------------
-void checkDemoConstraints(AnyPtr object) {
-	if (!SETTINGS.isDemo()) {
-		return;
-	}
-	static const int numMax = 4;
-	static AnyWPtr slots[numMax];
-
-	// check for free slot
-	for (int i=0; i<numMax; ++i) {
-		AnyPtr p = slots[i].lock();
-		if (p) {
-			continue;
-		}
-		slots[i] = object; // free slot found
-		return;
-	}
-	std::stringstream ss;
-	ss<<"DEMO LIMITATION: you can't add more than "<<numMax<<" modules per session.";
-	throw(std::runtime_error(ss.str()));
-}
-//-----------------------------------------------------------------------------
 void registerProcessor(IViewModelMap::Ptr map,
 					   FrxProcessorNode::Ptr v,
 					   frx::processing::IProcessor::Ptr m) 
@@ -75,7 +54,7 @@ FrxProcessorNodePtr createProcessor(FrxCircuidViewPtr circ, int numInputs, int n
 	}
 	// create view obj
 	typename ConcreteProcessor::Ptr viewObj = ConcreteProcessor::create();
-	checkDemoConstraints(viewObj);
+	globAddProcessor(viewObj);
 	if (!viewObj) {
 		return FrxProcessorNodePtr();
 	}
@@ -118,7 +97,7 @@ FrxProcessorNodePtr createPlugin(FrxCircuidViewPtr circ, ::processing::PluginInf
 	}
 	// create view obj.
 	FrxPluginNode::Ptr viewObj = FrxPluginNode::create();
-	checkDemoConstraints(viewObj);
+	globAddPlugin(viewObj);
 	if (!viewObj) {
 		return FrxProcessorNodePtr();
 	}
@@ -222,7 +201,7 @@ FrxProcessorNodePtr createRemoteChannel(FrxCircuidViewPtr circ, std::string &rcI
 	}
 	// create view obj.
 	FrxProcessorNodePtr viewObj = FrxRemoteChReceiver::create();
-	checkDemoConstraints(viewObj);
+	globAddProcessor(viewObj);
 	if (!viewObj) {
 		return FrxProcessorNodePtr();
 	}

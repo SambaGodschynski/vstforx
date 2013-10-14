@@ -22,6 +22,8 @@
 #include <sambag/com/Thread.hpp>
 #include <com/FrxConfig.h>
 
+extern const char * globGetProductName();
+
 namespace frx { namespace processing {
 namespace sce=sambag::com::events;
 namespace fg = frx::gui;
@@ -176,7 +178,7 @@ public:
 	//-------------------------------------------------------------------------
 	template <class String> 
 	void getProductName(String &outStr) const {
-		outStr = "VSTForx";
+		outStr = std::string( globGetProductName() );
 	} 
 	//-------------------------------------------------------------------------
 	int getProductVersion() const { 

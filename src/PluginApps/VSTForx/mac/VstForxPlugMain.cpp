@@ -10,6 +10,7 @@
 #include <exception>
 #include "VstForxResourceManager.hpp"
 #include <sambag/com/Common.hpp>
+#include "../../com/FrxPlugSettings.hpp"
 
 std::string getHomeDirectory();
 
@@ -17,19 +18,6 @@ namespace frx { namespace com {
     extern std::string getResourceLocation(const std::string &path);
     extern std::string getBundleLocation();
 }}
-
-#ifdef FRX_IS_INSTRUMENT
-	enum { _FRX_IS_INSTRUMENT = 1 };
-#else
-	enum { _FRX_IS_INSTRUMENT = 0 };
-#endif
-#ifdef FRX_IS_DEMO
-	enum { _FRX_IS_DEMO = 1 };
-#else
-	enum { _FRX_IS_DEMO = 0 };
-#endif
-
-enum { FRX_UID = '_frx' + (_FRX_IS_INSTRUMENT*2) + (_FRX_IS_DEMO*3) };
 
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
@@ -57,8 +45,6 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 	}
 	// init settings
 	::com::initSettings(getHomeDirectory());
-	com::getSettings().setIsDemo((bool)_FRX_IS_DEMO);
-	com::getSettings().setIsInstrument((bool)_FRX_IS_INSTRUMENT);
 	sambag::disco::components::getWindowToolkit()->useWithoutMainloop();
 	
 	// load plugin
@@ -66,9 +52,10 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 	// settingup plugin
 	typedef VST2xPluginWrapper<
 		frx::processing::VstForxPlug, // Processor
-		FRX_UID, // uid
+		PlugSettings::FRX_UID, // uid
 		sambag::dsp::StdPluginTraits<
-			2,2,_FRX_IS_INSTRUMENT,::com::Settings::PROGRAM_PARAMETER
+			2,2,PlugSettings::IsInstrument,
+            ::com::Settings::PROGRAM_PARAMETER
 		>
 		,frx::gui::components::CreateVstForxEditor
 	> Plugin;

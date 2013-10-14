@@ -41,7 +41,8 @@ protected:
 	BgPane(){}
 	sd::IPattern::Ptr pat;
 	sd::IPattern::Ptr shaderPat;
-	sd::ColorRGBA bg;
+	sd::ISurface::Ptr logo;
+    sd::ColorRGBA bg;
 	virtual void postConstructor();
 	void drawShadingLayer(sd::IDrawContext::Ptr cn, 
 		const sd::Rectangle &r);
@@ -97,20 +98,35 @@ void BgPane::drawShadingLayer(sd::IDrawContext::Ptr cn,
 	cn->setFillPattern(shaderPat);
 	cn->fill();
 }
-void drawDemoNotifictaion(sd::IDrawContext::Ptr cn, const sd::Rectangle &r) 
+void drawNotifictaion(sd::IDrawContext::Ptr cn, const sd::Rectangle &r, const std::string &txt)
 {
-	if (!SETTINGS.isDemo()) {
-		return;
-	}
-	std::string txt("DEMO VERSION");
 	cn->setFont(cn->getCurrentFont().setSize(36.));
 	sd::Rectangle tx = cn->textExtends(txt);
 	sambag::com::Number x = r.x();
 	sambag::com::Number y = r.y() + tx.height();
 	cn->moveTo(sd::Point2D(x,y));
-	cn->textPath("DEMO VERSION");
+	cn->textPath(txt);
 	cn->setFillColor(sd::ColorRGBA(0.6, 0.6, 0.6, 1));
 	cn->fill();
+}
+
+void drawDemoNotifictaion(sd::IDrawContext::Ptr cn, const sd::Rectangle &r)
+{
+	if (!globFrxIsDemo()) {
+		return;
+	}
+    drawNotifictaion(cn, r, "DEMO VERSION");
+}
+void drawLogo(sd::IDrawContext::Ptr cn, sd::ISurface::Ptr logo, const sd::Rectangle &r)
+{
+    if (!logo) {
+        return;
+    }
+    sd::Rectangle size = logo->getSize();
+    cn->save();
+    cn->translate(r.x0());
+	cn->drawSurface(logo);
+    cn->restore();
 }
 void BgPane::drawComponent(sd::IDrawContext::Ptr cn) {
 	if (!pat) {
@@ -123,6 +139,7 @@ void BgPane::drawComponent(sd::IDrawContext::Ptr cn) {
 	cn->rect(sd::Rectangle(0, 0, getWidth(), getHeight()));
 	cn->fill();
 	drawDemoNotifictaion(cn, r);
+    drawLogo(cn, logo, r);
 	drawShadingLayer(cn, r);
 }
 //-----------------------------------------------------------------------------
@@ -145,6 +162,8 @@ void BgPane::postConstructor() {
 	pat->setMatrix(m);
 	pat->setExtendType(e);
 	pat->setOpacity(opac);
+    
+    logo = sd::getResourceManager().getImage("FrxCircuidView.logo");
 }
 //-----------------------------------------------------------------------------
 sdc::AComponentPtr BgPane::findComponentAt(const sd::Point2D &p,

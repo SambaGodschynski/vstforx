@@ -21,6 +21,8 @@ function build() {
   cd src/PluginApps
   __nameWorkaround vstforx.app vstforx.vst
   __nameWorkaround vstforxInstrument.app vstforxInstrument.vst
+  __nameWorkaround VSTForx-CM.app VSTForx-CM.vst
+  __nameWorkaround VSTForxInstrument-CM.app VSTForxInstrument-CM.vst
   __nameWorkaround vstforxDEMO.app vstforxDEMO.vst
   __nameWorkaround vstforxInstrumentDEMO.app vstforxInstrumentDEMO.vst
   cd $ORG

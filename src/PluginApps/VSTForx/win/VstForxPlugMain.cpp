@@ -10,6 +10,7 @@
 #include <windows.h>
 #include <exception>
 #include "VstForxResourceManager.hpp"
+#include "../../com/FrxPluginSettings.hpp"
 
 extern void *hInstance; // @see vstsdk2.4::vstplugmain.cpp
 std::string getHomeDirectory();
@@ -41,35 +42,29 @@ Console console;
 #pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.VC90.CRT' version='9.0.21022.8' processorArchitecture='X86' publicKeyToken='1fc8b3b9a1e18e3b' language='*'\"")
 #endif
 
-#ifdef FRX_IS_INSTRUMENT
-	enum { _FRX_IS_INSTRUMENT = 1 };
-#else
-	enum { _FRX_IS_INSTRUMENT = 0 };
-#endif
-#ifdef FRX_IS_DEMO
-	enum { _FRX_IS_DEMO = 1 };
-#else
-	enum { _FRX_IS_DEMO = 0 };
-#endif
-
-enum { FRX_UID = '_frx' << (_FRX_IS_INSTRUMENT * 2) << (_FRX_IS_DEMO*3) };
-
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 
-	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); //VS memory tracking	
+	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); //VS memory tracking
+	// setup logging:
+	::sambag::com::addLogFile(getHomeDirectory() + "/VSTForx.log");
+	SAMBAG_LOG_INFO<<"woke up";
 	// init resourceManager
 	try {
+	        SAMBAG_LOG_INFO<<"loading resources: ...";
 		frx::VstForxResourceManager &rm = frx::VstForxResourceManager::instance();
 		rm.initMap((HINSTANCE)hInstance);
 		sambag::disco::installResourceManager(rm);
+		SAMBAG_LOG_INFO<<"loading resources: SUCCEED";
 	} catch (const std::exception &ex) {
+	        SAMBAG_LOG_ERR<<"loading of resources: FAILED, "<<ex.what();
 		std::stringstream ss;
 		ss<<"Initiation of plugin instance failed: "<<ex.what();
 		com::osMessageBox("Error", 
 			ss.str(), com::MSG_ALERT);
 		return NULL;
 	} catch(...) {
+	        SAMBAG_LOG_ERR<<"loading of resources : FAILED, unknown error";
 		com::osMessageBox("Error", 
 			"Initiation of plugin instance failed: unkonwn reason.", com::MSG_ALERT);
 		return NULL;
@@ -89,26 +84,32 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 	// settingup plugin
 	typedef VST2xPluginWrapper<
 		frx::processing::VstForxPlug, // Processor
-		FRX_UID, // uid
+	        PluginSettings::FRX_UID, // uid
 		sambag::dsp::StdPluginTraits<
-			2,2,_FRX_IS_INSTRUMENT,::com::Settings::PROGRAM_PARAMETER
+		  2,2,
+		  PluginSettings::IsInstrument,
+		  ::com::Settings::PROGRAM_PARAMETER
 		>,
 		frx::gui::components::CreateVstForxEditor
 	> Plugin;
 	// create plugin
 	try {
+	        SAMBAG_LOG_INFO<<"creating effect instance: ...";
 		Plugin *pl = new Plugin(audioMaster);
 		frx::processing::VstForxPlug &vpl = *pl;
 		vpl.setEffectPtr(pl);
 		vpl.setMasterCallback(audioMaster);
 		return pl;
+		SAMBAG_LOG_INFO<<"creating effect instance: SUCCEED";
 	} catch (const std::exception &ex) {
+	        SAMBAG_LOG_ERR<<"creating effect instance: FAILED, "<<ex.what();
 		std::stringstream ss;
 		ss<<"Creating of plugin instance failed: "<<ex.what();
 		com::osMessageBox("Error", 
 			ss.str(), com::MSG_ALERT);
 		return NULL;
 	} catch(...) {
+	        SAMBAG_LOG_ERR<<"creating effect instance: FAILED";
 		com::osMessageBox("Error", 
 			"Creating of plugin instance failed: unkonwn reason.", com::MSG_ALERT);
 		return NULL;

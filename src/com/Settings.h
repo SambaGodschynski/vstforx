@@ -14,6 +14,7 @@
 #include <set>
 #include <loki/Singleton.h>
 #include <sambag/com/ArithmeticWrapper.hpp>
+#include <boost/shared_ptr.hpp>
 
 #define SETTINGS com::getSettings()
 #define HOSTINFO SETTINGS.getHostInformation()
@@ -21,6 +22,14 @@
 namespace tests {
 	class PluginCollectionTest;
 }
+
+extern bool globFrxIsDemo();
+/**
+ * restrictions check:
+ */
+extern void globAddProcessor( boost::shared_ptr<void> obj );
+extern void globAddPlugin( boost::shared_ptr<void> obj );
+extern string globVersionStr();
 
 namespace com {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,19 +89,7 @@ private:
 		windowHeight = h; 
 	}
 	//--------------------------------------------------------------------------------------------------------
-	sambag::com::ArithmeticWrapper<bool> _isDemo;
-	//--------------------------------------------------------------------------------------------------------
-	sambag::com::ArithmeticWrapper<bool> _isInstrument;
-	//--------------------------------------------------------------------------------------------------------
 public:
-	//--------------------------------------------------------------------------------------------------------
-	bool isDemo() const { return _isDemo; }
-	//--------------------------------------------------------------------------------------------------------
-	bool isInstrument() const { return _isInstrument; }
-	//--------------------------------------------------------------------------------------------------------
-	void setIsDemo(bool val);
-	//--------------------------------------------------------------------------------------------------------
-	void setIsInstrument(bool val);
 	//--------------------------------------------------------------------------------------------------------
 	const std::string & getHomeDirectory() const {
 		return homeDir;
@@ -154,7 +151,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	const PathnameSet & getPluginDirectoryList() const { return pluginDirectories; }
 	//--------------------------------------------------------------------------------------------------------
-	string versionToString() const;
+	const string & versionToString() const;
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Settings(){}
 	//--------------------------------------------------------------------------------------------------------

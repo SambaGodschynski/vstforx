@@ -238,22 +238,9 @@ void Settings::saveConfigFile() {  // TODO: use boost::Program_options
 	f.close();
 }
 //------------------------------------------------------------------------------------------------------------
-void Settings::setIsDemo(bool val) {
-	_isDemo = val;
-}
-//------------------------------------------------------------------------------------------------------------
-void Settings::setIsInstrument(bool val) {
-	_isInstrument = val;
-}
-//------------------------------------------------------------------------------------------------------------
-string Settings::versionToString() const {
-	std::stringstream ss;
-	ss<<FRX_VERSION_MAJOR<<"."<<FRX_VERSION_MINOR<<"."<<FRX_VERSION_MICRO;
-    #ifdef SAMBAG_64
-        ss<<" - "<<"x86_64";
-    #endif
-	ss<<" - "<<FRX_VERSION_BUILD<<":"<<SAMBAG_VERSION_BUILD;
-	return ss.str() + (isDemo() ? " DEMO VERSION" : "");
+const std::string & Settings::versionToString() const {
+    static std::string version(globVersionStr());
+    return version;
 }
 //------------------------------------------------------------------------------------------------------------
 bool Settings::getBooleanValue(const std::string &key) const {
