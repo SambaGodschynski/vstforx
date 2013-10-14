@@ -15,6 +15,7 @@
 #include <processing/interprocess/Stream.hpp>
 #include <boost/shared_array.hpp>
 #include <sambag/com/Thread.hpp>
+#include <processing/Frames.h>
 
 namespace frx { namespace processing { namespace remoteChannel {
 //=============================================================================
@@ -82,7 +83,7 @@ public:
 	//-------------------------------------------------------------------------
 	template <class String> 
 	void getProductName(String &outStr) const {
-		outStr = "VSTForx.RemoteChannel";
+		outStr = "VSTForx.RemoteChannel-testrun3";
 	} 
 	//-------------------------------------------------------------------------
 	int getProductVersion() const {

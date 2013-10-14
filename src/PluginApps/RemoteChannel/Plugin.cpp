@@ -52,9 +52,15 @@ void Plugin::process(float **in, float **out, int numSamples) {
         return;
     }
     stream->write(in);
-    for (int i=0; i<numSamples; ++i) {
-        out[0][i] = in[0][i];
-        out[1][i] = in[1][i];
+    
+    // write output
+    float *o0 = out[0];
+    float *o1 = out[1];
+    float *i0 = in[0];
+    float *i1 = in[1];
+    while(--numSamples >= 0) {
+        *(o0++) = *(i0++);
+        *(o1++) = *(i1++);
     }
 }
 //-----------------------------------------------------------------------------
@@ -62,7 +68,7 @@ void Plugin::processEvents(sambag::dsp::IMidiEvents *ev) {
 }
 //-----------------------------------------------------------------------------
 void Plugin::setBlockSize(int blockSize) {
-	this->blockSize = blockSize; 
+	this->blockSize = blockSize;
 	updateConfiguration();
 }
 //-----------------------------------------------------------------------------
@@ -76,7 +82,9 @@ void Plugin::updateConfiguration() {
         return;
     }
     if (stream) {
-        stream->resize(blockSize, this->getHost()->getNumOutputs());
+        if ((int)stream->getBlockSize() != blockSize) {
+            stream->resize(blockSize, this->getHost()->getNumOutputs());
+        }
         return;
     }
     RemoteChannelManager &rm = RemoteChannelManager::instance();
