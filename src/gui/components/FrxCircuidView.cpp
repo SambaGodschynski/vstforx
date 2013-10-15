@@ -122,9 +122,11 @@ void drawLogo(sd::IDrawContext::Ptr cn, sd::ISurface::Ptr logo, const sd::Rectan
     if (!logo) {
         return;
     }
-    sd::Rectangle size = logo->getSize();
+    sd::Rectangle bounds = logo->getSize();
+    bounds.x( r.x() + r.width()/2. - bounds.width()/2. );
+    bounds.y( r.y() + r.height()/2. - bounds.height()/2. );
     cn->save();
-    cn->translate(r.x0());
+    cn->translate(bounds.x0());
 	cn->drawSurface(logo);
     cn->restore();
 }
