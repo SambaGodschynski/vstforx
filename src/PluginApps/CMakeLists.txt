@@ -3,6 +3,12 @@ SET ( FRX_STANDALONE
 	com/FrxPlugSettings.cpp
 )
 
+# common files
+SET (PlugSources ${PlugSources}
+    com/FrxPlugSettings.cpp
+)
+
+
 #remote channel common sources
 SET (RemoteSrc ${RemoteSrc} RemoteChannel/Plugin.cpp)
 
@@ -37,6 +43,14 @@ ELSEIF(APPLE)
   SET_SOURCE_FILES_PROPERTIES(${FRX_RESOURCES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
   set_source_files_properties(VSTForx/mac/CocoaHelper.mm PROPERTIES COMPILE_FLAGS "-x objective-c++")
 
+  #CM-Version
+  SET(FRX_CM_RESOURCES 
+      ${FRX_CM_RESOURCES} 
+      ${FRX_RESOURCES}
+      ${PROJECT_SOURCE_DIR}/src/images/cmlogo.png)
+  SET_SOURCE_FILES_PROPERTIES(${FRX_CM_RESOURCES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+  SET (CMPlugSources ${CMPlugSources} ${PlugSources} ${FRX_CM_RESOURCES})
+
   #remote channel
   SET (RemoteSrc ${RemoteSrc}
         RemoteChannel/mac/RemoteChannelMain.cpp
@@ -44,11 +58,6 @@ ELSEIF(APPLE)
 	${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp
    )
 ENDIF(WIN32)
-
-# common files
-SET (PlugSources ${PlugSources}
-    com/FrxPlugSettings.cpp
-)
 
 IF (WIN32)
   #vstforx
@@ -142,8 +151,7 @@ ELSEIF(APPLE)
   target_compile_definitions(vstforxInstrument PUBLIC "FRX_IS_INSTRUMENT"
   					       PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.VSTForxInstrument\"")
   #vstforx-CM
-  ADD_EXECUTABLE(VSTForx-CM MACOSX_BUNDLE ${PlugSources}
-					  ${PROJECT_SOURCE_DIR}/src/images/cmlogo.png)
+  ADD_EXECUTABLE(VSTForx-CM MACOSX_BUNDLE ${CMPlugSources} )
   target_link_libraries (VSTForx-CM frx_core ${FRX_CLIBS})
   SET_TARGET_PROPERTIES(VSTForx-CM PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/vstforxcm.plist")
   SET_TARGET_PROPERTIES(VSTForx-CM PROPERTIES LINK_FLAGS "-bundle")
@@ -151,8 +159,7 @@ ELSEIF(APPLE)
                                         PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.VSTForx-CM\"")
   
   #vstforxInstrument-CM
-  ADD_EXECUTABLE(VSTForxInstrument-CM MACOSX_BUNDLE ${PlugSources} 
-  				      		    ${PROJECT_SOURCE_DIR}/src/images/cmlogo.png)
+  ADD_EXECUTABLE(VSTForxInstrument-CM MACOSX_BUNDLE ${CMPlugSources})
   target_link_libraries (VSTForxInstrument-CM frx_core ${FRX_CLIBS})
   SET_TARGET_PROPERTIES(VSTForxInstrument-CM PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/ivstforxcm.plist")
   SET_TARGET_PROPERTIES(VSTForxInstrument-CM PROPERTIES LINK_FLAGS "-bundle")
