@@ -25,7 +25,6 @@
 #include "boost/tuple/tuple_comparison.hpp"
 
 namespace com {
-using namespace events;
 class PluginCollection;
 //============================================================================================================
 extern void ShowDatabaseConnectionFailedMSG();
@@ -34,10 +33,10 @@ extern void ShowDatabaseConnectionFailedMSG();
  * @class OnLoadFile.
  * Event: Datei wird geoeffnet.
  */
-struct OnLoadFile : public Event {
+struct OnLoadFile : public com::events::Event {
 //============================================================================================================
-	string filename;
-	OnLoadFile ( const string &filename ) : filename(filename) {}
+	std::string filename;
+	OnLoadFile ( const std::string &filename ) : filename(filename) {}
 };
 
 //============================================================================================================
@@ -45,11 +44,11 @@ struct OnLoadFile : public Event {
  * @class OnFileLoaded.
  * Event: Datei wird geschlossen.
  */
-struct OnFileLoaded : public Event {
+struct OnFileLoaded : public com::events::Event {
 //============================================================================================================
-	string filename;
+	std::string filename;
 	processing::PluginInfo info;
-	OnFileLoaded ( const string &filename, const processing::PluginInfo &info ) : 
+	OnFileLoaded ( const std::string &filename, const processing::PluginInfo &info ) : 
 		info(info), filename(filename) {}
 };
 
@@ -58,10 +57,10 @@ struct OnFileLoaded : public Event {
  * @class ScanInterrupted.
  * Event: Scan wurde unterbrochen
  */
-struct ScanInterrupted : public Event {
+struct ScanInterrupted : public com::events::Event {
 //============================================================================================================
-	string cause;
-	ScanInterrupted ( const string &cause ) : cause(cause) {}
+	std::string cause;
+	ScanInterrupted ( const std::string &cause ) : cause(cause) {}
 };
 
 //============================================================================================================
@@ -69,14 +68,14 @@ struct ScanInterrupted : public Event {
  *  @class CleaningUpDataBase.
  *  Datenbank wird bereinigt.
  */
-struct CleaningUpDataBase : public Event {};
+struct CleaningUpDataBase : public com::events::Event {};
 
 //============================================================================================================
 /**
  * @class ScanComplete.
  * Event: Scanvorgang beendet.
  */
-struct ScanComplete : public Event {};
+struct ScanComplete : public com::events::Event {};
 //============================================================================================================
 
 //============================================================================================================
@@ -153,27 +152,27 @@ public:
  */
 //============================================================================================================
 class PluginCollection : 
-	public EventSender<OnLoadFile>, 
-	public EventSender<OnFileLoaded>,
-	public EventSender<CleaningUpDataBase>, 
-	public EventSender<ScanComplete>,
-	public EventSender<ScanInterrupted>
+	public com::events::EventSender<OnLoadFile>, 
+	public com::events::EventSender<OnFileLoaded>,
+	public com::events::EventSender<CleaningUpDataBase>, 
+	public com::events::EventSender<ScanComplete>,
+	public com::events::EventSender<ScanInterrupted>
 {
 friend class ScanVisitor;
 friend boost::shared_ptr<PluginCollection> getPluginCollection();
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef com::EventSender<OnLoadFile> OnLoadFileSender;
-	typedef com::EventSender<OnFileLoaded> OnFileLoadedSender;
-	typedef com::EventSender<CleaningUpDataBase> CleaningUpDataBaseSender;
-	typedef com::EventSender<ScanComplete> ScanCompleteSender;
-	typedef com::EventSender<ScanInterrupted> ScanInterruptedSender;
+	typedef com::events::EventSender<OnLoadFile> OnLoadFileSender;
+	typedef com::events::EventSender<OnFileLoaded> OnFileLoadedSender;
+	typedef com::events::EventSender<CleaningUpDataBase> CleaningUpDataBaseSender;
+	typedef com::events::EventSender<ScanComplete> ScanCompleteSender;
+	typedef com::events::EventSender<ScanInterrupted> ScanInterruptedSender;
 	//--------------------------------------------------------------------------------------------------------
 	typedef std::string PluginIdType;
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<PluginCollection> Ptr;
 	//--------------------------------------------------------------------------------------------------------
-	typedef list < processing::PluginInfo > PluginInfoList;
+	typedef std::list < processing::PluginInfo > PluginInfoList;
 	//--------------------------------------------------------------------------------------------------------
 	typedef ScanVisitor::FolderID FolderID;
 	//--------------------------------------------------------------------------------------------------------
@@ -181,7 +180,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::tuples::tuple<std::string, FolderID> Folder;
 	//--------------------------------------------------------------------------------------------------------
-	typedef list<Folder> Folders;
+	typedef std::list<Folder> Folders;
 	//--------------------------------------------------------------------------------------------------------
 	typedef std::list<sambag::com::Location> PathList;
 	//--------------------------------------------------------------------------------------------------------
@@ -427,12 +426,12 @@ private:
 	 * Ist beim naechsten Start file noch da, war der letzte Eintrag wohl schuld an einem Absturz.
 	 * @param log_msg
 	 */
-	static void appendLog ( const string &log_msg );
+	static void appendLog ( const std::string &log_msg );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return den Dateinamen aus Log, der als letztes versucht wurde zu laden.
 	 */
-	string analyzeLog();
+	std::string analyzeLog();
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**

@@ -343,7 +343,7 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 		// TODO: insert as folder with concrete shell ids as content
 		out_info.access = PluginInfo::SUCCEED;
 		out_info.name = VSTPlugin::extractNameFromFilename(out_info.location);
-		out_info.timestamp = last_write_time(out_info.location);
+		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
 		return;
 	} catch(...) {
 		n = Plugin::Ptr();
@@ -354,14 +354,14 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 										   // im scan diese datei nicht nochmal versucht wird zu laden. 
 		out_info.access = PluginInfo::FAILED;
 		// set timestamp and name
-		out_info.timestamp = last_write_time(out_info.location);
+		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
 		out_info.name = VSTPlugin::extractNameFromFilename(out_info.location);
 		return;
 	}
 	if ( ! n->isAccessable() ) {
 		out_info.access = PluginInfo::FAILED;
 		// set timestamp and name
-		out_info.timestamp = last_write_time(out_info.location);
+		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
 		out_info.name = VSTPlugin::extractNameFromFilename(out_info.location);
 		return;
 	}
@@ -369,7 +369,7 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 	out_info = n->getPluginInfo();
 	out_info.access = PluginInfo::SUCCEED;
 	// set timestamp
-	out_info.timestamp = last_write_time(out_info.location);
+	out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
 	return;
 }
 //------------------------------------------------------------------------------------------------------------
@@ -424,7 +424,7 @@ namespace {
 	using namespace sambag::cpsqlite;
 	using namespace sqlcommands;
 	using namespace processing;
-	typedef list<PluginInfo> PluginInfoList;
+	typedef std::list<PluginInfo> PluginInfoList;
     typedef boost::function<void(int, DataBase::Result::Ptr)> _EntryF;
 	bool extractAndAdd ( const DataBase::Results &results, PluginInfoList &pL, _EntryF entryCallback=NULL)
     {

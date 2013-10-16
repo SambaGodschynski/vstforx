@@ -33,8 +33,6 @@
 #include "TList.h"
 #include <sambag/com/FileSystem.hpp>
 
-using namespace std;
-
 #define MAX_STR 50 // char str[MAX_STR]
 
 // fuegt string x ins log datei ein. -- NUR DEBUG -- 
@@ -119,7 +117,7 @@ namespace com {
 	inline size_t mapInteger(float value, size_t n){ 
 		if (value <= 0. )
 			return 0;
-		return int( n * min (value,0.99999f) ); 
+		return int( n * std::min (value,0.99999f) ); 
 	}
 	//========================================================================================================
  	template<class T>
@@ -158,7 +156,6 @@ namespace com {
 		if ( !( *t = dynamic_cast<T*>( o1 ) ) ) *t = dynamic_cast<T*>( o2 );
 		*u = ( *t==o1 ) ? dynamic_cast<U*>( o2 ) : dynamic_cast<U*>( o1 );
 	}
-	using namespace boost::filesystem;
 	//--------------------------------------------------------------------------------------------------------
 	template < typename T >
 	T getMax( const T& a, const T &b) { return (a > b) ? a : b; }
@@ -168,18 +165,17 @@ namespace com {
 	//--------------------------------------------------------------------------------------------------------
 	typedef sambag::com::Location Filename;
 	//--------------------------------------------------------------------------------------------------------
-	typedef set<sambag::com::Location> UniquePathList;
+	typedef std::set<sambag::com::Location> UniquePathList;
 	//--------------------------------------------------------------------------------------------------------
-	typedef list<sambag::com::Location> PathNameList;
+	typedef std::list<sambag::com::Location> PathNameList;
 	//--------------------------------------------------------------------------------------------------------
-	typedef list<Filename> Filenames;
+	typedef std::list<Filename> Filenames;
 	//--------------------------------------------------------------------------------------------------------
-	typedef list<string> StringList;
+	typedef std::list<std::string> StringList;
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::function< void ( const Filename& ) > FileFoundFuncPtr;
 	//========================================================================================================
-	bool isSubDirectory ( const sambag::com::Location &parent, const sambag::com::Location &sub )
-        throw(boost::filesystem::filesystem_error);
+	bool isSubDirectory ( const sambag::com::Location &parent, const sambag::com::Location &sub );
 	//========================================================================================================
 	//	Klasse IHasState:
 	//========================================================================================================

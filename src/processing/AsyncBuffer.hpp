@@ -17,7 +17,7 @@
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/interprocess/sync/sharable_lock.hpp>
 #include <sambag/com/Common.hpp>
-#include <sambag/com/Interprocess.hpp>
+#include <sambag/com/SharedMemory.hpp>
 
 namespace frx { namespace processing {
 using ::sambag::com::interprocess::Integer;

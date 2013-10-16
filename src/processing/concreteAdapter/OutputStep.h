@@ -18,7 +18,6 @@
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 
 namespace processing {
-using namespace parameter;
 //============================================================================================================
 /**
  * @class OutputStep.
@@ -26,10 +25,10 @@ using namespace parameter;
  */
 class OutputStep: 
 public ProcessAdapter, 
-public HasParameter, 
-public Serializable, 
+public parameter::HasParameter, 
+public com::Serializable, 
 public VariableOutputAdapter,
-public IHasState
+public com::IHasState
 {
 //============================================================================================================
 friend class boost::serialization::access;
@@ -44,14 +43,14 @@ private:
 	 * @param ar boost::Archive-Objekt
 	 * @param version
 	 */
-	void save ( oArchive &ar, const unsigned int version ) const;
+	void save ( com::oArchive &ar, const unsigned int version ) const;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Deserialisiert OutputStep-Objekt
 	 * @param ar boost::Archive-Objekt
 	 * @param version
 	 */
-	void load ( iArchive &ar, const unsigned int version );
+	void load ( com::iArchive &ar, const unsigned int version );
 	//--------------------------------------------------------------------------------------------------------
 	OutputStep() : fixTimeValue(0.0f, 0.0f) {};
 private:
@@ -86,7 +85,7 @@ private:
 	 */
 	void typeChanged ( void *src, const float& v );
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<Frames*> OutputMatrix;
+	typedef std::vector<Frames*> OutputMatrix;
 	//--------------------------------------------------------------------------------------------------------
 	OutputMatrix outpMatrix;
 	//--------------------------------------------------------------------------------------------------------
@@ -100,7 +99,7 @@ protected:
 		);
 	}
 	//--------------------------------------------------------------------------------------------------------
-	vector<Parameter::Ptr> parameterMap;
+	std::vector<Parameter::Ptr> parameterMap;
 	//--------------------------------------------------------------------------------------------------------
 	Step *cStep;
 	//--------------------------------------------------------------------------------------------------------

@@ -22,9 +22,6 @@
 
 namespace processing {
 namespace parameter {
-using namespace events;
-using namespace std;
-using namespace com;
 //============================================================================================================
 // Vorwaertz deklarationen
 //============================================================================================================
@@ -95,7 +92,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<ConnectionOperator> Ptr;
 	//--------------------------------------------------------------------------------------------------------
-	typedef list<ConnectionOperator::Ptr> Container; 
+	typedef std::list<ConnectionOperator::Ptr> Container; 
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -107,7 +104,7 @@ private:
 	void serialize( Archive &ar, const unsigned int version ){
 	}
 	//--------------------------------------------------------------------------------------------------------
-	string name;
+	std::string name;
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	ConnectionOperator(){}
@@ -116,27 +113,27 @@ public:
 	/**
 	 * @return Operatorname
 	 */
-	const string & getName() const { return name; }
+	const std::string & getName() const { return name; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * setzt Operatorname
 	 * @param _name
 	 */
-	void setName ( const string &_name ) { name = _name; }
+	void setName ( const std::string &_name ) { name = _name; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * implementiert Operation
 	 * @param f urspuengl. Parameter Wert
 	 * @return Parameterwert nach Operation
 	 */
-	virtual VstNumber operate ( VstNumber f ) = 0;
+	virtual com::VstNumber operate ( com::VstNumber f ) = 0;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * implementiert inverse Operation
 	 * @param f urspuengl. Parameter Wert
 	 * @return Parameterwert nach Operation
 	 */
-	virtual VstNumber operateInverse ( VstNumber f ) = 0;
+	virtual com::VstNumber operateInverse ( com::VstNumber f ) = 0;
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~ConnectionOperator() {}
 };
@@ -204,23 +201,23 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	Operators ops;
 	//--------------------------------------------------------------------------------------------------------
-	void onOperatorParameterChanged(void *src, const VstNumber &newValue);
+	void onOperatorParameterChanged(void *src, const com::VstNumber &newValue);
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Parameter A ValueChanged-Handler
 	 * @param
 	 * @param
 	 */
-	void onChangedA(void *src, const VstNumber &newValue);
+	void onChangedA(void *src, const com::VstNumber &newValue);
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Parameter B ValueChanged-Handler
 	 * @param
 	 * @param
 	 */
-	void onChangedB(void *src, const VstNumber &newValue);
+	void onChangedB(void *src, const com::VstNumber &newValue);
     //--------------------------------------------------------------------------------------------------------
-    void update(ParameterPtr p, const VstNumber &newValue);
+    void update(ParameterPtr p, const com::VstNumber &newValue);
 	//--------------------------------------------------------------------------------------------------------
 	void onInertiaDurationChanged(void *src, const float &value);
     //--------------------------------------------------------------------------------------------------------
@@ -327,8 +324,8 @@ struct ParameterConnectionSetHash : std::unary_function<std::string, std::size_t
 		// create hash by the two target parameters
 		std::size_t a = (std::size_t)x.first.get();
 		std::size_t b = (std::size_t)x.second.get();
-        boost::hash_combine(seed, max(a,b)); // always higher value first
-		boost::hash_combine(seed, min(a,b));
+		boost::hash_combine(seed, std::max(a,b)); // always higher value first
+		boost::hash_combine(seed, std::min(a,b));
         return seed;
     }
 };
@@ -369,7 +366,7 @@ public:
 	ParameterConnection::Ptr connectParameter(ParameterPtr a, ParameterPtr b) {
 		if (!a || !b || a == b)
 			return ParameterConnection::Ptr();
-		pair<Base::iterator,bool> ret;
+		std::pair<Base::iterator,bool> ret;
 		ParameterConnection::Ptr cn = ParameterConnection::create(a,b);
 		ret = insert(std::make_pair(createKey(cn), cn));
 		return ret.second ? cn : ParameterConnection::Ptr();
@@ -416,7 +413,7 @@ private:
 		//und comparator(P) konnte nicht serialisert werden:
 		//'serialize': Ist kein Element von 'boost::unordered_set<T,H,P>'
 		//ar & boost::serialization::base_object<Base> (*this);
-		list<ParameterConnection::Ptr>  l;
+		std::list<ParameterConnection::Ptr>  l;
 		BOOST_FOREACH(const Base::value_type &obj, *this) {
 			l.push_back(obj.second);
 		}
@@ -434,7 +431,7 @@ private:
 		//und comparator(P) konnte nicht serialisert werden:
 		//'serialize': Ist kein Element von 'boost::unordered_set<T,H,P>'
 		//ar & boost::serialization::base_object<Base> (*this);
-		list<ParameterConnection::Ptr>  l;
+		std::list<ParameterConnection::Ptr>  l;
 		ar & l;
 		BOOST_FOREACH(ParameterConnection::Ptr cn, l) {
 			insert(std::make_pair(createKey(cn), cn));
@@ -450,9 +447,9 @@ private:
  * Verbindungswert uebertragung.
  */
 class Parameter : 
-	public ValueChangedSender<float>, 
+	public com::events::ValueChangedSender<float>, 
 	public PObject,
-	public Serializable
+	public com::Serializable
 {
 //============================================================================================================
 friend class boost::serialization::access; 
@@ -465,10 +462,10 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	typedef Parameter* U; //verbundener Parameter
 	//--------------------------------------------------------------------------------------------------------
-	VstNumber _min, _max;
+	com::VstNumber _min, _max;
 	//--------------------------------------------------------------------------------------------------------
 	// Wert des Parameters;
-	VstNumber value;
+	com::VstNumber value;
 	//--------------------------------------------------------------------------------------------------------
 	int nr;
 	//--------------------------------------------------------------------------------------------------------
@@ -480,28 +477,28 @@ private:
 	/**
 	 * Parameter Groupname 
 	 */
-	MyString groupname;
+	com::MyString groupname;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * nach VST-SDK:
 	 * Stuff text with the name
 	 * ("Time", "Gain", "RoomType", etc...) of parameter index.
 	 */
-	MyString name;
+	com::MyString name;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * nach VST-SDK:
 	 * Stuff text with a string representation
 	 * ("0.5", "-3", "PLATE", etc...) of the value of parameter index.
 	 */
-	MyString display;
+	com::MyString display;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * nach VST-SDK:
 	 * Stuff label with the units in which parameter index is displayed
 	 * (i.e. "sec", "dB", "type", etc...).
 	 */
-	MyString label;
+	com::MyString label;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * (De)Serialisierung von Parameter-Objekt
@@ -524,7 +521,7 @@ protected:
 	/**
 	 * blockt updateConnections() gegen removeConnection()
 	 */
-	Mutex mutex;
+	com::Mutex mutex;
 	//--------------------------------------------------------------------------------------------------------
 	Parameter( int index = 0 );
 public:
@@ -539,7 +536,7 @@ public:
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	typedef ValueChangedSender<VstNumber>::ValueChangedFunction ParameterListenerFunction;
+	typedef ValueChangedSender<com::VstNumber>::ValueChangedFunction ParameterListenerFunction;
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Parameter();
 	//--------------------------------------------------------------------------------------------------------
@@ -564,40 +561,40 @@ public:
 	/**
 	 * @return Parametername
 	 */
-	const MyString & getName() const { return name; }
+	const com::MyString & getName() const { return name; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * setzt Parametername
 	 * @param name
 	 */
-	void setName(const MyString &name){ Parameter::name = name.trim(); }
+	void setName(const com::MyString &name){ Parameter::name = name.trim(); }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return ParameterGroupName
 	 */
-	const MyString & getGroupName() const { return groupname; }
+	const com::MyString & getGroupName() const { return groupname; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return ParameterGroupName
 	 */
-	void setGroupName(const MyString &name) { groupname = name; }
+	void setGroupName(const com::MyString &name) { groupname = name; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Parameterwert als String  ("0.5", "-3", "PLATE", etc...)
 	 */
 
-	const MyString & getLabel() const { return label; }
+	const com::MyString & getLabel() const { return label; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * setzt String-Parameterwert
 	 * @param label
 	 */
-	void setLabel(const MyString &label){ Parameter::label = label; }
+	void setLabel(const com::MyString &label){ Parameter::label = label; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Parameterwert
 	 */
-	VstNumber getValue() const { 
+	com::VstNumber getValue() const { 
 		return value;
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -605,58 +602,58 @@ public:
 	 * setzt Parameterwert.
 	 * @param v
 	 */
-	void setValue( VstNumber v ){
+	void setValue( com::VstNumber v ){
 		if ( updateLock ) return;
 		// avoid NaN. problems with serialize and deserialize
 		// see: issue #113
 		if ( !boost::math::isfinite(v) ) { 
 			v = 0;
 		}
-		value = com::getMin<VstNumber>( _max, com::getMax<VstNumber>( _min, v ) );
+		value = com::getMin<com::VstNumber>( _max, com::getMax<com::VstNumber>( _min, v ) );
 		ValueChangedSender<float>::notifyListeners(this, *this);
 	}
 	//--------------------------------------------------------------------------------------------------------
-	void operator=(VstNumber v){ setValue (v); }
+	void operator=(com::VstNumber v){ setValue (v); }
 	//--------------------------------------------------------------------------------------------------------
-	operator VstNumber() { return getValue(); }
+	operator com::VstNumber() { return getValue(); }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Parametereinheit (nach VST-SDK i.e. "sec", "dB", "type", etc...).
 	 */
-	MyString  getDisplay() const {
+	com::MyString  getDisplay() const {
 		if (!display.empty()){
 			return display;
 		}
-		return MyString( getValue() );
+		return com::MyString( getValue() );
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * setzt Parametereinheit (nach VST-SDK i.e. "sec", "dB", "type", etc...).
 	 * @param display
 	 */
-	void setDisplay(const MyString &display){ Parameter::display = display; }
+	void setDisplay(const com::MyString &display){ Parameter::display = display; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * setzt Minimalwert den Parameter annehmen kann
 	 * @param v
 	 */
-	void setMin ( VstNumber v ){ _min = v; }
+	void setMin ( com::VstNumber v ){ _min = v; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * setzt Maximalwert den Parameter annehmen kann
 	 * @param v
 	 */
-	void setMax ( VstNumber v ){ _max = v; }
+	void setMax ( com::VstNumber v ){ _max = v; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Parameter-Minimum
 	 */
-	VstNumber getMin() { return _min; }
+	com::VstNumber getMin() { return _min; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Parameter-Maximum
 	 */
-	VstNumber getMax() { return _max; }
+	com::VstNumber getMax() { return _max; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return true if parameter isReadOnly

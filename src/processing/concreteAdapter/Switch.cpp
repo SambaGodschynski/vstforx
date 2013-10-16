@@ -45,28 +45,28 @@ void Switch::_addState() {
 	// prepare duration parameter
 	nDurationIN[i] = Parameter::create(i);
 	parameterMap.push_back( nDurationIN[i] );
-	nDurationIN[i]->setName("fade-in duration " + MyString(i+1) );
-	nDurationIN[i]->setGroupName(STATE_GROUP_NAME + MyString(i+1));
+	nDurationIN[i]->setName("fade-in duration " + com::MyString(i+1) );
+	nDurationIN[i]->setGroupName(STATE_GROUP_NAME + com::MyString(i+1));
 	nDurationIN[i]->setLabel("ms");
 	nDurationIN[i]->setMin(FLT_MIN);
 	nDurationIN[i]->addValueChangedListener ( dI );
 	nDurationOUT[i] = Parameter::create(i);
 	parameterMap.push_back( nDurationOUT[i] );
-	nDurationOUT[i]->setName("fade-out duration " + MyString(i+1) );
-	nDurationOUT[i]->setGroupName(STATE_GROUP_NAME + MyString(i+1));
+	nDurationOUT[i]->setName("fade-out duration " + com::MyString(i+1) );
+	nDurationOUT[i]->setGroupName(STATE_GROUP_NAME + com::MyString(i+1));
 	nDurationOUT[i]->setLabel("ms");
 	nDurationOUT[i]->setMin(FLT_MIN);
 	nDurationIN[i]->addValueChangedListener ( dO );
 	// prepare curve type parameter
 	nCurveTypeIN[i] = Parameter::create(i);
 	parameterMap.push_back( nCurveTypeIN[i] );
-	nCurveTypeIN[i]->setName("fade-in curve type " + MyString(i+1) );
-	nCurveTypeIN[i]->setGroupName(STATE_GROUP_NAME + MyString(i+1));
+	nCurveTypeIN[i]->setName("fade-in curve type " + com::MyString(i+1) );
+	nCurveTypeIN[i]->setGroupName(STATE_GROUP_NAME + com::MyString(i+1));
 	nCurveTypeIN[i]->addValueChangedListener ( cT );
 	nCurveTypeOUT[i] = Parameter::create(i);
 	parameterMap.push_back( nCurveTypeOUT[i] );
-	nCurveTypeOUT[i]->setName("fade-out curve type " + MyString(i+1) );
-	nCurveTypeOUT[i]->setGroupName(STATE_GROUP_NAME + MyString(i+1));
+	nCurveTypeOUT[i]->setName("fade-out curve type " + com::MyString(i+1) );
+	nCurveTypeOUT[i]->setGroupName(STATE_GROUP_NAME + com::MyString(i+1));
 	nCurveTypeOUT[i]->addValueChangedListener ( cT );
 	// init
 	*nDurationIN[i] = 0.01f;
@@ -86,18 +86,18 @@ void Switch::addState() {
 //------------------------------------------------------------------------------------------------------------
 void Switch::durationINChanged ( void *src, const float &v ) {
 	Parameter *p = (Parameter*)src;
-	p->setDisplay(MyString(v*1000.0));
+	p->setDisplay(com::MyString(v*1000.0));
 }
 //------------------------------------------------------------------------------------------------------------
 void Switch::durationOUTChanged ( void *src, const float &v ) {
 	Parameter *p = (Parameter*)src;
-	p->setDisplay(MyString(v*1000.0));
+	p->setDisplay(com::MyString(v*1000.0));
 }
 //------------------------------------------------------------------------------------------------------------
 void Switch::curveTypeChanged ( void *src, const float &v ) {
 	Parameter *p = (Parameter*) src;
 	int t = mapInteger ( *p, FadeValue::NUM_FADE_TYPES );
-	p->setDisplay ("type " + MyString(t+1) );
+	p->setDisplay ("type " + com::MyString(t+1) );
 }
 //------------------------------------------------------------------------------------------------------------
 Switch::~Switch() {

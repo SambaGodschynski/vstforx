@@ -53,7 +53,7 @@ inline bool compareFloat ( T a, T b ) {
 template <typename T>
 inline void assertFloatEqual ( T a, T b ) {
 //=============================================================================
-	stringstream ss;
+	std::stringstream ss;
 	ss<<a<<"!="<<b;
 	CPPUNIT_ASSERT_MESSAGE(ss.str(),
 		compareFloat(a, b)
@@ -62,7 +62,7 @@ inline void assertFloatEqual ( T a, T b ) {
 //=============================================================================
 // liefert wert und position des ersten peaks in float array.
 // liefert ansonsten {startValue, UINT_MAX}
-typedef pair<float, size_t> PeakType;
+typedef std::pair<float, size_t> PeakType;
 #define NO_PEAK_POS UINT_MAX
 PeakType firstPeak ( float *f, size_t blockSize, float startValue = 0.0f ) {
 //=============================================================================

@@ -4,7 +4,6 @@
  *  Created on: Wed Oct 31 10:48:34 2012
  *      Author: Johannes Unger
  */
-
 #include "FrxMainBrowserCtrl.hpp"
 #include "FrxMainBrowser.hpp"
 #include <gui/IFrxControl.hpp>

@@ -190,7 +190,7 @@ bool processArguments(int narg, char **args) {
 	}
 	po::notify(vm);
 	if (vm.count("help")) {
-		cout << options << std::endl;
+		std::cout << options << std::endl;
 		return false;
 	}
 	return true;

@@ -89,24 +89,24 @@ attackVal(0.0f)
 	for ( int i=A; i<NUM_STATES; ++i ) {
 		curveType[i] = Parameter::create();
 		curveType[i]->setIndex (i);
-		curveType[i]->setName (MyString(bff[i]) + " slope type"); 
+		curveType[i]->setName (com::MyString(bff[i]) + " slope type"); 
 		curveType[i]->addValueChangedListener (cT); 
 		curveType[i]->setValue(0.0f); 
-		curveType[i]->setGroupName(MyString(bff[i]));
+		curveType[i]->setGroupName(com::MyString(bff[i]));
 		duration[i] = Parameter::create();
 		duration[i]->setIndex (i);
 		duration[i]->addValueChangedListener(dC);
-		duration[i]->setName (MyString(bff[i]) + " duration"); 
+		duration[i]->setName (com::MyString(bff[i]) + " duration"); 
 		duration[i]->setLabel(" s"); 
 		duration[i]->setDisplay("?");
 		duration[i]->setValue (1.0f / maxD);
-		duration[i]->setGroupName(MyString(bff[i]));
+		duration[i]->setGroupName(com::MyString(bff[i]));
 		level[i] = Parameter::create();
 		level[i]->setIndex (i);
 		level[i]->setValue (1.0f - (i*1.0f/4.0f) ); 
-		level[i]->setName (MyString(bff[i]) + " level"); 
+		level[i]->setName (com::MyString(bff[i]) + " level"); 
 		level[i]->addValueChangedListener (lC);
-		level[i]->setGroupName(MyString(bff[i]));
+		level[i]->setGroupName(com::MyString(bff[i]));
 		parameterMap.push_back ( level[i] );
 		parameterMap.push_back ( duration[i] );
 		parameterMap.push_back ( curveType[i] );
@@ -128,7 +128,7 @@ attackVal(0.0f)
 	level[R]->setValue (0.0f); 
 }
 //--------------------------------------------------------------------------------------------------------
-void ADSR::save ( oArchive &ar, const unsigned int version ) const {
+void ADSR::save ( com::oArchive &ar, const unsigned int version ) const {
 	ar << hostInfo;
 	ar << state;
 	for ( int i=0; i<NUM_STATES; ++i ){
@@ -151,7 +151,7 @@ void ADSR::save ( oArchive &ar, const unsigned int version ) const {
 	
 }
 //--------------------------------------------------------------------------------------------------------
-void ADSR::load ( iArchive &ar, const unsigned int version ) {
+void ADSR::load ( com::iArchive &ar, const unsigned int version ) {
 	using namespace processing;
 	using namespace processing::parameter;
 	Parameter::ParameterListenerFunction lC=boost::bind( &ADSR::levelChanged, this, _1, _2 );
@@ -197,9 +197,9 @@ void ADSR::curveTypeChanged(void *src, const float &v){
 	using namespace processing::parameter;
 
 	Parameter *p = (Parameter*) src;
-	int type = mapInteger ( v, FADER_TYPES );
+	int type = com::mapInteger ( v, FADER_TYPES );
 	fader.setType ( (FadeValue::FadeType)type );
-	p->setDisplay ("type " + MyString(type+1) );
+	p->setDisplay ("type " + com::MyString(type+1) );
 }
 //--------------------------------------------------------------------------------------------------------
 void ADSR::levelChanged(void *src, const float &v ){
@@ -215,7 +215,7 @@ void ADSR::modeChanged(void *src, const float &v ) {
 }
 //--------------------------------------------------------------------------------------------------------
 void ADSR::holdChanged(void *src, const float &v ){
-	hold->setDisplay ( MyString( v*HOLD_FAK ) );
+	hold->setDisplay ( com::MyString( v*HOLD_FAK ) );
 }
 //--------------------------------------------------------------------------------------------------------
 void ADSR::durationChanged(void *src, const float &v ){

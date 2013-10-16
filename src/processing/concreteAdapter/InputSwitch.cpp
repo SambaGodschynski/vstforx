@@ -16,7 +16,7 @@ namespace processing{
 ProcessorNode::Ptr InputSwitch::addInputNode() {
 	TRY_TO_LOCK_TIMED (mutex);
 	InputNode::Ptr neu = ProcessAdapter::createInputNode ( 
-		"Inputswitch InputNode("+MyString(getNumInputNodes()+2) + ")"
+		"Inputswitch InputNode("+com::MyString(getNumInputNodes()+2) + ")"
 	);
 	addState();
 	size_t states = getNumStates();
@@ -29,7 +29,7 @@ ProcessorNode::Ptr InputSwitch::addInputNode() {
 }
 //------------------------------------------------------------------------------------------------------------
 void InputSwitch::valueChanged ( void *src, const float &val ) {
-	Switch::setState ( mapInteger ( val, getNumStates() ) );
+	Switch::setState ( com::mapInteger ( val, getNumStates() ) );
 }
 //------------------------------------------------------------------------------------------------------------
 InputSwitch::InputSwitch( frx::processing::IHostInfo::Ptr hostInfo, int initStates ) : 
@@ -57,8 +57,8 @@ Switch ( initStates, hostInfo->getSampleRate() ), inputMatrix( InputMatrix(initS
 }
 //--------------------------------------------------------------------------------------------------------
 inline void InputSwitch::_processFrames ( InputMatrix &fr, Processor::Int numSamples ) {
-	VstNumber *l = tmpFrame[0];
-	VstNumber *r = tmpFrame[1];
+	com::VstNumber *l = tmpFrame[0];
+	com::VstNumber *r = tmpFrame[1];
 	for ( size_t i=0; i<numSamples; ++i ){
 		*l = 0.0f; *r = 0.0f;
 		for ( size_t j=0; j<getNumStates(); j++ ){

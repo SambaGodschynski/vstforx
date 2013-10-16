@@ -12,14 +12,12 @@
 
 namespace processing {
 class Graph;
-using namespace com;
-using namespace events;
 //============================================================================================================
 /**
  * @class PObject.
  * Oberklasse aller Process-Logik-Objekte
  */
-class PObject : public EventSender< OnDestroy<PObject> >
+class PObject : public com::events::EventSender< com::events::OnDestroy<PObject> >
 {
 //============================================================================================================
 friend class boost::serialization::access;
@@ -48,7 +46,7 @@ private:
 	 */
 	bool owned;
 	//--------------------------------------------------------------------------------------------------------
-	string name;
+	std::string name;
 	//--------------------------------------------------------------------------------------------------------
 public:
 	//--------------------------------------------------------------------------------------------------------
@@ -66,19 +64,21 @@ public:
 	 * PObjectname
 	 * @return
 	 */
-	const string & getName() const { return name; }
+	const std::string & getName() const { return name; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * setzt PObject-Name
 	 * @param _name
 	 */
-	void setName ( const string &_name ) { name = _name; }
+	void setName ( const std::string &_name ) { name = _name; }
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~PObject() {
-		EventSender< OnDestroy<PObject> >::notifyEventListeners ( this, OnDestroy<PObject>(this) );
+		com::events::EventSender< com::events::OnDestroy<PObject> >::notifyEventListeners ( 
+			this, com::events::OnDestroy<PObject>(this) 
+		);
 	}
 	//--------------------------------------------------------------------------------------------------------
-	PObject( const string &name = "unnamed" ) : name(name), owned(false) {}
+	PObject( const std::string &name = "unnamed" ) : name(name), owned(false) {}
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * wird aufgerufen wenn SampleRate oder BlockSize geaendert wird

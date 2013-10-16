@@ -11,7 +11,6 @@
 #include <string>
 
 namespace processing {
-using namespace std;
 //============================================================================================================
 /**
  * @class PluginInfo
@@ -48,8 +47,8 @@ private:
 	}
 	//--------------------------------------------------------------------------------------------------------
 public:
-	string location;
-	string name;
+	std::string location;
+	std::string name;
 	PluginType pluginType;
 	int isSynth;
 	int uid;
@@ -76,7 +75,7 @@ public:
 	/**
 	 * @return String-Repraesentation
 	 */
-	string toString() const;
+	std::string toString() const;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 *

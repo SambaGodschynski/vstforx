@@ -29,7 +29,7 @@ extern bool globFrxIsDemo();
  */
 extern void globAddProcessor( boost::shared_ptr<void> obj );
 extern void globAddPlugin( boost::shared_ptr<void> obj );
-extern string globVersionStr();
+extern std::string globVersionStr();
 
 namespace com {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -47,13 +47,13 @@ friend class tests::PluginCollectionTest;
 friend struct Loki::CreateUsingNew<Settings>;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef string Pathname;
+	typedef std::string Pathname;
     //--------------------------------------------------------------------------------------------------------
     struct PathComparator {
         bool operator() (const Pathname& lhs, const Pathname& rhs) const;
     };
 	//--------------------------------------------------------------------------------------------------------
-	typedef set<Pathname, PathComparator> PathnameSet;
+	typedef std::set<Pathname, PathComparator> PathnameSet;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	std::string homeDir;
@@ -63,11 +63,11 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	PathnameSet pluginDirectories;
 	//--------------------------------------------------------------------------------------------------------
-	string plugCollectionDumpFile;
+	std::string plugCollectionDumpFile;
 	//--------------------------------------------------------------------------------------------------------
-	string plugDir;
+	std::string plugDir;
 	//--------------------------------------------------------------------------------------------------------
-	string outDir;
+	std::string outDir;
 	//--------------------------------------------------------------------------------------------------------
 	bool fastScan; 
 	//--------------------------------------------------------------------------------------------------------
@@ -106,34 +106,34 @@ public:
 	static const unsigned int MIN_WINDOW_WIDTH = 800;
 	static const unsigned int MIN_WINDOW_HEIGHT = 600;
 	static const unsigned int MAX_STR_MENU_LABEL = 40;
-	static const string NAME; 
-	static const string VENDOR;
-	static const string SCAN_REPORT_FILENAME;
+	static const std::string NAME; 
+	static const std::string VENDOR;
+	static const std::string SCAN_REPORT_FILENAME;
 	// dateinamen
-	static const string PLUG_LOAD_LOGFILE; 
-	static const string CONFIG_FILE;
+	static const std::string PLUG_LOAD_LOGFILE; 
+	static const std::string CONFIG_FILE;
 	//--------------------------------------------------------------------------------------------------------
-	string getPlugCollectionDumpFilename();
+	std::string getPlugCollectionDumpFilename();
 	//--------------------------------------------------------------------------------------------------------
-	string getLogFilename() const;
+	std::string getLogFilename() const;
 	//--------------------------------------------------------------------------------------------------------
-	string getConfFilename() const;
+	std::string getConfFilename() const;
 	//--------------------------------------------------------------------------------------------------------
-	string getPlugInitLogFilename() const;
+	std::string getPlugInitLogFilename() const;
 	//--------------------------------------------------------------------------------------------------------
 	/**
      * @deprecated use addPluginFolder() instead.
      */
-    bool addVSTFolder ( const string &path );
+    bool addVSTFolder ( const std::string &path );
 	//--------------------------------------------------------------------------------------------------------
-	bool addPluginFolder ( const string &path );
+	bool addPluginFolder ( const std::string &path );
 	//--------------------------------------------------------------------------------------------------------
 	/**
      * @deprecated use removePluginFolder() instead.
      */
-    bool removeVSTFolder ( const string &path );
+    bool removeVSTFolder ( const std::string &path );
 	//--------------------------------------------------------------------------------------------------------
-	bool removePluginFolder ( const string &path );
+	bool removePluginFolder ( const std::string &path );
 	//--------------------------------------------------------------------------------------------------------
 	void clearVSTFolders () {
 		pluginDirectories.clear();
@@ -151,7 +151,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	const PathnameSet & getPluginDirectoryList() const { return pluginDirectories; }
 	//--------------------------------------------------------------------------------------------------------
-	const string & versionToString() const;
+	const std::string & versionToString() const;
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Settings(){}
 	//--------------------------------------------------------------------------------------------------------

@@ -23,9 +23,9 @@
 namespace com {
 //-----------------------------------------------------------------------------
 // testet ob filename == plugfilename ( zb.: *.dll )
-extern bool isPlugFilename ( const string &filename );
+extern bool isPlugFilename ( const std::string &filename );
 //-----------------------------------------------------------------------------
-extern bool isDirectory ( const string &path );
+extern bool isDirectory ( const std::string &path );
 //-----------------------------------------------------------------------------
 extern std::string getRootDirectory();
 } //namespace

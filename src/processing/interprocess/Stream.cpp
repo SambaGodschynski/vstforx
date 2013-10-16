@@ -7,24 +7,25 @@
 
 #include "Stream.hpp"
 #include <sambag/com/exceptions/IllegalArgumentException.hpp>
-#include <sambag/com/Interprocess.hpp>
 #include <boost/functional/hash.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <cstring>
+#include <sambag/com/SharedMemory.hpp> 
+#include <sambag/com/SharedMemoryImpl.hpp> 
 
 namespace {
 using sambag::com::interprocess::Integer;
 using sambag::com::interprocess::UInteger;
-SharedMemoryObjectPtr createSharedMemoryObject(const char * name) {
+SharedMemoryObjectPtr createSharedMemoryObject(const char * name, size_t maxMemory) {
     using namespace boost::interprocess;
     return SharedMemoryObjectPtr(
-        new SharedMemoryObject(open_or_create, name, read_write)
+		new SAMBAG_SHARED_MEMORY_OBJECT_CREATE(open_or_create, name, read_write, maxMemory)
     );
 }
 SharedMemoryObjectPtr findSharedMemoryObject(const char * name) {
     using namespace boost::interprocess;
     return SharedMemoryObjectPtr(
-        new SharedMemoryObject(open_only, name, read_write)
+		new si::SharedMemoryObject(open_only, name, read_write)
     );
 }
 boost::tuple<void*, UInteger, MappedRegionPtr>
@@ -34,9 +35,9 @@ ipMalloc(SharedMemoryObjectPtr shm, UInteger size)
     if (size==0) {
         return NULL;
     }
-    shm->truncate(size+sizeof(int));
+    SAMBAG_SHARED_MEMORY_TRUNC(shm, size+sizeof(int));
     MappedRegionPtr mp = MappedRegionPtr(
-        new MappedRegion(*(shm.get()), read_write)
+		new si::MappedRegion(*(shm.get()), read_write)
     );
     void *res = mp->get_address();
     
@@ -51,7 +52,7 @@ ipOpen(SharedMemoryObjectPtr shm)
 {
     using namespace boost::interprocess;
     MappedRegionPtr mp = MappedRegionPtr(
-        new MappedRegion(*(shm.get()), read_write)
+		new si::MappedRegion(*(shm.get()), read_write)
     );
     void *res =  mp->get_address();
     UInteger *memorySize = (UInteger*)res;
@@ -61,8 +62,7 @@ ipOpen(SharedMemoryObjectPtr shm)
 
 void ipFree(const char *name)
 {
-    using namespace boost::interprocess;
-    shared_memory_object::remove(name);
+    SAMBAG_SHARED_MEMORY_REMOVE(name);
 }
 
 
@@ -164,9 +164,11 @@ void Stream::createBuffer(UInteger blockSize_soll,
         "creating interprocess::Stream with illegal arguments.");
     }
 
+	UInteger byteSize = getNeededSize(blockSize_soll, numChannels_soll, numParameter_soll);
+
     using namespace ::sambag::com::interprocess;
-    shm = createSharedMemoryObject(id.c_str());
-    UInteger byteSize = getNeededSize(blockSize_soll, numChannels_soll, numParameter_soll);
+    shm = createSharedMemoryObject(id.c_str(), byteSize);
+    
     void *raw;
     boost::tie(raw, memorySize, mapped_region) = ipMalloc( shm, byteSize );
     memory_ptr = raw;
@@ -223,7 +225,7 @@ Stream::Ptr Stream::open(const std::string &id)
 //-----------------------------------------------------------------------------
 void Stream::resize(UInteger blockSize, UInteger numChannels) {
     #ifdef NDEBUG
-    #error "implement me befor release!";
+	// TODO: #error "implement me befor release!";
     #endif
 }
 //-----------------------------------------------------------------------------

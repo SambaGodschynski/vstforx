@@ -14,7 +14,6 @@
 
 
 namespace processing {
-using namespace parameter;
 //============================================================================================================
 /**
  * @class MidiProcessor.
@@ -22,8 +21,8 @@ using namespace parameter;
  */
 class MidiProcessor : 
 public ProcessAdapter, 
-public HasParameter, 
-public Serializable,
+public parameter::HasParameter, 
+public com::Serializable,
 public MidiEventProcessor
 {
 //============================================================================================================
@@ -38,9 +37,9 @@ private:
 	/**
 	 * MIDI-Kanal-Auswahl  Parameter
 	 */
-	Parameter::Ptr channelSelector;
+	parameter::Parameter::Ptr channelSelector;
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<Parameter::Ptr> Parameters;
+	typedef std::vector<parameter::Parameter::Ptr> Parameters;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Parameter index, der Parameter die keinem MIDI-Conrol Event zugehoerig sind
@@ -65,7 +64,7 @@ private:
 	}
 	//--------------------------------------------------------------------------------------------------------
 	void initParameter( size_t index, const std::string &name ) {
-		midiParameters[index] = Parameter::create( index );
+		midiParameters[index] = parameter::Parameter::create( index );
 		midiParameters[index]->setName ( name );
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -101,7 +100,7 @@ public:
 	/**
 	 * @return MIDI-Kanal-Auswahl-Parameter
 	 */
-	virtual Parameter::Ptr getMidiChannelParameter() { return channelSelector; }
+	virtual parameter::Parameter::Ptr getMidiChannelParameter() { return channelSelector; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Verarbeitet Samplemenge der Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
@@ -113,7 +112,7 @@ public:
 	 * @param index
 	 * @return liefert Parameter zu index. Wirft: std::out_of_range
 	 */
-	virtual Parameter::Ptr getParameter ( size_t index = 0 ) const { return midiParameters[index]; }
+	virtual parameter::Parameter::Ptr getParameter ( size_t index = 0 ) const { return midiParameters[index]; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Anzahl aller MidiProcessor-Parameter

@@ -16,7 +16,7 @@ namespace processing{
 ProcessorNode::Ptr OutputSwitch::addOutputNode() {
 	TRY_TO_LOCK_TIMED (mutex);
 	OutputNode::Ptr neu = ProcessAdapter::createOutputNode ( 
-		"outputswitch outputNode("+MyString(getNumOutputNodes()+2) + ")"
+		"outputswitch outputNode("+com::MyString(getNumOutputNodes()+2) + ")"
 	);
 	addState();
 	size_t states = getNumStates();
@@ -29,7 +29,7 @@ ProcessorNode::Ptr OutputSwitch::addOutputNode() {
 }
 //------------------------------------------------------------------------------------------------------------
 void OutputSwitch::valueChanged ( void *src, const float &val ) {
-	Switch::setState ( mapInteger ( val, getNumStates() ) );
+	Switch::setState ( com::mapInteger ( val, getNumStates() ) );
 }
 //------------------------------------------------------------------------------------------------------------
 OutputSwitch::OutputSwitch( frx::processing::IHostInfo::Ptr hostInfo, int initStates ) : 
@@ -55,8 +55,8 @@ Switch ( initStates, hostInfo->getSampleRate() ), outpMatrix( OutputMatrix(initS
 }
 //--------------------------------------------------------------------------------------------------------
 inline void OutputSwitch::_processFrames ( Frames *iFrame, OutputMatrix &fr, Processor::Int numSamples ) {
-	VstNumber *l = (*iFrame)[0];
-	VstNumber *r = (*iFrame)[1];
+	com::VstNumber *l = (*iFrame)[0];
+	com::VstNumber *r = (*iFrame)[1];
 	for ( size_t i=0; i<numSamples; ++i ){
 		for ( size_t j=0; j<getNumStates(); j++ ){
 			float fac = getFaderValueAndIncT(j); // mit jedem lesezugriff wird fader::t erhoet!

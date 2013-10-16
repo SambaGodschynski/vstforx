@@ -15,14 +15,14 @@ namespace ppiError{
 // Klasse: PPIError.
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-PPIError::PPIError (string err, string source, long line ){
+PPIError::PPIError (std::string err, std::string source, long line ){
 	error = err;
 	src = source;
 	linenumber = line;
 	TOLOG ( toString() ); 
 }
 //------------------------------------------------------------------------------------------------------------
-string PPIError::src2String() const {
+std::string PPIError::src2String() const {
 	return "source:" + src + " line:" + MyString((int)linenumber);
 }
 //------------------------------------------------------------------------------------------------------------

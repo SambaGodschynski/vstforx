@@ -11,13 +11,13 @@
 #include <loki/Singleton.h>
 #include "Stream.hpp"
 #include <time.h>
-#include <sambag/com/Interprocess.hpp>
+#include <sambag/com/PlacementAlloc.hpp>
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include <boost/foreach.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
+#include <sambag/com/SharedMemory.hpp> 
 
 namespace frx { namespace processing { namespace interprocess {
-typedef sambag::com::interprocess::String::Class IPString;
 namespace bi = boost::interprocess;
 namespace si = sambag::com::interprocess;
 using ::sambag::com::interprocess::Integer;
@@ -68,9 +68,9 @@ private:
     //typedef si::SharedMemoryHolder SHMH;
     //typedef boost::shared_ptr<SHMH> SHMHPtr;
     //SHMHPtr shmh;
-    typedef boost::shared_ptr<SharedMemoryObject> SharedMemoryObjectPtr;
+	typedef boost::shared_ptr<si::SharedMemoryObject> SharedMemoryObjectPtr;
     SharedMemoryObjectPtr shm;
-    typedef boost::shared_ptr<MappedRegion> MappedRegionPtr;
+	typedef boost::shared_ptr<si::MappedRegion> MappedRegionPtr;
     MappedRegionPtr mapped_region;
     //-------------------------------------------------------------------------
     RemoteChannelManager();

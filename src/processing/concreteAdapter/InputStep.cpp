@@ -15,7 +15,7 @@ namespace processing{
 //------------------------------------------------------------------------------------------------------------
 void InputStep::typeChanged ( void *src, const float &v ){
 	Parameter *pP = (Parameter*) src;
-	int n = mapInteger ( v, 2);
+	int n = com::mapInteger ( v, 2);
 	switch (n){
 		case 0 : 
 			pP->setDisplay ("fix");
@@ -40,7 +40,7 @@ void InputStep::init(){
 	type->addValueChangedListener (f);
 	// Adapter Nodes:
 	for ( int i=0; i<cStep->getNumSteps(); ++i ) {
-		inputNodes[i]->setName("StepInputNode["+MyString(i+1)+"]");
+		inputNodes[i]->setName("StepInputNode["+com::MyString(i+1)+"]");
 		if ( i<cStep->getNumSteps() ) {
 			parameterMap.push_back ( cStep->getParameter(i));
 			parameterMap.push_back ( cStep->Switch::getDurationParameterIN(i) );
@@ -54,7 +54,7 @@ void InputStep::init(){
 ProcessorNode::Ptr InputStep::addInputNode(){
 	TRY_TO_LOCK_TIMED (mutex);
 	InputNode::Ptr neu = ProcessAdapter::createInputNode ( 
-		"stepinput inputNode("+MyString(getNumInputNodes()+2) + ")"
+		"stepinput inputNode("+com::MyString(getNumInputNodes()+2) + ")"
 	);
 	cStep->addState();
 	cStep->setNumSteps (cStep->getNumSteps()+1);
@@ -109,8 +109,8 @@ void InputStep::reset(){
 }
 //------------------------------------------------------------------------------------------------------------
 inline void InputStep::processFrames ( InputMatrix &fr, Processor::Int numSamples ) {
-	VstNumber *l = tmpFrame[0];
-	VstNumber *r = tmpFrame[1];
+	com::VstNumber *l = tmpFrame[0];
+	com::VstNumber *r = tmpFrame[1];
 	for ( size_t i=0; i<numSamples; ++i ){
 		*l = 0.0f; *r = 0.0f;
 		cStep->skimDuration();

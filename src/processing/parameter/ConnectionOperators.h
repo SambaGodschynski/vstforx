@@ -67,8 +67,8 @@ public:
 	 * @param f urspuengl. Parameter Wert
 	 * @return Parameterwert nach Operation
 	 */
-	virtual VstNumber operate ( VstNumber dest ){
-		return (VstNumber)(1.0 - dest);
+	virtual com::VstNumber operate ( com::VstNumber dest ){
+		return (com::VstNumber)(1.0 - dest);
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -76,7 +76,7 @@ public:
 	 * @param f urspuengl. Parameter Wert
 	 * @return Parameterwert nach Operation
 	 */
-	virtual VstNumber operateInverse ( VstNumber dest ){
+	virtual com::VstNumber operateInverse ( com::VstNumber dest ){
 		return operate(dest);
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -137,7 +137,7 @@ public:
 	 * @param f urspuengl. Parameter Wert
 	 * @return Parameterwert nach Operation
 	 */
-	virtual VstNumber operate ( VstNumber x ){
+	virtual com::VstNumber operate ( com::VstNumber x ){
 		return x + *offset - 0.5f;
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ public:
 	 * @param f urspuengl. Parameter Wert
 	 * @return Parameterwert nach Operation
 	 */
-	virtual VstNumber operateInverse ( VstNumber x ){
+	virtual com::VstNumber operateInverse ( com::VstNumber x ){
 		return x - *offset + 0.5f;
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -189,7 +189,7 @@ private:
 	 * @param ar boost::Archive-Objekt
 	 * @param version
 	 */
-	void save ( oArchive &ar, const unsigned int version ) const {
+	void save ( com::oArchive &ar, const unsigned int version ) const {
 		ar << boost::serialization::base_object<ConnectionOperator> ( *this );
 		ar << a;
 		ar << slope;
@@ -200,7 +200,7 @@ private:
 	 * @param ar boost::Archive-Objekt
 	 * @param version
 	 */
-	void load ( iArchive &ar, const unsigned int version ) {
+	void load ( com::iArchive &ar, const unsigned int version ) {
 		ar >> boost::serialization::base_object<ConnectionOperator> ( *this );
 		ar >> a;
 		ar >> slope;
@@ -212,7 +212,7 @@ private:
 	 */
 	Parameter::Ptr slope;
 	//--------------------------------------------------------------------------------------------------------
-	VstNumber a;
+	com::VstNumber a;
 	//--------------------------------------------------------------------------------------------------------
 	ExpConnection () : ConnectionOperator ( )
 	 {
@@ -246,7 +246,7 @@ public:
 	 * @param f urspuengl. Parameter Wert
 	 * @return Parameterwert nach Operation
 	 */
-	virtual VstNumber operate ( VstNumber x ){
+	virtual com::VstNumber operate ( com::VstNumber x ){
 		if ( x == 0.0f ) return 0.0001f; 
 		return exp( a*x ) * *slope;
 	}
@@ -256,7 +256,7 @@ public:
 	 * @param f urspuengl. Parameter Wert
 	 * @return Parameterwert nach Operation
 	 */
-	virtual VstNumber operateInverse ( VstNumber x ){
+	virtual com::VstNumber operateInverse ( com::VstNumber x ){
 		if ( x == 0.0f ) return 0.0f; 
 		float v = -log( x ) / -a  + 1;
 		// problem with ambience reverb when using log/exp to dry/wet.
@@ -304,7 +304,7 @@ private:
 	 * @param ar boost::Archive-Objekt
 	 * @param version
 	 */
-	void save ( oArchive &ar, const unsigned int version ) const {
+	void save ( com::oArchive &ar, const unsigned int version ) const {
 		ar << boost::serialization::base_object<ConnectionOperator> ( *this );
 		ar << a;
 		ar << slope;
@@ -315,7 +315,7 @@ private:
 	 * @param ar boost::Archive-Objekt
 	 * @param version
 	 */
-	void load ( iArchive &ar, const unsigned int version ) {
+	void load ( com::iArchive &ar, const unsigned int version ) {
 		ar >> boost::serialization::base_object<ConnectionOperator> ( *this );
 		ar >> a;
 		ar >> slope;
@@ -338,7 +338,7 @@ private:
 	 */
 	Parameter::Ptr slope;
 	//--------------------------------------------------------------------------------------------------------
-	VstNumber a;
+	com::VstNumber a;
 	//--------------------------------------------------------------------------------------------------------
 	void onSlopeChanged(void *src, const float &value) {
 		a = log( value );
@@ -360,7 +360,7 @@ public:
 	 * @param f urspuengl. Parameter Wert
 	 * @return Parameterwert nach Operation
 	 */
-	virtual VstNumber operate ( VstNumber x ){
+	virtual com::VstNumber operate ( com::VstNumber x ){
 		if ( x == 0.0f ) return 0.0f; 
 		float v = -log( x ) / a  + 1;
 		// problem with ambience reverb when using log/exp to dry/wet.
@@ -377,7 +377,7 @@ public:
 	 * @param f urspuengl. Parameter Wert
 	 * @return Parameterwert nach Operation
 	 */
-	virtual VstNumber operateInverse ( VstNumber x ){
+	virtual com::VstNumber operateInverse ( com::VstNumber x ){
 		if ( x == 0.0f ) return 0.0001f; 
 		return exp( -a*x ) * *slope;
 	}

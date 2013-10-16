@@ -27,9 +27,9 @@ using namespace parameter;
 class InputStep: 
 public ProcessAdapter, 
 public HasParameter, 
-public Serializable, 
+public com::Serializable, 
 public VariableInputAdapter,
-public IHasState
+public com::IHasState
 {
 //============================================================================================================
 friend class boost::serialization::access;
@@ -44,14 +44,14 @@ private:
 	 * @param ar
 	 * @param version
 	 */
-	void save ( oArchive &ar, const unsigned int version ) const;
+	void save ( com::oArchive &ar, const unsigned int version ) const;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Deserialisiert InputStep-Objekt
 	 * @param ar
 	 * @param version
 	 */
-	void load ( iArchive &ar, const unsigned int version );
+	void load ( com::iArchive &ar, const unsigned int version );
 	//--------------------------------------------------------------------------------------------------------
 	InputStep() : fixTimeValue(0.0f, 0.0f) {}
 private:
@@ -88,7 +88,7 @@ private:
 	 */
 	void typeChanged ( void *src, const float& v );
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<Frames*> InputMatrix;
+	typedef std::vector<Frames*> InputMatrix;
 	//--------------------------------------------------------------------------------------------------------
 	InputMatrix inputMatrix;
 	//--------------------------------------------------------------------------------------------------------
@@ -102,7 +102,7 @@ protected:
 		);
 	}
 	//--------------------------------------------------------------------------------------------------------
-	vector<Parameter::Ptr> parameterMap;
+	std::vector<Parameter::Ptr> parameterMap;
 	//--------------------------------------------------------------------------------------------------------
 	Step *cStep;
 	//--------------------------------------------------------------------------------------------------------

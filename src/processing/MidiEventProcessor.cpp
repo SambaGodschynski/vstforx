@@ -28,7 +28,7 @@ MidiEventProcessor::MidiEventProcessor() : midiChannel( parameter::Parameter::cr
 //------------------------------------------------------------------------------------------------------------
 void MidiEventProcessor::processEvents( sambag::dsp::IMidiEvents *ev ) {
 	
-	int channel = mapInteger ( midiChannel->getValue(), 17 ); // 16 midi channels + all channels
+	int channel = com::mapInteger ( midiChannel->getValue(), 17 ); // 16 midi channels + all channels
 
 	if (channel!=ALL_CHANNEL) {
 		tmpEv.copyDeepFiltered(ev, channel);
@@ -40,7 +40,7 @@ void MidiEventProcessor::processEvents( sambag::dsp::IMidiEvents *ev ) {
 //------------------------------------------------------------------------------------------------------------
 void MidiEventProcessor::midiChannelChanged ( void *src, const float &val ) {
 	using namespace parameter;
-	int n = mapInteger ( midiChannel->getValue(), 17 ); // 16 midi channels + all channels
-	midiChannel->setDisplay ( ( n==(size_t)ALL_CHANNEL ? "all" : MyString(n+1) ) ); 
+	int n = com::mapInteger ( midiChannel->getValue(), 17 ); // 16 midi channels + all channels
+	midiChannel->setDisplay ( ( n==(size_t)ALL_CHANNEL ? "all" : com::MyString(n+1) ) ); 
 }
 }//namespace processing

@@ -11,11 +11,10 @@
 #include <boost/shared_ptr.hpp>
 #include "RemoteChannelManager.hpp"
 #include "Stream.hpp"
-#include "processing/processing.h"
+#include <processing/FrxAsyncDSPTimer.hpp>
 #include <com/Serialization.h>
 #include <processing/parameter/parameter.h>
-#include "Stream.hpp"
-#include <processing/FrxAsyncDSPTimer.hpp>
+#include "processing/processing.h"
 
 namespace frx { namespace processing { namespace interprocess {
 namespace pr = ::processing;

@@ -10,7 +10,7 @@
 #include <windows.h>
 #include <exception>
 #include "VstForxResourceManager.hpp"
-#include "../../com/FrxPluginSettings.hpp"
+#include "PluginApps/com/FrxPlugSettings.hpp"
 
 extern void *hInstance; // @see vstsdk2.4::vstplugmain.cpp
 std::string getHomeDirectory();
@@ -75,7 +75,6 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 		"win32.hinstance",
 		sambag::com::createObject((HINSTANCE)hInstance)
 	);
-	com::getSettings().setIsDemo((bool)_FRX_IS_DEMO);
 
 	sambag::disco::components::getWindowToolkit()->useWithoutMainloop();
 	
@@ -84,10 +83,10 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 	// settingup plugin
 	typedef VST2xPluginWrapper<
 		frx::processing::VstForxPlug, // Processor
-	        PluginSettings::FRX_UID, // uid
+	        PlugSettings::FRX_UID, // uid
 		sambag::dsp::StdPluginTraits<
 		  2,2,
-		  PluginSettings::IsInstrument,
+		  PlugSettings::IsInstrument,
 		  ::com::Settings::PROGRAM_PARAMETER
 		>,
 		frx::gui::components::CreateVstForxEditor

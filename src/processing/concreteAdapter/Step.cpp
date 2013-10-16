@@ -23,8 +23,8 @@ currTranslator(tr), Switch (initSteps, sampleRate ),  steps(initSteps), nDuratio
 		setFaderValue ( i, 0.0f );
 		nDuration[i] = Parameter::create(); 
 		Parameter::Ptr p = getParameter(i);
-		p->setName ( "Step " + MyString(i+1) + " duration." );
-		p->setGroupName(STATE_GROUP_NAME + MyString(i+1));
+		p->setName ( "Step " + com::MyString(i+1) + " duration." );
+		p->setGroupName(STATE_GROUP_NAME + com::MyString(i+1));
 		p->addValueChangedListener (f);
 		p->setValue(0.35f);
 	}
@@ -44,8 +44,8 @@ void Step::addState() {
 	size_t i = getNumStates() - 1;
 	nDuration[i] = Parameter::create(); 
 	Parameter::Ptr p = getParameter(i);
-	p->setName ( "Step " + MyString(i+1) + " duration." );
-	p->setGroupName(STATE_GROUP_NAME + MyString(i+1));
+	p->setName ( "Step " + com::MyString(i+1) + " duration." );
+	p->setGroupName(STATE_GROUP_NAME + com::MyString(i+1));
 	p->addValueChangedListener (f);
 	p->setValue(0.35f);
 

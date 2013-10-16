@@ -30,18 +30,18 @@ std::string getRootDirectory() {
 	return home_dir;
 }
 //------------------------------------------------------------------------------------------------------------
-bool isPlugFilename ( const string &filename ) { 
+bool isPlugFilename ( const std::string &filename ) { 
 	return Filename(filename).extension() == ".dll"; 
 } 
 //------------------------------------------------------------------------------------------------------------
-bool isDirectory ( const string &filename ) { 
+bool isDirectory ( const std::string &filename ) { 
 	boost::filesystem::file_status s = boost::filesystem::status( sambag::com::Location(filename) ); 
 	return is_directory (s);
 } 
 //------------------------------------------------------------------------------------------------------------
-MessageBoxReturn osMessageBox ( const string &title, const string &text, const MessageBoxType &type ) {
+MessageBoxReturn osMessageBox ( const std::string &title, const std::string &text, const MessageBoxType &type ) {
 	int ret = 0;
-	UINT flags = MB_SYSTEMMODAL;
+	UINT flags = MB_TASKMODAL;
 	switch ( type ){ 
 		case MSG_HINT :
 			::MessageBox ( NULL, text.c_str(), title.c_str(), flags | MB_OK );
@@ -81,7 +81,7 @@ std::string osSelectDirectory ( const std::string &wndTitle,
 						    const std::string &startPath,
 							void *parentWindow)
 {
-	string ret;
+	std::string ret;
 	BROWSEINFO bi = { 0 };
 	bi.lpfn = &BrowseCallbackProc;
 	bi.lpszTitle = ( wndTitle.c_str() );
@@ -94,7 +94,7 @@ std::string osSelectDirectory ( const std::string &wndTitle,
         // get the name of the folder
         char path[MAX_PATH];
         if ( SHGetPathFromIDList ( pidl, path ) ) {
-			ret = string(path);
+			ret = std::string(path);
         }
 
         // free memory used

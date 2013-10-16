@@ -9,7 +9,8 @@
 #include <processing/interprocess/Stream.hpp>
 #include <processing/interprocess/RemoteChannelManager.hpp>
 #include <boost/tuple/tuple.hpp>
-#include <sambag/com/Interprocess.hpp>
+#include <sambag/com/SharedMemory.hpp>
+#include <sambag/com/SharedMemoryImpl.hpp>
 #include <sambag/com/Common.hpp>
 #include <iostream>
 #include <boost/tuple/tuple_io.hpp>
@@ -74,8 +75,8 @@ int main() {
     using namespace boost::interprocess;
     using namespace ::sambag::com::interprocess;
     
-    SharedMemoryObject shm = SharedMemoryObject(open_or_create, "RCC", read_write);
-    shm.truncate(6400);
+    SharedMemoryObject shm = SAMBAG_SHARED_MEMORY_OBJECT_CREATE(open_or_create, "RCC", read_write, 6400);
+    SAMBAG_SHARED_MEMORY_TRUNC(shm, 6400);
     MappedRegion mapped_region = MappedRegion(shm, read_write);
     void *ptr = mapped_region.get_address();
     PointerIterator pIt(ptr, 6400);

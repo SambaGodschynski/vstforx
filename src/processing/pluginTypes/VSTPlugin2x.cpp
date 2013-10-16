@@ -457,7 +457,7 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::onPlugRequestWindowResize (size_t w, size_t h) {
-	com::EventSender<ResizeEditorEvent>::notifyEventListeners( this, ResizeEditorEvent(w,h) );
+	com::events::EventSender<ResizeEditorEvent>::notifyEventListeners( this, ResizeEditorEvent(w,h) );
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::openEditor(void *window) {

@@ -28,9 +28,9 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef size_t State;
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<FadeValue> FadeValues;
+	typedef std::vector<FadeValue> FadeValues;
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<Parameter::Ptr> Parameters;
+	typedef std::vector<Parameter::Ptr> Parameters;
 	//--------------------------------------------------------------------------------------------------------
 	static const std::string STATE_GROUP_NAME;
 private:

@@ -35,10 +35,11 @@ std::ostream & operator<<(std::ostream &os, Int2Type<PlugSettings::CM>) {
 std::string globVersionStr() {
   std::stringstream ss;
   ss<<FRX_VERSION_MAJOR<<"."<<FRX_VERSION_MINOR<<"."<<FRX_VERSION_MICRO;
+  ss<<" "<<Int2Type<PlugSettings::Version>();
 #ifdef SAMBAG_64
   ss<<" - "<<"x86_64";
 #endif
-  ss<<" - "<<FRX_VERSION_BUILD<<":"<<SAMBAG_VERSION_BUILD<<" "<<Int2Type<PlugSettings::Version>();
+  ss<<" - "<<FRX_VERSION_BUILD<<":"<<SAMBAG_VERSION_BUILD<<" ";
   return ss.str();
 }
 

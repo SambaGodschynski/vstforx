@@ -81,9 +81,9 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<ProcessorNode> Ptr;
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<ProcessorNode*> Container;
+	typedef std::vector<ProcessorNode*> Container;
 	//--------------------------------------------------------------------------------------------------------
-	typedef list<ProcessorNode*> Parents;
+	typedef std::list<ProcessorNode*> Parents;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -170,7 +170,7 @@ protected:
 	/**
 	 * Ausgabe-Sampleblockmenge-Ergebniss-Stack.
 	 */
-	typedef stack<Frames*> FrameStack;
+	typedef std::stack<Frames*> FrameStack;
 	FrameStack frameStack;
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -180,7 +180,7 @@ protected:
 	 * Anzahl abhaengig von activeChildren. Wird ueber prepareFramesContainer initalisiert.
 	 * TODO: list->vector
 	 */
-	typedef list<Frames::Ptr> FrameContainer;
+	typedef std::list<Frames::Ptr> FrameContainer;
 	FrameContainer frameContainer;
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -198,7 +198,7 @@ protected:
 		processFrames ( mixInputsToFrames(numSamples), numSamples );
 	}
 	//--------------------------------------------------------------------------------------------------------
-	ProcessorNode ( const string &name="unnamed" );
+	ProcessorNode ( const std::string &name="unnamed" );
 	//--------------------------------------------------------------------------------------------------------
 public:
 	//--------------------------------------------------------------------------------------------------------
@@ -336,7 +336,7 @@ public:
  * @class: NOPNode. - No Operation Node -
  * (Ausgabe = Eingabe)
  */
-class NOPNode : public ProcessorNode, public Serializable {
+class NOPNode : public ProcessorNode, public com::Serializable {
 //============================================================================================================
 friend class boost::serialization::access;
 public:
@@ -357,7 +357,7 @@ private:
 	NOPNode() {}
 protected:
 	//--------------------------------------------------------------------------------------------------------
-	NOPNode( const string& );
+	NOPNode( const std::string& );
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -365,7 +365,7 @@ public:
 	 * @param str Objektname
 	 * @return neues NOPNode-Objekt
 	 */
-	static Ptr create ( const string &str ) {
+	static Ptr create ( const std::string &str ) {
 		Ptr neu( new NOPNode(str) );
 		neu->self = neu;
 		return neu;
@@ -518,11 +518,11 @@ public:
 	class InputNode;
 	typedef boost::shared_ptr<InputNode> InputNodePtr;
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<OutputNodePtr> OutputNodes;
+	typedef std::vector<OutputNodePtr> OutputNodes;
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<InputNodePtr> InputNodes;
+	typedef std::vector<InputNodePtr> InputNodes;
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<Frames*> InputFrames;
+	typedef std::vector<Frames*> InputFrames;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -583,14 +583,14 @@ protected:
 	 * @param name Objektname
 	 * @return neues OutputNode-Objekt
 	 */
-	OutputNodePtr createOutputNode( const string &name = "unnamed" );
+	OutputNodePtr createOutputNode( const std::string &name = "unnamed" );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * fuegt neuen InputNode hinzu.
 	 * @param name Objektname
 	 * @return neues InputNode-Objekt
 	 */
-	InputNodePtr createInputNode( const string &name = "unnamed" );
+	InputNodePtr createInputNode( const std::string &name = "unnamed" );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * entfernt InputNode
@@ -658,7 +658,7 @@ public:
 	 */
 	OutputNodePtr getOutputNode( size_t index ) const { 
 		if ( index >= getNumOutputNodes() ) 
-			throw ppiError::IndexOutOfBoundException ( "OutOfBound-OutputNodes", __FILE__, __LINE__ );
+			throw com::ppiError::IndexOutOfBoundException ( "OutOfBound-OutputNodes", __FILE__, __LINE__ );
 		return outputNodes[index]; 
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -673,7 +673,7 @@ public:
 	 */
 	virtual InputNodePtr getInputNode( size_t index ) const { 
 		if ( index >= getNumInputNodes() ) 
-			throw ppiError::IndexOutOfBoundException ( "OutOfBound-InputNodes", __FILE__, __LINE__ );
+			throw com::ppiError::IndexOutOfBoundException ( "OutOfBound-InputNodes", __FILE__, __LINE__ );
 		return inputNodes[index]; 
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -707,7 +707,7 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	ProcessAdapter *parent;
 	//--------------------------------------------------------------------------------------------------------
-	OutputNode( const string &name, ProcessAdapter* parent );
+	OutputNode( const std::string &name, ProcessAdapter* parent );
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -716,7 +716,7 @@ public:
 	 * @param parent uebergeordnetes ProcessAdapter-Objekt
 	 * @return
 	 */
-	static Ptr create( const string &name, ProcessAdapter *parent ) {
+	static Ptr create( const std::string &name, ProcessAdapter *parent ) {
 		Ptr neu( new OutputNode(name, parent) );
 		neu->self = neu;
 		return neu;
@@ -778,7 +778,7 @@ private:
 	 */ 
 	void _processNode( Processor::Int numSamples, size_t delay );
 	//--------------------------------------------------------------------------------------------------------
-	InputNode( const string &name, ProcessAdapter *parent );
+	InputNode( const std::string &name, ProcessAdapter *parent );
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -787,7 +787,7 @@ public:
 	 * @param parent uebergeordnetes ProcessAdapter-Objekt
 	 * @return
 	 */
-	static Ptr create( const string &name, ProcessAdapter *parent ) {
+	static Ptr create( const std::string &name, ProcessAdapter *parent ) {
 		Ptr neu( new InputNode(name, parent) );
 		neu->self = neu;
 		return neu;
@@ -810,7 +810,7 @@ public:
  * Implementiert die processFrames Methode, indem es die processFrames() Methode,
  * des im Konstruktor uebergebenen ProcessAdapter-Objektes aufruft.
  */
-class ProcessAdapterNode : public ProcessorNode, public Serializable {
+class ProcessAdapterNode : public ProcessorNode, public com::Serializable {
 //============================================================================================================
 friend class boost::serialization::access;
 friend class ProcessAdapter;

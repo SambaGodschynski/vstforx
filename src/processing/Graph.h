@@ -49,16 +49,13 @@ namespace processing {
 //	Deklarationen
 //============================================================================================================
 namespace processing {
-using namespace events;
-using namespace com;
-using namespace boost::parameter;
 //============================================================================================================
 // Klasse GraphDelayChanged
 //============================================================================================================
 /**
  * @class GraphDelayChanged Event-Klasse.
  */
-struct GraphDelayChanged : public Event {
+struct GraphDelayChanged : public com::events::Event {
 	size_t delay;
 	GraphDelayChanged ( size_t delay ) : delay(delay) {}
 };
@@ -69,14 +66,14 @@ struct GraphDelayChanged : public Event {
  * (zb. Parameter)
  */
 class Graph : 
-	public EventSender<GraphDelayChanged>
+	public com::events::EventSender<GraphDelayChanged>
 //============================================================================================================
 {
 friend class boost::serialization::access;
 friend class DFSVisitor;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef list<ProcessorNode*> NodeList;
+	typedef std::list<ProcessorNode*> NodeList;
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<Graph> Ptr;
 	//--------------------------------------------------------------------------------------------------------
@@ -172,11 +169,11 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	Graph () : _hasCycle(false) { initBglGraph(); }
 	//--------------------------------------------------------------------------------------------------------
-	typedef list <PObject::Ptr> GraphObjectContainer;
+	typedef std::list <PObject::Ptr> GraphObjectContainer;
 	//--------------------------------------------------------------------------------------------------------
 	GraphObjectContainer graphObjects;
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<processing::parameter::Parameter::Ptr> ParameterContainer;
+	typedef std::vector<processing::parameter::Parameter::Ptr> ParameterContainer;
 	//--------------------------------------------------------------------------------------------------------
 	ParameterContainer hostParameter;
 	//--------------------------------------------------------------------------------------------------------

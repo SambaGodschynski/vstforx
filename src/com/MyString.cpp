@@ -11,7 +11,7 @@
 
 namespace {
 //-----------------------------------------------------------------------------------------------------------
-inline com::MyString shortenCenter ( const com::MyString &str, int max, const string & space ) {
+inline com::MyString shortenCenter ( const com::MyString &str, int max, const std::string & space ) {
 	// space muss min. 2 einheiten kleiner sein
 	if ( (int)space.length()  > max - 2 ) return str;
 	size_t l = str.length();
@@ -25,7 +25,7 @@ inline com::MyString shortenCenter ( const com::MyString &str, int max, const st
 	return out;
 }
 //-----------------------------------------------------------------------------------------------------------
-inline com::MyString shortenLeft ( const com::MyString &str, int max, const string & space ) {
+inline com::MyString shortenLeft ( const com::MyString &str, int max, const std::string & space ) {
 	size_t l = str.length();
 	using namespace com;	
 	int diff = l - ( max - space.length()  );
@@ -34,7 +34,7 @@ inline com::MyString shortenLeft ( const com::MyString &str, int max, const stri
 	return out;
 }
 //-----------------------------------------------------------------------------------------------------------
-inline com::MyString shortenRight ( const com::MyString &str, int max, const string & space ) {
+inline com::MyString shortenRight ( const com::MyString &str, int max, const std::string & space ) {
 	size_t l = str.length();
 	using namespace com;	
 	int diff = l - ( max - space.length() );
@@ -58,10 +58,10 @@ namespace com {
 
 //------------------------------------------------------------------------------------------------------------
 MyString MyString::trim() const {
-	return MyString ( boost::algorithm::trim_copy( (string)*this ) );
+	return MyString ( boost::algorithm::trim_copy( (std::string)*this ) );
 }
 //------------------------------------------------------------------------------------------------------------
-MyString MyString::shorten( int max, ShortenStyle type, const string & space ) const {
+MyString MyString::shorten( int max, ShortenStyle type, const std::string & space ) const {
 	if ( (int)this->length() < max ) return *this;
 	// space muss mind. 2 kleiner sein als max
 	if ( (int)space.length() - 1 >= max ) return *this;

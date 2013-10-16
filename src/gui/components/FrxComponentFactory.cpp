@@ -5,18 +5,24 @@
  *      Author: Johannes Unger
  */
 
+#include <com/Settings.h>
+#include <sambag/com/Exception.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <processing/IModelController.hpp>
 #include "FrxComponentFactory.hpp"
 #include <gui/IFrxControl.hpp>
 #include "FrxCircuidView.hpp"
 #include "FrxConcreteProcessor.hpp"
 #include "FrxConcreteParameter.hpp"
 #include <gui/__ModelExecutors.hpp>
+#include <boost/foreach.hpp>
 #include <boost/assign/list_of.hpp>
 #include <gui/components/FrxFlag.hpp>
 #include <boost/bind.hpp>
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <boost/foreach.hpp>
+#include <sambag/com/Exception.hpp>
 #include <processing/IModelController.hpp>
 #include <com/Settings.h>
 #include <processing/interprocess/RemoteChannelManager.hpp>

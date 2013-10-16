@@ -10,21 +10,21 @@
 
 #include <boost/shared_ptr.hpp>
 #include <string>
-#include <boost/interprocess/shared_memory_object.hpp>
-#include <boost/interprocess/mapped_region.hpp>
 #include <boost/interprocess/sync/interprocess_upgradable_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/interprocess/sync/sharable_lock.hpp>
-#include <boost/interprocess/offset_ptr.hpp>
 #include <processing/Frames.h>
-#include <sambag/com/Interprocess.hpp>
+#include <sambag/com/SharedMemory.hpp>
+#include <sambag/com/PlacementAlloc.hpp>
 #include <processing/AsyncBuffer.hpp>
 #include <boost/static_assert.hpp>
 
-typedef boost::interprocess::shared_memory_object SharedMemoryObject;
-typedef boost::interprocess::mapped_region MappedRegion;
-typedef boost::shared_ptr<SharedMemoryObject> SharedMemoryObjectPtr;
-typedef boost::shared_ptr<MappedRegion> MappedRegionPtr;
+
+namespace si = sambag::com::interprocess;
+
+typedef boost::shared_ptr<si::SharedMemoryObject> SharedMemoryObjectPtr;
+typedef boost::shared_ptr<si::MappedRegion> MappedRegionPtr;
+
 
 namespace frx { namespace processing { namespace interprocess {
 using sambag::com::interprocess::Integer;

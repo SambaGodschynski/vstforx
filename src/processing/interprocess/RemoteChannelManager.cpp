@@ -4,7 +4,6 @@
  *  Created on: Sat Sep 14 09:23:31 2013
  *      Author: Johannes Unger
  */
-
 #include "RemoteChannelManager.hpp"
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -13,6 +12,8 @@
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <sambag/com/Common.hpp>
 #include <math.h>
+#include <sambag/com/SharedMemory.hpp> 
+#include <sambag/com/SharedMemoryImpl.hpp> 
 
 namespace {
     const int MAX_CHANNELS = 128;
@@ -176,7 +177,7 @@ RemoteChannelManager::RemoteChannelManager() :
 }
 //-----------------------------------------------------------------------------
 bool RemoteChannelManager::isTotmann() {
-    int diff = ::abs( ::time(NULL) - *totmann_time );
+    Integer diff = ::abs( (Integer)::time(NULL) - (Integer)*totmann_time );
     if ( *references > 0 &&
          diff  > (TOTMANN_UPDATE_INTERVAL_SEC+1))
     {
@@ -204,10 +205,10 @@ void RemoteChannelManager::initManager(int tries) {
     using namespace boost::interprocess;
     using namespace ::sambag::com::interprocess;
     shm = SharedMemoryObjectPtr(
-        new SharedMemoryObject(open_or_create, SHM_MANAGER_NAME, read_write)
+        new SAMBAG_SHARED_MEMORY_OBJECT_CREATE(open_or_create, SHM_MANAGER_NAME, read_write, RC_MAX_MEM_SIZE)
     );
 
-    shm->truncate(RC_MAX_MEM_SIZE);
+    SAMBAG_SHARED_MEMORY_TRUNC(shm,RC_MAX_MEM_SIZE);
     mapped_region = MappedRegionPtr(
         new MappedRegion(*(shm.get()), read_write)
     );
@@ -284,7 +285,7 @@ void RemoteChannelManager::destroyShm() {
         
         mapped_region.reset();
         shm.reset();
-        shared_memory_object::remove(SHM_MANAGER_NAME);
+        SAMBAG_SHARED_MEMORY_REMOVE(SHM_MANAGER_NAME);
         SAMBAG_LOG_INFO<<"destroying RemoteChannelManager: SUCCEED";
     } catch (...) {
         SAMBAG_LOG_ERR<<"destroying RemoteChannelManager failed.";

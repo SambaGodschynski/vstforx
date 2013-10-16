@@ -32,7 +32,7 @@
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::PluginCollectionTest );
 
 //              folder       subfolder
-typedef multimap< std::string, std::string > ExcpectedFolderMap;
+typedef std::multimap< std::string, std::string > ExcpectedFolderMap;
 
 
 static std::ostream & operator<<(std::ostream &os, const ExcpectedFolderMap& m)
@@ -340,6 +340,7 @@ void PluginCollectionTest::testFolderIntegrity2(){
 	using namespace std;
 	using namespace com;
 	using namespace processing;
+	using namespace boost::filesystem;
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>reset PluginCollection
 	PluginCollection::Ptr pC = getPluginCollection();
 	Graph::Ptr graph = createGraph( 512, 44100.0f );

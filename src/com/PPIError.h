@@ -12,8 +12,6 @@
 #include "Events.h"
 #include <exception>
 
-using namespace std;
-
 namespace com{
 namespace ppiError{
 //------------------------------------------------------------------------------------------------------------
@@ -60,18 +58,18 @@ namespace ppiError{
 
 class PPIError : public std::exception {
 public:
-	string error;
-	string src;
-    mutable string tmp;
+	std::string error;
+	std::string src;
+    mutable std::string tmp;
 	long linenumber;
 	//--------------------------------------------------------------------------------------------------------
-	string src2String() const; 
+	std::string src2String() const; 
 	//--------------------------------------------------------------------------------------------------------
-	string toString() const {
+	std::string toString() const {
 		return "! Exception: " + error + " throwed in: " + src2String();
 	}
 	//--------------------------------------------------------------------------------------------------------
-	PPIError(string err="unkown error.", string source=UKWNSRC, long line=-1);
+	PPIError(std::string err="unkown error.", std::string source=UKWNSRC, long line=-1);
 	//--------------------------------------------------------------------------------------------------------
 	void showMessage();
     //-------------------------------------------------------------------------------------------------------
@@ -87,7 +85,7 @@ public:
 class StackUnderflow : public PPIError{
 public:
 	//--------------------------------------------------------------------------------------------------------
-	StackUnderflow(string err="Stack Underflow.", string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
+	StackUnderflow(std::string err="Stack Underflow.", std::string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
 };
 //============================================================================================================
 // Klasse: DeadlockException.
@@ -95,8 +93,8 @@ public:
 class DeadlockException : public PPIError{
 public:
 	//--------------------------------------------------------------------------------------------------------
-	DeadlockException(string err="DeadlockException.", 
-		              string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
+	DeadlockException(std::string err="DeadlockException.", 
+		              std::string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
 };
 //============================================================================================================
 // Klasse: NullPointer.
@@ -104,7 +102,7 @@ public:
 class NullPointer : public PPIError{
 public:
 	//--------------------------------------------------------------------------------------------------------
-	NullPointer(string err="NullPointer", string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
+	NullPointer(std::string err="NullPointer", std::string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
 };
 
 //============================================================================================================
@@ -113,7 +111,7 @@ public:
 class GraphIncomplete : public PPIError{
 public:
 	//--------------------------------------------------------------------------------------------------------
-	GraphIncomplete(string err="Graph Incomplete", string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
+	GraphIncomplete(std::string err="Graph Incomplete", std::string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
 };
 //============================================================================================================
 // Klasse: AlgorithmError.
@@ -121,7 +119,7 @@ public:
 class AlgorithmError : public PPIError{
 public:
 	//--------------------------------------------------------------------------------------------------------
-	AlgorithmError(string err="AlgorithmError", string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
+	AlgorithmError(std::string err="AlgorithmError", std::string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
 };
 //============================================================================================================
 // Klasse: IllegalGraph.
@@ -129,7 +127,7 @@ public:
 class IllegalGraph : public PPIError{
 public:
 	//--------------------------------------------------------------------------------------------------------
-	IllegalGraph(string err="Illegal Graph", string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
+	IllegalGraph(std::string err="Illegal Graph", std::string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
 };
 //============================================================================================================
 // Klasse: FileIOException.
@@ -137,7 +135,7 @@ public:
 class FileIOException : public PPIError{
 public:
 	//--------------------------------------------------------------------------------------------------------
-	FileIOException(string err="PushFrameError", string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
+	FileIOException(std::string err="PushFrameError", std::string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
 };
 //============================================================================================================
 // Klasse: PushFrameError.
@@ -145,7 +143,7 @@ public:
 class PushFrameError : public PPIError{
 public:
 	//--------------------------------------------------------------------------------------------------------
-	PushFrameError(string err="PushFrameError", string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
+	PushFrameError(std::string err="PushFrameError", std::string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
 };
 
 //============================================================================================================
@@ -154,7 +152,7 @@ public:
 class StageBufferException : public PPIError{
 public:
 	//--------------------------------------------------------------------------------------------------------
-	StageBufferException(string err="StageBufferException", string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
+	StageBufferException(std::string err="StageBufferException", std::string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
 };
 
 //============================================================================================================
@@ -163,7 +161,7 @@ public:
 class IteratorError : public StageBufferException {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	IteratorError(string err="StageBufferException: Iterator Error", string src=UKWNSRC, long line=-1) : StageBufferException(err,src,line){};
+	IteratorError(std::string err="StageBufferException: Iterator Error", std::string src=UKWNSRC, long line=-1) : StageBufferException(err,src,line){};
 };
 
 //============================================================================================================
@@ -172,7 +170,7 @@ public:
 class SettingsNotInitialized : public PPIError {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	SettingsNotInitialized(string err="SettingsNotInitialized", string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
+	SettingsNotInitialized(std::string err="SettingsNotInitialized", std::string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
 };
 
 //============================================================================================================
@@ -181,7 +179,7 @@ public:
 class IllegalOperation : public PPIError {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	IllegalOperation(string err="IllegalOperation", string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
+	IllegalOperation(std::string err="IllegalOperation", std::string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
 };
 
 //============================================================================================================
@@ -190,7 +188,7 @@ public:
 class TypeError : public PPIError {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	TypeError(string err="TypeError", string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
+	TypeError(std::string err="TypeError", std::string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
 };
 
 //============================================================================================================
@@ -199,7 +197,7 @@ public:
 class IndexOutOfBoundException : public PPIError {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	IndexOutOfBoundException(string err="IndexOutOfBoundException", string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
+	IndexOutOfBoundException(std::string err="IndexOutOfBoundException", std::string src=UKWNSRC, long line=-1) : PPIError(err,src,line){};
 };
 
 //============================================================================================================
@@ -208,7 +206,7 @@ public:
 class DllError : public PPIError {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	DllError(string err="DllError", string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
+	DllError(std::string err="DllError", std::string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
 };
 
 //============================================================================================================
@@ -217,7 +215,7 @@ public:
 class DataError : public PPIError {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	DataError(string err="DataError", string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
+	DataError(std::string err="DataError", std::string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
 };
 
 //============================================================================================================
@@ -226,7 +224,7 @@ public:
 class SizeError : public PPIError {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	SizeError(string err="SizeError", string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
+	SizeError(std::string err="SizeError", std::string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
 };
 
 //============================================================================================================
@@ -235,7 +233,7 @@ public:
 class MapError : public PPIError {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	MapError(string err="MapError", string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
+	MapError(std::string err="MapError", std::string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
 };
 //============================================================================================================
 // Klasse: SystemError.
@@ -243,7 +241,7 @@ public:
 class SystemError : public PPIError {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	SystemError(string err="SystemError", string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
+	SystemError(std::string err="SystemError", std::string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
 };
 //============================================================================================================
 // Klasse: InvalidBlockSize.
@@ -251,7 +249,7 @@ public:
 class InvalidBlockSize : public PPIError {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	InvalidBlockSize(string err="InvalidBlockSize", string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
+	InvalidBlockSize(std::string err="InvalidBlockSize", std::string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
 };
 //============================================================================================================
 // Klasse: InvalidSampleRate.
@@ -259,7 +257,7 @@ public:
 class InvalidSampleRate : public PPIError {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	InvalidSampleRate(string err="InvalidSampleRate", string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
+	InvalidSampleRate(std::string err="InvalidSampleRate", std::string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
 };
 //============================================================================================================
 // Klasse: OwnerLock.
@@ -267,7 +265,7 @@ public:
 class OwnerLock : public PPIError {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	OwnerLock(string err="OwnerLock", string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
+	OwnerLock(std::string err="OwnerLock", std::string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
 };
 //============================================================================================================
 // Klasse: SettingsException.
@@ -275,7 +273,7 @@ public:
 class SettingsException : public PPIError {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	SettingsException(string err="SettingsException", string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
+	SettingsException(std::string err="SettingsException", std::string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
 };
 //============================================================================================================
 // Klasse: SerializationError.
@@ -283,7 +281,7 @@ public:
 class SerializationError : public PPIError {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	SerializationError(string err="SerializationsError", string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
+	SerializationError(std::string err="SerializationsError", std::string src=UKWNSRC, long line=-1) : PPIError (err,src,line){};
 };
 } //namespace ppiError
 } //namespace com

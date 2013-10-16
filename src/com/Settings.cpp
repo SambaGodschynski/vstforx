@@ -20,22 +20,22 @@
 #include <sambag/com/Config.h>
 #include "FrxConfig.h"
 
-static const string SEPARATOR = "=";
-static const string IN_DIR = "in_dir";
-static const string WINDOW_WIDTH = "window_width";
-static const string WINDOW_HEIGHT = "window_height";
-static const string MAX_LOGSIZE = "max_logfile_sizeKB";
-static const string SKIP_SCAN = "fast_scan";
+static const std::string SEPARATOR = "=";
+static const std::string IN_DIR = "in_dir";
+static const std::string WINDOW_WIDTH = "window_width";
+static const std::string WINDOW_HEIGHT = "window_height";
+static const std::string MAX_LOGSIZE = "max_logfile_sizeKB";
+static const std::string SKIP_SCAN = "fast_scan";
 
 //------------------------------------------------------------------------------------------------------------
-static inline void parseConfigLine( ifstream &f, com::MyString &token, com::MyString &content ) {
+static inline void parseConfigLine( std::ifstream &f, com::MyString &token, com::MyString &content ) {
 	com::MyString str;
 	getline ( f, str );
 	if ( str.length() == 0 ) return;
 	str = str.trim();
 	if ( str.at(0) == '#' ) return;
 	size_t p = str.find_first_of (SEPARATOR);
-	if ( p == string::npos ) {
+	if ( p == std::string::npos ) {
 		content = str;
 		return;
 	}
@@ -65,11 +65,11 @@ Settings & initSettings(const std::string &homeDirectory) {
 	return res;
 }
 //------------------------------------------------------------------------------------------------------------
-const string Settings::NAME = "vstforx";
-const string Settings::VENDOR = "samba godschynski";
-const string Settings::PLUG_LOAD_LOGFILE = "init_plug.log";
-const string Settings::CONFIG_FILE = NAME + ".conf" ;
-const string Settings::SCAN_REPORT_FILENAME = "scanReport.txt";
+const std::string Settings::NAME = "vstforx";
+const std::string Settings::VENDOR = "samba godschynski";
+const std::string Settings::PLUG_LOAD_LOGFILE = "init_plug.log";
+const std::string Settings::CONFIG_FILE = NAME + ".conf" ;
+const std::string Settings::SCAN_REPORT_FILENAME = "scanReport.txt";
 static size_t KILO = 1000;
 //------------------------------------------------------------------------------------------------------------
 bool Settings::PathComparator::operator() (const Pathname& lhs, const Pathname& rhs) const {
@@ -89,25 +89,25 @@ void Settings::setHomeDirectory(const std::string &path) {
 	homeDir = path;
 }
 //------------------------------------------------------------------------------------------------------------
-string Settings::getPlugCollectionDumpFilename ()  {
+std::string Settings::getPlugCollectionDumpFilename ()  {
 	std::string str = getHomeDirectory() + "/" + plugCollectionDumpFile; 
 	boost::filesystem::path p(str);
 	return absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
-string Settings::getLogFilename() const { 
+std::string Settings::getLogFilename() const { 
 	std::string str = SETTINGS.getHomeDirectory() + "/" + NAME + ".log";
 	boost::filesystem::path p(str);
 	return absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
-string Settings::getConfFilename() const { 
+std::string Settings::getConfFilename() const { 
 	std::string str = SETTINGS.getHomeDirectory() + "/" + CONFIG_FILE; 
 	boost::filesystem::path p(str);
 	return absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
-string Settings::getPlugInitLogFilename() const { 
+std::string Settings::getPlugInitLogFilename() const { 
 	std::string str = SETTINGS.getHomeDirectory() + "/" + PLUG_LOAD_LOGFILE;
 	boost::filesystem::path p(str);
 	return absolute(p).string();
@@ -118,12 +118,12 @@ void Settings::init(const std::string &homeDirectory) {
 	setHomeDirectory(homeDirectory);
 	outDir = getHomeDirectory();
 	loadConfigFile();
-	string name = NAME; 
+	std::string name = NAME; 
 	to_lower(name);
 	plugCollectionDumpFile = name + "_plugin_db_dump";
 }
 //------------------------------------------------------------------------------------------------------------
-bool Settings::addPluginFolder ( const string &path ) {
+bool Settings::addPluginFolder ( const std::string &path ) {
 	if (path.empty()) {
         return false;
     }
@@ -131,14 +131,14 @@ bool Settings::addPluginFolder ( const string &path ) {
 	PathnameSet::iterator it = pluginDirectories.begin();
 	for ( ; it!=pluginDirectories.end(); ++it ) {
 		if ( isSubDirectory( sambag::com::Location(*it), sambag::com::Location(path) ) ) {
-			throw ppiError::SettingsException ( 
+			throw com::ppiError::SettingsException ( 
 				path + " is subfolder of " + *it,
 				__FILE__,
 				__LINE__
 			);
 		}
 		if ( isSubDirectory( sambag::com::Location(path), sambag::com::Location(*it) ) ) {
-			throw ppiError::SettingsException ( 
+			throw com::ppiError::SettingsException ( 
 				path + " is parent folder of " + *it,
 				__FILE__,
 				__LINE__
@@ -149,29 +149,29 @@ bool Settings::addPluginFolder ( const string &path ) {
 	return pluginDirectories.insert(path).second;
 }
 //------------------------------------------------------------------------------------------------------------
-bool Settings::addVSTFolder ( const string &path ) {
+bool Settings::addVSTFolder ( const std::string &path ) {
     return addPluginFolder(path);
 }
 //------------------------------------------------------------------------------------------------------------
-bool Settings::removePluginFolder ( const string &path ) {
+bool Settings::removePluginFolder ( const std::string &path ) {
 	return pluginDirectories.erase(path) > 0;
 }
 //------------------------------------------------------------------------------------------------------------
-bool Settings::removeVSTFolder ( const string &path ) {
+bool Settings::removeVSTFolder ( const std::string &path ) {
 	return removePluginFolder(path);
 }
 //------------------------------------------------------------------------------------------------------------
 void Settings::loadConfigFile() { // TODO: use boost::Program_options
 	// !! keine PPI ausnahmen oder TOLOG oder irgendetwas was indirekt wieder settings init. !!
-	ifstream f;
+	std::ifstream f;
 	if ( CONFIG_FILE == "" ) return;
-	string conFile = getConfFilename();
-	f.open ( conFile.c_str(), ios::in );
+	std::string conFile = getConfFilename();
+	f.open ( conFile.c_str(), std::ios::in );
 	// wenn zugriff verw. aber datei existent
 	if ( f.fail() )  {
 		if (  boost::filesystem::exists(conFile) ) {
 			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
-				string("access to [" + conFile + "] failed. (check protection)" )
+				std::string("access to [" + conFile + "] failed. (check protection)" )
 			);
 		}
 		return;
@@ -183,7 +183,7 @@ void Settings::loadConfigFile() { // TODO: use boost::Program_options
 			if ( cont.length() > 0 ) {
 				try {
 					addVSTFolder(cont); // throws SettingsException if folder==already given subfolder
-				} catch ( ppiError::SettingsException &ex ) {continue;}
+				} catch ( com::ppiError::SettingsException &ex ) {continue;}
 			}
 		}
 		if ( token == WINDOW_WIDTH ) {
@@ -214,25 +214,25 @@ void Settings::loadConfigFile() { // TODO: use boost::Program_options
 }
 //------------------------------------------------------------------------------------------------------------
 void Settings::saveConfigFile() {  // TODO: use boost::Program_options
-	ofstream f;
+	std::ofstream f;
 	if ( CONFIG_FILE == "" ) return;
-	f.open ( getConfFilename().c_str(), ios::trunc );
+	f.open ( getConfFilename().c_str(), std::ios::trunc );
 	if ( f.fail() ) {
 		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
-			string("writing to [" + getConfFilename() + "] failed. (check protection)" )
+			std::string("writing to [" + getConfFilename() + "] failed. (check protection)" )
 		);
 	}
 	
 	// indirs
 	PathnameSet::const_iterator it = pluginDirectories.begin();
 	for ( ; it!=pluginDirectories.end(); ++it ) {
-		f<<IN_DIR<<"="<<*it<<endl;
+		f<<IN_DIR<<"="<<*it<<std::endl;
 	}
 	// window metrics
-	f<<WINDOW_WIDTH<<"="<<getWindowWidth()<<endl;
-	f<<WINDOW_HEIGHT<<"="<<getWindowHeight()<<endl;
+	f<<WINDOW_WIDTH<<"="<<getWindowWidth()<<std::endl;
+	f<<WINDOW_HEIGHT<<"="<<getWindowHeight()<<std::endl;
 	// logfile
-	f<<MAX_LOGSIZE<<"="<<( getMaxLogSize() / KILO )<<endl;
+	f<<MAX_LOGSIZE<<"="<<( getMaxLogSize() / KILO )<<std::endl;
 	// fastScan
 	f<<SKIP_SCAN<<"="<<isFastScan();
 	f.close();
