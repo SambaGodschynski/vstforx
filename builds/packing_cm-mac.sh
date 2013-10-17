@@ -4,7 +4,7 @@ if [ $# -ne 1 ]; then
   echo usage: $0 version
   exit 1
 fi
-vstr=VSTForx-$1-mac
+vstr=VSTForx-CM-$1-mac
 dst=mac/$vstr
 folder=VSTForx-CM/
 mkdir -p $dst/$folder
