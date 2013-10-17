@@ -536,7 +536,7 @@ public:
 		return neu;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	typedef ValueChangedSender<com::VstNumber>::ValueChangedFunction ParameterListenerFunction;
+	typedef com::events::ValueChangedSender<com::VstNumber>::ValueChangedFunction ParameterListenerFunction;
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Parameter();
 	//--------------------------------------------------------------------------------------------------------
@@ -610,7 +610,7 @@ public:
 			v = 0;
 		}
 		value = com::getMin<com::VstNumber>( _max, com::getMax<com::VstNumber>( _min, v ) );
-		ValueChangedSender<float>::notifyListeners(this, *this);
+		com::events::ValueChangedSender<float>::notifyListeners(this, *this);
 	}
 	//--------------------------------------------------------------------------------------------------------
 	void operator=(com::VstNumber v){ setValue (v); }

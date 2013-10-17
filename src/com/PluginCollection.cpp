@@ -193,7 +193,7 @@ void PluginCollection::scanDirectories ( const Settings::PathnameSet &pathSet ) 
 		exec->execute("COMMIT TRANSACTION;");
 
 	// scan complete now clean up db
-	EventSender<CleaningUpDataBase>::notifyEventListeners ( this, CleaningUpDataBase() );
+	com::events::EventSender<CleaningUpDataBase>::notifyEventListeners ( this, CleaningUpDataBase() );
 
 	removeUnusedPlugins();  
 	removeUnusedFolders();
@@ -226,14 +226,14 @@ void PluginCollection::update(  frx::processing::IHostInfo::Ptr hostInfo ) {
 		} else scanDirectories( pathSet );
 	} catch ( const sambag::cpsqlite::DataBaseException & ) {
 		// send interrupt
-		EventSender<ScanInterrupted>::notifyEventListeners (
+		com::events::EventSender<ScanInterrupted>::notifyEventListeners (
 			this,
 			ScanInterrupted("Database Exception")
 		);
 		return;
 	} catch ( ... ) {
 		// send interrupt
-		EventSender<ScanInterrupted>::notifyEventListeners (
+		com::events::EventSender<ScanInterrupted>::notifyEventListeners (
 			this,
 			ScanInterrupted("Unkown Exception")
 		);
@@ -247,7 +247,7 @@ void PluginCollection::update(  frx::processing::IHostInfo::Ptr hostInfo ) {
 	} catch (...) {
 		return;
 	}
-	EventSender<ScanComplete>::notifyEventListeners ( this, ScanComplete() );
+	com::events::EventSender<ScanComplete>::notifyEventListeners ( this, ScanComplete() );
 }
 //------------------------------------------------------------------------------------------------------------
 void PluginCollection::appendLog ( const string &log_msg ) {
@@ -377,7 +377,7 @@ void PluginCollection::checkFile( const PluginCollection::Path &path, const Plug
 	using namespace processing;
 	if ( !::com::isPlugFilename( path.string() ) ) return;
 	// . update OnLoad listeners:
-	EventSender<OnLoadFile>::notifyEventListeners ( this, OnLoadFile ( path.string() ) );
+	com::events::EventSender<OnLoadFile>::notifyEventListeners ( this, OnLoadFile ( path.string() ) );
 
     
     // . datei schon in db ?
@@ -394,25 +394,25 @@ void PluginCollection::checkFile( const PluginCollection::Path &path, const Plug
             tmp.access = PluginInfo::FAILED;
             insertPlug ( folder, tmp );
         }
-		EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
+		com::events::EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
 		return;
 	}
     
 	if ( tmp.isValid() ) { // ja, schon vorhanden!
 		if ( tmp.hasChanged ( last_write_time (path) )  ) { // hatt sich geaendert
 			updatePlug ( tmp );
-			EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
+			com::events::EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
 			return;
 		}
 		updatePlugScanStamp(tmp);
-		EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
+		com::events::EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
 		return; // already in db => return
 	}
 
 	//
 	PluginInfo info = insertPlug ( folder, path ); // opens plugin and inserts into db
 	// notify listeners
-	EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), info ) );
+	com::events::EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), info ) );
 }
 //------------------------------------------------------------------------------------------------------------
 PluginCollection::~PluginCollection () {

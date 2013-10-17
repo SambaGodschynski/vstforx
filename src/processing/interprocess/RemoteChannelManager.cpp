@@ -208,7 +208,7 @@ void RemoteChannelManager::initManager(int tries) {
         new SAMBAG_SHARED_MEMORY_OBJECT_CREATE(open_or_create, SHM_MANAGER_NAME, read_write, RC_MAX_MEM_SIZE)
     );
 
-    SAMBAG_SHARED_MEMORY_TRUNC(shm,RC_MAX_MEM_SIZE);
+    SAMBAG_SHARED_MEMORY_TRUNC(*(shm.get()),RC_MAX_MEM_SIZE);
     mapped_region = MappedRegionPtr(
         new MappedRegion(*(shm.get()), read_write)
     );

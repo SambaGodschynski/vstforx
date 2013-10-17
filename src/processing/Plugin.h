@@ -147,7 +147,7 @@ public:
 	 * @param val
 	 */
 	void paramEditorPosXChanged ( void *src, const float &val ) {
-		EventSender<EditorPositionEvent>::notifyEventListeners ( 
+		com::events::EventSender<EditorPositionEvent>::notifyEventListeners (
 			this,
 			EditorPosition ( *editorPosX, *editorPosY )
 		);
@@ -159,7 +159,7 @@ public:
 	 * @param val
 	 */
 	void paramEditorPosYChanged ( void *src, const float &val ) {
-		EventSender<EditorPositionEvent>::notifyEventListeners ( 
+		com::events::EventSender<EditorPositionEvent>::notifyEventListeners ( 
 			this,
 			EditorPosition ( *editorPosX, *editorPosY )
 		);
@@ -171,7 +171,7 @@ public:
 	 * @param val
 	 */
 	void paramEditorOpenChanged ( void *src, const float &val ) {
-		EventSender<EditorOpenParameterChanged>::notifyEventListeners ( 
+		com::events::EventSender<EditorOpenParameterChanged>::notifyEventListeners ( 
 			this,
 			EditorOpenParameterChanged ( val > 0.5 )
 		);

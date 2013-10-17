@@ -35,7 +35,7 @@ ipMalloc(SharedMemoryObjectPtr shm, UInteger size)
     if (size==0) {
         return NULL;
     }
-    SAMBAG_SHARED_MEMORY_TRUNC(shm, size+sizeof(int));
+    SAMBAG_SHARED_MEMORY_TRUNC(*(shm.get()), size+sizeof(int));
     MappedRegionPtr mp = MappedRegionPtr(
 		new si::MappedRegion(*(shm.get()), read_write)
     );

@@ -191,8 +191,8 @@ void PluginCollectionTest::testScan() {
 	PluginCollection::Ptr pC = getPluginCollection();
 	CPPUNIT_ASSERT ( !pC->isAllScanned() );
 	Graph::Ptr graph = createGraph( 512, 44100.0f );
-	pC->EventSender<com::OnLoadFile>::addEventListener( this );
-	pC->EventSender<com::ScanComplete>::addEventListener( this );
+	pC->com::events::EventSender<com::OnLoadFile>::addEventListener( this );
+	pC->com::events::EventSender<com::ScanComplete>::addEventListener( this );
 	pC->update( graph->getHostInfo() );
 	// compare scanned tree with ExpMap
 	ExcpectedFolderMap exp;
@@ -226,8 +226,8 @@ void PluginCollectionTest::testFastScan() {
 	// setup folders
 	PluginCollection::Ptr pC = getPluginCollection();
 	Graph::Ptr graph = createGraph( 512, 44100.0f );
-	pC->EventSender<com::OnLoadFile>::addEventListener( this );
-	pC->EventSender<com::ScanComplete>::addEventListener( this );
+	pC->com::events::EventSender<com::OnLoadFile>::addEventListener( this );
+	pC->com::events::EventSender<com::ScanComplete>::addEventListener( this );
 	resetPluginCollection( graph );
 	//>>>>>>>>>>>>>>>>>>>>>>>>scan whole folder-fast. expect 94 potential plugs 
 	// setup folders
@@ -280,8 +280,8 @@ void PluginCollectionTest::testFolderIntegrity1(){
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>start scan
 	PluginCollection::Ptr pC = getPluginCollection();
 	Graph::Ptr graph = createGraph( 512, 44100.0f );
-	pC->EventSender<com::OnLoadFile>::addEventListener( this );
-	pC->EventSender<com::ScanComplete>::addEventListener( this );
+	pC->com::events::EventSender<com::OnLoadFile>::addEventListener( this );
+	pC->com::events::EventSender<com::ScanComplete>::addEventListener( this );
 	settings->clearVSTFolders();
 	settings->addPluginFolder( pathA.string() );
 	pC->update( graph->getHostInfo() );
@@ -345,8 +345,8 @@ void PluginCollectionTest::testFolderIntegrity2(){
 	PluginCollection::Ptr pC = getPluginCollection();
 	Graph::Ptr graph = createGraph( 512, 44100.0f );
 	resetPluginCollection( graph );
-	pC->EventSender<com::OnLoadFile>::addEventListener( this );
-	pC->EventSender<com::ScanComplete>::addEventListener( this );
+	pC->com::events::EventSender<com::OnLoadFile>::addEventListener( this );
+	pC->com::events::EventSender<com::ScanComplete>::addEventListener( this );
 	resetPluginCollection( graph );
 	////>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>setup folders
 	settings->clearVSTFolders();
@@ -453,8 +453,8 @@ void PluginCollectionTest::testPortability() {
 	// start scan
 	PluginCollection::Ptr pC = getPluginCollection();
 	Graph::Ptr graph = createGraph( 512, 44100.0f );
-	pC->EventSender<com::OnLoadFile>::addEventListener( this );
-	pC->EventSender<com::ScanComplete>::addEventListener( this );
+	pC->com::events::EventSender<com::OnLoadFile>::addEventListener( this );
+	pC->com::events::EventSender<com::ScanComplete>::addEventListener( this );
 	pC->update( graph->getHostInfo() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>getPlugin_1 has to be found
 	Plugin::Ptr plug = pC->getPlugNode ( graph->getHostInfo(), plugLocation.string() );
@@ -465,8 +465,8 @@ void PluginCollectionTest::testPortability() {
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>clear folders
 	settings->clearVSTFolders();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan folder(B). 
-	pC->EventSender<com::OnLoadFile>::addEventListener( this );
-	pC->EventSender<com::ScanComplete>::addEventListener( this );
+	pC->com::events::EventSender<com::OnLoadFile>::addEventListener( this );
+	pC->com::events::EventSender<com::ScanComplete>::addEventListener( this );
 	pC->update( graph->getHostInfo() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>getPlugin_1 cannot found
 	plug = pC->restorePlugNode ( graph->getHostInfo(), pluginInfo );
@@ -476,8 +476,8 @@ void PluginCollectionTest::testPortability() {
 	path =  boost::filesystem::absolute("testVstFolder/B");
 	settings->addPluginFolder( path.string() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan folder(B). 
-	pC->EventSender<com::OnLoadFile>::addEventListener( this );
-	pC->EventSender<com::ScanComplete>::addEventListener( this );
+	pC->com::events::EventSender<com::OnLoadFile>::addEventListener( this );
+	pC->com::events::EventSender<com::ScanComplete>::addEventListener( this );
 	pC->update( graph->getHostInfo() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>getPlugin_1 has to be found 
 	plug = pC->restorePlugNode ( graph->getHostInfo(), pluginInfo );
@@ -487,8 +487,8 @@ void PluginCollectionTest::testPortability() {
 	path =  boost::filesystem::absolute("testVstFolder/B/B2");
 	settings->addPluginFolder( path.string() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>scan folder(B2). 
-	pC->EventSender<com::OnLoadFile>::addEventListener( this );
-	pC->EventSender<com::ScanComplete>::addEventListener( this );
+	pC->com::events::EventSender<com::OnLoadFile>::addEventListener( this );
+	pC->com::events::EventSender<com::ScanComplete>::addEventListener( this );
 	pC->update( graph->getHostInfo() );
 	//>>>>>>>>>>>>>>>>>>>>>>getPlugin_1 has to be found as PLUGIN_LOACTION_2 
 	plug = pC->restorePlugNode ( graph->getHostInfo(), pluginInfo );
@@ -509,8 +509,8 @@ void PluginCollectionTest::testMultipleDirectories() {
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>prepare pluginCollection
 	PluginCollection::Ptr pC = getPluginCollection();
 	Graph::Ptr graph = createGraph( 512, 44100.0f );
-	pC->EventSender<com::OnLoadFile>::addEventListener( this );
-	pC->EventSender<com::ScanComplete>::addEventListener( this );
+	pC->com::events::EventSender<com::OnLoadFile>::addEventListener( this );
+	pC->com::events::EventSender<com::ScanComplete>::addEventListener( this );
 	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>setup folders
 	settings->clearVSTFolders();
 	resetPluginCollection(graph);
