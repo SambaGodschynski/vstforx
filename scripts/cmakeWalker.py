@@ -12,8 +12,13 @@ ENDIF(APPLE)
 
 add_library(frx_core ${FRX_SOURCES} ${VSTSDKSOURCE})
 
+SET (FRX_TESTSOURCES ${FRX_TESTSOURCES} PluginApps/com/FrxPlugSettings.cpp)
 add_executable(unit_tests ${FRX_TESTSOURCES})
 target_link_libraries (unit_tests frx_core ${FRX_CLIBS})
+
+add_executable(remoteChannelCounterpart tests/RemoteChannelCounterpart.cpp)
+target_link_libraries (remoteChannelCounterpart frx_core ${FRX_CLIBS})
+
 
 add_subdirectory(PluginApps)
 
@@ -29,7 +34,9 @@ ignoreDirs = (
 )
 ignoreFiles = (
     ".*win_Window.cpp",
-    ".*Command.cpp"
+    ".*Command.cpp",
+    ".*RemoteChannelCounterpart",
+    ".*cmlogo.png"
 )
 
 class Walker():
@@ -76,6 +83,7 @@ class Walker():
     def passFile(self, f):
          for x in ignoreFiles:
             if re.match("%s" % (x), f, re.I):
+                print "ignore file: ", f
                 return False
          return True     
     
@@ -88,13 +96,16 @@ class Walker():
             full = os.path.relpath(self.currDir, self.root) +'/'+x
             name, ext = os.path.splitext(x)
             if ext == ".mm":
+                if not self.passFile(x):
+                    continue
                 self.mmsource.append(full)
             if ext == ".png" and re.match("^images/.*", full):
+                if not self.passFile(x):
+                    continue
                 self.resources.append("../"+full)
             if not re.match("\.cp{0,2}$", ext):
                 continue
             if not self.passFile(x):
-                print "ignore file: ", x
                 continue
             if self.isTest(self.currDir):
                 self.testSource.append(full)

@@ -42,6 +42,13 @@ public:
 	 */
 	virtual ProcessorCreator 
 	getProcessorCreator(const std::string &name) const;
+    //-------------------------------------------------------------------------
+	/**
+	 * @return a creator for a remote channel .
+	 * @param the remote channel id
+	 */
+	virtual ProcessorCreator 
+	getRemoteChannelCreator(const std::string &rcId) const;
 	//-------------------------------------------------------------------------
 	/**
 	 * @return number of processor creators.

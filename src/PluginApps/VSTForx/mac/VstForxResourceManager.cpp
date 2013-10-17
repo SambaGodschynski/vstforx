@@ -6,8 +6,13 @@
  */
 
 #include "VstForxResourceManager.hpp"
-#include "CocoaHelper.hpp"
 #include <boost/filesystem.hpp>
+
+
+namespace frx { namespace com { 
+    extern std::string getResourceLocation(const std::string &path);
+    extern std::string getBundleLocation();
+}}
 
 namespace frx {
 typedef Loki::SingletonHolder<VstForxResourceManager> VstForxResourceManagerHolder;
@@ -27,7 +32,7 @@ VstForxResourceManager::ImagePtr
 VstForxResourceManager::loadImage(const std::string &_path) 
 {
 	std::string filename = boost::filesystem::path(_path).filename().string();
-    filename = com::CocoaHelper::getResourceLocation(filename);
+    filename = com::getResourceLocation(filename);
 	return Super::loadImage(filename);
 }
 //-----------------------------------------------------------------------------

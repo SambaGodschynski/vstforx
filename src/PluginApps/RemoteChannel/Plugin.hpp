@@ -11,8 +11,13 @@
 #include <boost/shared_ptr.hpp>
 #include <sambag/dsp/DspPlugin.hpp>
 #include <com/FrxConfig.h>
+#include <processing/interprocess/RemoteChannelManager.hpp>
+#include <processing/interprocess/Stream.hpp>
+#include <boost/shared_array.hpp>
+#include <sambag/com/Thread.hpp>
+#include <processing/Frames.h>
 
-namespace frx { namespace processing {
+namespace frx { namespace processing { namespace remoteChannel {
 //=============================================================================
 class Plugin : public sambag::dsp::PluginProcessorBase {
 //=============================================================================
@@ -20,10 +25,19 @@ public:
 	//-------------------------------------------------------------------------
 	typedef sambag::dsp::PluginProcessorBase Super;
 private:
+    //-------------------------------------------------------------------------
+    sambag::com::Mutex mutex;
 	//-------------------------------------------------------------------------
 	int blockSize;
 	//-------------------------------------------------------------------------
 	float sampleRate;
+    //-------------------------------------------------------------------------
+    interprocess::Stream::Ptr stream;
+    //-------------------------------------------------------------------------
+    interprocess::RemoteChannelManager::RCId channelId;
+    //-------------------------------------------------------------------------
+    typedef boost::shared_array<char> Chunk;
+    Chunk chunk;
 protected:
 	//-------------------------------------------------------------------------
 	/**
@@ -40,6 +54,8 @@ protected:
 	void getParameterValue(int index, float &outValue);
 	//-------------------------------------------------------------------------
 	void getParameterName (int index, std::string &outStr) const;
+    //-------------------------------------------------------------------------
+    void destroyStream();
 public:
 	//-------------------------------------------------------------------------
 	void open();
@@ -47,8 +63,6 @@ public:
 	void close();
 	//-------------------------------------------------------------------------
 	void processEvents(sambag::dsp::IMidiEvents *ev);
-	//-------------------------------------------------------------------------
-	void hostParameterChanged(void *src, float value, int index);
 	//-------------------------------------------------------------------------
 	Plugin();
 	//-------------------------------------------------------------------------
@@ -69,13 +83,13 @@ public:
 	//-------------------------------------------------------------------------
 	template <class String> 
 	void getProductName(String &outStr) const {
-		outStr = "VSTForx.RemoteChannel";
+		outStr = "VSTForx.RemoteChannel-testrun3";
 	} 
 	//-------------------------------------------------------------------------
 	int getProductVersion() const {
 		return FRX_VERSION_MAJOR*1000 + FRX_VERSION_MINOR*100 + FRX_VERSION_MICRO;
 	}
 };
-}} // namespace
+}}} // namespace
 
 #endif /* SAMBAG_VSTFORXPLUG_H */

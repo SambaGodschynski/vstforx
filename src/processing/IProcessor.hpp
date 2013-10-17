@@ -84,6 +84,11 @@ public:
 	 * @return the preset name on index i.
 	 */
 	virtual std::string getPresetName(size_t i) const = 0;
+    //-------------------------------------------------------------------------
+    /**
+     * @return status string such as "not available" if any.
+     */
+    virtual std::string getStatusMessage() const = 0;
 	//-------------------------------------------------------------------------
 	/**
 	 * set the preset on index i.

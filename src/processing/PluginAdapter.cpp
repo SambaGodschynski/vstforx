@@ -105,11 +105,6 @@ std::string PluginAdapter::getName() const {
 	return plug->getPlugName();
 }
 //-----------------------------------------------------------------------------
-std::string PluginAdapter::getStatusMessage() const {
-	Adaptee::Ptr plug = getPlugin();
-	return plug->getStatusMsg();
-}
-//-----------------------------------------------------------------------------
 bool PluginAdapter::isSynth() const {
 	Adaptee::Ptr plug = getPlugin();
 	return plug->isSynth();

@@ -19,7 +19,7 @@ namespace com {
 namespace sqlcommands {
 typedef sambag::cpsqlite::DataBase::Int Int;
 typedef sambag::cpsqlite::DataBase::Path Path;
-typedef list<Path> PathList;
+typedef std::list<Path> PathList;
 using namespace std;
 //============================================================================================================
 struct TblLastScan {

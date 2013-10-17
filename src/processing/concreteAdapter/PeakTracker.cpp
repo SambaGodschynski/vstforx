@@ -34,9 +34,9 @@ PeakTracker::PeakTracker( frx::processing::IHostInfo::Ptr hostInfo ) :
 void PeakTracker::processAdapter( Processor::Int numSamples ) {
 	Frames *frame = getInputNode(0)->popFrame();
 	int i = numSamples;
-	VstNumber *r = (*frame)[0];
-	VstNumber *l = (*frame)[1];
-    VstNumber signalAverage = 0.f;
+	com::VstNumber *r = (*frame)[0];
+	com::VstNumber *l = (*frame)[1];
+    com::VstNumber signalAverage = 0.f;
 	while ( --i >= 0 ){
 		signalAverage += fabs( ( *(r) + *(l) )/2.0f );
 		*(r++) = 0.0f;

@@ -5,46 +5,32 @@
  *      Author: Johannes Unger
  */
 
+#include <com/Settings.h>
+#include <sambag/com/Exception.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <processing/IModelController.hpp>
 #include "FrxComponentFactory.hpp"
 #include <gui/IFrxControl.hpp>
 #include "FrxCircuidView.hpp"
 #include "FrxConcreteProcessor.hpp"
 #include "FrxConcreteParameter.hpp"
 #include <gui/__ModelExecutors.hpp>
+#include <boost/foreach.hpp>
 #include <boost/assign/list_of.hpp>
 #include <gui/components/FrxFlag.hpp>
 #include <boost/bind.hpp>
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <boost/foreach.hpp>
+#include <sambag/com/Exception.hpp>
 #include <processing/IModelController.hpp>
 #include <com/Settings.h>
+#include <processing/interprocess/RemoteChannelManager.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace {
 typedef boost::weak_ptr<void> AnyWPtr;
 typedef boost::shared_ptr<void> AnyPtr;
-//-----------------------------------------------------------------------------
-void checkDemoConstraints(AnyPtr object) {
-	if (!SETTINGS.isDemo()) {
-		return;
-	}
-	static const int numMax = 4;
-	static AnyWPtr slots[numMax];
-
-	// check for free slot
-	for (int i=0; i<numMax; ++i) {
-		AnyPtr p = slots[i].lock();
-		if (p) {
-			continue;
-		}
-		slots[i] = object; // free slot found
-		return;
-	}
-	std::stringstream ss;
-	ss<<"DEMO LIMITATION: you can't add more than "<<numMax<<" modules per session.";
-	throw(std::runtime_error(ss.str()));
-}
 //-----------------------------------------------------------------------------
 void registerProcessor(IViewModelMap::Ptr map,
 					   FrxProcessorNode::Ptr v,
@@ -74,7 +60,7 @@ FrxProcessorNodePtr createProcessor(FrxCircuidViewPtr circ, int numInputs, int n
 	}
 	// create view obj
 	typename ConcreteProcessor::Ptr viewObj = ConcreteProcessor::create();
-	checkDemoConstraints(viewObj);
+	globAddProcessor(viewObj);
 	if (!viewObj) {
 		return FrxProcessorNodePtr();
 	}
@@ -117,7 +103,7 @@ FrxProcessorNodePtr createPlugin(FrxCircuidViewPtr circ, ::processing::PluginInf
 	}
 	// create view obj.
 	FrxPluginNode::Ptr viewObj = FrxPluginNode::create();
-	checkDemoConstraints(viewObj);
+	globAddPlugin(viewObj);
 	if (!viewObj) {
 		return FrxProcessorNodePtr();
 	}
@@ -130,7 +116,7 @@ FrxProcessorNodePtr createPlugin(FrxCircuidViewPtr circ, ::processing::PluginInf
 	if (plAd) {
 		viewObj->setName(plAd->getName());
 		viewObj->setUpperFlagText(plAd->getName());
-		viewObj->setLowerFlagText(plAd->getStatusMessage());
+		viewObj->setLowerFlagText(mObj->getStatusMessage());
 		viewObj->isSynth( plAd->isSynth() );
 	}
 	viewObj->configIO(mObj->getNumInputs(), mObj->getNumOutputs());
@@ -202,6 +188,45 @@ FrxParameterPtr createHostParameter(FrxCircuidViewPtr circ, int id) {
 	return viewObj;
 }
 //-----------------------------------------------------------------------------
+FrxProcessorNodePtr createRemoteChannel(FrxCircuidViewPtr circ, std::string &rcId)
+{
+	if (!circ) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"tried to create a remote channel with FrxCircuidViewPtr == NULL");
+	}
+    // create model obj.
+	frx::processing::IModelController::Ptr ctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(ctrl, map) = getControllerAndMap(circ);
+
+	frx::processing::IProcessor::Ptr mObj =
+        ctrl->createRemoteChannelReceiver(rcId);
+	if (!mObj) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"could'nt access remote channel: " + rcId);
+	}
+	// create view obj.
+	FrxProcessorNodePtr viewObj = FrxRemoteChReceiver::create();
+	globAddProcessor(viewObj);
+	if (!viewObj) {
+		return FrxProcessorNodePtr();
+	}
+    
+	// flag
+	FrxFlag::Ptr flag = FrxFlag::create();
+	flag->setTarget(viewObj);
+	circ->add(flag, FrxCircuidView::Z_Flags, true);
+    namespace fpi = frx::processing::interprocess;
+    std::string name = fpi::RemoteChannelManager::instance().getName(rcId);
+    viewObj->setName(name);
+    viewObj->setUpperFlagText(name);
+    viewObj->setLowerFlagText(mObj->getStatusMessage());
+	viewObj->configIO(mObj->getNumInputs(), mObj->getNumOutputs());
+	registerProcessor(map, viewObj, mObj);
+	return viewObj;
+    
+}
+//-----------------------------------------------------------------------------
 template <class ConcreteProcessor>
 FrxComponentFactory::ProcessorCreator getCreator(int numIns, int numOuts) 
 {
@@ -262,6 +287,14 @@ FrxComponentFactory::HostParameterCreator
 FrxComponentFactory::getHostParameterCreator() const 
 {
 	return HostParameterCreator(&createHostParameter);
+}
+//-----------------------------------------------------------------------------
+FrxComponentFactory::ProcessorCreator
+FrxComponentFactory::getRemoteChannelCreator(const std::string &rcId) const
+{
+    return ProcessorCreator(
+        boost::bind(&createRemoteChannel, _1, std::string(rcId))
+    );
 }
 ///////////////////////////////////////////////////////////////////////////////
 IFrxComponentFactory & getComponentFactory(FrxCircuidViewPtr view) {

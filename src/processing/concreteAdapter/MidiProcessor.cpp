@@ -16,14 +16,14 @@ namespace processing{
 //------------------------------------------------------------------------------------------------------------
 MidiProcessor::MidiProcessor ( frx::processing::IHostInfo::Ptr iHost ) :
 		ProcessAdapter( iHost, 0, 0 ),
-		midiParameters( NUM_OUT_PARAM, Parameter::Ptr() )
+		midiParameters( NUM_OUT_PARAM, parameter::Parameter::Ptr() )
 {
 	setName ("midi_receiver");
 	initParameter ( PITCH_BEND , "pitchbend" );
 	midiParameters[PITCH_BEND]->setValue(0.5f);
 	for ( size_t i=(size_t)NUM_NO_CC_PARAMETER; i<(size_t)NUM_OUT_PARAM; ++i ) {
 		size_t c = i - (size_t)NUM_NO_CC_PARAMETER;
-		initParameter ( i, "cc(" + MyString(c) + ")" + musicalValues::getCCName(c) );
+		initParameter ( i, "cc(" + com::MyString(c) + ")" + musicalValues::getCCName(c) );
 	}
 }
 //------------------------------------------------------------------------------------------------------------

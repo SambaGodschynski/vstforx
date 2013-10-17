@@ -71,7 +71,7 @@ private:
 	/**
 	 * StepDauer-Parameter pro StepState
 	 */
-	vector<Parameter::Ptr> nDuration;
+	std::vector<Parameter::Ptr> nDuration;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * StepDauer-Parameter geandert

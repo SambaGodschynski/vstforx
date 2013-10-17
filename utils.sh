@@ -6,6 +6,11 @@ function samba_loop()
 	do
 		echo "...........................................................................$c"
 		$1
+		if [ $? -ne 0 ]
+		then
+			echo "aborted after $c'th run"
+			break
+		fi
 	done
 }
 

@@ -1,7 +1,7 @@
 /*
  * initResourceMap.cpp
  *
- *  Created on: Fri Aug 16 10:42:28 2013
+ *  Created on: Tue Oct 15 12:52:36 2013
  *      Author: createResources.py
  *
  * !! CREATED AUTOMATICALLY DO NOT CHANGE !!
@@ -12,30 +12,31 @@
 namespace frx { namespace createResourcesPy {
 //-----------------------------------------------------------------------------
 void initResourceMap(RegisterResourceFunc registerF) {
-	registerF("images/entry.png", 100);
-	registerF("images/logo.png", 110);
-	registerF("images/plugin.png", 120);
-	registerF("images/e.png", 130);
-	registerF("images/disco-floor.png", 140);
-	registerF("images/midiReceiver.png", 150);
-	registerF("images/volume_node.png", 160);
-	registerF("images/folder.png", 170);
-	registerF("images/adsr_trigger.png", 180);
-	registerF("images/processor.png", 190);
-	registerF("images/step_adapter.png", 200);
-	registerF("images/channel_split.png", 210);
-	registerF("images/exit.png", 220);
-	registerF("images/knob.png", 230);
-	registerF("images/bkgrey.png", 240);
-	registerF("images/peak_tracker.png", 250);
-	registerF("images/sand.png", 260);
+	registerF("images/cmlogo.png", 100);
+	registerF("images/entry.png", 110);
+	registerF("images/logo.png", 120);
+	registerF("images/plugin.png", 130);
+	registerF("images/e.png", 140);
+	registerF("images/disco-floor.png", 150);
+	registerF("images/midiReceiver.png", 160);
+	registerF("images/volume_node.png", 170);
+	registerF("images/folder.png", 180);
+	registerF("images/adsr_trigger.png", 190);
+	registerF("images/processor.png", 200);
+	registerF("images/step_adapter.png", 210);
+	registerF("images/channel_split.png", 220);
+	registerF("images/exit.png", 230);
+	registerF("images/knob.png", 240);
+	registerF("images/bkgrey.png", 250);
+	registerF("images/peak_tracker.png", 260);
 	registerF("images/warning_icon.png", 270);
 	registerF("images/plus.png", 280);
 	registerF("images/hfolder.png", 290);
 	registerF("images/iplug.png", 300);
 	registerF("images/oSwitch.png", 310);
-	registerF("images/inf_icon.png", 320);
-	registerF("images/vstPlugNode.png", 330);
+	registerF("images/vstPlugNode.png", 320);
+	registerF("images/inf_icon.png", 330);
+	registerF("images/remoteChReceiver.png", 340);
 
 }
 

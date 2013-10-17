@@ -1292,11 +1292,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2"
-     inkscape:cx="-43.496385"
-     inkscape:cy="106.39653"
+     inkscape:zoom="4"
+     inkscape:cx="317.9324"
+     inkscape:cy="271.52537"
      inkscape:document-units="px"
-     inkscape:current-layer="g5132"
+     inkscape:current-layer="layer2"
      showgrid="false"
      inkscape:window-width="1916"
      inkscape:window-height="1036"
@@ -3687,7 +3687,10 @@
       </g>
     </g>
     <g
-       id="g4279">
+       id="g4279"
+       inkscape:export-filename="/Users/johannesunger/workspace/vstforx/src/images/remoteChReceiver.png"
+       inkscape:export-xdpi="90.990067"
+       inkscape:export-ydpi="90.990067">
       <path
          inkscape:export-ydpi="213.12584"
          inkscape:export-xdpi="213.12584"

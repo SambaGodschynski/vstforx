@@ -20,6 +20,7 @@
 #include "concreteAdapter/PeakTracker.h"
 #include "concreteAdapter/ADSRTrigger.h"
 #include "concreteAdapter/MidiProcessor.h"
+#include "interprocess/RemoteChReceiver.hpp"
 #include "IHostInfo.h"
 #include <processing/ProcessorAdapter.hpp>
 #include <processing/ParameterAdapter.hpp>
@@ -198,6 +199,25 @@ IProcessor::Ptr ModelController::createMIDIReceiver() {
 	pr::Graph::Janitor::Ptr jan = graph->getJanitor();
 	pr::MidiProcessor::Ptr res =  
 		pr::MidiProcessor::create(graph->getHostInfo());
+	if ( jan->add(res) != pr::Graph::Janitor::SUCCEED ) {
+		return IProcessor::Ptr();
+	}
+	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
+	// register remove request excutor
+	installListeners(ad);
+	return ad;
+}
+//-----------------------------------------------------------------------------
+IProcessor::Ptr
+ModelController::createRemoteChannelReceiver(const std::string &rcId)
+{
+    namespace pr = ::processing;
+    namespace fpi = frx::processing::interprocess;
+	if (!graph)
+		return IProcessor::Ptr();
+	pr::Graph::Janitor::Ptr jan = graph->getJanitor();
+	fpi::RemoteChReceiver::Ptr res =
+		fpi::RemoteChReceiver::create(graph->getHostInfo(), rcId);
 	if ( jan->add(res) != pr::Graph::Janitor::SUCCEED ) {
 		return IProcessor::Ptr();
 	}

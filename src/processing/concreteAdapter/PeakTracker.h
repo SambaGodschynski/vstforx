@@ -22,7 +22,8 @@ class PeakTracker :
 	public ProcessAdapter,
 	public HasParameter, 
 	public HasOutParameter,
-	public Serializable {
+	public com::Serializable 
+{
 //============================================================================================================
 friend class boost::serialization::access;
 public:

@@ -1,4 +1,4 @@
-                                        /*
+/*
  * ===========================================================================================================
  * Volume.cpp
  *      Author: Johannes Unger
@@ -15,8 +15,8 @@ namespace processing{
 void Volume::processAdapter( Processor::Int numSamples ) { 
 	Frames *fr = getInputNode(0)->popFrame();
 	int i = numSamples;
-	VstNumber *r = (*fr)[0];
-	VstNumber *l = (*fr)[1];
+	com::VstNumber *r = (*fr)[0];
+	com::VstNumber *l = (*fr)[1];
 	while ( --i >= 0 ){
 		float f = fader; // mit jedem lesezugriff wird fader::t erhoet!
 		*(r++) *= f;

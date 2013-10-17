@@ -193,7 +193,7 @@ void PluginCollection::scanDirectories ( const Settings::PathnameSet &pathSet ) 
 		exec->execute("COMMIT TRANSACTION;");
 
 	// scan complete now clean up db
-	EventSender<CleaningUpDataBase>::notifyEventListeners ( this, CleaningUpDataBase() );
+	com::events::EventSender<CleaningUpDataBase>::notifyEventListeners ( this, CleaningUpDataBase() );
 
 	removeUnusedPlugins();  
 	removeUnusedFolders();
@@ -226,14 +226,14 @@ void PluginCollection::update(  frx::processing::IHostInfo::Ptr hostInfo ) {
 		} else scanDirectories( pathSet );
 	} catch ( const sambag::cpsqlite::DataBaseException & ) {
 		// send interrupt
-		EventSender<ScanInterrupted>::notifyEventListeners (
+		com::events::EventSender<ScanInterrupted>::notifyEventListeners (
 			this,
 			ScanInterrupted("Database Exception")
 		);
 		return;
 	} catch ( ... ) {
 		// send interrupt
-		EventSender<ScanInterrupted>::notifyEventListeners (
+		com::events::EventSender<ScanInterrupted>::notifyEventListeners (
 			this,
 			ScanInterrupted("Unkown Exception")
 		);
@@ -247,7 +247,7 @@ void PluginCollection::update(  frx::processing::IHostInfo::Ptr hostInfo ) {
 	} catch (...) {
 		return;
 	}
-	EventSender<ScanComplete>::notifyEventListeners ( this, ScanComplete() );
+	com::events::EventSender<ScanComplete>::notifyEventListeners ( this, ScanComplete() );
 }
 //------------------------------------------------------------------------------------------------------------
 void PluginCollection::appendLog ( const string &log_msg ) {
@@ -343,7 +343,7 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 		// TODO: insert as folder with concrete shell ids as content
 		out_info.access = PluginInfo::SUCCEED;
 		out_info.name = VSTPlugin::extractNameFromFilename(out_info.location);
-		out_info.timestamp = last_write_time(out_info.location);
+		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
 		return;
 	} catch(...) {
 		n = Plugin::Ptr();
@@ -354,14 +354,14 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 										   // im scan diese datei nicht nochmal versucht wird zu laden. 
 		out_info.access = PluginInfo::FAILED;
 		// set timestamp and name
-		out_info.timestamp = last_write_time(out_info.location);
+		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
 		out_info.name = VSTPlugin::extractNameFromFilename(out_info.location);
 		return;
 	}
 	if ( ! n->isAccessable() ) {
 		out_info.access = PluginInfo::FAILED;
 		// set timestamp and name
-		out_info.timestamp = last_write_time(out_info.location);
+		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
 		out_info.name = VSTPlugin::extractNameFromFilename(out_info.location);
 		return;
 	}
@@ -369,7 +369,7 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 	out_info = n->getPluginInfo();
 	out_info.access = PluginInfo::SUCCEED;
 	// set timestamp
-	out_info.timestamp = last_write_time(out_info.location);
+	out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
 	return;
 }
 //------------------------------------------------------------------------------------------------------------
@@ -377,7 +377,7 @@ void PluginCollection::checkFile( const PluginCollection::Path &path, const Plug
 	using namespace processing;
 	if ( !::com::isPlugFilename( path.string() ) ) return;
 	// . update OnLoad listeners:
-	EventSender<OnLoadFile>::notifyEventListeners ( this, OnLoadFile ( path.string() ) );
+	com::events::EventSender<OnLoadFile>::notifyEventListeners ( this, OnLoadFile ( path.string() ) );
 
     
     // . datei schon in db ?
@@ -394,25 +394,25 @@ void PluginCollection::checkFile( const PluginCollection::Path &path, const Plug
             tmp.access = PluginInfo::FAILED;
             insertPlug ( folder, tmp );
         }
-		EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
+		com::events::EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
 		return;
 	}
     
 	if ( tmp.isValid() ) { // ja, schon vorhanden!
 		if ( tmp.hasChanged ( last_write_time (path) )  ) { // hatt sich geaendert
 			updatePlug ( tmp );
-			EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
+			com::events::EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
 			return;
 		}
 		updatePlugScanStamp(tmp);
-		EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
+		com::events::EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
 		return; // already in db => return
 	}
 
 	//
 	PluginInfo info = insertPlug ( folder, path ); // opens plugin and inserts into db
 	// notify listeners
-	EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), info ) );
+	com::events::EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), info ) );
 }
 //------------------------------------------------------------------------------------------------------------
 PluginCollection::~PluginCollection () {
@@ -424,7 +424,7 @@ namespace {
 	using namespace sambag::cpsqlite;
 	using namespace sqlcommands;
 	using namespace processing;
-	typedef list<PluginInfo> PluginInfoList;
+	typedef std::list<PluginInfo> PluginInfoList;
     typedef boost::function<void(int, DataBase::Result::Ptr)> _EntryF;
 	bool extractAndAdd ( const DataBase::Results &results, PluginInfoList &pL, _EntryF entryCallback=NULL)
     {

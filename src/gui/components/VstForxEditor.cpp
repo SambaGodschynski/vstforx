@@ -21,6 +21,7 @@
 #include <gui/FrxControl.hpp>
 #include <processing/VstForxPlug.hpp>
 #include <sambag/com/Config.h>
+#include <sambag/com/Common.hpp>
 
 extern void * __getHandlerForVstPlugins_(void *ptr);
 extern void* hInstance;
@@ -227,20 +228,23 @@ void VstForxEditor::_open( void *ptr ) {
 	AEffEditor::open(ptr);
 	sd::Dimension size = getEditorSize();
 	sambag::disco::Rectangle bounds( 0, 0, size.width(), size.height() );
-    
     try {
 		SAMBAG_BEGIN_SYNCHRONIZED(mutex)
+            SAMBAG_LOG_INFO<<"open view: ...";
 			nestedWindow = createMainWindow(bounds);
 			FrxCircuidViewPtr view = createView(nestedWindow);
 			setCircuidView(view);
+            SAMBAG_LOG_INFO<<"open view: SUCCEED";
 		SAMBAG_END_SYNCHRONIZED
 	} catch (const std::exception &ex) {
+        SAMBAG_LOG_ERR<<"open view: FAILED, "<<ex.what();
 		std::stringstream ss;
 		ss<<"Could'nt create main view: "<<ex.what();
 		errorMessage(ss.str());
 		return;
 	}
 	catch (...) {
+        SAMBAG_LOG_ERR<<"open view: FAILED, unkown error";
 		std::stringstream ss;
 		ss<<"Could'nt create main view: unkown error.";
 		errorMessage(ss.str());

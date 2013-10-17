@@ -25,7 +25,7 @@ class Volume :
 //============================================================================================================
 public ProcessAdapter, 
 public HasParameter, 
-public Serializable
+public com::Serializable
 {
 friend class boost::serialization::access;
 public:

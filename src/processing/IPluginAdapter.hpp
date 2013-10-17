@@ -34,11 +34,6 @@ public:
 	//-------------------------------------------------------------------------
 	virtual bool isSynth() const = 0;
 	//-------------------------------------------------------------------------
-	/**
-     * @return error message if exists othwerise an empty string
-     */
-    virtual std::string getStatusMessage() const = 0;
-	//-------------------------------------------------------------------------
 	virtual std::string getName() const = 0;
 }; // IPluginAdapter
 }} // namespace(s)

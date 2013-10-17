@@ -22,7 +22,7 @@ using namespace parameter;
 class ADSRTrigger : public ProcessAdapter, 
 	public HasParameter,
 	public HasOutParameter,
-	public Serializable
+	public com::Serializable
 {
 //============================================================================================================
 friend class boost::serialization::access;

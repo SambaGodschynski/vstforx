@@ -17,18 +17,18 @@
 
 namespace com {
 //------------------------------------------------------------------------------------------------------------
-bool isPlugFilename ( const string &filename ) { 
+bool isPlugFilename ( const std::string &filename ) {
 	return Filename(filename).extension() == ".vst"; 
 } 
 //------------------------------------------------------------------------------------------------------------
-bool isDirectory ( const string &filename ) {
+bool isDirectory ( const std::string &filename ) {
 	sambag::com::Location p(filename);
 	boost::filesystem::file_status s = boost::filesystem::status(p); 
 	// unter OSX sind plugs und apps verzeichnisse
 	return is_directory (s) &&  p.extension() != ".vst" &&  p.extension() != ".app";
 } 	
 //------------------------------------------------------------------------------------------------------------
-MessageBoxReturn osMessageBox ( const string &title, const string &text, const MessageBoxType &type ) {
+MessageBoxReturn osMessageBox ( const std::string &title, const std::string &text, const MessageBoxType &type ) {
     CFStringRef header_ref = CFStringCreateWithCString( NULL, title.c_str(), title.length() );
     CFStringRef message_ref = CFStringCreateWithCString( NULL, text.c_str(), text.length() );
     CFStringRef btn01 = NULL;

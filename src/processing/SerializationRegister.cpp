@@ -19,6 +19,7 @@
 #include <processing/PluginAdapter.hpp>
 #include <processing/ParameterConnection.hpp>
 #include <processing/ParameterAdapter.hpp>
+#include <processing/interprocess/RemoteChReceiver.hpp>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -49,6 +50,7 @@ void register_types_impl( Archive &ar ) {
 	ar.template register_type<pr::PeakTracker>();
 	ar.template register_type<pr::ADSRTrigger>();
 	ar.template register_type<pr::MidiProcessor>();
+    ar.template register_type<frx::processing::interprocess::RemoteChReceiver>();
 	ar.template register_type<pr::FadeValue>();
 
 	ar.template register_type<ProcessorAdapter>();

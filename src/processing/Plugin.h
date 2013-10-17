@@ -18,7 +18,6 @@
 
 
 namespace processing {
-using namespace parameter;
 //============================================================================================================
 /**
  * @class: ResizeEditor.
@@ -30,7 +29,7 @@ struct ResizeEditorEvent : public com::events::Event {
 	ResizeEditorEvent ( size_t width, size_t height ) : w(width), h(height) {}
 };
 //------------------------------------------------------------------------------------------------------------
-typedef pair< float, float > EditorPosition; 
+typedef std::pair< float, float > EditorPosition; 
 //------------------------------------------------------------------------------------------------------------
 typedef com::events::ValueChangedEvent<EditorPosition> EditorPositionEvent;
 //============================================================================================================
@@ -50,10 +49,10 @@ struct EditorOpenParameterChanged : public com::events::Event {
  */
 class Plugin: 
 	public ProcessAdapter,
-	public HasParameter,
+	public parameter::HasParameter,
 	public MidiEventProcessor,
-	public EventSender<EditorPositionEvent>,
-	public EventSender<EditorOpenParameterChanged>,
+	public com::events::EventSender<EditorPositionEvent>,
+	public com::events::EventSender<EditorOpenParameterChanged>,
 	public com::events::EventSender<ResizeEditorEvent>
 {
 //============================================================================================================
@@ -69,7 +68,7 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	PluginInfo pluginInfo;
 	//--------------------------------------------------------------------------------------------------------
-	string plugVendor;
+	std::string plugVendor;
 	//--------------------------------------------------------------------------------------------------------
 	// editor parameter:
 	// They will be processed by GObjectController. To save their states independendly from view,
@@ -104,10 +103,13 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	Plugin() {}
 	//--------------------------------------------------------------------------------------------------------
-	Plugin( frx::processing::IHostInfo::Ptr hostInfo, const string &location, size_t numInputs = 1, size_t numOutputs = 1 );
+	Plugin( frx::processing::IHostInfo::Ptr hostInfo, const std::string &location, size_t numInputs = 1, size_t numOutputs = 1 );
 public:
-	//--------------------------------------------------------------------------------------------------------
-	const std::string & getStatusMsg() const { return statusMsg; }
+    //--------------------------------------------------------------------------------------------------------
+    /**
+     * @override
+     */
+    virtual std::string getStatusMessage() const { return statusMsg; }
 	//--------------------------------------------------------------------------------------------------------
 	void setStatusMsg( const std::string &msg );
 	//--------------------------------------------------------------------------------------------------------
@@ -145,7 +147,7 @@ public:
 	 * @param val
 	 */
 	void paramEditorPosXChanged ( void *src, const float &val ) {
-		EventSender<EditorPositionEvent>::notifyEventListeners ( 
+		com::events::EventSender<EditorPositionEvent>::notifyEventListeners (
 			this,
 			EditorPosition ( *editorPosX, *editorPosY )
 		);
@@ -157,7 +159,7 @@ public:
 	 * @param val
 	 */
 	void paramEditorPosYChanged ( void *src, const float &val ) {
-		EventSender<EditorPositionEvent>::notifyEventListeners ( 
+		com::events::EventSender<EditorPositionEvent>::notifyEventListeners ( 
 			this,
 			EditorPosition ( *editorPosX, *editorPosY )
 		);
@@ -169,7 +171,7 @@ public:
 	 * @param val
 	 */
 	void paramEditorOpenChanged ( void *src, const float &val ) {
-		EventSender<EditorOpenParameterChanged>::notifyEventListeners ( 
+		com::events::EventSender<EditorOpenParameterChanged>::notifyEventListeners ( 
 			this,
 			EditorOpenParameterChanged ( val > 0.5 )
 		);
@@ -194,7 +196,7 @@ public:
 	 * @param index
 	 * @return Program-Name zu index.
 	 */
-	virtual string getProgramName( size_t index ) { return ""; }
+	virtual std::string getProgramName( size_t index ) { return ""; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Aktiviert Program zu index.
@@ -278,35 +280,35 @@ public:
 	/**
 	 * @return Speicherort des Plugins
 	 */
-	string getLocation() const { return pluginInfo.location; }
+	std::string getLocation() const { return pluginInfo.location; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Pluginname
 	 */
-	MyString getPlugName() const { return pluginInfo.name; }
+	com::MyString getPlugName() const { return pluginInfo.name; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Pluginhersteller
 	 */
-	MyString getPlugVendor() const { return plugVendor; }
+	com::MyString getPlugVendor() const { return plugVendor; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Setzt Pluginhersteller
 	 * @param str
 	 */
-	void setPlugVendor( const MyString &str ) { plugVendor = str; }
+	void setPlugVendor( const com::MyString &str ) { plugVendor = str; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * setzt Speicherort
 	 * @param str
 	 */
-	void setLocation( const MyString &str ) { pluginInfo.location = str; }
+	void setLocation( const com::MyString &str ) { pluginInfo.location = str; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * setzt Pluginname
 	 * @param str
 	 */
-	void setPlugName( const MyString &str ) { pluginInfo.name = str; }
+	void setPlugName( const com::MyString &str ) { pluginInfo.name = str; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return PluginInfo zu Plugin.
@@ -325,10 +327,10 @@ class PluginFactory {
 //============================================================================================================
 private:
 	//--------------------------------------------------------------------------------------------------------
-	static Plugin::Ptr createVST2xPlugNode ( frx::processing::IHostInfo::Ptr hostInfo, const string &filename );
+	static Plugin::Ptr createVST2xPlugNode ( frx::processing::IHostInfo::Ptr hostInfo, const std::string &filename );
 public:
 	//--------------------------------------------------------------------------------------------------------
-	static Plugin::Ptr createPlugNode ( frx::processing::IHostInfo::Ptr hostInfo, const string &filename );
+	static Plugin::Ptr createPlugNode ( frx::processing::IHostInfo::Ptr hostInfo, const std::string &filename );
 }; // pluginfactory
 }// namespace processing
 

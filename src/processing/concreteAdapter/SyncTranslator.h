@@ -76,7 +76,7 @@ public:
 	 *
 	 */
 	virtual com::MyString  translateAsString ( float v ) {
-		int n = mapInteger ( v, musicalValues::NUM_STDNOTES );
+		int n = com::mapInteger ( v, musicalValues::NUM_STDNOTES );
 		return musicalValues::noteLengthTable[n].str;
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -92,7 +92,7 @@ public:
 			);
 		}
 		using namespace frx::processing;
-		int n = mapInteger ( v, musicalValues::NUM_STDNOTES );
+		int n = com::mapInteger ( v, musicalValues::NUM_STDNOTES );
 		TimeInfo *inf = hI->getHostTimeInfo( TimeInfo::FrxTempo );
 		return note2Sample ( musicalValues::noteLengthTable[n].val, inf->tempo, inf->sampleRate );
 	}

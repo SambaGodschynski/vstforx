@@ -91,6 +91,8 @@ public:
 	 */
 	virtual IProcessor::Ptr createMIDIReceiver() = 0;
 	//-------------------------------------------------------------------------
+	virtual IProcessor::Ptr createRemoteChannelReceiver(const std::string &rcid) = 0;
+	//-------------------------------------------------------------------------
 	virtual IConnection::Ptr connect(INode::Ptr out, INode::Ptr in) = 0;
 	//-------------------------------------------------------------------------
 	virtual IConnection::Ptr connect(IParameter::Ptr a, IParameter::Ptr b) = 0;

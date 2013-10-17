@@ -108,12 +108,12 @@ void ParameterConnection::initListener() {
 ParameterConnection::~ParameterConnection() {
 }
 //------------------------------------------------------------------------------------------------------------
-void ParameterConnection::onOperatorParameterChanged(void *src, const VstNumber &newValue) {
+void ParameterConnection::onOperatorParameterChanged(void *src, const com::VstNumber &newValue) {
 	// update a to refresh connection
 	a->setValue(*a);
 }
 //------------------------------------------------------------------------------------------------------------
-void ParameterConnection::update(ParameterPtr p, const VstNumber &newValue) {
+void ParameterConnection::update(ParameterPtr p, const com::VstNumber &newValue) {
     Tween::Ptr tween;
     _tween = tween = getTween(_tween, _getDuration(*inertiaDuration));
     if (tween->dst.lock() && tween->dst.lock() != p) {
@@ -131,8 +131,8 @@ void ParameterConnection::update(ParameterPtr p, const VstNumber &newValue) {
     }
 }
 //------------------------------------------------------------------------------------------------------------
-void ParameterConnection::onChangedA(void *src, const VstNumber &newValue) {
-	VstNumber t = newValue;
+void ParameterConnection::onChangedA(void *src, const com::VstNumber &newValue) {
+	com::VstNumber t = newValue;
 	BOOST_FOREACH(ConnectionOperator::Ptr op, ops) {
 		t = op->operate(t);
 	}
@@ -153,8 +153,8 @@ void ParameterConnection::onChangedA(void *src, const VstNumber &newValue) {
 	
 }
 //------------------------------------------------------------------------------------------------------------
-void ParameterConnection::onChangedB(void *src, const VstNumber &newValue) {
-	VstNumber t = newValue;
+void ParameterConnection::onChangedB(void *src, const com::VstNumber &newValue) {
+	com::VstNumber t = newValue;
 	BOOST_FOREACH(ConnectionOperator::Ptr op, ops) {
 		t = op->operateInverse(t);
 	}
@@ -220,7 +220,7 @@ readOnly(false)
 {
 	nr = instances++;
 	Parameter::index = index;
-	setName ("Parameter:" + MyString(nr) );
+	setName ("Parameter:" + com::MyString(nr) );
 	setValue (0.0);
 }
 

@@ -24,10 +24,10 @@ using namespace parameter;
  */
 class OutputSwitch : 
 public ProcessAdapter, 
-public Serializable, 
+public com::Serializable, 
 public Switch,
 public VariableOutputAdapter,
-public IHasState
+public com::IHasState
 {
 //============================================================================================================
 friend class boost::serialization::access;
@@ -42,23 +42,23 @@ private:
 	 * @param ar boost::Archive-Objekt
 	 * @param version
 	 */
-	void save ( oArchive &ar, const unsigned int version ) const;
+	void save ( com::oArchive &ar, const unsigned int version ) const;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Deserialisiert OutputSwich-Objekt
 	 * @param ar boost::Archive-Objekt
 	 * @param version
 	 */
-	void load ( iArchive &ar, const unsigned int version );
+	void load ( com::iArchive &ar, const unsigned int version );
 	//--------------------------------------------------------------------------------------------------------
 	OutputSwitch() {};
 	//--------------------------------------------------------------------------------------------------------
-	typedef vector<Frames*> OutputMatrix;
+	typedef std::vector<Frames*> OutputMatrix;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * blockt hinzufuegen von OutputNode gegen processAdapter()
 	 */
-	Mutex mutex;
+	com::Mutex mutex;
 	//--------------------------------------------------------------------------------------------------------
 	OutputMatrix outpMatrix;
 	//--------------------------------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	Parameter::Ptr selector;
 	//--------------------------------------------------------------------------------------------------------
-	vector<Parameter::Ptr> parameterMap;
+	std::vector<Parameter::Ptr> parameterMap;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * setzt State

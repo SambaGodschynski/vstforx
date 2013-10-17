@@ -5,7 +5,7 @@ project (vstforx)
 
 SET(FRX_VERSION_MAJOR 1)
 SET(FRX_VERSION_MINOR 0)
-SET(FRX_VERSION_MICRO 4)
+SET(FRX_VERSION_MICRO 311)
 
 execute_process(COMMAND git log --pretty=format:%h -n 1
                 OUTPUT_VARIABLE FRX_VERSION_BUILD)
@@ -46,6 +46,7 @@ ELSEIF(UNIX)
 ELSEIF(WIN32)
         add_definitions(-DDISCO_USE_WIN32)
 	add_definitions(-DFRX_OS_WINDOWS)
+	add_definitions(-DWIN32_LEAN_AND_MEAN)
 	set(CMAKE_CXX_FLAGS_DEBUG "/MTd /ZI")
 	SET(FRX_ASYNC_DSP_TIMER "FRX_BOOST_TIMER")
 	SET(FRX_USE_FONTCACHE "1")
@@ -114,45 +115,6 @@ set (VSTSDKSOURCE ${VSTSDKSOURCE}
       ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/audioeffectx.cpp
       #${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp now part of target sources
 )
-
-
-IF(APPLE)
-        #vstforx
-	SET(PLIST_VERSION "${FRX_VERSION_MAJOR}.${FRX_VERSION_MINOR}.${FRX_VERSION_MICRO}")
-	SET(PLIST_PROD VSTForx)
-	SET(PLIST_EXEC vstforx)
-	CONFIGURE_FILE(
-  	  "${PROJECT_SOURCE_DIR}/src/PluginApps/tmpl.plist.in"
-  	  "${PROJECT_BINARY_DIR}/src/PluginApps/VSTForx/mac/vstforx.plist"
-	)	
-	SET(PLIST_PROD VSTForxInstrument)
-	SET(PLIST_EXEC vstforxInstrument)
-	CONFIGURE_FILE(
-  	  "${PROJECT_SOURCE_DIR}/src/PluginApps/tmpl.plist.in"
-  	  "${PROJECT_BINARY_DIR}/src/PluginApps/VSTForx/mac/ivstforx.plist"
-	)	
-	SET(PLIST_PROD VSTForxDEMO)
-	SET(PLIST_EXEC vstforxDEMO)
-	CONFIGURE_FILE(
-  	  "${PROJECT_SOURCE_DIR}/src/PluginApps/tmpl.plist.in"
-  	  "${PROJECT_BINARY_DIR}/src/PluginApps/VSTForx/mac/vstforxDemo.plist"
-	)	
-	SET(PLIST_PROD VSTForxInstrumentDEMO)
-	SET(PLIST_EXEC vstforxInstrumentDEMO)
-	CONFIGURE_FILE(
-  	  "${PROJECT_SOURCE_DIR}/src/PluginApps/tmpl.plist.in"
-  	  "${PROJECT_BINARY_DIR}/src/PluginApps/VSTForx/mac/ivstforxDEMO.plist"
-	)
-
-
-	#remote channel
-	SET(PLIST_PROD RemoteChannel)
-	SET(PLIST_EXEC remoteChannel)
-	CONFIGURE_FILE(
-  	  "${PROJECT_SOURCE_DIR}/src/PluginApps/tmpl.plist.in"
-  	  "${PROJECT_BINARY_DIR}/src/PluginApps/RemoteChannel/mac/remoteChannel.plist"
-	)		
-ENDIF(APPLE)
 
 
 CONFIGURE_FILE(

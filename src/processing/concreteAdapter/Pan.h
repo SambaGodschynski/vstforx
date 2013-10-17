@@ -19,7 +19,7 @@ using namespace parameter;
  * @class Pan.
  *  Pan auf Eingangs-Samplemenge.
  */
-class Pan : public ProcessAdapter, public Serializable, public HasParameter  {
+class Pan : public ProcessAdapter, public com::Serializable, public HasParameter  {
 //============================================================================================================
 friend class boost::serialization::access;
 public:

@@ -48,4 +48,17 @@ void TestOne4All::testExtractVSTPluginFilename() {
 		CPPUNIT_ASSERT_EQUAL(boost::get<ExpInt>(in[i]), res.second);
 	}
 }
+void TestOne4All::testMapNumChannels2Xput() {
+    CPPUNIT_ASSERT_EQUAL((size_t)0, com::numChannels2Xputs(0));
+    CPPUNIT_ASSERT_EQUAL((size_t)1, com::numChannels2Xputs(1));
+    CPPUNIT_ASSERT_EQUAL((size_t)1, com::numChannels2Xputs(2));
+    CPPUNIT_ASSERT_EQUAL((size_t)2, com::numChannels2Xputs(3));
+    CPPUNIT_ASSERT_EQUAL((size_t)2, com::numChannels2Xputs(4));
+    CPPUNIT_ASSERT_EQUAL((size_t)3, com::numChannels2Xputs(5));
+    CPPUNIT_ASSERT_EQUAL((size_t)3, com::numChannels2Xputs(6));
+    CPPUNIT_ASSERT_EQUAL((size_t)4, com::numChannels2Xputs(7));
+    CPPUNIT_ASSERT_EQUAL((size_t)4, com::numChannels2Xputs(8));
+    CPPUNIT_ASSERT_EQUAL((size_t)5, com::numChannels2Xputs(9));
+    CPPUNIT_ASSERT_EQUAL((size_t)5, com::numChannels2Xputs(10));
+}
 } // namespace tests

@@ -15,7 +15,7 @@ namespace processing{
 //------------------------------------------------------------------------------------------------------------
 void OutputStep::typeChanged ( void *src, const float &v ){
 	Parameter *pP = (Parameter*) src;
-	int n = mapInteger ( v, 2);
+	int n = com::mapInteger ( v, 2);
 	switch (n){
 		case 0 : 
 			pP->setDisplay ("fix");
@@ -40,7 +40,7 @@ void OutputStep::init(){
 	type->addValueChangedListener (f);
 	// Adapter Nodes:
 	for ( int i=0; i<cStep->getNumSteps(); ++i ) {
-		outputNodes[i]->setName("StepOutputode["+MyString(i+1)+"]");
+		outputNodes[i]->setName("StepOutputode["+com::MyString(i+1)+"]");
 		if ( i<cStep->getNumSteps() ) {
 			parameterMap.push_back ( cStep->getParameter(i) );
 			parameterMap.push_back ( cStep->Switch::getDurationParameterIN(i) );
@@ -54,7 +54,7 @@ void OutputStep::init(){
 ProcessorNode::Ptr OutputStep::addOutputNode(){
 	TRY_TO_LOCK_TIMED (mutex);
 	OutputNode::Ptr neu = ProcessAdapter::createOutputNode ( 
-		"StepOutput outputNode("+MyString(getNumOutputNodes()+2) + ")"
+		"StepOutput outputNode("+com::MyString(getNumOutputNodes()+2) + ")"
 	);
 	cStep->addState();
 	cStep->setNumSteps (cStep->getNumSteps()+1); //TODO: addStep?
@@ -108,8 +108,8 @@ void OutputStep::reset(){
 }
 //------------------------------------------------------------------------------------------------------------
 inline void OutputStep::processFrames ( Frames *iFrame, OutputMatrix &fr, Processor::Int numSamples ) {
-	VstNumber *l = (*iFrame)[0];
-	VstNumber *r = (*iFrame)[1];
+	com::VstNumber *l = (*iFrame)[0];
+	com::VstNumber *r = (*iFrame)[1];
 	for ( size_t i=0; i<numSamples; ++i ) {
 		cStep->skimDuration();
 		for ( int j=0; j<cStep->getNumSteps(); j++ ){

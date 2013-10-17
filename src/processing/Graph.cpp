@@ -176,7 +176,7 @@ void Graph::updateGraph() {
 	);
 	size_t delay = getGraphDelay();
 	if (oldDelay!=delay) {
-		EventSender<GraphDelayChanged>::notifyEventListeners( this, GraphDelayChanged( getGraphDelay() ) );
+		com::events::EventSender<GraphDelayChanged>::notifyEventListeners( this, GraphDelayChanged( getGraphDelay() ) );
 	}
 }
 //------------------------------------------------------------------------------------------------------------

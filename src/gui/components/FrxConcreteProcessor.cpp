@@ -50,6 +50,8 @@ template <>
 std::string getProcessorName<processorTypes::PeakTracker>() {return "FrxPeakTracker";}
 template <>
 std::string getProcessorName<processorTypes::MIDIReceiver>() {return "FrxMidiReceiver";}
+template <>
+std::string getProcessorName<processorTypes::RemoteChReceiver>() {return "FrxRemoteChReceiver";}
 ///////////////////////////////////////////////////////////////////////////////
 // Beauty Names
 template <>
@@ -72,6 +74,8 @@ template <>
 std::string getProcessorBeautyName<processorTypes::PeakTracker>() {return "Peak Tracker";}
 template <>
 std::string getProcessorBeautyName<processorTypes::MIDIReceiver>() {return "Midi Receiver";}
+template <>
+std::string getProcessorBeautyName<processorTypes::RemoteChReceiver>() {return "Remote Channel Receiver";}
 ///////////////////////////////////////////////////////////////////////////////
 // Tooltips
 template <>
@@ -105,6 +109,10 @@ template <>
 std::string getProcessorTooltip<processorTypes::MIDIReceiver>() {
 return "transform midi events into parameter values";
 }
+template <>
+std::string getProcessorTooltip<processorTypes::RemoteChReceiver>() {
+return "receives remote channel data";
+}
 //-----------------------------------------------------------------------------
 namespace {
 	typedef boost::function <std::string()> GetStrF;
@@ -133,6 +141,7 @@ namespace {
 		addProcessor<FrxADSRNode>();
 		addProcessor<FrxPeakTrackerNode>();
 		addProcessor<FrxMIDIReceiver>();
+        addProcessor<FrxRemoteChReceiver>();
 	}
 	ProcessorNameMap::const_iterator getPMapIterator(const std::string &processorName)
 	{

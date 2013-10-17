@@ -12,7 +12,7 @@
 namespace frx { namespace gui {
 namespace components { namespace ui { 
 namespace {
-	vector<sd::ColorRGBA> colors;
+	std::vector<sd::ColorRGBA> colors;
 	void initColors() {
 		using namespace sambag::disco::svg;
 		colors.reserve(100);

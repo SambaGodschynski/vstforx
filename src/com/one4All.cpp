@@ -14,7 +14,6 @@
 namespace com {
 //============================================================================================================
 bool isSubDirectory ( const sambag::com::Location &a,  const sambag::com::Location &b )
-    throw(boost::filesystem::filesystem_error)
 {
     using namespace boost::filesystem;
     if (equivalent(a, b)) {

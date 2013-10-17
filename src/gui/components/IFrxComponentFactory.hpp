@@ -19,7 +19,7 @@ namespace frx { namespace gui { namespace components {
 /** 
   * @class IFrxComponentFactory <Singleton>.
   * Serves a list of component names and its creator functions which
-  * creates a specific model object and the related view object.
+  * creates a specific model object and its related view object.
   */
 class IFrxComponentFactory {
 //=============================================================================
@@ -48,6 +48,13 @@ public:
 	 */
 	virtual ProcessorCreator 
 	getProcessorCreator(const std::string &name) const = 0;
+	//-------------------------------------------------------------------------
+	/**
+	 * @return a creator for a remote channel .
+	 * @param the remote channel id
+	 */
+	virtual ProcessorCreator 
+	getRemoteChannelCreator(const std::string &rcId) const = 0;
 	//-------------------------------------------------------------------------
 	/**
 	 * @return number of processor creators.
