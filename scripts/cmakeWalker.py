@@ -14,6 +14,7 @@ add_library(frx_core ${FRX_SOURCES} ${VSTSDKSOURCE})
 
 SET (FRX_TESTSOURCES ${FRX_TESTSOURCES} PluginApps/com/FrxPlugSettings.cpp)
 add_executable(unit_tests ${FRX_TESTSOURCES})
+target_compile_definitions(unit_tests PUBLIC "FRX_FEATURE_DC_TESTER")
 target_link_libraries (unit_tests frx_core ${FRX_CLIBS})
 
 add_executable(remoteChannelCounterpart tests/RemoteChannelCounterpart.cpp)

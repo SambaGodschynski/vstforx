@@ -10,6 +10,12 @@ SET(FRX_VERSION_MICRO 311)
 execute_process(COMMAND git log --pretty=format:%h -n 1
                 OUTPUT_VARIABLE FRX_VERSION_BUILD)
 
+
+# Common Features
+add_definitions(-DFRX_FEATURE_REMOTE_CHANNEL)
+add_definitions(-DFRX_FEATURE_DC_TESTER)
+
+
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 add_definitions(-DBOOST_UBLAS_TYPE_CHECK=0)
 add_definitions(-DBOOST_FILESYSTEM_VERSION=3)

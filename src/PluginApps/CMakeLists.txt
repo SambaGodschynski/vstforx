@@ -85,8 +85,8 @@ IF (WIN32)
   target_compile_definitions(VSTForxInstrument-CM PUBLIC "FRX_IS_INSTRUMENT" PUBLIC "FRX_IS_CM")
 
   #remote channel
-  #add_library(remoteChannelSender SHARED ${RemoteSrc})
-  #target_link_libraries (remoteChannelSender frx_core ${FRX_CLIBS})
+  add_library(remoteChannelSender SHARED ${RemoteSrc})
+  target_link_libraries (remoteChannelSender frx_core ${FRX_CLIBS})
 
 #process plistfiles
 ELSEIF(APPLE)
