@@ -64,35 +64,31 @@ void FrxLookAndFeel::installTooltipManager() {
 	}
 }
 //-----------------------------------------------------------------------------
+namespace {
+    template <class Processors>
+    void registerProcessors(sdcu::ALookAndFeel &laf) {
+        namespace fgc = frx::gui::components;
+        namespace fgcu = fgc::ui;
+        typedef typename Processors::Head FrxProcessor;
+        laf.registerComponentUI<FrxProcessor,
+            fgcu::FrxProcessorNodeUI<FrxProcessor> >();
+        registerProcessors<typename Processors::Tail>(laf);
+    }
+    template <>
+    void registerProcessors<Loki::NullType>(sdcu::ALookAndFeel &laf) {}
+}
 void FrxLookAndFeel::installComponents() {
 	Super::installComponents();
 	namespace fgc = frx::gui::components;
 	namespace fgcu = fgc::ui;
-	// view
+	
+    // view
 	registerComponentUI<fgc::FrxCircuidView, fgcu::FrxCircuidViewUI>();
-	// processor nodes
-	registerComponentUI<fgc::FrxPluginNode, 
-		fgcu::FrxProcessorNodeUI<FrxPluginNode::ProcessorType> >();
-	registerComponentUI<fgc::FrxVolumeNode, 
-		fgcu::FrxProcessorNodeUI<FrxVolumeNode::ProcessorType> >();
-	registerComponentUI<fgc::FrxPanNode, 
-		fgcu::FrxProcessorNodeUI<FrxPanNode::ProcessorType> >();
-	registerComponentUI<fgc::FrxInStepNode, 
-		fgcu::FrxProcessorNodeUI<FrxInStepNode::ProcessorType> >();
-	registerComponentUI<fgc::FrxOutStepNode, 
-		fgcu::FrxProcessorNodeUI<FrxOutStepNode::ProcessorType> >();
-	registerComponentUI<fgc::FrxInSwitchNode, 
-		fgcu::FrxProcessorNodeUI<FrxInSwitchNode::ProcessorType> >();
-	registerComponentUI<fgc::FrxOutSwitchNode, 
-		fgcu::FrxProcessorNodeUI<FrxOutSwitchNode::ProcessorType> >();
-	registerComponentUI<fgc::FrxADSRNode, 
-		fgcu::FrxProcessorNodeUI<FrxADSRNode::ProcessorType> >();
-	registerComponentUI<fgc::FrxPeakTrackerNode, 
-		fgcu::FrxProcessorNodeUI<FrxPeakTrackerNode::ProcessorType> >();
-	registerComponentUI<fgc::FrxMIDIReceiver, 
-		fgcu::FrxProcessorNodeUI<FrxMIDIReceiver::ProcessorType> >();
-	registerComponentUI<fgc::FrxRemoteChReceiver,
-		fgcu::FrxProcessorNodeUI<FrxRemoteChReceiver::ProcessorType> >();
+	
+    // processor nodes
+    registerProcessors<fgc::FrxProcessorList>(*this);
+    
+    
 	// parameter components
 	registerComponentUI<fgc::FrxStdKnob, 
 		FrxParameterUI<FrxStdKnob::ControllerType> >();

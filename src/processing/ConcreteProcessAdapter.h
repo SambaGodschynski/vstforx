@@ -28,7 +28,7 @@
 #include "concreteAdapter/InputStep.h"
 #include "concreteAdapter/OutputSwitch.h"
 #include "concreteAdapter/OutputStep.h"
-
+#include "concreteAdapter/DCTester.hpp"
 #endif
 
 

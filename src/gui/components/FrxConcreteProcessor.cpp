@@ -28,100 +28,81 @@ void Plugin::init( FrxProcessorNode::Ptr obj ) {
 }
 } // processorTypes
 
+
+namespace __private {
+
 ///////////////////////////////////////////////////////////////////////////////
 // Processor Names
-template <>
-std::string getProcessorName<processorTypes::Plugin>() {return "FrxPlugin";}
-template <>
-std::string getProcessorName<processorTypes::Volume>() {return "FrxVolume";}
-template <>
-std::string getProcessorName<processorTypes::Pan>() {return "FrxPan";}
-template <>
-std::string getProcessorName<processorTypes::InStep>() {return "FrxInStep";}
-template <>
-std::string getProcessorName<processorTypes::OutStep>() {return "FrxOutStep";}
-template <>
-std::string getProcessorName<processorTypes::InSwitch>() {return "FrxInSwitch";}
-template <>
-std::string getProcessorName<processorTypes::OutSwitch>() {return "FrxOutSwitch";}
-template <>
-std::string getProcessorName<processorTypes::ADSR>() {return "FrxADSR";}
-template <>
-std::string getProcessorName<processorTypes::PeakTracker>() {return "FrxPeakTracker";}
-template <>
-std::string getProcessorName<processorTypes::MIDIReceiver>() {return "FrxMidiReceiver";}
-template <>
-std::string getProcessorName<processorTypes::RemoteChReceiver>() {return "FrxRemoteChReceiver";}
+const char *ProcessorNames[] = {"FrxPlugin",
+                                "FrxVolume",
+                                "FrxPan",
+                                "FrxInStep",
+                                "FrxOutStep",
+                                "FrxInSwitch",
+                                "FrxOutSwitch",
+                                "FrxADSR",
+                                "FrxPeakTracker",
+                                "FrxMidiReceiver",
+                                "FrxRemoteChReceiver",
+                                "FrxDCTester"};
+
+const size_t NumProcessorNames = sizeof(ProcessorNames) / sizeof(ProcessorNames[0]);
+BOOST_STATIC_ASSERT( NumProcessorNames == Loki::TL::Length<FrxProcessorList>::value );
+
+const char * _getProcessorNameImpl(size_t index) {
+    return ProcessorNames[index];
+}
 ///////////////////////////////////////////////////////////////////////////////
 // Beauty Names
-template <>
-std::string getProcessorBeautyName<processorTypes::Plugin>() {return "Plugin";}
-template <>
-std::string getProcessorBeautyName<processorTypes::Volume>() {return "Volume";}
-template <>
-std::string getProcessorBeautyName<processorTypes::Pan>() {return "Pan";}
-template <>
-std::string getProcessorBeautyName<processorTypes::InStep>() {return "Input Step";}
-template <>
-std::string getProcessorBeautyName<processorTypes::OutStep>() {return "Output Step";}
-template <>
-std::string getProcessorBeautyName<processorTypes::InSwitch>() {return "Input Switch";}
-template <>
-std::string getProcessorBeautyName<processorTypes::OutSwitch>() {return "Output Switch";}
-template <>
-std::string getProcessorBeautyName<processorTypes::ADSR>() {return "ADSR Trigger";}
-template <>
-std::string getProcessorBeautyName<processorTypes::PeakTracker>() {return "Peak Tracker";}
-template <>
-std::string getProcessorBeautyName<processorTypes::MIDIReceiver>() {return "Midi Receiver";}
-template <>
-std::string getProcessorBeautyName<processorTypes::RemoteChReceiver>() {return "Remote Channel Receiver";}
+const char *ProcessorBNames[] = { "Plugin",
+                                  "Volume",
+                                  "Pan",
+                                  "Input Step",
+                                  "Output Step",
+                                  "Input Switch",
+                                   "Output Switch",
+                                  "ADSR Trigger",
+                                  "Peak Tracker",
+                                  "Midi Receiver",
+                                  "Remote Channel Receiver",
+                                  "DC Tester"};
+
+const size_t NumProcessorBNames = sizeof(ProcessorBNames) / sizeof(ProcessorBNames[0]);
+BOOST_STATIC_ASSERT( NumProcessorBNames == Loki::TL::Length<FrxProcessorList>::value );
+
+const char * _getProcessorBeautyNameImpl(size_t index) {
+    return ProcessorBNames[index];
+}
 ///////////////////////////////////////////////////////////////////////////////
 // Tooltips
-template <>
-std::string getProcessorTooltip<processorTypes::Plugin>() 
-{return "click the (e) to open/close plug's editor.";}
-template <>
-std::string getProcessorTooltip<processorTypes::Volume>() 
-{return "sets volume";}
-template <>
-std::string getProcessorTooltip<processorTypes::Pan>() 
-{return "sets panning";}
-template <>
-std::string getProcessorTooltip<processorTypes::InStep>()
-{return "steps through several inputs";}
-template <>
-std::string getProcessorTooltip<processorTypes::OutStep>() 
-{return "steps through several outputs";}
-template <>
-std::string getProcessorTooltip<processorTypes::InSwitch>() 
-{return "switchs several inputs";}
-template <>
-std::string getProcessorTooltip<processorTypes::OutSwitch>() 
-{return "switchs several outputs";}
-template <>
-std::string getProcessorTooltip<processorTypes::ADSR>() 
-{return "creates an ASDR sequence triggered by an input audio event";}
-template <>
-std::string getProcessorTooltip<processorTypes::PeakTracker>() 
-{return "transforms audio peaks into parameter values";}
-template <>
-std::string getProcessorTooltip<processorTypes::MIDIReceiver>() {
-return "transform midi events into parameter values";
+const char *ProcessorTips[] = { "click the (e) to open/close plug's editor.",
+                                "sets volume", "sets panning",
+                                "steps through several inputs",
+                                "steps through several outputs",
+                                "switchs several inputs",
+                                "switchs several outputs",
+                                "creates an ASDR sequence triggered by an input audio event",
+                                "transforms audio peaks into parameter values",
+                                "transform midi events into parameter values",
+                                "receives remote channel data",
+                                "adds delay between input and output"};
+    
+const size_t NumProcessorTips = sizeof(ProcessorTips) / sizeof(ProcessorTips[0]);
+BOOST_STATIC_ASSERT( NumProcessorTips == Loki::TL::Length<FrxProcessorList>::value );
+    
+const char * _getProcessorTooltipImpl(size_t index) {
+    return ProcessorBNames[index];
 }
-template <>
-std::string getProcessorTooltip<processorTypes::RemoteChReceiver>() {
-return "receives remote channel data";
-}
+
+} // namespace(s)
 //-----------------------------------------------------------------------------
 namespace {
 	typedef boost::function <std::string()> GetStrF;
 	typedef boost::tuple<GetStrF, GetStrF> NameFs;
 	typedef boost::unordered_map<std::string, NameFs> ProcessorNameMap;
 	ProcessorNameMap processorNameMap;
-	template <class _Pr>
+	template <class Pr>
 	void addProcessor() {
-		typedef typename _Pr::ProcessorType Pr;
 		GetStrF beauty = &getProcessorBeautyName<Pr>;
 		GetStrF toolt = &getProcessorTooltip<Pr>;
 		processorNameMap.insert( ProcessorNameMap::value_type(
@@ -130,19 +111,16 @@ namespace {
 			)
 		);
 	}
+    template <class Types>
+    void addProcessors() {
+        addProcessor<typename Types::Head>();
+        addProcessors<typename Types::Tail>();
+    }
+    template <>
+    void addProcessors<Loki::NullType>() {}
 	void initNameMap() {
-		addProcessor<FrxPluginNode>();
-		addProcessor<FrxVolumeNode>();
-		addProcessor<FrxPanNode>();
-		addProcessor<FrxInStepNode>();
-		addProcessor<FrxOutStepNode>();
-		addProcessor<FrxInSwitchNode>();
-		addProcessor<FrxOutSwitchNode>();
-		addProcessor<FrxADSRNode>();
-		addProcessor<FrxPeakTrackerNode>();
-		addProcessor<FrxMIDIReceiver>();
-        addProcessor<FrxRemoteChReceiver>();
-	}
+ 		addProcessors<FrxProcessorList>();
+    }
 	ProcessorNameMap::const_iterator getPMapIterator(const std::string &processorName)
 	{
 		if (processorNameMap.size()==0) {
@@ -155,7 +133,7 @@ namespace {
 std::string getProcessorBeautyName(const std::string &processorName) {
 	ProcessorNameMap::const_iterator it = getPMapIterator(processorName);
 	if (it==processorNameMap.end()) {
-		return "unkown processor";
+        return "unkown processor";
 	}
 	return boost::get<0>( it->second )();
 }

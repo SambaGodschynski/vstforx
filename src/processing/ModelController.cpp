@@ -11,15 +11,7 @@
 #include "ParameterConnection.hpp"
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
-#include "concreteAdapter/Volume.h"
-#include "concreteAdapter/Pan.h"
-#include "concreteAdapter/InputStep.h"
-#include "concreteAdapter/OutputStep.h"
-#include "concreteAdapter/InputSwitch.h"
-#include "concreteAdapter/OutputSwitch.h"
-#include "concreteAdapter/PeakTracker.h"
-#include "concreteAdapter/ADSRTrigger.h"
-#include "concreteAdapter/MidiProcessor.h"
+#include "ConcreteProcessAdapter.h"
 #include "interprocess/RemoteChReceiver.hpp"
 #include "IHostInfo.h"
 #include <processing/ProcessorAdapter.hpp>
@@ -227,6 +219,23 @@ ModelController::createRemoteChannelReceiver(const std::string &rcId)
 	return ad;
 }
 //-----------------------------------------------------------------------------
+IProcessor::Ptr ModelController::createDCTester() {
+    namespace pr = ::processing;
+	if (!graph)
+		return IProcessor::Ptr();
+	pr::Graph::Janitor::Ptr jan = graph->getJanitor();
+	pr::DCTester::Ptr res =  
+		pr::DCTester::create(graph->getHostInfo());
+	if ( jan->add(res) != pr::Graph::Janitor::SUCCEED ) {
+		return IProcessor::Ptr();
+	}
+	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
+	// register remove request excutor
+	installListeners(ad);
+	return ad;
+
+}
+//-----------------------------------------------------------------------------
 IConnection::Ptr ModelController::connect(INode::Ptr out, INode::Ptr in) {
 	if (!graph)
 		return IConnection::Ptr();
@@ -421,11 +430,11 @@ INode::Ptr ModelController::addOutputTo(IProcessor::Ptr pr) {
 	}
 	return res;
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void ModelController::getParameterCnOpTypeIds(ParameterCnOpTypeIds &out) const {
 	ParameterConnection::getParameterCnOpTypeIds(out);
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void ModelController::
 addParameterCnOp(IConnection::Ptr cn, const ParameterCnOpTypeId &opId) 
 {
@@ -435,5 +444,9 @@ addParameterCnOp(IConnection::Ptr cn, const ParameterCnOpTypeId &opId)
 		return;
 	}
 	pcn->addParameterCnOp(opId);
+}
+//-----------------------------------------------------------------------------
+int ModelController::getGraphDelay() const {
+    return (int)graph->getGraphDelay();
 }
 }} // namespace(s)

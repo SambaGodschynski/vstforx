@@ -37,7 +37,7 @@ sambag::com::Number getProcessorRadius() {
 }
 template<class PrType>
 std::string getImageName() {
-	return getProcessorName<PrType>() + ".image";
+	return std::string( getProcessorName<PrType>() ) + ".image";
 }
 } // namespace
 
@@ -153,7 +153,7 @@ void installSpecificDefs(sdc::AComponentPtr c)
 {
 }
 template <>
-inline void installSpecificDefs<FrxPluginNode::ProcessorType>(sdc::AComponentPtr _c)
+inline void installSpecificDefs<FrxPluginNode>(sdc::AComponentPtr _c)
 {
 	FrxComponent::Ptr c = boost::dynamic_pointer_cast<FrxComponent>(_c);
 	if (!c) {
@@ -202,7 +202,7 @@ void createSpecificEntries(sdc::PopupMenuPtr menu, FrxCircuidViewPtr view,
 {
 }
 template <>
-inline void createSpecificEntries<FrxPluginNode::ProcessorType>(sdc::PopupMenuPtr menu, 
+inline void createSpecificEntries<FrxPluginNode>(sdc::PopupMenuPtr menu, 
 	FrxCircuidViewPtr view, FrxComponentPtr c)
 {
 	sdc::MenuItem::Ptr m = sdc::MenuItem::create();

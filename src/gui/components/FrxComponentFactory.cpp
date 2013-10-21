@@ -240,15 +240,19 @@ FrxComponentFactory::ProcessorCreator getCreator(int numIns, int numOuts)
 //-----------------------------------------------------------------------------
 void FrxComponentFactory::initMap() {
 	processorMap = boost::assign::map_list_of
-	(getProcessorName<FrxVolumeNode::ProcessorType>(),           getCreator<FrxVolumeNode>(1, 1))
-	(getProcessorName<FrxPanNode::ProcessorType>(),                 getCreator<FrxPanNode>(1, 1))
-	(getProcessorName<FrxInStepNode::ProcessorType>(),           getCreator<FrxInStepNode>(2, 1))
-	(getProcessorName<FrxOutStepNode::ProcessorType>(),         getCreator<FrxOutStepNode>(1, 2))
-	(getProcessorName<FrxInSwitchNode::ProcessorType>(),       getCreator<FrxInSwitchNode>(2, 1))
-	(getProcessorName<FrxOutSwitchNode::ProcessorType>(),     getCreator<FrxOutSwitchNode>(1, 2))
-	(getProcessorName<FrxADSRNode::ProcessorType>(),               getCreator<FrxADSRNode>(1, 0))
-	(getProcessorName<FrxPeakTrackerNode::ProcessorType>(), getCreator<FrxPeakTrackerNode>(1, 0))
-	(getProcessorName<FrxMIDIReceiver::ProcessorType>(), getCreator<FrxMIDIReceiver>(0, 0));
+	(getProcessorName<FrxVolumeNode>(),           getCreator<FrxVolumeNode>(1, 1))
+	(getProcessorName<FrxPanNode>(),                 getCreator<FrxPanNode>(1, 1))
+	(getProcessorName<FrxInStepNode>(),           getCreator<FrxInStepNode>(2, 1))
+	(getProcessorName<FrxOutStepNode>(),         getCreator<FrxOutStepNode>(1, 2))
+	(getProcessorName<FrxInSwitchNode>(),       getCreator<FrxInSwitchNode>(2, 1))
+	(getProcessorName<FrxOutSwitchNode>(),     getCreator<FrxOutSwitchNode>(1, 2))
+	(getProcessorName<FrxADSRNode>(),               getCreator<FrxADSRNode>(1, 0))
+	(getProcessorName<FrxPeakTrackerNode>(), getCreator<FrxPeakTrackerNode>(1, 0))
+	(getProcessorName<FrxMIDIReceiver>(), getCreator<FrxMIDIReceiver>(0, 0))
+#ifdef FRX_FEATURE_DC_TESTER
+    (getProcessorName<FrxDCTester>(), getCreator<FrxDCTester>(1, 1))
+#endif
+    ;
 }//-----------------------------------------------------------------------------
 FrxComponentFactory::FrxComponentFactory() {
 	initMap();

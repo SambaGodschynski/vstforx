@@ -256,7 +256,13 @@ namespace {
 		static EntryExit process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
-	typedef LOKI_TYPELIST_32(FrxOpenPlugin,
+	struct FrxGetGraphDelay {
+        typedef boost::function<int()> Function;
+		static const char * name() { return "frxGetGraphDelay"; }
+		static int process(Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	typedef LOKI_TYPELIST_33(FrxOpenPlugin,
 		FrxClosePlugin,
 		FrxOpenEditor,
 		FrxCloseEditor,
@@ -287,8 +293,25 @@ namespace {
 		FrxGetProcessorOutputs,
 /*30*/	FrxGetEntryExit,
 		FrxAddProcessorOutput,
-		FrxAddProcessorInput
+		FrxAddProcessorInput,
+        FrxGetGraphDelay
 	) FrxFunctionList;
+//-----------------------------------------------------------------------------
+int FrxGetGraphDelay::process(Ctrl *ctrl)
+{
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+    FRX_GET_EDITOR
+	using namespace frx::gui;
+	using namespace frx::gui::components;
+	using namespace frx::processing;
+    FrxCircuidViewPtr view = editor->getCircuidView();
+	IFrxControl &frxctrl = getFrxControl(view);
+    frx::processing::IModelController::Ptr mctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(mctrl, map) = getControllerAndMap(view);
+    return mctrl->getGraphDelay();
+}
 //-----------------------------------------------------------------------------
 LuaPtr FrxAddProcessorOutput::process(LuaPtr component, Ctrl *ctrl) 
 {

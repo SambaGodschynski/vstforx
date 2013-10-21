@@ -13,17 +13,18 @@
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <gui/HandyNamespaces.hpp>
 #include <sambag/disco/components/Button.hpp>
+#include <loki/Typelist.h>
 
 namespace frx { namespace gui { namespace components {
 //-----------------------------------------------------------------------------
 template <class _ProcessorType>
-std::string getProcessorName();
+const char * getProcessorName();
 //-----------------------------------------------------------------------------
 template <class _ProcessorType>
-std::string getProcessorBeautyName();
+const char * getProcessorBeautyName();
 //-----------------------------------------------------------------------------
 template <class _ProcessorType>
-std::string getProcessorTooltip();
+const char * getProcessorTooltip();
 //-----------------------------------------------------------------------------
 std::string getProcessorBeautyName(const std::string &processorName);
 //-----------------------------------------------------------------------------
@@ -37,7 +38,6 @@ std::string getProcessorTooltip(const std::string &processorName);
   *  add FrxConcreteProcessor, 
   *  add createXY() IModelController method, 
   *  add FrxComponentFactory creatorMap entry and impl. related ModelExecutor function
-  *  register new view type in FrxLookAndFeel
   *
   * register new view type in FrxSerializationRegister
   * register new model type in SerializationRegister
@@ -68,11 +68,11 @@ protected:
 		Super::postConstructor();
 		ProcessorType::init( getPtr() );
 		if (getName() == "") {
-			setName(getProcessorBeautyName<ProcessorType>());
+			setName(getProcessorBeautyName<ConcreteProcessor>());
 			setName(getName()+"_"+sambag::com::toString(instances));
 		}
 		setUpperFlagText(getName());
-		setTooltipText( getProcessorTooltip<ProcessorType>() );
+		setTooltipText( getProcessorTooltip<ConcreteProcessor>() );
 	}
 private:
 	//-------------------------------------------------------------------------
@@ -129,6 +129,7 @@ namespace processorTypes {
 	struct PeakTracker : ProcessorTypeBase{};
 	struct MIDIReceiver : ProcessorTypeBase{};
     struct RemoteChReceiver : ProcessorTypeBase{};
+    struct DCTester : ProcessorTypeBase{};
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -143,82 +144,75 @@ typedef FrxConcreteProcessor<processorTypes::ADSR> FrxADSRNode;
 typedef FrxConcreteProcessor<processorTypes::PeakTracker> FrxPeakTrackerNode;
 typedef FrxConcreteProcessor<processorTypes::MIDIReceiver> FrxMIDIReceiver;
 typedef FrxConcreteProcessor<processorTypes::RemoteChReceiver> FrxRemoteChReceiver;
+typedef FrxConcreteProcessor<processorTypes::DCTester> FrxDCTester;
 ///////////////////////////////////////////////////////////////////////////////
+typedef LOKI_TYPELIST_12(FrxPluginNode,
+                 FrxVolumeNode,
+                 FrxPanNode,
+                 FrxInStepNode,
+                 FrxOutStepNode,
+                 FrxInSwitchNode,
+                 FrxOutSwitchNode,
+                 FrxADSRNode,
+                 FrxPeakTrackerNode,
+                 FrxMIDIReceiver,
+                 FrxRemoteChReceiver,
+                 FrxDCTester
+        ) FrxProcessorList;
 //-----------------------------------------------------------------------------
+namespace __private {
+    const char * _getProcessorNameImpl(size_t index);
+    template <int TypeIndex>
+    inline const char * _getProcessorName() {
+        BOOST_STATIC_ASSERT( TypeIndex < Loki::TL::Length<FrxProcessorList>::value );
+        return _getProcessorNameImpl(TypeIndex);
+    }
+    template <>
+    inline const char * _getProcessorName<-1>() {
+        return "unkonwn processortype";
+    }
+}
 template <class _ProcessorType>
-std::string getProcessorName() {return "unkonwn processortype";}
-template <>
-std::string getProcessorName<processorTypes::Plugin>();
-template <>
-std::string getProcessorName<processorTypes::Volume>();
-template <>
-std::string getProcessorName<processorTypes::Pan>();
-template <>
-std::string getProcessorName<processorTypes::InStep>();
-template <>
-std::string getProcessorName<processorTypes::OutStep>();
-template <>
-std::string getProcessorName<processorTypes::InSwitch>();
-template <>
-std::string getProcessorName<processorTypes::OutSwitch>();
-template <>
-std::string getProcessorName<processorTypes::ADSR>();
-template <>
-std::string getProcessorName<processorTypes::PeakTracker>();
-template <>
-std::string getProcessorName<processorTypes::MIDIReceiver>();
-template <>
-std::string getProcessorName<processorTypes::RemoteChReceiver>();
+const char * getProcessorName() {
+    enum { Index = ::Loki::TL::IndexOf<FrxProcessorList, _ProcessorType>::value };
+    return __private::_getProcessorName<Index>();
+}
 //-----------------------------------------------------------------------------
+namespace __private {
+    const char * _getProcessorBeautyNameImpl(size_t index);
+    template <int TypeIndex>
+    inline const char * _getProcessorBeautyName() {
+        BOOST_STATIC_ASSERT( TypeIndex < Loki::TL::Length<FrxProcessorList>::value );
+        return _getProcessorBeautyNameImpl(TypeIndex);
+    }
+    template <>
+    inline const char * _getProcessorBeautyName<-1>() {
+        return "unkonwn processortype";
+    }
+}
 template <class _ProcessorType>
-std::string getProcessorBeautyName() {return "unkonwn processortype";}
-template <>
-std::string getProcessorBeautyName<processorTypes::Plugin>();
-template <>
-std::string getProcessorBeautyName<processorTypes::Volume>();
-template <>
-std::string getProcessorBeautyName<processorTypes::Pan>();
-template <>
-std::string getProcessorBeautyName<processorTypes::InStep>();
-template <>
-std::string getProcessorBeautyName<processorTypes::OutStep>();
-template <>
-std::string getProcessorBeautyName<processorTypes::InSwitch>();
-template <>
-std::string getProcessorBeautyName<processorTypes::OutSwitch>();
-template <>
-std::string getProcessorBeautyName<processorTypes::ADSR>();
-template <>
-std::string getProcessorBeautyName<processorTypes::PeakTracker>();
-template <>
-std::string getProcessorBeautyName<processorTypes::MIDIReceiver>();
-template <>
-std::string getProcessorBeautyName<processorTypes::RemoteChReceiver>();
+const char * getProcessorBeautyName() {
+    enum { Index = ::Loki::TL::IndexOf<FrxProcessorList, _ProcessorType>::value };
+    return __private::_getProcessorBeautyName<Index>();
+}
 //-----------------------------------------------------------------------------
+namespace __private {
+    const char * _getProcessorTooltipImpl(size_t index);
+    template <int TypeIndex>
+    inline const char * _getProcessorTooltip() {
+        BOOST_STATIC_ASSERT( TypeIndex < Loki::TL::Length<FrxProcessorList>::value );
+        return _getProcessorTooltipImpl(TypeIndex);
+    }
+    template <>
+    inline const char * _getProcessorTooltip<-1>() {
+        return "?";
+    }
+}
 template <class _ProcessorType>
-std::string getProcessorTooltip() {return "?";}
-template <>
-std::string getProcessorTooltip<processorTypes::Plugin>();
-template <>
-std::string getProcessorTooltip<processorTypes::Volume>();
-template <>
-std::string getProcessorTooltip<processorTypes::Pan>();
-template <>
-std::string getProcessorTooltip<processorTypes::InStep>();
-template <>
-std::string getProcessorTooltip<processorTypes::OutStep>();
-template <>
-std::string getProcessorTooltip<processorTypes::InSwitch>();
-template <>
-std::string getProcessorTooltip<processorTypes::OutSwitch>();
-template <>
-std::string getProcessorTooltip<processorTypes::ADSR>();
-template <>
-std::string getProcessorTooltip<processorTypes::PeakTracker>();
-template <>
-std::string getProcessorTooltip<processorTypes::MIDIReceiver>();
-template <>
-std::string getProcessorTooltip<processorTypes::RemoteChReceiver>();
+const char * getProcessorTooltip() {
+    enum { Index = ::Loki::TL::IndexOf<FrxProcessorList, _ProcessorType>::value };
+    return __private::_getProcessorTooltip<Index>();
+}
 }}} // namespace(s)
 
 #endif /* SAMBAG_FRXPLUGINNODE_H */

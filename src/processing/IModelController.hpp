@@ -91,7 +91,15 @@ public:
 	 */
 	virtual IProcessor::Ptr createMIDIReceiver() = 0;
 	//-------------------------------------------------------------------------
+	/**
+	 * @return RemoteChannelReceiver pointer
+	 */
 	virtual IProcessor::Ptr createRemoteChannelReceiver(const std::string &rcid) = 0;
+	//-------------------------------------------------------------------------
+	/**
+	 * @return DCTester pointer
+	 */
+	virtual IProcessor::Ptr createDCTester() = 0;
 	//-------------------------------------------------------------------------
 	virtual IConnection::Ptr connect(INode::Ptr out, INode::Ptr in) = 0;
 	//-------------------------------------------------------------------------
@@ -123,6 +131,11 @@ public:
 	//-------------------------------------------------------------------------
 	virtual void 
 		addParameterCnOp(IConnection::Ptr cn, const ParameterCnOpTypeId &opId) = 0;
+    //-------------------------------------------------------------------------
+    /**
+     * @return the graph delay in samples
+     */
+     virtual int getGraphDelay() const = 0;
 }; // IModelController
 ///////////////////////////////////////////////////////////////////////////////
 extern IModelController::Ptr

@@ -96,6 +96,14 @@ inline createProcessorOnModel<FrxMIDIReceiver>(fp::IModelController::Ptr ctrl,
 {
 	return ctrl->createMIDIReceiver();
 }
+//-----------------------------------------------------------------------------
+template <>
+fp::IProcessor::Ptr 
+inline createProcessorOnModel<FrxDCTester>(fp::IModelController::Ptr ctrl,
+						 size_t numInputs, size_t numOutputs) 
+{
+	return ctrl->createDCTester();
+}
 ///////////////////////////////////////////////////////////////////////////////
 template <class ConnectionType>
 fp::IConnection::Ptr 
