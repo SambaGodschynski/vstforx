@@ -174,6 +174,18 @@ namespace {
 		static void process(LuaPtr, LuaPtr, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
+	struct FrxSetParameterValue {
+		typedef boost::function<void(LuaPtr, float)> Function;
+		static const char * name() { return "frxSetParameterValue"; }
+		static void process(LuaPtr, float, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxGetParameterValue {
+		typedef boost::function<float(LuaPtr)> Function;
+		static const char * name() { return "frxGetParameterValue"; }
+		static float process(LuaPtr, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
 	struct FrxGetComponentName {
 		typedef boost::function<std::string(LuaPtr)> Function;
 		static const char * name() { return "frxGetComponentName"; }
@@ -262,7 +274,7 @@ namespace {
 		static int process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
-	typedef LOKI_TYPELIST_33(FrxOpenPlugin,
+	typedef LOKI_TYPELIST_35(FrxOpenPlugin,
 		FrxClosePlugin,
 		FrxOpenEditor,
 		FrxCloseEditor,
@@ -294,7 +306,9 @@ namespace {
 /*30*/	FrxGetEntryExit,
 		FrxAddProcessorOutput,
 		FrxAddProcessorInput,
-        FrxGetGraphDelay
+        FrxGetGraphDelay,
+        FrxSetParameterValue,
+        FrxGetParameterValue
 	) FrxFunctionList;
 //-----------------------------------------------------------------------------
 int FrxGetGraphDelay::process(Ctrl *ctrl)
@@ -616,6 +630,58 @@ void FrxAddComponentParameter::process(LuaPtr component, LuaPtr par, Ctrl *ctrl)
 		return;
 	}
 	frxctrl.addRelatedKnobToView(view, fxobj, ipar);
+}
+//-----------------------------------------------------------------------------
+void FrxSetParameterValue::process(LuaPtr par, float val, Ctrl *ctrl)
+{
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+	using namespace frx::gui;
+	using namespace frx::gui::components;
+	using namespace frx::processing;
+	FrxCircuidViewPtr view = editor->getCircuidView();
+	IFrxControl &frxctrl = getFrxControl(view);
+	
+	ModelObjectPtr mobj = ctrl->getModelObject(par);
+	if (!mobj) {
+		SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"Could'nt resolve lua_ptr."
+		);
+	}
+	IParameter::Ptr ipar = 
+		boost::dynamic_pointer_cast<IParameter>(mobj);
+	if (!ipar) {
+		return;
+	}
+	ipar->setValue(val);
+}
+//-----------------------------------------------------------------------------
+float FrxGetParameterValue::process(LuaPtr par, Ctrl *ctrl)
+{
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+	using namespace frx::gui;
+	using namespace frx::gui::components;
+	using namespace frx::processing;
+	FrxCircuidViewPtr view = editor->getCircuidView();
+	IFrxControl &frxctrl = getFrxControl(view);
+	
+	ModelObjectPtr mobj = ctrl->getModelObject(par);
+	if (!mobj) {
+		SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"Could'nt resolve lua_ptr."
+		);
+	}
+	IParameter::Ptr ipar = 
+		boost::dynamic_pointer_cast<IParameter>(mobj);
+	if (!ipar) {
+		return 0.f;
+	}
+	return ipar->getValue();
 }
 //-----------------------------------------------------------------------------
 std::string FrxGetViewComponentTypeName::process(LuaPtr objId, Ctrl *ctrl) 

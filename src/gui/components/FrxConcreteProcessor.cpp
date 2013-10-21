@@ -91,7 +91,7 @@ const size_t NumProcessorTips = sizeof(ProcessorTips) / sizeof(ProcessorTips[0])
 BOOST_STATIC_ASSERT( NumProcessorTips == Loki::TL::Length<FrxProcessorList>::value );
     
 const char * _getProcessorTooltipImpl(size_t index) {
-    return ProcessorBNames[index];
+    return ProcessorTips[index];
 }
 
 } // namespace(s)

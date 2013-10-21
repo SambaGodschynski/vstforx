@@ -58,6 +58,7 @@ public:
 	virtual void tearDown();
 	void testOpenClose();
 	void testSerializing();
+    void issue163();
 	void issue255();
 	void issue265();
 	void issue269();
