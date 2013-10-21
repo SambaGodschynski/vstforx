@@ -24,7 +24,10 @@
 #include <processing/ModelObject.hpp>
 
 namespace frx { namespace scripts {
-struct ScriptExeFailedEvent{};
+struct ScriptExeFailedEvent{
+    std::string errMsg;
+    ScriptExeFailedEvent(const std::string &msg="unknown error") : errMsg(msg) {}
+};
 struct ScriptEnded{};
 //=============================================================================
 /** 

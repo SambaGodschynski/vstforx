@@ -36,14 +36,15 @@ class ScriptedTests : public CPPUNIT_NS::TestFixture {
 //=============================================================================
 private:
 	CPPUNIT_TEST_SUITE( ScriptedTests );
-	CPPUNIT_TEST( issue320 );
+    CPPUNIT_TEST( issue163 );
+	/*CPPUNIT_TEST( issue320 );
 	CPPUNIT_TEST( issue322 );
 	CPPUNIT_TEST( issue272 );
 	CPPUNIT_TEST( issue255 );
 	CPPUNIT_TEST( issue265 );
 	CPPUNIT_TEST( issue269 );
 	CPPUNIT_TEST( testOpenClose );
-	CPPUNIT_TEST( testSerializing );
+	CPPUNIT_TEST( testSerializing );*/
 	CPPUNIT_TEST_SUITE_END();
 	TestPlugin * plug;
 	TestPlugin * createPlug();

@@ -906,7 +906,7 @@ LuaPtr FrxAddProcessor::process(std::string _name, Ctrl *ctrl) {
     try {
         res = fac.getProcessorCreator(_name)(view);
     } catch (...) {
-        res = FrxProcessorNodePtr();
+        return NULL_LUAPTR;
     }
 	if (!res) {
 		return NULL_LUAPTR;
@@ -1016,10 +1016,10 @@ void PluginScriptCtrl::runThread() {
 			SAMBAG_TRY_TO_LOCK_TIMED(scriptCallMutex)
 			executeString(luaState.get(), script);
 		} catch(const ExecutionFailed &ex) {
-			sambag::com::log("executation failed: " + ex.errMsg);
+			SAMBAG_LOG_ERR<<"executation failed: "<<ex.errMsg;
 			sce::EventSender<ScriptExeFailedEvent>::notifyListeners(
 				this,
-				ScriptExeFailedEvent()
+				ScriptExeFailedEvent(ex.errMsg)
 			);
 			break;
 		}

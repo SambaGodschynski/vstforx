@@ -109,6 +109,7 @@ TestPlugin * ScriptedTests::createPlug() {
 void ScriptedTests::
 onScriptExeFailed(void *src, const frx::scripts::ScriptExeFailedEvent &ev) {
 	failed = true;
+    std::cout<<"Lua error: "<<ev.errMsg<<std::endl;
 	sambag::disco::components::getWindowToolkit()->quit();
 }
 //-----------------------------------------------------------------------------
