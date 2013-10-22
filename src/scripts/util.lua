@@ -20,3 +20,13 @@ function oc(x)
         frxWait(200)
     end
 end
+
+function findByName(name)
+  c=frxGetViewComponents()
+  for k, v in pairs(c) do
+      if name == frxGetComponentName(v) then
+      	 return v
+      end
+  end
+  return ""
+end

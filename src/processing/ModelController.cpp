@@ -449,4 +449,8 @@ addParameterCnOp(IConnection::Ptr cn, const ParameterCnOpTypeId &opId)
 int ModelController::getGraphDelay() const {
     return (int)graph->getGraphDelay();
 }
+//-----------------------------------------------------------------------------
+void ModelController::updateGraph() {
+    graph->getJanitor()->updateGraph();
+}
 }} // namespace(s)

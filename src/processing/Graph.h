@@ -22,6 +22,7 @@
 #include <boost/parameter/name.hpp>
 #include <boost/parameter/keyword.hpp>
 #include <boost/parameter/preprocessor.hpp>
+#include <boost/unordered_map.hpp>
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <sambag/com/Thread.hpp>
@@ -76,6 +77,8 @@ public:
 	typedef std::list<ProcessorNode*> NodeList;
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<Graph> Ptr;
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::weak_ptr<Graph> WPtr;
 	//--------------------------------------------------------------------------------------------------------
 	class Janitor;
 	//--------------------------------------------------------------------------------------------------------
@@ -197,6 +200,7 @@ private:
 	void updateGraph();
 	//--------------------------------------------------------------------------------------------------------
 	frx::processing::IHostInfo::HostIOChangedConnection ioChangedCn;
+    //--------------------------------------------------------------------------------------------------------
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	frx::processing::IHostInfo::WPtr hostInfo;
@@ -206,6 +210,10 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	//End Knoten
 	EndNode::Ptr endNode;
+    //--------------------------------------------------------------------------------------------------------
+    void installListener(ProcessAdapter::Ptr);
+    //--------------------------------------------------------------------------------------------------------
+    void installListeners();
 public:
 	//--------------------------------------------------------------------------------------------------------
 	void processEvents(sambag::dsp::IMidiEvents * events);
@@ -609,6 +617,8 @@ public:
 	 * @return SUCCEED / FAILED
 	 */
 	State removeConnection( ProcessorNode::Ptr parent, ProcessorNode::Ptr child );
+    //--------------------------------------------------------------------------------------------------------
+    void updateGraph();
 }; // Janitor
 
 //============================================================================================================
@@ -667,6 +677,7 @@ public:
 		n->setActive( false );
 		n->parents.clear();
 		n->activeChildren = 0;
+        n->delay = 0;
 		n->tmpFrames->setSize( graph->getBlockSize() );
 	}
 };
@@ -683,6 +694,7 @@ void Graph::serialize ( Archive &ar, const unsigned int version )
 	ar & parameterConnections;
 	ar & g;
 	if ( Archive::is_loading::value ) {
+        installListeners();
 		Ptr graph = self.lock();
 		graph->getJanitor()->updateProcessorNodeVertexRelations();
 	}

@@ -13,6 +13,8 @@
 #include "Graph.h"
 #include "OS_Specific/OS_com.h"
 #include "OS_Specific/OS_processing.h"
+#include <sambag/com/events/PropertyChanged.hpp>
+#include <boost/foreach.hpp>
 
 namespace processing {
 
@@ -117,6 +119,41 @@ size_t Graph::getNumAdapter() const {
 //------------------------------------------------------------------------------------------------------------
 bool Graph::isActive() const {
 	return endNode->isActive();
+}
+//------------------------------------------------------------------------------------------------------------
+void onPropertyChanged(void*,
+    const sambag::com::events::PropertyChanged &ev,
+    ProcessAdapter::WPtr wobj,
+    Graph::WPtr wg)
+{
+    ProcessAdapter::Ptr obj = wobj.lock();
+    Graph::Ptr g = wg.lock();
+    if (!obj || !g) {
+        return;
+    }
+    if (ev.getPropertyName() == "process delay") {
+        g->getJanitor()->updateGraph();
+    }
+}
+void Graph::installListener( ProcessAdapter::Ptr obj ) {
+    if (!obj) {
+        return;
+    }
+    namespace sce = sambag::com::events;
+    obj->sce::EventSender<sce::PropertyChanged>::addTrackedEventListener(
+        boost::bind(&onPropertyChanged, _1, _2, ProcessAdapter::WPtr(obj), self),
+        self
+    );
+}
+//------------------------------------------------------------------------------------------------------------
+void Graph::installListeners() {
+    BOOST_FOREACH(PObject::Ptr obj, graphObjects) {
+        ProcessAdapter::Ptr po = boost::dynamic_pointer_cast<ProcessAdapter>(obj);
+        if (!po) {
+            continue;
+        }
+        installListener(po);
+    }
 }
 //------------------------------------------------------------------------------------------------------------
 bool Graph::add( PObject::Ptr obj){
@@ -280,6 +317,10 @@ void Graph::Janitor::hostBaseConfigChanged() {
 	_hostBaseConfigChanged = true;
 }
 //------------------------------------------------------------------------------------------------------------
+void Graph::Janitor::updateGraph() {
+    // update on destroying janitor
+}
+//------------------------------------------------------------------------------------------------------------
 Graph::Janitor::State Graph::Janitor::connectNodes( ProcessorNode::Ptr parent, ProcessorNode::Ptr child ) {
 
 	if ( !parent || !child ) {
@@ -402,7 +443,7 @@ Graph::Janitor::State Graph::Janitor::add( ProcessAdapter::Ptr p ) {
 		ProcessAdapter::OutputNode::Ptr node = p->getOutputNode(i);
 		add( node ); // add ProcessAdapter::OutputNode :-> addProcessorNode -> connect( adapter, output )
 	}
-
+    graph->installListener(p);
 	return SUCCEED;
 }
 //------------------------------------------------------------------------------------------------------------

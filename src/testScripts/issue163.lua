@@ -1,10 +1,9 @@
+require "scripts/util"
+
 function assertGraphDelay(d)
 	 assert( frxGetGraphDelay() == d, 
 	 	 "graph delay. expected: " .. d .. " actual: " .. frxGetGraphDelay() ) 
 end
-
-
-
 
 frxOpenPlugin()
 frxOpenEditor()
@@ -34,9 +33,16 @@ frxClearView()
 
 frxClosePlugin()
 frxCloseEditor()
+-- !! object pointer are invalid now
 
 frxOpenPlugin()
 frxOpenEditor()
 assertGraphDelay(0)
 frxDeserializePlugin(save)
 assertGraphDelay(32768)
+
+p = findByName("DC Tester_1")
+assert(#p>0)
+delay = frxGetComponentParameter(p)[1]
+frxSetParameterValue(delay, 0)
+assertGraphDelay(0)

@@ -151,10 +151,9 @@ public:
 	//-------------------------------------------------------------------------
 	virtual void addParameterCnOp(IConnection::Ptr cn, const ParameterCnOpTypeId &opId);
     //-------------------------------------------------------------------------
-    /**
-     * @return the graph delay in samples
-     */
-     virtual int getGraphDelay() const;
+    virtual int getGraphDelay() const;
+    //-------------------------------------------------------------------------
+    virtual void updateGraph();
 }; // ModelController
 }} // namespace(s)
 

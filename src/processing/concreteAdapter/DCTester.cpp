@@ -17,7 +17,7 @@ namespace processing{
 // class DCTester
 //=============================================================================
 //-----------------------------------------------------------------------------
-void DCTester::processAdapter( Processor::Int numSamples ) { 
+void DCTester::processAdapter( Processor::Int numSamples ) {
 	Frames *fr = getInputNode(0)->popFrame();
     size_t delayframes = DCTester::getProcessDelay();
     stream.addFrame(fr, numSamples, delayframes);
@@ -26,6 +26,10 @@ void DCTester::processAdapter( Processor::Int numSamples ) {
 }
 //-----------------------------------------------------------------------------
 void DCTester::valueChanged ( void *src, const float &value ) {
+    namespace sce=sambag::com::events;
+    sce::EventSender<sce::PropertyChanged>::notifyListeners(this,
+        sce::PropertyChanged("process delay", (size_t)0, getProcessDelay())
+    );
 }
 //-----------------------------------------------------------------------------
 void DCTester::setupStream(frx::processing::IHostInfo::Ptr hI) {

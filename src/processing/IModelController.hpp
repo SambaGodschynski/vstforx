@@ -136,6 +136,12 @@ public:
      * @return the graph delay in samples
      */
      virtual int getGraphDelay() const = 0;
+    //-------------------------------------------------------------------------
+    /**
+     * graph needs to be updated. e.g. after processors property changed
+     * (process delay)
+     */
+    virtual void updateGraph() = 0;
 }; // IModelController
 ///////////////////////////////////////////////////////////////////////////////
 extern IModelController::Ptr
