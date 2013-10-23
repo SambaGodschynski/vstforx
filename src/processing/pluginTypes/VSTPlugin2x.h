@@ -20,6 +20,7 @@
 #include <stack>
 #include <sambag/dsp/VstMidiEventAdapter.hpp>
 #include "VstShellPlugin.hpp"
+#include <sambag/com/ArithmeticWrapper.hpp>
 
 namespace ppiGui {
 	class GPluginController;
@@ -55,6 +56,8 @@ public:
 	 */
 	static MyString extractNameFromFilename ( const string &fileName );
 private:
+    //--------------------------------------------------------------------------------------------------------
+    mutable sambag::com::ArithmeticWrapper<size_t> _processDelay;
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::shared_ptr<sambag::dsp::VstMidiEventAdapter> VstMidiEventAdapterPtr;
 	VstMidiEventAdapterPtr tmpMidiData;

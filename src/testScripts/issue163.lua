@@ -1,7 +1,8 @@
 require "scripts/util"
 
 function assertGraphDelay(d)
-	 assert( frxGetGraphDelay() == d, 
+	frxWait(1000) -- graph update happens async 
+	assert( frxGetGraphDelay() == d, 
 	 	 "graph delay. expected: " .. d .. " actual: " .. frxGetGraphDelay() ) 
 end
 

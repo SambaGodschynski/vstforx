@@ -24,7 +24,9 @@
 #include <sstream>
 #include "com/Serialization.h"
 #include <math.h>
-
+#include <sambag/com/Thread.hpp>
+#include <sambag/disco/components/WindowToolkit.hpp>
+#include <processing/FrxAsyncDSPTimer.hpp>
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::GraphTest );
@@ -1479,5 +1481,91 @@ void GraphTest::testSerialization() {
 	graph->pushAndCopy ( &inFrame, blockSize );
 	graph->processGraph( outFrame.getData(), blockSize  );
 	TEST_PEAK ( outFrame, 1.0f, DELAY, blockSize );
-}	
+}
+//=============================================================================
+namespace {
+    int countdown = 0;
+    template <typename T>
+    void add( T a, T b, T *res) {
+        using namespace sambag::disco::components;
+        *res = a + b;
+        if (--countdown<=0) {
+            getWindowToolkit()->quit();
+        }
+    }
+    void sum(int start, int end, int *res) {
+        for (int i=start; i<=end; ++i) {
+            *res+=i;
+        }
+    }
+    void sumTaskThread(processing::Graph::Ptr g,
+        int start,
+        int end,
+        int numTasks,
+        int sleepms,
+        int *res) {
+        using namespace sambag::disco::components;
+        for (int i=start; i<end; i+=numTasks) {
+            int s = i;
+            int e = i+numTasks-1;
+            g->addIdleTask( boost::bind(&sum, s, e, res) );
+            boost::this_thread::sleep( boost::posix_time::milliseconds(sleepms) );
+        }
+        if (--countdown<=0) {
+            boost::this_thread::sleep( boost::posix_time::seconds(5) );
+            getWindowToolkit()->quit();
+        }
+    }
+}
+void GraphTest::testGraphIdleHandler() { 
+//=============================================================================
+	using namespace std;
+	using namespace com;
+	using namespace processing;
+	using namespace sambag::disco::components;
+    using namespace frx::processing;
+    int blockSize = 512;
+	Graph::Ptr graph = createGraph( blockSize, 44100.0f );
+    FrxAsyncDSPTimer::WorkerThreadHolder wth = FrxAsyncDSPTimer::startWorkerThread();
+    
+    {   // simple test
+        int res = 0;
+        countdown = 1;
+        graph->addIdleTask( boost::bind(&add<int>, 1, 100, &res) );
+        getWindowToolkit()->startMainLoop();
+        CPPUNIT_ASSERT_EQUAL((int)101, res);
+    }
+    {   // simple test 2
+        int res = 0;
+        float fres = 0.f;
+        countdown = 2;
+        graph->addIdleTask( boost::bind(&add<int>, 1, 100, &res) );
+        graph->addIdleTask( boost::bind(&add<float>, 1.5, 0.2, &fres) );
+        getWindowToolkit()->startMainLoop();
+        CPPUNIT_ASSERT_EQUAL((int)101, res);
+        CPPUNIT_ASSERT_EQUAL(1.7f, fres);
+    }
+    {   // parallel
+        int res = 0;
+        countdown = 4;
+        boost::thread t1 = boost::thread(
+            boost::bind(&sumTaskThread, graph, 1, 100, 10, 10, &res)
+        );
+        boost::thread t2 = boost::thread(
+            boost::bind(&sumTaskThread, graph, 101, 200, 10, 10, &res)
+        );
+        boost::thread t3 = boost::thread(
+            boost::bind(&sumTaskThread, graph, 201, 300, 10, 20, &res)
+        );
+        boost::thread t4 = boost::thread(
+            boost::bind(&sumTaskThread, graph, 301, 400, 10, 20, &res)
+        );
+        getWindowToolkit()->startMainLoop();
+        t1.join();
+        t2.join();
+        t3.join();
+        t4.join();
+        CPPUNIT_ASSERT_EQUAL((int)80200, res);
+    }
+}
 } // namespace tests

@@ -57,6 +57,7 @@ class GraphTest : public CPPUNIT_NS::TestFixture {
 	CPPUNIT_TEST( testGraphComplex2 );
 	CPPUNIT_TEST( testGraphComplex3 );
 	CPPUNIT_TEST( testSerialization );
+    CPPUNIT_TEST( testGraphIdleHandler );
 	CPPUNIT_TEST_EXCEPTION( testJanitorLock, com::ppiError::DeadlockException );
 	CPPUNIT_TEST_SUITE_END();
 private:
@@ -88,6 +89,7 @@ public:
 	void testGraphComplex1();
 	void testGraphComplex2();
 	void testGraphComplex3();
+    void testGraphIdleHandler();
 };
 } // namespace tests
 #endif 

@@ -15,9 +15,17 @@
 #include "OS_Specific/OS_processing.h"
 #include <sambag/com/events/PropertyChanged.hpp>
 #include <boost/foreach.hpp>
+#include <processing/FrxAsyncDSPTimer.hpp>
+#include <sambag/com/events/PropertyChanged.hpp>
+#include <boost/unordered_set.hpp>
+
+
+namespace {
+    const int FRX_IDLE_TIME_MS = 100;
+}
+
 
 namespace processing {
-
 using namespace parameter;
 using namespace com; 
 //============================================================================================================
@@ -71,6 +79,69 @@ void DFSVisitor::addToSignalProcessPath( ProcessorNode::Ptr node ) {
 	graph->signalProcessPath.push_back( node.get() );
 }
 //============================================================================================================
+// class Graph::IdleHandler
+//============================================================================================================
+class Graph::IdleHandler {
+public:
+    typedef boost::function<void()> Function;
+private:
+    frx::processing::FrxAsyncDSPTimer::Ptr timer;
+    sambag::com::Mutex mutex;
+    typedef char Dummy;
+    typedef boost::shared_ptr<Dummy> DummyPtr;
+    typedef boost::weak_ptr<Dummy> DummyWPtr;
+    typedef boost::unordered_set<DummyPtr> Holder;
+    Holder holder;
+    void doIdle(Function f, DummyWPtr);
+public:
+    void addTask(const Function &f);
+    IdleHandler();
+    bool isRunning() const {
+        return timer->isRunning();
+    }
+};
+//-----------------------------------------------------------------------------------------------------------
+void Graph::IdleHandler::doIdle(Function f, DummyWPtr wp) {
+    f();
+    DummyPtr p = wp.lock();
+    SAMBAG_ASSERT(p);
+    SAMBAG_TRY_TO_LOCK_TIMED(mutex);
+    holder.erase(p);
+    if (holder.empty()) {
+        // we are the last task
+        timer->stop();
+    }
+}
+//-----------------------------------------------------------------------------------------------------------
+void Graph::IdleHandler::addTask(const Function &f) {
+    using frx::processing::FrxAsyncDSPTimer;
+    using sambag::com::events::EventSender;
+    //lock
+    SAMBAG_TRY_TO_LOCK_TIMED(mutex);
+    DummyPtr dummy = DummyPtr( new Dummy() );
+    // insert dummy
+    if (!(holder.insert(dummy)).second) {
+        SAMBAG_LOG_WARN<<"Graph::IdleHandler::addTask failed.";
+        return;
+    }
+    // add timer callback
+    timer->EventSender<FrxAsyncDSPTimer::Event>::addTrackedEventListener(
+        boost::bind(&IdleHandler::doIdle, this, f, DummyWPtr(dummy)),
+        dummy
+    );
+    if (holder.size() == 1) {
+        // we are the first task
+        timer->start();
+    }
+}
+//-----------------------------------------------------------------------------------------------------------
+Graph::IdleHandler::IdleHandler() {
+    using frx::processing::FrxAsyncDSPTimer;
+    using sambag::com::events::EventSender;
+    timer = FrxAsyncDSPTimer::create(FRX_IDLE_TIME_MS);
+    timer->setNumRepetitions(-1);
+}
+//============================================================================================================
 // class Graph
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
@@ -121,7 +192,51 @@ bool Graph::isActive() const {
 	return endNode->isActive();
 }
 //------------------------------------------------------------------------------------------------------------
-void onPropertyChanged(void*,
+Graph::IdleHandlerPtr Graph::getIdleHandler() {
+    if (!__idle_) {
+        __idle_ = IdleHandlerPtr( new IdleHandler() );
+    }
+    return __idle_;
+}
+//------------------------------------------------------------------------------------------------------------
+void Graph::addIdleTask(const Function &f) {
+    IdleHandlerPtr hnd = getIdleHandler();
+    hnd->addTask(f);
+}
+//------------------------------------------------------------------------------------------------------------
+void onAsyncUpdateGraph(Graph::WPtr wg)
+{
+    Graph::Ptr g = wg.lock();
+    if (!g) {
+        return;
+    }
+    g->getJanitor()->updateGraph();
+}
+void Graph::updateGraphAsync()
+{
+    namespace sce=sambag::com::events;
+    namespace fp = frx::processing;
+    addIdleTask(boost::bind(&onAsyncUpdateGraph, self));
+}
+//------------------------------------------------------------------------------------------------------------
+void onAsyncSendGraphDelay(Graph::WPtr wg)
+{
+    Graph::Ptr g = wg.lock();
+    if (!g) {
+        return;
+    }
+    g->com::events::EventSender<GraphDelayChanged>::notifyEventListeners( g.get(),
+        GraphDelayChanged( g->getGraphDelay() )
+    );
+}
+void Graph::sendGraphDelayChangedMessageAsync()
+{
+    namespace sce=sambag::com::events;
+    namespace fp = frx::processing;
+    addIdleTask(boost::bind(&onAsyncSendGraphDelay, self));
+}
+//------------------------------------------------------------------------------------------------------------
+void Graph::onPropertyChanged(void*,
     const sambag::com::events::PropertyChanged &ev,
     ProcessAdapter::WPtr wobj,
     Graph::WPtr wg)
@@ -132,16 +247,17 @@ void onPropertyChanged(void*,
         return;
     }
     if (ev.getPropertyName() == "process delay") {
-        g->getJanitor()->updateGraph();
+        updateGraphAsync();
     }
 }
+//------------------------------------------------------------------------------------------------------------
 void Graph::installListener( ProcessAdapter::Ptr obj ) {
     if (!obj) {
         return;
     }
     namespace sce = sambag::com::events;
     obj->sce::EventSender<sce::PropertyChanged>::addTrackedEventListener(
-        boost::bind(&onPropertyChanged, _1, _2, ProcessAdapter::WPtr(obj), self),
+        boost::bind(&Graph::onPropertyChanged, this, _1, _2, ProcessAdapter::WPtr(obj), self),
         self
     );
 }
@@ -213,7 +329,7 @@ void Graph::updateGraph() {
 	);
 	size_t delay = getGraphDelay();
 	if (oldDelay!=delay) {
-		com::events::EventSender<GraphDelayChanged>::notifyEventListeners( this, GraphDelayChanged( getGraphDelay() ) );
+        sendGraphDelayChangedMessageAsync();
 	}
 }
 //------------------------------------------------------------------------------------------------------------

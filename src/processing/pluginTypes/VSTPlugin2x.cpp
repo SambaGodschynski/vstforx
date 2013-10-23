@@ -99,7 +99,7 @@ void VSTPlugin::initPlug( VSTPlugin &plug ) {
 	plug.setIsSynth ( plug.can(effFlagsIsSynth) );
 	plug.setUid ( plug.aEff->uniqueID );
 	plug.setType ( PluginInfo::VST2X );
-
+    plug._processDelay = plug.aEff->initialDelay;
 	if ( plug.aEff == &nullAEff ) {
 		plug.setStatusMsg( "could not load " + plug.getLocation() );
 	}
@@ -273,7 +273,7 @@ void VSTPlugin::initParameter(){
 }
 //------------------------------------------------------------------------------------------------------------
 size_t VSTPlugin::getProcessDelay() const {
-	return (size_t)aEff->initialDelay;
+	return _processDelay = (size_t)aEff->initialDelay;
 }
 //------------------------------------------------------------------------------------------------------------
 //ruft die processReplacing Methode des zugeordneten VST-Plugin auf.
@@ -339,6 +339,14 @@ void VSTPlugin::onIOChanged() {
 		the AEffect structure wasn't updated and a getSpeakerArrangement() 
 		call had no evaluable result. 
 */
+    namespace sce=sambag::com::events;
+    size_t old = _processDelay;
+    size_t _new = getProcessDelay();
+    if (old!=_new) {
+        sce::EventSender<sce::PropertyChanged>::notifyListeners(this,
+            sce::PropertyChanged("process delay", old, _new)
+        );
+    }
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::onEditorParameterChanged (int index, float value){
