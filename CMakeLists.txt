@@ -5,15 +5,15 @@ project (vstforx)
 
 SET(FRX_VERSION_MAJOR 1)
 SET(FRX_VERSION_MINOR 0)
-SET(FRX_VERSION_MICRO 311)
+SET(FRX_VERSION_MICRO 32)
 
 execute_process(COMMAND git log --pretty=format:%h -n 1
                 OUTPUT_VARIABLE FRX_VERSION_BUILD)
 
 
 # Common Features
-add_definitions(-DFRX_FEATURE_REMOTE_CHANNEL)
-add_definitions(-DFRX_FEATURE_DC_TESTER)
+#add_definitions(-DFRX_FEATURE_REMOTE_CHANNEL)
+#add_definitions(-DFRX_FEATURE_DC_TESTER)
 
 
 include_directories ("${PROJECT_SOURCE_DIR}/src")
