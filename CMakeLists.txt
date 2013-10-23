@@ -13,8 +13,7 @@ execute_process(COMMAND git log --pretty=format:%h -n 1
 
 # Common Features
 #add_definitions(-DFRX_FEATURE_REMOTE_CHANNEL)
-#add_definitions(-DFRX_FEATURE_DC_TESTER)
-
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DFRX_FEATURE_DC_TESTER")
 
 include_directories ("${PROJECT_SOURCE_DIR}/src")
 add_definitions(-DBOOST_UBLAS_TYPE_CHECK=0)
