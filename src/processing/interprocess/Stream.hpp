@@ -100,7 +100,7 @@ private:
     //-------------------------------------------------------------------------
     Mutex *mutex;
     //-------------------------------------------------------------------------
-    UInteger *blockSize_ist, *numChannels_ist, *numParameter_ist;
+    UInteger *blockSize_ist, *numChannels_ist, *numParameter_ist, *lastWrittenTime;
     //-------------------------------------------------------------------------
     Integer *num_references;
     //-------------------------------------------------------------------------
@@ -139,9 +139,10 @@ public:
     void write(T **data);
     //-------------------------------------------------------------------------
     template <typename T>
-    int read(T **out, UInteger &inoutReadBlocks);
+    void write(T **data, UInteger numSamples);
     //-------------------------------------------------------------------------
-    void resize(UInteger blockSize, UInteger numChannels);
+    template <typename T>
+    int read(T **out, UInteger &inoutReadBlocks);
     //-------------------------------------------------------------------------
     ValueType * operator[](UInteger channel) const;
     //-------------------------------------------------------------------------
@@ -171,7 +172,13 @@ public:
     }
     //-------------------------------------------------------------------------
     const std::string & getId() const { return id; }
-
+    //-------------------------------------------------------------------------
+    UInteger getLastWrittenTime() const {
+        if (!lastWrittenTime) {
+            return 0;
+        }
+        return *lastWrittenTime;
+    }
 }; // Stream
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
@@ -180,6 +187,15 @@ void Stream::write(T **data) {
     using namespace boost::interprocess;
     scoped_lock<Mutex> lock(*mutex);
     buffer->writeBlock(data);
+    *lastWrittenTime = ::time(NULL);
+}
+//-----------------------------------------------------------------------------
+template <typename T>
+void Stream::write(T **data, UInteger numSamples) {
+    using namespace boost::interprocess;
+    scoped_lock<Mutex> lock(*mutex);
+    buffer->write(data, numSamples);
+    *lastWrittenTime = ::time(NULL);
 }
 //-----------------------------------------------------------------------------
 template <typename T>

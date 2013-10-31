@@ -32,25 +32,25 @@ RemoteChReceiver::RemoteChReceiver(frx::processing::IHostInfo::Ptr hostInfo,
     RemoteChannelManager &rm = RemoteChannelManager::instance();
     ipStream = rm.getStream(streamId);
     
-    frames.setSize( hostInfo->getBlockSize() );
-    frames.setZero( hostInfo->getBlockSize() );
-    dcStream.setSize( hostInfo->getBlockSize(),  0/*hostInfo->getBlockSize()*/);
+    setAudioSettings(hostInfo);
     
     initStream();
     initParameters(ipStream->getNumParameter());
+}
+//-----------------------------------------------------------------------------
+void RemoteChReceiver::setAudioSettings(frx::processing::IHostInfo::Ptr hI) {
+    size_t bs = hI->getBlockSize();
+    frames.setSize( bs );
+    frames.setZero( bs );
+    dcStream.setSize( bs,  0);
 }
 //-----------------------------------------------------------------------------
 void RemoteChReceiver::reOpenStream() {
     if (ipStream) {
         return;
     }
-
     frx::processing::IHostInfo::Ptr hostInfo = this->hostInfo.lock();
     RemoteChannelManager &rm = RemoteChannelManager::instance();
-    
-    frames.setSize( hostInfo->getBlockSize() );
-    frames.setZero( hostInfo->getBlockSize() );
-    dcStream.setSize( hostInfo->getBlockSize(),  0/*hostInfo->getBlockSize()*/);
     
     ipStream = rm.getStream(streamId);
     if (!ipStream) {
@@ -88,7 +88,6 @@ void RemoteChReceiver::initStream() {
     frx::processing::IHostInfo::Ptr hostInfo = this->hostInfo.lock();
     size_t sBs = ipStream->getBlockSize();
     size_t hBs = hostInfo->getBlockSize();
-    
     if (sBs!=hBs) {
         std::stringstream ss;
         ss<<"RemoteChannel("<<sBs<<"), this instance("<<hBs<<") ";
@@ -97,20 +96,34 @@ void RemoteChReceiver::initStream() {
         ss.str());
     }
 }
-
+//-----------------------------------------------------------------------------
+void RemoteChReceiver::streamLost() {
+    SAMBAG_TRY_TO_LOCK_TIMED(mutex);
+    ipStream.reset();
+    reOpenStream();
+}
 //-----------------------------------------------------------------------------
 void RemoteChReceiver::processAdapter( pr::Processor::Int numSamples ) {
     using namespace ::processing;
     if (!ipStream) {
-        frames.setZero(numSamples);
-        outputNodes[0]->pushAndCopy( &frames, numSamples );
+        _nullProcess(numSamples);
         return;
     }
     // reading from ip stream
     float **data = frames.getData();
     int res = ipStream->read(data, blocksRead);
-    if (res!=0) {
-        blocksRead-=res;
+    if (res<0) { // we are behind the last written block
+        blocksRead-=res; // blocksRead + numBlocksBehind (res is negative)
+        ipStream->read(data, blocksRead);
+    }
+    if (res>0) { // we are before the last written block
+        if (::time(NULL) - ipStream->getLastWrittenTime() >= 1)
+        {
+            streamLost();
+            _nullProcess(numSamples);
+            return;
+        }
+        blocksRead-=res; // blocksRead + numBlocksBefore (res is positive)
         ipStream->read(data, blocksRead);
     }
     size_t bs = getHostInfo()->getBlockSize();
@@ -156,7 +169,7 @@ void RemoteChReceiver::onParameterObserver()
     if (!ipStream) {
         return;
     }
-    
+    SAMBAG_TRY_TO_LOCK_TIMED(mutex);
     SAMBAG_ASSERT(ipStream->getNumParameter()==parameters.size());
     
     Stream::ValueType *pvalue = ipStream->getParameter();

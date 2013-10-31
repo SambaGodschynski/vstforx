@@ -103,9 +103,9 @@ public:
 //-----------------------------------------------------------------------------------------------------------
 void Graph::IdleHandler::doIdle(Function f, DummyWPtr wp) {
     f();
+    SAMBAG_TRY_TO_LOCK_TIMED(mutex);
     DummyPtr p = wp.lock();
     SAMBAG_ASSERT(p);
-    SAMBAG_TRY_TO_LOCK_TIMED(mutex);
     holder.erase(p);
     if (holder.empty()) {
         // we are the last task

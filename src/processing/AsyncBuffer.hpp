@@ -17,9 +17,11 @@
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/interprocess/sync/sharable_lock.hpp>
 #include <sambag/com/Common.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <sambag/com/SharedMemory.hpp>
 
 namespace frx { namespace processing {
+// TODO: remove depended types, use template parameter instead
 using ::sambag::com::interprocess::Integer;
 using ::sambag::com::interprocess::UInteger;
 //=============================================================================
@@ -143,9 +145,9 @@ public:
     //-------------------------------------------------------------------------
     void deallocate();
     //-------------------------------------------------------------------------
-    void allocate(UInteger blockSize);
+    void allocate(typename Super::SizeType blockSize);
     //-------------------------------------------------------------------------
-    inline T * operator[](UInteger channel) const {
+    inline T * operator[](typename Super::SizeType channel) const {
         return __buffer_[channel];
     }
     //-------------------------------------------------------------------------
@@ -157,7 +159,7 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 template < typename T, int I, int J>
-void DefaultMemoryPolicy<T, I, J>::allocate(UInteger blockSize)
+void DefaultMemoryPolicy<T, I, J>::allocate(typename Super::SizeType blockSize)
 {
     Allocator allocator;
     allocateImpl(allocator, __buffer_, blockSize);
@@ -203,7 +205,7 @@ public:
         boost::integer_traits<UInteger>::const_max;;
 protected:
     //-------------------------------------------------------------------------
-    UInteger blocksWritten;
+    UInteger blocksWritten, sampleOffset;
     //-------------------------------------------------------------------------
     inline UInteger cyc_bounds( UInteger i ) { return i%getSize(); }
     //-------------------------------------------------------------------------
@@ -267,6 +269,12 @@ public:
     template <typename U>
     void writeBlock(U **data);
     //-------------------------------------------------------------------------
+    template <typename U>
+    int readBlock(U **out, UInteger &blocksRead) const;
+    //-------------------------------------------------------------------------
+    template <typename U>
+    void write(U **data, UInteger numSamples);
+    //-------------------------------------------------------------------------
     /**
      * @return the number of samples of one block
      */
@@ -284,22 +292,12 @@ public:
     inline UInteger getNumChannels() const {
         return MemoryPolicy::NumChannels;
     }
-    //-------------------------------------------------------------------------
-    /**
-     * @param the allocated out container
-     * @param [in/out] the number of the already read blocks, increments value when
-     *        reading was successfull
-     * @return 0 when reading was successfull, otherwise the number of missing blocks. 
-     *         negative values: x blocks to late
-     *         positive values: x blocks to early
-     */
-    template <typename U>
-    int readBlock(U **out, UInteger &blocksRead) const;
 }; // AsyncBuffer
 ///////////////////////////////////////////////////////////////////////////////
 template < typename T, int I, int J, template <class, int, int> class A >
 AsyncBuffer<T, I, J, A>::AsyncBuffer() :
-    blocksWritten(0)
+    blocksWritten(0),
+    sampleOffset(0)
 {
 }
 //-----------------------------------------------------------------------------
@@ -319,6 +317,27 @@ void AsyncBuffer<T, I, J, A>::writeBlock(U **data)
         MemoryPolicy::copy(data[i], ptr, getBlockSize());
     }
     ++blocksWritten;
+}
+//-----------------------------------------------------------------------------
+template < typename T, int I, int J, template <class, int, int> class A >
+template < typename U>
+void AsyncBuffer<T, I, J, A>::write(U **data, UInteger numSamples)
+{
+    if (numSamples > getBlockSize()) {
+        SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+            "numsamples > blocksize"
+        );
+    }
+    for (UInteger i=0; i<getNumChannels(); ++i) {
+        T *ptr = (*this)[i];
+        ptr+=toSamplePos(getCurrentBlockNumber()) + sampleOffset;
+        MemoryPolicy::copy(data[i], ptr, numSamples);
+    }
+    sampleOffset+=numSamples;
+    if (sampleOffset >= getBlockSize() ) { // block complete
+        ++blocksWritten;
+        sampleOffset %= getBlockSize();
+    }
 }
 //-----------------------------------------------------------------------------
 template < typename T, int I, int J, template <class, int, int> class A >

@@ -15,6 +15,7 @@
 #include <com/Serialization.h>
 #include <processing/parameter/parameter.h>
 #include "processing/processing.h"
+#include <sambag/com/Thread.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 namespace pr = ::processing;
@@ -34,6 +35,8 @@ public:
 	typedef boost::shared_ptr<RemoteChReceiver> Ptr;
 private:
     //-------------------------------------------------------------------------
+    sambag::com::Mutex mutex;
+    //-------------------------------------------------------------------------
     FrxAsyncDSPTimer::Ptr parameterObserver;
     //-------------------------------------------------------------------------
     FrxAsyncDSPTimer::Ptr openStreamTimer;
@@ -50,9 +53,18 @@ private:
     //-------------------------------------------------------------------------
     std::string streamId;
     //-------------------------------------------------------------------------
+    void streamLost();
+    //-------------------------------------------------------------------------
     void initStream();
+    //-------------------------------------------------------------------------
+    void setAudioSettings(frx::processing::IHostInfo::Ptr hostInfo);
 	//-------------------------------------------------------------------------
     void reOpenStream();
+    //-------------------------------------------------------------------------
+    inline void _nullProcess(size_t numSamples) {
+        frames.setZero(numSamples);
+        outputNodes[0]->pushAndCopy(&frames, numSamples);
+    }
 	//-------------------------------------------------------------------------
 	/**
 	 * (De)Serialisiert Volume-Objekt
@@ -71,6 +83,7 @@ private:
 					"Hostinfo == NULL"
 				);
 			}
+            setAudioSettings(hI);
 			reOpenStream();
 		}
 	}

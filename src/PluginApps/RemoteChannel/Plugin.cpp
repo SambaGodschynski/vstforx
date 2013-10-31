@@ -83,7 +83,7 @@ void Plugin::updateConfiguration() {
     }
     if (stream) {
         if ((int)stream->getBlockSize() != blockSize) {
-            stream->resize(blockSize, this->getHost()->getNumOutputs());
+            //stream->resize(blockSize, this->getHost()->getNumOutputs());
         }
         return;
     }
