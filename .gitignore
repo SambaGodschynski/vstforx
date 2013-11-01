@@ -3,3 +3,8 @@
 cmake_install.cmake
 src/CMakeLists.txt
 src/cmake_install.cmake
+src/PluginApps/VSTForx/win/initResourceMap.cpp
+src/PluginApps/VSTForx/win/initResourceMap.h
+src/PluginApps/VSTForx/win/resources.rc
+src/com/FrxConfig.h
+
