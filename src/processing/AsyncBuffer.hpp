@@ -145,9 +145,9 @@ public:
     //-------------------------------------------------------------------------
     void deallocate();
     //-------------------------------------------------------------------------
-    void allocate(typename Super::SizeType blockSize);
+    void allocate(std::size_t blockSize);
     //-------------------------------------------------------------------------
-    inline T * operator[](typename Super::SizeType channel) const {
+    inline T * operator[](std::size_t channel) const {
         return __buffer_[channel];
     }
     //-------------------------------------------------------------------------
@@ -159,7 +159,7 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 template < typename T, int I, int J>
-void DefaultMemoryPolicy<T, I, J>::allocate(typename Super::SizeType blockSize)
+void DefaultMemoryPolicy<T, I, J>::allocate(std::size_t blockSize)
 {
     Allocator allocator;
     allocateImpl(allocator, __buffer_, blockSize);
