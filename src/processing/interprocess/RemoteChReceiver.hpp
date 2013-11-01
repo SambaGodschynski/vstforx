@@ -35,7 +35,7 @@ public:
 	typedef boost::shared_ptr<RemoteChReceiver> Ptr;
 private:
     //-------------------------------------------------------------------------
-    sambag::com::Mutex mutex;
+    sambag::com::RecursiveMutex mutex;
     //-------------------------------------------------------------------------
     FrxAsyncDSPTimer::Ptr parameterObserver;
     //-------------------------------------------------------------------------
@@ -53,9 +53,13 @@ private:
     //-------------------------------------------------------------------------
     std::string streamId;
     //-------------------------------------------------------------------------
+    std::string errMsg;
+    //-------------------------------------------------------------------------
     void streamLost();
     //-------------------------------------------------------------------------
     void initStream();
+    //-------------------------------------------------------------------------
+    void openStream();
     //-------------------------------------------------------------------------
     void setAudioSettings(frx::processing::IHostInfo::Ptr hostInfo);
 	//-------------------------------------------------------------------------
@@ -100,14 +104,14 @@ protected:
 	RemoteChReceiver(frx::processing::IHostInfo::Ptr hostInfo,
                      const std::string &rcId,
                      size_t numOutputs);
+    //-------------------------------------------------------------------------
+    void notifyStatusChanged();
 public:
     //-------------------------------------------------------------------------
     /**
      * @override
      */
-	virtual std::string getStatusMessage() const {
-        return ipStream ? "[connected]" : "[sender not available]";
-    }
+	virtual std::string getStatusMessage() const;
     //-------------------------------------------------------------------------
 	/**
 	 * @param hostInfo

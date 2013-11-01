@@ -29,13 +29,13 @@ RemoteChReceiver::RemoteChReceiver(frx::processing::IHostInfo::Ptr hostInfo,
     streamId(rcId)
 {
     setName ("RemoteChannel.Receiver");
-    RemoteChannelManager &rm = RemoteChannelManager::instance();
-    ipStream = rm.getStream(streamId);
-    
-    setAudioSettings(hostInfo);
-    
-    initStream();
-    initParameters(ipStream->getNumParameter());
+}
+//-----------------------------------------------------------------------------
+std::string RemoteChReceiver::getStatusMessage() const {
+    if (!errMsg.empty()) {
+        return errMsg;
+    }
+    return ipStream ? "[connected]" : "[sender not available]";
 }
 //-----------------------------------------------------------------------------
 void RemoteChReceiver::setAudioSettings(frx::processing::IHostInfo::Ptr hI) {
@@ -43,6 +43,29 @@ void RemoteChReceiver::setAudioSettings(frx::processing::IHostInfo::Ptr hI) {
     frames.setSize( bs );
     frames.setZero( bs );
     dcStream.setSize( bs,  0);
+}
+//-----------------------------------------------------------------------------
+void RemoteChReceiver::openStream() {
+    RemoteChannelManager &rm = RemoteChannelManager::instance();
+    ipStream = rm.getStream(streamId);
+    if (!ipStream) {
+        SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+            "stream == NULL");
+    }
+    setAudioSettings(getHostInfo());
+    initParameters(ipStream->getNumParameter());
+    try {
+        initStream();
+    } catch ( const std::exception &ex ) {
+        errMsg = ex.what();
+        streamLost();
+    }
+}
+//-----------------------------------------------------------------------------
+void RemoteChReceiver::notifyStatusChanged() {
+    sce::EventSender<sce::PropertyChanged>::notifyListeners(
+        this, sce::PropertyChanged("status message", std::string(), getStatusMessage())
+    );
 }
 //-----------------------------------------------------------------------------
 void RemoteChReceiver::reOpenStream() {
@@ -53,6 +76,17 @@ void RemoteChReceiver::reOpenStream() {
     RemoteChannelManager &rm = RemoteChannelManager::instance();
     
     ipStream = rm.getStream(streamId);
+    
+    if (ipStream) {
+        try {
+            initStream();
+            initParameterObserver();
+        } catch (const std::exception &ex) {
+            errMsg = ex.what();
+            ipStream.reset();
+        }
+    }
+    
     if (!ipStream) {
         if (!openStreamTimer) {
             openStreamTimer = FrxAsyncDSPTimer::create(REOPEN_STREAM_INTERVAL_MS);
@@ -63,9 +97,7 @@ void RemoteChReceiver::reOpenStream() {
         }
         openStreamTimer->stop();
         openStreamTimer->start();
-        sce::EventSender<sce::PropertyChanged>::notifyListeners(
-            this, sce::PropertyChanged("status message", std::string(), getStatusMessage())
-        );
+        notifyStatusChanged();
         return; // come back later
     } else {
         if (openStreamTimer) {
@@ -73,12 +105,7 @@ void RemoteChReceiver::reOpenStream() {
             openStreamTimer.reset();
         }
     }
-    initStream();
-    initParameterObserver();
-    sce::EventSender<sce::PropertyChanged>::notifyListeners(
-        this, sce::PropertyChanged("status message", std::string(), getStatusMessage())
-    );
-}
+ }
 //-----------------------------------------------------------------------------
 void RemoteChReceiver::initStream() {
     if (!ipStream) {
@@ -90,15 +117,18 @@ void RemoteChReceiver::initStream() {
     size_t hBs = hostInfo->getBlockSize();
     if (sBs!=hBs) {
         std::stringstream ss;
-        ss<<"RemoteChannel("<<sBs<<"), this instance("<<hBs<<") ";
-        ss<<"different blocksizes.";
+        ss<<"Different Blocksizes: sender("<<sBs<<"), receiver("<<hBs<<")";
         SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
         ss.str());
     }
+    if (!errMsg.empty()) {
+        errMsg.clear();
+    }
+    notifyStatusChanged();
 }
 //-----------------------------------------------------------------------------
 void RemoteChReceiver::streamLost() {
-    SAMBAG_TRY_TO_LOCK_TIMED(mutex);
+    SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
     ipStream.reset();
     reOpenStream();
 }
@@ -150,6 +180,7 @@ RemoteChReceiver::create(frx::processing::IHostInfo::Ptr hostInfo,
     size_t numOutputs = ::com::numChannels2Xputs(numChannels);
     Ptr neu( new RemoteChReceiver(hostInfo, rcId, numOutputs) );
     neu->self = neu;
+    neu->openStream();
     neu->initParameterObserver();
     return neu;
 }
@@ -169,8 +200,10 @@ void RemoteChReceiver::onParameterObserver()
     if (!ipStream) {
         return;
     }
-    SAMBAG_TRY_TO_LOCK_TIMED(mutex);
-    SAMBAG_ASSERT(ipStream->getNumParameter()==parameters.size());
+    SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+    if(ipStream->getNumParameter()!=parameters.size()) {
+        return;
+    }
     
     Stream::ValueType *pvalue = ipStream->getParameter();
     size_t n = ipStream->getNumParameter();

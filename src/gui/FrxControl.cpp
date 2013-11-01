@@ -302,6 +302,10 @@ void registerOnView(FrxCircuidViewPtr view, FrxProcessorNode::Ptr viewObj)
 			FrxProcessorNode::WPtr(viewObj)
 		)
 	);
+    std::string status = modelObj->getStatusMessage();
+    if (!status.empty()) {
+        viewObj->setLowerFlagText(status);
+    }
 }
 //-----------------------------------------------------------------------------
 void registerOnView(FrxCircuidViewPtr view, FrxParameter::Ptr knob) {
