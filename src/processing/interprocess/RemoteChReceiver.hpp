@@ -15,6 +15,7 @@
 #include <com/Serialization.h>
 #include <processing/parameter/parameter.h>
 #include "processing/processing.h"
+#include <sambag/com/Thread.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 namespace pr = ::processing;
@@ -34,6 +35,8 @@ public:
 	typedef boost::shared_ptr<RemoteChReceiver> Ptr;
 private:
     //-------------------------------------------------------------------------
+    sambag::com::RecursiveMutex mutex;
+    //-------------------------------------------------------------------------
     FrxAsyncDSPTimer::Ptr parameterObserver;
     //-------------------------------------------------------------------------
     FrxAsyncDSPTimer::Ptr openStreamTimer;
@@ -50,9 +53,22 @@ private:
     //-------------------------------------------------------------------------
     std::string streamId;
     //-------------------------------------------------------------------------
+    std::string errMsg;
+    //-------------------------------------------------------------------------
+    void streamLost();
+    //-------------------------------------------------------------------------
     void initStream();
+    //-------------------------------------------------------------------------
+    void openStream();
+    //-------------------------------------------------------------------------
+    void setAudioSettings(frx::processing::IHostInfo::Ptr hostInfo);
 	//-------------------------------------------------------------------------
     void reOpenStream();
+    //-------------------------------------------------------------------------
+    inline void _nullProcess(size_t numSamples) {
+        frames.setZero(numSamples);
+        outputNodes[0]->pushAndCopy(&frames, numSamples);
+    }
 	//-------------------------------------------------------------------------
 	/**
 	 * (De)Serialisiert Volume-Objekt
@@ -71,6 +87,7 @@ private:
 					"Hostinfo == NULL"
 				);
 			}
+            setAudioSettings(hI);
 			reOpenStream();
 		}
 	}
@@ -87,14 +104,14 @@ protected:
 	RemoteChReceiver(frx::processing::IHostInfo::Ptr hostInfo,
                      const std::string &rcId,
                      size_t numOutputs);
+    //-------------------------------------------------------------------------
+    void notifyStatusChanged();
 public:
     //-------------------------------------------------------------------------
     /**
      * @override
      */
-	virtual std::string getStatusMessage() const {
-        return ipStream ? "[connected]" : "[sender not available]";
-    }
+	virtual std::string getStatusMessage() const;
     //-------------------------------------------------------------------------
 	/**
 	 * @param hostInfo

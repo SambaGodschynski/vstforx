@@ -35,6 +35,14 @@ namespace {
         }
     }
 
+    void clearTestBuffer(UInteger blockSize, UInteger numChannels, double **data) {
+        for (UInteger i=0; i<numChannels; ++i) {
+            for (UInteger j=0; j<blockSize; ++j ) {
+                data[i][j] = 0;
+            }
+        }
+    }
+
     bool compare(UInteger blockSize, UInteger numChannels, double **a, double **b) {
         for (UInteger i=0; i<numChannels; ++i) {
             for (UInteger j=0; j<blockSize; ++j ) {
@@ -207,6 +215,55 @@ void TestInterprocessStream::testReadWrite() {
     CPPUNIT_ASSERT( !Stream::open("NULL-STREAM") );
     
     freeTestBuffer(check, NUM_CHANNELS);
+    freeTestBuffer(data, NUM_CHANNELS);
+}
+//-----------------------------------------------------------------------------
+void TestInterprocessStream::testWriteSamples() {
+    using namespace frx::processing::interprocess;
+    static const UInteger BLOCK_SIZE = 512,
+                        NUM_CHANNELS = 2,
+                        NUM_PARAMETER = 12;
+    
+    Stream::Ptr stream = Stream::create("ts2", BLOCK_SIZE, NUM_CHANNELS, NUM_PARAMETER);
+    double **data = createTestBuffer(BLOCK_SIZE*2, NUM_CHANNELS);
+    double *it[] = {data[0], data[1]};
+    fillTestBuffer(BLOCK_SIZE*2, NUM_CHANNELS, data);
+    
+    //full block size
+    stream->write(it, 512);
+    UInteger blocksRead = Stream::UndefinedNumBlocks;
+    double **res = createTestBuffer(BLOCK_SIZE, NUM_CHANNELS);
+    CPPUNIT_ASSERT_EQUAL(0, stream->read(res, blocksRead));
+    CPPUNIT_ASSERT(compare(BLOCK_SIZE, NUM_CHANNELS, data, res));
+    it[0]+=512; it[1]+=512;
+    stream->write(it, 512);
+    CPPUNIT_ASSERT_EQUAL(0, stream->read(res, blocksRead));
+    CPPUNIT_ASSERT(compare(BLOCK_SIZE, NUM_CHANNELS, it, res));
+    
+    clearTestBuffer(BLOCK_SIZE, NUM_CHANNELS, res);
+    it[0]=data[0]; it[1]=data[1];
+
+    //half block size
+    stream->write(it, 256);
+    it[0]+=256; it[1]+=256;
+    stream->write(it, 256);
+    CPPUNIT_ASSERT_EQUAL(0, stream->read(res, blocksRead));
+    CPPUNIT_ASSERT(compare(BLOCK_SIZE, NUM_CHANNELS, data, res));
+    
+    clearTestBuffer(BLOCK_SIZE, NUM_CHANNELS, res);
+    it[0]=data[0]; it[1]=data[1];
+
+    //odd block size
+    clearTestBuffer(BLOCK_SIZE, NUM_CHANNELS, res);
+    stream->write(it, 257);
+    it[0]+=257; it[1]+=257;
+    stream->write(it, 257);
+    CPPUNIT_ASSERT_EQUAL(0, stream->read(res, blocksRead));
+    CPPUNIT_ASSERT(compare(BLOCK_SIZE, NUM_CHANNELS, data, res));
+    
+    clearTestBuffer(BLOCK_SIZE, NUM_CHANNELS, res);
+
+    freeTestBuffer(res, NUM_CHANNELS);
     freeTestBuffer(data, NUM_CHANNELS);
 }
 } //namespace

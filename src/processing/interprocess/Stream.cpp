@@ -91,6 +91,7 @@ Stream::Stream() :
     blockSize_ist(NULL),
     numChannels_ist(NULL),
     numParameter_ist(NULL),
+    lastWrittenTime(NULL),
     num_references(NULL)
 {
 }
@@ -100,6 +101,7 @@ void Stream::destroyMemory() {
     blockSize_ist = NULL;
     numParameter_ist = NULL;
     numChannels_ist = NULL;
+    lastWrittenTime = NULL;
     mutex = NULL;
     mapped_region.reset();
     shm.reset();
@@ -116,7 +118,7 @@ UInteger Stream::getNeededSize(UInteger blockSize,
     UInteger numChannel, UInteger numParameter) const
 {
     return  sizeof(Integer) +
-            sizeof(UInteger)*3 +
+            sizeof(UInteger)*4 +
             sizeof(Mutex)  +
             sizeof(ValueType)*blockSize*AudioBuffer::NumChannels*AudioBuffer::NumBlocks +
             sizeof(ValueType)*numParameter+
@@ -134,6 +136,7 @@ void Stream::assignMemory(sambag::com::interprocess::PointerIterator &pIt,
     blockSize_ist = Allocator::rebind<UInteger>::other(alloc).allocate(1);
     numChannels_ist = Allocator::rebind<UInteger>::other(alloc).allocate(1);
     numParameter_ist = Allocator::rebind<UInteger>::other(alloc).allocate(1);
+    lastWrittenTime = Allocator::rebind<UInteger>::other(alloc).allocate(1);
     mutex = Allocator::rebind<Mutex>::other(alloc).allocate(1);
     
     if (numParameter!=0) {
@@ -221,12 +224,6 @@ Stream::Ptr Stream::open(const std::string &id)
         return Stream::Ptr();
     }
     return res;
-}
-//-----------------------------------------------------------------------------
-void Stream::resize(UInteger blockSize, UInteger numChannels) {
-    #ifdef NDEBUG
-	// TODO: #error "implement me befor release!";
-    #endif
 }
 //-----------------------------------------------------------------------------
 UInteger Stream::getMemoryChecksum() {

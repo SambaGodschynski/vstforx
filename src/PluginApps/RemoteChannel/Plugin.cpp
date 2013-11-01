@@ -51,8 +51,7 @@ void Plugin::process(float **in, float **out, int numSamples) {
     if (!stream) {
         return;
     }
-    stream->write(in);
-    
+    stream->write(in, numSamples);
     // write output
     float *o0 = out[0];
     float *o1 = out[1];
@@ -82,10 +81,10 @@ void Plugin::updateConfiguration() {
         return;
     }
     if (stream) {
-        if ((int)stream->getBlockSize() != blockSize) {
-            stream->resize(blockSize, this->getHost()->getNumOutputs());
+        if ((int)stream->getBlockSize() == blockSize) {
+            return;
         }
-        return;
+        destroyStream();
     }
     RemoteChannelManager &rm = RemoteChannelManager::instance();
     std::string name = rm.createUniqueName();

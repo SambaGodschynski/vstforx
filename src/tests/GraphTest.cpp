@@ -1485,6 +1485,7 @@ void GraphTest::testSerialization() {
 //=============================================================================
 namespace {
     int countdown = 0;
+    sambag::com::Mutex m1;
     template <typename T>
     void add( T a, T b, T *res) {
         using namespace sambag::disco::components;
@@ -1503,7 +1504,8 @@ namespace {
         int end,
         int numTasks,
         int sleepms,
-        int *res) {
+        int *res)
+    { // adding sum tasks
         using namespace sambag::disco::components;
         for (int i=start; i<end; i+=numTasks) {
             int s = i;
@@ -1511,6 +1513,7 @@ namespace {
             g->addIdleTask( boost::bind(&sum, s, e, res) );
             boost::this_thread::sleep( boost::posix_time::milliseconds(sleepms) );
         }
+        SAMBAG_TRY_TO_LOCK_TIMED(m1);
         if (--countdown<=0) {
             boost::this_thread::sleep( boost::posix_time::seconds(5) );
             getWindowToolkit()->quit();
