@@ -1,2 +1,5 @@
 .DS_Store
 *~
+cmake_install.cmake
+src/CMakeLists.txt
+src/cmake_install.cmake
