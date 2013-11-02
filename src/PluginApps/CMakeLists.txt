@@ -26,11 +26,11 @@ IF(WIN32)
       VSTForx/win/resources.rc
    )
   #remote channel
-  #SET (RemoteSrc ${RemoteSrc}
-  #	RemoteChannel/win/RemoteChannelMain.cpp
-  # 	${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp
-  #    	RemoteChannel/win/vstplug.def
-  # )
+  SET (RemoteSrc ${RemoteSrc}
+  	RemoteChannel/win/RemoteChannelMain.cpp
+   	${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp
+     	RemoteChannel/win/vstplug.def
+   )
 
 ELSEIF(APPLE)
   #vstforx
