@@ -11,6 +11,13 @@
 #include <boost/tuple/tuple.hpp>
 #include <sambag/com/Common.hpp>
 #include <cstring>
+#include <processing/interprocess/RemoteChannelManager.hpp>
+#include <processing/FrxAsyncDSPTimer.hpp>
+
+namespace {
+	frx::processing::FrxAsyncDSPTimer::WorkerThreadHolder _timerThreadHolder;
+	int _instances = 0;
+}
 
 namespace frx { namespace processing { namespace remoteChannel {
 using namespace interprocess;
@@ -23,14 +30,27 @@ Plugin::Plugin() :
 blockSize(0),
 sampleRate(0.f)
 {
+	using namespace frx::processing;
+	if (_instances++ == 0) {
+		_timerThreadHolder = 
+			FrxAsyncDSPTimer::startWorkerThread();
+	}
+}
+//-----------------------------------------------------------------------------
+Plugin::~Plugin() {
+	using ::frx::processing::interprocess::RemoteChannelManager;
+	if (--_instances == 0) {
+		RemoteChannelManager::instance().__releaseResources();
+		frx::processing::FrxAsyncDSPTimer::closeAllTimer();
+		_timerThreadHolder.reset();
+	}
 }
 //-----------------------------------------------------------------------------
 void Plugin::open() {
 }	
 //-----------------------------------------------------------------------------
 void Plugin::close() {
-    destroyStream();
-    chunk.reset();
+    destroyStream();	
 }
 //-----------------------------------------------------------------------------
 void Plugin::destroyStream() {
@@ -41,9 +61,6 @@ void Plugin::destroyStream() {
     RemoteChannelManager &rm = RemoteChannelManager::instance();
     rm.removeChannel(channelId);
     stream.reset();
-}
-//-----------------------------------------------------------------------------
-Plugin::~Plugin() {
 }
 //-----------------------------------------------------------------------------
 void Plugin::process(float **in, float **out, int numSamples) {
@@ -129,14 +146,19 @@ void Plugin::getParameterName (int index, std::string &outStr) const
 //-----------------------------------------------------------------------------
 int Plugin::getChunk(void **data) {
     size_t size = channelId.length();
-    chunk = Chunk( new char[size] );
-    strcpy(chunk.get(), channelId.c_str());
-    *data = chunk.get();
+	if (size==0) {
+		return 0;
+	}
+	chunk = channelId;
+    *data = (void*) chunk.c_str();
     SAMBAG_LOG_INFO<<"serialize id"<<channelId;
-    return size;
+	return size;
 }
 //-----------------------------------------------------------------------------
 int Plugin::setChunk(void *data, int byteSize) {
+	if (byteSize==0) {
+		return 0;
+	}
     SAMBAG_TRY_TO_LOCK_TIMED(mutex);
     destroyStream();
     channelId = std::string((char*)data);

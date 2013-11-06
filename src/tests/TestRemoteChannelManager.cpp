@@ -21,7 +21,11 @@ using sambag::com::interprocess::UInteger;
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::TestRemoteChannelManager );
 
 #ifdef WIN32
-    const char * COUNTERPART_EXEC = "./remoteChannelCounterpart.exe";
+	#ifdef _DEBUG
+		const char * COUNTERPART_EXEC = "Debug\\remoteChannelCounterpart.exe";
+	#else
+		const char * COUNTERPART_EXEC = "Release\\remoteChannelCounterpart.exe";
+	#endif
 #else   
     const char * COUNTERPART_EXEC = "arch -32 ./remoteChannelCounterpart";
 #endif

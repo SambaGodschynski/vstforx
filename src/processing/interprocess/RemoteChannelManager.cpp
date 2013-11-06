@@ -262,6 +262,9 @@ void RemoteChannelManager::initManager(int tries) {
 }
 //-----------------------------------------------------------------------------
 void RemoteChannelManager::doTotmann() {
+	if (!mutex || !totmann_time) {
+		return;
+	}
     bi::scoped_lock<Mutex> lock(*mutex);
     *totmann_time = ::time(NULL);
 }
@@ -293,9 +296,15 @@ void RemoteChannelManager::destroyShm() {
 }
 //-----------------------------------------------------------------------------
 RemoteChannelManager::~RemoteChannelManager() {
-    if (references && --(*references)<=0) {
-        destroyShm();
-    }
+	__releaseResources(); 
+}
+//-----------------------------------------------------------------------------
+void RemoteChannelManager::__releaseResources() {
+    if (references && --(*references)==0) {
+		totmannTimer->stop();
+		totmannTimer.reset();
+		destroyShm();
+	}
 }
 //-----------------------------------------------------------------------------
 RemoteChannelManager & RemoteChannelManager::instance() {

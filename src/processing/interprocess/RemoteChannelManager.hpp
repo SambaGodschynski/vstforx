@@ -92,6 +92,11 @@ protected:
     //-------------------------------------------------------------------------
     void destroyShm();
 public:
+	//-------------------------------------------------------------------------
+	/**
+	 * to unload resources manually, eg. before dll is closing.
+	 */ 
+	void __releaseResources();
     //-------------------------------------------------------------------------
     /**
      * @return the number of running RemoteChannelManager instances.

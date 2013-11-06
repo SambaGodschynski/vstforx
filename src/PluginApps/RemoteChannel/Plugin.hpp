@@ -16,6 +16,7 @@
 #include <boost/shared_array.hpp>
 #include <sambag/com/Thread.hpp>
 #include <processing/Frames.h>
+#include <string>
 
 namespace frx { namespace processing { namespace remoteChannel {
 //=============================================================================
@@ -36,7 +37,8 @@ private:
     //-------------------------------------------------------------------------
     interprocess::RemoteChannelManager::RCId channelId;
     //-------------------------------------------------------------------------
-    typedef boost::shared_array<char> Chunk;
+    // typedef boost::shared_array<char> Chunk; CRT (HEAP_CORRUPTION) issues on Win32
+	typedef std::string Chunk;
     Chunk chunk;
 protected:
 	//-------------------------------------------------------------------------

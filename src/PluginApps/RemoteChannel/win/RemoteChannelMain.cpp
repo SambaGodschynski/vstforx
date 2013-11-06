@@ -9,7 +9,6 @@
 extern void *hInstance; // @see vstsdk2.4::vstplugmain.cpp
 std::string getHomeDirectory();
 
-
 #ifdef _DEBUG
 #pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.VC90.CRT' version='9.0.21022.8' processorArchitecture='X86' publicKeyToken='1fc8b3b9a1e18e3b' language='*'\"")
 #endif
@@ -53,7 +52,6 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
         }
 	return NULL;
 }
-
 //-----------------------------------------------------------------------------
 std::string getHomeDirectory() {
 	const size_t N = 2048; 
