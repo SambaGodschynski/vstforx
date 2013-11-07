@@ -40,7 +40,6 @@ sampleRate(0.f)
 Plugin::~Plugin() {
 	using ::frx::processing::interprocess::RemoteChannelManager;
 	if (--_instances == 0) {
-		RemoteChannelManager::instance().__releaseResources();
 		frx::processing::FrxAsyncDSPTimer::closeAllTimer();
 		_timerThreadHolder.reset();
 	}

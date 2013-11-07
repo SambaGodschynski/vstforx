@@ -1570,5 +1570,7 @@ void GraphTest::testGraphIdleHandler() {
         t4.join();
         CPPUNIT_ASSERT_EQUAL((int)80200, res);
     }
+	FrxAsyncDSPTimer::closeAllTimer();
+	wth.reset();
 }
 } // namespace tests

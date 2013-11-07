@@ -42,7 +42,7 @@ void RemoteChReceiver::setAudioSettings(frx::processing::IHostInfo::Ptr hI) {
     size_t bs = hI->getBlockSize();
     frames.setSize( bs );
     frames.setZero( bs );
-    dcStream.setSize( bs,  0);
+    dcStream.setSize( bs, 0 );
 }
 //-----------------------------------------------------------------------------
 void RemoteChReceiver::openStream() {
@@ -160,7 +160,7 @@ void RemoteChReceiver::processAdapter( pr::Processor::Int numSamples ) {
     // add ip data into dc stream
     dcStream.addFrame(&frames, bs, 0);
     // read from dc stream
-	dcStream.flush(bs, data);
+	dcStream.flush(numSamples, data);
     outputNodes[0]->pushAndCopy( &frames, numSamples );
 }
 //-----------------------------------------------------------------------------

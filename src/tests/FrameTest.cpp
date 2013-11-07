@@ -36,58 +36,12 @@ T isFilledWith (  T *data, size_t num,  T v ) {
 	}
 	return v;
 }
-//=============================================================================
-struct ProcessException {
-	std::string text;
-	ProcessException ( const std::string &text ) : text(text) {}
-};
-//=============================================================================
-void processGraph ( processing::Graph *graph, 
-				    int blockSize, 
-				    float inLeft, 
-					float inRight,
-					float expectedLeft,
-					float expectedRight,
-					size_t repeat = 1000 ) 
-//=============================================================================
-{
-	if ( !graph->isActive() ) 
-		throw ProcessException("graph inactive.");
-	processing::Frames fIn ( blockSize );
-	processing::Frames fOut ( blockSize );
-	fillFrame ( &fIn, inLeft, inRight );
-	while ( repeat-- > 0 ) {
-		fillFrame ( &fIn, inLeft, inRight );
-		graph->pushAndCopy ( &fIn, blockSize );
-		graph->processGraph( fOut.getData(), blockSize  );
-		float res = isFilledWith<float>( fOut[0], blockSize, expectedLeft );
-		if ( expectedLeft != res )
-			throw ProcessException ( com::MyString(res) + "(res.) !=  (exp.)" + com::MyString(expectedLeft) );
-		
-		res = isFilledWith<float>( fOut[1], blockSize, expectedRight );
-		if ( expectedRight != res )
-			throw ProcessException ( com::MyString(res) + "(res.) !=  (exp.)" + com::MyString(expectedRight) );
-	}
 }
-} // anonymous namespace 
 
 namespace tests {
 //=============================================================================
-processing::Graph::Ptr FrameTest::createGraph( int blockSize, float samplerate ) 
-{
-//=============================================================================
-	using namespace processing;
-	Graph::Ptr graph = Graph::create ( dummyFX );
-	Graph::Janitor::Ptr janitor = graph->getJanitor();
-	dummyFX->setSampleRate ( samplerate );
-	dummyFX->setBlockSize ( blockSize );
-	janitor->hostBaseConfigChanged();
-	return graph;
-}
-//=============================================================================
 FrameTest::FrameTest() {
 //=============================================================================
-	dummyFX = processing::DummyFX::create( NULL );
 }
 //=============================================================================
 FrameTest::~FrameTest() {
@@ -142,6 +96,22 @@ void FrameTest::testResize() {
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> resize
 	fr.setSize( 1011 );
 	FILL_AND_CHECK (fr, 1.0f);
+	
+}
+//=============================================================================
+void FrameTest::testDCStreamReadWrite() {
+//=============================================================================
+	using namespace std;
+	using namespace com;
+	using namespace processing;
+	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> blocksize_read == blocksize_write
+	DCStream s(10, 10);
+	Frames f( 10 );
+	fillFrame(&f, 1.f, -1.f);
+	s.addFrame(&f, 10, 0);
+	s.addFrame(&f, 10, 0);
+	CPPUNIT_ASSERT_EQUAL(1.f, isFilledWith(s.getBuffer()[0], 20, 1.f));
+	CPPUNIT_ASSERT_EQUAL(-1.f, isFilledWith(s.getBuffer()[1], 20, -1.f));
 	
 }
 } // namespace tests

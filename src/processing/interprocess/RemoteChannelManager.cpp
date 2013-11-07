@@ -296,13 +296,7 @@ void RemoteChannelManager::destroyShm() {
 }
 //-----------------------------------------------------------------------------
 RemoteChannelManager::~RemoteChannelManager() {
-	__releaseResources(); 
-}
-//-----------------------------------------------------------------------------
-void RemoteChannelManager::__releaseResources() {
-    if (references && --(*references)==0) {
-		totmannTimer->stop();
-		totmannTimer.reset();
+	if (references && --(*references)==0) {
 		destroyShm();
 	}
 }
