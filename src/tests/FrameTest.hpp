@@ -13,7 +13,6 @@ class FrameTest : public CPPUNIT_NS::TestFixture {
 	CPPUNIT_TEST_SUITE( FrameTest );
 	CPPUNIT_TEST( testConstructor );
 	CPPUNIT_TEST( testResize );
-	CPPUNIT_TEST( testDCStreamReadWrite );
 	CPPUNIT_TEST_SUITE_END();
 private:
 public:
@@ -24,7 +23,6 @@ public:
 
 	void testConstructor();
 	void testResize();
-	void testDCStreamReadWrite();
 };
 } // namespace tests
 #endif 

@@ -98,20 +98,4 @@ void FrameTest::testResize() {
 	FILL_AND_CHECK (fr, 1.0f);
 	
 }
-//=============================================================================
-void FrameTest::testDCStreamReadWrite() {
-//=============================================================================
-	using namespace std;
-	using namespace com;
-	using namespace processing;
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> blocksize_read == blocksize_write
-	DCStream s(10, 10);
-	Frames f( 10 );
-	fillFrame(&f, 1.f, -1.f);
-	s.addFrame(&f, 10, 0);
-	s.addFrame(&f, 10, 0);
-	CPPUNIT_ASSERT_EQUAL(1.f, isFilledWith(s.getBuffer()[0], 20, 1.f));
-	CPPUNIT_ASSERT_EQUAL(-1.f, isFilledWith(s.getBuffer()[1], 20, -1.f));
-	
-}
 } // namespace tests
