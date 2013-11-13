@@ -36,6 +36,8 @@ private:
     interprocess::Stream::Ptr stream;
     //-------------------------------------------------------------------------
     interprocess::RemoteChannelManager::RCId channelId;
+	//-------------------------------------------------------------------------
+	std::string name;
     //-------------------------------------------------------------------------
     // typedef boost::shared_array<char> Chunk; CRT (HEAP_CORRUPTION) issues on Win32
 	typedef std::string Chunk;
@@ -85,7 +87,7 @@ public:
 	//-------------------------------------------------------------------------
 	template <class String> 
 	void getProductName(String &outStr) const {
-		outStr = "VSTForx.RemoteChannel-testrun3";
+		outStr = name.empty() ? "RemoteChannelSender" : name;
 	} 
 	//-------------------------------------------------------------------------
 	int getProductVersion() const {

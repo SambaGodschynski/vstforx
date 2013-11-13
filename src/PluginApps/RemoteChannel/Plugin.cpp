@@ -17,6 +17,18 @@
 namespace {
 	frx::processing::FrxAsyncDSPTimer::WorkerThreadHolder _timerThreadHolder;
 	int _instances = 0;
+
+	std::string createName() {
+		std::stringstream ss;
+		struct tm * timeinfo;
+		char buffer [80];
+		time_t rawtime;
+		time (&rawtime);
+		timeinfo = localtime (&rawtime);
+		strftime (buffer,80,"%m-%d-%y-%H:%M:%S",timeinfo);
+		ss<<"RemoteChannelSender"<<buffer;
+		return ss.str();
+	}
 }
 
 namespace frx { namespace processing { namespace remoteChannel {
@@ -102,17 +114,20 @@ void Plugin::updateConfiguration() {
         }
         destroyStream();
     }
+	if (name.empty()) {
+		name = createName();
+	}
     RemoteChannelManager &rm = RemoteChannelManager::instance();
-    std::string name = rm.createUniqueName();
-    stream = interprocess::Stream::create(name,
+    std::string sId = rm.createUniqueName();
+    stream = interprocess::Stream::create(sId,
         blockSize,
         this->getHost()->getNumOutputs(),
         this->getHost()->getNumParameter()
     );
     if (channelId.empty()) {
-        channelId = rm.addChannel( boost::make_tuple(name) );
+        channelId = rm.addChannel( boost::make_tuple(sId, name) );
     } else {
-        rm.addChannel( channelId, boost::make_tuple(name) );
+        rm.addChannel( channelId, boost::make_tuple(sId, name) );
     }
 }
 //-----------------------------------------------------------------------------
@@ -148,10 +163,12 @@ int Plugin::getChunk(void **data) {
 	if (size==0) {
 		return 0;
 	}
-	chunk = channelId;
+	std::stringstream ss;
+	ss<<channelId<<" "<<name;
+	chunk = ss.str();
     *data = (void*) chunk.c_str();
     SAMBAG_LOG_INFO<<"serialize id"<<channelId;
-	return size;
+	return chunk.size();
 }
 //-----------------------------------------------------------------------------
 int Plugin::setChunk(void *data, int byteSize) {
@@ -160,7 +177,14 @@ int Plugin::setChunk(void *data, int byteSize) {
 	}
     SAMBAG_TRY_TO_LOCK_TIMED(mutex);
     destroyStream();
-    channelId = std::string((char*)data);
+	std::stringstream ss;
+	try {
+		ss<<((char*)data);
+		ss>>channelId>>name;
+	} catch (...) {
+		SAMBAG_LOG_ERR<<"deserialing failed";
+		return 0;
+	}
     SAMBAG_LOG_INFO<<"deserialize id"<<channelId;
     updateConfiguration();
     return byteSize;

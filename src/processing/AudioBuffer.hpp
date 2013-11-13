@@ -17,26 +17,37 @@ namespace {
 	struct Int2Type {
 		enum { Value = I };
 	};
-	template <class Buffer, class _Int2Type>
-	void _copyIn( Buffer &buffer, 
-			 typename Buffer::value_type **data, 
-			 typename Buffer::size_type num,
+	//-------------------------------------------------------------------------
+	template <
+		class Iterator, 
+		typename T, 
+		typename SizeType, 
+		class _Int2Type
+	>
+	void _copyIn( Iterator begin, 
+			 T **src, 
+			 SizeType num,
 			 _Int2Type)
 	{
 		enum { I = _Int2Type::Value };
-		for (typename Buffer::size_type j=0; j<num; ++j) {
-			buffer.push_back( data[I][j] );
+		for (SizeType j=0; j<num; ++j) {
+			*(begin++) = src[I][j];
 		}
-		_copyIn<Buffer>(buffer, data, num, Int2Type<_Int2Type::Value-1>());
+		_copyIn(begin, src, num, Int2Type<_Int2Type::Value-1>());
 	}
-	template <class Buffer>
-	void _copyIn( Buffer &buffer, 
-			 typename Buffer::value_type **data, 
-			 typename Buffer::size_type num,
+	template <
+		class Iterator, 
+		typename T, 
+		typename SizeType
+	>
+	void _copyIn( Iterator, 
+			 T **, 
+			 SizeType,
 			 Int2Type<-1>)
 	{
 	}
-	template <class Buffer, class _Int2Type>
+	//-------------------------------------------------------------------------
+	/*template <class Buffer, class _Int2Type>
 	void _copyOut( Buffer &buffer, 
 			 typename Buffer::value_type **data, 
 			 typename Buffer::size_type num,
@@ -53,6 +64,35 @@ namespace {
 	void _copyOut( Buffer &buffer, 
 			 typename Buffer::value_type **data, 
 			 typename Buffer::size_type num,
+			 Int2Type<-1>)
+	{
+	}*/
+
+	template <
+		class Iterator, 
+		typename T, 
+		typename SizeType, 
+		class _Int2Type
+	>
+	void _copyOut( Iterator begin, 
+			 T **dst, 
+			 SizeType num,
+			 _Int2Type)
+	{
+		enum { I = _Int2Type::Value };
+		for (SizeType j=0; j<num; ++j) {
+			dst[I][j] = *(begin++);
+		}
+		_copyOut(begin, dst, num, Int2Type<_Int2Type::Value-1>());
+	}
+	template <
+		class Iterator, 
+		typename T, 
+		typename SizeType
+	>
+	void _copyOut( Iterator, 
+			 T **, 
+			 SizeType,
 			 Int2Type<-1>)
 	{
 	}
@@ -155,8 +195,9 @@ template < typename T,
 >
 void AudioBuffer<T, NC, A>::writeIn(T **data, SizeType numSamples) 
 {
-	buffer.resize( numSamples*NumChannels, T() );
-	_copyIn<Buffer>(buffer, data, numSamples, Int2Type<NumChannels-1>());
+	SizeType p = size();
+	buffer.resize( size() + numSamples*NumChannels, T() );
+	_copyIn( buffer.begin()+p, data, numSamples, Int2Type<NumChannels-1>());
 }
 //-----------------------------------------------------------------------------
 template < typename T, 
@@ -165,7 +206,8 @@ template < typename T,
 >
 void AudioBuffer<T, NC, A>::readOut(T **data, SizeType numSamples) 
 {
-	_copyOut<Buffer>(buffer, data, numSamples, Int2Type<NumChannels-1>());
+	_copyOut(buffer.begin(), data, numSamples, Int2Type<NumChannels-1>());
+	buffer.erase( buffer.begin(), buffer.begin()+numSamples*NumChannels );
 }
 }} // namespace(s)
 

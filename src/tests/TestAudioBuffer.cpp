@@ -92,8 +92,8 @@ void TestAudioBuffer::testReadWrite() {
 	abff.readOut(b.getData(), 512);
 	CPPUNIT_ASSERT( abff.isEmpty() );
 	//a==b
-	CPPUNIT_ASSERT_EQUAL( 1.f, _isFilledWith(b[0], 512, 1.f) );
-	CPPUNIT_ASSERT_EQUAL(-1.f, _isFilledWith(b[1], 512,-1.f) );
+	CPPUNIT_ASSERT_EQUAL( 1.f, _isFilledWith(b[0], 512, 1.f));
+	CPPUNIT_ASSERT_EQUAL(-1.f, _isFilledWith(b[1], 512,-1.f));
 	//abff<<a
 	CPPUNIT_ASSERT_EQUAL( (size_t)0, abff.size() );
 	_row(a[0], 512, 1.f);
