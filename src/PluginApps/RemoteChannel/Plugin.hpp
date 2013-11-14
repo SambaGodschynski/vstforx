@@ -18,6 +18,8 @@
 #include <processing/Frames.h>
 #include <string>
 
+extern const char * globGetProductName();
+
 namespace frx { namespace processing { namespace remoteChannel {
 //=============================================================================
 class Plugin : public sambag::dsp::PluginProcessorBase {
@@ -87,7 +89,7 @@ public:
 	//-------------------------------------------------------------------------
 	template <class String> 
 	void getProductName(String &outStr) const {
-		outStr = name.empty() ? "RemoteChannelSender" : name;
+		outStr = name.empty() ? globGetProductName() : name;
 	} 
 	//-------------------------------------------------------------------------
 	int getProductVersion() const {

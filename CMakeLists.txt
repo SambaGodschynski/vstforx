@@ -6,7 +6,7 @@ project (vstforx)
 SET(FRX_VERSION_MAJOR 1)
 SET(FRX_VERSION_MINOR 0)
 SET(FRX_VERSION_MICRO 32)
-
+SET(FRX_VERSION_STR "${FRX_VERSION_MAJOR}.${FRX_VERSION_MINOR}.${FRX_VERSION_MICRO}")
 execute_process(COMMAND git log --pretty=format:%h -n 1
                 OUTPUT_VARIABLE FRX_VERSION_BUILD)
 
@@ -128,5 +128,11 @@ CONFIGURE_FILE(
   "${PROJECT_SOURCE_DIR}/src/com/FrxConfig.h.in"
   "${PROJECT_BINARY_DIR}/src/com/FrxConfig.h"
 )
+
+CONFIGURE_FILE(
+  "${PROJECT_SOURCE_DIR}/builds/currVersion.txt.in"
+  "${PROJECT_BINARY_DIR}/builds/currVersion.txt"
+)
+
 
 add_subdirectory(src)

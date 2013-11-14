@@ -15,6 +15,8 @@ std::string getHomeDirectory();
 
 enum {RC_UID='fxRC'};
 
+void globAddRemoteChannelSender(size_t numSender);
+const char * globGetProductName();
 
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
@@ -65,4 +67,24 @@ std::string getHomeDirectory() {
 		res = f.string();
 	}
 	return res;
+}
+
+void globAddRemoteChannelSender(size_t numSender) {
+#ifdef FRX_REMOTE_IS_DEMO
+	if (numSender == 0) {
+		return;
+	}
+	std::stringstream ss;
+	ss<<"LIMITATION: you can't use more than one sender.";
+	ss<<"The plugin will be loaded anyway but you cant use it!";
+	throw(std::runtime_error(ss.str()));
+#endif
+}
+
+
+const char * globGetProductName() {
+	#ifdef FRX_REMOTE_IS_DEMO
+		return "RemoteChannelSender_DEMO";
+	#endif
+	return "RemoteChannelSender";
 }

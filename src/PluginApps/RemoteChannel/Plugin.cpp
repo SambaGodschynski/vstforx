@@ -13,6 +13,9 @@
 #include <cstring>
 #include <processing/interprocess/RemoteChannelManager.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
+#include <com/one4All.h>
+
+extern void globAddRemoteChannelSender(size_t);
 
 namespace {
 	frx::processing::FrxAsyncDSPTimer::WorkerThreadHolder _timerThreadHolder;
@@ -25,8 +28,8 @@ namespace {
 		time_t rawtime;
 		time (&rawtime);
 		timeinfo = localtime (&rawtime);
-		strftime (buffer,80,"%m-%d-%y-%H:%M:%S",timeinfo);
-		ss<<"RemoteChannelSender"<<buffer;
+		strftime (buffer,80,"%m-%d-%y++%H:%M:%S",timeinfo);
+		ss<<globGetProductName()<<"_"<<buffer;
 		return ss.str();
 	}
 }
@@ -124,6 +127,16 @@ void Plugin::updateConfiguration() {
         this->getHost()->getNumOutputs(),
         this->getHost()->getNumParameter()
     );
+
+	try {
+		globAddRemoteChannelSender( rm.getNumChannels() );
+	} catch (const std::exception &ex) {
+			::com::osMessageBox ( 
+				"Error", std::string(ex.what()), ::com::MSG_ALERT
+			);
+		return; // don't register sender
+	}
+
     if (channelId.empty()) {
         channelId = rm.addChannel( boost::make_tuple(sId, name) );
     } else {
