@@ -143,7 +143,7 @@ private:
 	Buffer buffer;
 public:
 	//-------------------------------------------------------------------------
-	AudioBuffer(typename SizeType blockSize=0, Allocator &alloc = Allocator() );
+	AudioBuffer( SizeType blockSize=0, const Allocator &alloc = Allocator() );
 	//-------------------------------------------------------------------------
 	/**
 	 * @note only for predictive memory allocation.
@@ -172,7 +172,7 @@ template < typename T,
 	int NC, 
 	template <class> class A
 >
-AudioBuffer<T, NC, A>::AudioBuffer(SizeType blockSize, A<T> &alloc) :
+AudioBuffer<T, NC, A>::AudioBuffer(SizeType blockSize, const A<T> &alloc) :
 	blockSize(blockSize),
 	buffer(alloc)
 {
@@ -186,7 +186,7 @@ void AudioBuffer<T, NC, A>::setBlockSize(SizeType bs)
 {
 	blockSize = bs;
 	SizeType minCap = bs*NumChannels;
-	buffer.set_capacity( Buffer::capacity_type(bs, bs) );
+	buffer.set_capacity( typename Buffer::capacity_type(minCap, minCap) );
 }
 //-----------------------------------------------------------------------------
 template < typename T, 
