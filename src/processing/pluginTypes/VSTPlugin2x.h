@@ -170,6 +170,11 @@ private:
 	int onPlugChangeParameterIndex;
 	//--------------------------------------------------------------------------------------------------------
 	void getShellPluginInfos(ShellPluginInfos &out);
+    //--------------------------------------------------------------------------------------------------------
+    /**
+     * recognized testplugin via filename: xxx.xxx.xxx.__Frx_Testplugin(numInputs, numOutputs)
+     */
+    void initAsTestPluginIfNecessary(std::string filename);
 protected:
 	//--------------------------------------------------------------------------------------------------------
 	VSTPlugin( frx::processing::IHostInfo::Ptr hostInfo, const string &filename );

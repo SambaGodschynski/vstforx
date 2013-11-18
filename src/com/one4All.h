@@ -21,10 +21,11 @@
 #include <ostream>
 #include <istream>
 #include <map>
-#include "boost/shared_ptr.hpp"
-#include "boost/weak_ptr.hpp"
-#include "boost/function.hpp"
-#include "boost/filesystem.hpp"
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
+#include <boost/function.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/tuple/tuple.hpp>
 #include <sstream>
 #include "Serialization.h"
 #include "OS_Specific/OS_com.h"
@@ -195,6 +196,20 @@ namespace com {
 	 * @return pair<filename, shellid>
 	 */
 	std::pair<std::string, int> extractVSTPluginFilename(const std::string &filename);
+	//--------------------------------------------------------------------------------------------------------
+    typedef boost::tuple<std::string, // type
+                         std::string, // name
+                         int,      // numInputs , -1 for undefined
+                         int       // numOutputs, -1 for undefined
+            > ProcessorDescriptor;
+    /**
+	 * @note: eg. frx.processing.vst2x.__FRX__Testplugin(2,2) -> tuple(vst2x, __FRX__Testplugin, 2, 2)
+     *            frx.processing.vst2x.DelayX -> tuple(vst2x, DelayX, -1, -1)
+     *            frx.processing.internal.FrxADSR -> tuple(internal, FrxADSR, -1, -1)
+	 */
+	ProcessorDescriptor extractProcessorDescriptor(const std::string &str);
+    //--------------------------------------------------------------------------------------------------------
+    extern const ProcessorDescriptor FRX_NULL_PROCESSOR;
 	//--------------------------------------------------------------------------------------------------------
 	std::string createVSTPluginFilename(const std::string &filename, int shellId);
 	/*//========================================================================================================

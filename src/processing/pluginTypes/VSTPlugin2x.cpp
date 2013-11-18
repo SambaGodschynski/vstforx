@@ -34,6 +34,8 @@ ioChangedLock(false)
 		(audioMasterCallback)(hostInfo->getMasterCallback()), 
 		(AudioEffectX*)(hostInfo->getEffectPtr()) ) 
 	);
+    
+    initAsTestPluginIfNecessary(filename);
 	
 	VstPlugCategory pluginCategory = (VstPlugCategory)
 		aEff->dispatcher(aEff, effGetPlugCategory, 0, 0, 0, 0);
@@ -61,6 +63,10 @@ ioChangedLock(false)
 	}
 	
 	initPlug ( *this ); // muss nach init i/o erfolgen
+}
+//------------------------------------------------------------------------------------------------------------
+void VSTPlugin::initAsTestPluginIfNecessary(std::string filename) {
+
 }
 //------------------------------------------------------------------------------------------------------------
 MyString VSTPlugin::extractNameFromFilename( const string &fileName ){
@@ -292,7 +298,9 @@ void VSTPlugin::processAdapter( Processor::Int numSamples ) {
 		inMatrix[i+1] = (*fr)[1];
 	}
 	
-	for ( size_t i=0; i<framebuffer.size(); ++i ) framebuffer[i].setZero( numSamples );
+	for ( size_t i=0; i<framebuffer.size(); ++i ) {
+        framebuffer[i].setZero( numSamples );
+    }
 	
 	if (!ioChangedLock) { 
 		// Process Event

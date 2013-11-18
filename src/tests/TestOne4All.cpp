@@ -9,6 +9,8 @@
 #include "TestOne4All.hpp"
 #include "com/one4All.h"
 #include <boost/tuple/tuple.hpp>
+#include <boost/tuple/tuple_comparison.hpp>
+#include <boost/tuple/tuple_io.hpp>
 #include <string>
 
 // Registers the fixture into the 'registry'
@@ -18,6 +20,7 @@ namespace tests {
 //=============================================================================
 void TestOne4All::testExtractVSTPluginFilename() {
 //=============================================================================
+//-----------------------------------------------------------------------------
 	// instr, outstr, outint
 	boost::tuple<std::string, std::string, int> in[] = {
 		boost::make_tuple("abc", "abc", 0),
@@ -48,6 +51,7 @@ void TestOne4All::testExtractVSTPluginFilename() {
 		CPPUNIT_ASSERT_EQUAL(boost::get<ExpInt>(in[i]), res.second);
 	}
 }
+//-----------------------------------------------------------------------------
 void TestOne4All::testMapNumChannels2Xput() {
     CPPUNIT_ASSERT_EQUAL((size_t)0, com::numChannels2Xputs(0));
     CPPUNIT_ASSERT_EQUAL((size_t)1, com::numChannels2Xputs(1));
@@ -60,5 +64,45 @@ void TestOne4All::testMapNumChannels2Xput() {
     CPPUNIT_ASSERT_EQUAL((size_t)4, com::numChannels2Xputs(8));
     CPPUNIT_ASSERT_EQUAL((size_t)5, com::numChannels2Xputs(9));
     CPPUNIT_ASSERT_EQUAL((size_t)5, com::numChannels2Xputs(10));
+}
+//-----------------------------------------------------------------------------
+void TestOne4All::testProcessorId() {
+    using namespace com;
+    CPPUNIT_ASSERT_EQUAL(
+        FRX_NULL_PROCESSOR,
+        extractProcessorDescriptor("")
+    );
+    CPPUNIT_ASSERT_EQUAL(
+        FRX_NULL_PROCESSOR,
+        extractProcessorDescriptor("no.none")
+    );
+    CPPUNIT_ASSERT_EQUAL(
+        ProcessorDescriptor("vst2x", "DelayX", -1, -1),
+        extractProcessorDescriptor("frx.processing.vst2x.DelayX")
+    );
+    CPPUNIT_ASSERT_EQUAL(
+        ProcessorDescriptor("vst2x", "FrxTestplugin", 2, 3),
+        extractProcessorDescriptor("frx.processing.vst2x.FrxTestplugin(2,3)")
+    );
+    CPPUNIT_ASSERT_EQUAL(
+        ProcessorDescriptor("internal", "FrxADSR", -1, -1),
+        extractProcessorDescriptor("frx.processing.internal.FrxADSR")
+    );
+   CPPUNIT_ASSERT_EQUAL(
+        FRX_NULL_PROCESSOR,
+        extractProcessorDescriptor("frx.processing.vst2x.FrxTestplugin(2)")
+    );
+   CPPUNIT_ASSERT_EQUAL(
+        FRX_NULL_PROCESSOR,
+        extractProcessorDescriptor("frx.processing.vst2x(2)")
+    );
+   CPPUNIT_ASSERT_EQUAL(
+        FRX_NULL_PROCESSOR,
+        extractProcessorDescriptor("vst2x(2)")
+    );
+    CPPUNIT_ASSERT_EQUAL(
+        ProcessorDescriptor("vst2x", "FrxTestplugin", 2, 3),
+        extractProcessorDescriptor("frx.processing.vst2x.FrxTestplugin( 2 , 3 )")
+    );
 }
 } // namespace tests
