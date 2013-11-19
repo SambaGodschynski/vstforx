@@ -1,22 +1,22 @@
 /*
  * ===========================================================================================================
- * NullAEffect.h
+ * TestAEffect.h
  *      Author: Johannes Unger
  * ===========================================================================================================
  */
-#ifndef NULL_AEFFECT_H
-#define NULL_AEFFECT_H
+#ifndef TEST_AEFFECT_H
+#define TEST_AEFFECT_H
 
 #include "audioeffectx.h"
 
 namespace processing {
 //============================================================================================================
 /**
- * Klasse: NullAEffect.
+ * Klasse: TestAEffect.
  * Proxy fuer Plugins die nicht geladen werden konnten.
  */
 //============================================================================================================
-class NullAEffect : public AEffect {
+class TestAEffect : public AEffect {
 	//--------------------------------------------------------------------------------------------------------
 	static VstIntPtr _aEffectDispatcherProc(AEffect* effect, VstInt32 opcode, VstInt32 index, 
 		                                    VstIntPtr value, void* ptr, float opt);
@@ -31,8 +31,13 @@ class NullAEffect : public AEffect {
 	static float _aEffectGetParameterProc(AEffect* effect, VstInt32 index);
 public:
 	//--------------------------------------------------------------------------------------------------------
-	NullAEffect();
+	TestAEffect();
+    //--------------------------------------------------------------------------------------------------------
+    /**
+     * creates TestAEffect which lives until program ends.
+     */
+    static TestAEffect * createLongevity();
 };
-extern NullAEffect nullAEff;
+extern TestAEffect testAEff;
 } // namespace
 #endif

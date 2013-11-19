@@ -172,7 +172,7 @@ private:
 	void getShellPluginInfos(ShellPluginInfos &out);
     //--------------------------------------------------------------------------------------------------------
     /**
-     * recognized testplugin via filename: xxx.xxx.xxx.__Frx_Testplugin(numInputs, numOutputs)
+     * recognized testplugin via filename: frx.vst2x.FrxTestplugin(numInputs, numOutputs)
      */
     void initAsTestPluginIfNecessary(std::string filename);
 protected:

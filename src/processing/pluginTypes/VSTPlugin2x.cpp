@@ -13,6 +13,7 @@
 #include <boost/foreach.hpp>
 #include <limits>
 #include <OS_Specific/OS_com.h>
+#include "TestAeffect.hpp"
 
 #define MAX_BFF_STR 2048
 
@@ -66,7 +67,20 @@ ioChangedLock(false)
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::initAsTestPluginIfNecessary(std::string filename) {
-
+    using namespace com;
+    ProcessorDescriptor pd = extractProcessorDescriptor(filename);
+    // frx.vst2x.FrxTestplugin(numInputs, numOutputs)
+    if (boost::get<0>(pd) != "vst2x") {
+        return;
+    }
+    if (boost::get<1>(pd) != "FrxTestPlugin") {
+        return;
+    }
+    int i = boost::get<2>(pd)>=0 ? boost::get<2>(pd) : 0;
+    int o = boost::get<3>(pd)>=0 ? boost::get<3>(pd) : 0;
+    aEff = TestAEffect::createLongevity();
+    aEff->numInputs = i*2; // vstforx => 1 channel == stero == 2 channel => vst2x
+    aEff->numOutputs = o*2;
 }
 //------------------------------------------------------------------------------------------------------------
 MyString VSTPlugin::extractNameFromFilename( const string &fileName ){
@@ -285,17 +299,18 @@ size_t VSTPlugin::getProcessDelay() const {
 //ruft die processReplacing Methode des zugeordneten VST-Plugin auf.
 void VSTPlugin::processAdapter( Processor::Int numSamples ) {
 	// breite daten vor ( mappe frames => matrix )
-	for ( size_t i=0; i<getNumInputNodes(); i+=2 ) {
-		ProcessorNode::Ptr pr = getInputNode(i/2);
+    size_t c=0;
+	for ( size_t i=0; i<getNumInputNodes(); ++i ) {
+		ProcessorNode::Ptr pr = getInputNode(i);
 		
 		if ( !pr->isActive() ) { // inaktiver input
-			inMatrix[i] = nullFrame[0];
-			inMatrix[i+1] = nullFrame[1];
+			inMatrix[c++] = nullFrame[0];
+			inMatrix[c++] = nullFrame[1];
 			continue;
 		}
 		Frames *fr = pr->popFrame();    
-		inMatrix[i] = (*fr)[0];
-		inMatrix[i+1] = (*fr)[1];
+		inMatrix[c++] = (*fr)[0];
+		inMatrix[c++] = (*fr)[1];
 	}
 	
 	for ( size_t i=0; i<framebuffer.size(); ++i ) {
