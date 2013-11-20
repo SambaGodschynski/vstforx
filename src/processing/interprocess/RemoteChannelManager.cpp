@@ -259,7 +259,7 @@ void RemoteChannelManager::initManager(int tries) {
     //init totmann timer
     if (!totmannTimer) {
         trackingDummy = TrackingDummyPtr(new Dummy);
-        totmannTimer = FrxAsyncDSPTimer::create(TOTMANN_UPDATE_INTERVAL_SEC*1000);
+        totmannTimer = TotmannTimer::create(TOTMANN_UPDATE_INTERVAL_SEC*1000);
         totmannTimer->setNumRepetitions(-1);
         totmannTimer->addTrackedEventListener(
             boost::bind(&RemoteChannelManager::doTotmann, this),
@@ -271,7 +271,7 @@ void RemoteChannelManager::initManager(int tries) {
 }
 //-----------------------------------------------------------------------------
 void RemoteChannelManager::doTotmann() {
-	if (!mutex || !totmann_time) {
+    if (!mutex || !totmann_time) {
 		return;
 	}
     bi::scoped_lock<Mutex> lock(*mutex);

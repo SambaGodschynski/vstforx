@@ -15,6 +15,7 @@
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include <boost/foreach.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
+#include <sambag/com/BoostTimer2.hpp>
 #include <sambag/com/SharedMemory.hpp> 
 
 namespace frx { namespace processing { namespace interprocess {
@@ -75,7 +76,8 @@ private:
     //-------------------------------------------------------------------------
     RemoteChannelManager();
     //-------------------------------------------------------------------------
-    FrxAsyncDSPTimer::Ptr totmannTimer;
+    typedef sambag::com::BoostTimer2 TotmannTimer;
+    TotmannTimer::Ptr totmannTimer;
     //-------------------------------------------------------------------------
     struct Dummy {};
     typedef boost::shared_ptr<Dummy> TrackingDummyPtr;

@@ -64,7 +64,7 @@ void Plugin::open() {
 }	
 //-----------------------------------------------------------------------------
 void Plugin::close() {
-    destroyStream();	
+    destroyStream();
 }
 //-----------------------------------------------------------------------------
 void Plugin::destroyStream() {
@@ -127,7 +127,6 @@ void Plugin::updateConfiguration() {
         this->getHost()->getNumOutputs(),
         this->getHost()->getNumParameter()
     );
-
 	try {
 		globAddRemoteChannelSender( rm.getNumChannels() );
 	} catch (const std::exception &ex) {
