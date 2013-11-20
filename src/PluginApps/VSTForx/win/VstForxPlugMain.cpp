@@ -57,7 +57,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 		sambag::disco::installResourceManager(rm);
 		SAMBAG_LOG_INFO<<"loading resources: SUCCEED";
 	} catch (const std::exception &ex) {
-	        SAMBAG_LOG_ERR<<"loading of resources: FAILED, "<<ex.what();
+	    SAMBAG_LOG_ERR<<"loading of resources: FAILED, "<<ex.what();
 		std::stringstream ss;
 		ss<<"Initiation of plugin instance failed: "<<ex.what();
 		com::osMessageBox("Error", 
@@ -114,6 +114,12 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 		return NULL;
 	}
 	return NULL;
+}
+//-----------------------------------------------------------------------------
+void onDllEntry() {
+}
+//-----------------------------------------------------------------------------
+void onDllExit() {
 }
 //-----------------------------------------------------------------------------
 std::string getHomeDirectory() {

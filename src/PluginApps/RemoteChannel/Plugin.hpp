@@ -16,6 +16,9 @@
 #include <boost/shared_array.hpp>
 #include <sambag/com/Thread.hpp>
 #include <processing/Frames.h>
+#include <string>
+
+extern const char * globGetProductName();
 
 namespace frx { namespace processing { namespace remoteChannel {
 //=============================================================================
@@ -35,8 +38,11 @@ private:
     interprocess::Stream::Ptr stream;
     //-------------------------------------------------------------------------
     interprocess::RemoteChannelManager::RCId channelId;
+	//-------------------------------------------------------------------------
+	std::string name;
     //-------------------------------------------------------------------------
-    typedef boost::shared_array<char> Chunk;
+    // typedef boost::shared_array<char> Chunk; CRT (HEAP_CORRUPTION) issues on Win32
+	typedef std::string Chunk;
     Chunk chunk;
 protected:
 	//-------------------------------------------------------------------------
@@ -83,7 +89,7 @@ public:
 	//-------------------------------------------------------------------------
 	template <class String> 
 	void getProductName(String &outStr) const {
-		outStr = "VSTForx.RemoteChannel-testrun3";
+		outStr = name.empty() ? globGetProductName() : name;
 	} 
 	//-------------------------------------------------------------------------
 	int getProductVersion() const {

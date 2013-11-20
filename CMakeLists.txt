@@ -5,9 +5,9 @@ project (vstforx)
 
 SET(FRX_VERSION_MAJOR 1)
 SET(FRX_VERSION_MINOR 0)
-SET(FRX_VERSION_MICRO 32)
-
-execute_process(COMMAND git log --pretty=format:%h -n 1
+SET(FRX_VERSION_MICRO 4)
+SET(FRX_VERSION_STR "${FRX_VERSION_MAJOR}.${FRX_VERSION_MINOR}.${FRX_VERSION_MICRO}")
+execute_process(COMMAND git --work-tree=${PROJECT_SOURCE_DIR} log --pretty=format:%h -n 1
                 OUTPUT_VARIABLE FRX_VERSION_BUILD)
 
 
@@ -52,7 +52,7 @@ ELSEIF(WIN32)
         add_definitions(-DDISCO_USE_WIN32)
 	add_definitions(-DFRX_OS_WINDOWS)
 	add_definitions(-DWIN32_LEAN_AND_MEAN)
-	#add_definitions(-DSAMBAG_USE_WINDOWS_SHARED_MEMORY)
+	add_definitions(-DSAMBAG_USE_WINDOWS_SHARED_MEMORY)
 	SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd /ZI")
 	SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
 	SET(FRX_ASYNC_DSP_TIMER "FRX_BOOST_TIMER")
@@ -128,5 +128,11 @@ CONFIGURE_FILE(
   "${PROJECT_SOURCE_DIR}/src/com/FrxConfig.h.in"
   "${PROJECT_BINARY_DIR}/src/com/FrxConfig.h"
 )
+
+CONFIGURE_FILE(
+  "${PROJECT_SOURCE_DIR}/builds/currVersion.txt.in"
+  "${PROJECT_BINARY_DIR}/builds/currVersion.txt"
+)
+
 
 add_subdirectory(src)

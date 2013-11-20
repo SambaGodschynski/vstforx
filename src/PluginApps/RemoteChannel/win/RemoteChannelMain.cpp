@@ -9,13 +9,14 @@
 extern void *hInstance; // @see vstsdk2.4::vstplugmain.cpp
 std::string getHomeDirectory();
 
-
 #ifdef _DEBUG
 #pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.VC90.CRT' version='9.0.21022.8' processorArchitecture='X86' publicKeyToken='1fc8b3b9a1e18e3b' language='*'\"")
 #endif
 
 enum {RC_UID='fxRC'};
 
+void globAddRemoteChannelSender(size_t numSender);
+const char * globGetProductName();
 
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
@@ -53,7 +54,6 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
         }
 	return NULL;
 }
-
 //-----------------------------------------------------------------------------
 std::string getHomeDirectory() {
 	const size_t N = 2048; 
@@ -67,4 +67,24 @@ std::string getHomeDirectory() {
 		res = f.string();
 	}
 	return res;
+}
+
+void globAddRemoteChannelSender(size_t numSender) {
+#ifdef FRX_REMOTE_IS_DEMO
+	if (numSender == 0) {
+		return;
+	}
+	std::stringstream ss;
+	ss<<"LIMITATION: you can't use more than one sender.";
+	ss<<"The plugin will be loaded anyway but you cant use it!";
+	throw(std::runtime_error(ss.str()));
+#endif
+}
+
+
+const char * globGetProductName() {
+	#ifdef FRX_REMOTE_IS_DEMO
+		return "RemoteChannelSender_DEMO";
+	#endif
+	return "RemoteChannelSender";
 }

@@ -56,4 +56,28 @@ std::string createVSTPluginFilename(const std::string &filename, int shellId) {
 	ss<<filename<<"@"<<shellId;
 	return ss.str();
 }
+//------------------------------------------------------------------------------------------------------------
+ProcessorDescriptor extractProcessorDescriptor(const std::string &str) {
+    // (\w+).(\w+).(\w+)(\( *(\d+) *, *(\d+) *\) *)*$
+    
+    using namespace boost::xpressive;
+	mark_tag tType(1), tName(2), tConf(3), tNumI(4), tNumO(5), tFrx(6), tNameSpace(7);
+	cregex pat = (tFrx=+alnum) >> "." >> (tNameSpace=+alnum) >> "." >> (tType=+alnum) >> "." >>
+                 (tName=+alnum) >> *("(" >> *_s >> (tNumI= +_d) >>
+                 *_s >> "," >> *_s >> (tNumO= +_d) >> *_s >> ")") >> eol;
+                  
+	cmatch what;
+	if(regex_search(str.c_str(), what, pat)) {
+        int a=-1,b=-1;
+        if (what.size() >= 4) {
+            std::stringstream ss;
+            ss<<what[tNumI]<<" "<<what[tNumO];
+            ss>>a>>b;
+        }
+		return ProcessorDescriptor(what[tType], what[tName], a, b);
+	}
+    return FRX_NULL_PROCESSOR;
+}
+//------------------------------------------------------------------------------------------------------------
+const ProcessorDescriptor FRX_NULL_PROCESSOR = ProcessorDescriptor("","",-1,-1);
 } // namespace com

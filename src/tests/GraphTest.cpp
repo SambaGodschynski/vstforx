@@ -27,6 +27,8 @@
 #include <sambag/com/Thread.hpp>
 #include <sambag/disco/components/WindowToolkit.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
+#include <processing/Plugin.h>
+#include <processing/pluginTypes/VSTPlugin2x.h>
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::GraphTest );
@@ -1569,6 +1571,144 @@ void GraphTest::testGraphIdleHandler() {
         t3.join();
         t4.join();
         CPPUNIT_ASSERT_EQUAL((int)80200, res);
+    }
+	FrxAsyncDSPTimer::closeAllTimer();
+}
+//=============================================================================
+namespace {
+    // ON = (i1+i2+...) + N
+    void _process(AEffect* eff, float** inputs, float** outputs, VstInt32 numSamples)
+    {
+        for (int s=0; s<numSamples; ++s) {
+            float v = 0;
+            for (int i=0; i<eff->numInputs; ++i) {
+                v+=inputs[i][s];
+            }
+            for (int o=0; o<eff->numOutputs; ++o) {
+                outputs[o][s] = v + o;
+            }
+        }
+    }
+    template <int Ins, int Outs>
+    void _test441(processing::Graph::Ptr graph,
+        float inLeft, float inRight, float expLeft, float expRight)
+    {
+        using namespace std;
+        using namespace com;
+        using namespace processing;
+        using namespace sambag::disco::components;
+        using namespace frx::processing;
+        int blockSize = graph->getHostInfo()->getBlockSize();
+        std::stringstream ss;
+        ss<<"frx.processing.vst2x.FrxTestPlugin("<<Ins<<","<<Outs<<")";
+        VSTPlugin::Ptr pl = boost::dynamic_pointer_cast<VSTPlugin>(
+            PluginFactory::createPlugNode(graph->getHostInfo(),
+            ss.str())
+        );
+        pl->getAEffect()->processReplacing = &_process;
+        CPPUNIT_ASSERT(pl);
+        CPPUNIT_ASSERT_EQUAL((size_t)Ins, pl->getNumInputNodes());
+        CPPUNIT_ASSERT_EQUAL((size_t)Outs, pl->getNumOutputNodes());
+        Graph::Janitor::Ptr jan = graph->getJanitor();
+        jan->add(pl);
+        for (int i=0; i<Ins; ++i) {
+            jan->connectNodes ( graph->getStartNode(), pl->getInputNode(i) );
+        }
+        for (int i=0; i<Outs; ++i) {
+            jan->connectNodes ( pl->getOutputNode(i), graph->getEndNode() );
+        }
+        jan.reset();
+    
+        Frames inFrame( blockSize );
+        Frames outFrame( blockSize );
+        fillFrame (&inFrame, inLeft,  inRight);
+        graph->pushAndCopy ( &inFrame, blockSize );
+        graph->processGraph( outFrame.getData(), blockSize  );
+        CPPUNIT_ASSERT_EQUAL( expLeft,
+            isFilledWith( outFrame[0], outFrame.getSize(), expLeft)
+        );
+        CPPUNIT_ASSERT_EQUAL( expRight,
+            isFilledWith( outFrame[1], outFrame.getSize(), expRight )
+        );
+    }
+} // namespace
+void GraphTest::testIssue441() {
+//=============================================================================
+    {
+        /*
+                 1/2
+                  |
+                  O   l1+r1 + On = Ol = 1 + 2 = 3 + 0 = 3
+                  |              = Or = 1 + 2 = 3 + 1 = 4
+                 3/4
+        
+        
+        */
+        processing::Graph::Ptr g = createGraph(512, 44100.f);
+        _test441<1, 1>(g, 1, 2, 3, 4);
+    }
+    {
+       /*
+              1/2  1/2
+                 \/
+                  O   l1+r1 + On = Ol = 1 + 2 + 1 + 2 = 6 + 0 = 6
+                  |              = Or = 1 + 2 + 1 + 2 = 6 + 1 = 7
+                 6/7
+        
+        
+        */
+        processing::Graph::Ptr g = createGraph(512, 44100.f);
+        _test441<2, 1>(g, 1, 2, 6, 7);
+    }
+    {
+        processing::Graph::Ptr g = createGraph(512, 44100.f);
+        _test441<3, 1>(g, 1, 2, 9, 10);
+    }
+    {
+        processing::Graph::Ptr g = createGraph(512, 44100.f);
+        _test441<4, 1>(g, 1, 2, 12, 13);
+    }
+    {
+       /*
+                 1/2
+                  |
+                  O              = O1l = 1 + 2 = 3 + 0 = 3
+                 / \             = O1r = 1 + 2 = 3 + 1 = 4
+              3/4   5/6          = O2l = 1 + 2 = 3 + 2 = 5
+                \  /             = O2r = 1 + 2 = 3 + 3 = 6
+                Exit             = l = O1l + O2l = 3 + 5 = 8
+                                 = r = O1r + O2r = 4 + 6 = 10
+        */
+        processing::Graph::Ptr g = createGraph(512, 44100.f);
+        _test441<1, 2>(g, 1, 2, 8, 10);
+    }
+    {
+        /*
+              1/2   1/2
+                 \ /
+                  O              = O1l = 1 + 2 + 1 + 2 = 6 + 0 = 6
+                 / \             = O1r = 1 + 2 + 1 + 2 = 6 + 1 = 7
+              3/4   5/6          = O2l = 1 + 2 + 1 + 2 = 6 + 2 = 8
+                \  /             = O2r = 1 + 2 + 1 + 2 = 6 + 3 = 9
+                Exit             = l = O1l + O2l = 6 + 8 = 14
+                                 = r = O1r + O2r = 7 + 9 = 16
+        */
+        processing::Graph::Ptr g = createGraph(512, 44100.f);
+        _test441<2, 2>(g, 1, 2, 14, 16);
+    }
+    {
+     /*
+      = O1l = 1 + 2 + 1 + 2 = 6 + 0 = 6
+      = O1r = 1 + 2 + 1 + 2 = 6 + 1 = 7
+      = O2l = 1 + 2 + 1 + 2 = 6 + 2 = 8
+      = O2r = 1 + 2 + 1 + 2 = 6 + 3 = 9
+      = O3l = 1 + 2 + 1 + 2 = 6 + 4 = 10
+      = O3r = 1 + 2 + 1 + 2 = 6 + 5 = 11
+      = l = O1l + O2l + O3l = 6 + 8 + 10 = 24
+      = r = O1r + O2r + 03r = 7 + 9 + 11 = 27
+     */
+        processing::Graph::Ptr g = createGraph(512, 44100.f);
+        _test441<2, 3>(g, 1, 2, 24, 27);
     }
 }
 } // namespace tests

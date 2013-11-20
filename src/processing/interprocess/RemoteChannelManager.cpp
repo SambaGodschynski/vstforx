@@ -18,7 +18,8 @@
 namespace {
     const int MAX_CHANNELS = 128;
     const int CH_MAX_CHAR = 100;
-    typedef boost::tuple<char[CH_MAX_CHAR], char[CH_MAX_CHAR]> ChannelData;
+	//                        rc_id              stream_id         channel_name
+    typedef boost::tuple<char[CH_MAX_CHAR], char[CH_MAX_CHAR], char[CH_MAX_CHAR]> ChannelData;
     const int RC_MAX_MEM_SIZE = sizeof(ChannelData)*MAX_CHANNELS + 6400;
     const int TOTMANN_UPDATE_INTERVAL_SEC = 3;
     const char * SHM_MANAGER_NAME = "VSTForx.RemoteChannelManager";
@@ -52,8 +53,11 @@ struct RemoteChannelManager::RemoteChannels {
     static std::string getId(ChannelData *data) {
         return std::string(&(*boost::get<0>(*data)));
     }
-    static std::string getChannelId(ChannelData *data) {
+    static std::string getStreamId(ChannelData *data) {
         return std::string(&(*boost::get<1>(*data)));
+    }
+    static std::string getChannelName(ChannelData *data) {
+        return std::string(&(*boost::get<2>(*data)));
     }
     static bool isChannel(const std::string &id, ChannelData *data) {
         if (id.length()>=(size_t)CH_MAX_CHAR) {
@@ -87,13 +91,18 @@ addChannel(const std::string &id, const RCData &rcd)
 void RemoteChannelManager::RemoteChannels::
 setChannel(ChannelData *data, const std::string &id, const RCData &rcd)
 {
-    const std::string &chname = boost::get<0>(rcd);
-    if (id.length() >= (int)CH_MAX_CHAR || chname.length() >= (int)CH_MAX_CHAR) {
+    const std::string &streamid = boost::get<0>(rcd);
+	const std::string &chname = boost::get<1>(rcd);
+    if (id.length() >= (int)CH_MAX_CHAR ||
+		streamid.length() >= (int)CH_MAX_CHAR ||
+		chname.length() >= (int)CH_MAX_CHAR) 
+	{
         SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
         "RemoteChannelManager: setChannel out of bounds");
     }
     strcpy(&(*boost::get<0>(*data)), id.c_str());
-    strcpy(&(*boost::get<1>(*data)), chname.c_str());
+    strcpy(&(*boost::get<1>(*data)), streamid.c_str());
+	strcpy(&(*boost::get<2>(*data)), chname.c_str());
 }
 //-----------------------------------------------------------------------------
 void RemoteChannelManager::RemoteChannels::
@@ -118,7 +127,7 @@ getChannelData(const std::string &id) {
     if (i<0) {
         return RCData();
     }
-    return RCData( getChannelId(&data[i]) );
+    return RCData( getStreamId(&data[i]), getChannelName(&data[i]) );
 }
 //-----------------------------------------------------------------------------
 void RemoteChannelManager::RemoteChannels::clear() {
@@ -250,7 +259,7 @@ void RemoteChannelManager::initManager(int tries) {
     //init totmann timer
     if (!totmannTimer) {
         trackingDummy = TrackingDummyPtr(new Dummy);
-        totmannTimer = FrxAsyncDSPTimer::create(TOTMANN_UPDATE_INTERVAL_SEC*1000);
+        totmannTimer = TotmannTimer::create(TOTMANN_UPDATE_INTERVAL_SEC*1000);
         totmannTimer->setNumRepetitions(-1);
         totmannTimer->addTrackedEventListener(
             boost::bind(&RemoteChannelManager::doTotmann, this),
@@ -262,6 +271,9 @@ void RemoteChannelManager::initManager(int tries) {
 }
 //-----------------------------------------------------------------------------
 void RemoteChannelManager::doTotmann() {
+    if (!mutex || !totmann_time) {
+		return;
+	}
     bi::scoped_lock<Mutex> lock(*mutex);
     *totmann_time = ::time(NULL);
 }
@@ -293,9 +305,9 @@ void RemoteChannelManager::destroyShm() {
 }
 //-----------------------------------------------------------------------------
 RemoteChannelManager::~RemoteChannelManager() {
-    if (references && --(*references)<=0) {
-        destroyShm();
-    }
+	if (references && --(*references)==0) {
+		destroyShm();
+	}
 }
 //-----------------------------------------------------------------------------
 RemoteChannelManager & RemoteChannelManager::instance() {
@@ -365,8 +377,8 @@ std::string RemoteChannelManager::createUniqueName() const {
 }
 //-----------------------------------------------------------------------------
 std::string RemoteChannelManager::getName(const RCId &id) {
-    // TODO: do some beauty things here
-    return id;
+	RCData data = getChannelData(id);
+	return boost::get<1>(data);
 }
 //-----------------------------------------------------------------------------
 RemoteChannelManager::RCData

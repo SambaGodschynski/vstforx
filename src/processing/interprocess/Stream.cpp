@@ -65,8 +65,6 @@ void ipFree(const char *name)
     SAMBAG_SHARED_MEMORY_REMOVE(name);
 }
 
-
-
 UInteger checksum(void *ptr, UInteger bytesize) {
     unsigned char *c = (unsigned char*)ptr;
     std::stringstream ss;

@@ -15,6 +15,7 @@
 #include <boost/interprocess/sync/interprocess_mutex.hpp>
 #include <boost/foreach.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
+#include <sambag/com/BoostTimer2.hpp>
 #include <sambag/com/SharedMemory.hpp> 
 
 namespace frx { namespace processing { namespace interprocess {
@@ -36,9 +37,9 @@ public:
     typedef std::string RCId;
     //-------------------------------------------------------------------------
     /**
-     * tuple(streamId)
+     * tuple(streamid, channelname)
      */
-    typedef boost::tuple<std::string> RCData;
+	typedef boost::tuple<std::string, std::string> RCData;
 private:
     //-------------------------------------------------------------------------
     //since boost managed memory has a 32/64 communictaion bug, we
@@ -75,7 +76,8 @@ private:
     //-------------------------------------------------------------------------
     RemoteChannelManager();
     //-------------------------------------------------------------------------
-    FrxAsyncDSPTimer::Ptr totmannTimer;
+    typedef sambag::com::BoostTimer2 TotmannTimer;
+    TotmannTimer::Ptr totmannTimer;
     //-------------------------------------------------------------------------
     struct Dummy {};
     typedef boost::shared_ptr<Dummy> TrackingDummyPtr;

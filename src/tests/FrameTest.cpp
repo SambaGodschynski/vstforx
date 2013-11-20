@@ -36,58 +36,12 @@ T isFilledWith (  T *data, size_t num,  T v ) {
 	}
 	return v;
 }
-//=============================================================================
-struct ProcessException {
-	std::string text;
-	ProcessException ( const std::string &text ) : text(text) {}
-};
-//=============================================================================
-void processGraph ( processing::Graph *graph, 
-				    int blockSize, 
-				    float inLeft, 
-					float inRight,
-					float expectedLeft,
-					float expectedRight,
-					size_t repeat = 1000 ) 
-//=============================================================================
-{
-	if ( !graph->isActive() ) 
-		throw ProcessException("graph inactive.");
-	processing::Frames fIn ( blockSize );
-	processing::Frames fOut ( blockSize );
-	fillFrame ( &fIn, inLeft, inRight );
-	while ( repeat-- > 0 ) {
-		fillFrame ( &fIn, inLeft, inRight );
-		graph->pushAndCopy ( &fIn, blockSize );
-		graph->processGraph( fOut.getData(), blockSize  );
-		float res = isFilledWith<float>( fOut[0], blockSize, expectedLeft );
-		if ( expectedLeft != res )
-			throw ProcessException ( com::MyString(res) + "(res.) !=  (exp.)" + com::MyString(expectedLeft) );
-		
-		res = isFilledWith<float>( fOut[1], blockSize, expectedRight );
-		if ( expectedRight != res )
-			throw ProcessException ( com::MyString(res) + "(res.) !=  (exp.)" + com::MyString(expectedRight) );
-	}
 }
-} // anonymous namespace 
 
 namespace tests {
 //=============================================================================
-processing::Graph::Ptr FrameTest::createGraph( int blockSize, float samplerate ) 
-{
-//=============================================================================
-	using namespace processing;
-	Graph::Ptr graph = Graph::create ( dummyFX );
-	Graph::Janitor::Ptr janitor = graph->getJanitor();
-	dummyFX->setSampleRate ( samplerate );
-	dummyFX->setBlockSize ( blockSize );
-	janitor->hostBaseConfigChanged();
-	return graph;
-}
-//=============================================================================
 FrameTest::FrameTest() {
 //=============================================================================
-	dummyFX = processing::DummyFX::create( NULL );
 }
 //=============================================================================
 FrameTest::~FrameTest() {

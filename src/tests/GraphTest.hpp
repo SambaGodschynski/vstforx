@@ -40,6 +40,7 @@ class GraphTest : public CPPUNIT_NS::TestFixture {
 //=============================================================================
 	CPPUNIT_TEST_SUITE( GraphTest );
 	CPPUNIT_TEST( testConstructor );
+    CPPUNIT_TEST( testIssue441 );
 	CPPUNIT_TEST( testAddRemoveNodes );
 	CPPUNIT_TEST( testConnectNodes );
 	CPPUNIT_TEST( testSignalProcessPath );
@@ -90,6 +91,7 @@ public:
 	void testGraphComplex2();
 	void testGraphComplex3();
     void testGraphIdleHandler();
+    void testIssue441();
 };
 } // namespace tests
 #endif 

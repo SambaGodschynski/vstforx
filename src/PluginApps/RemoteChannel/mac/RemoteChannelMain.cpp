@@ -6,19 +6,29 @@
 #include <exception>
 #include <com/one4All.h>
 #include <sambag/com/Common.hpp>
+#include <sambag/disco/components/WindowToolkit.hpp>
 
+#ifdef FRX_REMOTE_IS_DEMO
 enum {RC_UID='fxRC'};
+#else
+enum {RC_UID='fdRC'};
+#endif
 
 namespace frx { namespace com { 
     extern std::string getResourceLocation(const std::string &path);
     extern std::string getBundleLocation();
 }}
+void globAddRemoteChannelSender(size_t numSender);
+const char * globGetProductName();
 
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
     // setup logging:
     ::sambag::com::addLogFile(frx::com::getBundleLocation() + "/RemoteChannel.log");
     SAMBAG_LOG_INFO<<"woke up";
+    
+    sambag::disco::components::getWindowToolkit()->useWithoutMainloop();
+    
 	// load plugin
 	using namespace sambag::dsp::vst;
 	// settingup plugin
@@ -51,4 +61,22 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 	return NULL;
 }
 
+void globAddRemoteChannelSender(size_t numSender) {
+#ifdef FRX_REMOTE_IS_DEMO
+	if (numSender == 0) {
+		return;
+	}
+	std::stringstream ss;
+	ss<<"LIMITATION: you can't use more than one sender.";
+	ss<<"The plugin will be loaded anyway but it is invisible for all receivers!";
+	throw(std::runtime_error(ss.str()));
+#endif
+}
 
+
+const char * globGetProductName() {
+	#ifdef FRX_REMOTE_IS_DEMO
+		return "RemoteChannelSender_DEMO";
+	#endif
+	return "RemoteChannelSender";
+}

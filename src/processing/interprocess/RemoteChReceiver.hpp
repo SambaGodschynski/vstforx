@@ -15,6 +15,7 @@
 #include <com/Serialization.h>
 #include <processing/parameter/parameter.h>
 #include "processing/processing.h"
+#include "processing/AudioBuffer.hpp"
 #include <sambag/com/Thread.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
@@ -47,7 +48,9 @@ private:
     //-------------------------------------------------------------------------
     ::processing::Frames frames;
     //-------------------------------------------------------------------------
-    ::processing::DCStream dcStream;
+    typedef AudioBuffer<float, 2> ABuffer;
+	//-------------------------------------------------------------------------
+    ABuffer abff;
     //-------------------------------------------------------------------------
     Stream::Ptr ipStream;
     //-------------------------------------------------------------------------

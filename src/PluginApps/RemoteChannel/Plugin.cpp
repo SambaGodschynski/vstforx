@@ -11,6 +11,28 @@
 #include <boost/tuple/tuple.hpp>
 #include <sambag/com/Common.hpp>
 #include <cstring>
+#include <processing/interprocess/RemoteChannelManager.hpp>
+#include <processing/FrxAsyncDSPTimer.hpp>
+#include <com/one4All.h>
+
+extern void globAddRemoteChannelSender(size_t);
+
+namespace {
+	frx::processing::FrxAsyncDSPTimer::WorkerThreadHolder _timerThreadHolder;
+	int _instances = 0;
+
+	std::string createName() {
+		std::stringstream ss;
+		struct tm * timeinfo;
+		char buffer [80];
+		time_t rawtime;
+		time (&rawtime);
+		timeinfo = localtime (&rawtime);
+		strftime (buffer,80,"%m-%d-%y++%H:%M:%S",timeinfo);
+		ss<<globGetProductName()<<"_"<<buffer;
+		return ss.str();
+	}
+}
 
 namespace frx { namespace processing { namespace remoteChannel {
 using namespace interprocess;
@@ -23,6 +45,19 @@ Plugin::Plugin() :
 blockSize(0),
 sampleRate(0.f)
 {
+	using namespace frx::processing;
+	if (_instances++ == 0) {
+		_timerThreadHolder = 
+			FrxAsyncDSPTimer::startWorkerThread();
+	}
+}
+//-----------------------------------------------------------------------------
+Plugin::~Plugin() {
+	using ::frx::processing::interprocess::RemoteChannelManager;
+	if (--_instances == 0) {
+		frx::processing::FrxAsyncDSPTimer::closeAllTimer();
+		_timerThreadHolder.reset();
+	}
 }
 //-----------------------------------------------------------------------------
 void Plugin::open() {
@@ -30,7 +65,6 @@ void Plugin::open() {
 //-----------------------------------------------------------------------------
 void Plugin::close() {
     destroyStream();
-    chunk.reset();
 }
 //-----------------------------------------------------------------------------
 void Plugin::destroyStream() {
@@ -41,9 +75,6 @@ void Plugin::destroyStream() {
     RemoteChannelManager &rm = RemoteChannelManager::instance();
     rm.removeChannel(channelId);
     stream.reset();
-}
-//-----------------------------------------------------------------------------
-Plugin::~Plugin() {
 }
 //-----------------------------------------------------------------------------
 void Plugin::process(float **in, float **out, int numSamples) {
@@ -86,17 +117,29 @@ void Plugin::updateConfiguration() {
         }
         destroyStream();
     }
+	if (name.empty()) {
+		name = createName();
+	}
     RemoteChannelManager &rm = RemoteChannelManager::instance();
-    std::string name = rm.createUniqueName();
-    stream = interprocess::Stream::create(name,
+    std::string sId = rm.createUniqueName();
+    stream = interprocess::Stream::create(sId,
         blockSize,
         this->getHost()->getNumOutputs(),
         this->getHost()->getNumParameter()
     );
+	try {
+		globAddRemoteChannelSender( rm.getNumChannels() );
+	} catch (const std::exception &ex) {
+			::com::osMessageBox ( 
+				"Error", std::string(ex.what()), ::com::MSG_ALERT
+			);
+		return; // don't register sender
+	}
+
     if (channelId.empty()) {
-        channelId = rm.addChannel( boost::make_tuple(name) );
+        channelId = rm.addChannel( boost::make_tuple(sId, name) );
     } else {
-        rm.addChannel( channelId, boost::make_tuple(name) );
+        rm.addChannel( channelId, boost::make_tuple(sId, name) );
     }
 }
 //-----------------------------------------------------------------------------
@@ -129,17 +172,31 @@ void Plugin::getParameterName (int index, std::string &outStr) const
 //-----------------------------------------------------------------------------
 int Plugin::getChunk(void **data) {
     size_t size = channelId.length();
-    chunk = Chunk( new char[size] );
-    strcpy(chunk.get(), channelId.c_str());
-    *data = chunk.get();
+	if (size==0) {
+		return 0;
+	}
+	std::stringstream ss;
+	ss<<channelId<<" "<<name;
+	chunk = ss.str();
+    *data = (void*) chunk.c_str();
     SAMBAG_LOG_INFO<<"serialize id"<<channelId;
-    return size;
+	return chunk.size();
 }
 //-----------------------------------------------------------------------------
 int Plugin::setChunk(void *data, int byteSize) {
+	if (byteSize==0) {
+		return 0;
+	}
     SAMBAG_TRY_TO_LOCK_TIMED(mutex);
     destroyStream();
-    channelId = std::string((char*)data);
+	std::stringstream ss;
+	try {
+		ss<<((char*)data);
+		ss>>channelId>>name;
+	} catch (...) {
+		SAMBAG_LOG_ERR<<"deserialing failed";
+		return 0;
+	}
     SAMBAG_LOG_INFO<<"deserialize id"<<channelId;
     updateConfiguration();
     return byteSize;
