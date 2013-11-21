@@ -10,94 +10,8 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/circular_buffer.hpp>
+#include <boost/static_assert.hpp>
 #include <memory>
-
-namespace {
-	template <int I>
-	struct Int2Type {
-		enum { Value = I };
-	};
-	//-------------------------------------------------------------------------
-	template <
-		class Iterator, 
-		typename T, 
-		typename SizeType, 
-		class _Int2Type
-	>
-	void _copyIn( Iterator begin, 
-			 T **src, 
-			 SizeType num,
-			 _Int2Type)
-	{
-		enum { I = _Int2Type::Value };
-		for (SizeType j=0; j<num; ++j) {
-			*(begin++) = src[I][j];
-		}
-		_copyIn(begin, src, num, Int2Type<_Int2Type::Value-1>());
-	}
-	template <
-		class Iterator, 
-		typename T, 
-		typename SizeType
-	>
-	void _copyIn( Iterator, 
-			 T **, 
-			 SizeType,
-			 Int2Type<-1>)
-	{
-	}
-	//-------------------------------------------------------------------------
-	/*template <class Buffer, class _Int2Type>
-	void _copyOut( Buffer &buffer, 
-			 typename Buffer::value_type **data, 
-			 typename Buffer::size_type num,
-			 _Int2Type)
-	{
-		enum { I = _Int2Type::Value };
-		for (typename Buffer::size_type j=0; j<num; ++j) {
-			data[I][j] = buffer.front();
-			buffer.pop_front();
-		}
-		_copyOut<Buffer>(buffer, data, num, Int2Type<_Int2Type::Value-1>());
-	}
-	template <class Buffer>
-	void _copyOut( Buffer &buffer, 
-			 typename Buffer::value_type **data, 
-			 typename Buffer::size_type num,
-			 Int2Type<-1>)
-	{
-	}*/
-
-	template <
-		class Iterator, 
-		typename T, 
-		typename SizeType, 
-		class _Int2Type
-	>
-	void _copyOut( Iterator begin, 
-			 T **dst, 
-			 SizeType num,
-			 _Int2Type)
-	{
-		enum { I = _Int2Type::Value };
-		for (SizeType j=0; j<num; ++j) {
-			dst[I][j] = *(begin++);
-		}
-		_copyOut(begin, dst, num, Int2Type<_Int2Type::Value-1>());
-	}
-	template <
-		class Iterator, 
-		typename T, 
-		typename SizeType
-	>
-	void _copyOut( Iterator, 
-			 T **, 
-			 SizeType,
-			 Int2Type<-1>)
-	{
-	}
-} // namespace(s)
-
 namespace frx { namespace processing {
 //=============================================================================
 /** 
@@ -121,6 +35,7 @@ template <
 	template <class> class _Allocator=std::allocator
 >
 class AudioBuffer {
+BOOST_STATIC_ASSERT( _NumChannels > 0 );
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
@@ -140,10 +55,10 @@ private:
 	//-------------------------------------------------------------------------
 	Allocator alloc;
 	//-------------------------------------------------------------------------
-	Buffer buffer;
+	Buffer buffers[NumChannels];
 public:
 	//-------------------------------------------------------------------------
-	AudioBuffer( SizeType blockSize=0, const Allocator &alloc = Allocator() );
+	AudioBuffer( SizeType blockSize=0 );
 	//-------------------------------------------------------------------------
 	/**
 	 * @note only for predictive memory allocation.
@@ -155,7 +70,7 @@ public:
 	}
 	//-------------------------------------------------------------------------
 	SizeType size() const {
-		return buffer.size() / NumChannels;
+		return buffers[0].size();
 	}
 	//-------------------------------------------------------------------------
 	void writeIn(ValueType **data, SizeType numSamples);
@@ -163,7 +78,7 @@ public:
 	void readOut(ValueType **data, SizeType numSamples);
 	//-------------------------------------------------------------------------
 	bool isEmpty() const {
-		return buffer.empty();
+		return buffers[0].empty();
 	}
 }; // AudioBuffer
 ///////////////////////////////////////////////////////////////////////////////
@@ -172,10 +87,10 @@ template < typename T,
 	int NC, 
 	template <class> class A
 >
-AudioBuffer<T, NC, A>::AudioBuffer(SizeType blockSize, const A<T> &alloc) :
-	blockSize(blockSize),
-	buffer(alloc)
+AudioBuffer<T, NC, A>::AudioBuffer(SizeType blockSize) :
+	blockSize(0)
 {
+	setBlockSize(blockSize);
 }
 //-----------------------------------------------------------------------------
 template < typename T, 
@@ -185,8 +100,9 @@ template < typename T,
 void AudioBuffer<T, NC, A>::setBlockSize(SizeType bs) 
 {
 	blockSize = bs;
-	SizeType minCap = bs*NumChannels;
-	buffer.set_capacity( typename Buffer::capacity_type(minCap, minCap) );
+	for (int i=0; i<NumChannels; ++i) {
+		buffers[i].set_capacity( typename Buffer::capacity_type(bs, bs) );
+	}
 }
 //-----------------------------------------------------------------------------
 template < typename T, 
@@ -196,8 +112,13 @@ template < typename T,
 void AudioBuffer<T, NC, A>::writeIn(T **data, SizeType numSamples) 
 {
 	SizeType p = size();
-	buffer.resize( size() + numSamples*NumChannels, T() );
-	_copyIn( buffer.begin()+p, data, numSamples, Int2Type<NumChannels-1>());
+	for (SizeType i=0; i<NumChannels; ++i) {
+		buffers[i].resize( p + numSamples, T() );
+		Buffer::iterator it=buffers[i].begin() + p;
+		for (SizeType j=0; j<numSamples; ++j) {
+			*(it++) = data[i][j];
+		}	
+	}
 }
 //-----------------------------------------------------------------------------
 template < typename T, 
@@ -206,8 +127,13 @@ template < typename T,
 >
 void AudioBuffer<T, NC, A>::readOut(T **data, SizeType numSamples) 
 {
-	_copyOut(buffer.begin(), data, numSamples, Int2Type<NumChannels-1>());
-	buffer.erase( buffer.begin(), buffer.begin()+numSamples*NumChannels );
+	for (SizeType i=0; i<NumChannels; ++i) {
+		Buffer::iterator it=buffers[i].begin();
+		for (SizeType j=0; j<numSamples; ++j) {
+			data[i][j] = *(it++);
+		}	
+		buffers[i].erase( buffers[i].begin(), buffers[i].begin()+numSamples );
+	}
 }
 }} // namespace(s)
 

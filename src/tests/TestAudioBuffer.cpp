@@ -47,6 +47,7 @@ bool _isRow (  T *data, size_t num,  T s ) {
 //=============================================================================
 	for ( size_t i=0; i<num; ++i ) {
 		if ( data[i] != s++ ) { 
+			std::cout<<"!"<<data[i]<<":"<<s-1<<std::endl;
 			return false;
 		}
 	}
@@ -116,7 +117,7 @@ void TestAudioBuffer::testReadWrite() {
 		abff.readOut(&raw[0], 6);
 	}
 	CPPUNIT_ASSERT_EQUAL( (size_t)0, abff.size() );
-	_isRow(raw[0], 512, 1.f);
-	_isRow(raw[1], 512, 10.f);
+	CPPUNIT_ASSERT( _isRow(raw[0], 512, 1.f)  );
+	CPPUNIT_ASSERT( _isRow(raw[1], 512, 10.f) );
 }
 } //namespace
