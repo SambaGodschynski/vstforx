@@ -101,7 +101,7 @@ void AudioBuffer<T, NC, A>::setBlockSize(SizeType bs)
 {
 	blockSize = bs;
 	for (int i=0; i<NumChannels; ++i) {
-		buffers[i].set_capacity( typename Buffer::capacity_type(bs, bs) );
+		buffers[i].set_capacity( typename Buffer::capacity_type(bs*10, bs*10) );
 	}
 }
 //-----------------------------------------------------------------------------
@@ -113,10 +113,8 @@ void AudioBuffer<T, NC, A>::writeIn(T **data, SizeType numSamples)
 {
 	SizeType p = size();
 	for (SizeType i=0; i<NumChannels; ++i) {
-		buffers[i].resize( p + numSamples, T() );
-		Buffer::iterator it=buffers[i].begin() + p;
 		for (SizeType j=0; j<numSamples; ++j) {
-			*(it++) = data[i][j];
+			buffers[i].push_back( data[i][j] );
 		}	
 	}
 }
@@ -128,11 +126,10 @@ template < typename T,
 void AudioBuffer<T, NC, A>::readOut(T **data, SizeType numSamples) 
 {
 	for (SizeType i=0; i<NumChannels; ++i) {
-		Buffer::iterator it=buffers[i].begin();
 		for (SizeType j=0; j<numSamples; ++j) {
-			data[i][j] = *(it++);
+			data[i][j] = buffers[i].front();
+			buffers[i].pop_front();
 		}	
-		buffers[i].erase( buffers[i].begin(), buffers[i].begin()+numSamples );
 	}
 }
 }} // namespace(s)
