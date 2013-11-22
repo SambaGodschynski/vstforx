@@ -16,6 +16,7 @@
 #include <boost/shared_array.hpp>
 #include <sambag/com/Thread.hpp>
 #include <processing/Frames.h>
+#include <processing/FrxAsyncDSPTimer.hpp>
 #include <string>
 
 extern const char * globGetProductName();
@@ -40,6 +41,10 @@ private:
     interprocess::RemoteChannelManager::RCId channelId;
 	//-------------------------------------------------------------------------
 	std::string name;
+	//-------------------------------------------------------------------------
+	::processing::DCStream dcStream;
+	//-------------------------------------------------------------------------
+	frx::processing::FrxAsyncDSPTimer::Ptr ioChangedTimer;
     //-------------------------------------------------------------------------
     // typedef boost::shared_array<char> Chunk; CRT (HEAP_CORRUPTION) issues on Win32
 	typedef std::string Chunk;

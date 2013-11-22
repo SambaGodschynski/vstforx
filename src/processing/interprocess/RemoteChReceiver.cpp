@@ -142,6 +142,11 @@ void RemoteChReceiver::processAdapter( pr::Processor::Int numSamples ) {
     float **data = frames.getData();
     int res = ipStream->read(data, blocksRead);
     if (res<0) { // we are behind the last written block
+		if (abff.size() >= numSamples) { // we have audiodata left
+			abff.readOut(data, numSamples);
+			outputNodes[0]->pushAndCopy(&frames, numSamples);
+			return;
+		}
         blocksRead-=res; // blocksRead + numBlocksBehind (res is negative)
         ipStream->read(data, blocksRead);
     }
@@ -240,5 +245,12 @@ prp::Parameter::Ptr RemoteChReceiver::getParameter (size_t index) const
 //-----------------------------------------------------------------------------
 size_t RemoteChReceiver::getNumParameter () const {
     return parameters.size();
+}
+//-----------------------------------------------------------------------------
+size_t RemoteChReceiver::getProcessDelay() const {
+	if (!getHostInfo()) {
+		return 0;
+	}
+	return getHostInfo()->getBlockSize();
 }
 }}} // namespace(s)

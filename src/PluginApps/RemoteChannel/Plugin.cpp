@@ -12,7 +12,6 @@
 #include <sambag/com/Common.hpp>
 #include <cstring>
 #include <processing/interprocess/RemoteChannelManager.hpp>
-#include <processing/FrxAsyncDSPTimer.hpp>
 #include <com/one4All.h>
 
 extern void globAddRemoteChannelSender(size_t);
@@ -65,6 +64,7 @@ void Plugin::open() {
 //-----------------------------------------------------------------------------
 void Plugin::close() {
     destroyStream();
+	ioChangedTimer.reset();
 }
 //-----------------------------------------------------------------------------
 void Plugin::destroyStream() {
@@ -83,23 +83,35 @@ void Plugin::process(float **in, float **out, int numSamples) {
         return;
     }
     stream->write(in, numSamples);
-    // write output
-    float *o0 = out[0];
-    float *o1 = out[1];
-    float *i0 = in[0];
-    float *i1 = in[1];
-    while(--numSamples >= 0) {
-        *(o0++) = *(i0++);
-        *(o1++) = *(i1++);
-    }
+    // write into delay stream
+	dcStream.add(in, numSamples, blockSize);
+	// and back
+	dcStream.flush(numSamples, out);
 }
 //-----------------------------------------------------------------------------
 void Plugin::processEvents(sambag::dsp::IMidiEvents *ev) {
 }
 //-----------------------------------------------------------------------------
+namespace {
+	void __onIOChanged(sambag::dsp::IHost *host, size_t blockSize) 
+	{
+		host->delayChanged(blockSize);
+	}
+}
 void Plugin::setBlockSize(int blockSize) {
+	using namespace frx::processing;
 	this->blockSize = blockSize;
 	updateConfiguration();
+	dcStream.setSize(blockSize, blockSize);
+	if (!ioChangedTimer) {
+		ioChangedTimer = FrxAsyncDSPTimer::create(500);
+		ioChangedTimer->EventSender<FrxAsyncDSPTimer::Event>::
+		addTrackedEventListener(
+			boost::bind( &__onIOChanged, getHost(),  blockSize), ioChangedTimer
+		);
+	}
+	ioChangedTimer->stop();
+	ioChangedTimer->start();
 }
 //-----------------------------------------------------------------------------
 void Plugin::setSampleRate(float sampleRate)  {
@@ -203,6 +215,6 @@ int Plugin::setChunk(void *data, int byteSize) {
 }
 //-----------------------------------------------------------------------------
 int Plugin::getLatency() const {
-    return 0;
+    return blockSize;
 }
 }}} // namespace(s)
