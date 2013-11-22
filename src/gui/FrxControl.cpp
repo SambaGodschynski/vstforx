@@ -720,7 +720,7 @@ typedef boost::function<void(fgc::FrxCircuidViewPtr,
 	Components &out, FrxProcessorNodePtr pr)> ExtraF;
 typedef std::map<Loki::TypeInfo, ExtraF> ExtraMap;
 ExtraMap extraMap;
-void addOutParameter(fgc::FrxCircuidViewPtr view, 
+void addOutParameter(fgc::FrxCircuidViewPtr view,
 	Components &out, FrxProcessorNodePtr pr) 
 {
 	using namespace frx::processing;
@@ -742,6 +742,49 @@ void addOutParameter(fgc::FrxCircuidViewPtr view,
 	}
 }
 
+void _addParametersImpl(fgc::FrxCircuidViewPtr view,
+	Components &out, FrxProcessorNodePtr pr, int num, int *ids)
+{
+    using namespace frx::processing;
+	IViewModelMap::Ptr map = getViewModelMap(view);
+	frx::processing::ModelObject::Ptr obj = 
+		map->getModelObject(pr);
+	if (!obj) {
+		return;
+	}
+    ModelObject::Parameters pars;
+	obj->getParameters("*", pars);
+	for (int i=0; i<num; ++i) {
+        FrxComponentPtr knob = dynamic_cast<FrxControl*>(&getFrxControl(view))->
+            _addRelatedKnobToView(view, pr, pars.at( ids[i] ));
+        sc::Number x = pr->getX() + pr->getWidth()/2. + 55.;
+        sc::Number y = pr->getY() - 15. + i*35;
+        knob->setLocation(x,y);
+        out.push_back(knob);
+    }
+}
+
+void addParameters(fgc::FrxCircuidViewPtr view,
+	Components &out, FrxProcessorNodePtr pr, int p_id1)
+{
+    int ids[] = { p_id1 };
+    _addParametersImpl(view, out, pr, 1, &ids[0]);
+}
+void addParameters(fgc::FrxCircuidViewPtr view,
+	Components &out, FrxProcessorNodePtr pr, int p_id1, int p_id2)
+{
+    int ids[] = { p_id1, p_id2 };
+    _addParametersImpl(view, out, pr, 2, &ids[0]);
+}
+void addParameters(fgc::FrxCircuidViewPtr view,
+	Components &out, FrxProcessorNodePtr pr, int p_id1, int p_id2, int p_id3)
+{
+    int ids[] = { p_id1, p_id2, p_id3 };
+    _addParametersImpl(view, out, pr, 3, &ids[0]);
+}
+
+
+
 void _initExtraMap()
 {
 	using namespace boost::assign;
@@ -749,6 +792,14 @@ void _initExtraMap()
 		(Loki::TypeInfo(typeid(FrxPeakTrackerNode)), &addOutParameter)
 		(Loki::TypeInfo(typeid(FrxADSRNode)), &addOutParameter)
 	;
+    // these inserts does not work with boost::assign
+    extraMap.insert(std::make_pair( Loki::TypeInfo(typeid(FrxVolumeNode)), boost::bind( &addParameters, _1, _2, _3, 0)));
+    extraMap.insert(std::make_pair( Loki::TypeInfo(typeid(FrxPanNode)), boost::bind( &addParameters, _1, _2, _3, 0)));
+    extraMap.insert(std::make_pair( Loki::TypeInfo(typeid(FrxInSwitchNode)), boost::bind( &addParameters, _1, _2, _3, 0)));
+    extraMap.insert(std::make_pair( Loki::TypeInfo(typeid(FrxOutSwitchNode)), boost::bind( &addParameters, _1, _2, _3, 0)));
+    extraMap.insert(std::make_pair( Loki::TypeInfo(typeid(FrxInStepNode)), boost::bind( &addParameters, _1, _2, _3, 0, 1, 6)));
+    extraMap.insert(std::make_pair( Loki::TypeInfo(typeid(FrxOutStepNode)), boost::bind( &addParameters, _1, _2, _3, 0, 1, 6)));
+    extraMap.insert(std::make_pair( Loki::TypeInfo(typeid(FrxMIDIReceiver)), boost::bind( &addParameters, _1, _2, _3, 0, 2, 8)));
 }
     
 /**
@@ -768,7 +819,13 @@ void addExtraContent(fgc::FrxCircuidViewPtr view,
 	if (it==extraMap.end()) {
 		return;
 	}
-	it->second(view, out, pr);
+    try {
+        it->second(view, out, pr);
+    } catch (const std::exception &ex) {
+        SAMBAG_LOG_ERR<<"FrxControl::addExtraContent failed: "<<ex.what();
+    } catch(...) {
+        SAMBAG_LOG_ERR<<"FrxControl::addExtraContent failed.";
+    }
 }
 } //namespace(s)
 void FrxControl::addProcessorToView(fgc::FrxCircuidViewPtr view, 
