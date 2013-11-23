@@ -100,6 +100,8 @@ namespace {
 }
 void Plugin::setBlockSize(int blockSize) {
 	using namespace frx::processing;
+    using frx::processing::FrxAsyncDSPTimer;
+    using sambag::com::events::EventSender;
 	this->blockSize = blockSize;
 	updateConfiguration();
 	dcStream.setSize(blockSize, blockSize);
