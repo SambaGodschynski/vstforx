@@ -18,6 +18,7 @@
 #include "com/Settings.h"
 #include <stdlib.h>
 #include <OS_Specific/OS_com.h>
+#include <sambag/com/UnitEx.hpp>
 
 #pragma comment(linker, "\"/manifestdependency:type='Win32' name='Microsoft.VC90.CRT' version='9.0.21022.8' processorArchitecture='X86' publicKeyToken='1fc8b3b9a1e18e3b' language='*'\"")
 
@@ -27,7 +28,9 @@
 int main ( const int argc, char **argv ) {
 
 	::com::initSettings(".");
-
+    
+    sambag::com::unitex::processArguments(argc, argv);
+    
 	WIN32ONLY(
 		_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); //VS memory tracking
 	)
@@ -36,6 +39,9 @@ int main ( const int argc, char **argv ) {
 	cout<<"* VSTForx TestApp *"<<endl;
 	cout<<"testing version: " << SETTINGS.versionToString() << endl;
 	cout<<"==================================="<<endl;
+    if (sambag::com::unitex::ignoreKnownIssues) {
+        cout<<"! ignoring known issues !"<<endl;
+    }
 	
 	// Informiert Test-Listener ueber Testresultate
     CPPUNIT_NS :: TestResult testresult;

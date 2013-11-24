@@ -10,6 +10,7 @@
 #include "com/PluginCollection.h"
 #include "com/Events.h"
 #include "DummyFX.h"
+#include <sambag/com/UnitEx.hpp>
 
 namespace tests {
 //=============================================================================
@@ -19,13 +20,13 @@ class PluginCollectionTest : public CPPUNIT_NS::TestFixture,
 //=============================================================================
 	CPPUNIT_TEST_SUITE( PluginCollectionTest );
 	CPPUNIT_TEST( testConstructor );
-	CPPUNIT_TEST( testScan );
-	CPPUNIT_TEST( testFastScan );
-	CPPUNIT_TEST( testFolderIntegrity1 );
-	CPPUNIT_TEST( testFolderIntegrity2 );
-	CPPUNIT_TEST( testPortability );
-	CPPUNIT_TEST( testMultipleDirectories );
-    CPPUNIT_TEST( testIssue416 );
+	CPPUNIT_TEST_KNOWN_ISSUE( testScan );
+	CPPUNIT_TEST_KNOWN_ISSUE( testFastScan );
+	CPPUNIT_TEST_KNOWN_ISSUE( testFolderIntegrity1 );
+	CPPUNIT_TEST_KNOWN_ISSUE( testFolderIntegrity2 );
+	CPPUNIT_TEST_KNOWN_ISSUE( testPortability );
+	CPPUNIT_TEST_KNOWN_ISSUE( testMultipleDirectories );
+    CPPUNIT_TEST_KNOWN_ISSUE( testIssue416 );
 	CPPUNIT_TEST_SUITE_END();
 private:
 	processing::DummyFX::Ptr dummyFX;

@@ -10,7 +10,7 @@
 #include "processing/ConcreteProcessAdapter.h"
 #include "processing/IHostInfo.h"
 #include "DummyFX.h"
-
+#include <sambag/com/UnitEx.hpp>
 
 namespace tests {
 //=============================================================================
@@ -58,7 +58,7 @@ class GraphTest : public CPPUNIT_NS::TestFixture {
 	CPPUNIT_TEST( testGraphComplex2 );
 	CPPUNIT_TEST( testGraphComplex3 );
 	CPPUNIT_TEST( testSerialization );
-    CPPUNIT_TEST( testGraphIdleHandler );
+    CPPUNIT_TEST_KNOWN_ISSUE( testGraphIdleHandler );
 	CPPUNIT_TEST_EXCEPTION( testJanitorLock, com::ppiError::DeadlockException );
 	CPPUNIT_TEST_SUITE_END();
 private:
