@@ -10,6 +10,7 @@
 #include "tests/MyStringTest.hpp"
 #include <cppunit/CompilerOutputter.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
+#include <cppunit/XmlOutputter.h>
 #include <cppunit/ui/text/TestRunner.h>
 #include "com/one4All.h"
 #include <cppunit/TestResult.h>
@@ -63,8 +64,10 @@ int main ( const int argc, char **argv ) {
     CPPUNIT_NS :: CompilerOutputter compileroutputter (&collectedresults, std::cerr);
     compileroutputter.write ();
 
+    // important stuff happens next
+   std::ofstream xmlFileOut("vstforx_testresult.xml");
+   CPPUNIT_NS::XmlOutputter xmlOut(&collectedresults, xmlFileOut);
+   xmlOut.write();
 
-
-	// Return error code 1 if the one of test failed.
-	return 0 ; //collectedresults.wasSuccessful() ? 0 : 1;
+	return 0;
 }
