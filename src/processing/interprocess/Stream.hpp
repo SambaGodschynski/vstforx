@@ -18,17 +18,10 @@
 #include <sambag/com/PlacementAlloc.hpp>
 #include <processing/AsyncBuffer.hpp>
 #include <boost/static_assert.hpp>
-
-
-namespace si = sambag::com::interprocess;
-
-typedef boost::shared_ptr<si::SharedMemoryObject> SharedMemoryObjectPtr;
-typedef boost::shared_ptr<si::MappedRegion> MappedRegionPtr;
+#include "ShmCom.hpp"
 
 
 namespace frx { namespace processing { namespace interprocess {
-using sambag::com::interprocess::Integer;
-using sambag::com::interprocess::UInteger;
 //=============================================================================
 /**
  * @class IPMemoryPolicy

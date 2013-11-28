@@ -1293,8 +1293,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="4"
-     inkscape:cx="317.9324"
-     inkscape:cy="271.52537"
+     inkscape:cx="140.9324"
+     inkscape:cy="320.27537"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
@@ -4150,7 +4150,7 @@
          id="g5069">
         <path
            transform="matrix(0.98343904,0,0,0.99141286,1.4448586,446.1864)"
-           d="m -75.875,546.59448 a 23.3125,23.125 0 1 1 -46.625,0 23.3125,23.125 0 1 1 46.625,0 z"
+           d="m -75.875,546.59448 c 0,12.77159 -10.437362,23.125 -23.3125,23.125 -12.87514,0 -23.3125,-10.35341 -23.3125,-23.125 0,-12.77158 10.43736,-23.125 23.3125,-23.125 12.875138,0 23.3125,10.35342 23.3125,23.125 z"
            sodipodi:ry="23.125"
            sodipodi:rx="23.3125"
            sodipodi:cy="546.59448"
@@ -4338,6 +4338,69 @@
            d="m -81.25,1003.3622 -1.75,-1.375"
            style="fill:none;stroke:#414141;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
       </g>
+    </g>
+    <g
+       inkscape:export-ydpi="188.32504"
+       inkscape:export-xdpi="188.32504"
+       inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Graphics/remoteChReceiver_solved.png"
+       id="g4305"
+       transform="translate(61.5,-11.75)">
+      <path
+         sodipodi:type="arc"
+         style="stroke:#5ac2ff;stroke-width:4.5;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:none;display:inline"
+         id="path4307"
+         sodipodi:cx="196.00116"
+         sodipodi:cy="749.45532"
+         sodipodi:rx="1.016466"
+         sodipodi:ry="0.9722718"
+         d="m 197.01763,749.45532 a 1.016466,0.9722718 0 1 1 -2.03294,0 1.016466,0.9722718 0 1 1 2.03294,0 z"
+         transform="matrix(1.308543,0,0,-1.2771132,-127.76067,1683.5445)"
+         inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Graphics/remote.png"
+         inkscape:export-xdpi="213.12584"
+         inkscape:export-ydpi="213.12584" />
+      <path
+         style="fill:none;stroke:#5ac2ff;stroke-width:4.19999981;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+         d="m 122.14645,718.44455 c 1.72791,-1.22978 4.12251,-1.79519 6.48428,-1.76263 2.34003,0.0323 4.64784,0.65156 6.24305,1.79333"
+         id="path4309"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="csc"
+         inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Graphics/remote.png"
+         inkscape:export-xdpi="213.12584"
+         inkscape:export-ydpi="213.12584" />
+      <path
+         sodipodi:nodetypes="csc"
+         inkscape:connector-curvature="0"
+         id="path4311"
+         d="m 118.30156,711.85958 c 2.65657,-3.11004 6.50073,-4.12695 10.41535,-4.10995 3.62896,0.0158 7.31846,0.83304 10.17854,3.83128"
+         style="fill:none;stroke:#5ac2ff;stroke-width:4.19999981;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+         inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Graphics/remote.png"
+         inkscape:export-xdpi="213.12584"
+         inkscape:export-ydpi="213.12584" />
+      <path
+         inkscape:export-ydpi="213.12584"
+         inkscape:export-xdpi="213.12584"
+         inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Graphics/remote.png"
+         transform="matrix(0.22810826,-0.02886589,0.03298953,0.26069471,66.69212,645.60482)"
+         d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
+         sodipodi:ry="77.781746"
+         sodipodi:rx="88.893425"
+         sodipodi:cy="301.81885"
+         sodipodi:cx="228.29448"
+         id="path4313"
+         style="fill:#ffffff;fill-opacity:0;fill-rule:nonzero;stroke:#5ac2ff;stroke-width:37.28166962;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+      <text
+         xml:space="preserve"
+         style="font-size:77.85340118px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#169400;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
+         x="93.606972"
+         y="778.86078"
+         id="text4315"
+         sodipodi:linespacing="125%"
+         transform="scale(1.0461711,0.95586658)"><tspan
+           sodipodi:role="line"
+           id="tspan4317"
+           x="93.606972"
+           y="778.86078">✓</tspan></text>
     </g>
   </g>
   <g
