@@ -17,15 +17,15 @@ class TestIPSession : public CPPUNIT_NS::TestFixture {
 private:
 	CPPUNIT_TEST_SUITE( TestIPSession );
 	CPPUNIT_TEST( testSession );
-    CPPUNIT_TEST( testSessionHostStartDelayed );
     CPPUNIT_TEST( testNoHost );
     CPPUNIT_TEST( testHostLost );
+    CPPUNIT_TEST( testFailures );
 	CPPUNIT_TEST_SUITE_END();
 public:
 	void testSession();
-    void testSessionHostStartDelayed();
     void testNoHost();
     void testHostLost();
+    void testFailures();
 };
 
 } // namespace

@@ -20,19 +20,29 @@
 #include <boost/static_assert.hpp>
 #include <boost/optional.hpp>
 #include "ShmCom.hpp"
-
+#include <sambag/com/Thread.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 //=============================================================================
 /** 
   * @class Session.
   * Class for a bidirection interprocess communication.
-  * Communictaion is provided by 2 channels. Every channel has an an
-  * argument and a return buffer.
+  * Communictaion is provided by 2 channels A and B. Every channel has an an
+  * argument and a return buffer and will be processed by a seperated
+  * thread.
   */
 class Session {
 //=============================================================================
 public:
+    //-------------------------------------------------------------------------
+    SAMBAG_DERIVATED_EXCEPTION_CLASS(sambag::com::exceptions::IllegalStateException,
+        TimeOut
+    );
+    //-------------------------------------------------------------------------
+    SAMBAG_DERIVATED_EXCEPTION_CLASS(sambag::com::exceptions::IllegalStateException,
+        Exception
+    );
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<Session> Ptr;
     //-------------------------------------------------------------------------
@@ -46,8 +56,11 @@ public:
     typedef UInteger BffRetSize; //<< size of the channel return buffer
     typedef boost::tuple<BffArgSize, BffRetSize> ChannelSize;
     //-------------------------------------------------------------------------
-    enum { PROCEEDED = -2, IDLE =-1 };
+    enum { IDLE = -1 };
 private:
+    //-------------------------------------------------------------------------
+    typedef boost::shared_ptr<boost::thread> ThreadPtr;
+    ThreadPtr processThread;
     //-------------------------------------------------------------------------
     /**
      * @brief processes requests in a seperate thread.
@@ -56,8 +69,6 @@ private:
     //-------------------------------------------------------------------------
     struct IPChannel;
     IPChannel *channelA, *channelB, *processChannel, *requestChannel;
-    //-------------------------------------------------------------------------
-    IPChannel * getChannel() const;
     //-------------------------------------------------------------------------
     SharedMemoryObjectPtr shm;
     MappedRegionPtr mapped_region;
@@ -72,13 +83,13 @@ private:
     //-------------------------------------------------------------------------
     typedef boost::interprocess::interprocess_upgradable_mutex Mutex;
     //-------------------------------------------------------------------------
-    Mutex *mutex;
+    Integer *sleepingTime;
     //-------------------------------------------------------------------------
     Integer *num_references;
     //-------------------------------------------------------------------------
     void openBuffer();
     //-------------------------------------------------------------------------
-    void destroyBuffer();
+    void destroyShm();
     //-------------------------------------------------------------------------
     Integer getNeededSize(ChannelSize a, ChannelSize b);
     //-------------------------------------------------------------------------
@@ -87,17 +98,37 @@ private:
     typedef boost::tuple<ChannelSize, ChannelSize> ChannelSizes;
     void assignMemory(sambag::com::interprocess::PointerIterator &pIt,
         boost::optional<ChannelSizes> channelSizes = boost::optional<ChannelSizes>());
+    //-------------------------------------------------------------------------
+    void startProcessThread();
+    //-------------------------------------------------------------------------
+    void * waitForResultImpl(Opc opc, Integer timeout);
 protected:
     //-------------------------------------------------------------------------
-    virtual Opc processImpl(Opc opc, void *argmen, void *retmem) = 0;
+    virtual void processImpl(Opc opc, void *argmen, void *retmem) = 0;
     //-------------------------------------------------------------------------
     /**
      * @brief puts opc into related channel and waits until request is processed.
+     * @param opcode
+     * @param time in millisec to wait, throws TimeOut after elapsed with no result.
+     * @return retmem ptr
      */
-    void waitForResult(Opc opc);
+    template <typename T>
+    T waitForResult(Opc opc, Integer timeout=1000) {
+        return static_cast<T>(waitForResultImpl(opc, timeout));
+    }
     //-------------------------------------------------------------------------
+    void waitForResult(Opc opc, Integer timeout=1000) {
+        waitForResultImpl(opc, timeout);
+    }
+    //-------------------------------------------------------------------------
+    /**
+     * @return argmem for an request.
+     */
     void * getArgmem() const;
     //-------------------------------------------------------------------------
+    /**
+     * @return retmem for an request.
+     */
     void * getRetmem() const;
     //-------------------------------------------------------------------------
     /**
@@ -114,6 +145,21 @@ protected:
      * @throws IllegalStateException id is already occupied.
      */
     Session(const std::string &id);
+    //-------------------------------------------------------------------------
+    /**
+     * @param the max. sleeping time while waiting for result in millisec
+     */
+    void setMaxSleeping (Integer ms);
+    //-------------------------------------------------------------------------
+    /**
+     * @return the max. sleeping time for channel threads
+     */
+     Integer getMaxSleeping() const {
+        if (!sleepingTime) {
+            return 0;
+        }
+        return *sleepingTime;
+     }
 public:
     //-------------------------------------------------------------------------
     virtual ~Session();

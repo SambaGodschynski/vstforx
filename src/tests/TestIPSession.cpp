@@ -30,6 +30,19 @@ struct OpClose {
     enum {OPC = 1};
 };
 
+struct OpWhoAreYou {
+    enum {OPC = 2};
+    typedef struct Ret { char * value; } *RetPtr;
+    typedef struct Arg {} *ArgPtr;
+};
+
+struct OpHello {
+    enum {OPC = 3};
+    typedef struct Ret { char * value; } *RetPtr;
+    typedef struct Arg {} *ArgPtr;
+};
+
+
 template <class Op>
 void perform(void *argmem, void *retmem) {
     typename Op::ArgPtr arg = static_cast<typename Op::ArgPtr>(argmem);
@@ -40,39 +53,63 @@ void perform(void *argmem, void *retmem) {
 struct HostSession : Session {
     bool isRunning;
     HostSession(const std::string &id) :
-        Session(id, ChannelSize(100,100), ChannelSize(10,10) ),
+        Session(id, ChannelSize(100,100), ChannelSize(100,100) ),
         isRunning(true)
     {
     }
-    Opc processImpl(Opc opc, void *argmen, void *retmem) {
+    void processImpl(Opc opc, void *argmen, void *retmem) {
         if (opc == OpAdd::OPC) {
             perform<OpAdd>(argmen, retmem);
         }
         if (opc == OpClose::OPC) {
             isRunning = false;
         }
-        return PROCEEDED;
+        if (opc == OpHello::OPC) {
+            // ask for callers name
+            char * name = waitForResult<char*>(OpWhoAreYou::OPC);
+            char * ret = static_cast<char*>(retmem);
+            std::string rstr("Hello ");
+            rstr+=name;
+            strcpy(ret, rstr.c_str());
+        }
     }
 };
     
 struct ClientSession : Session {
-    ClientSession(const std::string &id) : Session(id) {}
-    Opc processImpl(Opc opc, void *argmen, void *retmem) {
-        return PROCEEDED;
+    ClientSession(const std::string &id) : Session(id),
+        causeChannelOverload(false)
+    {}
+    void processImpl(Opc opc, void *argmen, void *retmem) {
+        if (opc == OpWhoAreYou::OPC) {
+            // ask for callers name
+            char * ret = static_cast<char*>(retmem);
+            strcpy(ret, "Mike");
+            
+            if (causeChannelOverload) {
+                waitForResult<char*>(OpHello::OPC);
+            }
+        }
+
     }
     int add(int a, int b) {
-        waitForResult(OpAdd::OPC);
-        OpAdd::RetPtr ret = static_cast<OpAdd::RetPtr>(getRetmem());
+        OpAdd::ArgPtr args = static_cast<OpAdd::ArgPtr>(getArgmem());
+        args->a = a;
+        args->b = b;
+        OpAdd::RetPtr ret = waitForResult<OpAdd::RetPtr>(OpAdd::OPC);
         return ret->value;
     }
-    int close() {
+    void closeHost() {
         waitForResult(OpClose::OPC);
-        return PROCEEDED;
     }
+    std::string greetHost() {
+        char * res = waitForResult<char*>(OpHello::OPC);
+        return std::string(res);
+    }
+    bool causeChannelOverload; // Cl requests Ho requests> Cl requests Ho
 };
 
-void th_host() {
-    HostSession session("TestIPSession");
+void th_host(std::string sId) {
+    HostSession session(sId);
     while(session.isRunning) {
         boost::this_thread::sleep(boost::posix_time::millisec(100));
     }
@@ -89,21 +126,58 @@ namespace tests {
 //=============================================================================
 //-----------------------------------------------------------------------------
 void TestIPSession::testSession() {
-    boost::thread host( &th_host );
-    ClientSession session("TestIPSession");
+    std::string sId("testSession");
+    boost::thread host( boost::bind( &th_host, sId ));
+    boost::this_thread::sleep(boost::posix_time::millisec(100));
+    ClientSession session(sId);
     CPPUNIT_ASSERT_EQUAL( (int)2, session.add(1, 1) );
     CPPUNIT_ASSERT_EQUAL( (int)20, session.add(10, 10) );
     CPPUNIT_ASSERT_EQUAL( (int)200, session.add(100, 100) );
-    session.close();
+    CPPUNIT_ASSERT_EQUAL( std::string("Hello Mike"), session.greetHost() );
+    session.closeHost();
     host.join();
 }
 //-----------------------------------------------------------------------------
-void TestIPSession::testSessionHostStartDelayed() {
-}
-//-----------------------------------------------------------------------------
 void TestIPSession::testNoHost() {
+    std::string sId("testNoHost");
+    CPPUNIT_ASSERT_THROW(ClientSession session(sId), Session::Exception);
 }
 //-----------------------------------------------------------------------------
 void TestIPSession::testHostLost() {
+    std::string sId("testHostLost");
+    boost::thread host( boost::bind( &th_host, sId ));
+    boost::this_thread::sleep(boost::posix_time::millisec(100));
+    ClientSession session(sId);
+    CPPUNIT_ASSERT_EQUAL( (int)2, session.add(1, 1) );
+    session.closeHost();
+    host.join();
+    CPPUNIT_ASSERT_THROW(session.add(1, 1), Session::TimeOut);
+}
+//-----------------------------------------------------------------------------
+void TestIPSession::testFailures() {
+    {
+        std::string sId("testFailures");
+        HostSession host_session(sId);
+        CPPUNIT_ASSERT_THROW(HostSession second(sId), Session::Exception);
+        ClientSession session(sId);
+        CPPUNIT_ASSERT_EQUAL( (int)2, session.add(1, 1) );
+    }
+    { // cause overload
+        std::string sId("testFailures");
+        boost::thread host( boost::bind( &th_host, sId ));
+        boost::this_thread::sleep(boost::posix_time::millisec(100));
+        ClientSession session(sId);
+        
+        session.causeChannelOverload = true;
+        
+        CPPUNIT_ASSERT_THROW( session.greetHost(), Session::TimeOut );
+        session.closeHost();
+        host.join();
+    
+    }
 }
 } //namespace
+
+
+
+
