@@ -24,6 +24,36 @@
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
+namespace helper {
+/**
+ * @brief delegation between a function definition and a executing function 
+ * Function concept:
+ * struct Function {
+ *     typedef struct Arg {} *ArgPtr;
+ *     typedef struct Ret {} *RetPtr;
+ * };
+ *
+ * example:
+ * struct ExClass {
+ *   void processImpl(void *arg, void *ret) {
+ *       delegate<Function>(&ExClass::doFunction, this, arg, ret);
+ *   }
+ *   doFunction(Function::ArgPtr, Function::RetPtr);
+ * };
+ */
+template <class Caller, typename Function>
+struct Functor {
+    typedef void (Caller::*F)(typename Function::ArgPtr, typename Function::RetPtr);
+};
+template <class Function, class Caller>
+void delegate( typename Functor<Caller, Function>::F f,
+                Caller *caller, void *arg,  void *ret)
+{
+    (caller->*f)(static_cast<typename Function::ArgPtr>(arg),
+                 static_cast<typename Function::RetPtr>(ret));
+}
+
+} // namespace
 //=============================================================================
 /** 
   * @class Session.
@@ -142,9 +172,12 @@ protected:
      * @note creates a session.
      * uses channel B for process and A for request
      * @param tries to open this id
-     * @throws IllegalStateException id is already occupied.
      */
     Session(const std::string &id);
+    //-------------------------------------------------------------------------
+    const std::string & getId() const {
+        return id;
+    }
     //-------------------------------------------------------------------------
     /**
      * @param the max. sleeping time while waiting for result in millisec

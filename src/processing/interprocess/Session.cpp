@@ -67,11 +67,18 @@ void Session::process() {
     while (channelA && channelB)
     {
         if ( processChannel->opc != IDLE ) {
-            processImpl(
-                processChannel->opc,
-                processChannel->argmem.get(),
-                processChannel->retmem.get()
-            );
+            try {
+                processImpl(
+                    processChannel->opc,
+                    processChannel->argmem.get(),
+                    processChannel->retmem.get()
+                );
+            } catch(const std::exception &ex) {
+                SAMBAG_LOG_ERR<<"Session::process(): "<<ex.what();
+            }
+            catch(...) {
+                SAMBAG_LOG_ERR<<"Session::process(): unkown";
+            }
         }
         processChannel->opc = IDLE;
         boost::this_thread::sleep(boost::posix_time::millisec(*sleepingTime));
@@ -99,10 +106,7 @@ void Session::openBuffer() {
     memory_ptr = raw;
     pIt.setPointer(raw, memorySize);
     assignMemory(pIt);
-    if (*num_references>=2) {
-        SAMBAG_THROW(Exception,
-        "session already established");
-    }
+    
     ++(*num_references);
 
     processChannel = channelB;

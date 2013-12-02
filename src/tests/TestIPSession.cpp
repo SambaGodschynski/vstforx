@@ -153,29 +153,6 @@ void TestIPSession::testHostLost() {
     host.join();
     CPPUNIT_ASSERT_THROW(session.add(1, 1), Session::TimeOut);
 }
-//-----------------------------------------------------------------------------
-void TestIPSession::testFailures() {
-    {
-        std::string sId("testFailures");
-        HostSession host_session(sId);
-        CPPUNIT_ASSERT_THROW(HostSession second(sId), Session::Exception);
-        ClientSession session(sId);
-        CPPUNIT_ASSERT_EQUAL( (int)2, session.add(1, 1) );
-    }
-    { /* cause overload
-        std::string sId("testFailures");
-        boost::thread host( boost::bind( &th_host, sId ));
-        boost::this_thread::sleep(boost::posix_time::millisec(100));
-        ClientSession session(sId);
-        
-        session.causeChannelOverload = true;
-        
-        CPPUNIT_ASSERT_THROW( session.greetHost(), Session::TimeOut );
-        session.closeHost();
-        host.join();
-      */
-    }
-}
 } //namespace
 
 
