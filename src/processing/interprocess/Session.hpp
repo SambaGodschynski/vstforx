@@ -22,13 +22,15 @@
 #include "ShmCom.hpp"
 #include <sambag/com/Thread.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <loki/Typelist.h>
 
 namespace frx { namespace processing { namespace interprocess {
 namespace helper {
+
 /**
- * @brief delegation between a function definition and a executing function 
- * Function concept:
- * struct Function {
+ * @brief delegation between a operation definition and a executing function 
+ * Operation concept:
+ * struct Operation {
  *     typedef struct Arg {} *ArgPtr;
  *     typedef struct Ret {} *RetPtr;
  * };
@@ -36,22 +38,86 @@ namespace helper {
  * example:
  * struct ExClass {
  *   void processImpl(void *arg, void *ret) {
- *       delegate<Function>(&ExClass::doFunction, this, arg, ret);
+ *       delegate<Operation>(&ExClass::doOperation, this, arg, ret);
  *   }
- *   doFunction(Function::ArgPtr, Function::RetPtr);
+ *   doOperation(Operation::ArgPtr, Operation::RetPtr);
  * };
  */
-template <class Caller, typename Function>
+template <class Caller, typename Operation>
 struct Functor {
-    typedef void (Caller::*F)(typename Function::ArgPtr, typename Function::RetPtr);
+    typedef void (Caller::*F)(typename Operation::ArgPtr, typename Operation::RetPtr);
 };
-template <class Function, class Caller>
-void delegate( typename Functor<Caller, Function>::F f,
+template <class Operation, class Caller>
+void delegate( typename Functor<Caller, Operation>::F f,
                 Caller *caller, void *arg,  void *ret)
 {
-    (caller->*f)(static_cast<typename Function::ArgPtr>(arg),
-                 static_cast<typename Function::RetPtr>(ret));
+    (caller->*f)(static_cast<typename Operation::ArgPtr>(arg),
+                 static_cast<typename Operation::RetPtr>(ret));
 }
+
+namespace {
+template <class T>
+struct IsNullType {
+    enum { Value = false };
+};
+template <>
+struct IsNullType<Loki::NullType> {
+    enum { Value = true };
+};
+template <int I, class Caller, class List>
+struct find_delegate {
+    static bool _do(int opc, Caller *caller, void *args, void *rets) {
+        if (opc != I) {
+            return find_delegate<I-1, Caller, List>::_do(
+                opc,
+                caller,
+                args,
+                rets);
+        }
+        typedef typename Loki::TL::TypeAt<List, I>::Result Operation;
+        BOOST_STATIC_ASSERT( !IsNullType<Operation>::Value );
+        delegate<Operation, Caller>(&Caller::auto_opc_callback,
+            caller,
+            args,
+            rets);
+        
+        return true;
+    };
+};
+
+template <class Caller, class List>
+struct find_delegate<-1, Caller, List> {
+    static bool _do(int opc, Caller *caller, void *args, void *rets) {
+        return false;
+    };
+};
+
+} // namespace
+/**
+ * A Helperclass for Managing OPCs using a typelist.
+ */
+template <class OperationList>
+struct AutoOPC {
+    typedef OperationList OPs;
+    enum { NumOps = Loki::TL::Length<OPs>::value };
+    template <class T>
+    static int getOPC() {
+        return Loki::TL::IndexOf<OPs, T>::value;
+    }
+    /**
+     * delegates call to related opc method.
+     * Assumes that Caller impl:
+     * void auto_opc_callback(args, rets);
+     * @return flase if no related opc impl. were found
+     */
+    template <class Caller>
+    static bool process(int opc, Caller *caller, void *args, void *rets) {
+        return find_delegate<NumOps-1, Caller, OPs>::_do(opc,
+            caller,
+            args,
+            rets);
+    }
+};
 
 } // namespace
 //=============================================================================

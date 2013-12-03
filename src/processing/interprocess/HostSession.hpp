@@ -14,21 +14,28 @@
 #include <loki/Typelist.h>
 
 namespace frx { namespace processing { namespace interprocess {
-struct HostSessionBase {
-    struct CloseHost {
-        enum { OpCode = 0 };
-        typedef struct Arg {} *ArgPtr;
-        typedef struct Ret {} *RetPtr;
-    };
-};
-
 //=============================================================================
 /** 
   * @class Bridge Host Session.
   */
-class HostSession : public HostSessionBase, public Session
+class HostSession : public Session
 {
 //=============================================================================
+public:
+    //-------------------------------------------------------------------------
+    struct Operations {
+        struct CloseHost {
+            typedef struct Arg {} *ArgPtr;
+            typedef struct Ret {} *RetPtr;
+        };
+        struct CreatePluginSession {
+            typedef struct Arg {} *ArgPtr;
+            typedef struct Ret { char * id; } *RetPtr;
+        };
+        typedef LOKI_TYPELIST_2(CloseHost, CreatePluginSession) TypeList;
+        typedef helper::AutoOPC<TypeList> OpcManager;
+    };
+protected:
     //-------------------------------------------------------------------------
     void processImpl(Opc opc, void *argmen, void *retmem);
 private:
@@ -41,17 +48,20 @@ public:
     void stopMainLoop();
     //-------------------------------------------------------------------------
     HostSession(const std::string &id);
-private:
     ///////////////////////////////////////////////////////////////////////////
     //-------------------------------------------------------------------------
-    void doClose(CloseHost::ArgPtr, CloseHost::RetPtr);
+    void auto_opc_callback(Operations::CloseHost::ArgPtr,
+        Operations::CloseHost::RetPtr);
+    //-------------------------------------------------------------------------
+    void auto_opc_callback(Operations::CreatePluginSession::ArgPtr,
+        Operations::CreatePluginSession::RetPtr);
 }; // HostSession
 
 //=============================================================================
 /** 
   * @class HostSessionClient.
   */
-class HostSessionClient : public HostSessionBase, public Session
+class HostSessionClient : public Session
 {
 //=============================================================================
     

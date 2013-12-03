@@ -7,6 +7,7 @@
 
 #include "HostSession.hpp"
 #include <sambag/com/Thread.hpp>
+#include <sambag/com/exceptions/IllegalArgumentException.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 //=============================================================================
@@ -21,10 +22,10 @@ HostSession::HostSession(const std::string &id) : Session(id,
 }
 //-----------------------------------------------------------------------------
 void HostSession::processImpl(Opc opc, void *argmem, void *retmem) {
-    switch (opc) {
-        case CloseHost::OpCode :
-            helper::delegate<CloseHost>(&HostSession::doClose, this, argmem, retmem);
-            break;
+    if ( !Operations::OpcManager::process(opc, this, argmem, retmem)) {
+        using sambag::com::exceptions::IllegalArgumentException;
+        SAMBAG_THROW(IllegalArgumentException,
+        "HostSession::processImpl opc: " + sambag::com::toString(opc) + " not supported");
     }
 }
 //-----------------------------------------------------------------------------
@@ -36,14 +37,22 @@ void HostSession::startMainLoop() {
     }
     SAMBAG_LOG_INFO<<getId()<<" main thread ended";
 }
-///////////////////////////////////////////////////////////////////////////////
-//-----------------------------------------------------------------------------
-void HostSession::doClose(CloseHost::ArgPtr, CloseHost::RetPtr) {
-    stopMainLoop();
-}
 //-----------------------------------------------------------------------------
 void HostSession::stopMainLoop() {
     SAMBAG_LOG_INFO<<getId()<<": closing main thread";
     isRunning = false;
+}
+///////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------
+void HostSession::auto_opc_callback(Operations::CloseHost::ArgPtr,
+    Operations::CloseHost::RetPtr)
+{
+    stopMainLoop();
+}
+//-----------------------------------------------------------------------------
+void HostSession::auto_opc_callback(Operations::CreatePluginSession::ArgPtr,
+    Operations::CreatePluginSession::RetPtr)
+{
+    
 }
 }}} // namespace(s)

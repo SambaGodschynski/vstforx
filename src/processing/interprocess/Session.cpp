@@ -189,7 +189,14 @@ void Session::assignMemory(sambag::com::interprocess::PointerIterator &pIt,
 //-----------------------------------------------------------------------------
 void * Session::waitForResultImpl(Opc opc, Integer timeout) {
     using namespace boost::interprocess;
-    scoped_lock<Mutex> lock(requestChannel->mutex);
+    
+    boost::posix_time::ptime ptout = boost::posix_time::from_time_t(std::time(NULL));
+    ptout += boost::posix_time::milliseconds(timeout);
+    
+    scoped_lock<Mutex> lock(requestChannel->mutex, ptout);
+    if (!lock) {
+        SAMBAG_THROW(TimeOut, "Session::waitForResult timed out");
+    }
     requestChannel->opc = opc;
     int waited = 0;
     while (requestChannel->opc!=IDLE) {

@@ -19,11 +19,13 @@ private:
 	CPPUNIT_TEST( testSession );
     CPPUNIT_TEST( testNoHost );
     CPPUNIT_TEST( testHostLost );
+    CPPUNIT_TEST( testFailures );
 	CPPUNIT_TEST_SUITE_END();
 public:
 	void testSession();
     void testNoHost();
     void testHostLost();
+    void testFailures();
 };
 
 } // namespace

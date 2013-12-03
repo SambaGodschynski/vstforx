@@ -16,7 +16,7 @@
 #include <sambag/com/SharedMemoryImpl.hpp> 
 
 namespace {
-    const int MAX_SESSIONS = 1024;
+    const int MAX_SESSIONS = 128; // TODO: fails with values > 150
     const int CH_MAX_CHAR = 100;
 	//                        session_id              object_id         channel_name
     typedef boost::tuple<char[CH_MAX_CHAR], char[CH_MAX_CHAR], char[CH_MAX_CHAR]> RawSessionData;

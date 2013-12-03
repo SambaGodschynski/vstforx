@@ -11,6 +11,7 @@
 #include <loki/Singleton.h>
 #include <string>
 #include "SessionManager.hpp"
+#include "PluginSession.hpp"
 
 namespace frx { namespace processing { namespace interprocess {
 //=============================================================================
@@ -35,7 +36,8 @@ public:
     //-------------------------------------------------------------------------
     const std::string & getHostPath() const;
     //-------------------------------------------------------------------------
-    
+    std::string getHostSessionId() const;
+    //-------------------------------------------------------------------------
 }; // BridgeSessionManager
 }}} // namespace(s)
 

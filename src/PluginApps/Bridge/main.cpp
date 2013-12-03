@@ -23,10 +23,7 @@ void checkIsNeeded(frx::processing::interprocess::HostSession *session_ptr) {
 int main(int argc, char **argv) {
     using namespace frx::processing;
     using namespace frx::processing::interprocess;
-    std::string id("VSTForx.Bridge.Mainsession2");
-    if (argc>=2) {
-        id += std::string(argv[1]);
-    }
+    std::string id( BridgeSessionManager::instance().getHostSessionId() );
     typedef sambag::com::BoostTimer2 AutoCloseTimer;
     AutoCloseTimer::WorkerThreadHolder wth = AutoCloseTimer::startWorkerThread();
     
