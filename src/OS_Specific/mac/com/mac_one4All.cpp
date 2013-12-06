@@ -2,7 +2,7 @@
  * ===========================================================================================================
  * mac_one4All.cpp
  *      Author: Johannes Unger
- * ===========================================================================================================
+ * ============================================================================
  */
 
 #ifdef FRX_OS_MAC
@@ -16,18 +16,18 @@
 
 
 namespace com {
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool isPlugFilename ( const std::string &filename ) {
 	return Filename(filename).extension() == ".vst"; 
 } 
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool isDirectory ( const std::string &filename ) {
 	sambag::com::Location p(filename);
 	boost::filesystem::file_status s = boost::filesystem::status(p); 
 	// unter OSX sind plugs und apps verzeichnisse
 	return is_directory (s) &&  p.extension() != ".vst" &&  p.extension() != ".app";
 } 	
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 MessageBoxReturn osMessageBox ( const std::string &title, const std::string &text, const MessageBoxType &type ) {
     CFStringRef header_ref = CFStringCreateWithCString( NULL, title.c_str(), title.length() );
     CFStringRef message_ref = CFStringCreateWithCString( NULL, text.c_str(), text.length() );
@@ -78,10 +78,14 @@ MessageBoxReturn osMessageBox ( const std::string &title, const std::string &tex
 	}
 	return MSG_RET_NONE;
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 std::string osSelectDirectory ( const std::string &wndTitle, const std::string &startPath, void *parentWindow)
 {
 	return frx::com::CocoaImpl::selectDirectory(wndTitle, startPath);
+}
+//-----------------------------------------------------------------------------
+void startProcess(const char *path, int argc, const char **argv) {
+    frx::com::CocoaImpl::startProcess(path, argc, argv);
 }
 } // namespace com
 

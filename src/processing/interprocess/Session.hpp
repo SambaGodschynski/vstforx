@@ -23,6 +23,8 @@
 #include <sambag/com/Thread.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <loki/Typelist.h>
+#include <loki/HierarchyGenerators.h>
+
 
 namespace frx { namespace processing { namespace interprocess {
 namespace helper {
@@ -92,6 +94,29 @@ struct find_delegate<-1, Caller, List> {
     };
 };
 
+template <int I, class List>
+struct max_argmem {
+    enum { HeadSize = sizeof(typename Loki::TL::TypeAt<List, I>::Result::Arg) };
+    enum { PreSize = max_argmem<I-1, List>::Value };
+    enum { Value = HeadSize > PreSize ? HeadSize : PreSize };
+};
+template <class List>
+struct max_argmem<-1, List> {
+    enum { Value = 1 }; // to avoid malloc problems min size is always 1
+};
+
+template <int I, class List>
+struct max_retmem {
+    enum { HeadSize = sizeof(typename Loki::TL::TypeAt<List, I>::Result::Ret) };
+    enum { PreSize = max_retmem<I-1, List>::Value };
+    enum { Value = HeadSize > PreSize ? HeadSize : PreSize };
+};
+template <class List>
+struct max_retmem<-1, List> {
+    enum { Value = 1 }; // to avoid malloc problems min size is always 1
+};
+
+
 } // namespace
 /**
  * A Helperclass for Managing OPCs using a typelist.
@@ -117,6 +142,8 @@ struct AutoOPC {
             args,
             rets);
     }
+    enum { MaxArgmemSize = max_argmem<NumOps-1, OPs>::Value };
+    enum { MaxRetmemSize = max_retmem<NumOps-1, OPs>::Value };
 };
 
 } // namespace
@@ -153,6 +180,8 @@ public:
     typedef boost::tuple<BffArgSize, BffRetSize> ChannelSize;
     //-------------------------------------------------------------------------
     enum { IDLE = -1 };
+    //-------------------------------------------------------------------------
+    static const int DEFAULT_SLEEPING_TIME = 100;
 private:
     //-------------------------------------------------------------------------
     typedef boost::shared_ptr<boost::thread> ThreadPtr;
@@ -213,7 +242,7 @@ protected:
         return static_cast<T>(waitForResultImpl(opc, timeout));
     }
     //-------------------------------------------------------------------------
-    void waitForResult(Opc opc, Integer timeout=1000) {
+    void waitForResult(Opc opc, Integer timeout=5000) {
         waitForResultImpl(opc, timeout);
     }
     //-------------------------------------------------------------------------

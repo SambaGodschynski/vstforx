@@ -27,7 +27,7 @@ struct Session::IPChannel {
 Session::Session(const std::string &id, ChannelSize a, ChannelSize b) : id(id)
 {
     createBuffer(a, b);
-    setMaxSleeping(10);
+    setMaxSleeping(DEFAULT_SLEEPING_TIME);
 }
 //-----------------------------------------------------------------------------
 void Session::setMaxSleeping (Integer ms) {
@@ -79,8 +79,10 @@ void Session::process() {
             catch(...) {
                 SAMBAG_LOG_ERR<<"Session::process(): unkown";
             }
+            processChannel->opc = IDLE;
+
         }
-        processChannel->opc = IDLE;
+        SAMBAG_ASSERT(sleepingTime);
         boost::this_thread::sleep(boost::posix_time::millisec(*sleepingTime));
     }
     SAMBAG_LOG_INFO<<"session process thread closed";
@@ -107,6 +109,10 @@ void Session::openBuffer() {
     pIt.setPointer(raw, memorySize);
     assignMemory(pIt);
     
+    if (*num_references>=2) {
+        SAMBAG_THROW(Exception,
+        "session already established");
+    }
     ++(*num_references);
 
     processChannel = channelB;
@@ -189,13 +195,18 @@ void Session::assignMemory(sambag::com::interprocess::PointerIterator &pIt,
 //-----------------------------------------------------------------------------
 void * Session::waitForResultImpl(Opc opc, Integer timeout) {
     using namespace boost::interprocess;
-    
+    SAMBAG_ASSERT(sleepingTime);
+    if (timeout<=*sleepingTime) {
+        SAMBAG_LOG_WARN<<"Session: "<<id<<" sleeping time is longer than timeout.";
+    }
     boost::posix_time::ptime ptout = boost::posix_time::from_time_t(std::time(NULL));
     ptout += boost::posix_time::milliseconds(timeout);
     
     scoped_lock<Mutex> lock(requestChannel->mutex, ptout);
     if (!lock) {
-        SAMBAG_THROW(TimeOut, "Session::waitForResult timed out");
+        std::stringstream ss;
+        ss<<"Session "<<id<<" OPC("<<opc<<") timed out";
+        SAMBAG_THROW(TimeOut, ss.str());
     }
     requestChannel->opc = opc;
     int waited = 0;
@@ -203,7 +214,9 @@ void * Session::waitForResultImpl(Opc opc, Integer timeout) {
         boost::this_thread::sleep(boost::posix_time::millisec(*sleepingTime));
         waited+=*sleepingTime;
         if (waited>=timeout) {
-            SAMBAG_THROW(TimeOut, "Session::waitForResult timed out");
+            std::stringstream ss;
+            ss<<"Session "<<id<<" OPC("<<opc<<") timed out";
+            SAMBAG_THROW(TimeOut, ss.str());
         }
     }
     return getRetmem();

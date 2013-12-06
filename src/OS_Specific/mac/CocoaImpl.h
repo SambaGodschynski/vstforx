@@ -24,6 +24,8 @@ public:
      */
     static std::string selectDirectory(const std::string &wndTitle,
                                        const std::string &startPath="");
+    //-------------------------------------------------------------------------
+    static void startProcess(const char *path, int argc, const char **argv);
 }; // CocoaHelper
 }} // namespace(s)
 

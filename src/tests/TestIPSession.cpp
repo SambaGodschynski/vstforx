@@ -134,7 +134,7 @@ namespace tests {
 void TestIPSession::testSession() {
     std::string sId("testSession");
     boost::thread host( boost::bind( &th_host, sId ));
-    boost::this_thread::sleep(boost::posix_time::millisec(100));
+    boost::this_thread::sleep(boost::posix_time::millisec(Session::DEFAULT_SLEEPING_TIME + 100));
     ClientSession session(sId);
     CPPUNIT_ASSERT_EQUAL( (int)2, session.add(1, 1) );
     CPPUNIT_ASSERT_EQUAL( (int)20, session.add(10, 10) );
@@ -152,7 +152,7 @@ void TestIPSession::testNoHost() {
 void TestIPSession::testHostLost() {
     std::string sId("testHostLost");
     boost::thread host( boost::bind( &th_host, sId ));
-    boost::this_thread::sleep(boost::posix_time::millisec(100));
+    boost::this_thread::sleep(boost::posix_time::millisec(Session::DEFAULT_SLEEPING_TIME + 100));
     ClientSession session(sId);
     CPPUNIT_ASSERT_EQUAL( (int)2, session.add(1, 1) );
     session.closeHost();
@@ -171,7 +171,7 @@ void TestIPSession::testFailures() {
     { // cause overload
         std::string sId("testFailures3");
         boost::thread host( boost::bind( &th_host, sId ));
-        boost::this_thread::sleep(boost::posix_time::millisec(100));
+        boost::this_thread::sleep(boost::posix_time::millisec(Session::DEFAULT_SLEEPING_TIME + 100));
         ClientSession session(sId);
         
         session.causeChannelOverload = true;
@@ -180,6 +180,65 @@ void TestIPSession::testFailures() {
         session.closeHost();
         host.join();
     }
+}
+
+//-----------------------------------------------------------------------------
+namespace {
+    struct OP0 {
+        struct A {
+        };
+        typedef helper::AutoOPC<Loki::NullType> OpcManager;
+    };
+    struct OP1 {
+        struct A {
+            typedef struct Arg { char a; char b; } *ArgPtr;
+            typedef struct Ret {} *RetPtr;
+        };
+        typedef LOKI_TYPELIST_1(A) OPs;
+        typedef helper::AutoOPC<OPs> OpcManager;
+    };
+    struct OP2 {
+        struct A {
+            typedef struct Arg { char a; } *ArgPtr;
+            typedef struct Ret { char a[10]; } *RetPtr;
+        };
+        struct B {
+            typedef struct Arg { char a[3]; } *ArgPtr;
+            typedef struct Ret {} *RetPtr;
+        };
+        typedef LOKI_TYPELIST_2(A, B) OPs;
+        typedef helper::AutoOPC<OPs> OpcManager;
+    };
+    struct OP3 {
+        struct A {
+            typedef struct Arg { char a[10]; } *ArgPtr;
+            typedef struct Ret { char a[30]; } *RetPtr;
+        };
+        struct B {
+            typedef struct Arg { char a[20]; } *ArgPtr;
+            typedef struct Ret { char a[20]; } *RetPtr;
+        };
+        struct C {
+            typedef struct Arg { char a[30]; } *ArgPtr;
+            typedef struct Ret { char a[10]; } *RetPtr;
+        };
+        typedef LOKI_TYPELIST_3(A,B,C) OPs;
+        typedef helper::AutoOPC<OPs> OpcManager;
+    };
+
+}
+void TestIPSession::testHelper() {
+    BOOST_STATIC_ASSERT(OP0::OpcManager::MaxArgmemSize==1);
+    BOOST_STATIC_ASSERT(OP0::OpcManager::MaxRetmemSize==1);
+    
+    BOOST_STATIC_ASSERT(OP1::OpcManager::MaxArgmemSize==2);
+    BOOST_STATIC_ASSERT(OP1::OpcManager::MaxRetmemSize==1);
+    
+    BOOST_STATIC_ASSERT(OP2::OpcManager::MaxArgmemSize==3);
+    BOOST_STATIC_ASSERT(OP2::OpcManager::MaxRetmemSize==10);
+
+    BOOST_STATIC_ASSERT(OP3::OpcManager::MaxArgmemSize==30);
+    BOOST_STATIC_ASSERT(OP3::OpcManager::MaxRetmemSize==30);
 }
 
 } //namespace

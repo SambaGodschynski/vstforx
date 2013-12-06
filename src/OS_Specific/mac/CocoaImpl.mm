@@ -48,4 +48,18 @@ std::string CocoaImpl::selectDirectory(const std::string &wndTitle,
     }
     return "";
 }
+//-----------------------------------------------------------------------------
+void CocoaImpl::startProcess(const char *path, int argc, const char **argv) {
+    NSTask *task = [[NSTask alloc] init];
+    [task setLaunchPath: [NSString stringWithUTF8String:path]];
+    
+    if (argc > 0) {
+        NSMutableArray *args = [[NSMutableArray alloc] initWithCapacity: argc];
+        for (int i=0; i<argc; ++i) {
+            [args addObject: [NSString stringWithUTF8String:argv[i]]];
+        }
+        [task setArguments: args];
+    }
+    [task launch];
+}
 }}

@@ -334,7 +334,7 @@ void SessionManager::removeSession(const SessionId &id) {
     
 }
 //-----------------------------------------------------------------------------
-std::string SessionManager::createUniqueName() const {
+std::string SessionManager::createUniqueName() {
     using namespace boost::uuids;
     uuid uuid = random_generator()();
     return boost::uuids::to_string(uuid);

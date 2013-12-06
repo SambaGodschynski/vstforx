@@ -5,7 +5,7 @@
  *      Author: Johannes Unger
  */
 #include <processing/interprocess/BridgeSessionManager.hpp>
-#include <processing/interprocess/HostSession.hpp>
+#include <processing/interprocess/BridgeSession.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
 #include <sambag/com/BoostTimer2.hpp>
 
@@ -13,9 +13,8 @@ enum {
     FRX_BRIDGE_AUTOCLOSE_CHECK_INTERVAL = 5000
 };
   
-void checkIsNeeded(frx::processing::interprocess::HostSession *session_ptr) {
-    using namespace frx::processing::interprocess;
-    if ( BridgeSessionManager::instance().getNumSessions() == 0 ) {
+void checkIsNeeded(frx::processing::interprocess::BridgeSession *session_ptr) {
+    if ( session_ptr->getNumPluginSessions() == 0 ) {
         session_ptr->stopMainLoop();
     }
 }
@@ -23,13 +22,16 @@ void checkIsNeeded(frx::processing::interprocess::HostSession *session_ptr) {
 int main(int argc, char **argv) {
     using namespace frx::processing;
     using namespace frx::processing::interprocess;
-    std::string id( BridgeSessionManager::instance().getHostSessionId() );
+    if (argc<2) {
+        SAMBAG_LOG_ERR<<"VSTForx.Bridge missing path.";
+        return 1;
+    }
     typedef sambag::com::BoostTimer2 AutoCloseTimer;
     AutoCloseTimer::WorkerThreadHolder wth = AutoCloseTimer::startWorkerThread();
-    
+    std::string id(argv[1]);
     try {
         SAMBAG_LOG_INFO<<id<<": starting";
-        HostSession session(id);
+        BridgeSession session(id);
         // start is needed check
         typedef sambag::com::BoostTimer2 AutoCloseTimer;
         AutoCloseTimer::Ptr autoclosetimer = AutoCloseTimer::create(FRX_BRIDGE_AUTOCLOSE_CHECK_INTERVAL);
