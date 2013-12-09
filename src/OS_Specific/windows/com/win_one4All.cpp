@@ -18,6 +18,9 @@ extern void* hInstance;
 
 namespace com {
 //------------------------------------------------------------------------------------------------------------
+void startProcess(const char *path, int argc, const char **argv) {
+}
+//------------------------------------------------------------------------------------------------------------
 std::string getRootDirectory() {
 	using namespace com;
 	std::string home_dir;
