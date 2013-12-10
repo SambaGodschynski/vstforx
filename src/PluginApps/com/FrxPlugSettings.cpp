@@ -39,7 +39,7 @@ std::string globVersionStr() {
 #ifdef SAMBAG_64
   ss<<" - "<<"x86_64";
 #endif
-  ss<<" - "<<FRX_VERSION_BUILD<<":"<<SAMBAG_VERSION_BUILD<<" ";
+  ss<<" - "<<FRX_VERSION_BRANCH<<" "<<FRX_VERSION_BUILD<<":"<<SAMBAG_VERSION_BUILD<<" ";
   return ss.str();
 }
 
