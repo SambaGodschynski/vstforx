@@ -16,7 +16,7 @@ class TestBridgeSessionManager : public CPPUNIT_NS::TestFixture {
 //=============================================================================
 private:
 	CPPUNIT_TEST_SUITE( TestBridgeSessionManager );
-	//CPPUNIT_TEST( testStartupBridge );
+	CPPUNIT_TEST( testStartupBridge );
 	CPPUNIT_TEST_SUITE_END();
 public:
 	void testStartupBridge();
