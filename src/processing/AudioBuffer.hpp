@@ -47,26 +47,26 @@ public:
 	//-------------------------------------------------------------------------
 	typedef typename Allocator::size_type SizeType;
 	//-------------------------------------------------------------------------
-	typedef boost::circular_buffer_space_optimized<ValueType, Allocator>
+	typedef boost::circular_buffer<ValueType, Allocator>
 			Buffer;
 private:
 	//-------------------------------------------------------------------------
-	SizeType blockSize;
+	SizeType capacity;
 	//-------------------------------------------------------------------------
 	Allocator alloc;
 	//-------------------------------------------------------------------------
 	Buffer buffers[NumChannels];
 public:
 	//-------------------------------------------------------------------------
-	AudioBuffer( SizeType blockSize=0 );
+	AudioBuffer( SizeType capacity=0 );
 	//-------------------------------------------------------------------------
 	/**
-	 * @note only for predictive memory allocation.
+	 * @param the capcity (num samples)
 	 */
-	void setBlockSize(SizeType bs);
+	void setCapacity(SizeType capacity);
 	//-------------------------------------------------------------------------
-	SizeType getBlockSize() const {
-		return blockSize;
+	SizeType getCapacity() const {
+		return capacity;
 	}
 	//-------------------------------------------------------------------------
 	SizeType size() const {
@@ -87,21 +87,21 @@ template < typename T,
 	int NC, 
 	template <class> class A
 >
-AudioBuffer<T, NC, A>::AudioBuffer(SizeType blockSize) :
-	blockSize(0)
+AudioBuffer<T, NC, A>::AudioBuffer(SizeType capacity) :
+	capacity(0)
 {
-	setBlockSize(blockSize);
+	setCapacity(capacity);
 }
 //-----------------------------------------------------------------------------
 template < typename T, 
 	int NC, 
 	template <class> class A
 >
-void AudioBuffer<T, NC, A>::setBlockSize(SizeType bs) 
+void AudioBuffer<T, NC, A>::setCapacity(SizeType capacity) 
 {
-	blockSize = bs;
+	this->capacity = capacity;
 	for (int i=0; i<NumChannels; ++i) {
-		buffers[i].set_capacity( typename Buffer::capacity_type(bs*10, bs*10) );
+		buffers[i].set_capacity(capacity);
 	}
 }
 //-----------------------------------------------------------------------------
