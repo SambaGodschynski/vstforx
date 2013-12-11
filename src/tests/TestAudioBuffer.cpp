@@ -78,9 +78,9 @@ void TestAudioBuffer::testReadWrite() {
 	typedef AudioBuffer<float, 2> ABff;
     //prepare containers
 	ABff abff;
-	abff.setBlockSize(512);
+	abff.setCapacity(512);
 	CPPUNIT_ASSERT( abff.isEmpty() );
-	CPPUNIT_ASSERT_EQUAL((size_t)512, abff.getBlockSize() );
+	CPPUNIT_ASSERT_EQUAL((size_t)512, abff.getCapacity() );
 	Frames a(512), b(512);
 	float raw_l[512], raw_r[512];
 	float *raw[2] = {&raw_r[0], &raw_l[0]};

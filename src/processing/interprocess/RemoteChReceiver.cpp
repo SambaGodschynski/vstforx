@@ -14,6 +14,7 @@
 namespace {
     const int PARAM_OBSERVER_INTERVAL_MS=30;
     const int REOPEN_STREAM_INTERVAL_MS=2000;
+	const int AUDIO_BUFFER_RESERVE_FACTOR=3;
 }
 
 namespace frx { namespace processing { namespace interprocess {
@@ -142,15 +143,15 @@ void RemoteChReceiver::processAdapter( pr::Processor::Int numSamples ) {
     float **data = frames.getData();
     int res = ipStream->read(data, blocksRead);
     if (res<0) { // we are behind the last written block
+        blocksRead-=res; // blocksRead + numBlocksBehind (res is negative)
+        ipStream->read(data, blocksRead);
+    }
+    if (res>0) { // we are before the last written block
 		if (abff.size() >= numSamples) { // we have audiodata left
 			abff.readOut(data, numSamples);
 			outputNodes[0]->pushAndCopy(&frames, numSamples);
 			return;
 		}
-        blocksRead-=res; // blocksRead + numBlocksBehind (res is negative)
-        ipStream->read(data, blocksRead);
-    }
-    if (res>0) { // we are before the last written block
         if (::time(NULL) - ipStream->getLastWrittenTime() >= 1)
         {
             streamLost();
@@ -166,9 +167,16 @@ void RemoteChReceiver::processAdapter( pr::Processor::Int numSamples ) {
 		return;
 	}
 	// SPECIAL CASE: numsamples < blocksize. Fruity Loops has such behaviour
-	if (abff.getBlockSize() != bs) { // prepare buffer if needed
-		abff.setBlockSize(bs);
+	if (abff.getCapacity() < bs) { // prepare buffer if needed
+		abff.setCapacity(bs*AUDIO_BUFFER_RESERVE_FACTOR);
 	}
+
+	// TODO: why does this not work?
+	// float *tmp[] = { &data[0][numSamples], &data[1][numSamples] };
+    // abff.writeIn(&tmp[0], bs-numSamples-1);
+	// outputNodes[0]->pushAndCopy( &frames, numSamples );
+	// return;
+
     // write whole block into buffer
     abff.writeIn(data, bs);
     // read numsamples from buffer
