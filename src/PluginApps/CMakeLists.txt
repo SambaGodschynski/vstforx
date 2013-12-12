@@ -17,8 +17,8 @@ add_executable(standalone ${FRX_STANDALONE})
 target_link_libraries (standalone frx_core ${FRX_CLIBS})
 
 #bridge
-add_executable(bridge Bridge/main.cpp)
-target_link_libraries (bridge frx_core ${FRX_CLIBS})
+#add_executable(bridge Bridge/main.cpp)
+#target_link_libraries (bridge frx_core ${FRX_CLIBS})
 
 IF(WIN32)
   #vstforx
