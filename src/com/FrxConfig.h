@@ -6,7 +6,7 @@
 #define FRX_VERSION_MAJOR 1
 #define FRX_VERSION_MINOR 0
 #define FRX_VERSION_MICRO 4
-#define FRX_VERSION_BUILD "fd00923" 
+#define FRX_VERSION_BUILD "1b8c0bd" 
 #define FRX_VERSION_BRANCH "next"
 
 #define FRX_USE_FONTCACHE 0
