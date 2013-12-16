@@ -7,7 +7,6 @@
 
 #include "BridgeSessionManager.hpp"
 #include <sambag/com/Config.h>
-#include <boost/regex.hpp>
 #include "BridgeSession.hpp"
 #include <boost/filesystem.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
@@ -39,9 +38,6 @@ BridgeSessionManager & BridgeSessionManager::instance() {
 }
 //-----------------------------------------------------------------------------
 std::string BridgeSessionManager::getBridgeSessionId() const {
-    // macosx fails to ceate shm when '/' in name
-    //std::string pathId = boost::regex_replace(getBridgePath(), boost::regex("[^\\w]"), "");
-    //return pathId+"."+"VSTForx.Bridge.Mainsession." + FRX_BRIDGE_ARCH_STR;
     return SessionManager::createUniqueName();
 }
 //-----------------------------------------------------------------------------

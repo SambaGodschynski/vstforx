@@ -10,6 +10,7 @@
 #include "SessionManager.hpp"
 #include "PluginSession.hpp"
 #include <com/FrxConfig.h>
+#include <sambag/disco/components/WindowToolkit.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 //=============================================================================
@@ -18,8 +19,7 @@ namespace frx { namespace processing { namespace interprocess {
 //-----------------------------------------------------------------------------
 BridgeSession::BridgeSession(const std::string &id) : Session(id,
     ChannelSize(OpcM::MaxArgmemSize, OpcM::MaxRetmemSize),
-    ChannelSize(BridgeSessionClient::OpcM::MaxArgmemSize, BridgeSessionClient::OpcM::MaxRetmemSize)),
-    isRunning(false)
+    ChannelSize(BridgeSessionClient::OpcM::MaxArgmemSize, BridgeSessionClient::OpcM::MaxRetmemSize))
 {
 }
 //-----------------------------------------------------------------------------
@@ -36,11 +36,8 @@ void BridgeSession::processImpl(Opc opc, void *argmem, void *retmem) {
 }
 //-----------------------------------------------------------------------------
 void BridgeSession::startMainLoop() {
-    isRunning=true;
     SAMBAG_LOG_INFO<<getId()<<" main thread started";
-    while(isRunning) {
-        boost::this_thread::sleep(boost::posix_time::millisec(100));
-    }
+    sambag::disco::components::getWindowToolkit()->startMainLoop();
     SAMBAG_LOG_INFO<<getId()<<" main thread ended";
 }
 //-----------------------------------------------------------------------------
@@ -51,7 +48,7 @@ void BridgeSession::stopMainLoop() {
         waitForResult( BridgeSessionClient::OpcM::getOPC<Op>() );
     } catch(...) {}
     
-    isRunning = false;
+    sambag::disco::components::getWindowToolkit()->quit();
 }
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
@@ -67,23 +64,10 @@ void BridgeSession::auto_opc_callback(Operations::CreatePluginSession::ArgPtr ar
     SAMBAG_BEGIN_SYNCHRONIZED(mutex)
         SAMBAG_LOG_INFO<<"creating a plugin session for: "<<arg->path;
         std::string id = SessionManager::createUniqueName();
-        PluginSessionHost::Ptr ps;
-        /*try {
-                PluginSessionHost::Ptr ps = PluginSessionHost::create(this, id,
-                arg->sampleRate,
-                arg->blockSize,
-                2 // TODO: determine before opening
-            );
-        } catch (const std::exception &ex) {
-            SAMBAG_LOG_ERR<<"creating PluginSession failed: "<<ex.what();
-        }
-        catch (...) {
-            SAMBAG_LOG_ERR<<"creating PluginSession failed: unkown error";
-        }*/
-        if (!ps) {
-            strcpy(ret->id, "");
-            return;
-        }
+        
+        BridgePluginDelegate::Ptr delegate =
+            BridgePluginDelegate::create(arg->blockSize, arg->sampleRate, arg->path);
+        PluginSessionHost::Ptr ps = PluginSessionHost::create(delegate, this);
         plugHostMap[id] = ps;
         strcpy(ret->id, id.c_str());
         SAMBAG_LOG_INFO<<"plugin created: "<<arg->path;

@@ -8,6 +8,7 @@
 #include "ShmCom.hpp"
 #include <sambag/com/SharedMemoryImpl.hpp> 
 #include <boost/functional/hash.hpp>
+#include <boost/regex.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 
@@ -70,5 +71,11 @@ UInteger checksum(void *ptr, UInteger bytesize) {
     boost::hash<std::string> stringHash;
     return stringHash(ss.str());
 }
+
+
+std::string normalizeStringForShmId(const std::string &_id) {
+    return boost::regex_replace(_id, boost::regex("[^\\w]"), "");
+}
+
 }}}
 

@@ -31,6 +31,11 @@ boost::tuple<void*, UInteger, MappedRegionPtr>
 ipOpen(SharedMemoryObjectPtr shm);
 void ipFree(const char *name);
 UInteger checksum(void *ptr, UInteger bytesize);
+/**
+ * @brief dependent on which OS is used some names
+ * can fail the shm creation.
+ */
+std::string normalizeStringForShmId(const std::string &id);
 
 }}} // namespace(s)
 

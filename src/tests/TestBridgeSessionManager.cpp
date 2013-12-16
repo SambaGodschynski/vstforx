@@ -30,7 +30,7 @@ void TestBridgeSessionManager::testStartupBridge() {
     BridgeSessionManager &bm = BridgeSessionManager::instance();
     bm.setBridgePath("./bridge");
     
-    PluginSessionClientPtr plugin = bm.createPluginSession("plugin", 44100.f, 512);
+    PluginSessionClientPtr plugin = bm.createPluginSession("plugins", 44100.f, 512);
  
     while(bm.isBridgeSessionEstabished()) {
         boost::this_thread::sleep( boost::posix_time::seconds(1) );

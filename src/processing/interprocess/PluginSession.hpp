@@ -11,6 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include "Session.hpp"
 #include "ShmCom.hpp"
+#include "BridgePluginDelegate.hpp"
 
 namespace frx { namespace processing { namespace interprocess {
 class BridgeSession;
@@ -29,30 +30,21 @@ public:
             typedef struct Arg {} *ArgPtr;
             typedef struct Ret {} *RetPtr;
         };
-        struct SetPluginLocation {
-            typedef struct Arg { char *path; } *ArgPtr;
-            typedef struct Ret {} *RetPtr;
-        };
-        struct GetPluginLocation {
-            typedef struct Arg {} *ArgPtr;
-            typedef struct Ret { char *path; } *RetPtr;
-        };
-        typedef LOKI_TYPELIST_3(
-            Close,
-            SetPluginLocation,
-            GetPluginLocation
+        typedef LOKI_TYPELIST_1(
+            Close
         ) OPs;
         typedef helper::AutoOPC<OPs> OpcManager;
     };
     typedef Operations::OpcManager OpcM;
     //-------------------------------------------------------------------------
-    PluginSessionHost(const std::string &id, float sampleRate,
-        Integer blockSize, Integer numChannels);
+    PluginSessionHost(BridgePluginDelegate::Ptr delegate);
     //-------------------------------------------------------------------------
     void processImpl(Opc opc, void *argmen, void *retmem);
 private:
     //-------------------------------------------------------------------------
     BridgeSession *host;
+    //-------------------------------------------------------------------------
+    BridgePluginDelegate::Ptr delegate;
 public:
     //-------------------------------------------------------------------------
     BridgeSession * getBridgeSession() const {
@@ -62,19 +54,12 @@ public:
     /**
      * creates new session
      */
-    static Ptr create(BridgeSession *host, const std::string &id, float sampleRate,
-        Integer blockSize, Integer numChannels);
+    static Ptr create(BridgePluginDelegate::Ptr delegate, BridgeSession *host);
     //--------------------------------------------------------------------------
     ///////////////////////////////////////////////////////////////////////////
     //-------------------------------------------------------------------------
     void auto_opc_callback(Operations::Close::ArgPtr,
         Operations::Close::RetPtr);
-    //-------------------------------------------------------------------------
-    void auto_opc_callback(Operations::SetPluginLocation::ArgPtr,
-        Operations::SetPluginLocation::RetPtr);
-    //-------------------------------------------------------------------------
-    void auto_opc_callback(Operations::GetPluginLocation::ArgPtr,
-        Operations::GetPluginLocation::RetPtr);
 }; // PluginSession
 //=============================================================================
 /** 

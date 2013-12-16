@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.8.11)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{CLIBS}/sambag)
 
-project (vstforx)
+project (vstforx-next)
 
 SET(FRX_VERSION_MAJOR 1)
 SET(FRX_VERSION_MINOR 0)

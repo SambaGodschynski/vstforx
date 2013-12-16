@@ -13,7 +13,7 @@ namespace frx { namespace processing { namespace interprocess {
 namespace {
     template<class OpcM>
     inline Integer _minmem(Integer blockSize, Integer numChannels) {
-        return std::min( blockSize*numChannels + OpcM::MaxArgmemSize
+        return std::max( blockSize*numChannels + OpcM::MaxArgmemSize
         , 256 );
     }
 } // namespace
@@ -21,12 +21,20 @@ namespace {
 //  Class PluginSessionHost
 //=============================================================================
 //-----------------------------------------------------------------------------
-PluginSessionHost::PluginSessionHost(const std::string &id,
-    float sampleRate, Integer bs, Integer nc)
-    :  Session(id, ChannelSize(_minmem<OpcM>(bs, nc), _minmem<OpcM>(bs, nc)),
-                   ChannelSize(PluginSessionHost::OpcM::MaxArgmemSize,
-                   PluginSessionHost::OpcM::MaxRetmemSize))
+PluginSessionHost::PluginSessionHost(BridgePluginDelegate::Ptr dg)
+    :  Session( normalizeStringForShmId( dg->getLocation() ),
+                ChannelSize(
+                    _minmem<OpcM>(dg->getBlockSize(), dg->getNumChannels()),
+                    _minmem<OpcM>(dg->getBlockSize(), dg->getNumChannels())
+                ), ChannelSize(
+                    PluginSessionHost::OpcM::MaxArgmemSize,
+                    PluginSessionHost::OpcM::MaxRetmemSize
+                )
+        )
 {
+    float sampleRate = dg->getSampleRate();
+    size_t bs = dg->getBlockSize();
+    size_t nc = dg->getNumChannels();
     if (sampleRate<=0 || bs<=0 || nc <=0) {
         using sambag::com::exceptions::IllegalArgumentException;
         std::stringstream ss;
@@ -35,7 +43,7 @@ PluginSessionHost::PluginSessionHost(const std::string &id,
         SAMBAG_THROW(IllegalArgumentException,
         ss.str());
     }
-    setMaxSleeping( (Integer)(1000.f/(sampleRate/(float)bs)) );
+    setMaxSleeping((Integer)(1000.f/(sampleRate/(float)bs))); // TODO: only a suggestion
 }
 //-----------------------------------------------------------------------------
 void PluginSessionHost::processImpl(Opc opc, void *argmem, void *retmem) {
@@ -46,10 +54,14 @@ void PluginSessionHost::processImpl(Opc opc, void *argmem, void *retmem) {
     }
 }
 //-----------------------------------------------------------------------------
-PluginSessionHost::Ptr PluginSessionHost::create(BridgeSession *host,
-    const std::string &id, float sr, Integer bs, Integer nc)
+PluginSessionHost::Ptr PluginSessionHost::create(BridgePluginDelegate::Ptr dg,
+    BridgeSession *host)
 {
-    Ptr neu = Ptr( new PluginSessionHost(id, sr, bs, nc) );
+    if (!dg || !host) {
+        using sambag::com::exceptions::IllegalArgumentException;
+        SAMBAG_THROW(IllegalArgumentException, "NULL Ptr");
+    }
+    Ptr neu = Ptr( new PluginSessionHost(dg) );
     neu->host = host;
     return neu;
 }
@@ -57,16 +69,6 @@ PluginSessionHost::Ptr PluginSessionHost::create(BridgeSession *host,
 //-----------------------------------------------------------------------------
 void PluginSessionHost::auto_opc_callback(Operations::Close::ArgPtr,
         Operations::Close::RetPtr)
-{
-}
-//-----------------------------------------------------------------------------
-void PluginSessionHost::auto_opc_callback(Operations::SetPluginLocation::ArgPtr,
-        Operations::SetPluginLocation::RetPtr)
-{
-}
-//-----------------------------------------------------------------------------
-void PluginSessionHost::auto_opc_callback(Operations::GetPluginLocation::ArgPtr,
-        Operations::GetPluginLocation::RetPtr)
 {
 }
 //=============================================================================

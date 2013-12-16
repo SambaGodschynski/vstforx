@@ -63,7 +63,7 @@ void Session::destroyShm() {
 }
 //-----------------------------------------------------------------------------
 void Session::process() {
-    SAMBAG_LOG_INFO<<"session process thread started";
+    SAMBAG_LOG_INFO<<"session "<<id<<" process thread started";
     while (channelA && channelB)
     {
         if ( processChannel->opc != IDLE ) {
@@ -85,7 +85,7 @@ void Session::process() {
         SAMBAG_ASSERT(sleepingTime);
         boost::this_thread::sleep(boost::posix_time::millisec(*sleepingTime));
     }
-    SAMBAG_LOG_INFO<<"session process thread closed";
+    SAMBAG_LOG_INFO<<"session "<<id<<" process thread closed";
 }
 //-----------------------------------------------------------------------------
 void Session::startProcessThread() {
