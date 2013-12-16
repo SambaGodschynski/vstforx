@@ -1,16 +1,18 @@
 cmake_minimum_required (VERSION 2.8.11)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{CLIBS}/sambag)
 
-project (vstforx)
 
 SET(FRX_VERSION_MAJOR 1)
 SET(FRX_VERSION_MINOR 0)
-SET(FRX_VERSION_MICRO 41)
+SET(FRX_VERSION_MICRO 4)
 SET(FRX_VERSION_STR "${FRX_VERSION_MAJOR}.${FRX_VERSION_MINOR}.${FRX_VERSION_MICRO}")
 execute_process(COMMAND git --work-tree=${PROJECT_SOURCE_DIR} log --pretty=format:%h -n 1
                 OUTPUT_VARIABLE FRX_VERSION_BUILD)
 
 execute_process(COMMAND sh getbranch.sh OUTPUT_VARIABLE FRX_VERSION_BRANCH)
+
+project(VSTForx-${FRX_VERSION_BRANCH})
+
 
 # Common Features
 add_definitions(-DFRX_FEATURE_REMOTE_CHANNEL)
