@@ -9,6 +9,7 @@
 #define SAMBAG_TESTIPSESSION_H
 
 #include <cppunit/extensions/HelperMacros.h>
+#include <sambag/com/UnitEx.hpp>
 
 namespace tests {
 //=============================================================================
