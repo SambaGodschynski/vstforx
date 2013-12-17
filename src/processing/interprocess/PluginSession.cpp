@@ -24,8 +24,8 @@ namespace {
 PluginSessionHost::PluginSessionHost(BridgePluginDelegate::Ptr dg)
     :  Session( normalizeStringForShmId( dg->getLocation() ),
                 ChannelSize(
-                    _minmem<OpcM>(dg->getBlockSize(), dg->getNumChannels()),
-                    _minmem<OpcM>(dg->getBlockSize(), dg->getNumChannels())
+                    _minmem<OpcM>(dg->getBlockSize(), dg->getNumInputChannels()),
+                    _minmem<OpcM>(dg->getBlockSize(), dg->getNumOutputChannels())
                 ), ChannelSize(
                     PluginSessionHost::OpcM::MaxArgmemSize,
                     PluginSessionHost::OpcM::MaxRetmemSize
@@ -34,12 +34,11 @@ PluginSessionHost::PluginSessionHost(BridgePluginDelegate::Ptr dg)
 {
     float sampleRate = dg->getSampleRate();
     size_t bs = dg->getBlockSize();
-    size_t nc = dg->getNumChannels();
-    if (sampleRate<=0 || bs<=0 || nc <=0) {
+    if (sampleRate<=0 || bs<=0) {
         using sambag::com::exceptions::IllegalArgumentException;
         std::stringstream ss;
         ss<<"BridgeSession illegal audio setup: sr("<<sampleRate<<") ";
-        ss<<"bs("<<bs<<") nc("<<nc<<")";
+        ss<<"bs("<<bs<<")";
         SAMBAG_THROW(IllegalArgumentException,
         ss.str());
     }
@@ -47,10 +46,11 @@ PluginSessionHost::PluginSessionHost(BridgePluginDelegate::Ptr dg)
 }
 //-----------------------------------------------------------------------------
 void PluginSessionHost::processImpl(Opc opc, void *argmem, void *retmem) {
-    if ( !Operations::OpcManager::process(opc, this, argmem, retmem)) {
-        using sambag::com::exceptions::IllegalArgumentException;
-        SAMBAG_THROW(IllegalArgumentException,
-        "BridgeSession::processImpl opc: " + sambag::com::toString(opc) + " not supported");
+    try {
+        Operations::OpcManager::process(opc, this, argmem, retmem);
+    } catch(const std::exception &ex) {
+        SAMBAG_LOG_ERR<<ex.what()<<" opc("<<opc<<")";
+        throw;
     }
 }
 //-----------------------------------------------------------------------------
@@ -80,10 +80,11 @@ PluginSessionClient::PluginSessionClient(const std::string &id) : Session(id)
 }
 //-----------------------------------------------------------------------------
 void PluginSessionClient::processImpl(Opc opc, void *argmem, void *retmem) {
-    if ( !Operations::OpcManager::process(opc, this, argmem, retmem)) {
-        using sambag::com::exceptions::IllegalArgumentException;
-        SAMBAG_THROW(IllegalArgumentException,
-        "BridgeSession::processImpl opc: " + sambag::com::toString(opc) + " not supported");
+    try {
+        Operations::OpcManager::process(opc, this, argmem, retmem);
+    } catch(const std::exception &ex) {
+        SAMBAG_LOG_ERR<<ex.what()<<" opc("<<opc<<")";
+        throw;
     }
 }
 //-------------------------------------------------------------------------

@@ -1,8 +1,8 @@
 /*
- * ===========================================================================================================
+ * ============================================================================
  * VSTPlugin2x.cpp
  *      Author: Johannes Unger
- * ===========================================================================================================
+ * ============================================================================
  */
 #include "processing/processing.h"
 #include "VSTPlugin2x.h"
@@ -20,9 +20,9 @@
 typedef AEffect* (*PluginEntryProc) (audioMasterCallback audioMaster);
 
 namespace processing{
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 boost::unordered_map < AEffect*, VSTPlugin* > VSTPlugin::relatedPlugNode;
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 VSTPlugin::VSTPlugin( frx::processing::IHostInfo::Ptr hostInfo, const string &filename ) : 
 OS_VSTPlugNode2x ( filename ), // initalisiert aEff
 Plugin ( hostInfo, filename, 0,  0 ),  // ProcessAdapter
@@ -65,7 +65,7 @@ ioChangedLock(false)
 	
 	initPlug ( *this ); // muss nach init i/o erfolgen
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VSTPlugin::initAsTestPluginIfNecessary(std::string filename) {
     using namespace com;
     ProcessorDescriptor pd = extractProcessorDescriptor(filename);
@@ -82,12 +82,12 @@ void VSTPlugin::initAsTestPluginIfNecessary(std::string filename) {
     aEff->numInputs = i*2; // vstforx => 1 channel == stero == 2 channel => vst2x
     aEff->numOutputs = o*2;
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 MyString VSTPlugin::extractNameFromFilename( const string &fileName ){
 	boost::filesystem::path p(fileName);
 	return MyString ( p.stem().string() );
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VSTPlugin::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
 	if ( !canHandleMidiEvent() ) {
 		return;
@@ -102,7 +102,7 @@ void VSTPlugin::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
 	tmpMidiData->set(events);
 	aEff->dispatcher( aEff, effProcessEvents, 0, NULL, (void*)tmpMidiData->events, NULL );
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VSTPlugin::initPlug( VSTPlugin &plug ) {
 	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	// Objekt registrieren
@@ -160,7 +160,7 @@ void VSTPlugin::initPlug( VSTPlugin &plug ) {
 	
 	plug.setupFramesbuffer();
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VSTPlugin::setupFramesbuffer() {
 	frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
 	if (!hI) {
@@ -180,7 +180,7 @@ void VSTPlugin::setupFramesbuffer() {
 	nullFrame.setSize (blockSize);
 	nullFrame.setZero(blockSize);
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 string getPrgNameX ( AEffect *aEff, size_t index ) {
 	char bff[512] = {0};
 	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
@@ -190,11 +190,11 @@ string getPrgNameX ( AEffect *aEff, size_t index ) {
 	}
 	return string( &bff[0] );
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 string getPrgName ( size_t index ) {
 	return "Init " + MyString(index);
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VSTPlugin::initProgramNames() {
 	if ( getNumPrograms() == 0 ) return;
 	for ( size_t i=0; i<getNumPrograms(); ++i ) {
@@ -203,21 +203,21 @@ void VSTPlugin::initProgramNames() {
 		programNames.push_back( str );
 	}
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 size_t VSTPlugin::getNumPrograms() {
 	return aEff->numPrograms;
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 int VSTPlugin::getProgram() {
 	if ( getNumPrograms() == 0 ) return -1;
 	return aEff->dispatcher ( aEff, effGetProgram, 0, 0, NULL, 0.0f );
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 std::string VSTPlugin::getProgramName( size_t index ) {
 	if ( index > getNumPrograms() ) return "";
 	return programNames[index];
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VSTPlugin::setProgram(size_t index) {
 	if ( index > getNumPrograms() ) return;
 	aEff->dispatcher ( aEff, effSetProgram, 0, index, NULL, 0.0f );
@@ -227,7 +227,7 @@ void VSTPlugin::setProgram(size_t index) {
 		param[i]->setValue ( aEff->getParameter ( aEff, i ) );
 	}
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VSTPlugin::hostBaseConfigChanged() {
 	frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
 	if (!hI) {
@@ -244,7 +244,7 @@ void VSTPlugin::hostBaseConfigChanged() {
 	aEff->dispatcher ( aEff, effSetBlockSize, 0, hI->getBlockSize(), 0, 0 );
 	turnOn();
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VSTPlugin::valueChanged(void *src, const float &v) {
 	Parameter *p = (Parameter*) src;
 	size_t index = p->getIndex();
@@ -265,7 +265,7 @@ void VSTPlugin::valueChanged(void *src, const float &v) {
 	aEff->dispatcher ( aEff, effGetParamDisplay, index, NULL, &bff[0], NULL );
 	param->setDisplay( MyString(&bff[0]) );
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VSTPlugin::initParameter(){
 	char bff[255];
 	param = ParameterContainer ( aEff->numParams );
@@ -291,11 +291,11 @@ void VSTPlugin::initParameter(){
 		);
 	}
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 size_t VSTPlugin::getProcessDelay() const {
 	return _processDelay = (size_t)aEff->initialDelay;
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 //ruft die processReplacing Methode des zugeordneten VST-Plugin auf.
 void VSTPlugin::processAdapter( Processor::Int numSamples ) {
 	// breite daten vor ( mappe frames => matrix )
@@ -335,7 +335,11 @@ void VSTPlugin::processAdapter( Processor::Int numSamples ) {
 		getOutputNode(i)->pushAndCopy( &framebuffer[i], numSamples );
 	}
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void VSTPlugin::process(const Frames &_in, Frames &_out, size_t numSamples) {
+    
+}
+//-----------------------------------------------------------------------------
 VSTPlugin::~VSTPlugin() {
 	relatedPlugNode.erase ( aEff );
 	turnOff();
@@ -346,13 +350,13 @@ VSTPlugin::~VSTPlugin() {
 	if ( aEff != &nullAEff )
 		unloadModule();
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 inline VSTPlugin * VSTPlugin::getVSTPlugNode(AEffect *aEff){
 	RelatedPlugNode::iterator it = relatedPlugNode.find ( aEff );
 	if ( it == relatedPlugNode.end() ) return NULL;
 	return (*it).second;
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VSTPlugin::onIOChanged() {
 /*
 	resolved with a message that i/o has changed.
@@ -371,7 +375,7 @@ void VSTPlugin::onIOChanged() {
         );
     }
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VSTPlugin::onEditorParameterChanged (int index, float value){
 	if ( param.empty() ) {
 		return;
@@ -389,7 +393,7 @@ void VSTPlugin::onEditorParameterChanged (int index, float value){
 	param[index]->setValue ( value );
 	onPlugChangeParameterIndex = -1;
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VSTPlugin::save(com::oArchive &ar, const unsigned int version) const {
 	ar << boost::serialization::base_object< Plugin > ( *this ); //.........................................1
 	// save plugInfo
@@ -415,7 +419,7 @@ void VSTPlugin::save(com::oArchive &ar, const unsigned int version) const {
 	ar << size; //..........................................................................................6!
 	if ( size ) ar.save_binary ( data, size ); //...........................................................7
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 	TRY_TO_LOCK_TIMED(mutex);
 	ar >> boost::serialization::base_object< Plugin > ( *this ); //..........................................1
@@ -486,11 +490,11 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 	resetPlugin();
 	delete *data;
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VSTPlugin::onPlugRequestWindowResize (size_t w, size_t h) {
 	com::events::EventSender<ResizeEditorEvent>::notifyEventListeners( this, ResizeEditorEvent(w,h) );
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VSTPlugin::openEditor(void *window) {
 	if (!window)
 		return;
@@ -503,7 +507,7 @@ void VSTPlugin::openEditor(void *window) {
 	}
     aEff->dispatcher ( aEff, effEditOpen, 0, 0, window, 0);
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VSTPlugin::closeEditor(void *window) {
 	if (!window)
 		return;
@@ -513,7 +517,7 @@ void VSTPlugin::closeEditor(void *window) {
 void VSTPlugin::onEditorIdle() {
 	aEff->dispatcher ( aEff, effEditIdle, 0, 0, 0, 0);
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VSTPlugin::getShellPluginInfos(ShellPluginInfos &out) {
 	// scan shell for subplugins
 	char tempName[256] = {0}; 
@@ -526,7 +530,7 @@ void VSTPlugin::getShellPluginInfos(ShellPluginInfos &out) {
 		}
 	}
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 VstIntPtr VSTPlugin::_hostCallback ( AEffect* effect, 
 						 VstInt32 opcode, 
 						 VstInt32 index, 
@@ -590,7 +594,7 @@ VstIntPtr VSTPlugin::_hostCallback ( AEffect* effect,
 }
 } //namespace processing
 
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // Callback Methode.
 // Wird von geladenen Plugin Aufgerufen.
 // effect = zeiger auf Callback Quelle (?)

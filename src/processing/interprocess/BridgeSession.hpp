@@ -39,7 +39,10 @@ public:
                                  Integer blockSize;
                                  char path[FRX_SHMSESS_MAX_PATH_LENGTH];
                                 } *ArgPtr;
-            typedef struct Ret { char id[FRX_SHMSESS_MAX_STR_LENGTH]; } *RetPtr;
+            typedef struct Ret {
+                char result[FRX_SHMSESS_MAX_STR_LENGTH];
+                bool succeed;
+            } *RetPtr;
         };
         struct ClosePluginSession {
             typedef struct Arg { char id[FRX_SHMSESS_MAX_STR_LENGTH]; } *ArgPtr;
@@ -111,7 +114,9 @@ public:
             typedef struct Arg {} *ArgPtr;
             typedef struct Ret {} *RetPtr;
         };
-        typedef LOKI_TYPELIST_1(OnBridgeClosing) OPs;
+        typedef LOKI_TYPELIST_1(
+            OnBridgeClosing
+        ) OPs;
         typedef helper::AutoOPC<OPs> OpcManager;
     };
     typedef Operations::OpcManager OpcM;
@@ -127,6 +132,7 @@ public:
     //-------------------------------------------------------------------------
     void auto_opc_callback(Operations::OnBridgeClosing::ArgPtr,
         Operations::OnBridgeClosing::RetPtr);
+
 }; // BridgeSessionClient
 
 }}} // namespace(s)

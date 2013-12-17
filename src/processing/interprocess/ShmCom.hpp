@@ -14,6 +14,7 @@
 #include <boost/interprocess/sync/sharable_lock.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <sambag/com/SharedMemory.hpp>
+#include <com/FrxConfig.h>
 
 namespace frx { namespace processing { namespace interprocess {
 
@@ -37,6 +38,26 @@ UInteger checksum(void *ptr, UInteger bytesize);
  */
 std::string normalizeStringForShmId(const std::string &id);
 
+/**
+ * @brief use instead of strcpy.
+ * check length against FRX_SHMSESS_MAX_PATH_LENGTH
+ * throws if src.length() > max
+ */
+void shm_cpypath(char *dst, const std::string &src);
+/**
+ * @brief use instead of strcpy.
+ * check length against max
+ * truncates if src.length() > max
+ */
+void shm_cpystr(char *dst, const std::string &src,
+    size_t max=FRX_SHMSESS_MAX_STR_LENGTH);
+/**
+ * @brief use instead of strcpy.
+ * check length against max
+ * throws if src.length() > max
+ */
+void shm_cpystrex(char *dst, const std::string &src,
+    size_t max=FRX_SHMSESS_MAX_STR_LENGTH);
 }}} // namespace(s)
 
 

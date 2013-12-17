@@ -68,7 +68,7 @@ struct IsNullType<Loki::NullType> {
 };
 template <int I, class Caller, class List>
 struct find_delegate {
-    static bool _do(int opc, Caller *caller, void *args, void *rets) {
+    static void _do(int opc, Caller *caller, void *args, void *rets) {
         if (opc != I) {
             return find_delegate<I-1, Caller, List>::_do(
                 opc,
@@ -83,14 +83,16 @@ struct find_delegate {
             args,
             rets);
         
-        return true;
     };
 };
 
 template <class Caller, class List>
 struct find_delegate<-1, Caller, List> {
-    static bool _do(int opc, Caller *caller, void *args, void *rets) {
-        return false;
+    static void _do(int opc, Caller *caller, void *args, void *rets) {
+        SAMBAG_THROW(
+            sambag::com::exceptions::IllegalStateException,
+            "unsupported opc"
+        );
     };
 };
 
@@ -136,8 +138,8 @@ struct AutoOPC {
      * @return flase if no related opc impl. were found
      */
     template <class Caller>
-    static bool process(int opc, Caller *caller, void *args, void *rets) {
-        return find_delegate<NumOps-1, Caller, OPs>::_do(opc,
+    static void process(int opc, Caller *caller, void *args, void *rets) {
+        find_delegate<NumOps-1, Caller, OPs>::_do(opc,
             caller,
             args,
             rets);
@@ -270,10 +272,6 @@ protected:
      */
     Session(const std::string &id);
     //-------------------------------------------------------------------------
-    const std::string & getId() const {
-        return id;
-    }
-    //-------------------------------------------------------------------------
     /**
      * @param the max. sleeping time while waiting for result in millisec
      */
@@ -289,6 +287,10 @@ protected:
         return *sleepingTime;
      }
 public:
+    //-------------------------------------------------------------------------
+    const std::string & getId() const {
+        return id;
+    }
     //-------------------------------------------------------------------------
     virtual ~Session();
 }; // Session

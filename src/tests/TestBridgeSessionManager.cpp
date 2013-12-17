@@ -11,7 +11,7 @@
 #include <sambag/com/Thread.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
 #include <sambag/com/BoostTimer2.hpp>
-
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::TestBridgeSessionManager );
@@ -30,7 +30,10 @@ void TestBridgeSessionManager::testStartupBridge() {
     BridgeSessionManager &bm = BridgeSessionManager::instance();
     bm.setBridgePath("./bridge");
     
-    PluginSessionClientPtr plugin = bm.createPluginSession("plugins", 44100.f, 512);
+    CPPUNIT_ASSERT_THROW(
+        bm.createPluginSession("this is never ever a usable plugin path", 44100.f, 512),
+        sambag::com::exceptions::IllegalStateException
+    );
  
     while(bm.isBridgeSessionEstabished()) {
         boost::this_thread::sleep( boost::posix_time::seconds(1) );

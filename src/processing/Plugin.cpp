@@ -1,8 +1,8 @@
 /*
- * ===========================================================================================================
+ * ============================================================================
  * Plugin.cpp
  *      Author: Johannes Unger
- * ===========================================================================================================
+ * ============================================================================
  */
 #include "Plugin.h"
 #include "OS_Specific/os_processing.h"
@@ -14,14 +14,14 @@ namespace processing{
 
 enum { ALL_CHANNEL = 16 };
 	
-//============================================================================================================
+//=============================================================================
 // Plugin
-//============================================================================================================
-//------------------------------------------------------------------------------------------------------------
+//=============================================================================
+//-----------------------------------------------------------------------------
 void Plugin::setStatusMsg( const std::string &msg ) {
 	statusMsg = msg;
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void Plugin::initListener() {
 	Parameter::ParameterListenerFunction xC = boost::bind( 
 		&Plugin::paramEditorPosXChanged, this, _1, _2 
@@ -40,7 +40,7 @@ void Plugin::initListener() {
 	paramEditorOpenConnection = editorOpen->addValueChangedListener(oC);
 	editorOpen->addValueChangedListener(dC);
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 Plugin::Plugin ( frx::processing::IHostInfo::Ptr hostInfo, const string &location, size_t numInputs , size_t numOutputs ) :
 ProcessAdapter ( hostInfo, numInputs, numOutputs ),
 editorPosX ( processing::parameter::Parameter::create() ),
@@ -58,22 +58,26 @@ editorOpen ( processing::parameter::Parameter::create() )
 	*editorOpen = 0.0f;
 	initListener();
 }
-//------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 Plugin::~Plugin() {
 }
-//============================================================================================================
+//=============================================================================
 // Klasse: PluginFactory.
 // erzeugt plugin.
-//============================================================================================================
-//--------------------------------------------------------------------------------------------------------
-Plugin::Ptr PluginFactory::createVST2xPlugNode ( frx::processing::IHostInfo::Ptr hostInfo, const string &filename ) {
+//=============================================================================
+//-----------------------------------------------------------------------------
+Plugin::Ptr PluginFactory::createVST2xPlugNode ( frx::processing::IHostInfo::Ptr hostInfo,
+    const string &filename )
+{
 	return VSTPlugin::create( hostInfo, filename );
 	
 	// ... weitere Plugs TODO: VST3.x
 
 }
-//------------------------------------------------------------------------------------------------------------
-Plugin::Ptr PluginFactory::createPlugNode (  frx::processing::IHostInfo::Ptr hostInfo, const string &filename ) {
+//-----------------------------------------------------------------------------
+Plugin::Ptr PluginFactory::createPlugNode (  frx::processing::IHostInfo::Ptr hostInfo,
+    const string &filename )
+{
 	return createVST2xPlugNode ( hostInfo, filename ); 
 	/*
 	switch ( pI.pluginType ) {
