@@ -197,22 +197,60 @@ namespace com {
 	 */
 	std::pair<std::string, int> extractVSTPluginFilename(const std::string &filename);
 	//--------------------------------------------------------------------------------------------------------
-    typedef boost::tuple<std::string, // type
+    typedef boost::tuple<std::string, // namespace
+                         std::string, // type
                          std::string, // name
-                         int,      // numInputs , -1 for undefined
-                         int       // numOutputs, -1 for undefined
-            > ProcessorDescriptor;
-    /**
-	 * @note: eg. frx.processing.vst2x.__FRX__Testplugin(2,2) -> tuple(vst2x, __FRX__Testplugin, 2, 2)
-     *            frx.processing.vst2x.DelayX -> tuple(vst2x, DelayX, -1, -1)
-     *            frx.processing.internal.FrxADSR -> tuple(internal, FrxADSR, -1, -1)
+                         int,         // numInputs , -1 for undefined
+                         int,         // numOutputs, -1 for undefined
+                         std::string  // details
+            > ProcessorDescriptorData;
+   /**
+	 * @note: eg. frx.processing.vst2x.FrxTestplugin(2,2) -> tuple(processing, vst2x, FrxTestplugin, 2, 2)
+     *            frx.processing.vst2x.DelayX -> tuple(processing, vst2x, DelayX, -1, -1)
+     *            frx.processing.internal.FrxADSR -> tuple(processing, internal, FrxADSR, -1, -1)
+     *            frx.processing.vst2x.location('/home/plugins/plugin.vst') -> tuple(processing, vst2x, location, -1, -1, /home/plugins/plugin.vst)
 	 */
-	ProcessorDescriptor extractProcessorDescriptor(const std::string &str);
-    //--------------------------------------------------------------------------------------------------------
-    extern const ProcessorDescriptor FRX_NULL_PROCESSOR;
-	//--------------------------------------------------------------------------------------------------------
+    struct Descriptor : public ProcessorDescriptorData
+    {
+        typedef ProcessorDescriptorData Data;
+        Descriptor(const std::string &str = "");
+        Descriptor(const Data &data) : Data(data) {}
+        Descriptor(const std::string &ns,
+                            const std::string &tp,
+                            const std::string &name,
+                            int ni = -1,
+                            int no = -1,
+                            const std::string &dt = "") : Data(ns, tp, name, ni, no, dt)
+        {
+        }
+        
+        const Data & data() const { return *this; }
+        void data(const Data &data) { *this = data; }
+        
+        const std::string & namespace_() const { return boost::get<0>(*this); }
+        const std::string &       type() const { return boost::get<1>(*this); }
+        const std::string &       name() const { return boost::get<2>(*this); }
+        int                  numInputs() const { return boost::get<3>(*this); }
+        int                 numOutputs() const { return boost::get<4>(*this); }
+        const std::string &    details() const { return boost::get<5>(*this); }
+        
+        Descriptor & namespace_(const std::string &val) { boost::get<0>(*this) = val; return *this; }
+        Descriptor &       type(const std::string &val) { boost::get<1>(*this) = val; return *this; }
+        Descriptor &       name(const std::string &val) { boost::get<2>(*this) = val; return *this; }
+        Descriptor &                 numInputs(int val) { boost::get<3>(*this) = val; return *this; }
+        Descriptor &                numOutputs(int val) { boost::get<4>(*this) = val; return *this; }
+        Descriptor &    details(const std::string &val) { boost::get<5>(*this) = val; return *this; }
+        std::string toString() const;
+        bool operator==(const Descriptor &descr) const;
+        bool operator!=(const Descriptor &descr) const;
+    };
+    //------------------------------------------------------------------------------------------------------
+    extern const Descriptor FRX_NULL_PROCESSOR;
+    //------------------------------------------------------------------------------------------------------
+    std::ostream & operator << (std::ostream &os, const Descriptor &pd);
+	//------------------------------------------------------------------------------------------------------
 	std::string createVSTPluginFilename(const std::string &filename, int shellId);
-	/*//========================================================================================================
+	/*//====================================================================================================
 	//	Funktion: typeDetector.
 	//  Gebeben werden TypeList und zeiger zu objekt .
 	//  Geliefert wird der index zum typ aus der typelist vom Objekt.

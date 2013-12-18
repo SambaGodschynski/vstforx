@@ -13,6 +13,7 @@
 #include "processing/dspTools.h"
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <processing/ModelFactory.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -144,6 +145,14 @@ public:
 	virtual ~Volume () {
 	}
 };
+
+namespace {
+    const bool Internal_Volume_Registered =
+        frx::processing::ModelFactory::instance().register_<Volume>(
+            "internal.Volume", &Volume::create
+    );
+}
+
 }// namespace processing
 
 #endif  // FORX_VOLUME_H

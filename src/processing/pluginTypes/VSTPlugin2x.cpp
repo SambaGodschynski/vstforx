@@ -67,17 +67,18 @@ ioChangedLock(false)
 }
 //-----------------------------------------------------------------------------
 void VSTPlugin::initAsTestPluginIfNecessary(std::string filename) {
+    // TODO: replace by factory
     using namespace com;
-    ProcessorDescriptor pd = extractProcessorDescriptor(filename);
+    Descriptor pd = Descriptor(filename);
     // frx.vst2x.FrxTestplugin(numInputs, numOutputs)
-    if (boost::get<0>(pd) != "vst2x") {
+    if (pd.type() != "vst2x") {
         return;
     }
-    if (boost::get<1>(pd) != "FrxTestPlugin") {
+    if (pd.name() != "FrxTestPlugin") {
         return;
     }
-    int i = boost::get<2>(pd)>=0 ? boost::get<2>(pd) : 0;
-    int o = boost::get<3>(pd)>=0 ? boost::get<3>(pd) : 0;
+    int i = pd.numInputs() ? pd.numInputs() : 0;
+    int o = pd.numOutputs() ? pd.numOutputs() : 0;
     aEff = TestAEffect::createLongevity();
     aEff->numInputs = i*2; // vstforx => 1 channel == stero == 2 channel => vst2x
     aEff->numOutputs = o*2;

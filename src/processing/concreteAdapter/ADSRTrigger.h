@@ -11,6 +11,7 @@
 #include "processing/parameter/parameter.h"
 #include "com/Serialization.h"
 #include "processing/dspTools.h"
+#include <processing/ModelFactory.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -102,6 +103,15 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~ADSRTrigger ();
 };
+
+
+namespace {
+    const bool Internal_ADSR_Registered =
+        frx::processing::ModelFactory::instance().register_<ADSRTrigger>(
+            "internal.ADSRTrigger", &ADSRTrigger::create
+    );
+}
+
 }// namespace processing
 
 #endif  // FORX_ADSRTRIGGER_H

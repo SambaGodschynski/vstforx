@@ -5,6 +5,9 @@
  * ===========================================================================================================
  */
 #include "ADSRTrigger.h"
+#include <processing/ModelFactory.hpp>
+
+namespace processing{
 
 namespace {
     // check if inertia parameter connection is working after
@@ -13,7 +16,6 @@ namespace {
 }
 
 
-namespace processing{
 //============================================================================================================
 //ADSRTrigger
 //============================================================================================================

@@ -64,12 +64,13 @@ void BridgeSession::auto_opc_callback(Operations::CreatePluginSession::ArgPtr ar
         // because I did the misstake before:
         // do not use the location as id, because by doing so
         // only one pluginstance would be possible
-        std::string result_str = SessionManager::createUniqueName();
+        std::string result_str;
         try {
             ret->succeed = false;
             BridgePluginDelegate::Ptr delegate =
                 BridgePluginDelegate::create(arg->blockSize, arg->sampleRate, arg->path);
             PluginSessionHost::Ptr ps = PluginSessionHost::create(delegate, this);
+            result_str = ps->getId();
             plugHostMap[result_str] = ps;
             ret->succeed = true;
         } catch (const std::exception &ex) {

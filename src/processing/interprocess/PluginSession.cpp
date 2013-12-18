@@ -8,6 +8,7 @@
 #include "PluginSession.hpp"
 #include <sambag/com/exceptions/IllegalArgumentException.hpp>
 #include <algorithm>
+#include "SessionManager.hpp"
 
 namespace frx { namespace processing { namespace interprocess {
 namespace {
@@ -22,7 +23,7 @@ namespace {
 //=============================================================================
 //-----------------------------------------------------------------------------
 PluginSessionHost::PluginSessionHost(BridgePluginDelegate::Ptr dg)
-    :  Session( normalizeStringForShmId( dg->getLocation() ),
+    :  Session( SessionManager::createUniqueName(),
                 ChannelSize(
                     _minmem<OpcM>(dg->getBlockSize(), dg->getNumInputChannels()),
                     _minmem<OpcM>(dg->getBlockSize(), dg->getNumOutputChannels())

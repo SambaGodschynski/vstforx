@@ -18,7 +18,38 @@
 #include <boost/shared_ptr.hpp>
 #include <com/Serialization.h>
 
+
 namespace processing {
+
+
+struct DummyHostInfo : public frx::processing::IHostInfo {
+    template <class Archive>
+    void serialize ( Archive &ar, const unsigned int version ) {
+        ar & boost::serialization::base_object< frx::processing::IHostInfo > ( *this );
+        ar & sampleRate;
+        ar & blockSize;
+    }
+    DummyHostInfo() : sampleRate(0), blockSize(0) {}
+    DummyHostInfo(float sr, int bs) : sampleRate(sr), blockSize(bs) {}
+    virtual float getSampleRate () const { return sampleRate; }
+    virtual int getBlockSize () const { return blockSize; }
+    virtual frx::processing::TimeInfo * getHostTimeInfo (int filter) { return NULL; }
+    virtual void * getEffectPtr () { return NULL; }
+    virtual void * getMasterCallback () { return NULL; }
+    virtual bool ioChanged () { return true; }
+    virtual HostIOChangedConnection
+    addHostChangedListener (const HostIOChangedFunction &f)
+    {
+        return HostIOChangedConnection();
+    }
+    virtual HostIOChangedConnection
+    addTrackedHostChangedListener (const HostIOChangedFunction &f, AnyWPtr wptr)
+    {
+        return HostIOChangedConnection();
+    }
+    float sampleRate;
+    int blockSize;
+};
 
 struct DummyFX : public AudioEffectX, public frx::processing::IHostInfo {
 public:
