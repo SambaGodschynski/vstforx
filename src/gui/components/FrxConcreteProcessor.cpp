@@ -33,18 +33,18 @@ namespace __private {
 
 ///////////////////////////////////////////////////////////////////////////////
 // Processor Names
-const char *ProcessorNames[] = {"FrxPlugin",
-                                "FrxVolume",
-                                "FrxPan",
-                                "FrxInStep",
-                                "FrxOutStep",
-                                "FrxInSwitch",
-                                "FrxOutSwitch",
-                                "FrxADSR",
-                                "FrxPeakTracker",
-                                "FrxMidiReceiver",
-                                "FrxRemoteChReceiver",
-                                "FrxDCTester"};
+const char *ProcessorNames[] = {"Plugin",
+                                "Volume",
+                                "Pan",
+                                "InStep",
+                                "OutStep",
+                                "InSwitch",
+                                "OutSwitch",
+                                "ADSR",
+                                "PeakTracker",
+                                "MidiReceiver",
+                                "RemoteChReceiver",
+                                "DCTester"};
 
 const size_t NumProcessorNames = sizeof(ProcessorNames) / sizeof(ProcessorNames[0]);
 BOOST_STATIC_ASSERT( NumProcessorNames == Loki::TL::Length<FrxProcessorList>::value );

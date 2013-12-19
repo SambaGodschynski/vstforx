@@ -104,13 +104,7 @@ public:
 	virtual ~ADSRTrigger ();
 };
 
-
-namespace {
-    const bool Internal_ADSR_Registered =
-        frx::processing::ModelFactory::instance().register_<ADSRTrigger>(
-            "internal.ADSRTrigger", &ADSRTrigger::create
-    );
-}
+FRX_MODELFACTORY_REGISTER(internal, ADSRTrigger);
 
 }// namespace processing
 

@@ -36,8 +36,6 @@ ioChangedLock(false)
 		(AudioEffectX*)(hostInfo->getEffectPtr()) ) 
 	);
     
-    initAsTestPluginIfNecessary(filename);
-	
 	VstPlugCategory pluginCategory = (VstPlugCategory)
 		aEff->dispatcher(aEff, effGetPlugCategory, 0, 0, 0, 0);
 	
@@ -66,22 +64,39 @@ ioChangedLock(false)
 	initPlug ( *this ); // muss nach init i/o erfolgen
 }
 //-----------------------------------------------------------------------------
-void VSTPlugin::initAsTestPluginIfNecessary(std::string filename) {
-    // TODO: replace by factory
-    using namespace com;
-    Descriptor pd = Descriptor(filename);
-    // frx.vst2x.FrxTestplugin(numInputs, numOutputs)
-    if (pd.type() != "vst2x") {
-        return;
-    }
-    if (pd.name() != "FrxTestPlugin") {
-        return;
-    }
-    int i = pd.numInputs() ? pd.numInputs() : 0;
-    int o = pd.numOutputs() ? pd.numOutputs() : 0;
-    aEff = TestAEffect::createLongevity();
-    aEff->numInputs = i*2; // vstforx => 1 channel == stero == 2 channel => vst2x
-    aEff->numOutputs = o*2;
+VSTPlugin::VSTPlugin( frx::processing::IHostInfo::Ptr hostInfo, AEffect *aeff ) :
+OS_VSTPlugNode2x ( "" ),         
+Plugin ( hostInfo, "FrxTestPlugin", 0,  0 ),  
+onPlugChangeParameterIndex (-1),
+param(NULL),
+canReceiveVstEvents(false),
+ioChangedLock(false)
+{
+
+    this->aEff = aeff;
+	// init i/o 
+	size_t c = ( aEff->numInputs%2==0 ) ? aEff->numInputs/2 : aEff->numInputs/2 + 1; // anzahl der eingaenge
+	for ( size_t i=0; i<c; ++i ) {
+		createInputNode( getName() + " InputNode(" + MyString(i) + ")" );
+	}
+	c = ( aEff->numOutputs%2==0 ) ? aEff->numOutputs/2 : aEff->numOutputs/2 + 1; // anzahl der ausgaenge
+	for ( size_t i=0; i<c; ++i ) {
+		createOutputNode( getName() + " OutputNode(" + MyString(i) + ")" );
+	}
+	
+	initPlug ( *this ); // muss nach init i/o erfolgen
+}
+
+//-----------------------------------------------------------------------------
+VSTPlugin::Ptr VSTPlugin::createTestPlugin(
+    frx::processing::IHostInfo::Ptr hostInfo, int numInputs, int numOutputs)
+{
+    AEffect *aEff = TestAEffect::createLongevity();
+    aEff->numInputs = numInputs*2; // vstforx => 1 channel == stero == 2 channel => vst2x
+    aEff->numOutputs = numOutputs*2;
+    Ptr res( new VSTPlugin(hostInfo, aEff) );
+    res->self = res;
+    return res;
 }
 //-----------------------------------------------------------------------------
 MyString VSTPlugin::extractNameFromFilename( const string &fileName ){

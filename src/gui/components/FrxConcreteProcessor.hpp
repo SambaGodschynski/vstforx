@@ -14,6 +14,7 @@
 #include <gui/HandyNamespaces.hpp>
 #include <sambag/disco/components/Button.hpp>
 #include <loki/Typelist.h>
+#include <gui/ViewFactory.hpp>
 
 namespace frx { namespace gui { namespace components {
 //-----------------------------------------------------------------------------
@@ -213,6 +214,22 @@ const char * getProcessorTooltip() {
     enum { Index = ::Loki::TL::IndexOf<FrxProcessorList, _ProcessorType>::value };
     return __private::_getProcessorTooltip<Index>();
 }
+namespace {
+    template <class ProcessorList>
+    inline bool registerInFactory() {
+        typedef typename ProcessorList::Head T;
+        bool res = ViewFactory::instance().register_<T>(
+            std::string("internal.") + getProcessorName<T>(),
+            &T::create
+        );
+        return res && registerInFactory<typename ProcessorList::Tail>();
+    }
+    template <>
+    inline bool registerInFactory<Loki::NullType>() { return true; }
+    
+    bool FrxProcessors_Registered = registerInFactory<FrxProcessorList>();
+
+} // namespace(s)
 }}} // namespace(s)
 
 #endif /* SAMBAG_FRXPLUGINNODE_H */

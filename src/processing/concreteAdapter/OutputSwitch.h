@@ -14,6 +14,7 @@
 #include "com/One4All.h"
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <processing/ModelFactory.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -95,9 +96,10 @@ public:
 	/**
 	 * @param hostInfo
 	 * @param initStates
+     * @param not used, needed to fit ModelFactory's create function signature
 	 * @return neues OutputSwitch-Objekt
 	 */
-	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo, int initStates = 2 ) {
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo, int initStates = 2, int unused=0 ) {
 		Ptr neu( new OutputSwitch(hostInfo, initStates) );
 		neu->self = neu;
 		return neu;
@@ -153,6 +155,9 @@ public:
 	 */
 	virtual ProcessorNode::Ptr addOutputNode();
 };
+
+FRX_MODELFACTORY_REGISTER_IO(internal, OutputSwitch);
+
 }// namespace processing
 
 #endif  // FORX_OUTPUTSWITCH_H

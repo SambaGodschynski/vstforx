@@ -61,7 +61,7 @@ std::string createVSTPluginFilename(const std::string &filename, int shellId) {
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
 Descriptor::Descriptor(const std::string &str) :
-     Data( FRX_NULL_PROCESSOR.data() )
+     Data( FRX_NULL_DESCRIPTOR.data() )
 {
     if (str.length()==0) {
         return;
@@ -84,7 +84,7 @@ Descriptor::Descriptor(const std::string &str) :
                   
 	cmatch what;
 	if(!regex_search(str.c_str(), what, pat)) {
-        data( FRX_NULL_PROCESSOR.data() );
+        data( FRX_NULL_DESCRIPTOR.data() );
         return;
     }
     namespace_(what[tNameSpace]);
@@ -115,7 +115,7 @@ bool Descriptor::operator!=(const Descriptor &descr) const {
 }
 //------------------------------------------------------------------------------------------------------------
 std::ostream & operator << (std::ostream &os, const Descriptor &pd) {
-    if ( pd == FRX_NULL_PROCESSOR ) {
+    if ( pd == FRX_NULL_DESCRIPTOR ) {
         return os;
     }
     os<<"frx."<<pd.namespace_()<<"."<<pd.type()<<"."<<pd.name();
@@ -129,7 +129,7 @@ std::ostream & operator << (std::ostream &os, const Descriptor &pd) {
     return os;
 }
 //------------------------------------------------------------------------------------------------------------
-const Descriptor FRX_NULL_PROCESSOR = Descriptor("","","",-1,-1,"");
+const Descriptor FRX_NULL_DESCRIPTOR = Descriptor("","","",-1,-1,"");
 } // namespace com
 
 

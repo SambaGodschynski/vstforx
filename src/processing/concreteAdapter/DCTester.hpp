@@ -12,6 +12,7 @@
 #include "com/Serialization.h"
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <processing/ModelFactory.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -111,6 +112,9 @@ public:
 	//-------------------------------------------------------------------------
 	virtual ~DCTester () {}
 };
+
+FRX_MODELFACTORY_REGISTER(internal, DCTester);
+
 }// namespace processing
 
 #endif  // FORX_DC_TESTER_HPP

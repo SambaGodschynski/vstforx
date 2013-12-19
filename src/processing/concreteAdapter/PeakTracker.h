@@ -10,6 +10,7 @@
 #include "processing/processing.h"
 #include "processing/parameter/parameter.h"
 #include "com/Serialization.h"
+#include <processing/ModelFactory.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -99,6 +100,9 @@ public:
 	virtual ~PeakTracker (){ 
 	}
 };
+
+FRX_MODELFACTORY_REGISTER(internal, PeakTracker);
+
 }// namespace processing
 
 #endif  // FORX_PEAKTRACKER_H

@@ -16,10 +16,14 @@ class TestViewFactory : public CPPUNIT_NS::TestFixture {
 //=============================================================================
 private:
 	CPPUNIT_TEST_SUITE( TestViewFactory );
-	// CPPUNIT_TEST( XXX );
+	CPPUNIT_TEST( testCreateProducts );
+    CPPUNIT_TEST( testArchiveRegister );
+    CPPUNIT_TEST( testGetRegisteredIds );
 	CPPUNIT_TEST_SUITE_END();
 public:
-	//void XXX();
+	void testCreateProducts();
+    void testArchiveRegister();
+    void testGetRegisteredIds();
 };
 
 } // namespace

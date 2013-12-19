@@ -61,6 +61,11 @@ public:
 	 */
 	virtual void getProcessorNames(std::list<std::string> &out) const = 0;
 	//-------------------------------------------------------------------------
+	/**
+	 * @return component names which can be created by factory
+	 */
+	virtual void getComponentNames(std::list<std::string> &out) const = 0;
+	//-------------------------------------------------------------------------
 	virtual FreeParameterCreator getFreeParameterCreator() const = 0;
 	//-------------------------------------------------------------------------
 	virtual HostParameterCreator getHostParameterCreator() const = 0;

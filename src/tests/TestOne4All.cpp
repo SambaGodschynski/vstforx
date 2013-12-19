@@ -69,15 +69,15 @@ void TestOne4All::testMapNumChannels2Xput() {
 void TestOne4All::testProcessorId() {
     using namespace com;
     CPPUNIT_ASSERT_EQUAL(
-        FRX_NULL_PROCESSOR,
+        FRX_NULL_DESCRIPTOR,
         Descriptor()
     );
     CPPUNIT_ASSERT_EQUAL(
-        FRX_NULL_PROCESSOR,
+        FRX_NULL_DESCRIPTOR,
         Descriptor("")
     );
     CPPUNIT_ASSERT_EQUAL(
-        FRX_NULL_PROCESSOR,
+        FRX_NULL_DESCRIPTOR,
         Descriptor("no.none")
     );
     CPPUNIT_ASSERT_EQUAL(
@@ -101,15 +101,15 @@ void TestOne4All::testProcessorId() {
         Descriptor("frx.processing.internal.FrxADSR")
     );
    CPPUNIT_ASSERT_EQUAL(
-        FRX_NULL_PROCESSOR,
+        FRX_NULL_DESCRIPTOR,
         Descriptor("frx.processing.vst2x.FrxTestplugin(2)")
     );
    CPPUNIT_ASSERT_EQUAL(
-        FRX_NULL_PROCESSOR,
+        FRX_NULL_DESCRIPTOR,
         Descriptor("frx.processing.vst2x(2)")
     );
    CPPUNIT_ASSERT_EQUAL(
-        FRX_NULL_PROCESSOR,
+        FRX_NULL_DESCRIPTOR,
         Descriptor("vst2x(2)")
     );
     CPPUNIT_ASSERT_EQUAL(

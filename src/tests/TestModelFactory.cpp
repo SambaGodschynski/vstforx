@@ -37,6 +37,7 @@ void TestModelFactory::testCreateProducts() {
         sambag::com::exceptions::IllegalArgumentException
     );
 }
+//-----------------------------------------------------------------------------
 void TestModelFactory::testArchiveRegister() {
     using namespace processing;
     using namespace frx::processing;
@@ -57,5 +58,15 @@ void TestModelFactory::testArchiveRegister() {
     ia>>hI;
     ia>>volume;
     CPPUNIT_ASSERT(volume);
+}
+//-----------------------------------------------------------------------------
+void TestModelFactory::testGetRegisteredIds() {
+    using namespace processing;
+    using namespace frx::processing;
+    ModelFactory &fac = ModelFactory::instance();
+    std::vector<std::string> ids;
+    ids.reserve(fac.getNumRegisteredIds());
+    fac.getRegisteredIds(ids);
+    SAMBAG_ASSERT(ids.size() == fac.getNumRegisteredIds());
 }
 } //namespace

@@ -18,10 +18,12 @@ private:
 	CPPUNIT_TEST_SUITE( TestModelFactory );
 	CPPUNIT_TEST( testCreateProducts );
     CPPUNIT_TEST( testArchiveRegister );
+    CPPUNIT_TEST( testGetRegisteredIds );
 	CPPUNIT_TEST_SUITE_END();
 public:
 	void testCreateProducts();
     void testArchiveRegister();
+    void testGetRegisteredIds();
 };
 
 } // namespace

@@ -27,6 +27,10 @@
 #include <com/Settings.h>
 #include <processing/interprocess/RemoteChannelManager.hpp>
 
+#include <gui/ViewFactory.hpp>
+#include <processing/ModelFactory.hpp>
+
+
 namespace frx { namespace gui { namespace components {
 namespace {
 typedef boost::weak_ptr<void> AnyWPtr;
@@ -299,6 +303,10 @@ FrxComponentFactory::getRemoteChannelCreator(const std::string &rcId) const
     return ProcessorCreator(
         boost::bind(&createRemoteChannel, _1, std::string(rcId))
     );
+}
+//-----------------------------------------------------------------------------
+void FrxComponentFactory::getComponentNames(std::list<std::string> &out) const {
+ ‚
 }
 ///////////////////////////////////////////////////////////////////////////////
 IFrxComponentFactory & getComponentFactory(FrxCircuidViewPtr view) {

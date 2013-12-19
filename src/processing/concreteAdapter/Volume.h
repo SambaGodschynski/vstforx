@@ -146,12 +146,7 @@ public:
 	}
 };
 
-namespace {
-    const bool Internal_Volume_Registered =
-        frx::processing::ModelFactory::instance().register_<Volume>(
-            "internal.Volume", &Volume::create
-    );
-}
+FRX_MODELFACTORY_REGISTER(internal, Volume);
 
 }// namespace processing
 

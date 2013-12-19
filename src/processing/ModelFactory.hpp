@@ -11,12 +11,31 @@
 #include <loki/Singleton.h>
 #include "IHostInfo.h"
 #include "processing.h"
-#include <com/one4All.h>
 #include <boost/function.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/shared_ptr.hpp>
 #include <com/Serialization.h>
 #include <list>
+#include <boost/foreach.hpp>
+
+#define FRX_MODELFACTORY_REGISTER(type,prod)                                   \
+    namespace { const bool type ## prod =                                      \
+            frx::processing::ModelFactory::instance().register_<prod>(         \
+                std::string(#type) + "." + #prod, &prod::create                \
+        );}
+
+#define FRX_MODELFACTORY_REGISTER_IO(type,prod)                                \
+    namespace { const bool type ## prod =                                      \
+            frx::processing::ModelFactory::instance().registerWithIO<prod>(    \
+                std::string(#type) + "." + #prod, &prod::create                \
+        );}
+
+#define FRX_MODELFACTORY_REGISTER_DETAILS(type,prod)                              \
+    namespace { const bool type ## prod =                                         \
+            frx::processing::ModelFactory::instance().registerWithDetail<prod>(   \
+                std::string(#type) + "." + #prod, &prod::create                   \
+        );}
+
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -105,6 +124,29 @@ public:
     void registerToArchive(com::iArchive &ar) const;
     //-------------------------------------------------------------------------
     void registerToArchive(com::oArchive &ar) const;
+    //-------------------------------------------------------------------------
+    size_t getNumRegisteredIds() const {
+        return creators.size() +
+               creatorsIO.size() +
+               creatorsDetail.size();
+    }
+    //-------------------------------------------------------------------------
+    template <class Container>
+    void getRegisteredIds(Container &out) const {
+        BOOST_FOREACH(const CreatorMap::value_type &v, creators)
+        {
+            out.push_back(v.first);
+        }
+        BOOST_FOREACH(const CreatorWithIOMap::value_type &v, creatorsIO)
+        {
+            out.push_back(v.first);
+        }
+        BOOST_FOREACH(const CreatorWithDetailMap::value_type &v, creatorsDetail)
+        {
+            out.push_back(v.first);
+        }
+    }
+
 }; // ModelFactory
 }} // namespace(s)
 

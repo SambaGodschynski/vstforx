@@ -21,6 +21,7 @@
 #include <sambag/dsp/VstMidiEventAdapter.hpp>
 #include "VstShellPlugin.hpp"
 #include <sambag/com/ArithmeticWrapper.hpp>
+#include <processing/ModelFactory.hpp>
 
 namespace processing{
 using namespace com;
@@ -165,14 +166,15 @@ private:
 	int onPlugChangeParameterIndex;
 	//-------------------------------------------------------------------------
 	void getShellPluginInfos(ShellPluginInfos &out);
-    //-------------------------------------------------------------------------
-    /**
-     * recognized testplugin via filename: frx.vst2x.FrxTestplugin(numInputs, numOutputs)
-     */
-    void initAsTestPluginIfNecessary(std::string filename);
 protected:
 	//-------------------------------------------------------------------------
 	VSTPlugin( frx::processing::IHostInfo::Ptr hostInfo, const string &filename );
+	//-------------------------------------------------------------------------
+	/**
+     * @brief is used for testing, you are able to create an
+     * AEff using TestAEffect::createLongevity()
+     */
+    VSTPlugin(frx::processing::IHostInfo::Ptr hostInfo, AEffect *aEff);
 public:
 	//-------------------------------------------------------------------------
 	/**
@@ -187,6 +189,9 @@ public:
 		neu->self = neu;
 		return neu;
 	}
+	//-------------------------------------------------------------------------
+	static Ptr createTestPlugin( frx::processing::IHostInfo::Ptr hostInfo,
+        int numInputs, int numOutputs);
 	//-------------------------------------------------------------------------
 	/**
 	 * @return Anzahl aller Plugin-Programme (aka. Presets)
@@ -349,6 +354,16 @@ public:
         return aEff->numOutputs;
     }
 }; // class VSTPlugin
+
+namespace {
+    const bool VST2X_Plugin_Location_Registered =
+        frx::processing::ModelFactory::instance().
+            registerWithDetail<VSTPlugin>("vst2x.location", &VSTPlugin::create);
+    const bool VST2X_Plugin_TestPlug_Registered =
+        frx::processing::ModelFactory::instance().
+            registerWithIO<VSTPlugin>("vst2x.FrxTestPlugin", &VSTPlugin::createTestPlugin);
+}
+
 } // namespace processing
 
 #endif

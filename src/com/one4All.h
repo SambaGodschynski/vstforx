@@ -245,7 +245,7 @@ namespace com {
         bool operator!=(const Descriptor &descr) const;
     };
     //------------------------------------------------------------------------------------------------------
-    extern const Descriptor FRX_NULL_PROCESSOR;
+    extern const Descriptor FRX_NULL_DESCRIPTOR;
     //------------------------------------------------------------------------------------------------------
     std::ostream & operator << (std::ostream &os, const Descriptor &pd);
 	//------------------------------------------------------------------------------------------------------
