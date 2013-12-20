@@ -176,8 +176,15 @@ public:
 	 */
 	ProcessorNode::Ptr addInputNode();
 };
-
-FRX_MODELFACTORY_REGISTER_IO(internal, InputStep);
+namespace {
+    const bool INTERNAL_INSTEP_IO_Registered =
+        frx::processing::ModelFactory::instance().
+            registerWithIO<InputStep>("internal.InputStep", &InputStep::create);
+    
+    const bool INTERNAL_INSTEP_Registered =
+        frx::processing::ModelFactory::instance().
+            register_<InputStep>("internal.InputStep", &InputStep::create);
+}
 
 }// namespace processing
 

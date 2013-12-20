@@ -31,8 +31,9 @@ namespace {
 ModelFactory::Product ModelFactory::create(const std::string &pdStr,
     IHostInfo::Ptr hI)
 {
-    com::Descriptor descr(pdStr);
-    if (descr==com::FRX_NULL_DESCRIPTOR || descr.namespace_()!="processing" ) {
+    SAMBAG_LOG_INFO<<"ModelFactory create: " << pdStr;
+    com::IdParser descr(pdStr);
+    if (descr==com::FRX_NULL_ID || descr.namespace_()!="processing" ) {
         _throw(pdStr + " not found");
     }
     std::string id = descr.type() + "." + descr.name();

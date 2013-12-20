@@ -30,14 +30,10 @@
 #include <processing/IModelController.hpp>
 #include "IViewModelMap.hpp"
 #include <exception>
-#include "__ModelExecutors.hpp"
-#include <boost/archive/text_oarchive.hpp> 
-#include <boost/archive/text_iarchive.hpp>
 #include <boost/foreach.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/assign.hpp>
 #include <boost/unordered_set.hpp>
-#include "components/FrxSerializationRegister.hpp"
 #include <gui/components/SetupWindow.hpp>
 #include <processing/IParameter.hpp>
 #include <processing/IProcessor.hpp>

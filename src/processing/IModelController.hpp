@@ -33,73 +33,13 @@ public:
 	typedef boost::shared_ptr<IModelController> Ptr;
 	//-------------------------------------------------------------------------
 	/**
-	 * @return ModelObject pointer which points on a VolumeProcessor object
+     * @param the id of the processor to create
+     * @param whether the first output should be connected to the exit
+     * (for processors which have a invisble output e.g. Peaktracker etc.)
+	 * @return ModelObject fitting to id.
 	 */
-	virtual IProcessor::Ptr createVolumeProcessor() = 0;
-	//-------------------------------------------------------------------------
-	/**
-	 * @return ModelObject pointer which points on a PanProcessor object
-	 */
-	virtual IProcessor::Ptr createPanProcessor() = 0;
-	//-------------------------------------------------------------------------
-	virtual IProcessor::Ptr createPlugin(const ::processing::PluginInfo &pI) = 0;
-	//-------------------------------------------------------------------------
-	/**
-	 * @param number of inputs
-	 * @param out-container with i/o objects
-	 * @return ModelObject pointer which points on a InStepProcessor object
-	 */
-	virtual IProcessor::Ptr 
-	createInStepProcessor(size_t numInputs) = 0;
-	//-------------------------------------------------------------------------
-	/**
-	 * @param number of outputs
-	 * @param out-container with i/o objects
-	 * @return ModelObject pointer which points on a InStepProcessor object
-	 */
-	virtual IProcessor::Ptr 
-	createOutStepProcessor(size_t numOutputs) = 0;
-	//-------------------------------------------------------------------------
-	/**
-	 * @param number of inputs
-	 * @param out-container with i/o objects
-	 * @return ModelObject pointer which points on a InStepProcessor object
-	 */
-	virtual IProcessor::Ptr 
-	createInSwitchProcessor(size_t numInputs) = 0;
-	//-------------------------------------------------------------------------
-	/**
-	 * @param number of outputs
-	 * @param out-container with i/o objects
-	 * @return ModelObject pointer which points on a InStepProcessor object
-	 */
-	virtual IProcessor::Ptr 
-	createOutSwitchProcessor(size_t numOutputs) = 0;
-	//-------------------------------------------------------------------------
-	/**
-	 * @return ModelObject pointer which points on a PeakTracker object
-	 */
-	virtual IProcessor::Ptr createPeakTracker() = 0;
-	//-------------------------------------------------------------------------
-	/**
-	 * @return ModelObject pointer which points on a PeakTracker object
-	 */
-	virtual IProcessor::Ptr createADSRTransformer() = 0;
-	//-------------------------------------------------------------------------
-	/**
-	 * @return ModelObject pointer which points on a MIDIReceiver object
-	 */
-	virtual IProcessor::Ptr createMIDIReceiver() = 0;
-	//-------------------------------------------------------------------------
-	/**
-	 * @return RemoteChannelReceiver pointer
-	 */
-	virtual IProcessor::Ptr createRemoteChannelReceiver(const std::string &rcid) = 0;
-	//-------------------------------------------------------------------------
-	/**
-	 * @return DCTester pointer
-	 */
-	virtual IProcessor::Ptr createDCTester() = 0;
+	virtual IProcessor::Ptr createProcessor(const std::string &id,
+        bool autoConnectOutput = false) = 0;
 	//-------------------------------------------------------------------------
 	virtual IConnection::Ptr connect(INode::Ptr out, INode::Ptr in) = 0;
 	//-------------------------------------------------------------------------

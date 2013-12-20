@@ -6,6 +6,7 @@
  */
 
 #include <boost/xpressive/xpressive.hpp>
+#include <boost/xpressive/regex_primitives.hpp>
 #include "one4All.h"
 #include "OS_Specific/OS_com.h"
 #include <sstream>
@@ -57,11 +58,14 @@ std::string createVSTPluginFilename(const std::string &filename, int shellId) {
 	return ss.str();
 }
 //============================================================================================================
-// class Descriptor
+// class IdParser
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-Descriptor::Descriptor(const std::string &str) :
-     Data( FRX_NULL_DESCRIPTOR.data() )
+
+#define FRX_IDPARSER_NAME set[range('a','z')|range('A','Z')|range('0','9')|'-']
+
+IdParser::IdParser(const std::string &str) :
+     Data( FRX_NULL_ID.data() )
 {
     if (str.length()==0) {
         return;
@@ -76,15 +80,16 @@ Descriptor::Descriptor(const std::string &str) :
              tFrx(6),
              tNameSpace(7),
              tDetails(8);
-	cregex pat = "frx." >> (tNameSpace=+alnum) >> "." >> (tType=+alnum) >> "." >>
-                 (tName=+alnum) >> *("(" >> *_s >> (tNumI= +_d) >>
+    
+    cregex pat = "frx." >> (tNameSpace=+FRX_IDPARSER_NAME) >> "." >> (tType=+FRX_IDPARSER_NAME) >> "." >>
+                 (tName=+FRX_IDPARSER_NAME) >> *("(" >> *_s >> (tNumI= +_d) >>
                  *_s >> "," >> *_s >> (tNumO= +_d) >> *_s >> ")" |
                  ("(" >> *_s >> "'" >> (tDetails=-*_) >> "'" >> *_s >> ")") ) >>
                  eol;
                   
 	cmatch what;
 	if(!regex_search(str.c_str(), what, pat)) {
-        data( FRX_NULL_DESCRIPTOR.data() );
+        data( FRX_NULL_ID.data() );
         return;
     }
     namespace_(what[tNameSpace]);
@@ -100,22 +105,22 @@ Descriptor::Descriptor(const std::string &str) :
     }
 }
 //------------------------------------------------------------------------------------------------------------
-std::string Descriptor::toString() const {
+std::string IdParser::toString() const {
     std::stringstream ss;
     ss<<*this;
     return ss.str();
 }
 //------------------------------------------------------------------------------------------------------------
-bool Descriptor::operator==(const Descriptor &descr) const {
+bool IdParser::operator==(const IdParser &descr) const {
     return this->data() == descr.data();
 }
 //------------------------------------------------------------------------------------------------------------
-bool Descriptor::operator!=(const Descriptor &descr) const {
+bool IdParser::operator!=(const IdParser &descr) const {
     return !(*this == descr);
 }
 //------------------------------------------------------------------------------------------------------------
-std::ostream & operator << (std::ostream &os, const Descriptor &pd) {
-    if ( pd == FRX_NULL_DESCRIPTOR ) {
+std::ostream & operator << (std::ostream &os, const IdParser &pd) {
+    if ( pd == FRX_NULL_ID ) {
         return os;
     }
     os<<"frx."<<pd.namespace_()<<"."<<pd.type()<<"."<<pd.name();
@@ -129,7 +134,7 @@ std::ostream & operator << (std::ostream &os, const Descriptor &pd) {
     return os;
 }
 //------------------------------------------------------------------------------------------------------------
-const Descriptor FRX_NULL_DESCRIPTOR = Descriptor("","","",-1,-1,"");
+const IdParser FRX_NULL_ID = IdParser("","","",-1,-1,"");
 } // namespace com
 
 

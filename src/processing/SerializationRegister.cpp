@@ -10,7 +10,6 @@
 #include <processing/processing.h>
 #include <processing/parameter/parameter.h>
 #include <processing/parameter/ConnectionOperators.h>
-#include <processing/ConcreteProcessAdapter.h>
 #include <processing/dspTools.h>
 #include <processing/pluginTypes/VSTPlugin2x.h>
 #include <processing/NodeConnection.hpp>
@@ -19,8 +18,7 @@
 #include <processing/PluginAdapter.hpp>
 #include <processing/ParameterConnection.hpp>
 #include <processing/ParameterAdapter.hpp>
-#include <processing/interprocess/RemoteChReceiver.hpp>
-
+#include <processing/ModelFactory.hpp>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -41,20 +39,7 @@ void register_types_impl( Archive &ar ) {
 	ar.template register_type<pr::StartNode>();
 	ar.template register_type<pr::EndNode>();
 	ar.template register_type<pr::ProcessAdapterNode>();
-	ar.template register_type<pr::Volume>();
-	ar.template register_type<pr::VSTPlugin>();
-	ar.template register_type<pr::Pan>();
-	ar.template register_type<pr::OutputStep>();
-	ar.template register_type<pr::InputStep>();
-	ar.template register_type<pr::OutputSwitch>();
-	ar.template register_type<pr::InputSwitch>();
-	ar.template register_type<pr::PeakTracker>();
-	ar.template register_type<pr::ADSRTrigger>();
-	ar.template register_type<pr::MidiProcessor>();
-    ar.template register_type<frx::processing::interprocess::RemoteChReceiver>();
-    ar.template register_type<pr::DCTester>();
 	ar.template register_type<pr::FadeValue>();
-
 	ar.template register_type<ProcessorAdapter>();
 	ar.template register_type<PluginAdapter>();
 	ar.template register_type<ParameterConnection>();
@@ -64,8 +49,10 @@ void register_types_impl( Archive &ar ) {
 }
 void register_types(::com::iArchive &ar) {
 	register_types_impl(ar);
+    ModelFactory::instance().registerToArchive(ar);
 }
 void register_types(::com::oArchive &ar) {
 	register_types_impl(ar);
+    ModelFactory::instance().registerToArchive(ar);
 }
 }} // namespace(s)

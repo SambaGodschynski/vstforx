@@ -203,19 +203,19 @@ namespace com {
                          int,         // numInputs , -1 for undefined
                          int,         // numOutputs, -1 for undefined
                          std::string  // details
-            > ProcessorDescriptorData;
+            > IdData;
    /**
 	 * @note: eg. frx.processing.vst2x.FrxTestplugin(2,2) -> tuple(processing, vst2x, FrxTestplugin, 2, 2)
      *            frx.processing.vst2x.DelayX -> tuple(processing, vst2x, DelayX, -1, -1)
      *            frx.processing.internal.FrxADSR -> tuple(processing, internal, FrxADSR, -1, -1)
      *            frx.processing.vst2x.location('/home/plugins/plugin.vst') -> tuple(processing, vst2x, location, -1, -1, /home/plugins/plugin.vst)
 	 */
-    struct Descriptor : public ProcessorDescriptorData
+    struct IdParser : public IdData
     {
-        typedef ProcessorDescriptorData Data;
-        Descriptor(const std::string &str = "");
-        Descriptor(const Data &data) : Data(data) {}
-        Descriptor(const std::string &ns,
+        typedef IdData Data;
+        IdParser(const std::string &str = "");
+        IdParser(const Data &data) : Data(data) {}
+        IdParser(const std::string &ns,
                             const std::string &tp,
                             const std::string &name,
                             int ni = -1,
@@ -234,20 +234,20 @@ namespace com {
         int                 numOutputs() const { return boost::get<4>(*this); }
         const std::string &    details() const { return boost::get<5>(*this); }
         
-        Descriptor & namespace_(const std::string &val) { boost::get<0>(*this) = val; return *this; }
-        Descriptor &       type(const std::string &val) { boost::get<1>(*this) = val; return *this; }
-        Descriptor &       name(const std::string &val) { boost::get<2>(*this) = val; return *this; }
-        Descriptor &                 numInputs(int val) { boost::get<3>(*this) = val; return *this; }
-        Descriptor &                numOutputs(int val) { boost::get<4>(*this) = val; return *this; }
-        Descriptor &    details(const std::string &val) { boost::get<5>(*this) = val; return *this; }
+        IdParser & namespace_(const std::string &val) { boost::get<0>(*this) = val; return *this; }
+        IdParser &       type(const std::string &val) { boost::get<1>(*this) = val; return *this; }
+        IdParser &       name(const std::string &val) { boost::get<2>(*this) = val; return *this; }
+        IdParser &                 numInputs(int val) { boost::get<3>(*this) = val; return *this; }
+        IdParser &                numOutputs(int val) { boost::get<4>(*this) = val; return *this; }
+        IdParser &    details(const std::string &val) { boost::get<5>(*this) = val; return *this; }
         std::string toString() const;
-        bool operator==(const Descriptor &descr) const;
-        bool operator!=(const Descriptor &descr) const;
+        bool operator==(const IdParser &descr) const;
+        bool operator!=(const IdParser &descr) const;
     };
     //------------------------------------------------------------------------------------------------------
-    extern const Descriptor FRX_NULL_DESCRIPTOR;
+    extern const IdParser FRX_NULL_ID;
     //------------------------------------------------------------------------------------------------------
-    std::ostream & operator << (std::ostream &os, const Descriptor &pd);
+    std::ostream & operator << (std::ostream &os, const IdParser &pd);
 	//------------------------------------------------------------------------------------------------------
 	std::string createVSTPluginFilename(const std::string &filename, int shellId);
 	/*//====================================================================================================

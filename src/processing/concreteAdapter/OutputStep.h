@@ -171,7 +171,15 @@ public:
 	ProcessorNode::Ptr addOutputNode();
 };
 
-FRX_MODELFACTORY_REGISTER_IO(internal, OutputStep);
+namespace {
+    const bool INTERNAL_OUTSTEP_IO_Registered =
+        frx::processing::ModelFactory::instance().
+            registerWithIO<OutputStep>("internal.OutputStep", &OutputStep::create);
+    
+    const bool INTERNAL_OUTSTEP_Registered =
+        frx::processing::ModelFactory::instance().
+            register_<OutputStep>("internal.OutputStep", &OutputStep::create);
+}
 
 }// namespace processing
 

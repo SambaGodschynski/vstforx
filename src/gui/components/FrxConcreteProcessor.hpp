@@ -18,13 +18,13 @@
 
 namespace frx { namespace gui { namespace components {
 //-----------------------------------------------------------------------------
-template <class _ProcessorType>
+template <class Processor>
 const char * getProcessorName();
 //-----------------------------------------------------------------------------
-template <class _ProcessorType>
+template <class Processor>
 const char * getProcessorBeautyName();
 //-----------------------------------------------------------------------------
-template <class _ProcessorType>
+template <class Processor>
 const char * getProcessorTooltip();
 //-----------------------------------------------------------------------------
 std::string getProcessorBeautyName(const std::string &processorName);
@@ -214,15 +214,43 @@ const char * getProcessorTooltip() {
     enum { Index = ::Loki::TL::IndexOf<FrxProcessorList, _ProcessorType>::value };
     return __private::_getProcessorTooltip<Index>();
 }
+///////////////////////////////////////////////////////////////////////////////
+// Register in Factory
+// Walk through ProcessorList and register themselve
+///////////////////////////////////////////////////////////////////////////////
 namespace {
-    template <class ProcessorList>
-    inline bool registerInFactory() {
-        typedef typename ProcessorList::Head T;
-        bool res = ViewFactory::instance().register_<T>(
+    template <class T>
+    inline bool _doRegister() {
+        return ViewFactory::instance().register_<T>(
             std::string("internal.") + getProcessorName<T>(),
             &T::create
         );
-        return res && registerInFactory<typename ProcessorList::Tail>();
+    }
+    template <>
+    inline bool _doRegister<FrxPluginNode>() {
+        typedef FrxPluginNode T;
+        // register FrxPluginNode for all plugin types
+        return ViewFactory::instance().register_<T>(
+            std::string("vst2x.location"),
+            &T::create
+        ) && ViewFactory::instance().register_<T>(
+            std::string("vst3x.location"),
+            &T::create
+        ) && ViewFactory::instance().register_<T>(
+            std::string("au.location"),
+            &T::create
+        ) && ViewFactory::instance().register_<T>(
+            std::string("dx.location"),
+            &T::create
+        ) && ViewFactory::instance().register_<T>(
+            std::string("unknown-plugin.location"),
+            &T::create
+        );
+    }
+    template <class ProcessorList>
+    inline bool registerInFactory() {
+        typedef typename ProcessorList::Head T;
+        return _doRegister<T>() && registerInFactory<typename ProcessorList::Tail>();
     }
     template <>
     inline bool registerInFactory<Loki::NullType>() { return true; }

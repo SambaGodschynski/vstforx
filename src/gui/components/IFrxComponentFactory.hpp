@@ -43,7 +43,7 @@ public:
 	virtual PluginCreator getPluginCreator() const = 0;
 	//-------------------------------------------------------------------------
 	/**
-	 * @return a creator for the processors name.
+	 * @return a creator for the component name.
 	 * @see FrxComponent::getName()
 	 */
 	virtual ProcessorCreator 
@@ -55,11 +55,6 @@ public:
 	 */
 	virtual ProcessorCreator 
 	getRemoteChannelCreator(const std::string &rcId) const = 0;
-	//-------------------------------------------------------------------------
-	/**
-	 * @return number of processor creators.
-	 */
-	virtual void getProcessorNames(std::list<std::string> &out) const = 0;
 	//-------------------------------------------------------------------------
 	/**
 	 * @return component names which can be created by factory

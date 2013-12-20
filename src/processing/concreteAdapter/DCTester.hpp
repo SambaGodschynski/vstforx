@@ -113,7 +113,9 @@ public:
 	virtual ~DCTester () {}
 };
 
+#ifdef FRX_FEATURE_DC_TESTER
 FRX_MODELFACTORY_REGISTER(internal, DCTester);
+#endif
 
 }// namespace processing
 

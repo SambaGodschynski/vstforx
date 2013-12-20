@@ -885,7 +885,7 @@ FrxGetProcessorTypes::Strings FrxGetProcessorTypes::process(Ctrl *ctrl) {
 	FRX_GET_EDITOR
 	using namespace frx::gui::components;
 	std::list<std::string> processors;
-	getComponentFactory(editor->getCircuidView()).getProcessorNames(processors);
+	getComponentFactory(editor->getCircuidView()).getComponentNames(processors);
 	Strings res;
 	BOOST_FOREACH(const std::string &str, processors) {
 		res.push_back(str);

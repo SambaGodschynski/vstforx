@@ -22,8 +22,9 @@ ViewFactory & ViewFactory::instance() {
 //-----------------------------------------------------------------------------
 ViewFactory::Product ViewFactory::create(const std::string &pdStr)
 {
-    com::Descriptor descr(pdStr);
-    if (descr==com::FRX_NULL_DESCRIPTOR || descr.namespace_()!="gui" ) {
+    SAMBAG_LOG_INFO<<"ViewFactory create: " << pdStr;
+    com::IdParser descr(pdStr);
+    if (descr==com::FRX_NULL_ID || descr.namespace_()!="gui" ) {
         SAMBAG_THROW(
             sambag::com::exceptions::IllegalArgumentException,
             pdStr + " not found"

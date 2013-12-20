@@ -69,58 +69,58 @@ void TestOne4All::testMapNumChannels2Xput() {
 void TestOne4All::testProcessorId() {
     using namespace com;
     CPPUNIT_ASSERT_EQUAL(
-        FRX_NULL_DESCRIPTOR,
-        Descriptor()
+        FRX_NULL_ID,
+        IdParser()
     );
     CPPUNIT_ASSERT_EQUAL(
-        FRX_NULL_DESCRIPTOR,
-        Descriptor("")
+        FRX_NULL_ID,
+        IdParser("")
     );
     CPPUNIT_ASSERT_EQUAL(
-        FRX_NULL_DESCRIPTOR,
-        Descriptor("no.none")
+        FRX_NULL_ID,
+        IdParser("no.none")
     );
     CPPUNIT_ASSERT_EQUAL(
-        Descriptor("processing", "vst2x", "location", -1, -1, "/home/plugins/myplugin.vst"),
-        Descriptor("frx.processing.vst2x.location('/home/plugins/myplugin.vst')")
+        IdParser("processing", "vst2x", "location", -1, -1, "/home/plugins/myplugin.vst"),
+        IdParser("frx.processing.vst2x.location('/home/plugins/myplugin.vst')")
     );
     CPPUNIT_ASSERT_EQUAL(
-        Descriptor("processing", "vst2x", "location", -1, -1, "/home/plugins/myplugin.vst"),
-        Descriptor("frx.processing.vst2x.location(   '/home/plugins/myplugin.vst'   )")
+        IdParser("processing", "vst2x", "location", -1, -1, "/home/plugins/myplugin.vst"),
+        IdParser("frx.processing.vst2x.location(   '/home/plugins/myplugin.vst'   )")
     );
     CPPUNIT_ASSERT_EQUAL(
-        Descriptor("processing", "vst2x", "location", -1, -1, "c:\\home\\plugins\\myplugin.dll"),
-        Descriptor("frx.processing.vst2x.location('c:\\home\\plugins\\myplugin.dll')")
+        IdParser("processing", "vst2x", "location", -1, -1, "c:\\home\\plugins\\myplugin.dll"),
+        IdParser("frx.processing.vst2x.location('c:\\home\\plugins\\myplugin.dll')")
     );
     CPPUNIT_ASSERT_EQUAL(
-        Descriptor("processing", "vst2x", "FrxTestplugin", 2, 3, ""),
-        Descriptor("frx.processing.vst2x.FrxTestplugin(2,3)")
+        IdParser("processing", "vst2x", "FrxTestplugin", 2, 3, ""),
+        IdParser("frx.processing.vst2x.FrxTestplugin(2,3)")
     );
     CPPUNIT_ASSERT_EQUAL(
-        Descriptor("processing", "internal", "FrxADSR", -1, -1, ""),
-        Descriptor("frx.processing.internal.FrxADSR")
+        IdParser("processing", "internal", "FrxADSR", -1, -1, ""),
+        IdParser("frx.processing.internal.FrxADSR")
     );
    CPPUNIT_ASSERT_EQUAL(
-        FRX_NULL_DESCRIPTOR,
-        Descriptor("frx.processing.vst2x.FrxTestplugin(2)")
+        FRX_NULL_ID,
+        IdParser("frx.processing.vst2x.FrxTestplugin(2)")
     );
    CPPUNIT_ASSERT_EQUAL(
-        FRX_NULL_DESCRIPTOR,
-        Descriptor("frx.processing.vst2x(2)")
+        FRX_NULL_ID,
+        IdParser("frx.processing.vst2x(2)")
     );
    CPPUNIT_ASSERT_EQUAL(
-        FRX_NULL_DESCRIPTOR,
-        Descriptor("vst2x(2)")
+        FRX_NULL_ID,
+        IdParser("vst2x(2)")
     );
     CPPUNIT_ASSERT_EQUAL(
-        Descriptor("processing", "vst2x", "FrxTestplugin", 2, 3, ""),
-        Descriptor("frx.processing.vst2x.FrxTestplugin( 2 , 3 )")
+        IdParser("processing", "vst2x", "FrxTestplugin", 2, 3, ""),
+        IdParser("frx.processing.vst2x.FrxTestplugin( 2 , 3 )")
     );
     CPPUNIT_ASSERT_EQUAL(
-        Descriptor("frx.processing.vst2x.location('/home/plugins/myplugin.vst')"),
-        Descriptor("frx.processing.vst2x.location('/home/plugins/myplugin.vst')")
+        std::string("frx.processing.unknown-plugin.location('/home/plugins/myplugin.vst')"),
+        IdParser("frx.processing.unknown-plugin.location('/home/plugins/myplugin.vst')").toString()
     );
-    Descriptor pd("frx.processing.internal.FrxADSR");
+    IdParser pd("frx.processing.internal.FrxADSR");
     CPPUNIT_ASSERT_EQUAL(
         std::string("frx.processing.internal.FrxADSR"),
         pd.toString()
@@ -139,7 +139,7 @@ void TestOne4All::testProcessorId() {
     );
     CPPUNIT_ASSERT_EQUAL(
         std::string(""),
-        Descriptor("nothing").toString()
+        IdParser("nothing").toString()
     );
 }
 } // namespace tests

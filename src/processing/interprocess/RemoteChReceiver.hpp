@@ -17,6 +17,7 @@
 #include "processing/processing.h"
 #include "processing/AudioBuffer.hpp"
 #include <sambag/com/Thread.hpp>
+#include <processing/ModelFactory.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 namespace pr = ::processing;
@@ -151,6 +152,9 @@ public:
 	//-------------------------------------------------------------------------
 	virtual ~RemoteChReceiver() {}
 };
+
+FRX_MODELFACTORY_REGISTER_DETAILS(internal, RemoteChReceiver);
+
 }}} // namespace(s)
 
 #endif /* SAMBAG_REMOTECHRECEIVER_H */

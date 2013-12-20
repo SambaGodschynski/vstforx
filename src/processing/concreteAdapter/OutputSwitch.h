@@ -156,7 +156,15 @@ public:
 	virtual ProcessorNode::Ptr addOutputNode();
 };
 
-FRX_MODELFACTORY_REGISTER_IO(internal, OutputSwitch);
+namespace {
+    const bool INTERNAL_OUTSWITCH_IO_Registered =
+        frx::processing::ModelFactory::instance().
+            registerWithIO<OutputSwitch>("internal.OutputSwitch", &OutputSwitch::create);
+    
+    const bool INTERNAL_OUTSWITCH_Registered =
+        frx::processing::ModelFactory::instance().
+            register_<OutputSwitch>("internal.OutputSwitch", &OutputSwitch::create);
+}
 
 }// namespace processing
 

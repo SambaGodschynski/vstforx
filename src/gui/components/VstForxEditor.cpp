@@ -1,4 +1,3 @@
-
 #include "FrxSerializationRegister.hpp"
 #include "VstForxEditor.hpp"
 #include <sambag/disco/components/WindowToolkit.hpp>
@@ -92,8 +91,8 @@ void VstForxEditor::serializeViewTemp(::com::oArchive &ar, FrxCircuidView::Ptr v
 		return;
 	}
 	try {
-		register_types(ar);
-		getPlugin()->getViewModelMap()->lock(ar);
+        register_types(ar);
+        getPlugin()->getViewModelMap()->lock(ar);
 		FrxControl::serializeView(ar, view);
 		FrxControl::serializeViewComponents(ar, view);
 	} catch(const std::exception &ex) {
