@@ -9,7 +9,7 @@
 #include <cppunit/config/SourcePrefix.h>
 #include "DummyFX.h"
 #include <processing/ModelFactory.hpp>
-#include <processing/concreteAdapter/Volume.h>
+#include <processing/ConcreteProcessAdapter.h>
 #include <sambag/com/exceptions/IllegalArgumentException.hpp>
 #include <com/Serialization.h>
 
@@ -67,6 +67,23 @@ void TestModelFactory::testGetRegisteredIds() {
     std::vector<std::string> ids;
     ids.reserve(fac.getNumRegisteredIds());
     fac.getRegisteredIds(ids);
-    SAMBAG_ASSERT(ids.size() == fac.getNumRegisteredIds());
+    CPPUNIT_ASSERT(ids.size() == fac.getNumRegisteredIds());
+    // test filter
+    ids.clear();
+    fac.getRegisteredIds(ids, ".*");
+    CPPUNIT_ASSERT(ids.size() == fac.getNumRegisteredIds());
+    
+    ids.clear();
+    fac.getRegisteredIds(ids, "no match");
+    CPPUNIT_ASSERT_EQUAL((size_t)0, ids.size());
+    
+    ids.clear();
+    fac.getRegisteredIds(ids, "internal\\..*?Step");
+    std::stringstream ss;
+    std::copy(ids.begin(), ids.end(), std::ostream_iterator<std::string>(ss, " "));
+    std::string exp = "internal.OutputStep internal.InputStep ";
+    CPPUNIT_ASSERT_EQUAL(exp, ss.str());
+    
+    
 }
 } //namespace

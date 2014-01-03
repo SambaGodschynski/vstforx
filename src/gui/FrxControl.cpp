@@ -57,7 +57,6 @@
 #include <gui/components/FrxFlag.hpp>
 #include <gui/components/About.hpp>
 
-
 namespace {
     const long FRX_REFRESH_PARAMETER=30;
 }
@@ -326,6 +325,40 @@ void registerOnView(FrxCircuidViewPtr view, FrxParameter::Ptr knob) {
 		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
 	);
 }
+//-----------------------------------------------------------------------------
+template <class ConnectionType>
+fp::IConnection::Ptr 
+connectModelObjects(fp::IModelController::Ptr ctrl, 
+	fp::ModelObject::Ptr src,
+	fp::ModelObject::Ptr dst) 
+{
+	return fp::IConnection::Ptr();
+}
+//-----------------------------------------------------------------------------
+template <>
+fp::IConnection::Ptr 
+inline connectModelObjects<IOCn>(fp::IModelController::Ptr ctrl, 
+	fp::ModelObject::Ptr src,
+	fp::ModelObject::Ptr dst) 
+{
+	fp::INode::Ptr nsrc = boost::dynamic_pointer_cast<fp::INode>(src);
+	fp::INode::Ptr ndst = boost::dynamic_pointer_cast<fp::INode>(dst);
+	SAMBAG_ASSERT(nsrc && ndst);
+	return ctrl->connect(nsrc, ndst);
+}
+//-----------------------------------------------------------------------------
+template <>
+fp::IConnection::Ptr 
+inline connectModelObjects<ParameterCn>(fp::IModelController::Ptr ctrl, 
+	fp::ModelObject::Ptr src,
+	fp::ModelObject::Ptr dst) 
+{
+	fp::IParameter::Ptr nsrc = boost::dynamic_pointer_cast<fp::IParameter>(src);
+	fp::IParameter::Ptr ndst = boost::dynamic_pointer_cast<fp::IParameter>(dst);
+	SAMBAG_ASSERT(nsrc && ndst);
+	return ctrl->connect(nsrc, ndst);
+}
+
 //-----------------------------------------------------------------------------
 template <class ConnectionType>
 bool perfomConnect(FrxCircuidView::Ptr view, 

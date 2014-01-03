@@ -20,45 +20,35 @@ ModelFactory & ModelFactory::instance() {
 	return ModelFactoryHolder::Instance();
 }
 //-----------------------------------------------------------------------------
-namespace {
-    void _throw(const std::string &str) {
-        SAMBAG_THROW(
-            sambag::com::exceptions::IllegalArgumentException,
-            str
-        );
-    }
-} // namespace
 ModelFactory::Product ModelFactory::create(const std::string &pdStr,
     IHostInfo::Ptr hI)
 {
+    using sambag::com::exceptions::IllegalArgumentException;
     SAMBAG_LOG_INFO<<"ModelFactory create: " << pdStr;
     com::IdParser descr(pdStr);
     if (descr==com::FRX_NULL_ID || descr.namespace_()!="processing" ) {
-        _throw(pdStr + " not found");
+        SAMBAG_THROW(IllegalArgumentException, pdStr + " not found");
     }
     std::string id = descr.type() + "." + descr.name();
-    if (descr.details().length() > 0 ) {
-        CreatorWithDetailMap::const_iterator it =
-            creatorsDetail.find(id);
-        if (it==creatorsDetail.end()) {
-            _throw(pdStr + " not found");
-        }
-        return it->second(hI, descr.details());
-    }
-    if (descr.numInputs() >= 0 || descr.numOutputs() >= 0) {
-        CreatorWithIOMap::const_iterator it =
-            creatorsIO.find(id);
-        if (it==creatorsIO.end()) {
-            _throw(pdStr + " not found");
-        }
-        return it->second(hI, descr.numInputs(), descr.numOutputs());
-    }
-    CreatorMap::const_iterator it =
-        creators.find(id);
+    CreatorMap::const_iterator it = creators.find(id);
     if (it==creators.end()) {
-        _throw(pdStr + " not found");
+        SAMBAG_THROW(IllegalArgumentException, pdStr + " not found");
     }
-    return it->second(hI);
+    try {
+        if (descr.details().length() > 0 ) {
+            return it->second.detailF(hI, descr.details());
+        }
+        if (descr.numInputs() >= 0 || descr.numOutputs() >= 0) {
+            return it->second.withIOF(hI, descr.numInputs(), descr.numOutputs());
+        }
+        return it->second._defaultF(hI);
+    } catch (const std::exception &ex) {
+        SAMBAG_THROW(IllegalArgumentException,
+        "creating " + pdStr + " failed: " + ex.what());
+    } catch (...) {
+        SAMBAG_THROW(IllegalArgumentException,
+        "creating " + pdStr + " failed: unkown reson");
+    }
 }
 //-----------------------------------------------------------------------------
 void ModelFactory::registerToArchive(com::iArchive &ar) const {

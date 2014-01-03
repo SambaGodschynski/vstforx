@@ -14,7 +14,6 @@
 #include "FrxCircuidView.hpp"
 #include "FrxConcreteProcessor.hpp"
 #include "FrxConcreteParameter.hpp"
-#include <gui/__ModelExecutors.hpp>
 #include <boost/foreach.hpp>
 #include <boost/assign/list_of.hpp>
 #include <gui/components/FrxFlag.hpp>
@@ -38,7 +37,10 @@ namespace {
 typedef boost::weak_ptr<void> AnyWPtr;
 typedef boost::shared_ptr<void> AnyPtr;
 //-----------------------------------------------------------------------------
-void registerProcessor(IViewModelMap::Ptr map,
+/**
+ * register components in ModelMap
+ */
+void registerComponent(IViewModelMap::Ptr map,
 					   FrxProcessorNode::Ptr v,
 					   frx::processing::IProcessor::Ptr m) 
 {
@@ -100,7 +102,7 @@ FrxProcessorNodePtr createProcessor(FrxCircuidViewPtr circ, std::string id)
     viewObj->configIO(mObj->getNumInputs(),
         invisibleOuts ? 0 : mObj->getNumOutputs()
     );
-    registerProcessor(map, viewObj, mObj);
+    registerComponent(map, viewObj, mObj);
 	return viewObj;
 }
 //-----------------------------------------------------------------------------
@@ -301,13 +303,14 @@ FrxComponentFactory::getRemoteChannelCreator(const std::string &rcId) const
     );
 }
 //-----------------------------------------------------------------------------
-void FrxComponentFactory::getComponentNames(std::list<std::string> &out) const
+void FrxComponentFactory::getComponentNames(std::list<std::string> &out,
+    const std::string &filter) const
 {
     typedef std::vector<std::string> Vector;
-    // determine the intersect of registered model and view components
+    // determine the intersection of registered model and view components
     // get data:
     Vector ms;
-    processing::ModelFactory::instance().getRegisteredIds(ms);
+    processing::ModelFactory::instance().getRegisteredIds(ms, filter);
     Vector vs;
     ViewFactory::instance().getRegisteredIds(vs);
     // presort

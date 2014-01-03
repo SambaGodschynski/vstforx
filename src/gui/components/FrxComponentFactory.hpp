@@ -48,7 +48,8 @@ public:
 	//-------------------------------------------------------------------------
 	virtual HostParameterCreator getHostParameterCreator() const;
     //-------------------------------------------------------------------------
-    virtual void getComponentNames(std::list<std::string> &out) const;
+    virtual void getComponentNames(std::list<std::string> &out,
+        const std::string &filter="") const;
 }; // FrxComponentFactory
 }}} // namespace(s)
 

@@ -153,7 +153,7 @@ public:
 	virtual ~RemoteChReceiver() {}
 };
 
-FRX_MODELFACTORY_REGISTER_DETAILS(internal, RemoteChReceiver);
+FRX_MODELFACTORY_REGISTER_DETAILS(interprocess, RemoteChReceiver);
 
 }}} // namespace(s)
 

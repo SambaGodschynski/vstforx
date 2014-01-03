@@ -58,8 +58,10 @@ public:
 	//-------------------------------------------------------------------------
 	/**
 	 * @return component names which can be created by factory
+     * @param regex filter e.g.: internal\..*?Step
 	 */
-	virtual void getComponentNames(std::list<std::string> &out) const = 0;
+	virtual void getComponentNames(std::list<std::string> &out,
+        const std::string &filter="") const = 0;
 	//-------------------------------------------------------------------------
 	virtual FreeParameterCreator getFreeParameterCreator() const = 0;
 	//-------------------------------------------------------------------------

@@ -17,6 +17,7 @@
 #include <com/Serialization.h>
 #include <list>
 #include <boost/foreach.hpp>
+#include <boost/regex.hpp>
 
 #define FRX_MODELFACTORY_REGISTER(type,prod)                                   \
     namespace { const bool type ## prod =                                      \
@@ -48,13 +49,40 @@ friend struct Loki::CreateUsingNew<ModelFactory>;
 public:
     //-------------------------------------------------------------------------
     typedef ::processing::ProcessAdapter::Ptr Product;
-    typedef boost::function<Product(IHostInfo::Ptr)> Creator;
+    typedef boost::function<Product(IHostInfo::Ptr)> CreatorDefault;
     typedef boost::function<Product(IHostInfo::Ptr,int, int)> CreatorWithIO;
     typedef boost::function<Product(IHostInfo::Ptr, std::string)> CreatorWithDetail;
     typedef std::string Id;
-    typedef boost::unordered_map<Id, Creator> CreatorMap;
-    typedef boost::unordered_map<Id, CreatorWithIO> CreatorWithIOMap;
-    typedef boost::unordered_map<Id, CreatorWithDetail> CreatorWithDetailMap;
+    struct CreatorFunctions {
+        CreatorDefault _defaultF;
+        CreatorWithIO withIOF;
+        CreatorWithDetail detailF;
+        CreatorFunctions(const CreatorDefault &f) : _defaultF(f) {}
+        CreatorFunctions(const CreatorWithIO &f) : withIOF(f) {}
+        CreatorFunctions(const CreatorWithDetail &f) : detailF(f) {}
+        bool set(const CreatorDefault &f) {
+            if (_defaultF) {
+                return false;
+            }
+            _defaultF = f;
+            return true;
+        }
+        bool set(const CreatorWithIO &f) {
+            if (_defaultF) {
+                return false;
+            }
+            withIOF = f;
+            return true;
+        }
+        bool set(const CreatorWithDetail &f) {
+            if (_defaultF) {
+                return false;
+            }
+            detailF = f;
+            return true;
+        }
+    };
+    typedef boost::unordered_map<Id, CreatorFunctions> CreatorMap;
     typedef boost::function<void(com::oArchive*)> OArchiveRegisterF;
     typedef boost::function<void(com::iArchive*)> IArchiveRegisterF;
     typedef std::list<OArchiveRegisterF> OARegList;
@@ -62,9 +90,7 @@ public:
 protected:
 private:
     //-------------------------------------------------------------------------
-    CreatorMap           creators;
-    CreatorWithIOMap     creatorsIO;
-    CreatorWithDetailMap creatorsDetail;
+    CreatorMap creators;
     OARegList oaregs;
     IARegList iaregs;
     //-------------------------------------------------------------------------
@@ -79,6 +105,18 @@ private:
         iaregs.push_back( &toArchive<com::iArchive, ConcreteProd> );
         return true;
     }
+    //-------------------------------------------------------------------------
+    template <class Creator>
+    bool _register(const Id &id, const Creator &creator) {
+        CreatorMap::iterator it = creators.find(id);
+        if (it==creators.end()) {
+            return creators.insert(
+                CreatorMap::value_type(id, CreatorFunctions(creator))
+            ).second;
+        }
+        return it->second.set(creator);
+    }
+
 public:
 	//-------------------------------------------------------------------------
 	static ModelFactory & instance();
@@ -97,28 +135,18 @@ public:
     Product create(const std::string &pdStr, IHostInfo::Ptr hI);
     //-------------------------------------------------------------------------
     template <class ConcreteProd>
-    bool register_(const Id &id, const Creator &creator) {
-        return
-            creators.insert(
-                CreatorMap::value_type(id, creator)
-            ).second && registerArchives<ConcreteProd>();
+    bool register_(const Id &id, const CreatorDefault &creator) {
+        return _register(id, creator) && registerArchives<ConcreteProd>();
     }
     //-------------------------------------------------------------------------
     template <class ConcreteProd>
     bool registerWithIO(const Id &id, const CreatorWithIO &creator) {
-        return 
-            creatorsIO.insert(
-                CreatorWithIOMap::value_type(id, creator)
-            ).second && registerArchives<ConcreteProd>();
+       return _register(id, creator) && registerArchives<ConcreteProd>();
     }
     //-------------------------------------------------------------------------
     template <class ConcreteProd>
     bool registerWithDetail(const Id &id, const CreatorWithDetail &creator) {
-        return
-            creatorsDetail.
-            insert(
-                CreatorWithDetailMap::value_type(id, creator)
-            ).second && registerArchives<ConcreteProd>();
+        return _register(id, creator) && registerArchives<ConcreteProd>();
     }
     //-------------------------------------------------------------------------
     void registerToArchive(com::iArchive &ar) const;
@@ -126,24 +154,18 @@ public:
     void registerToArchive(com::oArchive &ar) const;
     //-------------------------------------------------------------------------
     size_t getNumRegisteredIds() const {
-        return creators.size() +
-               creatorsIO.size() +
-               creatorsDetail.size();
+        return creators.size();
     }
     //-------------------------------------------------------------------------
     template <class Container>
-    void getRegisteredIds(Container &out) const {
+    void getRegisteredIds(Container &out, const std::string &filter="") const {
         BOOST_FOREACH(const CreatorMap::value_type &v, creators)
         {
-            out.push_back(v.first);
-        }
-        BOOST_FOREACH(const CreatorWithIOMap::value_type &v, creatorsIO)
-        {
-            out.push_back(v.first);
-        }
-        BOOST_FOREACH(const CreatorWithDetailMap::value_type &v, creatorsDetail)
-        {
-            out.push_back(v.first);
+            if (filter.length()==0 ||
+                boost::regex_match(v.first, boost::regex(filter)))
+            {
+                out.push_back(v.first);
+            }
         }
     }
 

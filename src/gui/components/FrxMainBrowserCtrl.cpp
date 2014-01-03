@@ -467,7 +467,7 @@ void FrxMainBrowserCtrl::addMainProcessors()
 	Tree::Ptr tree = brws->getBrowserImpl();
 	IFrxComponentFactory &fac = getComponentFactory(view);
 	std::list<std::string> processorNames;
-	fac.getComponentNames(processorNames);
+	fac.getComponentNames(processorNames, "internal\\..*");
 	BOOST_FOREACH(std::string name, processorNames) {
 		IFrxComponentFactory::ProcessorCreator f = fac.getProcessorCreator(name);
 		BrowserNode node;
