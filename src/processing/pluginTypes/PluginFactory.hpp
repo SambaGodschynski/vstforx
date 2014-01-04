@@ -27,25 +27,27 @@ public:
     typedef ::processing::Plugin Product;
 protected:
 private:
-public:
     //-------------------------------------------------------------------------
-    /**
-     * @brief determines plugintype and loads plugin.
-     * @return plugin and PluginInfo
-     * @param
-     * @param the plugin info, only location is needed, the rest will be set
-     */
-    Product::Ptr loadAndDeterminePlugin(IHostInfo::Ptr hI, ::processing::PluginInfo &inOut);
+    Product::Ptr
+    _load(IHostInfo::Ptr hI, const std::string &location);
+public:
 	//-------------------------------------------------------------------------
 	static PluginFactory & instance();
     //-------------------------------------------------------------------------
-    static Product::Ptr loadPlugin(IHostInfo::Ptr hI, const std::string &location);
+    /**
+     * @brief determines plugintype and loads plugin.
+     * @return plugin
+     * @param
+     * @param the plugin location
+     */
+
+    static Product::Ptr load(IHostInfo::Ptr hI, const std::string &location);
 }; // PluginFactory
 
 namespace {
     const bool PluginFactoryRegistered =
         ModelFactory::instance().registerWithDetail (
-                "unknown-plugin.Plugin", &PluginFactory::loadPlugin
+                "unknown-plugin.Plugin", &PluginFactory::load
         );
 }
 

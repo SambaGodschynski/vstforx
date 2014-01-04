@@ -29,6 +29,7 @@
 #include <gui/ViewFactory.hpp>
 #include <com/one4All.h>
 #include <algorithm>
+#include <boost/algorithm/string.hpp>
 #include <processing/pluginTypes/PluginFactory.hpp>
 
 namespace frx { namespace gui { namespace components {
@@ -105,19 +106,6 @@ FrxProcessorNodePtr createProcessor(FrxCircuidViewPtr circ, std::string id)
 	return viewObj;
 }
 //-----------------------------------------------------------------------------
-namespace {
-    const char * _getType(const ::processing::PluginInfo &pI) {
-        using ::processing::PluginInfo;
-        switch (pI.pluginType) {
-            case PluginInfo::VST2X : return "vst2x";
-            case PluginInfo::VST3X : return "vst3x";
-            case PluginInfo::DX    : return "dx";
-            case PluginInfo::AU    : return "au";
-            default                : return "unknown-plugin";
-        }
-        return "";
-    }
-} // namespace
 FrxProcessorNodePtr createPlugin(FrxCircuidViewPtr circ, ::processing::PluginInfo pI) 
 {
 	if (!circ) {
@@ -125,8 +113,9 @@ FrxProcessorNodePtr createPlugin(FrxCircuidViewPtr circ, ::processing::PluginInf
 			"tried to create processor with FrxCircuidViewPtr == NULL");
 	}
     
-    std::string id =
-        std::string(_getType(pI)) + ".Plugin('" + pI.location + "')";
+    std::string id = pI.getFactoryId();
+    // remove frx.processing
+    boost::algorithm::erase_first(id, "frx.processing.");
     SAMBAG_LOG_TRACE<<id;
     FrxPluginNode::Ptr viewObj = boost::dynamic_pointer_cast<FrxPluginNode>(
         createProcessor(circ, id)

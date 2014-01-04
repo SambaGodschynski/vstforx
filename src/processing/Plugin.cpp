@@ -61,33 +61,4 @@ editorOpen ( processing::parameter::Parameter::create() )
 //-----------------------------------------------------------------------------
 Plugin::~Plugin() {
 }
-//=============================================================================
-// Klasse: PluginFactory.
-// erzeugt plugin.
-//=============================================================================
-//-----------------------------------------------------------------------------
-Plugin::Ptr PluginFactory::createVST2xPlugNode ( frx::processing::IHostInfo::Ptr hostInfo,
-    const string &filename )
-{
-	return VSTPlugin::create( hostInfo, filename );
-	
-	// ... weitere Plugs TODO: VST3.x
-
-}
-//-----------------------------------------------------------------------------
-Plugin::Ptr PluginFactory::createPlugNode (  frx::processing::IHostInfo::Ptr hostInfo,
-    const string &filename )
-{
-	return createVST2xPlugNode ( hostInfo, filename ); 
-	/*
-	switch ( pI.pluginType ) {
-		case PluginInfo::UNKNOWN :
-			throw com::ppiError::DllError ( "unkown plug.", __FILE__, __LINE__ ); break;
-		case PluginInfo::VST2X :
-		default:
-			return NULL;
-	}*/
-}
-
-
 }//namespace processing

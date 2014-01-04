@@ -17,6 +17,8 @@
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <sambag/com/Thread.hpp>
 #include <boost/date_time.hpp>
+#include <processing/pluginTypes/PluginFactory.hpp>
+#include <processing/ModelFactory.hpp>
 
 #define DB_QUERY(x)											\
 	try {x}													\
@@ -284,16 +286,6 @@ string PluginCollection::analyzeLog() {
 	return str;
 }
 //------------------------------------------------------------------------------------------------------------
-processing::Plugin::Ptr PluginCollection::getPlugNode ( frx::processing::IHostInfo::Ptr hostInfo, 
-														  const PluginCollection::PluginIdType &location ) 
-{
-	using namespace processing;
-	PluginInfo pI = getPlugInfo ( location );
-	// plugin not in db => return NULL
-	if ( !pI.isValid() ) return processing::Plugin::Ptr();
-	return PluginFactory::createPlugNode ( hostInfo, pI.location ); 
-}
-//------------------------------------------------------------------------------------------------------------
 processing::PluginInfo PluginCollection::restorePluginInfo ( frx::processing::IHostInfo::Ptr hostInfo, 
 															 processing::PluginInfo &info ) 
 {
@@ -318,8 +310,10 @@ processing::Plugin::Ptr PluginCollection::restorePlugNode ( frx::processing::IHo
 {
 	using namespace processing;
 	PluginInfo pI = restorePluginInfo ( hostInfo, info );
-	if ( !pI.isValid() ) return processing::Plugin::Ptr(); // NULL
-	return PluginFactory::createPlugNode ( hostInfo, info.location ); 
+	if ( !pI.isValid() ) {
+        return processing::Plugin::Ptr(); // NULL
+    }
+	return frx::processing::ModelFactory::instance().create<Plugin> ( info.getFactoryId(), hostInfo );
 }
 //------------------------------------------------------------------------------------------------------------
 void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::processing::IHostInfo::Ptr hostinfo )
@@ -338,7 +332,7 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 	appendLog ( out_info.location );		   // eintrag ins scan log	
 	Plugin::Ptr n;
 	try {
-		n = PluginFactory::createPlugNode ( hostinfo, out_info.location );
+		n = frx::processing::PluginFactory::load(hostinfo, out_info.location);
 	} catch(const ShellPluginException &ex) {
 		// TODO: insert as folder with concrete shell ids as content
 		out_info.access = PluginInfo::SUCCEED;

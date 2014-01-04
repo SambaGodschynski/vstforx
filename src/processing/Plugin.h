@@ -337,25 +337,6 @@ public:
 
     virtual size_t getNumOutputChannels() const = 0;
 };
-
-//=============================================================================
-/**
- * @class PluginFactory.
- * Erzeugt Plugin.
- * TODO: sollte erzeuger fuer alle Plugins sein(unabhaengig vom konkreten Typ).
- * Ist bisher nicht implementiert.
- */
-class PluginFactory {
-//=============================================================================
-private:
-	//-------------------------------------------------------------------------
-	static Plugin::Ptr createVST2xPlugNode ( frx::processing::IHostInfo::Ptr hostInfo,
-        const std::string &filename );
-public:
-	//-------------------------------------------------------------------------
-	static Plugin::Ptr createPlugNode ( frx::processing::IHostInfo::Ptr hostInfo,
-     const std::string &filename );
-}; // pluginfactory
 }// namespace processing
 
 #endif

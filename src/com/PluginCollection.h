@@ -435,15 +435,6 @@ private:
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * @param hostInfo
-	 * @param location
-	 * @return Plugin-Objekt zu location
-	 * @throw sambag::cpsqlite::DataBaseQueryFailed
-	 * TODO: plugin lade Vorgang ueberdenken. (PluginFactory)
-	 */
-	processing::Plugin::Ptr getPlugNode ( frx::processing::IHostInfo::Ptr hostInfo, const PluginIdType &location );
-	//--------------------------------------------------------------------------------------------------------
-	/**
 	 *
 	 * @param hostInfo
 	 * @param pI

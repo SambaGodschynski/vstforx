@@ -20,27 +20,27 @@ PluginFactory & PluginFactory::instance() {
 }
 //-----------------------------------------------------------------------------
 PluginFactory::Product::Ptr
-PluginFactory::loadAndDeterminePlugin(IHostInfo::Ptr hI, ::processing::PluginInfo &inOut)
+PluginFactory::_load(IHostInfo::Ptr hI, const std::string &location)
 {
     ModelFactory &fac = ModelFactory::instance();
     Product::Ptr res;
     ::com::IdParser id;
-    id.namespace_("processing").name("Plugin").details(inOut.location);
+    id.namespace_("processing").name("Plugin").details(location);
+    
     // vst2x
     id.type("vst2x");
     res = fac.create<Product>(id.toString(), hI);
     if (res) {
-        inOut = res->getPluginInfo();
         return res;
     }
+    
+    // no success
     return Product::Ptr();
 }
 //-----------------------------------------------------------------------------
 PluginFactory::Product::Ptr
-PluginFactory::loadPlugin(IHostInfo::Ptr hI, const std::string &location)
+PluginFactory::load(IHostInfo::Ptr hI, const std::string &location)
 {
-    ::processing::PluginInfo pi;
-    pi.location = location;
-    return instance().loadAndDeterminePlugin(hI, pi);
+    return instance()._load(hI, location);
 }
 }} // namespace(s)

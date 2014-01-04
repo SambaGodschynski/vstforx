@@ -9,6 +9,7 @@
 
 #include "com/Serialization.h"
 #include <string>
+#include <com/one4All.h>
 
 namespace processing {
 //============================================================================================================
@@ -55,6 +56,19 @@ public:
 	time_t timestamp;
 	AccessState access; // konnte geladen werden?
     int id; // database id
+    //--------------------------------------------------------------------------------------------------------
+    std::string getFactoryId() {
+        ::com::IdParser res;
+        res.namespace_("processing").name("Plugin").details(location);
+        switch (pluginType) {
+            case PluginInfo::VST2X : return res.type("vst2x").toString();
+            case PluginInfo::VST3X : return res.type("vst3x").toString();
+            case PluginInfo::DX    : return res.type("dx").toString();
+            case PluginInfo::AU    : return res.type("au").toString();
+            default                : return res.type("unknown-plugin").toString();
+        }
+        return "";
+    }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return true, wenn valides PluginInfo-Objekt
