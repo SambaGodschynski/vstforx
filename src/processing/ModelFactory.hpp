@@ -19,6 +19,10 @@
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>
 
+
+/**
+ * helper macros for default processors
+ */
 #define FRX_MODELFACTORY_REGISTER(type,prod)                                   \
     namespace { const bool type ## prod =                                      \
             frx::processing::ModelFactory::instance().register_<prod>(         \
@@ -127,26 +131,61 @@ public:
      * examples:
      * frx.processing.vst2x.FrxTestplugin(2,2)
      * frx.processing.internal.FrxADSR
-     * frx.processing.unknown-plugin.location('/home/plugins/plugin.vst')
-     * frx.processing.briged-plugin.location('/home/plugins/plugin.vst')
-     * frx.processing.vst2x.location('/home/plugins/plugin.vst')
-     * frx.processing.au.location('/home/plugins/plugin.au')
+     * frx.processing.unknown-plugin.Plugin('/home/plugins/plugin.vst')
+     * frx.processing.briged-plugin.Plugin('/home/plugins/plugin.vst')
+     * frx.processing.vst2x.Plugin('/home/plugins/plugin.vst')
+     * frx.processing.au.Plugin('/home/plugins/plugin.au')
      */
     Product create(const std::string &pdStr, IHostInfo::Ptr hI);
     //-------------------------------------------------------------------------
+    template <class T>
+    boost::shared_ptr<T> create(const std::string &pdStr, IHostInfo::Ptr hI) {
+        return boost::dynamic_pointer_cast<T>( create(pdStr, hI) );
+    }
+    //-------------------------------------------------------------------------
+    /**
+     * @brief registeres creator for id and ConcreteProd for archive
+     */
     template <class ConcreteProd>
     bool register_(const Id &id, const CreatorDefault &creator) {
         return _register(id, creator) && registerArchives<ConcreteProd>();
     }
     //-------------------------------------------------------------------------
+    /**
+     * @brief registeres creator for id and ConcreteProd for archive
+     */
     template <class ConcreteProd>
     bool registerWithIO(const Id &id, const CreatorWithIO &creator) {
        return _register(id, creator) && registerArchives<ConcreteProd>();
     }
     //-------------------------------------------------------------------------
+    /**
+     * @brief registeres creator for id and ConcreteProd for archive
+     */
     template <class ConcreteProd>
     bool registerWithDetail(const Id &id, const CreatorWithDetail &creator) {
         return _register(id, creator) && registerArchives<ConcreteProd>();
+    }
+    //-------------------------------------------------------------------------
+    /**
+     * @brief registeres creator for id
+     */
+    bool register_(const Id &id, const CreatorDefault &creator) {
+        return _register(id, creator);
+    }
+    //-------------------------------------------------------------------------
+    /**
+     * @brief registeres creator for id
+     */
+    bool registerWithIO(const Id &id, const CreatorWithIO &creator) {
+       return _register(id, creator);
+    }
+    //-------------------------------------------------------------------------
+    /**
+     * @brief registeres creator for id
+     */
+    bool registerWithDetail(const Id &id, const CreatorWithDetail &creator) {
+        return _register(id, creator);
     }
     //-------------------------------------------------------------------------
     void registerToArchive(com::iArchive &ar) const;

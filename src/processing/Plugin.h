@@ -325,14 +325,14 @@ public:
     /**
      * @brief get the number of input channels that the plugin is using.
      * @note don't confuse with getNumInputNodes because one inputnode uses
-     * alwas two channels aka stereo.
+     * always two channels aka stereo.
      */
     virtual size_t getNumInputChannels() const = 0;
     //-------------------------------------------------------------------------
     /**
      * @brief get the number of output channels that the plugin is using.
      * @note don't confuse with getNumInputNodes because one outputnode uses
-     * alwas two channels aka stereo.
+     * always two channels aka stereo.
      */
 
     virtual size_t getNumOutputChannels() const = 0;

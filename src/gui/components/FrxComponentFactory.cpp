@@ -25,12 +25,11 @@
 #include <processing/IModelController.hpp>
 #include <com/Settings.h>
 #include <processing/interprocess/RemoteChannelManager.hpp>
-
 #include <processing/ModelFactory.hpp>
 #include <gui/ViewFactory.hpp>
 #include <com/one4All.h>
-
 #include <algorithm>
+#include <processing/pluginTypes/PluginFactory.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace {
@@ -127,7 +126,7 @@ FrxProcessorNodePtr createPlugin(FrxCircuidViewPtr circ, ::processing::PluginInf
 	}
     
     std::string id =
-        std::string(_getType(pI)) + ".location('" + pI.location + "')";
+        std::string(_getType(pI)) + ".Plugin('" + pI.location + "')";
     SAMBAG_LOG_TRACE<<id;
     FrxPluginNode::Ptr viewObj = boost::dynamic_pointer_cast<FrxPluginNode>(
         createProcessor(circ, id)

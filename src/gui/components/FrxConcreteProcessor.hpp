@@ -283,19 +283,19 @@ namespace {
         typedef FrxPluginNode T;
         // register FrxPluginNode for all plugin types
         return ViewFactory::instance().register_<T>(
-            std::string("vst2x.location"),
+            std::string("vst2x.Plugin"),
             &T::create
         ) && ViewFactory::instance().register_<T>(
-            std::string("vst3x.location"),
+            std::string("vst3x.Plugin"),
             &T::create
         ) && ViewFactory::instance().register_<T>(
-            std::string("au.location"),
+            std::string("au.Plugin"),
             &T::create
         ) && ViewFactory::instance().register_<T>(
-            std::string("dx.location"),
+            std::string("dx.Plugin"),
             &T::create
         ) && ViewFactory::instance().register_<T>(
-            std::string("unknown-plugin.location"),
+            std::string("unknown-plugin.Plugin"),
             &T::create
         );
     }

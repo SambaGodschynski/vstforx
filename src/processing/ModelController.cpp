@@ -17,7 +17,7 @@
 #include <processing/ProcessorAdapter.hpp>
 #include <processing/ParameterAdapter.hpp>
 #include <processing/NodeAdapter.hpp>
-#include <com/PluginCollection.h>
+#include <com/one4All.h>
 #include <processing/Plugin.h>
 #include <processing/pluginTypes/VSTPlugin2x.h>
 #include "PluginAdapter.hpp"
@@ -52,17 +52,23 @@ void ModelController::installListeners(IProcessor::Ptr pr) {
 void ModelController::installListeners(IParameter::Ptr pr)  {
 }
 //-----------------------------------------------------------------------------
-IProcessor::Ptr ModelController::createProcessor(const std::string &id,
+IProcessor::Ptr ModelController::createProcessor(const std::string &idStr,
     bool autoConnectOutput)
 {
     
     namespace pr = ::processing;
 	if (!graph)
 		return IProcessor::Ptr();
-	pr::Graph::Janitor::Ptr jan = graph->getJanitor();
 	
-   pr::ProcessAdapter::Ptr res =
-        ModelFactory::instance().create(id, graph->getHostInfo());
+    ::com::IdParser id(idStr);
+    if (id.name() == "Plugin") {
+        return createPlugin(idStr);
+    }
+    
+    pr::Graph::Janitor::Ptr jan = graph->getJanitor();
+	
+    pr::ProcessAdapter::Ptr res =
+        ModelFactory::instance().create(idStr, graph->getHostInfo());
 	jan->add(res);
     if (autoConnectOutput) {
         // create invisible connection
@@ -73,7 +79,29 @@ IProcessor::Ptr ModelController::createProcessor(const std::string &id,
 	installListeners(ad);
 	return ad;
 }
-
+//-----------------------------------------------------------------------------
+IProcessor::Ptr ModelController::createPlugin(const std::string &id)
+{
+	
+	typedef ::processing::Plugin Plugin;
+    Plugin::Ptr plugin;
+	try {
+		plugin =
+            ModelFactory::instance().create<Plugin>(id, graph->getHostInfo());
+	} catch(const ::processing::ShellPluginException) {
+		throw;
+	} catch(...) {
+		return IProcessor::Ptr(); 
+	}
+		
+	if ( graph->getJanitor()->add(plugin) != ::processing::Graph::Janitor::SUCCEED )
+		return IProcessor::Ptr();
+	PluginAdapter::Ptr adapter = PluginAdapter::create();
+	adapter->setAdaptee(plugin);
+	// register remove request excutor
+	installListeners(adapter);
+	return adapter;
+}
 //-----------------------------------------------------------------------------
 IConnection::Ptr ModelController::connect(INode::Ptr out, INode::Ptr in) {
 	if (!graph)
@@ -155,34 +183,6 @@ INode::Ptr ModelController::getExit() {
 //-----------------------------------------------------------------------------
 IHostInfo::Ptr ModelController::getHostInfo() const {
 	return graph->getHostInfo();
-}
-//-----------------------------------------------------------------------------
-IProcessor::Ptr ModelController::createPlugin(const ::processing::PluginInfo &pI)
-{
-	
-	::processing::Plugin::Ptr plugin;
-	::com::PluginCollection::Ptr pC;
-	try {
-		pC = ::com::getPluginCollection();
-	} catch (...) {
-		return IProcessor::Ptr();
-	}
-	::processing::PluginInfo pluginInfo = pI;
-	try {
-		plugin = pC->restorePlugNode( getHostInfo(), pluginInfo ); 
-	} catch(const ::processing::ShellPluginException) {
-		throw;
-	} catch(...) {
-		return IProcessor::Ptr(); 
-	}
-		
-	if ( graph->getJanitor()->add(plugin) != ::processing::Graph::Janitor::SUCCEED )
-		return IProcessor::Ptr();
-	PluginAdapter::Ptr adapter = PluginAdapter::create();
-	adapter->setAdaptee(plugin);
-	// register remove request excutor
-	installListeners(adapter);
-	return adapter;
 }
 //-----------------------------------------------------------------------------
 IParameter::Ptr ModelController::createFreeParameter() {

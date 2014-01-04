@@ -73,7 +73,7 @@ public:
 	//-------------------------------------------------------------------------
 	virtual INode::Ptr getExit();
 	//-------------------------------------------------------------------------
-	virtual IProcessor::Ptr createPlugin(const ::processing::PluginInfo &pI);
+	virtual IProcessor::Ptr createPlugin(const std::string &id);
 	//-------------------------------------------------------------------------
 	virtual IParameter::Ptr createFreeParameter();
 	//-------------------------------------------------------------------------

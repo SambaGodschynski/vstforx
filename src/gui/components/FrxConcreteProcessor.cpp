@@ -16,7 +16,7 @@ namespace processorTypes {
 void Plugin::init( FrxProcessorNode::Ptr obj ) {
 	sdc::Button::Ptr btn(sdc::Button::create());
 	btn->setIcon(
-		sd::getResourceManager().getImage("FrxPlugin.e.image")
+		sd::getResourceManager().getImage("Plugin.e.image")
 	);
 	btn->setSize(sd::Dimension(30., 30.));
 	btn->setFont( btn->getFont().setSize(25.) );

@@ -358,7 +358,7 @@ public:
 namespace {
     const bool VST2X_Plugin_Location_Registered =
         frx::processing::ModelFactory::instance().
-            registerWithDetail<VSTPlugin>("vst2x.location", &VSTPlugin::create);
+            registerWithDetail<VSTPlugin>("vst2x.Plugin", &VSTPlugin::create);
     const bool VST2X_Plugin_TestPlug_Registered =
         frx::processing::ModelFactory::instance().
             registerWithIO<VSTPlugin>("vst2x.FrxTestPlugin", &VSTPlugin::createTestPlugin);
