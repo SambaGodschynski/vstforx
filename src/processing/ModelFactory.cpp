@@ -10,6 +10,7 @@
 #include <sambag/com/exceptions/IllegalArgumentException.hpp>
 #include <boost/foreach.hpp>
 
+
 namespace frx { namespace processing {
 typedef Loki::SingletonHolder<ModelFactory> ModelFactoryHolder;
 //=============================================================================
@@ -34,21 +35,17 @@ ModelFactory::Product ModelFactory::create(const std::string &pdStr,
     if (it==creators.end()) {
         SAMBAG_THROW(IllegalArgumentException, pdStr + " not found");
     }
-    try {
-        if (descr.details().length() > 0 ) {
-            return it->second.detailF(hI, descr.details());
-        }
-        if (descr.numInputs() >= 0 || descr.numOutputs() >= 0) {
-            return it->second.withIOF(hI, descr.numInputs(), descr.numOutputs());
-        }
-        return it->second._defaultF(hI);
-    } catch (const std::exception &ex) {
-        SAMBAG_THROW(IllegalArgumentException,
-        "creating " + pdStr + " failed: " + ex.what());
-    } catch (...) {
-        SAMBAG_THROW(IllegalArgumentException,
-        "creating " + pdStr + " failed: unkown reson");
+    
+    if (it->second.detailF && descr.details().length() > 0 ) {
+        return it->second.detailF(hI, descr.details());
     }
+    if (it->second.withIOF && descr.numInputs() >= 0 || descr.numOutputs() >= 0) {
+        return it->second.withIOF(hI, descr.numInputs(), descr.numOutputs());
+    }
+    if (!it->second._defaultF) {
+        SAMBAG_THROW(IllegalArgumentException, pdStr + " no creator found");
+    }
+    return it->second._defaultF(hI);
 }
 //-----------------------------------------------------------------------------
 void ModelFactory::registerToArchive(com::iArchive &ar) const {

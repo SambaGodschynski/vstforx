@@ -15,7 +15,8 @@
 #include "com/Events.h"
 #include "PlugInfo.h"
 #include "processing/MidiEventProcessor.h"
-
+#include <sambag/com/Exception.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 
 namespace processing {
 //=============================================================================
@@ -42,6 +43,16 @@ struct EditorOpenParameterChanged : public com::events::Event {
 	bool open;
 	EditorOpenParameterChanged( bool open ) : open(open) {}
 };
+//=============================================================================
+
+//=============================================================================
+/**
+ * @class: PluginArchitectureMissmatch.
+ */
+SAMBAG_DERIVATED_EXCEPTION_CLASS(
+    sambag::com::exceptions::IllegalStateException,
+    PluginArchitectureMissmatch
+);
 //=============================================================================
 /**
  * Klasse: Plugin.

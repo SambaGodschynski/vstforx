@@ -12,6 +12,7 @@
 #include <processing/Plugin.h>
 #include <processing/IHostInfo.h>
 #include <processing/ModelFactory.hpp>
+#include <com/one4All.h>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -29,6 +30,18 @@ protected:
 private:
     //-------------------------------------------------------------------------
     Product::Ptr
+    _loadBridged(IHostInfo::Ptr hI, ::com::IdParser id);
+    //-------------------------------------------------------------------------
+    Product::Ptr
+    _loadVST2x(IHostInfo::Ptr hI, ::com::IdParser id);
+    //-------------------------------------------------------------------------
+    Product::Ptr
+    _loadVST3x(IHostInfo::Ptr hI, ::com::IdParser id);
+    //-------------------------------------------------------------------------
+    Product::Ptr
+    _loadAU(IHostInfo::Ptr hI, ::com::IdParser id);
+    //-------------------------------------------------------------------------
+    Product::Ptr
     _load(IHostInfo::Ptr hI, const std::string &location);
 public:
 	//-------------------------------------------------------------------------
@@ -40,7 +53,6 @@ public:
      * @param
      * @param the plugin location
      */
-
     static Product::Ptr load(IHostInfo::Ptr hI, const std::string &location);
 }; // PluginFactory
 
