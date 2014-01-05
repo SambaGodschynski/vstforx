@@ -29,8 +29,8 @@ bool isDirectory ( const std::string &filename ) {
 } 	
 //-----------------------------------------------------------------------------
 MessageBoxReturn osMessageBox ( const std::string &title, const std::string &text, const MessageBoxType &type ) {
-    CFStringRef header_ref = CFStringCreateWithCString( NULL, title.c_str(), title.length() );
-    CFStringRef message_ref = CFStringCreateWithCString( NULL, text.c_str(), text.length() );
+    CFStringRef header_ref = CFStringCreateWithCString( NULL, title.c_str(), kCFStringEncodingUTF8 );
+    CFStringRef message_ref = CFStringCreateWithCString( NULL, text.c_str(), kCFStringEncodingUTF8 );
     CFStringRef btn01 = NULL;
 	CFStringRef btn02 = NULL;
 	CFOptionFlags result;  //result code from the message box
