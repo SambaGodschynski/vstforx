@@ -71,7 +71,7 @@ BridgePluginDelegate::create(size_t blockSize,
 {
     SAMBAG_THROW(
         sambag::com::exceptions::IllegalStateException,
-        "missing implemnation"
+        "missing implemenation"
     );
 
    /* BridgePluginDelegate::Ptr res( new BridgePluginDelegate() );

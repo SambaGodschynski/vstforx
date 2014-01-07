@@ -21,19 +21,25 @@ typedef AEffect* (*PluginEntryProc) (audioMasterCallback audioMaster);
 
 namespace processing{
 //-----------------------------------------------------------------------------
-boost::unordered_map < AEffect*, VSTPlugin* > VSTPlugin::relatedPlugNode;
+boost::unordered_map < AEffect*, VSTPluginImpl* > VSTPluginImpl::relatedPlugNode;
 //-----------------------------------------------------------------------------
-VSTPlugin::VSTPlugin( frx::processing::IHostInfo::Ptr hostInfo, const string &filename ) : 
-OS_VSTPlugNode2x ( filename ), // initalisiert aEff
-Plugin ( hostInfo, filename, 0,  0 ),  // ProcessAdapter
-onPlugChangeParameterIndex (-1),
-param(NULL),
-canReceiveVstEvents(false),
-ioChangedLock(false)
+VSTPluginImpl::VSTPluginImpl( frx::processing::IHostInfo::Ptr hostInfo,
+    Parameters *parameters,
+    const string &filename ) :
+        OS_VSTPlugNode2x ( filename ), // initalisiert aEff
+        frx::processing::APluginImpl (hostInfo, parameters, filename),  // ProcessAdapter
+        onPlugChangeParameterIndex (-1),
+        canReceiveVstEvents(false),
+        ioChangedLock(false)
 { 
+}
+//-----------------------------------------------------------------------------
+void VSTPluginImpl::openPlugin(frx::processing::IHostInfo::Ptr hI,
+    const std::string &filename)
+{
 	loadModule( HostCallBackOnInit (          // erzeugt Mutex lock bis fertig geladen
-		(audioMasterCallback)(hostInfo->getMasterCallback()), 
-		(AudioEffectX*)(hostInfo->getEffectPtr()) ) 
+		(audioMasterCallback)(hI->getMasterCallback()), 
+		(AudioEffectX*)(hI->getEffectPtr()) ) 
 	);
     
 	VstPlugCategory pluginCategory = (VstPlugCategory)
@@ -50,61 +56,15 @@ ioChangedLock(false)
 			throw 
 				ShellPluginException(filename, infos);
 	}
-
-	// init i/o 
-	size_t c = ( aEff->numInputs%2==0 ) ? aEff->numInputs/2 : aEff->numInputs/2 + 1; // anzahl der eingaenge
-	for ( size_t i=0; i<c; ++i ) {
-		createInputNode( getName() + " InputNode(" + MyString(i) + ")" );
-	}
-	c = ( aEff->numOutputs%2==0 ) ? aEff->numOutputs/2 : aEff->numOutputs/2 + 1; // anzahl der ausgaenge
-	for ( size_t i=0; i<c; ++i ) {
-		createOutputNode( getName() + " OutputNode(" + MyString(i) + ")" );
-	}
-	
-	initPlug ( *this ); // muss nach init i/o erfolgen
+	initPlug ( *this );
 }
 //-----------------------------------------------------------------------------
-VSTPlugin::VSTPlugin( frx::processing::IHostInfo::Ptr hostInfo, AEffect *aeff ) :
-OS_VSTPlugNode2x ( "" ),         
-Plugin ( hostInfo, "FrxTestPlugin", 0,  0 ),  
-onPlugChangeParameterIndex (-1),
-param(NULL),
-canReceiveVstEvents(false),
-ioChangedLock(false)
-{
-
-    this->aEff = aeff;
-	// init i/o 
-	size_t c = ( aEff->numInputs%2==0 ) ? aEff->numInputs/2 : aEff->numInputs/2 + 1; // anzahl der eingaenge
-	for ( size_t i=0; i<c; ++i ) {
-		createInputNode( getName() + " InputNode(" + MyString(i) + ")" );
-	}
-	c = ( aEff->numOutputs%2==0 ) ? aEff->numOutputs/2 : aEff->numOutputs/2 + 1; // anzahl der ausgaenge
-	for ( size_t i=0; i<c; ++i ) {
-		createOutputNode( getName() + " OutputNode(" + MyString(i) + ")" );
-	}
-	
-	initPlug ( *this ); // muss nach init i/o erfolgen
-}
-
-//-----------------------------------------------------------------------------
-VSTPlugin::Ptr VSTPlugin::createTestPlugin(
-    frx::processing::IHostInfo::Ptr hostInfo, int numInputs, int numOutputs)
-{
-    AEffect *aEff = TestAEffect::createLongevity();
-    aEff->numInputs = numInputs*2; // vstforx => 1 channel == stero == 2 channel => vst2x
-    aEff->numOutputs = numOutputs*2;
-    Ptr res( new VSTPlugin(hostInfo, aEff) );
-    res->self = res;
-    return res;
-}
-//-----------------------------------------------------------------------------
-MyString VSTPlugin::extractNameFromFilename( const string &fileName ){
+MyString VSTPluginImpl::extractNameFromFilename( const string &fileName ){
 	boost::filesystem::path p(fileName);
 	return MyString ( p.stem().string() );
 }
 //-----------------------------------------------------------------------------
-void VSTPlugin::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
+void VSTPluginImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
 	if ( !canHandleMidiEvent() ) {
 		return;
 	}
@@ -119,10 +79,10 @@ void VSTPlugin::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
 	aEff->dispatcher( aEff, effProcessEvents, 0, NULL, (void*)tmpMidiData->events, NULL );
 }
 //-----------------------------------------------------------------------------
-void VSTPlugin::initPlug( VSTPlugin &plug ) {
+void VSTPluginImpl::initPlug( VSTPluginImpl &plug ) {
 	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	// Objekt registrieren
-	relatedPlugNode.insert ( pair < AEffect*, VSTPlugin* >( plug.aEff, &plug ) );
+	relatedPlugNode.insert ( pair < AEffect*, VSTPluginImpl* >( plug.aEff, &plug ) );
 	//hole name und hersteller
 	char bff[MAX_BFF_STR];
 	bff[0] = '\0';
@@ -170,31 +130,6 @@ void VSTPlugin::initPlug( VSTPlugin &plug ) {
 
 	plug.turnOff();
 	plug.turnOn();
-	plug.inMatrix = new float*[ plug.getNumInputNodes()*2 ];
-	plug.outMatrix = new float*[ plug.getNumOutputNodes()*2 ];
-	plug.framebuffer = Framebuffer( plug.getNumOutputNodes() );
-	
-	plug.setupFramesbuffer();
-}
-//-----------------------------------------------------------------------------
-void VSTPlugin::setupFramesbuffer() {
-	frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
-	if (!hI) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
-			"Hostinfo == NULL"
-		);
-	}
-	blockSize = hI->getBlockSize();
-	// mappe von frames nach float[][]
-	for ( size_t i=0; i<getNumOutputNodes()*2; i+=2 ) {
-		Frames *fr = &( framebuffer[i/2] );
-		fr->setSize ( blockSize );
-		fr->setZero( blockSize );
-		outMatrix[i] = (*fr)[0];
-		outMatrix[i+1] = (*fr)[1];
-	}
-	nullFrame.setSize (blockSize);
-	nullFrame.setZero(blockSize);
 }
 //-----------------------------------------------------------------------------
 string getPrgNameX ( AEffect *aEff, size_t index ) {
@@ -211,7 +146,7 @@ string getPrgName ( size_t index ) {
 	return "Init " + MyString(index);
 }
 //-----------------------------------------------------------------------------
-void VSTPlugin::initProgramNames() {
+void VSTPluginImpl::initProgramNames() {
 	if ( getNumPrograms() == 0 ) return;
 	for ( size_t i=0; i<getNumPrograms(); ++i ) {
 		string str = getPrgNameX ( aEff, i );
@@ -220,53 +155,44 @@ void VSTPlugin::initProgramNames() {
 	}
 }
 //-----------------------------------------------------------------------------
-size_t VSTPlugin::getNumPrograms() {
+size_t VSTPluginImpl::getNumPrograms() {
 	return aEff->numPrograms;
 }
 //-----------------------------------------------------------------------------
-int VSTPlugin::getProgram() {
+int VSTPluginImpl::getProgram() {
 	if ( getNumPrograms() == 0 ) return -1;
 	return aEff->dispatcher ( aEff, effGetProgram, 0, 0, NULL, 0.0f );
 }
 //-----------------------------------------------------------------------------
-std::string VSTPlugin::getProgramName( size_t index ) {
+std::string VSTPluginImpl::getProgramName( size_t index ) {
 	if ( index > getNumPrograms() ) return "";
 	return programNames[index];
 }
 //-----------------------------------------------------------------------------
-void VSTPlugin::setProgram(size_t index) {
+void VSTPluginImpl::setProgram(size_t index) {
 	if ( index > getNumPrograms() ) return;
 	aEff->dispatcher ( aEff, effSetProgram, 0, index, NULL, 0.0f );
 
 	//update parameter
-	for ( size_t i=0; i<param.size(); i++ ){
-		param[i]->setValue ( aEff->getParameter ( aEff, i ) );
+	for ( size_t i=0; i<param->size(); i++ ){
+		(*parameters)[i]->setValue ( aEff->getParameter ( aEff, i ) );
 	}
 }
 //-----------------------------------------------------------------------------
-void VSTPlugin::hostBaseConfigChanged() {
-	frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
-	if (!hI) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
-			"Hostinfo == NULL"
-		);
-	}
-	turnOff();
-	setupFramesbuffer();
+void VSTPluginImpl::baseConfigChanged(frx::processing::IHostInfo::Ptr hI) {
 	// setze samplerate
 	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
 	aEff->dispatcher ( aEff, effSetSampleRate, 0, 0, 0, hI->getSampleRate() );
 	// setze blockSize  
 	aEff->dispatcher ( aEff, effSetBlockSize, 0, hI->getBlockSize(), 0, 0 );
-	turnOn();
 }
 //-----------------------------------------------------------------------------
-void VSTPlugin::valueChanged(void *src, const float &v) {
+void VSTPluginImpl::valueChanged(void *src, const float &v) {
 	Parameter *p = (Parameter*) src;
 	size_t index = p->getIndex();
 	if ( onPlugChangeParameterIndex == index ) 
 		return; // when called by editorParameterChanged
-	if ( index>=param.size() || index<0 ) return;
+	if ( index>=param->size() || index<0 ) return;
 	Parameter::Ptr param = getParameter (index);
 	aEff->setParameter ( aEff, index, param->getValue() );	
 	char bff[255];
@@ -282,98 +208,66 @@ void VSTPlugin::valueChanged(void *src, const float &v) {
 	param->setDisplay( MyString(&bff[0]) );
 }
 //-----------------------------------------------------------------------------
-void VSTPlugin::initParameter(){
+void VSTPluginImpl::initParameter(){
 	char bff[255];
-	param = ParameterContainer ( aEff->numParams );
+	param->resize( aEff->numParams );
 	// initalisiere parameter
-	for ( size_t i=0; i<param.size(); i++ ){
-		param[i] = Parameter::create(i);
-		param[i]->setMin( (VstNumber)INT_MIN ); //entferne min, max ( siehe issue: 0000049 )
-		param[i]->setMax( (VstNumber)INT_MAX );
+	for ( size_t i=0; i<param->size(); i++ ){
+		(*parameters)[i] = Parameter::create(i);
+		(*parameters)[i]->setMin( (VstNumber)INT_MIN ); //entferne min, max ( siehe issue: 0000049 )
+		(*parameters)[i]->setMax( (VstNumber)INT_MAX );
 		// hole Parameter wert
-		param[i]->setValue ( aEff->getParameter ( aEff, i ) );
+		(*parameters)[i]->setValue ( aEff->getParameter ( aEff, i ) );
 		// hole Parameter name
 		aEff->dispatcher ( aEff, effGetParamName, i, NULL, &bff[0], NULL );
-		param[i]->setName ( MyString(bff) );
+		(*parameters)[i]->setName ( MyString(bff) );
 		// hole Parameter label
 		aEff->dispatcher ( aEff, effGetParamLabel, i, NULL, &bff[0], NULL );
-		param[i]->setLabel ( MyString(bff) );
+		(*parameters)[i]->setLabel ( MyString(bff) );
 		// hole Parameter Display
 		aEff->dispatcher ( aEff, effGetParamDisplay, i, NULL, &bff[0], NULL );
-		param[i]->setDisplay( MyString(bff) );
+		(*parameters)[i]->setDisplay( MyString(bff) );
 		// add listener
-		param[i]->addValueChangedListener ( 
-			boost::bind(&VSTPlugin::valueChanged, this, _1, _2)
+		(*parameters)[i]->addValueChangedListener ( 
+			boost::bind(&VSTPluginImpl::valueChanged, this, _1, _2)
 		);
 	}
 }
 //-----------------------------------------------------------------------------
-size_t VSTPlugin::getProcessDelay() const {
+size_t VSTPluginImpl::getInitialDelay() const {
 	return _processDelay = (size_t)aEff->initialDelay;
 }
 //-----------------------------------------------------------------------------
-//ruft die processReplacing Methode des zugeordneten VST-Plugin auf.
-void VSTPlugin::processAdapter( Processor::Int numSamples ) {
-	// breite daten vor ( mappe frames => matrix )
-    size_t c=0;
-	for ( size_t i=0; i<getNumInputNodes(); ++i ) {
-		ProcessorNode::Ptr pr = getInputNode(i);
-		
-		if ( !pr->isActive() ) { // inaktiver input
-			inMatrix[c++] = nullFrame[0];
-			inMatrix[c++] = nullFrame[1];
-			continue;
-		}
-		Frames *fr = pr->popFrame();    
-		inMatrix[c++] = (*fr)[0];
-		inMatrix[c++] = (*fr)[1];
-	}
-	
-	for ( size_t i=0; i<framebuffer.size(); ++i ) {
-        framebuffer[i].setZero( numSamples );
-    }
-	
-	if (!ioChangedLock) { 
+void VSTPluginImpl::processPlugin(Frames::T **_in,
+        Frames::T **_out, size_t numSamples)
+{
+    if (!ioChangedLock) { 
 		// Process Event
 		if ( can( effFlagsCanReplacing ) ) { 
 			//aEff->processReplacing ( *aEffect, **src, **dst, frameSize );
-			aEff->processReplacing ( aEff, inMatrix, outMatrix, numSamples );
+			aEff->processReplacing ( aEff, _in, _out, numSamples );
 		} else { 
-			aEff->DECLARE_VST_DEPRECATED(process) ( aEff, inMatrix, outMatrix, numSamples );
+			aEff->DECLARE_VST_DEPRECATED(process) ( aEff, _in, _out, numSamples );
 		}
 	}
-	if ( aEff->numOutputs == 1 ) { // mono
-		framebuffer[0].mixMonoToAll( numSamples );
-		getOutputNode(0)->pushAndCopy( &framebuffer[0], numSamples );
-		return;
-	}
-	for ( size_t i=0; i<getNumOutputNodes(); i++ ) {
-		getOutputNode(i)->pushAndCopy( &framebuffer[i], numSamples );
-	}
 }
 //-----------------------------------------------------------------------------
-void VSTPlugin::process(const Frames &_in, Frames &_out, size_t numSamples) {
-    
-}
-//-----------------------------------------------------------------------------
-VSTPlugin::~VSTPlugin() {
+VSTPluginImpl::~VSTPluginImpl() {
 	relatedPlugNode.erase ( aEff );
 	turnOff();
 	aEff->dispatcher ( aEff, effClose, 0, 0, 0, 0.0 );
-	delete[] inMatrix;
-	delete[] outMatrix;
 	// TODO: hier gab es probleme, unload muss aber stattfinden
 	if ( aEff != &nullAEff )
 		unloadModule();
 }
 //-----------------------------------------------------------------------------
-inline VSTPlugin * VSTPlugin::getVSTPlugNode(AEffect *aEff){
+inline VSTPluginImpl * VSTPluginImpl::getVSTPlugNode(AEffect *aEff){
 	RelatedPlugNode::iterator it = relatedPlugNode.find ( aEff );
 	if ( it == relatedPlugNode.end() ) return NULL;
 	return (*it).second;
 }
 //-----------------------------------------------------------------------------
-void VSTPlugin::onIOChanged() {
+void VSTPluginImpl::onIOChanged() {
 /*
 	resolved with a message that i/o has changed.
 	dynamic i/o update was impossible because some plugs 
@@ -392,8 +286,8 @@ void VSTPlugin::onIOChanged() {
     }
 }
 //-----------------------------------------------------------------------------
-void VSTPlugin::onEditorParameterChanged (int index, float value){
-	if ( param.empty() ) {
+void VSTPluginImpl::onEditorParameterChanged (int index, float value){
+	if ( param->empty() ) {
 		return;
 	}
 	// try to lock:
@@ -406,11 +300,11 @@ void VSTPlugin::onEditorParameterChanged (int index, float value){
 		return;
 	}
 	onPlugChangeParameterIndex = index; 
-	param[index]->setValue ( value );
+	(*parameters)[index]->setValue ( value );
 	onPlugChangeParameterIndex = -1;
-}
+}/*
 //-----------------------------------------------------------------------------
-void VSTPlugin::save(com::oArchive &ar, const unsigned int version) const {
+void VSTPluginImpl::save(com::oArchive &ar, const unsigned int version) const {
 	ar << boost::serialization::base_object< Plugin > ( *this ); //.........................................1
 	// save plugInfo
 	const PluginInfo plugInfo = getPluginInfo();
@@ -436,7 +330,7 @@ void VSTPlugin::save(com::oArchive &ar, const unsigned int version) const {
 	if ( size ) ar.save_binary ( data, size ); //...........................................................7
 }
 //-----------------------------------------------------------------------------
-void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
+void VSTPluginImpl::load(com::iArchive &ar, const unsigned int version) {
 	TRY_TO_LOCK_TIMED(mutex);
 	ar >> boost::serialization::base_object< Plugin > ( *this ); //..........................................1
 	// get plugInfo
@@ -488,7 +382,7 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 	// init parameter
 	for ( size_t i=0; i<param.size(); ++i ) {
 		param[i]->addValueChangedListener (
-			boost::bind(&VSTPlugin::valueChanged, this, _1, _2)
+			boost::bind(&VSTPluginImpl::valueChanged, this, _1, _2)
 		);
 		param[i]->setValue ( *param[i] );
 	}
@@ -505,13 +399,13 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 	aEff->dispatcher ( aEff, effSetChunk, 0, size, *data, 0 );
 	resetPlugin();
 	delete *data;
-}
+}*/
 //-----------------------------------------------------------------------------
-void VSTPlugin::onPlugRequestWindowResize (size_t w, size_t h) {
+void VSTPluginImpl::onPlugRequestWindowResize (size_t w, size_t h) {
 	com::events::EventSender<ResizeEditorEvent>::notifyEventListeners( this, ResizeEditorEvent(w,h) );
 }
 //-----------------------------------------------------------------------------
-void VSTPlugin::openEditor(void *window) {
+void VSTPluginImpl::openEditor(void *window) {
 	if (!window)
 		return;
 	ERect *size = NULL;
@@ -524,17 +418,17 @@ void VSTPlugin::openEditor(void *window) {
     aEff->dispatcher ( aEff, effEditOpen, 0, 0, window, 0);
 }
 //-----------------------------------------------------------------------------
-void VSTPlugin::closeEditor(void *window) {
+void VSTPluginImpl::closeEditor(void *window) {
 	if (!window)
 		return;
 	aEff->dispatcher ( aEff, effEditClose, 0, 0, window, 0);
 }
 //--------------------------------------------------------------------------------------------------------
-void VSTPlugin::onEditorIdle() {
+void VSTPluginImpl::onEditorIdle() {
 	aEff->dispatcher ( aEff, effEditIdle, 0, 0, 0, 0);
 }
 //-----------------------------------------------------------------------------
-void VSTPlugin::getShellPluginInfos(ShellPluginInfos &out) {
+void VSTPluginImpl::getShellPluginInfos(ShellPluginInfos &out) {
 	// scan shell for subplugins
 	char tempName[256] = {0}; 
 	VstInt32 plugUniqueID = 0;
@@ -547,7 +441,7 @@ void VSTPlugin::getShellPluginInfos(ShellPluginInfos &out) {
 	}
 }
 //-----------------------------------------------------------------------------
-VstIntPtr VSTPlugin::_hostCallback ( AEffect* effect, 
+VstIntPtr VSTPluginImpl::_hostCallback ( AEffect* effect, 
 						 VstInt32 opcode, 
 						 VstInt32 index, 
 						 VstIntPtr value, 
@@ -574,7 +468,7 @@ VstIntPtr VSTPlugin::_hostCallback ( AEffect* effect,
 	// find related plugin
 	RelatedPlugNode::iterator it = relatedPlugNode.find ( effect );
 	if ( it == relatedPlugNode.end() ) return 0;
-	VSTPlugin *pl = it->second;
+	VSTPluginImpl *pl = it->second;
 	if ( !pl ) return 0;
 	
 	switch (opcode) {
@@ -647,7 +541,7 @@ VstIntPtr VSTCALLBACK pluginCallToPlugNode (AEffect* effect,
 		}
 	}
 
-	return processing::VSTPlugin::_hostCallback ( effect, opcode, index, value, ptr, opt );
+	return processing::VSTPluginImpl::_hostCallback ( effect, opcode, index, value, ptr, opt );
 }
 
 

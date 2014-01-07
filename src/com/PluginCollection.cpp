@@ -332,11 +332,11 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 	appendLog ( out_info.location );		   // eintrag ins scan log	
 	Plugin::Ptr n;
 	try {
-		n = frx::processing::PluginFactory::load(hostinfo, out_info.location);
+		n = Plugin::create(hostinfo, out_info.location);
 	} catch(const ShellPluginException &ex) {
 		// TODO: insert as folder with concrete shell ids as content
 		out_info.access = PluginInfo::SUCCEED;
-		out_info.name = VSTPlugin::extractNameFromFilename(out_info.location);
+		out_info.name = VSTPluginImpl::extractNameFromFilename(out_info.location);
 		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
 		return;
 	} catch(...) {
@@ -349,14 +349,14 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 		out_info.access = PluginInfo::FAILED;
 		// set timestamp and name
 		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
-		out_info.name = VSTPlugin::extractNameFromFilename(out_info.location);
+		out_info.name = VSTPluginImpl::extractNameFromFilename(out_info.location);
 		return;
 	}
 	if ( ! n->isAccessable() ) {
 		out_info.access = PluginInfo::FAILED;
 		// set timestamp and name
 		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
-		out_info.name = VSTPlugin::extractNameFromFilename(out_info.location);
+		out_info.name = VSTPluginImpl::extractNameFromFilename(out_info.location);
 		return;
 	}
 	// fill out

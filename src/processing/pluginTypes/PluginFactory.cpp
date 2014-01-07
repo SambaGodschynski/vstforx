@@ -7,10 +7,14 @@
 
 #include "PluginFactory.hpp"
 #include <processing/ModelFactory.hpp>
-
+#include "BridgedPlugin.hpp"
 
 namespace frx { namespace processing {
 typedef Loki::SingletonHolder<PluginFactory> PluginFactoryHolder;
+
+extern PluginFactory::ProductPtr createVST2xPlugin(IHostInfo::Ptr hI,
+    const std::string &location);
+
 //=============================================================================
 //  Class PluginFactory
 //=============================================================================
@@ -19,55 +23,45 @@ PluginFactory & PluginFactory::instance() {
 	return PluginFactoryHolder::Instance();
 }
 //-----------------------------------------------------------------------------
-PluginFactory::Product::Ptr
-PluginFactory::_loadBridged(IHostInfo::Ptr hI, ::com::IdParser id)
+PluginFactory::ProductPtr
+PluginFactory::loadBridged(IHostInfo::Ptr hI, const std::string &loc)
 {
-    return Product::Ptr();
+    return NULL;
 }
 //-----------------------------------------------------------------------------
-PluginFactory::Product::Ptr
-PluginFactory::_loadVST2x(IHostInfo::Ptr hI, ::com::IdParser id)
+PluginFactory::ProductPtr
+PluginFactory::loadVST2x(IHostInfo::Ptr hI, const std::string &loc)
 {
-    ModelFactory &fac = ModelFactory::instance();
-    id.type("vst2x");
-    try {
-        return fac.create<Product>(id.toString(), hI);
-    } catch (const ::processing::PluginArchitectureMissmatch &ex) {
-        return Product::Ptr();
-    }
+    return createVST2xPlugin(hI, location);
 }
 //-----------------------------------------------------------------------------
-PluginFactory::Product::Ptr
-PluginFactory::_loadVST3x(IHostInfo::Ptr hI, ::com::IdParser id)
+PluginFactory::ProductPtr
+PluginFactory::loadVST3x(IHostInfo::Ptr hI, const std::string &loc)
 {
-    return Product::Ptr();
+    return NULL;
 }
 //-----------------------------------------------------------------------------
-PluginFactory::Product::Ptr
-PluginFactory::_loadAU(IHostInfo::Ptr hI, ::com::IdParser id)
+PluginFactory::ProductPtr
+PluginFactory::loadAU(IHostInfo::Ptr hI, const std::string &loc)
 {
-    return Product::Ptr();
+    return NULL;
 }
 //-----------------------------------------------------------------------------
-PluginFactory::Product::Ptr
-PluginFactory::_load(IHostInfo::Ptr hI, const std::string &location)
+PluginFactory::ProductPtr
+PluginFactory::load(IHostInfo::Ptr hI, const std::string &location)
 {
-    Product::Ptr res;
-    ::com::IdParser id;
-    id.namespace_("processing").name("Plugin").details(location);
+    ProductPtr res;
     
-    // vst2x
-    if ( res = _loadVST2x(hI, id) ) {
-        return res;
+    try {
+        // vst2x
+        if ( (res = _loadVST2x(hI, location)) ) {
+            return res;
+        }
+    } catch (const ::processing::PluginArchitectureMissmatch &ex) {
+        return _loadBridged(hI, location);
     }
     
     // no success
-    return Product::Ptr();
-}
-//-----------------------------------------------------------------------------
-PluginFactory::Product::Ptr
-PluginFactory::load(IHostInfo::Ptr hI, const std::string &location)
-{
-    return instance()._load(hI, location);
+    return NULL;
 }
 }} // namespace(s)

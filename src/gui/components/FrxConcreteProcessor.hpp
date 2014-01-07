@@ -297,6 +297,9 @@ namespace {
         ) && ViewFactory::instance().register_<T>(
             std::string("unknown-plugin.Plugin"),
             &T::create
+        ) && ViewFactory::instance().register_<T>(
+            std::string("bridged-plugin.Plugin"),
+            &T::create
         );
     }
     template <class ProcessorList>

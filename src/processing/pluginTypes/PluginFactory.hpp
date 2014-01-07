@@ -9,60 +9,54 @@
 #define SAMBAG_PLUGINFACTORY_H
 
 #include <loki/Singleton.h>
-#include <processing/Plugin.h>
+#include "PluginImpl.hpp"
 #include <processing/IHostInfo.h>
-#include <processing/ModelFactory.hpp>
-#include <com/one4All.h>
 
 namespace frx { namespace processing {
 //=============================================================================
 /** 
   * @class PluginFactory.
-  * @brief determines plugintype and loads plugin.
+  * @brief determines plugintype and loads plugin impl (@see APluginImpl).
   */
 class PluginFactory {
 //=============================================================================
 friend struct Loki::CreateUsingNew<PluginFactory>;
 public:
     //-------------------------------------------------------------------------
-    typedef ::processing::Plugin Product;
+    typedef APluginImpl Product;
+    //-------------------------------------------------------------------------
+    typedef Product* ProductPtr;
 protected:
-private:
-    //-------------------------------------------------------------------------
-    Product::Ptr
-    _loadBridged(IHostInfo::Ptr hI, ::com::IdParser id);
-    //-------------------------------------------------------------------------
-    Product::Ptr
-    _loadVST2x(IHostInfo::Ptr hI, ::com::IdParser id);
-    //-------------------------------------------------------------------------
-    Product::Ptr
-    _loadVST3x(IHostInfo::Ptr hI, ::com::IdParser id);
-    //-------------------------------------------------------------------------
-    Product::Ptr
-    _loadAU(IHostInfo::Ptr hI, ::com::IdParser id);
-    //-------------------------------------------------------------------------
-    Product::Ptr
-    _load(IHostInfo::Ptr hI, const std::string &location);
 public:
 	//-------------------------------------------------------------------------
 	static PluginFactory & instance();
     //-------------------------------------------------------------------------
     /**
-     * @brief determines plugintype and loads plugin.
-     * @return plugin
-     * @param
-     * @param the plugin location
+     * @return appropriate plugin impl
      */
-    static Product::Ptr load(IHostInfo::Ptr hI, const std::string &location);
+    ProductPtr load(IHostInfo::Ptr hI, const std::string &location);
+    //-------------------------------------------------------------------------
+    /**
+     * @return bridged plugin impl
+     */
+    ProductPtr loadBridged(IHostInfo::Ptr hI, const std::string &loc);
+    //-------------------------------------------------------------------------
+    /**
+     * @return vst2x plugin impl
+     */
+    ProductPtr loadVST2x(IHostInfo::Ptr hI, const std::string &loc);
+    //-------------------------------------------------------------------------
+    /**
+     * @return vst3x plugin impl
+     */
+    ProductPtr loadVST3x(IHostInfo::Ptr hI, const std::string &loc);
+    //-------------------------------------------------------------------------
+    /**
+     * @return au plugin impl
+     */
+    ProductPtr loadAU(IHostInfo::Ptr hI, const std::string &loc);
+
 }; // PluginFactory
-
-namespace {
-    const bool PluginFactoryRegistered =
-        ModelFactory::instance().registerWithDetail (
-                "unknown-plugin.Plugin", &PluginFactory::load
-        );
-}
-
 }} // namespace(s)
 
 

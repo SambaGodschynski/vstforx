@@ -24,7 +24,9 @@ typedef boost::shared_ptr<PluginSessionHost> PluginSessionHostPtr;
 typedef boost::shared_ptr<PluginSessionClient> PluginSessionClientPtr;
 //=============================================================================
 /** 
-  * @class Bridge Host Session.
+  * @class BridgeSession.
+  * @brief The bridge session on host side.
+  * Manager for adding and removing of PluginSessions. 
   */
 class BridgeSession : public Session
 {
@@ -85,6 +87,7 @@ public:
 //=============================================================================
 /** 
   * @class BridgeSessionClient.
+  * @brief The bridge session on client side.
   */
 struct OnBridgeClosing {};
 class BridgeSessionClient : public Session,

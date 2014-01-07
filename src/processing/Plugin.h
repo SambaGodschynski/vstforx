@@ -17,6 +17,8 @@
 #include "processing/MidiEventProcessor.h"
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
+#include "pluginTypes/PluginImpl.hpp"
+#include <processing/ModelFactory.hpp>
 
 namespace processing {
 //=============================================================================
@@ -105,6 +107,25 @@ private:
 			initListener();
 		}
 	}
+    //-------------------------------------------------------------------------
+    frx::processing::APluginImpl *impl;
+    //-------------------------------------------------------------------------
+	typedef std::vector<Frames> Framebuffer;
+	//-------------------------------------------------------------------------
+	Framebuffer framebuffer;
+    //-------------------------------------------------------------------------
+	Frames nullFrame; // fuer nicht genutzte eingaenge ( beim frame=>float[] )
+	//-------------------------------------------------------------------------
+	float ** inMatrix;
+	//-------------------------------------------------------------------------
+	float ** outMatrix;
+    //-------------------------------------------------------------------------
+    frx::processing::APluginImpl::Parameters parameters;
+	//-------------------------------------------------------------------------
+	/**
+	 * INITALISIERT Framesbuffer
+	 */
+	void setupFramesbuffer();
 protected:
 	//-------------------------------------------------------------------------
 	/**
@@ -115,13 +136,19 @@ protected:
 	Plugin() {}
 	//-------------------------------------------------------------------------
 	Plugin( frx::processing::IHostInfo::Ptr hostInfo, const std::string &location,
-        size_t numInputs = 1, size_t numOutputs = 1 );
+        frx::processing::APluginImpl *impl);
 public:
     //-------------------------------------------------------------------------
-    /**
-     * @brief alternative process call, used by bridged plugins.
-     */
-    virtual void process(const Frames &_in, Frames &_out, size_t numSamples) = 0;
+    static Ptr create(frx::processing::IHostInfo::Ptr, const std::string &location);
+    //-------------------------------------------------------------------------
+    static Ptr createVST2x(frx::processing::IHostInfo::Ptr, const std::string &location);
+    //-------------------------------------------------------------------------
+    static Ptr createVST3x(frx::processing::IHostInfo::Ptr, const std::string &location);
+    //-------------------------------------------------------------------------
+    static Ptr createAU(frx::processing::IHostInfo::Ptr, const std::string &location);
+    //-------------------------------------------------------------------------
+    virtual void processPlugin(Frames::T **_in,
+        Frames::T **_out, size_t numSamples) = 0;
     //-------------------------------------------------------------------------
     /**
      * @override
@@ -206,28 +233,6 @@ public:
 	}
 	//-------------------------------------------------------------------------
 	/**
-	 * @return Anzahl aller Plugin-Programme (aka. Presets)
-	 */
-	virtual size_t getNumPrograms() { return 0; }
-	//-------------------------------------------------------------------------
-	/**
-	 * @param index
-	 * @return Program-Name zu index.
-	 */
-	virtual std::string getProgramName( size_t index ) { return ""; }
-	//-------------------------------------------------------------------------
-	/**
-	 * Aktiviert Program zu index.
-	 * @param index
-	 */
-	virtual void setProgram( size_t index ) {}
-	//-------------------------------------------------------------------------
-	/**
-	 * @return index des akuell gesetzten Program, falls vorhanden. Andernfalls -1.
-	 */
-	virtual int getProgram() { return -1; }
-	//-------------------------------------------------------------------------
-	/**
 	 * @return true, wenn von Client ausfuehrbar.
 	 */
 	virtual bool isAccessable() = 0;
@@ -274,7 +279,7 @@ public:
 	 * Verarbeitet Samplemenge des Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
 	 * @param numSamples Anzahl der zu bearbeitenden Samples
 	 */
-	virtual void processAdapter( Processor::Int numSamples ) = 0;
+	virtual void processAdapter( Processor::Int numSamples );
 	//-------------------------------------------------------------------------
 	/**
 	 * Verarbeitet Midi-Events (@see VST-SDK VstEvents)
@@ -283,17 +288,6 @@ public:
 	virtual void processMidiEvents( sambag::dsp::IMidiEvents * events ) = 0;
 	//-------------------------------------------------------------------------
 	virtual ~Plugin();
-	//-------------------------------------------------------------------------
-	/**
-	 * @return true, wenn Plugin ueber Editor verfuegt.
-	 */
-	virtual bool hasEditor() const = 0;
-	//-------------------------------------------------------------------------
-	virtual void openEditor(void *window) {}
-	//-------------------------------------------------------------------------
-	virtual void closeEditor(void *window) {}
-	//-------------------------------------------------------------------------
-	virtual void onEditorIdle() {}
 	//-------------------------------------------------------------------------
 	/**
 	 * @return Speicherort des Plugins
@@ -332,22 +326,39 @@ public:
 	 * @return PluginInfo zu Plugin.
 	 */
 	const PluginInfo & getPluginInfo() const { return pluginInfo; }
+	//-------------------------------------------------------------------------
+	/**
+	 * Host-Info changed Handler
+	 */
+	virtual void hostBaseConfigChanged();
     //-------------------------------------------------------------------------
-    /**
-     * @brief get the number of input channels that the plugin is using.
-     * @note don't confuse with getNumInputNodes because one inputnode uses
-     * always two channels aka stereo.
-     */
-    virtual size_t getNumInputChannels() const = 0;
+    virtual parameter::ParameterPtr getParameter (size_t nr=0) const {
+        return parameters.at(nr);
+    }
     //-------------------------------------------------------------------------
-    /**
-     * @brief get the number of output channels that the plugin is using.
-     * @note don't confuse with getNumInputNodes because one outputnode uses
-     * always two channels aka stereo.
-     */
-
-    virtual size_t getNumOutputChannels() const = 0;
+    virtual size_t 	getNumParameter () const {
+        return parameters.size();
+    }
 };
+
+namespace {
+    const bool UnkownPluginReg =
+        ::frx::processing::ModelFactory::instance().registerWithDetail<Plugin>(
+                "unknown-plugin.Plugin", &Plugin::create
+    );
+    const bool VST2xPluginReg =
+        ::frx::processing::ModelFactory::instance().registerWithDetail(
+                "vst2x.Plugin", &Plugin::createVST2x
+    );
+    const bool VST3PluginReg =
+        ::frx::processing::ModelFactory::instance().registerWithDetail(
+                "vst3x.Plugin", &Plugin::createVST3x
+    );
+    const bool AUPluginReg =
+        ::frx::processing::ModelFactory::instance().registerWithDetail(
+                "au.Plugin", &Plugin::createAU
+    );
+}
 }// namespace processing
 
 #endif

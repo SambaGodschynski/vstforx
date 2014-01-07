@@ -8,9 +8,6 @@
 #define _VST2XPLUGNODE_H
 
 #include "com/one4All.h"
-#include "processing/processing.h"
-#include "processing/Plugin.h"
-#include "processing/parameter/parameter.h"
 #include "boost/unordered_map.hpp"
 #include "OS_Specific/os_processing.h"
 #include "NullAEffect.h"
@@ -21,7 +18,7 @@
 #include <sambag/dsp/VstMidiEventAdapter.hpp>
 #include "VstShellPlugin.hpp"
 #include <sambag/com/ArithmeticWrapper.hpp>
-#include <processing/ModelFactory.hpp>
+#include "PluginImpl.hpp"
 
 namespace processing{
 using namespace com;
@@ -29,12 +26,12 @@ using namespace processing;
 using namespace parameter;
 //=============================================================================
 /**
- * @class: VSTPlugin.
+ * @class: VSTPluginImpl.
  * Represaentriert ein VST-Plugin.
  */
-class VSTPlugin: 
+class VSTPluginImpl: 
 	public OS_VSTPlugNode2x, // Plattformspezifische impl.
-	public Plugin, 
+	public frx::processing::APluginImpl,
 	public Serializable
 {
 //=============================================================================
@@ -43,7 +40,7 @@ friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<VSTPlugin> Ptr;
+	typedef boost::shared_ptr<VSTPluginImpl> Ptr;
 	//-------------------------------------------------------------------------
 	/**
 	 * @param fileName
@@ -77,7 +74,7 @@ private:
 	 * @param w
 	 * @param h
 	 */
-	void onPlugRequestWindowResize ( size_t w, size_t h);
+	void onPlugRequestWindowResize (size_t w, size_t h);
 	//-------------------------------------------------------------------------
 	typedef vector<string> ProgramNames;
 	//-------------------------------------------------------------------------
@@ -87,24 +84,6 @@ private:
 	 * initalisiert Program-Namen (aka.Presets)
 	 */
 	void initProgramNames();
-	//-------------------------------------------------------------------------
-	Frames nullFrame; // fuer nicht genutzte eingaenge ( beim frame=>float[] )
-	//-------------------------------------------------------------------------
-	/**
-	 * Deserialisert VSTPlugin.
-	 * @param ar boost::Archive-Objekt
-	 * @param version
-	 */
-	void load ( iArchive &ar, const unsigned int version );
-	//-------------------------------------------------------------------------
-	/**
-	 * Serialisert VSTPlugin.
-	 * @param ar boost::Archive-Objekt
-	 * @param version
-	 */
-	void save ( oArchive &ar, const unsigned int version ) const;
-	//-------------------------------------------------------------------------
-	VSTPlugin() : onPlugChangeParameterIndex(-1), ioChangedLock(false) {}
 	//-------------------------------------------------------------------------
 	/**
 	 * Blockiert Deserialisierung gegen nebenlaufige
@@ -117,24 +96,14 @@ private:
 	 */
 	bool ioChangedLock;
 	//-------------------------------------------------------------------------
-	typedef vector<Parameter::Ptr> ParameterContainer;
-	//-------------------------------------------------------------------------
-	ParameterContainer param;
-	//-------------------------------------------------------------------------
-	int blockSize;
-	//-------------------------------------------------------------------------
-	typedef vector<Frames> Framebuffer;
-	//-------------------------------------------------------------------------
-	Framebuffer framebuffer;
-	//-------------------------------------------------------------------------
-	static VSTPlugin * getVSTPlugNode ( AEffect *aEff ); // ermittelt ueber Aeffect=>vstplugnode map
+	static VSTPluginImpl * getVSTPlugImpl ( AEffect *aEff ); // ermittelt ueber Aeffect=>vstplugnode map
 	//-------------------------------------------------------------------------
 	/**
 	 * initalisiert Plugin-Parameter
 	 */
 	void initParameter();
 	//-------------------------------------------------------------------------
-	typedef boost::unordered_map < AEffect*, VSTPlugin* > RelatedPlugNode;
+	typedef boost::unordered_map < AEffect*, VSTPluginImpl* > RelatedPlugNode;
 	//-------------------------------------------------------------------------
 	/**
 	 * Abbildung AEffect-Objektzeiger auf zugehoeriges VSTPlugin-Objekt.
@@ -144,20 +113,7 @@ private:
 	//-------------------------------------------------------------------------
 	bool canReceiveVstEvents;
 	//-------------------------------------------------------------------------
-	float ** inMatrix;
-	//-------------------------------------------------------------------------
-	float ** outMatrix;
-	//-------------------------------------------------------------------------
-	void initInputs();
-	//-------------------------------------------------------------------------
-	void initOutputs();
-	//-------------------------------------------------------------------------
-	static void initPlug ( VSTPlugin &pln ); 
-	//-------------------------------------------------------------------------
-	/**
-	 * INITALISIERT Framesbuffer
-	 */
-	void setupFramesbuffer();
+	static void initPlug ( VSTPluginImpl &pln ); 
 	//-------------------------------------------------------------------------
 	/**
 	 * boolsches Sperren von Parameteraenderungen.
@@ -168,30 +124,14 @@ private:
 	void getShellPluginInfos(ShellPluginInfos &out);
 protected:
 	//-------------------------------------------------------------------------
-	VSTPlugin( frx::processing::IHostInfo::Ptr hostInfo, const string &filename );
-	//-------------------------------------------------------------------------
-	/**
-     * @brief is used for testing, you are able to create an
-     * AEff using TestAEffect::createLongevity()
-     */
-    VSTPlugin(frx::processing::IHostInfo::Ptr hostInfo, AEffect *aEff);
+	VSTPluginImpl( frx::processing::IHostInfo::Ptr hostInfo,
+        Parameters *parameters,
+        const string &filename
+    );
 public:
-	//-------------------------------------------------------------------------
-	/**
-	 * @param hostInfo
-	 * @param filename
-	 * @return neues VSTPlugin-Objekt
-	 */
-	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo, const string &filename ) {
-		Ptr neu( new VSTPlugin(hostInfo, filename) );
-		if ( !neu ) 
-			return Ptr();
-		neu->self = neu;
-		return neu;
-	}
-	//-------------------------------------------------------------------------
-	static Ptr createTestPlugin( frx::processing::IHostInfo::Ptr hostInfo,
-        int numInputs, int numOutputs);
+    //-------------------------------------------------------------------------
+    virtual void openPlugin(frx::processing::IHostInfo::Ptr hi,
+        const std::string &filename);
 	//-------------------------------------------------------------------------
 	/**
 	 * @return Anzahl aller Plugin-Programme (aka. Presets)
@@ -236,15 +176,15 @@ public:
 	/**
 	 * @return Signal-Verabeitungs-Verzoegerung des uebergeordneten ProcessAdapter
 	 */
-	virtual size_t getProcessDelay() const;
+	virtual size_t getInitialDelay() const;
 	//-------------------------------------------------------------------------
 	/**
 	 * Verarbeitet Samplemenge des Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
 	 * @param numSamples Anzahl der zu bearbeitenden Samples
 	 */
-	virtual void processAdapter( Processor::Int sampleFrames );
+	virtual void processAdapter( Processor::Int sampleFrames ) {}
 	//-------------------------------------------------------------------------
-	virtual ~VSTPlugin();
+	virtual ~VSTPluginImpl();
 	//-------------------------------------------------------------------------
 	/**
 	 * Plugin-Parameter Handler
@@ -252,14 +192,6 @@ public:
 	 * @param value
 	 */
 	virtual void valueChanged ( void *src, const float &value );
-	//-------------------------------------------------------------------------
-	/**
-	 * @param index
-	 * @return liefert Parameter zu index. Wirft: std::out_of_range
-	 */
-	virtual Parameter::Ptr getParameter ( size_t index ) const {
-		return param.at( index);
-	}
 	//-------------------------------------------------------------------------
 	/**
 	 * aka. VST-Plugin: standby
@@ -290,13 +222,6 @@ public:
 	virtual void onEditorIdle();
 	//-------------------------------------------------------------------------
 	/**
-	 * @return Anzahl aller MidiProcessor-Parameter
-	 */
-	virtual size_t getNumParameter() const {
-		return param.size();	
-	}
-	//-------------------------------------------------------------------------
-	/**
 	 * @return true, wenn Plugin ueber Editor verfuegt.
 	 */
 	virtual bool hasEditor() const {
@@ -306,7 +231,7 @@ public:
 	/**
 	 * Host-Info changed Handler
 	 */
-	virtual void hostBaseConfigChanged();
+	virtual void baseConfigChanged(frx::processing::IHostInfo::Ptr hi);
 	//-------------------------------------------------------------------------
 	/**
 	 * @param flag
@@ -342,7 +267,8 @@ public:
 									void* ptr, 
 									float opt );
     //-------------------------------------------------------------------------
-    virtual void process(const Frames &_in, Frames &_out, size_t numSamples);
+    virtual void processPlugin(Frames::T **_in,
+        Frames::T **_out, size_t numSamples);
     //-------------------------------------------------------------------------
     size_t getNumInputChannels() const {
         SAMBAG_ASSERT(aEff);
@@ -353,17 +279,7 @@ public:
         SAMBAG_ASSERT(aEff);
         return aEff->numOutputs;
     }
-}; // class VSTPlugin
-
-namespace {
-    const bool VST2X_Plugin_Location_Registered =
-        frx::processing::ModelFactory::instance().
-            registerWithDetail<VSTPlugin>("vst2x.Plugin", &VSTPlugin::create);
-    const bool VST2X_Plugin_TestPlug_Registered =
-        frx::processing::ModelFactory::instance().
-            registerWithIO<VSTPlugin>("vst2x.FrxTestPlugin", &VSTPlugin::createTestPlugin);
-}
-
+}; // class VSTPluginImpl
 } // namespace processing
 
 #endif

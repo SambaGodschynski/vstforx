@@ -45,11 +45,15 @@ private:
         if (version>=1) {
             ar & id;
         }
+        if (version>=2) {
+            ar & vendor;
+        }
 	}
 	//--------------------------------------------------------------------------------------------------------
 public:
 	std::string location;
 	std::string name;
+    std::string vendor;
 	PluginType pluginType;
 	int isSynth;
 	int uid;
@@ -110,6 +114,6 @@ public:
 };
 } // namespace
 
-BOOST_CLASS_VERSION(processing::PluginInfo, 1)
+BOOST_CLASS_VERSION(processing::PluginInfo, 2)
 
 #endif

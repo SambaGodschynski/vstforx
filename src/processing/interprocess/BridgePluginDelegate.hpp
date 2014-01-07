@@ -21,6 +21,7 @@ namespace frx { namespace processing { namespace interprocess {
 //=============================================================================
 /** 
   * @class BridgePluginDelegate.
+  * @brief Plugin interface used by bridge.
   */
 class BridgePluginDelegate {
 //=============================================================================
