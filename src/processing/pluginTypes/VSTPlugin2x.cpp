@@ -19,7 +19,16 @@
 
 typedef AEffect* (*PluginEntryProc) (audioMasterCallback audioMaster);
 
-namespace processing{
+namespace frx { namespace processing {
+    APluginImpl * createVST2xPluginImpl(IHostInfo::Ptr hI,
+        APluginImpl::Parameters *parameters,
+        const std::string &location)
+    {
+        return new ::processing::VSTPluginImpl(hI, parameters, location);
+    }
+}}
+
+namespace processing {
 //-----------------------------------------------------------------------------
 boost::unordered_map < AEffect*, VSTPluginImpl* > VSTPluginImpl::relatedPlugNode;
 //-----------------------------------------------------------------------------
@@ -27,16 +36,17 @@ VSTPluginImpl::VSTPluginImpl( frx::processing::IHostInfo::Ptr hostInfo,
     Parameters *parameters,
     const string &filename ) :
         OS_VSTPlugNode2x ( filename ), // initalisiert aEff
-        frx::processing::APluginImpl (hostInfo, parameters, filename),  // ProcessAdapter
+        frx::processing::APluginImpl (hostInfo, filename, parameters),  // ProcessAdapter
         onPlugChangeParameterIndex (-1),
         canReceiveVstEvents(false),
-        ioChangedLock(false)
+        ioChangedLock(false),
+        oldEditorLocation(EditorLocation(0,0))
 { 
 }
 //-----------------------------------------------------------------------------
-void VSTPluginImpl::openPlugin(frx::processing::IHostInfo::Ptr hI,
-    const std::string &filename)
+void VSTPluginImpl::openPlugin()
 {
+    frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
 	loadModule( HostCallBackOnInit (          // erzeugt Mutex lock bis fertig geladen
 		(audioMasterCallback)(hI->getMasterCallback()), 
 		(AudioEffectX*)(hI->getEffectPtr()) ) 
@@ -54,9 +64,18 @@ void VSTPluginImpl::openPlugin(frx::processing::IHostInfo::Ptr hI,
 		// on because we have to specify which plugin we want.
 		if (!infos.empty())
 			throw 
-				ShellPluginException(filename, infos);
+				ShellPluginException(location, infos);
 	}
 	initPlug ( *this );
+}
+//-----------------------------------------------------------------------------
+void VSTPluginImpl::closePlugin()
+{
+	turnOff();
+	aEff->dispatcher ( aEff, effClose, 0, 0, 0, 0.0 );
+	// TODO: hier gab es probleme, unload muss aber stattfinden
+	if ( aEff != &nullAEff )
+		unloadModule();
 }
 //-----------------------------------------------------------------------------
 MyString VSTPluginImpl::extractNameFromFilename( const string &fileName ){
@@ -79,25 +98,29 @@ void VSTPluginImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
 	aEff->dispatcher( aEff, effProcessEvents, 0, NULL, (void*)tmpMidiData->events, NULL );
 }
 //-----------------------------------------------------------------------------
+void VSTPluginImpl::updatePluginInfo (::processing::PluginInfo &inf) const {
+    char bff[MAX_BFF_STR];
+	bff[0] = '\0';
+	aEff->dispatcher ( aEff, effGetEffectName, 0, NULL, &bff[0], NULL );
+	inf.name = std::string(bff);
+	if ( inf.name.length() == 0 ) {
+        inf.name = extractNameFromFilename(location);
+    }
+	bff[0] = '\0';
+	aEff->dispatcher ( aEff, effGetVendorString, 0, NULL, &bff[0], NULL );
+	inf.vendor = string (bff);
+	inf.isSynth  = can(effFlagsIsSynth);
+	inf.uid = aEff->uniqueID;
+	inf.pluginType = PluginInfo::VST2X;
+}
+//-----------------------------------------------------------------------------
 void VSTPluginImpl::initPlug( VSTPluginImpl &plug ) {
 	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	// Objekt registrieren
 	relatedPlugNode.insert ( pair < AEffect*, VSTPluginImpl* >( plug.aEff, &plug ) );
-	//hole name und hersteller
-	char bff[MAX_BFF_STR];
-	bff[0] = '\0';
-	plug.aEff->dispatcher ( plug.aEff, effGetEffectName, 0, NULL, &bff[0], NULL );
-	plug.setPlugName ( string(bff) );
-	if ( plug.getPlugName().length() == 0 ) plug.setPlugName ( extractNameFromFilename( plug.getLocation() ) );
-	bff[0] = '\0';
-	plug.aEff->dispatcher ( plug.aEff, effGetVendorString, 0, NULL, &bff[0], NULL );
-	plug.setPlugVendor( string (bff) );
-	plug.setIsSynth ( plug.can(effFlagsIsSynth) );
-	plug.setUid ( plug.aEff->uniqueID );
-	plug.setType ( PluginInfo::VST2X );
     plug._processDelay = plug.aEff->initialDelay;
 	if ( plug.aEff == &nullAEff ) {
-		plug.setStatusMsg( "could not load " + plug.getLocation() );
+		plug.statusMsg = "could not load " + plug.location;
 	}
 	
 	// can receive vst events?
@@ -174,12 +197,13 @@ void VSTPluginImpl::setProgram(size_t index) {
 	aEff->dispatcher ( aEff, effSetProgram, 0, index, NULL, 0.0f );
 
 	//update parameter
-	for ( size_t i=0; i<param->size(); i++ ){
+	for ( size_t i=0; i<parameters->size(); i++ ){
 		(*parameters)[i]->setValue ( aEff->getParameter ( aEff, i ) );
 	}
 }
 //-----------------------------------------------------------------------------
-void VSTPluginImpl::baseConfigChanged(frx::processing::IHostInfo::Ptr hI) {
+void VSTPluginImpl::baseConfigChanged() {
+    frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
 	// setze samplerate
 	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
 	aEff->dispatcher ( aEff, effSetSampleRate, 0, 0, 0, hI->getSampleRate() );
@@ -192,8 +216,10 @@ void VSTPluginImpl::valueChanged(void *src, const float &v) {
 	size_t index = p->getIndex();
 	if ( onPlugChangeParameterIndex == index ) 
 		return; // when called by editorParameterChanged
-	if ( index>=param->size() || index<0 ) return;
-	Parameter::Ptr param = getParameter (index);
+	if ( index>=parameters->size() ) {
+        return;
+    }
+	Parameter::Ptr param = parameters->at(index);
 	aEff->setParameter ( aEff, index, param->getValue() );	
 	char bff[255];
 	// hole Parameter name
@@ -210,9 +236,9 @@ void VSTPluginImpl::valueChanged(void *src, const float &v) {
 //-----------------------------------------------------------------------------
 void VSTPluginImpl::initParameter(){
 	char bff[255];
-	param->resize( aEff->numParams );
+	parameters->resize( aEff->numParams );
 	// initalisiere parameter
-	for ( size_t i=0; i<param->size(); i++ ){
+	for ( size_t i=0; i<parameters->size(); i++ ){
 		(*parameters)[i] = Parameter::create(i);
 		(*parameters)[i]->setMin( (VstNumber)INT_MIN ); //entferne min, max ( siehe issue: 0000049 )
 		(*parameters)[i]->setMax( (VstNumber)INT_MAX );
@@ -253,15 +279,10 @@ void VSTPluginImpl::processPlugin(Frames::T **_in,
 }
 //-----------------------------------------------------------------------------
 VSTPluginImpl::~VSTPluginImpl() {
-	relatedPlugNode.erase ( aEff );
-	turnOff();
-	aEff->dispatcher ( aEff, effClose, 0, 0, 0, 0.0 );
-	// TODO: hier gab es probleme, unload muss aber stattfinden
-	if ( aEff != &nullAEff )
-		unloadModule();
+    relatedPlugNode.erase ( aEff );
 }
 //-----------------------------------------------------------------------------
-inline VSTPluginImpl * VSTPluginImpl::getVSTPlugNode(AEffect *aEff){
+inline VSTPluginImpl * VSTPluginImpl::getVSTPlugImpl(AEffect *aEff){
 	RelatedPlugNode::iterator it = relatedPlugNode.find ( aEff );
 	if ( it == relatedPlugNode.end() ) return NULL;
 	return (*it).second;
@@ -278,7 +299,7 @@ void VSTPluginImpl::onIOChanged() {
 */
     namespace sce=sambag::com::events;
     size_t old = _processDelay;
-    size_t _new = getProcessDelay();
+    size_t _new = getInitialDelay();
     if (old!=_new) {
         sce::EventSender<sce::PropertyChanged>::notifyListeners(this,
             sce::PropertyChanged("process delay", old, _new)
@@ -287,7 +308,7 @@ void VSTPluginImpl::onIOChanged() {
 }
 //-----------------------------------------------------------------------------
 void VSTPluginImpl::onEditorParameterChanged (int index, float value){
-	if ( param->empty() ) {
+	if ( parameters->empty() ) {
 		return;
 	}
 	// try to lock:
@@ -296,7 +317,7 @@ void VSTPluginImpl::onEditorParameterChanged (int index, float value){
 		return; // lock failed
 	}
 
-	if ( index > (int)getNumParameter() ) {
+	if ( index > (int)parameters->size() ) {
 		return;
 	}
 	onPlugChangeParameterIndex = index; 
@@ -402,7 +423,14 @@ void VSTPluginImpl::load(com::iArchive &ar, const unsigned int version) {
 }*/
 //-----------------------------------------------------------------------------
 void VSTPluginImpl::onPlugRequestWindowResize (size_t w, size_t h) {
-	com::events::EventSender<ResizeEditorEvent>::notifyEventListeners( this, ResizeEditorEvent(w,h) );
+    namespace sce=sambag::com::events;
+    EditorLocation _new(w, h);
+    if (oldEditorLocation!=_new) {
+        sce::EventSender<sce::PropertyChanged>::notifyListeners(this,
+            sce::PropertyChanged("editor location", oldEditorLocation, _new)
+        );
+    }
+    oldEditorLocation = _new;
 }
 //-----------------------------------------------------------------------------
 void VSTPluginImpl::openEditor(void *window) {

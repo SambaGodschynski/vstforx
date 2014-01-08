@@ -47,14 +47,7 @@ struct EditorOpenParameterChanged : public com::events::Event {
 };
 //=============================================================================
 
-//=============================================================================
-/**
- * @class: PluginArchitectureMissmatch.
- */
-SAMBAG_DERIVATED_EXCEPTION_CLASS(
-    sambag::com::exceptions::IllegalStateException,
-    PluginArchitectureMissmatch
-);
+
 //=============================================================================
 /**
  * Klasse: Plugin.
@@ -126,6 +119,9 @@ private:
 	 * INITALISIERT Framesbuffer
 	 */
 	void setupFramesbuffer();
+    //-------------------------------------------------------------------------
+    void onImplPropertyChanged(void*,
+        const sambag::com::events::PropertyChanged &ev);
 protected:
 	//-------------------------------------------------------------------------
 	/**
@@ -135,8 +131,10 @@ protected:
 	//-------------------------------------------------------------------------
 	Plugin() {}
 	//-------------------------------------------------------------------------
-	Plugin( frx::processing::IHostInfo::Ptr hostInfo, const std::string &location,
-        frx::processing::APluginImpl *impl);
+    Plugin( frx::processing::IHostInfo::Ptr hostInfo,
+        const std::string &location,
+        PluginInfo::PluginType type
+    );
 public:
     //-------------------------------------------------------------------------
     static Ptr create(frx::processing::IHostInfo::Ptr, const std::string &location);
@@ -146,9 +144,6 @@ public:
     static Ptr createVST3x(frx::processing::IHostInfo::Ptr, const std::string &location);
     //-------------------------------------------------------------------------
     static Ptr createAU(frx::processing::IHostInfo::Ptr, const std::string &location);
-    //-------------------------------------------------------------------------
-    virtual void processPlugin(Frames::T **_in,
-        Frames::T **_out, size_t numSamples) = 0;
     //-------------------------------------------------------------------------
     /**
      * @override
@@ -235,57 +230,68 @@ public:
 	/**
 	 * @return true, wenn von Client ausfuehrbar.
 	 */
-	virtual bool isAccessable() = 0;
+	bool isAccessable() const;
 	//-------------------------------------------------------------------------
 	/**
 	 * @return Plugin-Uid.
 	 */
-	virtual int getUid() const { return pluginInfo.uid; }
+	int getUid() const { return pluginInfo.uid; }
 	//-------------------------------------------------------------------------
 	/**
 	 * setzt Plugin-Uid
 	 * @param uid
 	 */
-	virtual void setUid ( int uid ) { pluginInfo.uid = uid; }
+	void setUid ( int uid ) { pluginInfo.uid = uid; }
 	//-------------------------------------------------------------------------
 	/**
 	 * @return Plugin-Typ (@see PluginInfo::PluginType)
 	 */
-	virtual PluginInfo::PluginType getType() const { return pluginInfo.pluginType; }
+	PluginInfo::PluginType getType() const { return pluginInfo.pluginType; }
 	//-------------------------------------------------------------------------
 	/**
 	 * setzt Plugin-Typ (@see PluginInfo::PluginType)
 	 * @param type
 	 */
-	virtual void setType( const PluginInfo::PluginType & type ) { pluginInfo.pluginType = type; }
+	void setType( const PluginInfo::PluginType & type ) { pluginInfo.pluginType = type; }
 	//-------------------------------------------------------------------------
 	/**
 	 * @return true, wenn Plugin == Synthesizer
 	 */
-	virtual bool isSynth() const { return pluginInfo.isSynth; }
+	bool isSynth() const { return pluginInfo.isSynth; }
 	//-------------------------------------------------------------------------
 	/**
 	 * bestimmt ob Plugin == Synthesizer
 	 * @param isSynth
 	 */
-	virtual void setIsSynth ( bool isSynth ) { pluginInfo.isSynth = isSynth; }
+	void setIsSynth ( bool isSynth ) { pluginInfo.isSynth = isSynth; }
 	//-------------------------------------------------------------------------
 	/**
 	 * @return true, wenn Plugin Midi-Event verarbeiten kann.
 	 */
-	virtual bool canHandleMidiEvent() const = 0;
+	bool canHandleMidiEvent() const;
+    //-------------------------------------------------------------------------
+	/**
+	 * @return true, wenn Plugin ueber Editor verfuegt.
+	 */
+	bool hasEditor() const;
+	//-------------------------------------------------------------------------
+	void openEditor(void *window);
+	//-------------------------------------------------------------------------
+	void closeEditor(void *window);
+	//-------------------------------------------------------------------------
+	void onEditorIdle();
 	//-------------------------------------------------------------------------
 	/**
 	 * Verarbeitet Samplemenge des Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
 	 * @param numSamples Anzahl der zu bearbeitenden Samples
 	 */
-	virtual void processAdapter( Processor::Int numSamples );
+	void processAdapter( Processor::Int numSamples );
 	//-------------------------------------------------------------------------
 	/**
 	 * Verarbeitet Midi-Events (@see VST-SDK VstEvents)
 	 * @param events
 	 */
-	virtual void processMidiEvents( sambag::dsp::IMidiEvents * events ) = 0;
+	void processMidiEvents( sambag::dsp::IMidiEvents * events );
 	//-------------------------------------------------------------------------
 	virtual ~Plugin();
 	//-------------------------------------------------------------------------
@@ -330,15 +336,41 @@ public:
 	/**
 	 * Host-Info changed Handler
 	 */
-	virtual void hostBaseConfigChanged();
+	void hostBaseConfigChanged();
     //-------------------------------------------------------------------------
-    virtual parameter::ParameterPtr getParameter (size_t nr=0) const {
+    parameter::ParameterPtr getParameter (size_t nr=0) const {
         return parameters.at(nr);
     }
     //-------------------------------------------------------------------------
-    virtual size_t 	getNumParameter () const {
+    size_t 	getNumParameter () const {
         return parameters.size();
     }
+    //-------------------------------------------------------------------------
+	/**
+	 * @return Anzahl aller Plugin-Programme (aka. Presets)
+	 */
+	size_t getNumPrograms();
+	//-------------------------------------------------------------------------
+	/**
+	 * @param index
+	 * @return Program-Name zu index.
+	 */
+	std::string getProgramName( size_t index );
+	//-------------------------------------------------------------------------
+	/**
+	 * Aktiviert Program zu index.
+	 * @param index
+	 */
+	void setProgram( size_t index );
+	//-------------------------------------------------------------------------
+	/**
+	 * @return index des akuell gesetzten Program, falls vorhanden. Andernfalls -1.
+	 */
+	int getProgram();
+    //-------------------------------------------------------------------------
+    size_t getNumInputChannels() const;
+    //-------------------------------------------------------------------------
+    size_t getNumOutputChannels() const;
 };
 
 namespace {

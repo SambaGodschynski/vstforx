@@ -13,6 +13,9 @@
 #include <sambag/dsp/IMidiEvents.hpp>
 #include <processing/PlugInfo.h>
 #include <processing/Frames.h>
+#include <sambag/com/events/Events.hpp>
+#include <sambag/com/events/PropertyChanged.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 
 namespace processing {
     namespace parameter {
@@ -22,13 +25,30 @@ namespace processing {
 }
 
 namespace frx { namespace processing {
+
+//=============================================================================
+/**
+ * @class: PluginArchitectureMissmatch.
+ */
+//=============================================================================
+SAMBAG_DERIVATED_EXCEPTION_CLASS(
+    sambag::com::exceptions::IllegalStateException,
+    PluginArchitectureMissmatch
+);
+
 namespace oldPr = ::processing;
 //=============================================================================
 /** 
   * @class PluginImpl.
   */
-struct APluginImpl {
+struct APluginImpl :
+	public sambag::com::events::EventSender<
+        sambag::com::events::PropertyChanged
+    >
+{
 //=============================================================================
+    //-------------------------------------------------------------------------
+    typedef std::pair<int, int> EditorLocation;
     //-------------------------------------------------------------------------
     typedef std::vector<oldPr::parameter::ParameterPtr> Parameters;
     //-------------------------------------------------------------------------
@@ -61,11 +81,13 @@ struct APluginImpl {
 	 */
 	virtual bool hasEditor() const = 0;
 	//-------------------------------------------------------------------------
-	virtual void openEditor(void *window) const = 0;
+	virtual void openEditor(void *window) = 0;
 	//-------------------------------------------------------------------------
-	virtual void closeEditor(void *window) const = 0;
+	virtual void closeEditor(void *window) = 0;
 	//-------------------------------------------------------------------------
-	virtual void onEditorIdle() const = 0;
+	virtual void onEditorIdle() = 0;
+    //-------------------------------------------------------------------------
+    virtual bool isAccessable() const = 0;
 	//-------------------------------------------------------------------------
 	/**
 	 * @return Anzahl aller Plugin-Programme (aka. Presets)
@@ -99,16 +121,21 @@ struct APluginImpl {
 	virtual size_t getInitialDelay() const = 0;
     //-------------------------------------------------------------------------
     /**
-     * @note does not affect fills out name, isSynth, uid, vendor
+     * @note fills out name, isSynth, uid, vendor, type
      */
-    void getPluginInfo (::processing::PluginInfo &inf) const;
+    virtual void updatePluginInfo (::processing::PluginInfo &inf) const = 0;
     //-------------------------------------------------------------------------
-    virtual void processPlugin( oldPr::Frames::T **, oldPr::Frames::T **) = 0;
+    virtual void processPlugin( oldPr::Frames::T **,
+        oldPr::Frames::T **, size_t numSamples) = 0;
+    //-------------------------------------------------------------------------
+    virtual ~APluginImpl() {}
     ///////////////////////////////////////////////////////////////////////////
     // Fields
     //-------------------------------------------------------------------------
-    IHostInfo::Ptr hI;
+    IHostInfo::WPtr hostInfo;
     Parameters *parameters;
+    std::string location;
+    std::string statusMsg;
 }; // PluginImpl
 }} // namespace(s)
 

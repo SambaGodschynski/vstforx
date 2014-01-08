@@ -10,6 +10,7 @@
 
 #include <loki/Singleton.h>
 #include "PluginImpl.hpp"
+#include <processing/PlugInfo.h>
 #include <processing/IHostInfo.h>
 
 namespace frx { namespace processing {
@@ -25,8 +26,35 @@ public:
     //-------------------------------------------------------------------------
     typedef APluginImpl Product;
     //-------------------------------------------------------------------------
+    typedef APluginImpl::Parameters Parameters;
+    //-------------------------------------------------------------------------
     typedef Product* ProductPtr;
+    //-------------------------------------------------------------------------
+    typedef ::processing::PluginInfo::PluginType Type;
+
 protected:
+    //-------------------------------------------------------------------------
+    /**
+     * @return bridged plugin impl
+     */
+    ProductPtr loadBridged(IHostInfo::Ptr, Parameters*, const std::string &);
+    //-------------------------------------------------------------------------
+    /**
+     * @return vst2x plugin impl
+     */
+    ProductPtr loadVST2x(IHostInfo::Ptr, Parameters*, const std::string &);
+    //-------------------------------------------------------------------------
+    /**
+     * @return vst3x plugin impl
+     */
+    ProductPtr loadVST3x(IHostInfo::Ptr, Parameters*, const std::string &);
+    //-------------------------------------------------------------------------
+    /**
+     * @return au plugin impl
+     */
+    ProductPtr loadAU(IHostInfo::Ptr, Parameters*, const std::string &);
+    //-------------------------------------------------------------------------
+    Type detectType(const std::string &);
 public:
 	//-------------------------------------------------------------------------
 	static PluginFactory & instance();
@@ -34,27 +62,7 @@ public:
     /**
      * @return appropriate plugin impl
      */
-    ProductPtr load(IHostInfo::Ptr hI, const std::string &location);
-    //-------------------------------------------------------------------------
-    /**
-     * @return bridged plugin impl
-     */
-    ProductPtr loadBridged(IHostInfo::Ptr hI, const std::string &loc);
-    //-------------------------------------------------------------------------
-    /**
-     * @return vst2x plugin impl
-     */
-    ProductPtr loadVST2x(IHostInfo::Ptr hI, const std::string &loc);
-    //-------------------------------------------------------------------------
-    /**
-     * @return vst3x plugin impl
-     */
-    ProductPtr loadVST3x(IHostInfo::Ptr hI, const std::string &loc);
-    //-------------------------------------------------------------------------
-    /**
-     * @return au plugin impl
-     */
-    ProductPtr loadAU(IHostInfo::Ptr hI, const std::string &loc);
+    ProductPtr load(Type, IHostInfo::Ptr, Parameters*, const std::string &);
 
 }; // PluginFactory
 }} // namespace(s)

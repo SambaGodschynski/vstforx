@@ -10,7 +10,7 @@
 #include "OS_VSTPlugin2x.h" 
 #include "processing/pluginTypes/NullAEffect.h"
 #include <sambag/com/Config.h>
-#include <processing/Plugin.h>
+#include <processing/pluginTypes/PluginImpl.hpp>
 
 // Callback Methode fuer VST-Plugin.
 extern VstIntPtr VSTCALLBACK pluginCallToPlugNode (
@@ -61,7 +61,7 @@ bool checkArchitecture(Module module) {
 AEffect * getAEffect( Module module ) {
     if (!checkArchitecture(module)) {
         SAMBAG_THROW(
-            ::processing::PluginArchitectureMissmatch,
+            frx::processing::PluginArchitectureMissmatch,
             "Plugin architecture missmatch."
         );
     }

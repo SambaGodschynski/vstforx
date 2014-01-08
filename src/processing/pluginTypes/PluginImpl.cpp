@@ -7,10 +7,15 @@
 
 #include "PluginImpl.hpp"
 
-namespace sambag { 
+namespace frx { namespace processing { 
 //=============================================================================
 //  Class PluginImpl
 //=============================================================================
 //-----------------------------------------------------------------------------
-
-} // namespace(s)
+APluginImpl::APluginImpl(IHostInfo::Ptr hI, const std::string &location,
+        Parameters *parameters) : hostInfo(hI),
+                                  parameters(parameters),
+                                  location(location)
+{
+}
+}} // namespace(s)

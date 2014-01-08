@@ -12,8 +12,14 @@
 namespace frx { namespace processing {
 typedef Loki::SingletonHolder<PluginFactory> PluginFactoryHolder;
 
-extern PluginFactory::ProductPtr createVST2xPlugin(IHostInfo::Ptr hI,
-    const std::string &location);
+/**
+ * creation of products could be approached using a loki::Factory pattern as the
+ * ModelFactory is using.
+ * BUT, since we need a reasonable number of creators we use
+ * this "cheap" approach.
+ */
+extern PluginFactory::ProductPtr createVST2xPluginImpl(IHostInfo::Ptr,
+    PluginFactory::Parameters*, const std::string&);
 
 //=============================================================================
 //  Class PluginFactory
@@ -24,41 +30,53 @@ PluginFactory & PluginFactory::instance() {
 }
 //-----------------------------------------------------------------------------
 PluginFactory::ProductPtr
-PluginFactory::loadBridged(IHostInfo::Ptr hI, const std::string &loc)
+PluginFactory::loadBridged(IHostInfo::Ptr hI, Parameters*par, const std::string &loc)
 {
     return NULL;
 }
 //-----------------------------------------------------------------------------
 PluginFactory::ProductPtr
-PluginFactory::loadVST2x(IHostInfo::Ptr hI, const std::string &loc)
+PluginFactory::loadVST2x(IHostInfo::Ptr hI, Parameters*par, const std::string &loc)
 {
-    return createVST2xPlugin(hI, location);
+    return createVST2xPluginImpl(hI, par, loc);
 }
 //-----------------------------------------------------------------------------
 PluginFactory::ProductPtr
-PluginFactory::loadVST3x(IHostInfo::Ptr hI, const std::string &loc)
+PluginFactory::loadVST3x(IHostInfo::Ptr hI, Parameters*par, const std::string &loc)
 {
     return NULL;
 }
 //-----------------------------------------------------------------------------
 PluginFactory::ProductPtr
-PluginFactory::loadAU(IHostInfo::Ptr hI, const std::string &loc)
+PluginFactory::loadAU(IHostInfo::Ptr hI, Parameters*par, const std::string &loc)
 {
     return NULL;
 }
 //-----------------------------------------------------------------------------
+PluginFactory::Type PluginFactory::detectType(const std::string &) {
+    using ::processing::PluginInfo;
+    return PluginInfo::VST2X;
+}
+//-----------------------------------------------------------------------------
 PluginFactory::ProductPtr
-PluginFactory::load(IHostInfo::Ptr hI, const std::string &location)
+PluginFactory::load(Type type, IHostInfo::Ptr hI,
+    Parameters*par, const std::string &loc)
 {
+    using ::processing::PluginInfo;
     ProductPtr res;
     
+    if (type == PluginInfo::UNKNOWN) {
+        type = detectType(loc);
+    }
+    
     try {
-        // vst2x
-        if ( (res = _loadVST2x(hI, location)) ) {
-            return res;
+        switch (type) {
+        case PluginInfo::VST2X : return loadVST2x(hI, par, loc);
+        default : return NULL;
+        
         }
-    } catch (const ::processing::PluginArchitectureMissmatch &ex) {
-        return _loadBridged(hI, location);
+    } catch (const PluginArchitectureMissmatch &ex) {
+        return loadBridged(hI, par, loc);
     }
     
     // no success

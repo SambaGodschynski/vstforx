@@ -21,17 +21,25 @@ enum { ALL_CHANNEL = 16 };
 //=============================================================================
 //-----------------------------------------------------------------------------
 Plugin::Plugin ( frx::processing::IHostInfo::Ptr hostInfo,
-    const string &location, APluginImpl *impl ) :
-ProcessAdapter ( hostInfo, numInputs, numOutputs ),
-editorPosX ( processing::parameter::Parameter::create() ),
-editorPosY ( processing::parameter::Parameter::create() ),
-editorOpen ( processing::parameter::Parameter::create() )
+    const string &location, PluginInfo::PluginType type ) :
+        ProcessAdapter ( hostInfo, 0, 0 ),
+        editorPosX ( processing::parameter::Parameter::create() ),
+        editorPosY ( processing::parameter::Parameter::create() ),
+        editorOpen ( processing::parameter::Parameter::create() )
 {
+    using frx::processing::PluginFactory;
+    impl = PluginFactory::instance().load(type, hostInfo, &parameters, location);
+    
     if (!impl) {
         SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
                      "try to creating plugin without impl.");
     }
-
+    
+    namespace se = sambag::com::events;
+    impl->se::EventSender<se::PropertyChanged>::addEventListener(
+        boost::bind(&Plugin::onImplPropertyChanged, this, _1, _2)
+    );
+    
 	setLocation ( location );
 	// init editorPos parameters
 	editorPosX->setName("editor_X");
@@ -44,6 +52,7 @@ editorOpen ( processing::parameter::Parameter::create() )
     initListener();
 
     impl->openPlugin();
+    impl->updatePluginInfo(pluginInfo);
     
     // init i/o
     size_t tmp=impl->getNumInputChannels();
@@ -90,6 +99,30 @@ Plugin::~Plugin() {
     delete impl;
     delete[] inMatrix;
 	delete[] outMatrix;
+}
+//-----------------------------------------------------------------------------
+void Plugin::onImplPropertyChanged(void*,
+        const sambag::com::events::PropertyChanged &ev)
+{
+    namespace newEvents=sambag::com::events;
+    namespace oldEvents=::com::events;
+    if (ev.getPropertyName() == "process delay") {
+        newEvents::EventSender<newEvents::PropertyChanged>::notifyListeners(
+            this,
+            ev
+        );
+        return;
+    }
+    if (ev.getPropertyName() == "editor location") {
+        frx::processing::APluginImpl::EditorLocation _new;
+        ev.getNewValue(_new);
+        com::events::EventSender<ResizeEditorEvent>::notifyEventListeners(
+            this,
+            ResizeEditorEvent(_new.first, _new.second)
+        );
+        return;
+    }
+
 }
 //-----------------------------------------------------------------------------
 void Plugin::processAdapter( Processor::Int numSamples ) {
@@ -159,45 +192,93 @@ void Plugin::hostBaseConfigChanged() {
 	}
 	impl->turnOff();
     setupFramesbuffer();
-    impl->baseConfigChanged(hI);
+    impl->baseConfigChanged();
     impl->turnOn();
 }
 //-----------------------------------------------------------------------------
-Plugin::Ptr create(frx::processing::IHostInfo::Ptr hI, const std::string &location)
+bool Plugin::canHandleMidiEvent() const {
+    return impl->canHandleMidiEvent();
+}
+//-----------------------------------------------------------------------------
+void Plugin::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
+    impl->processMidiEvents(events);
+}
+//-----------------------------------------------------------------------------
+bool Plugin::isAccessable() const {
+    return impl->isAccessable();
+}
+//-----------------------------------------------------------------------------
+bool Plugin::hasEditor() const {
+    return impl->hasEditor();
+}
+//-----------------------------------------------------------------------------
+void Plugin::openEditor(void *window) {
+    impl->openEditor(window);
+}
+//-----------------------------------------------------------------------------
+void Plugin::closeEditor(void *window) {
+    impl->closeEditor(window);
+}
+//-----------------------------------------------------------------------------
+void Plugin::onEditorIdle() {
+    impl->onEditorIdle();
+}
+//-----------------------------------------------------------------------------
+size_t Plugin::getNumPrograms() {
+    return impl->getNumPrograms();
+}
+//-----------------------------------------------------------------------------
+std::string Plugin::getProgramName( size_t index ) {
+    return impl->getProgramName(index);
+}
+//-----------------------------------------------------------------------------
+void Plugin::setProgram( size_t index ) {
+    impl->setProgram(index);
+}
+//-----------------------------------------------------------------------------
+int Plugin::getProgram() {
+    return impl->getProgram();
+}
+//-----------------------------------------------------------------------------
+size_t Plugin::getNumInputChannels() const {
+    return impl->getNumInputChannels();
+}
+//-----------------------------------------------------------------------------
+size_t Plugin::getNumOutputChannels() const {
+    return impl->getNumOutputChannels();
+}
+//-----------------------------------------------------------------------------
+Plugin::Ptr Plugin::create(frx::processing::IHostInfo::Ptr hI, const std::string &location)
 {
     using frx::processing::PluginFactory;
     using frx::processing::APluginImpl;
-    APluginImpl * impl = PluginFactory::instance().load(hostInfo, location);
-    Ptr res( new Plugin(hI, location, impl) );
+    Ptr res( new Plugin(hI, location, PluginInfo::UNKNOWN) );
     res->self = res;
     return res;
 }
 //-----------------------------------------------------------------------------
-Plugin::Ptr createVST2x(frx::processing::IHostInfo::Ptr hI, const std::string &location)
+Plugin::Ptr Plugin::createVST2x(frx::processing::IHostInfo::Ptr hI, const std::string &location)
 {
     using frx::processing::PluginFactory;
     using frx::processing::APluginImpl;
-    APluginImpl * impl = PluginFactory::instance().loadVST2x(hostInfo, location);
-    Ptr res( new Plugin(hI, location, impl) );
+    Ptr res( new Plugin(hI, location, PluginInfo::VST2X) );
     res->self = res;
     return res;
 }
 //-----------------------------------------------------------------------------
-Plugin::Ptr createVST3x(frx::processing::IHostInfo::Ptr hI, const std::string &location)
+Plugin::Ptr Plugin::createVST3x(frx::processing::IHostInfo::Ptr hI, const std::string &location)
 {
     using frx::processing::PluginFactory;
     using frx::processing::APluginImpl;
-    APluginImpl * impl = PluginFactory::instance().loadVST3x(hostInfo, location);
-    Ptr res( new Plugin(hI, location, impl) );
+    Ptr res( new Plugin(hI, location, PluginInfo::VST3X) );
     res->self = res;
     return res;}
 //-----------------------------------------------------------------------------
-Plugin::Ptr createAU(frx::processing::IHostInfo::Ptr hI, const std::string &location)
+Plugin::Ptr Plugin::createAU(frx::processing::IHostInfo::Ptr hI, const std::string &location)
 {
     using frx::processing::PluginFactory;
     using frx::processing::APluginImpl;
-    APluginImpl * impl = PluginFactory::instance().loadAU(hostInfo, location);
-    Ptr res( new Plugin(hI, location, impl) );
+    Ptr res( new Plugin(hI, location, PluginInfo::AU) );
     res->self = res;
     return res;
 }

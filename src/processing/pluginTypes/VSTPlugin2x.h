@@ -50,6 +50,8 @@ public:
 	static MyString extractNameFromFilename ( const string &fileName );
 private:
     //-------------------------------------------------------------------------
+    EditorLocation oldEditorLocation;
+    //-------------------------------------------------------------------------
     mutable sambag::com::ArithmeticWrapper<size_t> _processDelay;
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<sambag::dsp::VstMidiEventAdapter> VstMidiEventAdapterPtr;
@@ -123,15 +125,18 @@ private:
 	//-------------------------------------------------------------------------
 	void getShellPluginInfos(ShellPluginInfos &out);
 protected:
+public:
 	//-------------------------------------------------------------------------
 	VSTPluginImpl( frx::processing::IHostInfo::Ptr hostInfo,
         Parameters *parameters,
         const string &filename
     );
-public:
     //-------------------------------------------------------------------------
-    virtual void openPlugin(frx::processing::IHostInfo::Ptr hi,
-        const std::string &filename);
+    void updatePluginInfo (::processing::PluginInfo &inf) const;
+    //-------------------------------------------------------------------------
+    virtual void openPlugin();
+    //-------------------------------------------------------------------------
+    virtual void closePlugin();
 	//-------------------------------------------------------------------------
 	/**
 	 * @return Anzahl aller Plugin-Programme (aka. Presets)
@@ -158,7 +163,7 @@ public:
 	/**
 	 * @return true, wenn von Client ausfuehrbar.
 	 */
-	virtual bool isAccessable() { return aEff != &nullAEff; }
+	virtual bool isAccessable() const { return aEff != &nullAEff; }
 	//-------------------------------------------------------------------------
 	/**
 	 * @return true, wenn Plugin Midi-Event verarbeiten kann.
@@ -177,12 +182,6 @@ public:
 	 * @return Signal-Verabeitungs-Verzoegerung des uebergeordneten ProcessAdapter
 	 */
 	virtual size_t getInitialDelay() const;
-	//-------------------------------------------------------------------------
-	/**
-	 * Verarbeitet Samplemenge des Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
-	 * @param numSamples Anzahl der zu bearbeitenden Samples
-	 */
-	virtual void processAdapter( Processor::Int sampleFrames ) {}
 	//-------------------------------------------------------------------------
 	virtual ~VSTPluginImpl();
 	//-------------------------------------------------------------------------
@@ -231,7 +230,7 @@ public:
 	/**
 	 * Host-Info changed Handler
 	 */
-	virtual void baseConfigChanged(frx::processing::IHostInfo::Ptr hi);
+	virtual void baseConfigChanged();
 	//-------------------------------------------------------------------------
 	/**
 	 * @param flag
