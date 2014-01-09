@@ -286,8 +286,7 @@ string PluginCollection::analyzeLog() {
 	return str;
 }
 //------------------------------------------------------------------------------------------------------------
-processing::PluginInfo PluginCollection::restorePluginInfo ( frx::processing::IHostInfo::Ptr hostInfo, 
-															 processing::PluginInfo &info ) 
+processing::PluginInfo PluginCollection::restorePluginInfo ( processing::PluginInfo &info ) 
 {
 	using namespace processing;
 	int shellId;
@@ -295,9 +294,7 @@ processing::PluginInfo PluginCollection::restorePluginInfo ( frx::processing::IH
 	PluginInfo pI = getPlugInfo ( info.location );
 	// plugin not in db => search in db
 	if ( !pI.isValid() ) {
-		tmpHostInfo = hostInfo;
 		bool b = searchPlugin( info );
-		tmpHostInfo = frx::processing::IHostInfo::Ptr(); // NULL
 		if ( !b ) // plugin not found
 			return processing::PluginInfo(); // NULL
 	}
@@ -309,7 +306,7 @@ processing::Plugin::Ptr PluginCollection::restorePlugNode ( frx::processing::IHo
 															 processing::PluginInfo &info ) 
 {
 	using namespace processing;
-	PluginInfo pI = restorePluginInfo ( hostInfo, info );
+	PluginInfo pI = restorePluginInfo (info);
 	if ( !pI.isValid() ) {
         return processing::Plugin::Ptr(); // NULL
     }

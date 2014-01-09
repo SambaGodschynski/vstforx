@@ -11,6 +11,7 @@
 #include <boost/filesystem.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <sambag/com/Common.hpp>
+#include <com/PluginCollection.h>
 
 namespace processing{
 
@@ -20,28 +21,22 @@ enum { ALL_CHANNEL = 16 };
 // Plugin
 //=============================================================================
 //-----------------------------------------------------------------------------
+Plugin::Plugin() : impl(NULL), processing(true) {}
+//-----------------------------------------------------------------------------
 Plugin::Plugin ( frx::processing::IHostInfo::Ptr hostInfo,
     const string &location, PluginInfo::PluginType type ) :
         ProcessAdapter ( hostInfo, 0, 0 ),
         editorPosX ( processing::parameter::Parameter::create() ),
         editorPosY ( processing::parameter::Parameter::create() ),
-        editorOpen ( processing::parameter::Parameter::create() )
+        editorOpen ( processing::parameter::Parameter::create() ),
+        impl(NULL),
+        processing(true)
 {
-    using frx::processing::PluginFactory;
-    impl = PluginFactory::instance().load(type, hostInfo, &parameters, location);
     
-    if (!impl) {
-        SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
-                     "try to creating plugin without impl.");
-    }
-    
-    namespace se = sambag::com::events;
-    impl->se::EventSender<se::PropertyChanged>::addEventListener(
-        boost::bind(&Plugin::onImplPropertyChanged, this, _1, _2)
-    );
-    
-	setLocation ( location );
-	// init editorPos parameters
+	setLocation (location);
+    setType(type);
+    loadImpl();
+    // init editorPos parameters
 	editorPosX->setName("editor_X");
 	editorPosY->setName("editor_Y");
 	editorOpen->setName("editor_visibility");
@@ -51,9 +46,6 @@ Plugin::Plugin ( frx::processing::IHostInfo::Ptr hostInfo,
 	
     initListener();
 
-    impl->openPlugin();
-    impl->updatePluginInfo(pluginInfo);
-    
     // init i/o
     size_t tmp=impl->getNumInputChannels();
 	size_t c = (tmp%2==0) ? tmp/2 : tmp/2 + 1; // anzahl der eingaenge
@@ -70,8 +62,33 @@ Plugin::Plugin ( frx::processing::IHostInfo::Ptr hostInfo,
     setupFramesbuffer();
 }
 //-----------------------------------------------------------------------------
-void Plugin::setStatusMsg( const std::string &msg ) {
-	statusMsg = msg;
+void Plugin::loadImpl() {
+    if (impl) {
+        impl->closePlugin();
+        delete impl;
+    }
+    frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+    if (!hI) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+			"Hostinfo == NULL"
+		);
+	}
+    using frx::processing::PluginFactory;
+    impl = PluginFactory::instance().load(hI, &parameters,
+        pluginInfo.location, pluginInfo.pluginType);
+    
+    if (!impl) {
+        SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+                     "try to creating plugin without impl.");
+    }
+    
+    namespace se = sambag::com::events;
+    impl->se::EventSender<se::PropertyChanged>::addEventListener(
+        boost::bind(&Plugin::onImplPropertyChanged, this, _1, _2)
+    );
+
+    impl->openPlugin();
+    impl->updatePluginInfo(pluginInfo);
 }
 //-----------------------------------------------------------------------------
 void Plugin::initListener() {
@@ -145,8 +162,9 @@ void Plugin::processAdapter( Processor::Int numSamples ) {
         framebuffer[i].setZero( numSamples );
     }
 	
-    impl->processPlugin(inMatrix, outMatrix, numSamples);
-    
+    if (processing) {
+        impl->processPlugin(inMatrix, outMatrix, numSamples);
+    }
 	if ( impl->getNumOutputChannels() == 1 ) { // mono
 		framebuffer[0].mixMonoToAll( numSamples );
 		getOutputNode(0)->pushAndCopy( &framebuffer[0], numSamples );
@@ -248,6 +266,75 @@ size_t Plugin::getNumOutputChannels() const {
     return impl->getNumOutputChannels();
 }
 //-----------------------------------------------------------------------------
+std::string Plugin::getStatusMessage() const {
+    return impl->statusMsg;
+}
+//-----------------------------------------------------------------------------
+void Plugin::restorePluginInfo() {
+    try {
+		// restore/update via db
+		com::PluginCollection::Ptr pC = com::getPluginCollection();
+		pC->restorePluginInfo ( pluginInfo );
+	} catch(...) {
+	}
+}
+//-----------------------------------------------------------------------------
+void Plugin::saveImplState(com::oArchive &ar, const unsigned int version, Int2Type<1>)
+{
+   
+    size_t numInputs = impl->getNumInputChannels();
+    size_t numOutputs = impl->getNumOutputChannels();
+    
+	ar << numInputs; 
+	ar << numOutputs; 
+	// chunk
+	size_t dataSize;
+    void *data;
+
+    boost::tie(dataSize, data) = impl->getStateData();
+    ar << dataSize;
+	if ( dataSize ) {
+        ar.save_binary (data, dataSize);
+    }
+}
+//-----------------------------------------------------------------------------
+void Plugin::loadImplState(com::iArchive &ar, const unsigned int version, Int2Type<1>)
+{
+    // confirm pluginInfo with DB
+    restorePluginInfo();
+    loadImpl();
+    setupFramesbuffer();
+    
+    size_t numInputs;
+    size_t numOutputs;
+    
+	ar >> numInputs;
+	ar >> numOutputs;
+    
+    if( numInputs   != impl->getNumInputChannels() ||
+		numOutputs  != impl->getNumOutputChannels() )
+	{
+        if (impl->statusMsg.length()==0) {
+            impl->statusMsg = " I/O configuration has changed between save and restore. \
+Processing is stopped. Please Reload.";
+        }
+		processing = false;
+	}
+
+    // chunk
+	size_t dataSize;
+    unsigned char *data;
+    ar >> dataSize;
+	if ( dataSize ) {
+        data = new unsigned char[dataSize];
+        ar.load_binary (data, dataSize);
+    }
+    impl->setStateData(dataSize, data);
+    if (dataSize) {
+        delete[] data;
+    }
+}
+//-----------------------------------------------------------------------------
 Plugin::Ptr Plugin::create(frx::processing::IHostInfo::Ptr hI, const std::string &location)
 {
     using frx::processing::PluginFactory;
@@ -272,7 +359,8 @@ Plugin::Ptr Plugin::createVST3x(frx::processing::IHostInfo::Ptr hI, const std::s
     using frx::processing::APluginImpl;
     Ptr res( new Plugin(hI, location, PluginInfo::VST3X) );
     res->self = res;
-    return res;}
+    return res;
+}
 //-----------------------------------------------------------------------------
 Plugin::Ptr Plugin::createAU(frx::processing::IHostInfo::Ptr hI, const std::string &location)
 {

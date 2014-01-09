@@ -7,7 +7,6 @@
 
 #include "PluginFactory.hpp"
 #include <processing/ModelFactory.hpp>
-#include "BridgedPlugin.hpp"
 
 namespace frx { namespace processing {
 typedef Loki::SingletonHolder<PluginFactory> PluginFactoryHolder;
@@ -19,6 +18,9 @@ typedef Loki::SingletonHolder<PluginFactory> PluginFactoryHolder;
  * this "cheap" approach.
  */
 extern PluginFactory::ProductPtr createVST2xPluginImpl(IHostInfo::Ptr,
+    PluginFactory::Parameters*, const std::string&);
+    
+extern PluginFactory::ProductPtr createBridgedPluginImpl(IHostInfo::Ptr,
     PluginFactory::Parameters*, const std::string&);
 
 //=============================================================================
@@ -32,7 +34,8 @@ PluginFactory & PluginFactory::instance() {
 PluginFactory::ProductPtr
 PluginFactory::loadBridged(IHostInfo::Ptr hI, Parameters*par, const std::string &loc)
 {
-    return NULL;
+    SAMBAG_LOG_INFO<<"loading bridge...";
+    return createBridgedPluginImpl(hI, par, loc);
 }
 //-----------------------------------------------------------------------------
 PluginFactory::ProductPtr
@@ -59,11 +62,10 @@ PluginFactory::Type PluginFactory::detectType(const std::string &) {
 }
 //-----------------------------------------------------------------------------
 PluginFactory::ProductPtr
-PluginFactory::load(Type type, IHostInfo::Ptr hI,
-    Parameters*par, const std::string &loc)
+PluginFactory::load(IHostInfo::Ptr hI,
+    Parameters*par, const std::string &loc, Type type)
 {
     using ::processing::PluginInfo;
-    ProductPtr res;
     
     if (type == PluginInfo::UNKNOWN) {
         type = detectType(loc);

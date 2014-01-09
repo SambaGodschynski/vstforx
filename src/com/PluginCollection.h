@@ -450,7 +450,7 @@ public:
 	 * @return neues aktualisertes Pluginfo-Objekt
 	 * @throw sambag::cpsqlite::DataBaseQueryFailed
 	 */
-	processing::PluginInfo restorePluginInfo ( frx::processing::IHostInfo::Ptr hostInfo, processing::PluginInfo &pI );
+	processing::PluginInfo restorePluginInfo ( processing::PluginInfo &pI );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * bricht scan ab.

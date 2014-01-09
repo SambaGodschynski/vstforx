@@ -67,8 +67,8 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<Plugin> Ptr;
 private:
-	//-------------------------------------------------------------------------
-	std::string statusMsg;
+    //-------------------------------------------------------------------------
+	bool processing;
 	//-------------------------------------------------------------------------
 	parameter::Parameter::Connection paramEditorOpenConnection;
 	//-------------------------------------------------------------------------
@@ -80,7 +80,23 @@ private:
 	// They will be processed by GObjectController. To save their states independendly from view,
 	// they are stored here and not in VSTPlugView.
 	processing::parameter::Parameter::Ptr editorPosX, editorPosY, editorOpen;
+    //-------------------------------------------------------------------------
+    void restorePluginInfo();
+    //-------------------------------------------------------------------------
+    void loadImpl();
+    //-------------------------------------------------------------------------
+    template<int I> struct Int2Type { enum {Value = I}; };
 	//-------------------------------------------------------------------------
+    void saveImplState(com::oArchive &ar, const unsigned int version, Int2Type<1>);
+	//-------------------------------------------------------------------------
+    void loadImplState(com::iArchive &ar, const unsigned int version, Int2Type<1>);
+	//-------------------------------------------------------------------------
+    template <class Archive>
+    void saveImplState(Archive&, const unsigned int , Int2Type<0>){}
+	//-------------------------------------------------------------------------
+    template <class Archive>
+    void loadImplState(Archive&, const unsigned int , Int2Type<0>){}
+    //-------------------------------------------------------------------------
 	/**
 	 * (De)Serialisiert Plugin-Objekt
 	 * @param ar boost::Archive-Objekt
@@ -96,10 +112,17 @@ private:
 		ar & editorPosX;
 		ar & editorPosY;
 		ar & editorOpen;
-		if ( Archive::is_loading::value ) {
-			initListener();
-		}
-	}
+        ar & pluginInfo;
+        ar & parameters;
+        enum { IsLoading = Archive::is_loading::value };
+		if ( IsLoading ) {
+			loadImplState(ar, version, Int2Type<IsLoading>());
+            impl->updatePluginInfo(pluginInfo);
+            initListener();
+		} else {
+            saveImplState(ar, version, Int2Type<!IsLoading>());
+        }
+    }
     //-------------------------------------------------------------------------
     frx::processing::APluginImpl *impl;
     //-------------------------------------------------------------------------
@@ -129,7 +152,7 @@ protected:
 	 */
 	void initListener();
 	//-------------------------------------------------------------------------
-	Plugin() {}
+	Plugin();
 	//-------------------------------------------------------------------------
     Plugin( frx::processing::IHostInfo::Ptr hostInfo,
         const std::string &location,
@@ -148,9 +171,7 @@ public:
     /**
      * @override
      */
-    virtual std::string getStatusMessage() const { return statusMsg; }
-	//-------------------------------------------------------------------------
-	void setStatusMsg( const std::string &msg );
+    virtual std::string getStatusMessage() const;
 	//-------------------------------------------------------------------------
 	/**
 	 * Wird von GPluginController benoetigt um bei bedarf verbindung zu blockieren.

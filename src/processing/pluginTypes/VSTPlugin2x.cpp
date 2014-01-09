@@ -38,20 +38,16 @@ VSTPluginImpl::VSTPluginImpl( frx::processing::IHostInfo::Ptr hostInfo,
         OS_VSTPlugNode2x ( filename ), // initalisiert aEff
         frx::processing::APluginImpl (hostInfo, filename, parameters),  // ProcessAdapter
         onPlugChangeParameterIndex (-1),
-        canReceiveVstEvents(false),
-        ioChangedLock(false),
         oldEditorLocation(EditorLocation(0,0))
-{ 
+{
+	loadModule( HostCallBackOnInit (          // erzeugt Mutex lock bis fertig geladen
+		(audioMasterCallback)(hostInfo->getMasterCallback()),
+		(AudioEffectX*)(hostInfo->getEffectPtr()) ) 
+	);
 }
 //-----------------------------------------------------------------------------
 void VSTPluginImpl::openPlugin()
 {
-    frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
-	loadModule( HostCallBackOnInit (          // erzeugt Mutex lock bis fertig geladen
-		(audioMasterCallback)(hI->getMasterCallback()), 
-		(AudioEffectX*)(hI->getEffectPtr()) ) 
-	);
-    
 	VstPlugCategory pluginCategory = (VstPlugCategory)
 		aEff->dispatcher(aEff, effGetPlugCategory, 0, 0, 0, 0);
 	
@@ -122,13 +118,7 @@ void VSTPluginImpl::initPlug( VSTPluginImpl &plug ) {
 	if ( plug.aEff == &nullAEff ) {
 		plug.statusMsg = "could not load " + plug.location;
 	}
-	
-	// can receive vst events?
-	char can[] = "receiveVstMidiEvent";
-	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
-	int ret = plug.aEff->dispatcher ( plug.aEff, effCanDo, 0, 0, &can[0], 0.0 );
-	plug.canReceiveVstEvents = ret == 1;
-	
+		
 	// -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 	// reihenfolge wichtig! ( ueber debugger ermittelt )
 	// setze samplerate  
@@ -238,23 +228,26 @@ void VSTPluginImpl::initParameter(){
 	char bff[255];
 	parameters->resize( aEff->numParams );
 	// initalisiere parameter
-	for ( size_t i=0; i<parameters->size(); i++ ){
-		(*parameters)[i] = Parameter::create(i);
-		(*parameters)[i]->setMin( (VstNumber)INT_MIN ); //entferne min, max ( siehe issue: 0000049 )
-		(*parameters)[i]->setMax( (VstNumber)INT_MAX );
-		// hole Parameter wert
-		(*parameters)[i]->setValue ( aEff->getParameter ( aEff, i ) );
-		// hole Parameter name
-		aEff->dispatcher ( aEff, effGetParamName, i, NULL, &bff[0], NULL );
-		(*parameters)[i]->setName ( MyString(bff) );
-		// hole Parameter label
-		aEff->dispatcher ( aEff, effGetParamLabel, i, NULL, &bff[0], NULL );
-		(*parameters)[i]->setLabel ( MyString(bff) );
-		// hole Parameter Display
-		aEff->dispatcher ( aEff, effGetParamDisplay, i, NULL, &bff[0], NULL );
-		(*parameters)[i]->setDisplay( MyString(bff) );
-		// add listener
-		(*parameters)[i]->addValueChangedListener ( 
+	for ( size_t i=0; i<parameters->size(); i++ ) {
+        Parameter::Ptr p = parameters->at(i);
+        if (!p) {
+            (*parameters)[i] = p = Parameter::create(i);
+            p->setMin( (VstNumber)INT_MIN ); //entferne min, max ( siehe issue: 0000049 )
+            p->setMax( (VstNumber)INT_MAX );
+            // hole Parameter wert
+            p->setValue ( aEff->getParameter ( aEff, i ) );
+            // hole Parameter namelo
+            aEff->dispatcher ( aEff, effGetParamName, i, NULL, &bff[0], NULL );
+            p->setName ( MyString(bff) );
+            // hole Parameter label
+            aEff->dispatcher ( aEff, effGetParamLabel, i, NULL, &bff[0], NULL );
+            p->setLabel ( MyString(bff) );
+            // hole Parameter Display
+            aEff->dispatcher ( aEff, effGetParamDisplay, i, NULL, &bff[0], NULL );
+            p->setDisplay( MyString(bff) );
+        }
+        // add listener
+		p->addValueChangedListener (
 			boost::bind(&VSTPluginImpl::valueChanged, this, _1, _2)
 		);
 	}
@@ -267,15 +260,13 @@ size_t VSTPluginImpl::getInitialDelay() const {
 void VSTPluginImpl::processPlugin(Frames::T **_in,
         Frames::T **_out, size_t numSamples)
 {
-    if (!ioChangedLock) { 
-		// Process Event
-		if ( can( effFlagsCanReplacing ) ) { 
-			//aEff->processReplacing ( *aEffect, **src, **dst, frameSize );
-			aEff->processReplacing ( aEff, _in, _out, numSamples );
-		} else { 
-			aEff->DECLARE_VST_DEPRECATED(process) ( aEff, _in, _out, numSamples );
-		}
-	}
+    // Process Event
+    if ( can( effFlagsCanReplacing ) ) { 
+        //aEff->processReplacing ( *aEffect, **src, **dst, frameSize );
+        aEff->processReplacing ( aEff, _in, _out, numSamples );
+    } else { 
+        aEff->DECLARE_VST_DEPRECATED(process) ( aEff, _in, _out, numSamples );
+    }
 }
 //-----------------------------------------------------------------------------
 VSTPluginImpl::~VSTPluginImpl() {
@@ -323,104 +314,31 @@ void VSTPluginImpl::onEditorParameterChanged (int index, float value){
 	onPlugChangeParameterIndex = index; 
 	(*parameters)[index]->setValue ( value );
 	onPlugChangeParameterIndex = -1;
-}/*
-//-----------------------------------------------------------------------------
-void VSTPluginImpl::save(com::oArchive &ar, const unsigned int version) const {
-	ar << boost::serialization::base_object< Plugin > ( *this ); //.........................................1
-	// save plugInfo
-	const PluginInfo plugInfo = getPluginInfo();
-	ar << plugInfo; //......................................................................................2
-
-	// parameter
-	ar << param; //.........................................................................................3
-	ar << aEff->numInputs; // to make sure that io config is the same after save/load ......................4
-	ar << aEff->numOutputs; //..............................................................................5
-	// chunk
-	size_t size = 0;
-	if ( !can (effFlagsProgramChunks) ) {
-		// nothing to save: size = 0
-		ar << size; //......................................................................................6!
-		return;
-	}
-	// save chunk
-	void *data;
-	//[ptr]: void** for chunk data address [index]: 0 for bank, 1 for program  @see AudioEffect::getChunk
-	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
-	size = aEff->dispatcher ( aEff, effGetChunk, 0, 0, &data, 0 );
-	ar << size; //..........................................................................................6!
-	if ( size ) ar.save_binary ( data, size ); //...........................................................7
 }
 //-----------------------------------------------------------------------------
-void VSTPluginImpl::load(com::iArchive &ar, const unsigned int version) {
-	TRY_TO_LOCK_TIMED(mutex);
-	ar >> boost::serialization::base_object< Plugin > ( *this ); //..........................................1
-	// get plugInfo
-	PluginInfo plugInfo;
-	ar>>plugInfo; //.........................................................................................2
-
-	try {
-		// restore/update via db
-		com::PluginCollection::Ptr pC = com::getPluginCollection();
-		pC->restorePluginInfo ( hostInfo.lock(), plugInfo );
-	} catch(...) {
-		aEff = &nullAEff;
-	}
-
-	//check type
-	if ( plugInfo.pluginType != PluginInfo::VST2X )
-		throw com::ppiError::SerializationError ("incompatible plugin types", __FILE__, __LINE__);
-	setLocation ( plugInfo.location );
-	// load Plugin
-	frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
-	if (!hI) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
-			"Hostinfo == NULL"
-		);
-	}
-	OS_VSTPlugNode2x::setModuleLocation ( getLocation() );
-	loadModule( HostCallBackOnInit (
-		(audioMasterCallback)hI->getMasterCallback(), 
-		(AudioEffectX*)hI->getEffectPtr() ) 
-	);
-	param.clear();
-	initPlug ( *this );
-	// parameter
-	ar >> param; //.........................................................................................3
-
-	// make sure that io config is the same after save/load
-	VstInt32 numInputs, numOutputs;
-	ar >> numInputs;  //....................................................................................4
-	ar >> numOutputs; //....................................................................................5
-	if( aEff->numInputs   != numInputs  ||
-		aEff->numOutputs  != numOutputs ||
-		aEff->numParams != param.size() ) 
-	{
-		com::osMessageBox(getPlugName(), getPlugName() + " I/O configuration has changed."
-			" Plugin output ist stopped until reload!", com::MSG_ALERT);
-		ioChangedLock = true;
-		// do not return, because it breaks the restore mechanism
-	}
-	// init parameter
-	for ( size_t i=0; i<param.size(); ++i ) {
-		param[i]->addValueChangedListener (
-			boost::bind(&VSTPluginImpl::valueChanged, this, _1, _2)
-		);
-		param[i]->setValue ( *param[i] );
-	}
-
-	// load chunk
-	size_t size;
-	ar >> size; //..........................................................................................6
-	if (!size) 
+std::pair<size_t, void*> VSTPluginImpl::getStateData() const {
+    void *data;
+    size_t s = aEff->dispatcher ( aEff, effGetChunk, 0, 0, &data, 0 );
+    return std::make_pair(s, data);
+}
+//-----------------------------------------------------------------------------
+void VSTPluginImpl::setStateData(size_t size, void* data)
+{
+    TRY_TO_LOCK_TIMED(mutex);
+	if (!size) {
 		return;
-	unsigned char *data[1] = { new unsigned char[size] };
-	if ( size ) ar.load_binary ( *data, size ); //..........................................................7
+    }
 	//[ptr]: chunk data [value]: byte size [index]: 0 for bank, 1 for program  @see AudioEffect::setChunk
 	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
-	aEff->dispatcher ( aEff, effSetChunk, 0, size, *data, 0 );
-	resetPlugin();
-	delete *data;
-}*/
+	aEff->dispatcher ( aEff, effSetChunk, 0, size, data, 0 );
+    resetPlugin();
+    
+    for ( size_t i=0; i<parameters->size(); i++ ) {
+        Parameter::Ptr p = parameters->at(i);
+		p->setValue ( aEff->getParameter ( aEff, i ) );
+    }
+
+}
 //-----------------------------------------------------------------------------
 void VSTPluginImpl::onPlugRequestWindowResize (size_t w, size_t h) {
     namespace sce=sambag::com::events;
@@ -451,7 +369,7 @@ void VSTPluginImpl::closeEditor(void *window) {
 		return;
 	aEff->dispatcher ( aEff, effEditClose, 0, 0, window, 0);
 }
-//--------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VSTPluginImpl::onEditorIdle() {
 	aEff->dispatcher ( aEff, effEditIdle, 0, 0, 0, 0);
 }
@@ -467,6 +385,16 @@ void VSTPluginImpl::getShellPluginInfos(ShellPluginInfos &out) {
 			out.push_back(ShellPluginInfo(std::string(tempName), plugUniqueID));
 		}
 	}
+}
+//-----------------------------------------------------------------------------
+bool VSTPluginImpl::canHandleMidiEvent() const {
+    if (can(effFlagsIsSynth)) {
+        return true;
+    }
+    // can receive vst events?
+    char can[] = "receiveVstMidiEvent";
+    int ret = aEff->dispatcher ( aEff, effCanDo, 0, 0, &can[0], 0.0 );
+    return ret == 1;
 }
 //-----------------------------------------------------------------------------
 VstIntPtr VSTPluginImpl::_hostCallback ( AEffect* effect, 

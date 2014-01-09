@@ -8,6 +8,7 @@
 #include "BridgePluginDelegate.hpp"
 #include <processing/Plugin.h>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <processing/pluginTypes/PluginFactory.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 namespace {
@@ -74,39 +75,21 @@ BridgePluginDelegate::create(size_t blockSize,
         "missing implemenation"
     );
 
-   /* BridgePluginDelegate::Ptr res( new BridgePluginDelegate() );
+    BridgePluginDelegate::Ptr res( new BridgePluginDelegate() );
     res->hostInfo = IHostInfo::Ptr( new _HostInfo(blockSize, sampleRate, res.get()) );
-    res->plugin = ::processing::PluginFactory::createPlugNode(
-        res->hostInfo,
-        location
-    );
+    res->plugin = PluginFactory::instance().load(res->hostInfo, &(res->parameters), location);
     if (!res->plugin->isAccessable()) {
         SAMBAG_THROW(
             sambag::com::exceptions::IllegalStateException,
             "couldn't access: " + location
         );
     }
-    return res;*/
+    return res;
 }
 //-----------------------------------------------------------------------------
-size_t BridgePluginDelegate::getBlockSize() const {
-    return getHostInfo()->getBlockSize();
-}
-//-----------------------------------------------------------------------------
-float BridgePluginDelegate::getSampleRate() const {
-    return getHostInfo()->getSampleRate();
-}
-//-----------------------------------------------------------------------------
-size_t BridgePluginDelegate::getNumInputChannels() const {
-    return plugin->getNumInputChannels();
-}
-//-----------------------------------------------------------------------------
-size_t BridgePluginDelegate::getNumOutputChannels() const {
-    return plugin->getNumOutputChannels();
-}
-//-----------------------------------------------------------------------------
-std::string BridgePluginDelegate::getLocation() const {
-    return plugin->getLocation();
+BridgePluginDelegate::~BridgePluginDelegate() {
+    plugin->closePlugin();
+    delete plugin;
 }
 
 }}} // namespace(s)

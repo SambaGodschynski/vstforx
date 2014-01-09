@@ -59,12 +59,6 @@ bool checkArchitecture(Module module) {
 }
 //------------------------------------------------------------------------------------------------------------
 AEffect * getAEffect( Module module ) {
-    if (!checkArchitecture(module)) {
-        SAMBAG_THROW(
-            frx::processing::PluginArchitectureMissmatch,
-            "Plugin architecture missmatch."
-        );
-    }
 	PluginEntryProc mainProc = NULL;
 	mainProc = (PluginEntryProc)CFBundleGetFunctionPointerForName ( module, CFSTR("VSTPluginMain"));
 	if (!mainProc)
@@ -89,12 +83,12 @@ void loadModule ( const char *filename, Module *module, AEffect **aEff ) {
 	*module = CFBundleCreate (NULL, url);
 	CFRelease (url);
 	if (*module) {
-		/*TOLOG ("CFBundleLoadExecutable");
-		if ( !CFBundleLoadExecutable (*module)  ) {
-			TOLOG ("CFBundleLoadExecutable FAILED!");
-			*module = NULL;
-			return;
-		}*/
+        if (!checkArchitecture(*module)) {
+            SAMBAG_THROW(
+                frx::processing::PluginArchitectureMissmatch,
+                "Plugin architecture missmatch."
+        );
+    }
 	} else {
 		TOLOG ("getBundleRef FAILED!");
 		return;

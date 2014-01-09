@@ -62,7 +62,11 @@ public:
     /**
      * @return appropriate plugin impl
      */
-    ProductPtr load(Type, IHostInfo::Ptr, Parameters*, const std::string &);
+    ProductPtr load(IHostInfo::Ptr,
+        Parameters*,
+        const std::string &,
+        Type type = ::processing::PluginInfo::UNKNOWN);
+
 
 }; // PluginFactory
 }} // namespace(s)

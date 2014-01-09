@@ -56,28 +56,34 @@ IProcessor::Ptr ModelController::createProcessor(const std::string &idStr,
     bool autoConnectOutput)
 {
     
-    namespace pr = ::processing;
-	if (!graph)
-		return IProcessor::Ptr();
-	
-    ::com::IdParser id(idStr);
-    if (id.name() == "Plugin") {
-        return createPlugin(idStr);
-    }
+    try {
+        namespace pr = ::processing;
+        if (!graph) {
+            return IProcessor::Ptr();
+        }
+        ::com::IdParser id(idStr);
+        if (id.name() == "Plugin") {
+            return createPlugin(idStr);
+        }
     
-    pr::Graph::Janitor::Ptr jan = graph->getJanitor();
+        pr::Graph::Janitor::Ptr jan = graph->getJanitor();
 	
-    pr::ProcessAdapter::Ptr res =
-        ModelFactory::instance().create(idStr, graph->getHostInfo());
-	jan->add(res);
-    if (autoConnectOutput) {
-        // create invisible connection
-        jan->connectNodes(res->getOutputNode(0), graph->getEndNode());
-	}
-    ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
-	// register remove request excutor
-	installListeners(ad);
-	return ad;
+        pr::ProcessAdapter::Ptr res =
+            ModelFactory::instance().create(idStr, graph->getHostInfo());
+        jan->add(res);
+        if (autoConnectOutput) {
+            // create invisible connection
+            jan->connectNodes(res->getOutputNode(0), graph->getEndNode());
+        }
+        ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
+        // register remove request excutor
+        installListeners(ad);
+        return ad;
+    } catch (const std::exception &ex) {
+        throw std::runtime_error("creating " + idStr + " failed: " + ex.what());
+    } catch (...) {
+        throw std::runtime_error("creating " + idStr + " failed: unknown error.");
+    }
 }
 //-----------------------------------------------------------------------------
 IProcessor::Ptr ModelController::createPlugin(const std::string &id)
@@ -85,14 +91,7 @@ IProcessor::Ptr ModelController::createPlugin(const std::string &id)
 	
 	typedef ::processing::Plugin Plugin;
     Plugin::Ptr plugin;
-	try {
-		plugin =
-            ModelFactory::instance().create<Plugin>(id, graph->getHostInfo());
-	} catch(const ::processing::ShellPluginException) {
-		throw;
-	} catch(...) {
-		return IProcessor::Ptr(); 
-	}
+    plugin = ModelFactory::instance().create<Plugin>(id, graph->getHostInfo());
 		
 	if ( graph->getJanitor()->add(plugin) != ::processing::Graph::Janitor::SUCCEED )
 		return IProcessor::Ptr();

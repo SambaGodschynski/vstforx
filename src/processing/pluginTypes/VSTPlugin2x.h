@@ -35,9 +35,6 @@ class VSTPluginImpl:
 	public Serializable
 {
 //=============================================================================
-friend class boost::serialization::access;
-
-BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<VSTPluginImpl> Ptr;
@@ -93,11 +90,6 @@ private:
 	 */
 	Mutex mutex;
 	//-------------------------------------------------------------------------
-	/**
-	 * Blockiert ioChanged gegen process
-	 */
-	bool ioChangedLock;
-	//-------------------------------------------------------------------------
 	static VSTPluginImpl * getVSTPlugImpl ( AEffect *aEff ); // ermittelt ueber Aeffect=>vstplugnode map
 	//-------------------------------------------------------------------------
 	/**
@@ -112,8 +104,6 @@ private:
 	 * Wird fuer Host-Callbacks benoetigt.
 	 */
 	static RelatedPlugNode relatedPlugNode;
-	//-------------------------------------------------------------------------
-	bool canReceiveVstEvents;
 	//-------------------------------------------------------------------------
 	static void initPlug ( VSTPluginImpl &pln ); 
 	//-------------------------------------------------------------------------
@@ -168,9 +158,7 @@ public:
 	/**
 	 * @return true, wenn Plugin Midi-Event verarbeiten kann.
 	 */
-	virtual bool canHandleMidiEvent() const { 
-		return can(effFlagsIsSynth) || canReceiveVstEvents; 
-	}
+	virtual bool canHandleMidiEvent() const;
 	//-------------------------------------------------------------------------
 	/**
 	 * Verarbeitet Midi-Events (@see VST-SDK VstEvents)
@@ -278,6 +266,10 @@ public:
         SAMBAG_ASSERT(aEff);
         return aEff->numOutputs;
     }
+    //-------------------------------------------------------------------------
+    std::pair<size_t, void*> getStateData() const;
+    //-------------------------------------------------------------------------
+    void setStateData(size_t size, void* data);
 }; // class VSTPluginImpl
 } // namespace processing
 

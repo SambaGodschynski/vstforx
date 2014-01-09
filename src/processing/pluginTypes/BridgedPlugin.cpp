@@ -2,69 +2,48 @@
  * BridgedPlugin.cpp
  *
  *  Created on: Mon Jan  6 11:53:25 2014
- *      Author: Johannes Unger
+ *  Author: Johannes Unger
  */
 
 #include "BridgedPlugin.hpp"
-
-#if 0
+#include <processing/interprocess/BridgeSessionManager.hpp>
 
 namespace frx { namespace processing {
 //=============================================================================
 //  Class BridgedPlugin
 //=============================================================================
 //-----------------------------------------------------------------------------
-void BridgedPlugin::createSession() {
-}
-//-----------------------------------------------------------------------------
-void BridgedPlugin::restoreSession() {
-}
-//-----------------------------------------------------------------------------
-void BridgedPlugin::initListener() {
-}
-//-----------------------------------------------------------------------------
-BridgedPlugin::BridgedPlugin(IHostInfo::Ptr hostInfo,
-    const std::string &location) : Plugin(hostInfo, location)
+BridgedPlugin::BridgedPlugin(IHostInfo::Ptr hI, const std::string &location,
+        Parameters *parameters) :
+        APluginImpl(hI, location, parameters)
 {
-    createSession();
+    using namespace interprocess;
+    session = BridgeSessionManager::instance().createPluginSession(
+        location, hI->getSampleRate(), hI->getBlockSize()
+    );
 }
 //-----------------------------------------------------------------------------
-BridgedPlugin::Ptr BridgedPlugin::create(IHostInfo::Ptr hI, const std::string &location) {
-  /*  Ptr res = Ptr( new BridgedPlugin(hI, location) );
-    res->self = res;
-    return res;*/
+void BridgedPlugin::baseConfigChanged() {
 }
 //-----------------------------------------------------------------------------
-size_t BridgedPlugin::getNumPrograms() {
+void BridgedPlugin::turnOff() {
+}
+//-----------------------------------------------------------------------------
+void BridgedPlugin::turnOn() {
+}
+//-----------------------------------------------------------------------------
+void BridgedPlugin::openPlugin() {
+}
+//-----------------------------------------------------------------------------
+void BridgedPlugin::closePlugin() {
+}
+//-----------------------------------------------------------------------------
+size_t BridgedPlugin::getNumInputChannels() const {
     return 0;
 }
 //-----------------------------------------------------------------------------
-std::string BridgedPlugin::getProgramName(size_t index ) {
-    return "";
-}
-//-----------------------------------------------------------------------------
-void BridgedPlugin::setProgram(size_t index ) {
-}
-//-----------------------------------------------------------------------------
-int BridgedPlugin::getProgram() {
+size_t BridgedPlugin::getNumOutputChannels() const {
     return 0;
-}
-//-----------------------------------------------------------------------------
-bool BridgedPlugin::isAccessable() {
-    return false;
-}
-//-----------------------------------------------------------------------------
-bool BridgedPlugin::canHandleMidiEvent() const {
-    return false;
-}
-//-----------------------------------------------------------------------------
-void BridgedPlugin::processAdapter( oldPr::Processor::Int numSamples ) {
-}
-//-----------------------------------------------------------------------------
-void BridgedPlugin::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
-}
-//-----------------------------------------------------------------------------
-BridgedPlugin::~BridgedPlugin() {
 }
 //-----------------------------------------------------------------------------
 bool BridgedPlugin::hasEditor() const {
@@ -80,23 +59,57 @@ void BridgedPlugin::closeEditor(void *window) {
 void BridgedPlugin::onEditorIdle() {
 }
 //-----------------------------------------------------------------------------
-size_t BridgedPlugin::getNumInputChannels() const {
+bool BridgedPlugin::isAccessable() const {
+    return false;
+}
+//-----------------------------------------------------------------------------
+size_t BridgedPlugin::getNumPrograms() {
     return 0;
 }
 //-----------------------------------------------------------------------------
-size_t BridgedPlugin::getNumOutputChannels() const {
+std::string BridgedPlugin::getProgramName( size_t index ) {
+    return "";
+}
+//-----------------------------------------------------------------------------
+void BridgedPlugin::setProgram( size_t index ) {
+}
+//-----------------------------------------------------------------------------
+int BridgedPlugin::getProgram() {
     return 0;
 }
 //-----------------------------------------------------------------------------
-::processing::parameter::ParameterPtr
-BridgedPlugin::getParameter ( size_t nr ) const
+bool BridgedPlugin::canHandleMidiEvent() const {
+    return false;
+}
+//-----------------------------------------------------------------------------
+void BridgedPlugin::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
+}
+//-----------------------------------------------------------------------------
+size_t BridgedPlugin::getInitialDelay() const {
+}
+//-----------------------------------------------------------------------------
+void BridgedPlugin::updatePluginInfo (::processing::PluginInfo &inf) const {
+}
+//-----------------------------------------------------------------------------
+void BridgedPlugin::processPlugin( oldPr::Frames::T **,
+oldPr::Frames::T **, size_t numSamples) {
+}
+//-----------------------------------------------------------------------------
+BridgedPlugin::~BridgedPlugin() {
+}
+//-----------------------------------------------------------------------------
+std::pair<size_t, void*> BridgedPlugin::getStateData() const {
+    return std::make_pair(0, (void*)NULL);
+}
+//-----------------------------------------------------------------------------
+void BridgedPlugin::setStateData(size_t size, void* data) {
+}
+
+///////////////////////////////////////////////////////////////////////////////
+APluginImpl * createBridgedPluginImpl(IHostInfo::Ptr hI,
+    APluginImpl::Parameters* par, const std::string& loc)
 {
-    return ::processing::parameter::ParameterPtr();
-}
-//-----------------------------------------------------------------------------
-size_t BridgedPlugin::getNumParameter () const {
-    return 0;
+    return new BridgedPlugin(hI, loc, par);
 }
 }} // namespace(s)
 
-#endif

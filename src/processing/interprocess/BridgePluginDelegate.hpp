@@ -11,11 +11,8 @@
 #include <boost/shared_ptr.hpp>
 #include <string>
 #include <processing/IHostInfo.h>
-
-namespace processing {
-    class Plugin;
-    typedef boost::shared_ptr<Plugin> PluginPtr;
-} // namespace(s)
+#include <processing/pluginTypes/PluginImpl.hpp>
+#include <processing/parameter/Parameter.h>
 
 namespace frx { namespace processing { namespace interprocess {
 //=============================================================================
@@ -33,10 +30,14 @@ protected:
     BridgePluginDelegate() {}
 private:
     //-------------------------------------------------------------------------
-    ::processing::PluginPtr plugin;
+    APluginImpl *plugin;
     //-------------------------------------------------------------------------
     IHostInfo::Ptr hostInfo;
+    //-------------------------------------------------------------------------
+    APluginImpl::Parameters parameters;
 public:
+    //-------------------------------------------------------------------------
+    ~BridgePluginDelegate();
     //-------------------------------------------------------------------------
     /**
      * @brief loads plugin
@@ -44,23 +45,30 @@ public:
      */
     static Ptr create(size_t blockSize, float sampleRate, const std::string &location);
     //-------------------------------------------------------------------------
-    size_t getBlockSize() const;
-    //-------------------------------------------------------------------------
-    float getSampleRate() const;
-    //-------------------------------------------------------------------------
-    size_t getNumInputChannels() const;
-    //-------------------------------------------------------------------------
-    size_t getNumOutputChannels() const;
-    //-------------------------------------------------------------------------
-    std::string getLocation() const;
-    //-------------------------------------------------------------------------
-    ::processing::PluginPtr getPlugin() const {
+    APluginImpl * getPluginImpl() const {
         return plugin;
     }
     //-------------------------------------------------------------------------
     IHostInfo::Ptr getHostInfo() const {
         return hostInfo;
     }
+    //-------------------------------------------------------------------------
+    size_t getBlockSize() const {
+        return hostInfo->getBlockSize();
+    }
+    //-------------------------------------------------------------------------
+    float getSampleRate() const {
+        return hostInfo->getSampleRate();
+    }
+    //-------------------------------------------------------------------------
+    size_t getNumInputChannels() const {
+        return plugin->getNumInputChannels();
+    }
+    //-------------------------------------------------------------------------
+    size_t getNumOutputChannels() const {
+        return plugin->getNumOutputChannels();
+    }
+    //-------------------------------------------------------------------------
 }; // BridgePluginDelegate
 }}} // namespace(s)
 
