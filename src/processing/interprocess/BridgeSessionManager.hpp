@@ -13,6 +13,7 @@
 #include <boost/shared_ptr.hpp>
 #include <processing/IHostInfo.h>
 #include <processing/PlugInfo.h>
+#include <sambag/com/ArithmeticWrapper.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 class BridgeSessionClient;
@@ -50,6 +51,16 @@ private:
     //-------------------------------------------------------------------------
     void onHostClosingAsync();
 public:
+    //-------------------------------------------------------------------------
+    sambag::com::ArithmeticWrapper<bool, false>
+        __BridgeSessionManager_private_isBridge;
+    //-------------------------------------------------------------------------
+    /**
+     * @return true when current application is the bridge itself
+     */
+    bool isBridge() {
+        return __BridgeSessionManager_private_isBridge;
+    }
 	//-------------------------------------------------------------------------
 	static BridgeSessionManager & instance();
     //-------------------------------------------------------------------------
@@ -70,6 +81,8 @@ public:
     //-------------------------------------------------------------------------
     PluginSessionClientPtr createPluginSession(const std::string &path,
         float sampleRate, int blockSize);
+    //-------------------------------------------------------------------------
+    void closePluginSession(PluginSessionClientPtr session);
 }; // BridgeSessionManager
 }}} // namespace(s)
 

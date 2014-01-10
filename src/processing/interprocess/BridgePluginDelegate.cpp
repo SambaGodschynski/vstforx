@@ -70,11 +70,6 @@ BridgePluginDelegate::Ptr
 BridgePluginDelegate::create(size_t blockSize,
     float sampleRate, const std::string &location)
 {
-    SAMBAG_THROW(
-        sambag::com::exceptions::IllegalStateException,
-        "missing implemenation"
-    );
-
     BridgePluginDelegate::Ptr res( new BridgePluginDelegate() );
     res->hostInfo = IHostInfo::Ptr( new _HostInfo(blockSize, sampleRate, res.get()) );
     res->plugin = PluginFactory::instance().load(res->hostInfo, &(res->parameters), location);
@@ -88,8 +83,12 @@ BridgePluginDelegate::create(size_t blockSize,
 }
 //-----------------------------------------------------------------------------
 BridgePluginDelegate::~BridgePluginDelegate() {
-    plugin->closePlugin();
     delete plugin;
+}
+//-----------------------------------------------------------------------------
+const ::processing::PluginInfo & BridgePluginDelegate::getPluginInfo() {
+    plugin->updatePluginInfo(pluginInfo);
+    return pluginInfo;
 }
 
 }}} // namespace(s)

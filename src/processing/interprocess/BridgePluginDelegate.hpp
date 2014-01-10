@@ -35,6 +35,8 @@ private:
     IHostInfo::Ptr hostInfo;
     //-------------------------------------------------------------------------
     APluginImpl::Parameters parameters;
+    //-------------------------------------------------------------------------
+    ::processing::PluginInfo pluginInfo;
 public:
     //-------------------------------------------------------------------------
     ~BridgePluginDelegate();
@@ -69,6 +71,15 @@ public:
         return plugin->getNumOutputChannels();
     }
     //-------------------------------------------------------------------------
+    const ::processing::PluginInfo & getPluginInfo();
+    //-------------------------------------------------------------------------
+    const APluginImpl::Parameters & getParameters() const {
+        return parameters;
+    }
+    //-------------------------------------------------------------------------
+    APluginImpl::Parameters & getParameters() {
+        return parameters;
+    }
 }; // BridgePluginDelegate
 }}} // namespace(s)
 

@@ -62,6 +62,11 @@ void BridgeSessionManager::startBridge() {
     namespace bs=boost::filesystem;
     using sambag::com::exceptions::IllegalStateException;
     using sambag::com::events::EventSender;
+    
+    if (isBridge()) {
+        SAMBAG_THROW(IllegalStateException, "bridge recursion error.");
+    }
+    
     if (!bs::exists(bs::path( getBridgePath()))) {
         SAMBAG_THROW(IllegalStateException, getBridgePath() + " not found.");
     }
@@ -100,6 +105,11 @@ PluginSessionClientPtr BridgeSessionManager::createPluginSession(
         path, sampleRate, blockSize
     );
     return res;
+}
+//-----------------------------------------------------------------------------
+void BridgeSessionManager::closePluginSession(PluginSessionClientPtr plSession) {
+    BridgeSessionClient::Ptr session = getBridgeClient();
+    session->closePluginSession(plSession);
 }
 //-----------------------------------------------------------------------------
 bool BridgeSessionManager::isBridgeSessionEstabished() const {

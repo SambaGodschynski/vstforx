@@ -22,6 +22,9 @@ void checkIsNeeded(frx::processing::interprocess::BridgeSession *session_ptr) {
 int main(int argc, char **argv) {
     using namespace frx::processing;
     using namespace frx::processing::interprocess;
+    // set app is bridge
+    BridgeSessionManager::instance().__BridgeSessionManager_private_isBridge =
+        true;
     if (argc<2) {
         SAMBAG_LOG_ERR<<"VSTForx.Bridge missing path.";
         return 1;

@@ -23,27 +23,63 @@ BridgedPlugin::BridgedPlugin(IHostInfo::Ptr hI, const std::string &location,
     );
 }
 //-----------------------------------------------------------------------------
+void BridgedPlugin::parameterChanged(int index) {
+    session->setParameterValues(parameters->at(index), index);
+}
+//-----------------------------------------------------------------------------
+void BridgedPlugin::initParameters() {
+    using ::processing::parameter::Parameter;
+    int num = session->getNumParameter();
+    if (num==0) {
+        return;
+    }
+    parameters->resize(num);
+    for (int i=0; i<num; ++i) {
+        Parameter::Ptr p = parameters->at(i);
+        if (!p) {
+            (*parameters)[i] = p = Parameter::create(i);
+            p->setMin( (::com::VstNumber)INT_MIN ); //entferne min, max ( siehe issue: 0000049 )
+            p->setMax( (::com::VstNumber)INT_MAX );
+            session->getParameterValues(p, i);
+        }
+        // add listener
+		p->addValueChangedListener (
+			boost::bind(&BridgedPlugin::parameterChanged, this, i)
+		);
+    }
+}
+//-----------------------------------------------------------------------------
+BridgedPlugin::~BridgedPlugin() {
+    using namespace interprocess;
+    BridgeSessionManager::instance().closePluginSession(session);
+}
+//-----------------------------------------------------------------------------
 void BridgedPlugin::baseConfigChanged() {
 }
 //-----------------------------------------------------------------------------
 void BridgedPlugin::turnOff() {
+    session->turnOff();
 }
 //-----------------------------------------------------------------------------
 void BridgedPlugin::turnOn() {
+    session->turnOn();
 }
 //-----------------------------------------------------------------------------
 void BridgedPlugin::openPlugin() {
+    session->openPlugin();
+    initParameters();
 }
 //-----------------------------------------------------------------------------
 void BridgedPlugin::closePlugin() {
+    session->closePlugin();
 }
 //-----------------------------------------------------------------------------
 size_t BridgedPlugin::getNumInputChannels() const {
-    return 0;
+    return session->getNumInputChannels();
 }
 //-----------------------------------------------------------------------------
 size_t BridgedPlugin::getNumOutputChannels() const {
-    return 0;
+    return session->getNumOutputChannels();
 }
 //-----------------------------------------------------------------------------
 bool BridgedPlugin::hasEditor() const {
@@ -86,16 +122,15 @@ void BridgedPlugin::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
 }
 //-----------------------------------------------------------------------------
 size_t BridgedPlugin::getInitialDelay() const {
+    return 0;
 }
 //-----------------------------------------------------------------------------
 void BridgedPlugin::updatePluginInfo (::processing::PluginInfo &inf) const {
+    session->updatePluginInfo(inf);
 }
 //-----------------------------------------------------------------------------
 void BridgedPlugin::processPlugin( oldPr::Frames::T **,
 oldPr::Frames::T **, size_t numSamples) {
-}
-//-----------------------------------------------------------------------------
-BridgedPlugin::~BridgedPlugin() {
 }
 //-----------------------------------------------------------------------------
 std::pair<size_t, void*> BridgedPlugin::getStateData() const {

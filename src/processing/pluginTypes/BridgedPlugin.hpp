@@ -31,6 +31,8 @@ public:
     BridgedPlugin(IHostInfo::Ptr hI, const std::string &location,
         Parameters *parameters);
     //-------------------------------------------------------------------------
+    virtual ~BridgedPlugin();
+    //-------------------------------------------------------------------------
     virtual void baseConfigChanged();
     //-------------------------------------------------------------------------
     virtual void turnOff();
@@ -97,8 +99,6 @@ public:
     virtual void processPlugin( oldPr::Frames::T **,
         oldPr::Frames::T **, size_t numSamples);
     //-------------------------------------------------------------------------
-    virtual ~BridgedPlugin();
-    //-------------------------------------------------------------------------
     virtual std::pair<size_t, void*> getStateData() const;
     //-------------------------------------------------------------------------
     virtual void setStateData(size_t size, void* data);
@@ -106,7 +106,11 @@ public:
     // Fields
 protected:
     //-------------------------------------------------------------------------
-    interprocess::PluginSessionClient::Ptr session;
+    void parameterChanged(int index);
+    //-------------------------------------------------------------------------
+    void initParameters();
+    //-------------------------------------------------------------------------
+    mutable interprocess::PluginSessionClient::Ptr session;
 };
 }} // namespace(s)
 

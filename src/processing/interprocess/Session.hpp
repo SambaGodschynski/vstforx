@@ -26,25 +26,56 @@
 #include <loki/HierarchyGenerators.h>
 
 
+
+#define FRX_OP_RET() typedef struct Ret {} *RetPtr
+#define FRX_OP_RET_1(a1) typedef struct Ret {a1;} *RetPtr
+#define FRX_OP_RET_2(a1,a2) typedef struct Ret {a1;a2;} *RetPtr
+#define FRX_OP_RET_3(a1,a2,a3) typedef struct Ret {a1;a2;a3;} *RetPtr
+#define FRX_OP_RET_4(a1,a2,a3,a4) typedef struct Ret {a1;a2;a3;a4;} *RetPtr
+#define FRX_OP_RET_5(a1,a2,a3,a4,a5) typedef struct Ret {a1;a2;a3;a4;a5;} *RetPtr
+#define FRX_OP_RET_6(a1,a2,a3,a4,a5,a6) typedef struct Ret {a1;a2;a3;a4;a5;a6;} *RetPtr
+#define FRX_OP_RET_7(a1,a2,a3,a4,a5,a6,a7) typedef struct Ret {a1;a2;a3;a4;a5;a6;a7;} *RetPtr
+#define FRX_OP_RET_8(a1,a2,a3,a4,a5,a6,a7,a8) typedef struct Ret {a1;a2;a3;a4;a5;a6;a7;a8;} *RetPtr
+#define FRX_OP_RET_9(a1,a2,a3,a4,a5,a6,a7,a8,a9) typedef struct Ret {a1;a2;a3;a4;a5;a6;a7;a8;a9;} *RetPtr
+#define FRX_OP_RET_10(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) typedef struct Ret {a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;} *RetPtr
+
+#define FRX_OP_ARG() typedef struct Arg {} *ArgPtr
+#define FRX_OP_ARG_1(a1) typedef struct Arg {a1;} *ArgPtr
+#define FRX_OP_ARG_2(a1,a2) typedef struct Arg {a1;a2;} *ArgPtr
+#define FRX_OP_ARG_3(a1,a2,a3) typedef struct Arg {a1;a2;a3;} *ArgPtr
+#define FRX_OP_ARG_4(a1,a2,a3,a4) typedef struct Arg {a1;a2;a3;a4;} *ArgPtr
+#define FRX_OP_ARG_5(a1,a2,a3,a4,a5) typedef struct Arg {a1;a2;a3;a4;a5;} *ArgPtr
+#define FRX_OP_ARG_6(a1,a2,a3,a4,a5,a6) typedef struct Arg {a1;a2;a3;a4;a5;a6;} *ArgPtr
+#define FRX_OP_ARG_7(a1,a2,a3,a4,a5,a6,a7) typedef struct Arg {a1;a2;a3;a4;a5;a6;a7;} *ArgPtr
+#define FRX_OP_ARG_8(a1,a2,a3,a4,a5,a6,a7,a8) typedef struct Arg {a1;a2;a3;a4;a5;a6;a7;a8;} *ArgPtr
+#define FRX_OP_ARG_9(a1,a2,a3,a4,a5,a6,a7,a8,a9) typedef struct Arg {a1;a2;a3;a4;a5;a6;a7;a8;a9;} *ArgPtr
+#define FRX_OP_ARG_10(a1,a2,a3,a4,a5,a6,a7,a8,a9,a10) typedef struct Arg {a1;a2;a3;a4;a5;a6;a7;a8;a9;a10;} *ArgPtr
+
+
+
+#define FRX_OP_PROCESS_IMPL                                                             \
+    void processImpl(Session::Opc opc, void *argmem, void *retmem) {                    \
+        try {                                                                           \
+            Operations::OpcManager::process(opc, this, argmem, retmem);                 \
+        } catch(const std::exception &ex) {                                             \
+            SAMBAG_LOG_ERR<<ex.what()<<" on opc("<<opc<<") "<<__FILE__<<":"<<__LINE__;  \
+            throw;                                                                      \
+        }                                                                               \
+    }
+#define FRX_OP_BEGIN_OPERATIONS struct Operations {
+#define FRX_OP_END_OPERATIONS(ops) typedef helper::AutoOPC<ops> OpcManager; }; \
+    typedef Operations::OpcManager OpcM;
+
+#define FRX_OP_END_OPERATIONS_AND_IMPL_PROCESS(ops) FRX_OP_END_OPERATIONS(ops) FRX_OP_PROCESS_IMPL
+
+#define FRX_OP_OPERATION(name, arg, ret) struct name {arg; ret;}
+
+
+#define FRX_OP_CALLBACK_METHOD(opname) void auto_opc_callback(Operations::opname::ArgPtr arg, Operations::opname::RetPtr ret)
+#define FRX_OP_CALLBACK_METHOD_IMPL(classname, opname) void classname::auto_opc_callback(Operations::opname::ArgPtr arg, Operations::opname::RetPtr ret)
+
 namespace frx { namespace processing { namespace interprocess {
 namespace helper {
-
-/**
- * @brief delegation between a operation definition and a executing function 
- * Operation concept:
- * struct Operation {
- *     typedef struct Arg {} *ArgPtr;
- *     typedef struct Ret {} *RetPtr;
- * };
- *
- * example:
- * struct ExClass {
- *   void processImpl(void *arg, void *ret) {
- *       delegate<Operation>(&ExClass::doOperation, this, arg, ret);
- *   }
- *   doOperation(Operation::ArgPtr, Operation::RetPtr);
- * };
- */
 template <class Caller, typename Operation>
 struct Functor {
     typedef void (Caller::*F)(typename Operation::ArgPtr, typename Operation::RetPtr);
@@ -152,10 +183,61 @@ struct AutoOPC {
 //=============================================================================
 /** 
   * @class Session.
-  * Class for a bidirection interprocess communication.
+  * @brief Class for a bidirection interprocess communication.
   * Communictaion is provided by 2 channels A and B. Every channel has an an
   * argument and a return buffer and will be processed by a seperated
   * thread.
+  * \par
+  * Helper:
+  * \par
+  * Delegation concept:
+  * \par
+  * delegation between a operation definition and a executing function
+  * \par
+  * Operation concept:
+  * \code{.cpp}
+  *
+  * // Operation definitions:
+  * struct Operations {
+  *     struct DoSome { 
+  *         typedef struct Arg {} *ArgPtr;
+  *         typedef struct Ret {} *RetPtr;
+  *     };
+  *     typedef LOKI_TYPELIST_1( DoSome ) OPs;
+  *     typedef helper::AutoOPC<OPs> OpcManager;
+  * };
+  * 
+  * // Impl. example:
+  * struct ExClass {
+  *   // delegate
+  *   void processImpl(Opc opc, void *argmem, void *retmem) {
+  *      try {
+  *          // calls auto_opc_callback
+  *          Operations::OpcManager::process(opc, this, argmem, retmem);
+  *      } catch(const std::exception &ex) {
+  *         SAMBAG_LOG_ERR<<ex.what()<<" opc("<<opc<<")";
+  *         throw;
+  *      }
+  *    }
+  *    // impl.:
+  *    void auto_opc_callback(Operations::DoSome::ArgPtr, Operations::DoSome::RetPtr);
+  * };
+  *
+  * // OR the convinient Way
+  * FRX_OP_BEGIN_OPERATIONS
+  *     FRX_OP_OPERATION(DoSome, FRX_OP_ARG_1(int value), FRX_OP_RET());
+  *     typedef LOKI_TYPELIST_1( DoSome ) OPs;
+  * FRX_OP_END_OPERATIONS(OPs)
+  *
+  * // impl.
+  * struct ExClass {
+  *     FRX_OP_PROCESS_IMPL
+  *     FRX_OP_CALLBACK_METHOD(DoSome);
+  * };
+  * FRX_OP_CALLBACK_METHOD_IMPL(ExClass, DoSome) {
+  *    // doSome using arg and ret
+  * }
+  * \endcode
   */
 class Session {
 //=============================================================================
@@ -235,16 +317,30 @@ protected:
     //-------------------------------------------------------------------------
     /**
      * @brief puts opc into related channel and waits until request is processed.
+     * \code{.cpp}
+     * // example call
+     * typedef Host::Operations::DoSome Op;
+     * Op::ArgPtr args = static_cast<Op::ArgPtr>(getArgmem());
+     * // copy arg values
+     * args->arg1 = 0;
+     * args->arg2 = 0;
+     * Op::RetPtr rets rets = waitForResult<Op::RetPtr>(
+     *   Host::OpcM::getOPC<Op>(),
+     *   FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT
+     * );
+     * \endcode
      * @param opcode
      * @param time in millisec to wait, throws TimeOut after elapsed with no result.
      * @return retmem ptr
      */
     template <typename T>
-    T waitForResult(Opc opc, Integer timeout=1000) {
+    T waitForResult(Opc opc, Integer timeout=FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT)
+    {
         return static_cast<T>(waitForResultImpl(opc, timeout));
     }
     //-------------------------------------------------------------------------
-    void waitForResult(Opc opc, Integer timeout=5000) {
+    void waitForResult(Opc opc, Integer timeout=FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT)
+    {
         waitForResultImpl(opc, timeout);
     }
     //-------------------------------------------------------------------------

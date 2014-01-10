@@ -205,7 +205,7 @@ void VSTPluginImpl::valueChanged(void *src, const float &v) {
 	Parameter *p = (Parameter*) src;
 	size_t index = p->getIndex();
 	if ( onPlugChangeParameterIndex == index ) 
-		return; // when called by editorParameterChanged
+		return; // called by editorParameterChanged
 	if ( index>=parameters->size() ) {
         return;
     }
@@ -214,11 +214,11 @@ void VSTPluginImpl::valueChanged(void *src, const float &v) {
 	char bff[255];
 	// hole Parameter name
 	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
-	aEff->dispatcher ( aEff, effGetParamName, index, NULL, &bff[0], NULL );
-	param->setName ( MyString(&bff[0]) );
+	// aEff->dispatcher ( aEff, effGetParamName, index, NULL, &bff[0], NULL );
+	// param->setName ( MyString(&bff[0]) );
 	// hole Parameter label
-	aEff->dispatcher ( aEff, effGetParamLabel, index, NULL, &bff[0], NULL );
-	param->setLabel ( MyString(&bff[0]) );
+	// aEff->dispatcher ( aEff, effGetParamLabel, index, NULL, &bff[0], NULL );
+	// param->setLabel ( MyString(&bff[0]) );
 	// hole Parameter Display
 	aEff->dispatcher ( aEff, effGetParamDisplay, index, NULL, &bff[0], NULL );
 	param->setDisplay( MyString(&bff[0]) );
@@ -444,6 +444,10 @@ VstIntPtr VSTPluginImpl::_hostCallback ( AEffect* effect,
 			"Hostinfo == NULL"
 		);
 	}
+    if (!hI->getMasterCallback()) {
+        SAMBAG_LOG_TRACE<<"plugin -> host missing("<<opcode<<")";
+        return 0;
+    }
 	// no specific handling: call VSTForx's host
 	audioMasterCallback hostCallback = (audioMasterCallback)(hI->getMasterCallback());
 	if ( !hostCallback ) 

@@ -7,6 +7,8 @@
 
 #include "PluginFactory.hpp"
 #include <processing/ModelFactory.hpp>
+#include <processing/interprocess/BridgeSessionManager.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 
 namespace frx { namespace processing {
 typedef Loki::SingletonHolder<PluginFactory> PluginFactoryHolder;
@@ -35,6 +37,10 @@ PluginFactory::ProductPtr
 PluginFactory::loadBridged(IHostInfo::Ptr hI, Parameters*par, const std::string &loc)
 {
     SAMBAG_LOG_INFO<<"loading bridge...";
+    if (interprocess::BridgeSessionManager::instance().isBridge()) {
+        using sambag::com::exceptions::IllegalStateException;
+        SAMBAG_THROW(IllegalStateException,"bridge: unsupportet architecture.");
+    }
     return createBridgedPluginImpl(hI, par, loc);
 }
 //-----------------------------------------------------------------------------
