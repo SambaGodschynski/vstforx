@@ -11,6 +11,7 @@
 #include "VstForxResourceManager.hpp"
 #include <sambag/com/Common.hpp>
 #include "../../com/FrxPlugSettings.hpp"
+#include <processing/interprocess/BridgeSessionManager.hpp>
 
 std::string getHomeDirectory();
 
@@ -23,6 +24,11 @@ namespace frx { namespace com {
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
     // setup logging:
     ::sambag::com::addLogFile(getHomeDirectory() + "/VSTForx.log");
+    // setup bridge path
+    frx::processing::interprocess::BridgeSessionManager::instance().setBridgePath(
+        getHomeDirectory() + "/../bridge"
+    );
+    
     SAMBAG_LOG_INFO<<"woke up";
 	// init resourceManager
 	try {

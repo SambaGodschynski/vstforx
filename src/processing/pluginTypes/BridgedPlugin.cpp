@@ -129,8 +129,10 @@ void BridgedPlugin::updatePluginInfo (::processing::PluginInfo &inf) const {
     session->updatePluginInfo(inf);
 }
 //-----------------------------------------------------------------------------
-void BridgedPlugin::processPlugin( oldPr::Frames::T **,
-oldPr::Frames::T **, size_t numSamples) {
+void BridgedPlugin::processPlugin( oldPr::Frames::T **ins,
+oldPr::Frames::T **outs, size_t numSamples)
+{
+    session->process(ins, outs, numSamples);
 }
 //-----------------------------------------------------------------------------
 std::pair<size_t, void*> BridgedPlugin::getStateData() const {

@@ -71,7 +71,7 @@ BridgePluginDelegate::create(size_t blockSize,
     float sampleRate, const std::string &location)
 {
     BridgePluginDelegate::Ptr res( new BridgePluginDelegate() );
-    res->hostInfo = IHostInfo::Ptr( new _HostInfo(blockSize, sampleRate, res.get()) );
+    res->hostInfo = IHostInfo::Ptr( new _HostInfo(sampleRate, blockSize, res.get()) );
     res->plugin = PluginFactory::instance().load(res->hostInfo, &(res->parameters), location);
     if (!res->plugin->isAccessable()) {
         SAMBAG_THROW(

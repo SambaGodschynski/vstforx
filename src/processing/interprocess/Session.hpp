@@ -24,7 +24,7 @@
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <loki/Typelist.h>
 #include <loki/HierarchyGenerators.h>
-
+#include <com/FrxConfig.h>
 
 
 #define FRX_OP_RET() typedef struct Ret {} *RetPtr
@@ -265,8 +265,28 @@ public:
     //-------------------------------------------------------------------------
     enum { IDLE = -1 };
     //-------------------------------------------------------------------------
-    static const int DEFAULT_SLEEPING_TIME = 100;
+    enum Priority { Normal, High };
+    //-------------------------------------------------------------------------
+    static const Priority DEFAULT_PRIORITY = Normal;
+    static const int FRX_PRIOR_HIGH_MICROSEC = 10;
+    static const int FRX_PRIOR_NORMAL_MICROSEC = 50 * 1000;
+    
 private:
+    //-------------------------------------------------------------------------
+    /**
+     * @return the number of microseconds which were slept
+     */
+    inline int sleep() {
+        SAMBAG_ASSERT(priority);
+        if (*priority == (Integer)High) {
+            boost::this_thread::sleep(boost::posix_time::microsec(
+                FRX_PRIOR_HIGH_MICROSEC));
+            return FRX_PRIOR_HIGH_MICROSEC;
+        }
+        boost::this_thread::sleep(boost::posix_time::microsec(
+            FRX_PRIOR_NORMAL_MICROSEC));
+        return FRX_PRIOR_NORMAL_MICROSEC;
+    }
     //-------------------------------------------------------------------------
     typedef boost::shared_ptr<boost::thread> ThreadPtr;
     ThreadPtr processThread;
@@ -292,7 +312,7 @@ private:
     //-------------------------------------------------------------------------
     typedef boost::interprocess::interprocess_upgradable_mutex Mutex;
     //-------------------------------------------------------------------------
-    Integer *sleepingTime;
+    Integer *priority;
     //-------------------------------------------------------------------------
     Integer *num_references;
     //-------------------------------------------------------------------------
@@ -369,18 +389,18 @@ protected:
     Session(const std::string &id);
     //-------------------------------------------------------------------------
     /**
-     * @param the max. sleeping time while waiting for result in millisec
+     * @param the session thread priority
      */
-    void setMaxSleeping (Integer ms);
+    void setPriority (Priority val);
     //-------------------------------------------------------------------------
     /**
-     * @return the max. sleeping time for channel threads
+     * @return the channel thread priority, or -1 when undefined
      */
-     Integer getMaxSleeping() const {
-        if (!sleepingTime) {
-            return 0;
+     Integer getPriority() const {
+        if (!priority) {
+            return -1;
         }
-        return *sleepingTime;
+        return (Integer)*priority;
      }
 public:
     //-------------------------------------------------------------------------
@@ -389,6 +409,27 @@ public:
     }
     //-------------------------------------------------------------------------
     virtual ~Session();
+    //-------------------------------------------------------------------------
+    /**
+     * @return argmem bytesize of processing channel 
+     */
+    size_t getProcessArgmemSize() const;
+    //-------------------------------------------------------------------------
+    /**
+     * @return retmem bytesize of processing channel 
+     */
+    size_t getProcessRetmemSize() const;
+    //-------------------------------------------------------------------------
+    /**
+     * @return argmem bytesize of request channel 
+     */
+    size_t getRequestArgmemSize() const;
+    //-------------------------------------------------------------------------
+    /**
+     * @return retmem bytesize of request channel 
+     */
+    size_t getRequestRetmemSize() const;
+
 }; // Session
 }}} // namespace(s)
 

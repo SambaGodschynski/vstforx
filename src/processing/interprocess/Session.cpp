@@ -27,13 +27,13 @@ struct Session::IPChannel {
 Session::Session(const std::string &id, ChannelSize a, ChannelSize b) : id(id)
 {
     createBuffer(a, b);
-    setMaxSleeping(DEFAULT_SLEEPING_TIME);
+    setPriority(DEFAULT_PRIORITY);
 }
 //-----------------------------------------------------------------------------
-void Session::setMaxSleeping (Integer ms) {
-    SAMBAG_ASSERT(sleepingTime);
-    if (sleepingTime) {
-        *sleepingTime = ms;
+void Session::setPriority (Priority val) {
+    SAMBAG_ASSERT(priority);
+    if (priority) {
+        *priority = (Integer)val;
     }
 }
 //-----------------------------------------------------------------------------
@@ -44,7 +44,7 @@ Session::Session(const std::string &id) : id(id) {
 Session::~Session() {
     channelA = NULL;
     channelB = NULL;
-    sleepingTime = NULL;
+    priority = NULL;
     processThread->join();
     processThread.reset();
 
@@ -82,8 +82,7 @@ void Session::process() {
             processChannel->opc = IDLE;
 
         }
-        SAMBAG_ASSERT(sleepingTime);
-        boost::this_thread::sleep(boost::posix_time::millisec(*sleepingTime));
+        sleep();
     }
     SAMBAG_LOG_INFO<<"session "<<id<<" process thread closed";
 }
@@ -174,7 +173,7 @@ void Session::assignMemory(sambag::com::interprocess::PointerIterator &pIt,
     
     channelA = Allocator::rebind<IPChannel>::other(alloc).allocate(1);
     channelB = Allocator::rebind<IPChannel>::other(alloc).allocate(1);
-    sleepingTime = Allocator::rebind<Integer>::other(alloc).allocate(1);
+    priority = Allocator::rebind<Integer>::other(alloc).allocate(1);
 
     if (channelSizes) { // creatememory
         // init values
@@ -195,10 +194,7 @@ void Session::assignMemory(sambag::com::interprocess::PointerIterator &pIt,
 //-----------------------------------------------------------------------------
 void * Session::waitForResultImpl(Opc opc, Integer timeout) {
     using namespace boost::interprocess;
-    SAMBAG_ASSERT(sleepingTime);
-    if (timeout<=*sleepingTime) {
-        SAMBAG_LOG_WARN<<"Session: "<<id<<" sleeping time is longer than timeout.";
-    }
+    timeout*=1000; // millisec to microsec
     boost::posix_time::ptime ptout = boost::posix_time::from_time_t(std::time(NULL));
     ptout += boost::posix_time::milliseconds(timeout);
     
@@ -211,8 +207,7 @@ void * Session::waitForResultImpl(Opc opc, Integer timeout) {
     requestChannel->opc = opc;
     int waited = 0;
     while (requestChannel->opc!=IDLE) {
-        boost::this_thread::sleep(boost::posix_time::millisec(*sleepingTime));
-        waited+=*sleepingTime;
+        waited+=sleep();
         if (waited>=timeout) {
             std::stringstream ss;
             ss<<"Session "<<id<<" OPC("<<opc<<") timed out";
@@ -223,10 +218,27 @@ void * Session::waitForResultImpl(Opc opc, Integer timeout) {
 }
 //-----------------------------------------------------------------------------
 void * Session::getArgmem() const {
-   return requestChannel->argmem.get();
+    return requestChannel->argmem.get();
 }
 //-----------------------------------------------------------------------------
 void * Session::getRetmem() const {
     return requestChannel->retmem.get();
 }
+//-----------------------------------------------------------------------------
+size_t Session::getRequestArgmemSize() const {
+    return requestChannel->argsize;
+}
+//-----------------------------------------------------------------------------
+size_t Session::getRequestRetmemSize() const {
+    return requestChannel->retsize;
+}
+//-----------------------------------------------------------------------------
+size_t Session::getProcessArgmemSize() const {
+    return processChannel->argsize;
+}
+//-----------------------------------------------------------------------------
+size_t Session::getProcessRetmemSize() const {
+    return processChannel->retsize;
+}
+
 }}} // namespace(s)

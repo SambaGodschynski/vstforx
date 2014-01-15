@@ -253,7 +253,7 @@ void FrxLookAndFeel::installDefaults() {
 	rManager->registerImage("InputSwitch.image", "images/oSwitch.png");
 	rManager->registerImage("ADSRTrigger.image", "images/adsr_trigger.png");
 	rManager->registerImage("PeakTracker.image", "images/peak_tracker.png");
-	rManager->registerImage("MidiReceiver.image", "images/midiReceiver.png");
+	rManager->registerImage("MidiProcessor.image", "images/midiReceiver.png");
     rManager->registerImage("RemoteChReceiver.image", "images/remoteChReceiver.png");
 	
 	//rManager->registerImage("ProcessorInput.image", "w3c.svg");

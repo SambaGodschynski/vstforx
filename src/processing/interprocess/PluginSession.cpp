@@ -10,13 +10,15 @@
 #include <algorithm>
 #include "SessionManager.hpp"
 #include "BridgeSession.hpp"
+#include <sambag/com/PlacementAlloc.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 namespace {
-    template<class OpcM>
     inline Integer _minmem(Integer blockSize, Integer numChannels) {
-        return std::max( blockSize*numChannels + OpcM::MaxArgmemSize
-        , 256 );
+        return std::max(
+            (Integer)((blockSize*numChannels*sizeof(PluginSessionHost::Float)) + 64),
+            (Integer)256
+        );
     }
 } // namespace
 //=============================================================================
@@ -26,8 +28,8 @@ namespace {
 PluginSessionHost::PluginSessionHost(BridgePluginDelegate::Ptr dg)
     :  Session( SessionManager::createUniqueName(),
                 ChannelSize(
-                    _minmem<OpcM>(dg->getBlockSize(), dg->getNumInputChannels()),
-                    _minmem<OpcM>(dg->getBlockSize(), dg->getNumOutputChannels())
+                    _minmem(dg->getBlockSize(), dg->getNumInputChannels())  + OpcM::MaxArgmemSize,
+                    _minmem(dg->getBlockSize(), dg->getNumOutputChannels()) + OpcM::MaxRetmemSize
                 ), ChannelSize(
                     PluginSessionHost::OpcM::MaxArgmemSize,
                     PluginSessionHost::OpcM::MaxRetmemSize
@@ -46,8 +48,7 @@ PluginSessionHost::PluginSessionHost(BridgePluginDelegate::Ptr dg)
         SAMBAG_THROW(IllegalArgumentException,
         ss.str());
     }
-    setMaxSleeping(11);
-    SAMBAG_LOG_TRACE<<"sleeping:"<<(Integer)(1000.f/(sampleRate/(float)bs)); // TODO: only a suggestion
+    setPriority(High);
 }
 //-----------------------------------------------------------------------------
 PluginSessionHost::Ptr PluginSessionHost::create(BridgePluginDelegate::Ptr dg,
@@ -116,11 +117,50 @@ FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionHost, SetParameterValue) {
     p->setValue(arg->value);
     shm_cpystr(ret->display, p->getDisplay());
 }
+//-----------------------------------------------------------------------------
+namespace {
+    template <typename Float>
+    inline Float ** _assignMemory(sambag::com::interprocess::PointerIterator &pIt,
+        int numChannels,
+        int numSamples)
+    {
+        using namespace ::sambag::com::interprocess;
+        typedef PlacementAlloc< Float* > Allocator;
+        Allocator alloc(pIt);
+        Float **res = new Float*[numChannels];
+        for (int i=0; i<numChannels; ++i) {
+             res[i] = typename Allocator::template rebind<Float>::other(alloc).allocate(numSamples);
+        }
+        return res;
+    }
+}
+FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionHost, Process) {
+    // Shared Session Memory:
+    // struct OP::Arg{}; <-argument memory
+    // void * raw; <-reserved memory
+    //   ...
+    //   ...
+    using namespace ::sambag::com::interprocess;
+    PointerIterator arg_pIt(arg + 1, getProcessArgmemSize() - sizeof(Operations::Process::Arg));
+    PointerIterator ret_pIt(ret + 1, getProcessRetmemSize() - sizeof(Operations::Process::Ret));
+    
+    Float  **ins = _assignMemory<Float>(arg_pIt,
+        delegate->getNumInputChannels(), arg->numSamples);
+    Float  **outs = _assignMemory<Float>(ret_pIt,
+        delegate->getNumOutputChannels(), arg->numSamples);
+   
+   delegate->getPluginImpl()->processPlugin(ins, outs, arg->numSamples);
+   
+   delete [] ins;
+   delete [] outs;
+}
 //=============================================================================
 //  Class PluginSessionClient
 //=============================================================================
 //-----------------------------------------------------------------------------
-PluginSessionClient::PluginSessionClient(const std::string &id) : Session(id)
+PluginSessionClient::PluginSessionClient(const std::string &id) : Session(id),
+    tmpNumInputs(-1),
+    tmpNumOutputs(-1)
 {
 }
 //-----------------------------------------------------------------------------
@@ -131,9 +171,7 @@ PluginSessionClient::Ptr PluginSessionClient::create(const std::string &id) {
 //-----------------------------------------------------------------------------
 void PluginSessionClient::updatePluginInfo (::processing::PluginInfo &inf) {
     typedef PluginSessionHost::Operations::GetPluginInfo Op;
-    Op::RetPtr res = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>(),
-        FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT
-    );
+    Op::RetPtr res = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
     inf.location = res->location;
     inf.name = res->name;
     inf.vendor = res->vendor;
@@ -144,54 +182,42 @@ void PluginSessionClient::updatePluginInfo (::processing::PluginInfo &inf) {
 //-----------------------------------------------------------------------------
 void PluginSessionClient::turnOff() {
     typedef SessionHost::Operations::TurnOff Op;
-    waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>(),
-        FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT
-    );
+    waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
 }
 //-----------------------------------------------------------------------------
 void PluginSessionClient::turnOn() {
     typedef SessionHost::Operations::TurnOn Op;
-    waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>(),
-        FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT
-    );
+    waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
 }
 //-----------------------------------------------------------------------------
 void PluginSessionClient::openPlugin() {
     typedef SessionHost::Operations::Open Op;
-    waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>(),
-        FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT
-    );
+    waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
 }
 //-----------------------------------------------------------------------------
 void PluginSessionClient::closePlugin() {
     typedef SessionHost::Operations::Close Op;
-    waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>(),
-        FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT
-    );
+    waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
 }
 //-----------------------------------------------------------------------------
 size_t PluginSessionClient::getNumInputChannels() {
     typedef SessionHost::Operations::GetNumInputChannels Op;
-    Op::RetPtr res = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>(),
-        FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT
-    );
+    Op::RetPtr res = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
+    tmpNumInputs = res->num;
     return res->num;
 }
 //-----------------------------------------------------------------------------
 size_t PluginSessionClient::getNumOutputChannels() {
     typedef SessionHost::Operations::GetNumOutputChannels Op;
-    Op::RetPtr res = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>(),
-        FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT
-    );
+    Op::RetPtr res = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
+    tmpNumOutputs = res->num;
     return res->num;
 }
 //-----------------------------------------------------------------------------
 int PluginSessionClient::getNumParameter()
 {
     typedef SessionHost::Operations::GetNumParameter Op;
-    Op::RetPtr res = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>(),
-        FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT
-    );
+    Op::RetPtr res = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
     return res->num;
 }
 //-----------------------------------------------------------------------------
@@ -201,9 +227,7 @@ void PluginSessionClient::getParameterValues(
     typedef SessionHost::Operations::GetParameterValues Op;
     Op::ArgPtr args = static_cast<Op::ArgPtr>( getArgmem() );
     args->index = index;
-    Op::RetPtr res = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>(),
-        FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT
-    );
+    Op::RetPtr res = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
     p->setName(res->name);
     p->setDisplay(res->display);
     p->setLabel(res->label);
@@ -217,9 +241,48 @@ void PluginSessionClient::setParameterValues(
     Op::ArgPtr args = static_cast<Op::ArgPtr>( getArgmem() );
     args->index = index;
     args->value = p->getValue();
-    Op::RetPtr res = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>(),
-        FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT
-    );
+    Op::RetPtr res = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
     p->setDisplay(res->display);
+}
+//-----------------------------------------------------------------------------
+void PluginSessionClient::process(SessionHost::Float **srcIns,
+    SessionHost::Float **srcOuts, int numSamples)
+{
+    // Shared Session Memory:
+    // struct OP::Arg{}; <-argument memory
+    // void * raw; <-reserved memory
+    //   ...
+    //   ...
+    if (tmpNumInputs<0 || tmpNumOutputs<0) {
+        using sambag::com::exceptions::IllegalArgumentException;
+        SAMBAG_THROW(IllegalArgumentException, "PluginSessionClient numIO not set.");
+    }
+    typedef SessionHost::Operations::Process Op;
+    typedef SessionHost::Float Float;
+    using namespace ::sambag::com::interprocess;
+    Op::ArgPtr arg = static_cast<Op::ArgPtr>( getArgmem() );
+    Op::RetPtr ret = static_cast<Op::RetPtr>( getRetmem() );
+    
+    PointerIterator arg_pIt(arg + 1, getRequestArgmemSize() - sizeof(Op::Arg));
+    PointerIterator ret_pIt(ret + 1, getRequestRetmemSize() - sizeof(Op::Ret));
+    
+    Float **ins = _assignMemory<Float>(arg_pIt, tmpNumInputs, numSamples);
+    Float **outs = _assignMemory<Float>(ret_pIt, tmpNumOutputs, numSamples);
+   
+    // copy into shared session memory
+    for (int i=0; i<tmpNumInputs; ++i) {
+        memcpy(ins[i], srcIns[i], numSamples*sizeof(Float));
+    }
+    // call process
+    arg->numSamples = numSamples;
+    waitForResult (SessionHost::OpcM::getOPC<Op>());
+    
+    // copy result into out memory
+    for (int i=0; i<tmpNumOutputs; ++i) {
+        memcpy(srcOuts[i], outs[i], numSamples*sizeof(Float));
+    }
+    
+    delete [] ins;
+    delete [] outs;
 }
 }}} // namespace(s)

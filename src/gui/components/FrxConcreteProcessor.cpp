@@ -37,7 +37,7 @@ const char * InSwitch::Details::name         = "InputSwitch";
 const char * OutSwitch::Details::name        = "OutputSwitch";
 const char * ADSR::Details::name             = "ADSRTrigger";
 const char * PeakTracker::Details::name      = "PeakTracker";
-const char * MIDIReceiver::Details::name     = "MidiReceiver";
+const char * MIDIReceiver::Details::name     = "MidiProcessor";
 const char * RemoteChReceiver::Details::name = "RemoteChReceiver";
 const char * DCTester::Details::name         = "DCTester";
 

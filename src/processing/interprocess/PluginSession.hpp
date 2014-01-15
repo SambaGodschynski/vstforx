@@ -18,6 +18,7 @@
 namespace frx { namespace processing { namespace interprocess {
 class BridgeSession;
 class PluginSessionClient;
+namespace sci = sambag::com::interprocess;
 //=============================================================================
 /** 
   * @class PluginSession.
@@ -29,6 +30,8 @@ public:
 	typedef boost::shared_ptr<PluginSessionHost> Ptr;
     //-------------------------------------------------------------------------
     typedef PluginSessionClient SessionHost; // host for session calls
+    //-------------------------------------------------------------------------
+    typedef ::processing::Frames::T Float;
     //-------------------------------------------------------------------------
     FRX_OP_BEGIN_OPERATIONS
         FRX_OP_OPERATION(Open, FRX_OP_ARG(), FRX_OP_RET());
@@ -59,8 +62,12 @@ public:
             FRX_OP_ARG_2(int index, float value),
             FRX_OP_RET_1(char display[FRX_SHMSESS_MAX_STR_LENGTH])
         );
+        FRX_OP_OPERATION(Process,
+            FRX_OP_ARG_1(int numSamples), // sample memory is beyond of this struct
+            FRX_OP_RET()
+        );
         //---------------------------------------------------------------------
-        typedef LOKI_TYPELIST_10(Open,
+        typedef LOKI_TYPELIST_11(Open,
             Close,
             GetPluginInfo,
             TurnOn,
@@ -69,7 +76,8 @@ public:
             GetNumOutputChannels,
             GetNumParameter,
             GetParameterValues,
-            SetParameterValue                       // 10
+            SetParameterValue,                      // 10
+            Process
         ) OPs;
     FRX_OP_END_OPERATIONS_AND_IMPL_PROCESS(OPs)
     //-------------------------------------------------------------------------
@@ -102,6 +110,7 @@ public:
     FRX_OP_CALLBACK_METHOD(GetNumParameter);
     FRX_OP_CALLBACK_METHOD(GetParameterValues);
     FRX_OP_CALLBACK_METHOD(SetParameterValue);
+    FRX_OP_CALLBACK_METHOD(Process);
 }; // PluginSession
 //=============================================================================
 /** 
@@ -121,6 +130,10 @@ public:
     //-------------------------------------------------------------------------
     PluginSessionClient(const std::string &id);
 private:
+    //-------------------------------------------------------------------------
+    // will be updated with every getNumXXXChannels call
+    // needed for shared memory alloc in process
+    mutable int tmpNumInputs, tmpNumOutputs;
 public:
     //-------------------------------------------------------------------------
     /**
@@ -150,6 +163,7 @@ public:
     void closePlugin();
     size_t getNumInputChannels();
     size_t getNumOutputChannels();
+    void process(SessionHost::Float **ins, SessionHost::Float **outs, int numSamples);
 }; // PluginSession
 }}} // namespace(s)
 
