@@ -13,22 +13,35 @@
 #include <processing/IHostInfo.h>
 #include <processing/pluginTypes/PluginImpl.hpp>
 #include <processing/parameter/Parameter.h>
+#include <sambag/disco/components/Timer.hpp>
+#include <gui/HandyNamespaces.hpp>
 
+namespace frx { namespace gui { namespace components { namespace interprocess {
+    class WindowSessionHost;
+    typedef boost::shared_ptr<WindowSessionHost> WindowSessionHostPtr;
+}}}}
 namespace frx { namespace processing { namespace interprocess {
+namespace fgci = frx::gui::components::interprocess;
 //=============================================================================
 /** 
   * @class BridgePluginDelegate.
   * @brief Plugin interface used by bridge.
   */
-class BridgePluginDelegate {
+class BridgePluginDelegate : public sce::EventSender<sce::PropertyChanged> {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<BridgePluginDelegate> Ptr;
 protected:
     //-------------------------------------------------------------------------
-    BridgePluginDelegate() {}
+    BridgePluginDelegate();
+    //-------------------------------------------------------------------------
+    void onIdleTimer(void *src, const sdc::TimerEvent &ev);
+    //-------------------------------------------------------------------------
+    void onPluginPropertyChanged(void*, const sce::PropertyChanged &ev);
 private:
+    //-------------------------------------------------------------------------
+    sdc::Timer::Ptr idleTimer;
     //-------------------------------------------------------------------------
     APluginImpl *plugin;
     //-------------------------------------------------------------------------
@@ -37,6 +50,8 @@ private:
     APluginImpl::Parameters parameters;
     //-------------------------------------------------------------------------
     ::processing::PluginInfo pluginInfo;
+    //-------------------------------------------------------------------------
+    fgci::WindowSessionHostPtr windowSession;
 public:
     //-------------------------------------------------------------------------
     ~BridgePluginDelegate();
@@ -80,6 +95,12 @@ public:
     APluginImpl::Parameters & getParameters() {
         return parameters;
     }
+    //-------------------------------------------------------------------------
+    fgci::WindowSessionHostPtr getWindowSession();
+    //-------------------------------------------------------------------------
+    void openEditor();
+    //-------------------------------------------------------------------------
+    void closeEditor();
 }; // BridgePluginDelegate
 }}} // namespace(s)
 

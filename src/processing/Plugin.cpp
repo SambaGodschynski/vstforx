@@ -130,8 +130,8 @@ void Plugin::onImplPropertyChanged(void*,
         );
         return;
     }
-    if (ev.getPropertyName() == "editor location") {
-        frx::processing::APluginImpl::EditorLocation _new;
+    if (ev.getPropertyName() == "editor size") {
+        frx::processing::APluginImpl::EditorSize _new;
         ev.getNewValue(_new);
         com::events::EventSender<ResizeEditorEvent>::notifyEventListeners(
             this,

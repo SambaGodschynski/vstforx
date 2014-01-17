@@ -38,7 +38,7 @@ VSTPluginImpl::VSTPluginImpl( frx::processing::IHostInfo::Ptr hostInfo,
         OS_VSTPlugNode2x ( filename ), // initalisiert aEff
         frx::processing::APluginImpl (hostInfo, filename, parameters),  // ProcessAdapter
         onPlugChangeParameterIndex (-1),
-        oldEditorLocation(EditorLocation(0,0))
+        oldEditorSize(EditorSize(0,0))
 {
 	loadModule( HostCallBackOnInit (          // erzeugt Mutex lock bis fertig geladen
 		(audioMasterCallback)(hostInfo->getMasterCallback()),
@@ -342,17 +342,17 @@ void VSTPluginImpl::setStateData(size_t size, void* data)
 //-----------------------------------------------------------------------------
 void VSTPluginImpl::onPlugRequestWindowResize (size_t w, size_t h) {
     namespace sce=sambag::com::events;
-    EditorLocation _new(w, h);
-    if (oldEditorLocation!=_new) {
+    EditorSize _new(w, h);
+    if (oldEditorSize!=_new) {
         sce::EventSender<sce::PropertyChanged>::notifyListeners(this,
-            sce::PropertyChanged("editor location", oldEditorLocation, _new)
+            sce::PropertyChanged("editor size", oldEditorSize, _new)
         );
     }
-    oldEditorLocation = _new;
+    oldEditorSize = _new;
 }
 //-----------------------------------------------------------------------------
 void VSTPluginImpl::openEditor(void *window) {
-	if (!window)
+    if (!window)
 		return;
 	ERect *size = NULL;
 	// get editor size

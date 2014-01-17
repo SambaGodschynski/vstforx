@@ -11,6 +11,7 @@
 #include "SessionManager.hpp"
 #include "BridgeSession.hpp"
 #include <sambag/com/PlacementAlloc.hpp>
+#include <gui/components/interprocess/WindowSession.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 namespace {
@@ -49,6 +50,11 @@ PluginSessionHost::PluginSessionHost(BridgePluginDelegate::Ptr dg)
         ss.str());
     }
     setPriority(High);
+
+    dg->sce::EventSender<sce::PropertyChanged>::addEventListener(
+        boost::bind(&PluginSessionHost::onPluginPropertyChanged, this, _1, _2)
+    );
+
 }
 //-----------------------------------------------------------------------------
 PluginSessionHost::Ptr PluginSessionHost::create(BridgePluginDelegate::Ptr dg,
@@ -62,13 +68,39 @@ PluginSessionHost::Ptr PluginSessionHost::create(BridgePluginDelegate::Ptr dg,
     neu->host = host;
     return neu;
 }
+//-----------------------------------------------------------------------------
+void PluginSessionHost::onPluginPropertyChanged(void*,
+    const sce::PropertyChanged &ev)
+{
+    namespace newEvents=sambag::com::events;
+    namespace oldEvents=::com::events;
+    if (ev.getPropertyName() == "process delay") {
+        // TODO
+        return;
+    }
+    if (ev.getPropertyName() == "editor size") {
+        frx::processing::APluginImpl::EditorSize _new;
+        ev.getNewValue(_new);
+        onPluginEditorResized(_new);
+        return;
+    }
+}
+//-----------------------------------------------------------------------------
+void PluginSessionHost::onPluginEditorResized(const APluginImpl::EditorSize &val)
+{
+    SAMBAG_LOG_TRACE<<"PluginSessionHost";
+    typedef SessionHost::Operations::OnEditorResized Op;
+    Op::ArgPtr arg = static_cast<Op::ArgPtr>( getArgmem() );
+    arg->val = val;
+    waitForResult( SessionHost::OpcM::getOPC<Op>() );
+}
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionHost, GetPluginInfo) {
     const ::processing::PluginInfo info = delegate->getPluginInfo();
     shm_cpypath(ret->location, info.location);
-    shm_cpypath(ret->name, info.name);
-    shm_cpypath(ret->vendor, info.vendor);
+    shm_cpystr(ret->name, info.name);
+    shm_cpystr(ret->vendor, info.vendor);
     ret->isSynth = info.isSynth;
     ret->uid = info.uid;
     ret->type = info.pluginType;
@@ -153,6 +185,26 @@ FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionHost, Process) {
    
    delete [] ins;
    delete [] outs;
+}
+//-----------------------------------------------------------------------------
+FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionHost, GetEditorSessionId) {
+    if (!delegate->getPluginImpl()->hasEditor()) {
+        shm_cpystr(ret->id, "");
+        return;
+    }
+    shm_cpystr(ret->id, delegate->getWindowSession()->getId());
+}
+//-----------------------------------------------------------------------------
+FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionHost, HasEditor) {
+    ret->value = delegate->getPluginImpl()->hasEditor();
+}
+//-----------------------------------------------------------------------------
+FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionHost, OpenEditor) {
+    delegate->openEditor();
+}
+//-----------------------------------------------------------------------------
+FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionHost, CloseEditor) {
+    delegate->closeEditor();
 }
 //=============================================================================
 //  Class PluginSessionClient
@@ -277,12 +329,44 @@ void PluginSessionClient::process(SessionHost::Float **srcIns,
     arg->numSamples = numSamples;
     waitForResult (SessionHost::OpcM::getOPC<Op>());
     
-    // copy result into out memory
+    // copy result into out memry
     for (int i=0; i<tmpNumOutputs; ++i) {
         memcpy(srcOuts[i], outs[i], numSamples*sizeof(Float));
     }
     
     delete [] ins;
     delete [] outs;
+}
+//-----------------------------------------------------------------------------
+bool PluginSessionClient::hasEditor() {
+    typedef SessionHost::Operations::HasEditor Op;
+    Op::RetPtr res = waitForResult<Op::RetPtr>(SessionHost::OpcM::getOPC<Op>());
+    return res->value;
+}
+//-----------------------------------------------------------------------------
+std::string PluginSessionClient::getEditorSessionId() {
+    typedef SessionHost::Operations::GetEditorSessionId Op;
+    Op::RetPtr res = waitForResult<Op::RetPtr>(SessionHost::OpcM::getOPC<Op>());
+    return res->id;
+}
+
+//-----------------------------------------------------------------------------
+void PluginSessionClient::openEditor() {
+    typedef SessionHost::Operations::OpenEditor Op;
+    waitForResult(SessionHost::OpcM::getOPC<Op>());
+}
+//-----------------------------------------------------------------------------
+void PluginSessionClient::closeEditor() {
+    typedef SessionHost::Operations::CloseEditor Op;
+    waitForResult(SessionHost::OpcM::getOPC<Op>());
+}
+///////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------
+FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionClient, OnEditorResized) {
+    sce::EventSender<sce::PropertyChanged>::notifyListeners(
+        this,
+        sce::PropertyChanged("editor size",
+            APluginImpl::EditorSize(0,0), arg->val)
+    );
 }
 }}} // namespace(s)

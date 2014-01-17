@@ -403,11 +403,18 @@ typename Browser::Ptr openDetailsBrowser(fgc::FrxCircuidViewPtr view,
 }
 //-----------------------------------------------------------------------------
 FrxPluginEditor::Ptr createPluginEditor(fgc::FrxCircuidViewPtr view, 
-	fgc::FrxComponentPtr c)
+	fgc::FrxComponentPtr c, frx::processing::IPluginAdapter::Ptr plugin)
 {
 	FrxPluginEditor::Ptr ed;
-	ed = FrxPluginEditor::create( view->getLastContainer<sdc::Window>() );
-	ed->setTitle(c->getName() + " editor");
+    
+    // bridged plugins have an own window impl, default is NULL
+    sdc::AWindowImplPtr winImpl = plugin->getWindowImpl();
+    if (winImpl) {
+        ed=FrxPluginEditor::create(winImpl, view->getLastContainer<sdc::Window>());
+    } else {
+        ed=FrxPluginEditor::create(view->getLastContainer<sdc::Window>());
+	}
+    ed->setTitle(c->getName() + " editor");
 	return ed;
 }
 //-----------------------------------------------------------------------------
@@ -1108,7 +1115,7 @@ void FrxControl::openClosePluginEditor(fgc::FrxCircuidViewPtr view,
 		return;
 	}
 	// else: create editor
-    ed = createPluginEditor(view, c);
+    ed = createPluginEditor(view, c, plugin);
 	addWindow(ed);
 	c->putClientProperty("plugin.editor", FrxPluginEditor::WPtr(ed));
 	installBrowserListeners(ed, view, c);

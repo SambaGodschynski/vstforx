@@ -35,9 +35,21 @@ protected:
 		 Super(parent)
 	{
 	}
+	//-------------------------------------------------------------------------
+	FrxPluginEditor(sdc::AWindowImpl::Ptr impl, sdc::Window::Ptr parent = sdc::Window::Ptr()) :
+		 Super(impl, parent)
+	{
+	}
+
 private:
 public:
+    //-------------------------------------------------------------------------
 	SAMBAG_STD_WINDOW_CREATOR(FrxPluginEditor)
+    //-------------------------------------------------------------------------
+	static Ptr create(sdc::AWindowImpl::Ptr winImpl,
+        sdc::Window::Ptr parentWindow=sdc::Window::Ptr());
+    //-------------------------------------------------------------------------
+    ~FrxPluginEditor();
 }; // FrxPluginEditor
 }}} // namespace(s)
 

@@ -13,6 +13,7 @@
 #include <boost/weak_ptr.hpp>
 #include "PluginImpl.hpp"
 #include <processing/interprocess/PluginSession.hpp>
+#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace processing {
 namespace oldPr = ::processing;
@@ -102,15 +103,25 @@ public:
     virtual std::pair<size_t, void*> getStateData() const;
     //-------------------------------------------------------------------------
     virtual void setStateData(size_t size, void* data);
-    ///////////////////////////////////////////////////////////////////////////
-    // Fields
+    //-------------------------------------------------------------------------
+    virtual bool isBridged() const {
+        return true;
+    }
+    //-------------------------------------------------------------------------
+    AWindowImplPtr getWindowImpl();
 protected:
     //-------------------------------------------------------------------------
     void parameterChanged(int index);
     //-------------------------------------------------------------------------
     void initParameters();
     //-------------------------------------------------------------------------
+    void onPluginPropertyChanged(void*, const sce::PropertyChanged &ev);
+    ///////////////////////////////////////////////////////////////////////////
+    // Fields
+    //-------------------------------------------------------------------------
     mutable interprocess::PluginSessionClient::Ptr session;
+    //-------------------------------------------------------------------------
+    mutable AWindowImplPtr windowSession;
 };
 }} // namespace(s)
 

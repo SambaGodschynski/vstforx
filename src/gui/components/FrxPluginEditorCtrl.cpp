@@ -6,6 +6,7 @@
  */
 
 #include "FrxPluginEditorCtrl.hpp"
+#include <sambag/com/Common.hpp>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -13,21 +14,25 @@ namespace frx { namespace gui { namespace components {
 //=============================================================================
 //-----------------------------------------------------------------------------
 void FrxPluginEditorCtrl::open(sdc::WindowPtr win) {
+    Plugin::Ptr plugin = getPlugin();
 	if (!plugin)
 		return;
 	
     plugin->openEditor(win);
-	idleTimer = sdc::Timer::create(10);
-	idleTimer->setNumRepetitions(-1);
-	idleTimer->sce::EventSender<sdc::TimerEvent>::addTrackedEventListener(
-		boost::bind(&FrxPluginEditorCtrl::onIdleTimer, this, _1, _2),
-		win
-	);
-	idleTimer->start();
-	__isOpen = true;
+    __isOpen = true;
+    
+    if (!plugin->isBridged()) {
+        idleTimer = sdc::Timer::create(10);
+        idleTimer->setNumRepetitions(-1);
+        idleTimer->sce::EventSender<sdc::TimerEvent>::addTrackedEventListener(
+            boost::bind(&FrxPluginEditorCtrl::onIdleTimer, this, _1, _2),
+            win);
+        idleTimer->start();
+    }
 }
 //-----------------------------------------------------------------------------
 void FrxPluginEditorCtrl::close(sdc::WindowPtr win) {
+    Plugin::Ptr plugin = getPlugin();
 	if (!plugin)
 		return;
 	__isOpen = false;
@@ -38,12 +43,16 @@ void FrxPluginEditorCtrl::close(sdc::WindowPtr win) {
 }
 //-----------------------------------------------------------------------------
 void FrxPluginEditorCtrl::setPlugin(Plugin::Ptr plugin) {
-	this->plugin = plugin;
+	this->_plugin = plugin;
 }
 //-----------------------------------------------------------------------------
 void FrxPluginEditorCtrl::onIdleTimer(void *src, const sdc::TimerEvent &ev) {
+    Plugin::Ptr plugin = getPlugin();
 	if (!plugin || !__isOpen)
 		return;
 	plugin->onEditorIdle();
+}
+//-----------------------------------------------------------------------------
+FrxPluginEditorCtrl::~FrxPluginEditorCtrl() {
 }
 }}} // namespace(s)

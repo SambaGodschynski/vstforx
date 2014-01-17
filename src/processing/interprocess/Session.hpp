@@ -63,7 +63,7 @@
         }                                                                               \
     }
 #define FRX_OP_BEGIN_OPERATIONS struct Operations {
-#define FRX_OP_END_OPERATIONS(ops) typedef helper::AutoOPC<ops> OpcManager; }; \
+#define FRX_OP_END_OPERATIONS(ops) typedef frx::processing::interprocess::helper::AutoOPC<ops> OpcManager; }; \
     typedef Operations::OpcManager OpcM;
 
 #define FRX_OP_END_OPERATIONS_AND_IMPL_PROCESS(ops) FRX_OP_END_OPERATIONS(ops) FRX_OP_PROCESS_IMPL
@@ -276,7 +276,7 @@ private:
     /**
      * @return the number of microseconds which were slept
      */
-    inline int sleep() {
+    inline int sleep() const {
         SAMBAG_ASSERT(priority);
         if (*priority == (Integer)High) {
             boost::this_thread::sleep(boost::posix_time::microsec(
@@ -297,7 +297,7 @@ private:
     void process();
     //-------------------------------------------------------------------------
     struct IPChannel;
-    IPChannel *channelA, *channelB, *processChannel, *requestChannel;
+    mutable IPChannel *channelA, *channelB, *processChannel, *requestChannel;
     //-------------------------------------------------------------------------
     SharedMemoryObjectPtr shm;
     MappedRegionPtr mapped_region;
@@ -330,7 +330,7 @@ private:
     //-------------------------------------------------------------------------
     void startProcessThread();
     //-------------------------------------------------------------------------
-    void * waitForResultImpl(Opc opc, Integer timeout);
+    void * waitForResultImpl(Opc opc, Integer timeout) const;
 protected:
     //-------------------------------------------------------------------------
     virtual void processImpl(Opc opc, void *argmen, void *retmem) = 0;
@@ -354,12 +354,12 @@ protected:
      * @return retmem ptr
      */
     template <typename T>
-    T waitForResult(Opc opc, Integer timeout=FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT)
+    T waitForResult(Opc opc, Integer timeout=FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT) const
     {
         return static_cast<T>(waitForResultImpl(opc, timeout));
     }
     //-------------------------------------------------------------------------
-    void waitForResult(Opc opc, Integer timeout=FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT)
+    void waitForResult(Opc opc, Integer timeout=FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT) const
     {
         waitForResultImpl(opc, timeout);
     }
@@ -373,6 +373,17 @@ protected:
      * @return retmem for an request.
      */
     void * getRetmem() const;
+    //-------------------------------------------------------------------------
+    /**
+     * @return argmem for an request.
+     */
+    void * getArgmem();
+    //-------------------------------------------------------------------------
+    /**
+     * @return retmem for an request.
+     */
+    void * getRetmem();
+
     //-------------------------------------------------------------------------
     /**
      * @note creates a session.

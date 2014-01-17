@@ -17,5 +17,17 @@ void FrxPluginEditor::postConstructor() {
 	getContentPane()->setOpaque(false);
 	getWindowImpl()->setFlag(sdc::WindowFlags::WND_RAW, true);
 }
-
+//-----------------------------------------------------------------------------
+FrxPluginEditor::Ptr
+FrxPluginEditor::create(sdc::AWindowImpl::Ptr winImpl, sdc::Window::Ptr parentWindow)
+{
+    Ptr res(new FrxPluginEditor(winImpl, parentWindow));
+    res->self = res;
+    res->postConstructor();
+    res->initWindow();
+    return res;
+}
+//-----------------------------------------------------------------------------
+FrxPluginEditor::~FrxPluginEditor() {
+}
 }}} // namespace(s)

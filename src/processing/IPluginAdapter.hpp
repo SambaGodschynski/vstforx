@@ -9,7 +9,14 @@
 #define SAMBAG_IPLUGINADAPTER_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include <sambag/disco/components/Forward.hpp>
+
+
+namespace sambag { namespace disco { namespace components {
+    class AWindowImpl;
+    typedef boost::shared_ptr<AWindowImpl> AWindowImplPtr;
+}}}
 
 namespace frx { namespace processing {
 namespace sd = sambag::disco;
@@ -23,6 +30,7 @@ class IPluginAdapter {
 public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<IPluginAdapter> Ptr;
+	typedef boost::weak_ptr<IPluginAdapter> WPtr;
 	//-------------------------------------------------------------------------
 	virtual void openEditor(sdc::WindowPtr win) = 0;
 	//-------------------------------------------------------------------------
@@ -35,6 +43,14 @@ public:
 	virtual bool isSynth() const = 0;
 	//-------------------------------------------------------------------------
 	virtual std::string getName() const = 0;
+    //-------------------------------------------------------------------------
+    /**
+     * @return WindowImpl if the plugin has its own. Can be NULL. 
+     * (Bridged plugins have its own impl.)
+     */
+    virtual sdc::AWindowImplPtr getWindowImpl() = 0;
+    //-------------------------------------------------------------------------
+    virtual bool isBridged() const = 0;
 }; // IPluginAdapter
 }} // namespace(s)
 

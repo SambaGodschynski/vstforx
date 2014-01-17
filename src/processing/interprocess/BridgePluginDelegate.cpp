@@ -9,6 +9,8 @@
 #include <processing/Plugin.h>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <processing/pluginTypes/PluginFactory.hpp>
+#include <gui/components/interprocess/WindowSession.hpp>
+#include <gui/components/FrxPluginEditor.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 namespace {
@@ -79,7 +81,15 @@ BridgePluginDelegate::create(size_t blockSize,
             "couldn't access: " + location
         );
     }
+    
+    res->plugin->sce::EventSender<sce::PropertyChanged>::addEventListener(
+        boost::bind(&BridgePluginDelegate::onPluginPropertyChanged, res.get(), _1, _2)
+    );
+
     return res;
+}
+//-----------------------------------------------------------------------------
+BridgePluginDelegate::BridgePluginDelegate() {
 }
 //-----------------------------------------------------------------------------
 BridgePluginDelegate::~BridgePluginDelegate() {
@@ -90,5 +100,48 @@ const ::processing::PluginInfo & BridgePluginDelegate::getPluginInfo() {
     plugin->updatePluginInfo(pluginInfo);
     return pluginInfo;
 }
+//-----------------------------------------------------------------------------
+fgci::WindowSessionHostPtr BridgePluginDelegate::getWindowSession() {
+    if (windowSession) {
+        return windowSession;
+    }
+    windowSession = fgci::WindowSessionHost::create();
+    return windowSession;
+}
+//-----------------------------------------------------------------------------
+void BridgePluginDelegate::openEditor() {
+    SAMBAG_LOG_TRACE<<"OPEN";
+    sdc::Window::Ptr win = getWindowSession()->getWindow();
+    void *wndPtr = win->getWindowImpl()->getSystemHandle();
+    plugin->openEditor(wndPtr);
 
+    idleTimer = sdc::Timer::create(10);
+    idleTimer->setNumRepetitions(-1);
+    idleTimer->sce::EventSender<sdc::TimerEvent>::addTrackedEventListener(
+        boost::bind(&BridgePluginDelegate::onIdleTimer, this, _1, _2),
+            win);
+    idleTimer->start();
+
+}
+//-----------------------------------------------------------------------------
+void BridgePluginDelegate::closeEditor() {
+    void *wndPtr = getWindowSession()->getWindow()->getWindowImpl()->getSystemHandle();
+    plugin->closeEditor(wndPtr);
+    
+    if (idleTimer) {
+        idleTimer->stop();
+    }
+
+}
+//-----------------------------------------------------------------------------
+void BridgePluginDelegate::onIdleTimer(void *src, const sdc::TimerEvent &ev) {
+	plugin->onEditorIdle();
+}
+//-----------------------------------------------------------------------------
+void BridgePluginDelegate::onPluginPropertyChanged(void*,
+        const sambag::com::events::PropertyChanged &ev)
+{
+    SAMBAG_LOG_TRACE<<"BridgePluginDelegate";
+    sce::EventSender<sce::PropertyChanged>::notifyListeners(this, ev);
+}
 }}} // namespace(s)

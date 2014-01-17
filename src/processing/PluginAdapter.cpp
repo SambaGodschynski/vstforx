@@ -124,4 +124,14 @@ void PluginAdapter::setPreset(int i) {
 	Adaptee::Ptr plug = getPlugin();
 	plug->setProgram(i);
 }
+//-----------------------------------------------------------------------------
+sdc::AWindowImplPtr PluginAdapter::getWindowImpl() {
+    Adaptee::Ptr plug = getPlugin();
+    return plug->getPluginImpl()->getWindowImpl();
+}
+//-----------------------------------------------------------------------------
+bool PluginAdapter::isBridged() const {
+    Adaptee::Ptr plug = getPlugin();
+    return plug->getPluginImpl()->isBridged();
+}
 }} // namespace(s)

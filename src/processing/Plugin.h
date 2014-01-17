@@ -20,6 +20,7 @@
 #include "pluginTypes/PluginImpl.hpp"
 #include <processing/ModelFactory.hpp>
 
+
 namespace processing {
 //=============================================================================
 /**
@@ -159,6 +160,10 @@ protected:
         PluginInfo::PluginType type
     );
 public:
+    //-------------------------------------------------------------------------
+    frx::processing::APluginImpl * getPluginImpl() const {
+        return impl;
+    }
     //-------------------------------------------------------------------------
     static Ptr create(frx::processing::IHostInfo::Ptr, const std::string &location);
     //-------------------------------------------------------------------------

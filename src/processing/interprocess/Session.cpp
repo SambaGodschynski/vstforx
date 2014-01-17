@@ -192,7 +192,7 @@ void Session::assignMemory(sambag::com::interprocess::PointerIterator &pIt,
     channelB->retmem = Allocator::rebind<char>::other(alloc).allocate(channelB->retsize);
 }
 //-----------------------------------------------------------------------------
-void * Session::waitForResultImpl(Opc opc, Integer timeout) {
+void * Session::waitForResultImpl(Opc opc, Integer timeout) const {
     using namespace boost::interprocess;
     timeout*=1000; // millisec to microsec
     boost::posix_time::ptime ptout = boost::posix_time::from_time_t(std::time(NULL));
@@ -224,6 +224,15 @@ void * Session::getArgmem() const {
 void * Session::getRetmem() const {
     return requestChannel->retmem.get();
 }
+//-----------------------------------------------------------------------------
+void * Session::getArgmem() {
+    return requestChannel->argmem.get();
+}
+//-----------------------------------------------------------------------------
+void * Session::getRetmem() {
+    return requestChannel->retmem.get();
+}
+
 //-----------------------------------------------------------------------------
 size_t Session::getRequestArgmemSize() const {
     return requestChannel->argsize;

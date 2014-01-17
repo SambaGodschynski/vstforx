@@ -47,7 +47,7 @@ public:
 	static MyString extractNameFromFilename ( const string &fileName );
 private:
     //-------------------------------------------------------------------------
-    EditorLocation oldEditorLocation;
+    EditorSize oldEditorSize;
     //-------------------------------------------------------------------------
     mutable sambag::com::ArithmeticWrapper<size_t> _processDelay;
 	//-------------------------------------------------------------------------

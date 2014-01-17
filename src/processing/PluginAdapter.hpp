@@ -14,6 +14,7 @@
 #include "Plugin.h"
 #include "Forward.hpp"
 
+
 namespace frx { namespace processing {
 //=============================================================================
 /** 
@@ -68,6 +69,14 @@ public:
 	virtual std::string getPresetName(size_t i) const;
 	//-------------------------------------------------------------------------
 	virtual void setPreset(int i);
+    //-------------------------------------------------------------------------
+    /**
+     * @return WindowImpl if the plugin has its own. Can be NULL. 
+     * (Bridged plugins have its own impl.)
+     */
+    virtual sdc::AWindowImplPtr getWindowImpl();
+    //-------------------------------------------------------------------------
+    virtual bool isBridged() const;
 }; // PluginAdapter
 }} // namespace(s)
 

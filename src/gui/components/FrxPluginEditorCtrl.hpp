@@ -35,7 +35,7 @@ protected:
 	//-------------------------------------------------------------------------
 	typedef frx::processing::IPluginAdapter Plugin;
 	//-------------------------------------------------------------------------
-	Plugin::Ptr plugin;
+	Plugin::WPtr _plugin;
 	//-------------------------------------------------------------------------
 	sdc::Timer::Ptr idleTimer;
 private:
@@ -46,6 +46,8 @@ private:
 	 */
 	sambag::com::ArithmeticWrapper<bool> __isOpen;
 public:
+	//-------------------------------------------------------------------------
+    ~FrxPluginEditorCtrl();
 	//-------------------------------------------------------------------------
 	void onIdleTimer(void *src, const sdc::TimerEvent &ev);
 	//-------------------------------------------------------------------------
@@ -62,7 +64,7 @@ public:
 	void setPlugin(Plugin::Ptr plugin);
 	//-------------------------------------------------------------------------
 	Plugin::Ptr getPlugin() const {
-		return plugin;
+		return _plugin.lock();
 	}
 }; // FrxPluginEditorCtrl
 }}} // namespace(s)

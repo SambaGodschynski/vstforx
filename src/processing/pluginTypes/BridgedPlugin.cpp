@@ -7,6 +7,7 @@
 
 #include "BridgedPlugin.hpp"
 #include <processing/interprocess/BridgeSessionManager.hpp>
+#include <gui/components/interprocess/WindowSession.hpp>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -21,6 +22,14 @@ BridgedPlugin::BridgedPlugin(IHostInfo::Ptr hI, const std::string &location,
     session = BridgeSessionManager::instance().createPluginSession(
         location, hI->getSampleRate(), hI->getBlockSize()
     );
+    session->sce::EventSender<sce::PropertyChanged>::addEventListener(
+        boost::bind(&BridgedPlugin::onPluginPropertyChanged, this, _1, _2)
+    );
+}
+//-----------------------------------------------------------------------------
+void BridgedPlugin::onPluginPropertyChanged(void*, const sce::PropertyChanged &ev)
+{
+    sce::EventSender<sce::PropertyChanged>::notifyListeners(this, ev);
 }
 //-----------------------------------------------------------------------------
 void BridgedPlugin::parameterChanged(int index) {
@@ -83,13 +92,15 @@ size_t BridgedPlugin::getNumOutputChannels() const {
 }
 //-----------------------------------------------------------------------------
 bool BridgedPlugin::hasEditor() const {
-    return false;
+    return session->hasEditor();
 }
 //-----------------------------------------------------------------------------
 void BridgedPlugin::openEditor(void *window) {
+    session->openEditor();
 }
 //-----------------------------------------------------------------------------
 void BridgedPlugin::closeEditor(void *window) {
+    session->closeEditor();
 }
 //-----------------------------------------------------------------------------
 void BridgedPlugin::onEditorIdle() {
@@ -141,7 +152,17 @@ std::pair<size_t, void*> BridgedPlugin::getStateData() const {
 //-----------------------------------------------------------------------------
 void BridgedPlugin::setStateData(size_t size, void* data) {
 }
-
+//-----------------------------------------------------------------------------
+BridgedPlugin::AWindowImplPtr BridgedPlugin::getWindowImpl() {
+    using frx::gui::components::interprocess::WindowSessionClient;
+    AWindowImplPtr res = windowSession;
+    if (res) {
+        return res;
+    }
+    std::string id = session->getEditorSessionId();
+    windowSession = res = WindowSessionClient::create(id);
+    return res;
+}
 ///////////////////////////////////////////////////////////////////////////////
 APluginImpl * createBridgedPluginImpl(IHostInfo::Ptr hI,
     APluginImpl::Parameters* par, const std::string& loc)

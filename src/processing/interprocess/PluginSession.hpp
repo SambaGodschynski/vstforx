@@ -66,8 +66,14 @@ public:
             FRX_OP_ARG_1(int numSamples), // sample memory is beyond of this struct
             FRX_OP_RET()
         );
+        FRX_OP_OPERATION(GetEditorSessionId, FRX_OP_ARG(),
+            FRX_OP_RET_1(char id[FRX_SHMSESS_MAX_STR_LENGTH])
+        );
+        FRX_OP_OPERATION(HasEditor, FRX_OP_ARG(), FRX_OP_RET_1(bool value));
+        FRX_OP_OPERATION(OpenEditor, FRX_OP_ARG(), FRX_OP_RET());
+        FRX_OP_OPERATION(CloseEditor, FRX_OP_ARG(), FRX_OP_RET());
         //---------------------------------------------------------------------
-        typedef LOKI_TYPELIST_11(Open,
+        typedef LOKI_TYPELIST_15(Open,
             Close,
             GetPluginInfo,
             TurnOn,
@@ -77,7 +83,11 @@ public:
             GetNumParameter,
             GetParameterValues,
             SetParameterValue,                      // 10
-            Process
+            Process,
+            GetEditorSessionId,
+            HasEditor,
+            OpenEditor,
+            CloseEditor
         ) OPs;
     FRX_OP_END_OPERATIONS_AND_IMPL_PROCESS(OPs)
     //-------------------------------------------------------------------------
@@ -87,6 +97,11 @@ private:
     BridgeSession *host;
     //-------------------------------------------------------------------------
     BridgePluginDelegate::Ptr delegate;
+protected:
+    //-------------------------------------------------------------------------
+    void onPluginPropertyChanged(void*, const sce::PropertyChanged &ev);
+    //-------------------------------------------------------------------------
+    void onPluginEditorResized(const APluginImpl::EditorSize &val);
 public:
     //-------------------------------------------------------------------------
     BridgeSession * getBridgeSession() const {
@@ -111,29 +126,42 @@ public:
     FRX_OP_CALLBACK_METHOD(GetParameterValues);
     FRX_OP_CALLBACK_METHOD(SetParameterValue);
     FRX_OP_CALLBACK_METHOD(Process);
+    FRX_OP_CALLBACK_METHOD(GetEditorSessionId);
+    FRX_OP_CALLBACK_METHOD(HasEditor);
+    FRX_OP_CALLBACK_METHOD(OpenEditor);
+    FRX_OP_CALLBACK_METHOD(CloseEditor);
 }; // PluginSession
 //=============================================================================
 /** 
   * @class PluginSessionClient.
   */
-class PluginSessionClient : public Session {
+class PluginSessionClient : public Session,
+    public sce::EventSender<sce::PropertyChanged>
+{
 //=============================================================================
 public:
-	//-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
 	typedef boost::shared_ptr<PluginSessionClient> Ptr;
-   //-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
     typedef PluginSessionHost SessionHost; // host for session calls
     //-------------------------------------------------------------------------
     FRX_OP_BEGIN_OPERATIONS
-        typedef Loki::NullType OPs;
+        FRX_OP_OPERATION(OnEditorResized,
+            FRX_OP_ARG_1(APluginImpl::EditorSize val),
+            FRX_OP_RET()
+        );
+        typedef LOKI_TYPELIST_1(OnEditorResized) OPs;
     FRX_OP_END_OPERATIONS_AND_IMPL_PROCESS(OPs)
     //-------------------------------------------------------------------------
-    PluginSessionClient(const std::string &id);
+    FRX_OP_CALLBACK_METHOD(OnEditorResized);
 private:
     //-------------------------------------------------------------------------
     // will be updated with every getNumXXXChannels call
     // needed for shared memory alloc in process
     mutable int tmpNumInputs, tmpNumOutputs;
+protected:
+    //-------------------------------------------------------------------------
+    PluginSessionClient(const std::string &id);
 public:
     //-------------------------------------------------------------------------
     /**
@@ -164,6 +192,13 @@ public:
     size_t getNumInputChannels();
     size_t getNumOutputChannels();
     void process(SessionHost::Float **ins, SessionHost::Float **outs, int numSamples);
+    /**
+     * @return id of WindowSessionHost if exists 
+     */
+    std::string getEditorSessionId();
+    bool hasEditor();
+    void openEditor();
+    void closeEditor();
 }; // PluginSession
 }}} // namespace(s)
 

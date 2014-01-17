@@ -9,6 +9,7 @@
 #define SAMBAG_PLUGINIMPL_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include <processing/IHostInfo.h>
 #include <sambag/dsp/IMidiEvents.hpp>
 #include <processing/PlugInfo.h>
@@ -17,15 +18,19 @@
 #include <sambag/com/events/PropertyChanged.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 
-namespace processing {
-    namespace parameter {
-        class Parameter;
-        typedef boost::shared_ptr<Parameter> ParameterPtr;
-    }
-}
+
+namespace processing { namespace parameter {
+    class Parameter;
+    typedef boost::shared_ptr<Parameter> ParameterPtr;
+}}
+
+namespace sambag { namespace disco { namespace components {
+    class AWindowImpl;
+    typedef boost::shared_ptr<AWindowImpl> AWindowImplPtr;
+    typedef boost::weak_ptr<AWindowImpl> AWindowImplWPtr;
+}}}
 
 namespace frx { namespace processing {
-
 //=============================================================================
 /**
  * @class: PluginArchitectureMissmatch.
@@ -50,7 +55,13 @@ struct APluginImpl :
     //-------------------------------------------------------------------------
     typedef std::pair<int, int> EditorLocation;
     //-------------------------------------------------------------------------
+    typedef std::pair<int, int> EditorSize;
+    //-------------------------------------------------------------------------
     typedef std::vector<oldPr::parameter::ParameterPtr> Parameters;
+    //-------------------------------------------------------------------------
+    typedef sambag::disco::components::AWindowImplPtr AWindowImplPtr;
+    //-------------------------------------------------------------------------
+    typedef sambag::disco::components::AWindowImplWPtr AWindowImplWPtr;
     //-------------------------------------------------------------------------
     /**
      * @param 
@@ -133,6 +144,21 @@ struct APluginImpl :
     virtual std::pair<size_t, void*> getStateData() const = 0;
     //-------------------------------------------------------------------------
     virtual void setStateData(size_t size, void* data) = 0;
+    //-------------------------------------------------------------------------
+    /**
+     * @return true if plugin is bridged.
+     */
+    virtual bool isBridged() const {
+        return false;
+    }
+    //-------------------------------------------------------------------------
+    /**
+     * @return WindowImpl if the plugin has its own. Can be NULL. 
+     * (Bridged plugins have its own impl.)
+     */
+    virtual AWindowImplPtr getWindowImpl() {
+        return AWindowImplPtr();
+    }
     //-------------------------------------------------------------------------
     ///////////////////////////////////////////////////////////////////////////
     // Fields
