@@ -184,6 +184,10 @@ public:
 	int getProductVersion() const { 
 		return FRX_VERSION_MAJOR*1000 + FRX_VERSION_MINOR*100 + FRX_VERSION_MICRO;
 	}
+    //-------------------------------------------------------------------------
+    virtual MasterType getMasterType() const {
+        return VST2X;
+    }
 };
 }} // namespace
 

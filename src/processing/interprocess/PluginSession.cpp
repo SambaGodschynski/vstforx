@@ -12,6 +12,7 @@
 #include "BridgeSession.hpp"
 #include <sambag/com/PlacementAlloc.hpp>
 #include <gui/components/interprocess/WindowSession.hpp>
+#include <sambag/disco/components/Timer.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 namespace {
@@ -27,7 +28,7 @@ namespace {
 //=============================================================================
 //-----------------------------------------------------------------------------
 PluginSessionHost::PluginSessionHost(BridgePluginDelegate::Ptr dg)
-    :  Session( SessionManager::createUniqueName(),
+    :  Session( "ps-"+SessionManager::createUniqueName(),
                 ChannelSize(
                     _minmem(dg->getBlockSize(), dg->getNumInputChannels())  + OpcM::MaxArgmemSize,
                     _minmem(dg->getBlockSize(), dg->getNumOutputChannels()) + OpcM::MaxRetmemSize
@@ -93,6 +94,14 @@ void PluginSessionHost::onPluginEditorResized(const APluginImpl::EditorSize &val
     Op::ArgPtr arg = static_cast<Op::ArgPtr>( getArgmem() );
     arg->val = val;
     waitForResult( SessionHost::OpcM::getOPC<Op>() );
+}
+//-----------------------------------------------------------------------------
+sdsp::HostTimeInfo PluginSessionHost::getHostTimeInfo(int filter) {
+    typedef SessionHost::Operations::GetTimeInfo Op;
+    Op::ArgPtr arg = static_cast<Op::ArgPtr>( getArgmem() );
+    arg->filter = (Integer)filter;
+    Op::RetPtr ret = waitForResult<Op::RetPtr>(SessionHost::OpcM::getOPC<Op>());
+    return ret->info;
 }
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
@@ -218,6 +227,7 @@ PluginSessionClient::PluginSessionClient(const std::string &id) : Session(id),
 //-----------------------------------------------------------------------------
 PluginSessionClient::Ptr PluginSessionClient::create(const std::string &id) {
     Ptr res = Ptr( new PluginSessionClient(id) );
+    res->self = res;
     return res;
 }
 //-----------------------------------------------------------------------------
@@ -360,13 +370,31 @@ void PluginSessionClient::closeEditor() {
     typedef SessionHost::Operations::CloseEditor Op;
     waitForResult(SessionHost::OpcM::getOPC<Op>());
 }
+//-----------------------------------------------------------------------------
+void PluginSessionClient::setHostInfo(IHostInfo::Ptr hI) {
+    hostInfo = hI;
+}
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionClient, OnEditorResized) {
-    sce::EventSender<sce::PropertyChanged>::notifyListeners(
-        this,
-        sce::PropertyChanged("editor size",
-            APluginImpl::EditorSize(0,0), arg->val)
+    
+    sdc::Timer::Ptr tm = sdc::Timer::create(50);
+    tm->sce::EventSender<sdc::TimerEvent>::addTrackedEventListener(
+        boost::bind( &PluginSessionClient::doSendEvent<sce::PropertyChanged>,
+            this,
+            sce::PropertyChanged("editor size", APluginImpl::EditorSize(0,0), arg->val)
+        ),
+            self
     );
+    tm->start();
+    
+}
+//-----------------------------------------------------------------------------
+FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionClient, GetTimeInfo) {
+    if (!hostInfo) {
+        SAMBAG_LOG_WARN<<"PluginSessionClient: HostInfo=NULL.";
+        return;
+    }
+    ret->info = *(hostInfo->getHostTimeInfo(arg->filter));
 }
 }}} // namespace(s)

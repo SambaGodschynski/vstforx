@@ -16,6 +16,7 @@
 #include <com/FrxConfig.h>
 #include <sambag/com/Thread.hpp>
 #include <sambag/com/events/Events.hpp>
+#include <processing/IHostInfo.h>
 
 namespace frx { namespace processing { namespace interprocess {
 class PluginSessionHost;
@@ -117,11 +118,8 @@ public:
         typedef LOKI_TYPELIST_1(OnBridgeClosing) OPs;
     FRX_OP_END_OPERATIONS_AND_IMPL_PROCESS(OPs)
     //-------------------------------------------------------------------------
-    PluginSessionClientPtr createPluginSession(
-        const std::string &path,
-        float sampleRate,
-        Integer blockSize
-    );
+    PluginSessionClientPtr createPluginSession(const std::string &path,
+        IHostInfo::Ptr hI);
     //-------------------------------------------------------------------------
     void closePluginSession(PluginSessionClientPtr session);
     //-------------------------------------------------------------------------

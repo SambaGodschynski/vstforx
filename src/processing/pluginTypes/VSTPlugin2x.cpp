@@ -14,8 +14,11 @@
 #include <limits>
 #include <OS_Specific/OS_com.h>
 #include "TestAeffect.hpp"
+#include <sambag/com/Thread.hpp>
+#include <sambag/dsp/TimeInfoVst2xHelper.hpp>
 
 #define MAX_BFF_STR 2048
+static const int FRX_VST2XPLUGIN_MAX_IDLE_MS = 20;
 
 typedef AEffect* (*PluginEntryProc) (audioMasterCallback audioMaster);
 
@@ -438,30 +441,200 @@ VstIntPtr VSTPluginImpl::_hostCallback ( AEffect* effect,
 			pl->onIOChanged();
 			return 0;
 	}
-	frx::processing::IHostInfo::Ptr hI =  pl->hostInfo.lock();
+    using frx::processing::IHostInfo;
+	IHostInfo::Ptr hI =  pl->hostInfo.lock();
 	if (!hI) {
 		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
 			"Hostinfo == NULL"
 		);
 	}
-    if (!hI->getMasterCallback()) {
-        SAMBAG_LOG_TRACE<<"plugin -> host missing("<<opcode<<")";
-        return 0;
+    if (hI->getMasterType() == IHostInfo::VST2X) {
+        // master is vst2x we can call master directly:
+        audioMasterCallback hostCallback =
+            (audioMasterCallback)(hI->getMasterCallback());
+        if ( !hostCallback ) {
+            SAMBAG_LOG_WARN<<"VST2X no mastercallback";
+            return 0;
+        }
+        return hostCallback(
+            ( (AudioEffectX*)(hI->getEffectPtr()) )->getAeffect(),
+            opcode,
+            index,
+            value,
+            ptr,
+            opt
+        );
     }
-	// no specific handling: call VSTForx's host
-	audioMasterCallback hostCallback = (audioMasterCallback)(hI->getMasterCallback());
-	if ( !hostCallback ) 
-		return 0;
-	// eigentlicher host callback ( VSTForx nach host )
-	return hostCallback( 
-		( (AudioEffectX*)(hI->getEffectPtr()) )->getAeffect(),
-		opcode, 
-		index, 
-		value, 
-		ptr, 
-		opt
-	);
+    VstInt32 ret = 0;
+    bool suc = false;
+    boost::tie(ret, suc) =
+        pl->processRequest(hI, effect, opcode, index, value, ptr, opt);
+    
+    if (suc) {
+        return ret;
+    }
+    SAMBAG_LOG_WARN<<"plugin vst2.x couldn't process request("<<opcode<<")";
+    return 0;
 }
+//-----------------------------------------------------------------------------
+std::pair<VstIntPtr, bool> VSTPluginImpl::processRequest( frx::processing::IHostInfo::Ptr hI,
+                    AEffect* effect,
+                    VstInt32 opcode, 
+                    VstInt32 index, 
+                    VstIntPtr value,
+                    void* ptr,
+                    float opt)
+{
+    switch (opcode) {
+        //---------------------------------------------------------------------
+        case audioMasterIdle:
+            boost::this_thread::sleep( boost::posix_time::milliseconds(
+                FRX_VST2XPLUGIN_MAX_IDLE_MS
+            ));
+            return std::make_pair(0, true);
+        //---------------------------------------------------------------------
+        case DECLARE_VST_DEPRECATED(audioMasterWantMidi):
+            return std::make_pair(0, true);
+        //---------------------------------------------------------------------
+        case audioMasterGetSampleRate:
+            return std::make_pair((VstInt32)hI->getSampleRate(), true);
+        //---------------------------------------------------------------------
+        case audioMasterGetBlockSize:
+            return std::make_pair(hI->getBlockSize(), true);
+        //---------------------------------------------------------------------
+        case audioMasterUpdateDisplay:
+            return std::make_pair(0, true);
+        //---------------------------------------------------------------------
+        case audioMasterBeginEdit:
+            return std::make_pair(0, true);
+        //---------------------------------------------------------------------
+        case audioMasterEndEdit:
+            return std::make_pair(0, true);
+        //---------------------------------------------------------------------
+        case audioMasterAutomate:
+            return std::make_pair(0, true);
+        //---------------------------------------------------------------------
+        case DECLARE_VST_DEPRECATED(audioMasterGetPreviousPlug):
+            return std::make_pair(0, true);
+        //---------------------------------------------------------------------
+        case DECLARE_VST_DEPRECATED(audioMasterGetNextPlug):
+            return std::make_pair(0, true);
+        //---------------------------------------------------------------------
+        case DECLARE_VST_DEPRECATED(audioMasterWillReplaceOrAccumulate):
+            return std::make_pair(0, true);
+        //---------------------------------------------------------------------
+        case audioMasterGetTime: {
+            using namespace sambag::dsp;
+            HostTimeInfo::Filter filter =
+                timeInfoVst2xHelper::toHostTimeFilter(value);
+            HostTimeInfo * ti = hI->getHostTimeInfo(filter);
+            timeInfoVst2xHelper::convert(tmpInfo, *ti);
+            tmpInfo.flags |= value; // set filter back to timeinfo
+                                    // because HostTimeInfo doesn't save the filter
+                                    // flags but VstTimeInfo does.
+            return std::make_pair((VstIntPtr)&tmpInfo, true);
+        }
+        //---------------------------------------------------------------------
+        case audioMasterGetCurrentProcessLevel:
+            return std::make_pair(kVstProcessLevelUnknown, true);
+        //---------------------------------------------------------------------
+        // TODOs:
+        case DECLARE_VST_DEPRECATED(audioMasterPinConnected):
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case audioMasterProcessEvents:
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case DECLARE_VST_DEPRECATED(audioMasterSetTime):
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case DECLARE_VST_DEPRECATED(audioMasterTempoAt):
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case DECLARE_VST_DEPRECATED(audioMasterGetNumAutomatableParameters):
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case DECLARE_VST_DEPRECATED(audioMasterGetParameterQuantization):
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case DECLARE_VST_DEPRECATED(audioMasterNeedIdle):
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case audioMasterGetInputLatency:
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case audioMasterGetOutputLatency:
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case audioMasterGetAutomationState:
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case audioMasterOfflineStart:
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case audioMasterOfflineRead:
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case audioMasterOfflineGetCurrentPass:
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case audioMasterOfflineGetCurrentMetaPass:
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case DECLARE_VST_DEPRECATED(audioMasterSetOutputSampleRate):
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case DECLARE_VST_DEPRECATED(audioMasterGetOutputSpeakerArrangement):
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case audioMasterGetVendorString:
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case audioMasterGetProductString:
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case audioMasterGetVendorVersion:
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case audioMasterVendorSpecific:
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case DECLARE_VST_DEPRECATED(audioMasterSetIcon):
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case audioMasterCanDo:
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case audioMasterGetLanguage:
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case DECLARE_VST_DEPRECATED(audioMasterOpenWindow):
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case DECLARE_VST_DEPRECATED(audioMasterCloseWindow):
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case audioMasterGetDirectory:
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case audioMasterOpenFileSelector:
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case audioMasterCloseFileSelector:
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case DECLARE_VST_DEPRECATED(audioMasterEditFile):
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case DECLARE_VST_DEPRECATED(audioMasterGetChunkFile):
+            return std::make_pair(0, false);
+        //---------------------------------------------------------------------
+        case DECLARE_VST_DEPRECATED(audioMasterGetInputSpeakerArrangement):
+            return std::make_pair(0, false);
+    }
+    return std::make_pair(0, false);
+}
+
 } //namespace processing
 
 //-----------------------------------------------------------------------------

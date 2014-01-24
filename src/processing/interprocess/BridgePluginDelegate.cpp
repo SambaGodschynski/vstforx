@@ -11,10 +11,12 @@
 #include <processing/pluginTypes/PluginFactory.hpp>
 #include <gui/components/interprocess/WindowSession.hpp>
 #include <gui/components/FrxPluginEditor.hpp>
+#include <processing/interprocess/PluginSession.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 namespace {
     struct _HostInfo : public IHostInfo {
+        TimeInfo tmpInfo;
         _HostInfo(float sr, int bs, BridgePluginDelegate *master) :
             sampleRate(sr), blockSize(bs), master(master)
         {
@@ -27,10 +29,10 @@ namespace {
         {
             return blockSize;
         }
-        virtual TimeInfo * 	getHostTimeInfo (int filter)
+        virtual TimeInfo * getHostTimeInfo (int filter)
         {
-            // TODO:
-            return NULL;
+            tmpInfo = master->getPluginSession()->getHostTimeInfo(filter);
+            return &tmpInfo;
         }
         virtual void * getEffectPtr ()
         {
@@ -41,6 +43,9 @@ namespace {
         {
             // TODO:
             return NULL;
+        }
+        virtual MasterType getMasterType() const {
+            return BRIDGE;
         }
         virtual bool ioChanged () {
             // TODO:
@@ -87,6 +92,10 @@ BridgePluginDelegate::create(size_t blockSize,
     );
 
     return res;
+}
+//-----------------------------------------------------------------------------
+void BridgePluginDelegate::setPluginSession(PluginSessionHostPtr session) {
+    pluginSession = session;
 }
 //-----------------------------------------------------------------------------
 BridgePluginDelegate::BridgePluginDelegate() {

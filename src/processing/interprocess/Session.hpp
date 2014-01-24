@@ -386,14 +386,14 @@ protected:
 
     //-------------------------------------------------------------------------
     /**
-     * @note creates a session.
+     * @note creates a host session.
      * uses channel A for process and B for request
      * @param creates session with this id
      */
     Session(const std::string &id, ChannelSize a, ChannelSize b);
     //-------------------------------------------------------------------------
     /**
-     * @note creates a session.
+     * @note creates a client session.
      * uses channel B for process and A for request
      * @param tries to open this id
      */
@@ -418,6 +418,8 @@ public:
     const std::string & getId() const {
         return id;
     }
+    //-------------------------------------------------------------------------
+    std::string name() const;
     //-------------------------------------------------------------------------
     virtual ~Session();
     //-------------------------------------------------------------------------

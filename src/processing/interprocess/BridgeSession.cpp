@@ -59,6 +59,7 @@ FRX_OP_CALLBACK_METHOD_IMPL(BridgeSession, CreatePluginSession) {
             BridgePluginDelegate::Ptr delegate =
                 BridgePluginDelegate::create(arg->blockSize, arg->sampleRate, arg->path);
             PluginSessionHost::Ptr ps = PluginSessionHost::create(delegate, this);
+            delegate->setPluginSession(ps);
             result_str = ps->getId();
             plugHostMap[result_str] = ps;
             ret->succeed = true;
@@ -91,17 +92,14 @@ BridgeSessionClient::Ptr BridgeSessionClient::create(const SessionId &id) {
     return res;
 }
 //-----------------------------------------------------------------------------
-PluginSessionClientPtr BridgeSessionClient::createPluginSession(
-        const std::string &path,
-        float sampleRate,
-        Integer blockSize)
+PluginSessionClientPtr BridgeSessionClient::createPluginSession(const std::string &path, IHostInfo::Ptr hI)
 {
     SAMBAG_LOG_INFO<<"try to establish a plugin session for: "<<path;
     typedef BridgeSession::Operations::CreatePluginSession Op;
     Op::ArgPtr args = static_cast<Op::ArgPtr>(getArgmem());
     shm_cpypath(args->path, path);
-    args->sampleRate = sampleRate;
-    args->blockSize = blockSize;
+    args->sampleRate = hI->getSampleRate();
+    args->blockSize = hI->getBlockSize();
     Op::RetPtr rets = NULL;
     try {
         rets = waitForResult<Op::RetPtr>(
@@ -123,6 +121,7 @@ PluginSessionClientPtr BridgeSessionClient::createPluginSession(
     }
     std::string id(rets->result);
     PluginSessionClient::Ptr res = PluginSessionClient::create(id);
+    res->setHostInfo(hI);
     SAMBAG_LOG_INFO<<"plugin session estabished: "<<path;
     return res;
 }

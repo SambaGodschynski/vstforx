@@ -19,7 +19,7 @@ namespace frx { namespace gui { namespace components { namespace interprocess {
 //=============================================================================
 //-----------------------------------------------------------------------------
 WindowSessionHost::WindowSessionHost()
-    :  fpi::Session( fpi::SessionManager::createUniqueName(),
+    :  fpi::Session( "ws-"+fpi::SessionManager::createUniqueName(),
                 ChannelSize(OpcM::MaxArgmemSize, OpcM::MaxRetmemSize),
                 ChannelSize(OpcM::MaxArgmemSize, OpcM::MaxRetmemSize)
         )

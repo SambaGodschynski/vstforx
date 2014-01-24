@@ -71,6 +71,9 @@ struct IHostInfo {
 	 * @note: avoid using this function.
 	 */
 	virtual void * getMasterCallback() = 0;
+    //-------------------------------------------------------------------------
+    enum MasterType { VST2X, VST3X, AU, BRIDGE };
+    virtual MasterType getMasterType() const = 0;
 	//-------------------------------------------------------------------------
 	virtual ~IHostInfo(){}
 	//-------------------------------------------------------------------------

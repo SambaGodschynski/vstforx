@@ -19,9 +19,7 @@ BridgedPlugin::BridgedPlugin(IHostInfo::Ptr hI, const std::string &location,
         APluginImpl(hI, location, parameters)
 {
     using namespace interprocess;
-    session = BridgeSessionManager::instance().createPluginSession(
-        location, hI->getSampleRate(), hI->getBlockSize()
-    );
+    session = BridgeSessionManager::instance().createPluginSession(location, hI);
     session->sce::EventSender<sce::PropertyChanged>::addEventListener(
         boost::bind(&BridgedPlugin::onPluginPropertyChanged, this, _1, _2)
     );

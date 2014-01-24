@@ -57,6 +57,9 @@ namespace {
 		virtual void * getMasterCallback() {
 			return hostInfo->getMasterCallback();
 		}
+        virtual MasterType getMasterType() const {
+			return hostInfo->getMasterType();
+		}
 	};
 	//-------------------------------------------------------------------------
 	typedef boost::bimap<fgc::FrxCircuidViewPtr, VstForxPlug*>

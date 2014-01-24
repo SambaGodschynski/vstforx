@@ -55,15 +55,15 @@ Session::~Session() {
 }
 //-----------------------------------------------------------------------------
 void Session::destroyShm() {
-    SAMBAG_LOG_INFO<<"destroying: " << id;
+    SAMBAG_LOG_INFO<<"destroying: " << name();
     mapped_region.reset();
     shm.reset();
     ipFree(id.c_str());
-    SAMBAG_LOG_INFO<<"destroyed: " << id;
+    SAMBAG_LOG_INFO<<"destroyed: " << name();
 }
 //-----------------------------------------------------------------------------
 void Session::process() {
-    SAMBAG_LOG_INFO<<"session "<<id<<" process thread started";
+    SAMBAG_LOG_INFO<<"session "<<name()<<" process thread started";
     while (channelA && channelB)
     {
         if ( processChannel->opc != IDLE ) {
@@ -84,7 +84,7 @@ void Session::process() {
         }
         sleep();
     }
-    SAMBAG_LOG_INFO<<"session "<<id<<" process thread closed";
+    SAMBAG_LOG_INFO<<"session "<<name()<<" process thread closed";
 }
 //-----------------------------------------------------------------------------
 void Session::startProcessThread() {
@@ -94,12 +94,12 @@ void Session::startProcessThread() {
 }
 //-----------------------------------------------------------------------------
 void Session::openBuffer() {
-    SAMBAG_LOG_INFO<<"try to establish session: '"<<id<<"'";
+    SAMBAG_LOG_INFO<<"try to establish session: '"<<name()<<"'";
     using namespace ::sambag::com::interprocess;
     try {
         shm = findSharedMemoryObject(id.c_str());
     } catch (const boost::interprocess::interprocess_exception &ex) {
-        SAMBAG_THROW(Exception, "create session '" + id + "' failed: " + ex.what());
+        SAMBAG_THROW(Exception, "create session '" + name() + "' failed: " + ex.what());
     }
 
     void *raw;
@@ -117,7 +117,7 @@ void Session::openBuffer() {
     processChannel = channelB;
     requestChannel = channelA;
     startProcessThread();
-    SAMBAG_LOG_INFO<<"session established: '"<<id<<"'";
+    SAMBAG_LOG_INFO<<"session established: '"<<name()<<"'";
 }
 //-----------------------------------------------------------------------------
 Integer Session::getNeededSize(ChannelSize a, ChannelSize b) {
@@ -131,14 +131,14 @@ Integer Session::getNeededSize(ChannelSize a, ChannelSize b) {
 }
 //-----------------------------------------------------------------------------
 void Session::createBuffer(ChannelSize a, ChannelSize b) {
-    SAMBAG_LOG_INFO<<"try to create session: '"<<id<<"'";
+    SAMBAG_LOG_INFO<<"try to create session: '"<<name()<<"'";
 	UInteger byteSize = getNeededSize(a, b);
 
     using namespace ::sambag::com::interprocess;
     try {
         shm = createSharedMemoryObject(id.c_str(), byteSize);
     } catch (const boost::interprocess::interprocess_exception &ex) {
-        SAMBAG_THROW(Exception, "create session '" + id + "' failed: " + ex.what());
+        SAMBAG_THROW(Exception, "create session '" + name() + "' failed: " + ex.what());
     }
     void *raw;
     boost::tie(raw, memorySize, mapped_region) = ipMalloc( shm, byteSize );
@@ -156,7 +156,7 @@ void Session::createBuffer(ChannelSize a, ChannelSize b) {
     processChannel = channelA;
     requestChannel = channelB;
     startProcessThread();
-    SAMBAG_LOG_INFO<<"session created: '"<<id<<"'";
+    SAMBAG_LOG_INFO<<"session created: '"<<name()<<"'";
 }
 //-----------------------------------------------------------------------------
 void Session::assignMemory(sambag::com::interprocess::PointerIterator &pIt,
@@ -192,6 +192,16 @@ void Session::assignMemory(sambag::com::interprocess::PointerIterator &pIt,
     channelB->retmem = Allocator::rebind<char>::other(alloc).allocate(channelB->retsize);
 }
 //-----------------------------------------------------------------------------
+std::string Session::name() const {
+    if (!requestChannel) {
+        return "session-? " + getId();
+    }
+    bool host = requestChannel == channelB;
+    std::stringstream ss;
+    ss<<"session-"<<(host?"host":"client")<<" "<<getId();
+    return ss.str();
+}
+//-----------------------------------------------------------------------------
 void * Session::waitForResultImpl(Opc opc, Integer timeout) const {
     using namespace boost::interprocess;
     timeout*=1000; // millisec to microsec
@@ -201,7 +211,7 @@ void * Session::waitForResultImpl(Opc opc, Integer timeout) const {
     scoped_lock<Mutex> lock(requestChannel->mutex, ptout);
     if (!lock) {
         std::stringstream ss;
-        ss<<"Session "<<id<<" OPC("<<opc<<") timed out";
+        ss<<name()<<" OPC("<<opc<<") timed out";
         SAMBAG_THROW(TimeOut, ss.str());
     }
     requestChannel->opc = opc;
@@ -210,7 +220,7 @@ void * Session::waitForResultImpl(Opc opc, Integer timeout) const {
         waited+=sleep();
         if (waited>=timeout) {
             std::stringstream ss;
-            ss<<"Session "<<id<<" OPC("<<opc<<") timed out";
+            ss<<name()<<" OPC("<<opc<<") timed out";
             SAMBAG_THROW(TimeOut, ss.str());
         }
     }

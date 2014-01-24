@@ -21,6 +21,9 @@ namespace frx { namespace gui { namespace components { namespace interprocess {
     typedef boost::shared_ptr<WindowSessionHost> WindowSessionHostPtr;
 }}}}
 namespace frx { namespace processing { namespace interprocess {
+class PluginSessionHost;
+typedef boost::shared_ptr<PluginSessionHost> PluginSessionHostPtr;
+typedef boost::weak_ptr<PluginSessionHost> PluginSessionHostWPtr;
 namespace fgci = frx::gui::components::interprocess;
 //=============================================================================
 /** 
@@ -52,6 +55,8 @@ private:
     ::processing::PluginInfo pluginInfo;
     //-------------------------------------------------------------------------
     fgci::WindowSessionHostPtr windowSession;
+    //-------------------------------------------------------------------------
+    PluginSessionHostWPtr pluginSession;
 public:
     //-------------------------------------------------------------------------
     ~BridgePluginDelegate();
@@ -65,6 +70,12 @@ public:
     APluginImpl * getPluginImpl() const {
         return plugin;
     }
+    //-------------------------------------------------------------------------
+    PluginSessionHostPtr getPluginSession() const {
+        return pluginSession.lock();
+    }
+    //-------------------------------------------------------------------------
+    void setPluginSession(PluginSessionHostPtr session);
     //-------------------------------------------------------------------------
     IHostInfo::Ptr getHostInfo() const {
         return hostInfo;

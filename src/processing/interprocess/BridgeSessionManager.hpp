@@ -80,7 +80,7 @@ public:
         const ::processing::PluginInfo &pI);
     //-------------------------------------------------------------------------
     PluginSessionClientPtr createPluginSession(const std::string &path,
-        float sampleRate, int blockSize);
+        IHostInfo::Ptr hI);
     //-------------------------------------------------------------------------
     void closePluginSession(PluginSessionClientPtr session);
 }; // BridgeSessionManager

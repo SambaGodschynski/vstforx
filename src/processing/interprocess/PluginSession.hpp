@@ -9,16 +9,19 @@
 #define SAMBAG_PLUGINSESSION_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include "Session.hpp"
 #include "ShmCom.hpp"
 #include "BridgePluginDelegate.hpp"
 #include <processing/pluginTypes/PluginImpl.hpp>
 #include <processing/parameter/Parameter.h>
+#include <sambag/dsp/HostTimeInfo.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 class BridgeSession;
 class PluginSessionClient;
 namespace sci = sambag::com::interprocess;
+namespace sdsp = sambag::dsp;
 //=============================================================================
 /** 
   * @class PluginSession.
@@ -97,12 +100,13 @@ private:
     BridgeSession *host;
     //-------------------------------------------------------------------------
     BridgePluginDelegate::Ptr delegate;
-protected:
+public:
     //-------------------------------------------------------------------------
     void onPluginPropertyChanged(void*, const sce::PropertyChanged &ev);
     //-------------------------------------------------------------------------
     void onPluginEditorResized(const APluginImpl::EditorSize &val);
-public:
+    //-------------------------------------------------------------------------
+    sdsp::HostTimeInfo getHostTimeInfo(int filter);
     //-------------------------------------------------------------------------
     BridgeSession * getBridgeSession() const {
         return host;
@@ -143,6 +147,8 @@ public:
     //-------------------------------------------------------------------------
 	typedef boost::shared_ptr<PluginSessionClient> Ptr;
     //-------------------------------------------------------------------------
+	typedef boost::weak_ptr<PluginSessionClient> WPtr;
+    //-------------------------------------------------------------------------
     typedef PluginSessionHost SessionHost; // host for session calls
     //-------------------------------------------------------------------------
     FRX_OP_BEGIN_OPERATIONS
@@ -150,19 +156,46 @@ public:
             FRX_OP_ARG_1(APluginImpl::EditorSize val),
             FRX_OP_RET()
         );
-        typedef LOKI_TYPELIST_1(OnEditorResized) OPs;
+        FRX_OP_OPERATION(GetTimeInfo,
+            FRX_OP_ARG_1(Integer filter),
+            FRX_OP_RET_1(sambag::dsp::HostTimeInfo info)
+        );
+        typedef LOKI_TYPELIST_2(OnEditorResized,
+            GetTimeInfo
+        ) OPs;
     FRX_OP_END_OPERATIONS_AND_IMPL_PROCESS(OPs)
     //-------------------------------------------------------------------------
     FRX_OP_CALLBACK_METHOD(OnEditorResized);
+    FRX_OP_CALLBACK_METHOD(GetTimeInfo);
 private:
     //-------------------------------------------------------------------------
     // will be updated with every getNumXXXChannels call
     // needed for shared memory alloc in process
     mutable int tmpNumInputs, tmpNumOutputs;
+    //-------------------------------------------------------------------------
+    IHostInfo::Ptr hostInfo;
 protected:
     //-------------------------------------------------------------------------
     PluginSessionClient(const std::string &id);
+    //-------------------------------------------------------------------------
+    /**
+     * @brief since Session channel communication can be blocked when
+     * both channels are in use we notify events delayed to prevent running
+     * into mutual blocking. 
+     */
+    template <class Event>
+    void doSendEvent(Event &ev) {
+        sce::EventSender<Event>::notifyListeners(this, ev);
+    }
+    //-------------------------------------------------------------------------
+    WPtr self;
 public:
+    //-------------------------------------------------------------------------
+    void setHostInfo(IHostInfo::Ptr hI);
+    //-------------------------------------------------------------------------
+    IHostInfo::Ptr getHostInfo() const {
+        return hostInfo;
+    }
     //-------------------------------------------------------------------------
     /**
      * @brief creates new session

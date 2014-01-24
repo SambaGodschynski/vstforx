@@ -19,6 +19,7 @@
 #include "VstShellPlugin.hpp"
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include "PluginImpl.hpp"
+#include <aeffectx.h>
 
 namespace processing{
 using namespace com;
@@ -46,6 +47,8 @@ public:
 	 */
 	static MyString extractNameFromFilename ( const string &fileName );
 private:
+    //-------------------------------------------------------------------------
+    VstTimeInfo tmpInfo;
     //-------------------------------------------------------------------------
     EditorSize oldEditorSize;
     //-------------------------------------------------------------------------
@@ -114,6 +117,19 @@ private:
 	int onPlugChangeParameterIndex;
 	//-------------------------------------------------------------------------
 	void getShellPluginInfos(ShellPluginInfos &out);
+    //-------------------------------------------------------------------------
+    /**
+     * @brief processes plugin VST2x request call
+     * @return return code and true if processing succeeded
+     */
+    std::pair<VstIntPtr, bool> processRequest( frx::processing::IHostInfo::Ptr hI,
+        AEffect* effect,
+        VstInt32 opcode, 
+        VstInt32 index, 
+        VstIntPtr value,
+        void* ptr,
+        float opt
+    );
 protected:
 public:
 	//-------------------------------------------------------------------------

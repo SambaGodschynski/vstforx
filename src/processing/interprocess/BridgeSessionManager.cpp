@@ -38,7 +38,7 @@ BridgeSessionManager & BridgeSessionManager::instance() {
 }
 //-----------------------------------------------------------------------------
 std::string BridgeSessionManager::getBridgeSessionId() const {
-    return SessionManager::createUniqueName();
+    return "bs-"+SessionManager::createUniqueName();
 }
 //-----------------------------------------------------------------------------
 void BridgeSessionManager::setBridgePath(const std::string &path) {
@@ -92,16 +92,14 @@ BridgeSessionClientPtr BridgeSessionManager::getBridgeClient() {
 PluginSessionClientPtr BridgeSessionManager::
 createPluginSession(IHostInfo::Ptr hI, const ::processing::PluginInfo &pI)
 {
-   return createPluginSession(pI.location, hI->getSampleRate(), hI->getBlockSize());
+   return createPluginSession(pI.location, hI);
 }
 //-----------------------------------------------------------------------------
 PluginSessionClientPtr BridgeSessionManager::createPluginSession(
-    const std::string &path, float sampleRate, int blockSize)
+    const std::string &path, IHostInfo::Ptr hI)
 {
     BridgeSessionClient::Ptr session = getBridgeClient();
-    PluginSessionClientPtr res = session->createPluginSession(
-        path, sampleRate, blockSize
-    );
+    PluginSessionClientPtr res = session->createPluginSession(path, hI);
     return res;
 }
 //-----------------------------------------------------------------------------
