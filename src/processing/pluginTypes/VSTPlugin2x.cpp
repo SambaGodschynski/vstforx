@@ -362,6 +362,7 @@ void VSTPluginImpl::openEditor(void *window) {
 	aEff->dispatcher ( aEff, effEditGetRect, 0, 0, &size, 0);
 	// set size
 	if ( size ) {
+        oldEditorSize = EditorSize(0,0); // reset old size
         onPlugRequestWindowResize(size->right - size->left, size->bottom - size->top);
 	}
     aEff->dispatcher ( aEff, effEditOpen, 0, 0, window, 0);

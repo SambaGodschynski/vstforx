@@ -73,9 +73,7 @@ protected:
     void onClose();
 public:
     //-------------------------------------------------------------------------
-    FrxPluginEditorPtr getWindow() const {
-        return window;
-    }
+    FrxPluginEditorPtr getWindow();
     //-------------------------------------------------------------------------
     /**
      * creates new session

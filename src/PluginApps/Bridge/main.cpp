@@ -8,15 +8,23 @@
 #include <processing/interprocess/BridgeSession.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
 #include <sambag/com/BoostTimer2.hpp>
+#include <sambag/com/Thread.hpp>
 
 enum {
-    FRX_BRIDGE_AUTOCLOSE_CHECK_INTERVAL = 5000
+    FRX_BRIDGE_AUTOCLOSE_CHECK_INTERVAL = 1000
 };
-  
-void checkIsNeeded(frx::processing::interprocess::BridgeSession *session_ptr) {
-    if ( session_ptr->getNumPluginSessions() == 0 ) {
-        session_ptr->stopMainLoop();
-    }
+void checkForClosing(frx::processing::interprocess::BridgeSession *session_ptr)
+{
+    static sambag::com::Mutex mutex;
+    SAMBAG_WHEN_UNLOCKED(mutex)
+        if ( session_ptr->getNumPluginSessions() > 0 ) {
+            return;
+        }
+        boost::this_thread::sleep(boost::posix_time::seconds(5)); // we wait
+        if ( session_ptr->getNumPluginSessions() == 0 ) { // still unused
+            session_ptr->stopMainLoop();
+        }
+    SAMBAG_END_WHEN_UNLOCKED
 }
 
 int main(int argc, char **argv) {
@@ -40,7 +48,7 @@ int main(int argc, char **argv) {
         AutoCloseTimer::Ptr autoclosetimer = AutoCloseTimer::create(FRX_BRIDGE_AUTOCLOSE_CHECK_INTERVAL);
         autoclosetimer->setNumRepetitions(-1);
         autoclosetimer->addEventListener(
-            boost::bind(&checkIsNeeded, &session)
+            boost::bind(&checkForClosing, &session)
         );
         autoclosetimer->start();
         // start main session
@@ -51,7 +59,6 @@ int main(int argc, char **argv) {
     } catch (...) {
         SAMBAG_LOG_ERR<<id<<": failed, unknown error";
     }
-    
     AutoCloseTimer::closeAllTimer();
     return 0;
 }

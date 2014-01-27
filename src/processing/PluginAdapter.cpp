@@ -62,11 +62,16 @@ void PluginAdapter::openEditor(sdc::WindowPtr win) {
 	Adaptee::Ptr plug = getPlugin();
 	if (!plug)
 		return;
-
-	plug->com::events::EventSender<pr::ResizeEditorEvent>::addTrackedEventListener(
-		boost::bind(&onPluginEditorResize, _1, _2, sdc::WindowWPtr(win)),
-		win
-	);
+    
+    bool r = false;
+    win->getClientProperty("plugin.editor.resizelistener-set", r);
+    if (!r) {
+        plug->com::events::EventSender<pr::ResizeEditorEvent>::addTrackedEventListener(
+            boost::bind(&onPluginEditorResize, _1, _2, sdc::WindowWPtr(win)),
+            win
+        );
+        win->putClientProperty("plugin.editor.resizelistener-set", true);
+    }
 
 	plug->openEditor(
         ::__getHandlerForVstPlugins_(winImpl->getSystemHandle())
@@ -102,7 +107,11 @@ void PluginAdapter::onEditorIdle() {
 //-----------------------------------------------------------------------------
 std::string PluginAdapter::getName() const {
 	Adaptee::Ptr plug = getPlugin();
-	return plug->getPlugName();
+	std::string res = plug->getPlugName();
+    if (isBridged()) {
+        res+=" - bridged";
+    }
+    return res;
 }
 //-----------------------------------------------------------------------------
 bool PluginAdapter::isSynth() const {

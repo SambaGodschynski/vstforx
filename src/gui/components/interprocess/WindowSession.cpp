@@ -24,13 +24,6 @@ WindowSessionHost::WindowSessionHost()
                 ChannelSize(OpcM::MaxArgmemSize, OpcM::MaxRetmemSize)
         )
 {
-    window = FrxPluginEditor::create();
-    window->getWindowImpl()->sce::EventSender<sdc::OnCloseEvent>::addEventListener(
-        boost::bind(&WindowSessionHost::onClose, this)
-    );
-    window->getWindowImpl()->sce::EventSender<sdc::OnOpenEvent>::addEventListener(
-        boost::bind(&WindowSessionHost::onOpen, this)
-    );
 }
 //-----------------------------------------------------------------------------
 WindowSessionHost::Ptr WindowSessionHost::create() {
@@ -46,55 +39,71 @@ void WindowSessionHost::onOpen() {
 void WindowSessionHost::onClose() {
     typedef SessionHost::Operations::OnClose Op;
     waitForResult( SessionHost::OpcM::getOPC<Op>() );
+    
+    window.reset();
 }
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
+FrxPluginEditorPtr WindowSessionHost::getWindow() {
+    if (window) {
+        return window;
+    }
+    window = FrxPluginEditor::create();
+    window->getWindowImpl()->sce::EventSender<sdc::OnCloseEvent>::addEventListener(
+        boost::bind(&WindowSessionHost::onClose, this)
+    );
+    window->getWindowImpl()->sce::EventSender<sdc::OnOpenEvent>::addEventListener(
+        boost::bind(&WindowSessionHost::onOpen, this)
+    );
+    return window;
+}
+//-----------------------------------------------------------------------------
 FRX_OP_CALLBACK_METHOD_IMPL(WindowSessionHost, Open) {
-    window->open();
+    getWindow()->open();
 }
 //-----------------------------------------------------------------------------
 FRX_OP_CALLBACK_METHOD_IMPL(WindowSessionHost, Close) {
-    window->close();
+    getWindow()->close();
 }
 //-----------------------------------------------------------------------------
 FRX_OP_CALLBACK_METHOD_IMPL(WindowSessionHost, SetBounds) {
-    window->setWindowBounds( arg->bounds );
+    getWindow()->setWindowBounds( arg->bounds );
 }
 //-----------------------------------------------------------------------------
 FRX_OP_CALLBACK_METHOD_IMPL(WindowSessionHost, GetBounds) {
-    ret->bounds = window->getWindowBounds();
+    ret->bounds = getWindow()->getWindowBounds();
 }
 //-----------------------------------------------------------------------------
 FRX_OP_CALLBACK_METHOD_IMPL(WindowSessionHost, IsVisible) {
-    ret->value = window->isVisible();
+    ret->value = getWindow()->isVisible();
 }
 //-----------------------------------------------------------------------------
 FRX_OP_CALLBACK_METHOD_IMPL(WindowSessionHost, SetTitle) {
-    window->setTitle(arg->title);
+    getWindow()->setTitle(arg->title);
 }
 //-----------------------------------------------------------------------------
 FRX_OP_CALLBACK_METHOD_IMPL(WindowSessionHost, GetTitle) {
-    fpi::shm_cpystr(ret->title, window->getTitle());
+    fpi::shm_cpystr(ret->title, getWindow()->getTitle());
 }
 //-----------------------------------------------------------------------------
 FRX_OP_CALLBACK_METHOD_IMPL(WindowSessionHost, GetHostBounds) {
-    ret->bounds = window->getWindowImpl()->getHostBounds();
+    ret->bounds = getWindow()->getWindowImpl()->getHostBounds();
 }
 //-----------------------------------------------------------------------------
 FRX_OP_CALLBACK_METHOD_IMPL(WindowSessionHost, GetSize) {
-    ret->size = window->getWindowSize();
+    ret->size = getWindow()->getWindowSize();
 }
 //-----------------------------------------------------------------------------
 FRX_OP_CALLBACK_METHOD_IMPL(WindowSessionHost, SetSize) {
-    window->setWindowSize( arg->size );
+    getWindow()->setWindowSize( arg->size );
 }
 //-----------------------------------------------------------------------------
 FRX_OP_CALLBACK_METHOD_IMPL(WindowSessionHost, GetLocation) {
-    ret->loc = window->getWindowLocation();
+    ret->loc = getWindow()->getWindowLocation();
 }
 //-----------------------------------------------------------------------------
 FRX_OP_CALLBACK_METHOD_IMPL(WindowSessionHost, SetLocation) {
-    window->setWindowLocation( arg->loc );
+    getWindow()->setWindowLocation( arg->loc );
 }
 //=============================================================================
 //  Class WindowSessionClient
