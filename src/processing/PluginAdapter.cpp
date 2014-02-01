@@ -63,16 +63,11 @@ void PluginAdapter::openEditor(sdc::WindowPtr win) {
 	if (!plug)
 		return;
     
-    bool r = false;
-    win->getClientProperty("plugin.editor.resizelistener-set", r);
-    if (!r) {
-        plug->com::events::EventSender<pr::ResizeEditorEvent>::addTrackedEventListener(
-            boost::bind(&onPluginEditorResize, _1, _2, sdc::WindowWPtr(win)),
-            win
-        );
-        win->putClientProperty("plugin.editor.resizelistener-set", true);
-    }
-
+    plug->com::events::EventSender<pr::ResizeEditorEvent>::addTrackedEventListener(
+        boost::bind(&onPluginEditorResize, _1, _2, sdc::WindowWPtr(win)),
+        win
+    );
+        
 	plug->openEditor(
         ::__getHandlerForVstPlugins_(winImpl->getSystemHandle())
     );

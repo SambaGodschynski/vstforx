@@ -12,7 +12,8 @@
 #include <processing/ConcreteProcessAdapter.h>
 #include <sambag/com/exceptions/IllegalArgumentException.hpp>
 #include <com/Serialization.h>
-
+#include <processing/concreteAdapter/Volume.h>
+#include <exception>
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::TestModelFactory );
 
@@ -24,7 +25,7 @@ namespace tests {
 void TestModelFactory::testCreateProducts() {
     using namespace processing;
     using namespace frx::processing;
-    boost::shared_ptr<DummyHostInfo> hI(new DummyHostInfo(44100.f, 255));
+    IHostInfo::Ptr hI = ::processing::DummyFX::create(NULL);
     ModelFactory &fac = ModelFactory::instance();
     CPPUNIT_ASSERT(fac.create("frx.processing.internal.Volume", hI));
     CPPUNIT_ASSERT(
@@ -45,17 +46,20 @@ void TestModelFactory::testArchiveRegister() {
     std::stringstream ss;
     {
         com::oArchive oa(ss);
+        oa.register_type< ::processing::DummyFX >();
         fac.registerToArchive(oa);
-        boost::shared_ptr<DummyHostInfo> hI(new DummyHostInfo(44100.f, 255));
+        IHostInfo::Ptr hI = ::processing::DummyFX::create(NULL);
         ProcessAdapter::Ptr volume = fac.create("frx.processing.internal.Volume", hI);
         oa<<hI;
         oa<<volume;
     }
     com::iArchive ia(ss);
+    ia.register_type< ::processing::DummyFX >();
     fac.registerToArchive(ia);
-    boost::shared_ptr<DummyHostInfo> hI;
+    ::processing::DummyFX::Ptr hI;
     ProcessAdapter::Ptr volume;
     ia>>hI;
+    throw std::runtime_error("crashes here:");
     ia>>volume;
     CPPUNIT_ASSERT(volume);
 }

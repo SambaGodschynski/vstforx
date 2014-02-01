@@ -162,6 +162,10 @@ struct AutoOPC {
     static int getOPC() {
         return Loki::TL::IndexOf<OPs, T>::value;
     }
+    template <class T>
+    struct GetOPC {
+        enum {Value = Loki::TL::IndexOf<OPs, T>::value};
+    };
     /**
      * delegates call to related opc method.
      * Assumes that Caller impl:
@@ -238,6 +242,7 @@ struct AutoOPC {
   *    // doSome using arg and ret
   * }
   * \endcode
+  * @note ! Client->Host->Client calls will wind up in a threadlock !
   */
 class Session {
 //=============================================================================
@@ -263,7 +268,7 @@ public:
     typedef UInteger BffRetSize; //<< size of the channel return buffer
     typedef boost::tuple<BffArgSize, BffRetSize> ChannelSize;
     //-------------------------------------------------------------------------
-    enum { IDLE = -1 };
+    enum { IDLE = -1, TRANSFER_DATA = -2, CLEAR_DATA = -3 };
     //-------------------------------------------------------------------------
     enum Priority { Normal, High };
     //-------------------------------------------------------------------------
@@ -274,10 +279,22 @@ public:
 private:
     //-------------------------------------------------------------------------
     /**
+     * @brief data container for an operation data transfer. @see transferData().
+     */
+    typedef std::vector<char> RawData;
+    typedef std::pair<Opc, RawData> DataContainer;
+    DataContainer trData;
+    void _transferData();
+    //-------------------------------------------------------------------------
+    /**
      * @return the number of microseconds which were slept
      */
     inline int sleep() const {
-        SAMBAG_ASSERT(priority);
+        if (!priority) {
+            boost::this_thread::sleep(boost::posix_time::microsec(
+                FRX_PRIOR_NORMAL_MICROSEC));
+            return FRX_PRIOR_NORMAL_MICROSEC;
+        }
         if (*priority == (Integer)High) {
             boost::this_thread::sleep(boost::posix_time::microsec(
                 FRX_PRIOR_HIGH_MICROSEC));
@@ -333,6 +350,23 @@ private:
     void * waitForResultImpl(Opc opc, Integer timeout) const;
 protected:
     //-------------------------------------------------------------------------
+    /**
+     * @brief copies data to host for a specific operation.
+     *        This data is then available while executing the operation
+     *        using the @see getTransferedDataPointer() function.
+     *  @note use this only if dynamic memory sizes are absolutely required.
+     *        Consider using appropriate arg/ret (static!) memorysizes.
+     */
+    void transferData(Opc opc, void *data, int size);
+    //-------------------------------------------------------------------------
+    /**
+     * @return NULL or the raw pointer to the data which was previously copied
+     * with @see transferDataToHost or @see transferDataToClient.
+     */
+    void * getTransferedData(Opc opc);
+    //-------------------------------------------------------------------------
+    size_t getTransferedDataSize(Opc opc) const;
+    //-------------------------------------------------------------------------
     virtual void processImpl(Opc opc, void *argmen, void *retmem) = 0;
     //-------------------------------------------------------------------------
     /**
@@ -354,12 +388,12 @@ protected:
      * @return retmem ptr
      */
     template <typename T>
-    T waitForResult(Opc opc, Integer timeout=FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT) const
+    T waitForResult(Opc opc, Integer timeout=FRX_SHMSESS_DEFAULT_TIMEOUT_MS) const
     {
         return static_cast<T>(waitForResultImpl(opc, timeout));
     }
     //-------------------------------------------------------------------------
-    void waitForResult(Opc opc, Integer timeout=FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT) const
+    void waitForResult(Opc opc, Integer timeout=FRX_SHMSESS_DEFAULT_TIMEOUT_MS) const
     {
         waitForResultImpl(opc, timeout);
     }

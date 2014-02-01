@@ -21,6 +21,7 @@ private:
     CPPUNIT_TEST( testHostLost );
     CPPUNIT_TEST( testFailures );
     CPPUNIT_TEST( testHelper );
+    CPPUNIT_TEST( testTransferData );
 	CPPUNIT_TEST_SUITE_END();
 public:
 	void testSession();
@@ -28,6 +29,7 @@ public:
     void testHostLost();
     void testFailures();
     void testHelper();
+    void testTransferData();
 };
 
 } // namespace

@@ -13,7 +13,6 @@
 #include <processing/IHostInfo.h>
 #include <processing/pluginTypes/PluginImpl.hpp>
 #include <processing/parameter/Parameter.h>
-#include <sambag/disco/components/Timer.hpp>
 #include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components { namespace interprocess {
@@ -39,12 +38,10 @@ protected:
     //-------------------------------------------------------------------------
     BridgePluginDelegate();
     //-------------------------------------------------------------------------
-    void onIdleTimer(void *src, const sdc::TimerEvent &ev);
+    void onIdleTimer();
     //-------------------------------------------------------------------------
     void onPluginPropertyChanged(void*, const sce::PropertyChanged &ev);
 private:
-    //-------------------------------------------------------------------------
-    sdc::Timer::Ptr idleTimer;
     //-------------------------------------------------------------------------
     APluginImpl *plugin;
     //-------------------------------------------------------------------------

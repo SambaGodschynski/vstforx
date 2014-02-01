@@ -75,8 +75,10 @@ public:
         FRX_OP_OPERATION(HasEditor, FRX_OP_ARG(), FRX_OP_RET_1(bool value));
         FRX_OP_OPERATION(OpenEditor, FRX_OP_ARG(), FRX_OP_RET());
         FRX_OP_OPERATION(CloseEditor, FRX_OP_ARG(), FRX_OP_RET());
+        FRX_OP_OPERATION(GetStateData, FRX_OP_ARG(), FRX_OP_RET()); // uses Session::trasferData()
+        FRX_OP_OPERATION(SetStateData, FRX_OP_ARG(), FRX_OP_RET()); // uses Session::trasferData()
         //---------------------------------------------------------------------
-        typedef LOKI_TYPELIST_15(Open,
+        typedef LOKI_TYPELIST_17(Open,
             Close,
             GetPluginInfo,
             TurnOn,
@@ -90,7 +92,9 @@ public:
             GetEditorSessionId,
             HasEditor,
             OpenEditor,
-            CloseEditor
+            CloseEditor,
+            GetStateData,
+            SetStateData
         ) OPs;
     FRX_OP_END_OPERATIONS_AND_IMPL_PROCESS(OPs)
     //-------------------------------------------------------------------------
@@ -134,6 +138,9 @@ public:
     FRX_OP_CALLBACK_METHOD(HasEditor);
     FRX_OP_CALLBACK_METHOD(OpenEditor);
     FRX_OP_CALLBACK_METHOD(CloseEditor);
+    FRX_OP_CALLBACK_METHOD(GetStateData);
+    FRX_OP_CALLBACK_METHOD(SetStateData);
+
 }; // PluginSession
 //=============================================================================
 /** 
@@ -232,6 +239,8 @@ public:
     bool hasEditor();
     void openEditor();
     void closeEditor();
+    std::pair<size_t, void*> getStateData();
+    void setStateData(size_t size, void* data);
 }; // PluginSession
 }}} // namespace(s)
 

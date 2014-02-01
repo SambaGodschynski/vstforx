@@ -11,6 +11,7 @@
 #include <processing/pluginTypes/PluginFactory.hpp>
 #include <gui/components/interprocess/WindowSession.hpp>
 #include <gui/components/FrxPluginEditor.hpp>
+#include <sambag/disco/components/Timer.hpp>
 #include <processing/interprocess/PluginSession.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
@@ -124,33 +125,26 @@ void BridgePluginDelegate::openEditor() {
     void *wndPtr = win->getWindowImpl()->getSystemHandle();
     plugin->openEditor(wndPtr);
 
-    idleTimer = sdc::Timer::create(10);
-    idleTimer->setNumRepetitions(-1);
+    sdc::Timer::Ptr idleTimer = getWindowSession()->getIdleTimer();
     idleTimer->sce::EventSender<sdc::TimerEvent>::addTrackedEventListener(
-        boost::bind(&BridgePluginDelegate::onIdleTimer, this, _1, _2),
-            win);
-    idleTimer->start();
+        boost::bind(&BridgePluginDelegate::onIdleTimer, this),
+        win
+    );
 
 }
 //-----------------------------------------------------------------------------
 void BridgePluginDelegate::closeEditor() {
     void *wndPtr = getWindowSession()->getWindow()->getWindowImpl()->getSystemHandle();
     plugin->closeEditor(wndPtr);
-    
-    if (idleTimer) {
-        idleTimer->stop();
-    }
-
 }
 //-----------------------------------------------------------------------------
-void BridgePluginDelegate::onIdleTimer(void *src, const sdc::TimerEvent &ev) {
+void BridgePluginDelegate::onIdleTimer() {
 	plugin->onEditorIdle();
 }
 //-----------------------------------------------------------------------------
 void BridgePluginDelegate::onPluginPropertyChanged(void*,
         const sambag::com::events::PropertyChanged &ev)
 {
-    SAMBAG_LOG_TRACE<<"BridgePluginDelegate";
     sce::EventSender<sce::PropertyChanged>::notifyListeners(this, ev);
 }
 }}} // namespace(s)

@@ -27,7 +27,7 @@
 #include <sambag/com/Thread.hpp>
 #include <sambag/disco/components/WindowToolkit.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
-#include <processing/pluginTypes/VSTPlugin2x.h>
+#include <processing/Plugin.h>
 #include <processing/ModelFactory.hpp>
 
 // Registers the fixture into the 'registry'
@@ -1603,10 +1603,10 @@ namespace {
         int blockSize = graph->getHostInfo()->getBlockSize();
             std::stringstream ss;
         ss<<"frx.processing.vst2x.FrxTestPlugin("<<Ins<<","<<Outs<<")";
-        VSTPlugin::Ptr pl = boost::dynamic_pointer_cast<VSTPlugin>(
+        Plugin::Ptr pl = boost::dynamic_pointer_cast<Plugin>(
             fac.create(ss.str(), graph->getHostInfo())
         );
-        pl->getAEffect()->processReplacing = &_process;
+        //pl->getAEffect()->processReplacing = &_process;
         CPPUNIT_ASSERT(pl);
         CPPUNIT_ASSERT_EQUAL((size_t)Ins, pl->getNumInputNodes());
         CPPUNIT_ASSERT_EQUAL((size_t)Outs, pl->getNumOutputNodes());

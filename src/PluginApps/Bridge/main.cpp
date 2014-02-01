@@ -11,7 +11,8 @@
 #include <sambag/com/Thread.hpp>
 
 enum {
-    FRX_BRIDGE_AUTOCLOSE_CHECK_INTERVAL = 1000
+    FRX_BRIDGE_AUTOCLOSE_CHECK_INTERVAL = 1000,
+    FRX_BRIDGE_AUTOCLOSE_WAIT_FOR_SURE_SEC = 60
 };
 void checkForClosing(frx::processing::interprocess::BridgeSession *session_ptr)
 {
@@ -20,8 +21,11 @@ void checkForClosing(frx::processing::interprocess::BridgeSession *session_ptr)
         if ( session_ptr->getNumPluginSessions() > 0 ) {
             return;
         }
-        boost::this_thread::sleep(boost::posix_time::seconds(5)); // we wait
+        boost::this_thread::sleep(boost::posix_time::seconds( // we wait
+            FRX_BRIDGE_AUTOCLOSE_WAIT_FOR_SURE_SEC
+        )); 
         if ( session_ptr->getNumPluginSessions() == 0 ) { // still unused
+            // now go to hell
             session_ptr->stopMainLoop();
         }
     SAMBAG_END_WHEN_UNLOCKED

@@ -59,12 +59,12 @@ void VSTPluginImpl::openPlugin()
 	if (shellPlugId==0 && pluginCategory==kPlugCategShell) {
 		ShellPluginInfos infos;
 		getShellPluginInfos(infos);
-		// plugin delivers shell plugins, at this pouint we can't go
+		// plugin delivers shell plugins, at this point we can't go
 		// on because we have to specify which plugin we want.
-		if (!infos.empty())
-			throw 
-				ShellPluginException(location, infos);
-	}
+		if (!infos.empty()) {
+			throw ShellPluginException(location, infos);
+        }
+    }
 	initPlug ( *this );
 }
 //-----------------------------------------------------------------------------
@@ -73,8 +73,9 @@ void VSTPluginImpl::closePlugin()
 	turnOff();
 	aEff->dispatcher ( aEff, effClose, 0, 0, 0, 0.0 );
 	// TODO: hier gab es probleme, unload muss aber stattfinden
-	if ( aEff != &nullAEff )
-		unloadModule();
+	if ( aEff != &nullAEff ) {
+        unloadModule();
+    }
 }
 //-----------------------------------------------------------------------------
 MyString VSTPluginImpl::extractNameFromFilename( const string &fileName ){
@@ -375,6 +376,7 @@ void VSTPluginImpl::closeEditor(void *window) {
 }
 //-----------------------------------------------------------------------------
 void VSTPluginImpl::onEditorIdle() {
+    SAMBAG_LOG_TRACE<<"ED IDLE";
 	aEff->dispatcher ( aEff, effEditIdle, 0, 0, 0, 0);
 }
 //-----------------------------------------------------------------------------

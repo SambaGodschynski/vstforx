@@ -12,6 +12,8 @@
 #include <sambag/disco/components/FramedWindow.hpp>
 #include <gui/components/FrxPluginEditor.hpp>
 #include <sambag/disco/components/Timer.hpp>
+#include <sambag/disco/components/WindowToolkit.hpp>
+
 
 namespace frx { namespace gui { namespace components { namespace interprocess {
 //=============================================================================
@@ -28,6 +30,7 @@ WindowSessionHost::WindowSessionHost()
 //-----------------------------------------------------------------------------
 WindowSessionHost::Ptr WindowSessionHost::create() {
     Ptr neu = Ptr( new WindowSessionHost() );
+    neu->self=neu;
     return neu;
 }
 //-----------------------------------------------------------------------------
@@ -39,8 +42,9 @@ void WindowSessionHost::onOpen() {
 void WindowSessionHost::onClose() {
     typedef SessionHost::Operations::OnClose Op;
     waitForResult( SessionHost::OpcM::getOPC<Op>() );
-    
+    idleTimer->stop();
     window.reset();
+    idleTimer.reset();
 }
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
@@ -49,12 +53,17 @@ FrxPluginEditorPtr WindowSessionHost::getWindow() {
         return window;
     }
     window = FrxPluginEditor::create();
-    window->getWindowImpl()->sce::EventSender<sdc::OnCloseEvent>::addEventListener(
-        boost::bind(&WindowSessionHost::onClose, this)
+    window->getWindowImpl()->sce::EventSender<sdc::OnCloseEvent>::addTrackedEventListener(
+        boost::bind(&WindowSessionHost::onClose, this),
+        self
     );
-    window->getWindowImpl()->sce::EventSender<sdc::OnOpenEvent>::addEventListener(
-        boost::bind(&WindowSessionHost::onOpen, this)
+    window->getWindowImpl()->sce::EventSender<sdc::OnOpenEvent>::addTrackedEventListener(
+        boost::bind(&WindowSessionHost::onOpen, this),
+        self
     );
+    idleTimer = sdc::Timer::create(25);
+    idleTimer->setNumRepetitions(-1);
+    idleTimer->start();
     return window;
 }
 //-----------------------------------------------------------------------------
@@ -228,20 +237,14 @@ std::string WindowSessionClient::getTitle () const {
 //-----------------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////
 FRX_OP_CALLBACK_METHOD_IMPL(WindowSessionClient, OnOpen) {
-    sdc::Timer::Ptr tm = sdc::Timer::create(50);
-    tm->sce::EventSender<sdc::TimerEvent>::addTrackedEventListener(
-        boost::bind(&WindowSessionClient::doSendEvent<sdc::OnOpenEvent>, this),
-        self
+    sdc::getWindowToolkit()->invokeLater(
+        boost::bind(&WindowSessionClient::doSendEvent<sdc::OnOpenEvent>, this)
     );
-    tm->start();
 }
 //-----------------------------------------------------------------------------
 FRX_OP_CALLBACK_METHOD_IMPL(WindowSessionClient, OnClose) {
-    sdc::Timer::Ptr tm = sdc::Timer::create(50);
-    tm->sce::EventSender<sdc::TimerEvent>::addTrackedEventListener(
-        boost::bind(&WindowSessionClient::doSendEvent<sdc::OnCloseEvent>, this),
-        self
+    sdc::getWindowToolkit()->invokeLater(
+        boost::bind(&WindowSessionClient::doSendEvent<sdc::OnCloseEvent>, this)
     );
-    tm->start();
 }
 }}}} // namespace(s)

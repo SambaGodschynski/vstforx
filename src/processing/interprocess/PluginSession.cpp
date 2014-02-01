@@ -215,6 +215,23 @@ FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionHost, OpenEditor) {
 FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionHost, CloseEditor) {
     delegate->closeEditor();
 }
+//-----------------------------------------------------------------------------
+FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionHost, GetStateData) {
+    enum { OPC = OpcM::GetOPC<Operations::GetStateData>::Value };
+    void *data; size_t size;
+    boost::tie(size, data) = delegate->getPluginImpl()->getStateData();
+    transferData(OPC, data, size);
+}
+//-----------------------------------------------------------------------------
+FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionHost, SetStateData) {
+    enum { OPC = OpcM::GetOPC<Operations::SetStateData>::Value };
+    size_t byteSize = getTransferedDataSize(OPC);
+    if (byteSize==0) {
+        return;
+    }
+    void * data = getTransferedData(OPC);
+    delegate->getPluginImpl()->setStateData(byteSize, data);
+}
 //=============================================================================
 //  Class PluginSessionClient
 //=============================================================================
@@ -234,7 +251,6 @@ PluginSessionClient::Ptr PluginSessionClient::create(const std::string &id) {
 void PluginSessionClient::updatePluginInfo (::processing::PluginInfo &inf) {
     typedef PluginSessionHost::Operations::GetPluginInfo Op;
     Op::RetPtr res = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
-    inf.location = res->location;
     inf.name = res->name;
     inf.vendor = res->vendor;
     inf.isSynth = res->isSynth;
@@ -373,6 +389,23 @@ void PluginSessionClient::closeEditor() {
 //-----------------------------------------------------------------------------
 void PluginSessionClient::setHostInfo(IHostInfo::Ptr hI) {
     hostInfo = hI;
+}
+//-----------------------------------------------------------------------------
+std::pair<size_t, void*> PluginSessionClient::getStateData() {
+    typedef SessionHost::Operations::GetStateData Op;
+    enum {OPC = SessionHost::OpcM::GetOPC<Op>::Value};
+    waitForResult(OPC);
+    return std::make_pair(
+        getTransferedDataSize(OPC),
+        getTransferedData(OPC)
+    );
+}
+//-----------------------------------------------------------------------------
+void PluginSessionClient::setStateData(size_t size, void* data) {
+    typedef SessionHost::Operations::SetStateData Op;
+    enum {OPC = SessionHost::OpcM::GetOPC<Op>::Value};
+    transferData(OPC, data, size);
+    waitForResult(OPC);
 }
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------

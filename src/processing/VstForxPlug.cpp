@@ -460,6 +460,12 @@ void VstForxPlug::load(std::istream &is) {
 	ar.register_type<HostInfoAdapter>();
 	register_types(ar);
 	ar & hostInfoAdapter;
+    if (!hostInfoAdapter) {
+        SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"VstForxPlug: serialization failed."
+		);
+    }
 	dynamic_cast<HostInfoAdapter*>
 		(hostInfoAdapter.get())->hostInfo = this;
 	ar & graph;

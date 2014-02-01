@@ -11,7 +11,6 @@
 #include <processing/parameter/parameter.h>
 #include <processing/parameter/ConnectionOperators.h>
 #include <processing/dspTools.h>
-#include <processing/pluginTypes/VSTPlugin2x.h>
 #include <processing/NodeConnection.hpp>
 #include <processing/NodeAdapter.hpp>
 #include <processing/ProcessorAdapter.hpp>
@@ -19,6 +18,7 @@
 #include <processing/ParameterConnection.hpp>
 #include <processing/ParameterAdapter.hpp>
 #include <processing/ModelFactory.hpp>
+#include <processing/legacy/VSTPlugin2x.h>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -46,6 +46,9 @@ void register_types_impl( Archive &ar ) {
 	ar.template register_type<ParameterAdapter>();
 	ar.template register_type<NodeAdapter>();
 	ar.template register_type<NodeConnection>();
+    
+    // legacy
+    //sar.template register_type<legacy::processing::VSTPlugin>();
 }
 void register_types(::com::iArchive &ar) {
 	register_types_impl(ar);

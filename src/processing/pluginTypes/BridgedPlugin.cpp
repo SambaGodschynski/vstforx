@@ -145,10 +145,11 @@ oldPr::Frames::T **outs, size_t numSamples)
 }
 //-----------------------------------------------------------------------------
 std::pair<size_t, void*> BridgedPlugin::getStateData() const {
-    return std::make_pair(0, (void*)NULL);
+    return session->getStateData();
 }
 //-----------------------------------------------------------------------------
 void BridgedPlugin::setStateData(size_t size, void* data) {
+    session->setStateData(size, data);
 }
 //-----------------------------------------------------------------------------
 BridgedPlugin::AWindowImplPtr BridgedPlugin::getWindowImpl() {

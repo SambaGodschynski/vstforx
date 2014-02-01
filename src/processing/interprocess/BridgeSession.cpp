@@ -13,6 +13,10 @@
 #include <com/FrxConfig.h>
 #include <sambag/disco/components/WindowToolkit.hpp>
 
+namespace {
+    enum { FRX_CREATE_PLUGINSESSION_TIME_OUT = 10000 };
+}
+
 namespace frx { namespace processing { namespace interprocess {
 //=============================================================================
 //  Class BridgeSession
@@ -103,8 +107,7 @@ PluginSessionClientPtr BridgeSessionClient::createPluginSession(const std::strin
     Op::RetPtr rets = NULL;
     try {
         rets = waitForResult<Op::RetPtr>(
-            BridgeSession::OpcM::getOPC<Op>(),
-            FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT
+            BridgeSession::OpcM::getOPC<Op>(), FRX_CREATE_PLUGINSESSION_TIME_OUT
         );
         if (!rets->succeed) {
             SAMBAG_THROW(
@@ -130,7 +133,7 @@ void BridgeSessionClient::closePluginSession(PluginSessionClientPtr session) {
     typedef SessionHost::Operations::ClosePluginSession Op;
     Op::ArgPtr args = static_cast<Op::ArgPtr>(getArgmem());
     shm_cpystr(args->id, session->getId());
-    waitForResult(BridgeSession::OpcM::getOPC<Op>());
+    waitForResult(BridgeSession::OpcM::getOPC<Op>(), FRX_CREATE_PLUGINSESSION_TIME_OUT);
 }
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------

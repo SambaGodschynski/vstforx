@@ -19,6 +19,12 @@ struct Session::IPChannel {
     Mutex mutex;
     VoidPtr argmem;
     VoidPtr retmem;
+    struct TransferDataPurpose { // see @Session::transferData()
+        Integer bytesToCopy;
+        Integer opc;
+        char data[FRX_SHMSESS_MAX_DATA_LENGTH];
+    };
+    TransferDataPurpose trData;
 };
 //=============================================================================
 //  Class Session
@@ -67,6 +73,16 @@ void Session::process() {
     while (channelA && channelB)
     {
         if ( processChannel->opc != IDLE ) {
+            if (processChannel->opc == TRANSFER_DATA) {
+                _transferData();
+                processChannel->opc = IDLE;
+                continue;
+            }
+            if (processChannel->opc == CLEAR_DATA) {
+                trData.second.clear();
+                processChannel->opc = IDLE;
+                continue;
+            }
             try {
                 processImpl(
                     processChannel->opc,
@@ -211,7 +227,7 @@ void * Session::waitForResultImpl(Opc opc, Integer timeout) const {
     scoped_lock<Mutex> lock(requestChannel->mutex, ptout);
     if (!lock) {
         std::stringstream ss;
-        ss<<name()<<" OPC("<<opc<<") timed out";
+        ss<<name()<<" OPC("<<opc<<") busy";
         SAMBAG_THROW(TimeOut, ss.str());
     }
     requestChannel->opc = opc;
@@ -259,5 +275,47 @@ size_t Session::getProcessArgmemSize() const {
 size_t Session::getProcessRetmemSize() const {
     return processChannel->retsize;
 }
-
+//-----------------------------------------------------------------------------
+void Session::_transferData() {
+    if (processChannel->trData.bytesToCopy == 0) {
+        return;
+    }
+    IPChannel::TransferDataPurpose &td = processChannel->trData;
+    trData.first = td.opc;
+    RawData &vec = trData.second;
+    vec.insert(vec.end(), td.data, td.data + td.bytesToCopy);
+}
+//-----------------------------------------------------------------------------
+void Session::transferData(Opc opc, void *data, int size) {
+    waitForResult(CLEAR_DATA);
+    requestChannel->trData.opc=opc;
+    static const int maxBytes = FRX_SHMSESS_MAX_DATA_LENGTH;
+    while (size>0) {
+        int bytesToCopy = size<maxBytes ? size:maxBytes;
+        requestChannel->trData.bytesToCopy = bytesToCopy;
+        memcpy(requestChannel->trData.data, data, bytesToCopy);
+        waitForResult(TRANSFER_DATA);
+        //iterate
+        data=(char*)data+bytesToCopy;
+        size-=bytesToCopy;
+    }
+}
+//-----------------------------------------------------------------------------
+void * Session::getTransferedData(Opc opc) {
+    if (trData.first != opc) {
+        SAMBAG_LOG_WARN<<"Session::getTransferedDataPointer OPCs dosen't match";
+        return NULL;
+    }
+    if (trData.second.empty()) {
+        return NULL;
+    }
+    return &(trData.second[0]);
+}
+//-----------------------------------------------------------------------------
+size_t Session::getTransferedDataSize(Opc opc) const {
+    if (trData.first != opc) {
+        return 0;
+    }
+    return trData.second.size();
+}
 }}} // namespace(s)

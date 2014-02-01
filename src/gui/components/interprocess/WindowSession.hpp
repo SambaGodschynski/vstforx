@@ -12,6 +12,7 @@
 #include <processing/interprocess/Session.hpp>
 #include <processing/interprocess/ShmCom.hpp>
 #include <sambag/disco/components/windowImpl/AWindowImpl.hpp>
+#include <sambag/disco/components/Timer.hpp>
 #include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
@@ -30,6 +31,8 @@ class WindowSessionHost : public fpi::Session {
 public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<WindowSessionHost> Ptr;
+	//-------------------------------------------------------------------------
+	typedef boost::weak_ptr<WindowSessionHost> WPtr;
     //-------------------------------------------------------------------------
     typedef WindowSessionClient SessionHost; // host for session calls
     //-------------------------------------------------------------------------
@@ -65,13 +68,21 @@ public:
     WindowSessionHost();
 private:
     //-------------------------------------------------------------------------
+    sdc::Timer::Ptr idleTimer;
+    //-------------------------------------------------------------------------
     FrxPluginEditorPtr window;
 protected:
     //-------------------------------------------------------------------------
     void onOpen();
     //-------------------------------------------------------------------------
     void onClose();
+    //-------------------------------------------------------------------------
+    WPtr self;
 public:
+    //-------------------------------------------------------------------------
+    sdc::Timer::Ptr getIdleTimer() const {
+        return idleTimer;
+    }
     //-------------------------------------------------------------------------
     FrxPluginEditorPtr getWindow();
     //-------------------------------------------------------------------------
