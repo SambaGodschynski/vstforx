@@ -1,0 +1,50 @@
+package com.example.vstforxmobile;
+
+import android.os.Bundle;
+import android.app.Activity;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
+import android.view.Menu;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.Space;
+
+public class MainActivity extends Activity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        ViewGroup myLayout = (ViewGroup) findViewById(R.id.sliders);
+        
+        for (int i=0; i<5; ++i) {
+        	SeekBar obj = new SeekBar(this);
+        	obj.setLayoutParams(new LinearLayout.LayoutParams(
+        								 LinearLayout.LayoutParams.MATCH_PARENT,
+                                         LinearLayout.LayoutParams.WRAP_CONTENT));
+        	ShapeDrawable thumb = new ShapeDrawable();
+        	thumb.setBounds(new Rect(0,0,50,100));
+        	obj.setThumb(thumb);
+        	myLayout.addView(obj);
+        	Space space = new Space(this);
+        	
+           	space.setLayoutParams(new LinearLayout.LayoutParams(
+					 LinearLayout.LayoutParams.MATCH_PARENT,
+                     30));
+           	myLayout.addView(space);
+        }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+    
+    	// Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+    
+}
