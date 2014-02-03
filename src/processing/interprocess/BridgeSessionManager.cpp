@@ -30,7 +30,7 @@ typedef Loki::SingletonHolder<BridgeSessionManager> BridgeSessionManagerHolder;
 //  Class BridgeSessionManager
 //=============================================================================
 //-----------------------------------------------------------------------------
-BridgeSessionManager::BridgeSessionManager() : path("./bridge") {
+BridgeSessionManager::BridgeSessionManager() : path("./VSTForx.bridge") {
 }
 //-----------------------------------------------------------------------------
 BridgeSessionManager & BridgeSessionManager::instance() {
