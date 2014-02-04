@@ -10,7 +10,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <string>
-#include <boost/interprocess/sync/interprocess_upgradable_mutex.hpp>
+#include <boost/interprocess/sync/interprocess_recursive_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/interprocess/sync/sharable_lock.hpp>
 #include <processing/Frames.h>
@@ -19,6 +19,7 @@
 #include <processing/AsyncBuffer.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/optional.hpp>
+#include <boost/type_traits.hpp>
 #include "ShmCom.hpp"
 #include <sambag/com/Thread.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
@@ -327,7 +328,7 @@ private:
     //-------------------------------------------------------------------------
     sambag::com::interprocess::PointerIterator pIt;
     //-------------------------------------------------------------------------
-    typedef boost::interprocess::interprocess_upgradable_mutex Mutex;
+    typedef boost::interprocess::interprocess_recursive_mutex Mutex;
     //-------------------------------------------------------------------------
     Integer *priority;
     //-------------------------------------------------------------------------
@@ -347,56 +348,10 @@ private:
     //-------------------------------------------------------------------------
     void startProcessThread();
     //-------------------------------------------------------------------------
-    void * waitForResultImpl(Opc opc, Integer timeout) const;
-protected:
-    //-------------------------------------------------------------------------
-    /**
-     * @brief copies data to host for a specific operation.
-     *        This data is then available while executing the operation
-     *        using the @see getTransferedDataPointer() function.
-     *  @note use this only if dynamic memory sizes are absolutely required.
-     *        Consider using appropriate arg/ret (static!) memorysizes.
-     */
-    void transferData(Opc opc, void *data, int size);
-    //-------------------------------------------------------------------------
-    /**
-     * @return NULL or the raw pointer to the data which was previously copied
-     * with @see transferDataToHost or @see transferDataToClient.
-     */
-    void * getTransferedData(Opc opc);
-    //-------------------------------------------------------------------------
-    size_t getTransferedDataSize(Opc opc) const;
-    //-------------------------------------------------------------------------
-    virtual void processImpl(Opc opc, void *argmen, void *retmem) = 0;
-    //-------------------------------------------------------------------------
-    /**
-     * @brief puts opc into related channel and waits until request is processed.
-     * \code{.cpp}
-     * // example call
-     * typedef Host::Operations::DoSome Op;
-     * Op::ArgPtr args = static_cast<Op::ArgPtr>(getArgmem());
-     * // copy arg values
-     * args->arg1 = 0;
-     * args->arg2 = 0;
-     * Op::RetPtr rets rets = waitForResult<Op::RetPtr>(
-     *   Host::OpcM::getOPC<Op>(),
-     *   FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT
-     * );
-     * \endcode
-     * @param opcode
-     * @param time in millisec to wait, throws TimeOut after elapsed with no result.
-     * @return retmem ptr
-     */
-    template <typename T>
-    T waitForResult(Opc opc, Integer timeout=FRX_SHMSESS_DEFAULT_TIMEOUT_MS) const
-    {
-        return static_cast<T>(waitForResultImpl(opc, timeout));
-    }
-    //-------------------------------------------------------------------------
-    void waitForResult(Opc opc, Integer timeout=FRX_SHMSESS_DEFAULT_TIMEOUT_MS) const
-    {
-        waitForResultImpl(opc, timeout);
-    }
+    void waitForResultImpl(Opc opc,
+        const void *args, size_t argSize,
+        void *outrets, size_t retSize, // assumes that rets memory is already allocated
+        Integer timeout) const;
     //-------------------------------------------------------------------------
     /**
      * @return argmem for an request.
@@ -417,7 +372,73 @@ protected:
      * @return retmem for an request.
      */
     void * getRetmem();
-
+protected:
+    //-------------------------------------------------------------------------
+    class TransferSenderGuard;
+    typedef boost::shared_ptr<TransferSenderGuard> TransferSenderGuardPtr;
+    class TransferReceiverGuard;
+    typedef boost::shared_ptr<TransferReceiverGuard> TransferReceiverGuardPtr;
+    //-------------------------------------------------------------------------
+    TransferSenderGuardPtr getTransferSenderGuard(Integer timeout=FRX_SHMSESS_DEFAULT_TIMEOUT_MS);
+    //-------------------------------------------------------------------------
+    /**
+     * @brief copies data to host for a specific operation.
+     *        This data is then available while executing the operation
+     *        using the @see getTransferedDataPointer() function.
+     *  @note use this only if dynamic memory sizes are absolutely required.
+     *        Consider using appropriate arg/ret (static!) memorysizes.
+     */
+    void transferData(Opc opc, void *data, int size, TransferSenderGuardPtr lock);
+    //-------------------------------------------------------------------------
+    /**
+     * @return NULL or the raw pointer to the data which was previously copied
+     * with @see transferDataToHost or @see transferDataToClient.
+     */
+    std::pair<void *, TransferReceiverGuardPtr> getTransferedData(Opc opc);
+    //-------------------------------------------------------------------------
+    size_t getTransferedDataSize(Opc opc) const;
+    //-------------------------------------------------------------------------
+    virtual void processImpl(Opc opc, void *argmen, void *retmem) = 0;
+    //-------------------------------------------------------------------------
+    /**
+     * @brief puts opc into related channel and waits until request is processed.
+     * \code{.cpp}
+     * // example call
+     * typedef Host::Operations::DoSome Op;
+     * Op::Args args;
+     * // copy arg values
+     * args.arg1 = 0;
+     * args.arg2 = 0;
+     * Op::Ret rets rets;
+     * waitForResult<Op::RetPtr>( Host::OpcM::getOPC<Op>(), args, rets );
+     * \endcode
+     * @param opcode
+     * @param time in millisec to wait, throws TimeOut after elapsed with no result.
+     * @return retmem ptr
+     */
+    void waitForProcess(Opc opc, Integer timeout=FRX_SHMSESS_DEFAULT_TIMEOUT_MS) const
+    {
+        waitForResultImpl(opc, NULL, 0, NULL, 0, timeout);
+    }
+    template <typename Args>
+    void waitForProcess(Opc opc, const Args &args, Integer timeout=FRX_SHMSESS_DEFAULT_TIMEOUT_MS) const
+    {
+        //BOOST_STATIC_ASSERT( boost::is_pod<Args>::value ); dosen't work with gcc-llvm4.2 on mac -> always false
+        waitForResultImpl(opc, &args, sizeof(args), NULL, 0, timeout);
+    }
+    template <typename Rets>
+    void waitForResult(Opc opc, Rets &rets, Integer timeout=FRX_SHMSESS_DEFAULT_TIMEOUT_MS) const
+    {
+        //BOOST_STATIC_ASSERT( boost::is_pod<Rets>::value );
+        waitForResultImpl(opc, NULL, 0, &rets, sizeof(rets), timeout);
+    }
+    template <typename Args, typename Rets>
+    void waitForResult(Opc opc, const Args &args, Rets &rets, Integer timeout=FRX_SHMSESS_DEFAULT_TIMEOUT_MS) const
+    {
+        //BOOST_STATIC_ASSERT( boost::is_pod<Args>::value );
+        //BOOST_STATIC_ASSERT( boost::is_pod<Rets>::value );
+        waitForResultImpl(opc, &args, sizeof(args), &rets, sizeof(rets), timeout);
+    }
     //-------------------------------------------------------------------------
     /**
      * @note creates a host session.
@@ -447,6 +468,21 @@ protected:
         }
         return (Integer)*priority;
      }
+    //-------------------------------------------------------------------------
+    struct MemoryGuard {
+        boost::interprocess::scoped_lock<Mutex> lock;
+        MemoryGuard(void * arg, void *ret) : argmem(arg), retmem(ret){}
+        MemoryGuard(const MemoryGuard&) : argmem(NULL), retmem(NULL){}
+        typedef boost::shared_ptr<MemoryGuard> Ptr;
+        void * const argmem;
+        void * const retmem;
+    };
+    /**
+     * @return the raw arg/ret memory pointer for the request channel.
+     * @note locks the channel while MemoryGuard in scope.
+     * @throw TimeOut
+     */
+    MemoryGuard::Ptr getMemoryGuard(Integer timeout=FRX_SHMSESS_DEFAULT_TIMEOUT_MS);
 public:
     //-------------------------------------------------------------------------
     const std::string & getId() const {
@@ -463,7 +499,7 @@ public:
     size_t getProcessArgmemSize() const;
     //-------------------------------------------------------------------------
     /**
-     * @return retmem bytesize of processing channel 
+     * @return retmem bytesize of processing channel
      */
     size_t getProcessRetmemSize() const;
     //-------------------------------------------------------------------------

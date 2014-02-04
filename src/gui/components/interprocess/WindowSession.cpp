@@ -36,12 +36,12 @@ WindowSessionHost::Ptr WindowSessionHost::create() {
 //-----------------------------------------------------------------------------
 void WindowSessionHost::onOpen() {
     typedef SessionHost::Operations::OnOpen Op;
-    waitForResult( SessionHost::OpcM::getOPC<Op>() );
+    waitForProcess( SessionHost::OpcM::getOPC<Op>() );
 }
 //-----------------------------------------------------------------------------
 void WindowSessionHost::onClose() {
     typedef SessionHost::Operations::OnClose Op;
-    waitForResult( SessionHost::OpcM::getOPC<Op>() );
+    waitForProcess( SessionHost::OpcM::getOPC<Op>() );
     idleTimer->stop();
     window.reset();
     idleTimer.reset();
@@ -135,19 +135,19 @@ WindowSessionClient::getMouseEventCreator ()
 //-----------------------------------------------------------------------------
 void WindowSessionClient::open() {
     typedef SessionHost::Operations::Open Op;
-    waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
+    waitForProcess(SessionHost::OpcM::getOPC<Op>());
 }
 //-----------------------------------------------------------------------------
 void WindowSessionClient::close() {
     typedef SessionHost::Operations::Close Op;
-    waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
+    waitForProcess(SessionHost::OpcM::getOPC<Op>());
 }
 //-----------------------------------------------------------------------------
 void WindowSessionClient::setBounds(const sd::Rectangle &r) {
     typedef SessionHost::Operations::SetBounds Op;
-    Op::ArgPtr arg = static_cast<Op::ArgPtr>( getArgmem() );
-    arg->bounds = r;
-    waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
+    Op::Arg arg;
+    arg.bounds = r;
+    waitForProcess(SessionHost::OpcM::getOPC<Op>(), arg);
 }
 //-----------------------------------------------------------------------------
 void * WindowSessionClient::getSystemHandle () {
@@ -156,41 +156,45 @@ void * WindowSessionClient::getSystemHandle () {
 //-----------------------------------------------------------------------------
 void WindowSessionClient::setSize (const sd::Dimension &d) {
     typedef SessionHost::Operations::SetSize Op;
-    Op::ArgPtr arg = static_cast<Op::ArgPtr>( getArgmem() );
-    arg->size = d;
-    waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
+    Op::Arg arg;
+    arg.size = d;
+    waitForProcess(SessionHost::OpcM::getOPC<Op>(), arg);
 }
 //-----------------------------------------------------------------------------
 void WindowSessionClient::setLocation (const sd::Point2D &p) {
     typedef SessionHost::Operations::SetLocation Op;
-    Op::ArgPtr arg = static_cast<Op::ArgPtr>( getArgmem() );
-    arg->loc = p;
-    waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
+    Op::Arg arg;
+    arg.loc = p;
+    waitForProcess(SessionHost::OpcM::getOPC<Op>(), arg);
 
 }
 //-----------------------------------------------------------------------------
 sd::Rectangle WindowSessionClient::getBounds () const {
     typedef SessionHost::Operations::GetBounds Op;
-    Op::RetPtr ret = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
-    return ret->bounds;
+    Op::Ret ret;
+    waitForResult(SessionHost::OpcM::getOPC<Op>(), ret);
+    return ret.bounds;
 }
 //-----------------------------------------------------------------------------
 sd::Rectangle WindowSessionClient::getHostBounds () const {
     typedef SessionHost::Operations::GetHostBounds Op;
-    Op::RetPtr ret = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
-    return ret->bounds;
+    Op::Ret ret;
+    waitForResult(SessionHost::OpcM::getOPC<Op>(), ret);
+    return ret.bounds;
 }
 //-----------------------------------------------------------------------------
 sd::Dimension WindowSessionClient::getSize () const {
     typedef SessionHost::Operations::GetSize Op;
-    Op::RetPtr ret = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
-    return ret->size;
+    Op::Ret ret;
+    waitForResult(SessionHost::OpcM::getOPC<Op>(), ret);
+    return ret.size;
 }
 //-----------------------------------------------------------------------------
 sd::Point2D WindowSessionClient::getLocation () const {
     typedef SessionHost::Operations::GetLocation Op;
-    Op::RetPtr ret = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
-    return ret->loc;
+    Op::Ret ret;
+    waitForResult( SessionHost::OpcM::getOPC<Op>(), ret);
+    return ret.loc;
 }
 //-----------------------------------------------------------------------------
 void WindowSessionClient::setEnabled (bool b) {
@@ -218,21 +222,23 @@ bool WindowSessionClient::getFlag (sdc::WindowFlags::Flag flag) const {
 //-----------------------------------------------------------------------------
 bool WindowSessionClient::isVisible () const {
     typedef SessionHost::Operations::IsVisible Op;
-    Op::RetPtr ret = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
-    return ret->value;
+    Op::Ret ret;
+    waitForResult(SessionHost::OpcM::getOPC<Op>(), ret);
+    return ret.value;
 }
 //-----------------------------------------------------------------------------
 void WindowSessionClient::setTitle (const std::string &title) {
     typedef SessionHost::Operations::SetTitle Op;
-    Op::ArgPtr arg = static_cast<Op::ArgPtr>( getArgmem() );
-    fpi::shm_cpystr(arg->title, title);
-    waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
+    Op::Arg arg;
+    fpi::shm_cpystr(arg.title, title);
+    waitForProcess(SessionHost::OpcM::getOPC<Op>(), arg);
 }
 //-----------------------------------------------------------------------------
 std::string WindowSessionClient::getTitle () const {
     typedef SessionHost::Operations::GetTitle Op;
-    Op::RetPtr ret = waitForResult<Op::RetPtr>( SessionHost::OpcM::getOPC<Op>());
-    return ret->title;
+    Op::Ret ret;
+    waitForResult(SessionHost::OpcM::getOPC<Op>(), ret);
+    return ret.title;
 }
 //-----------------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////

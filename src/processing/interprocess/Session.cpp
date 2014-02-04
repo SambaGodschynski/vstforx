@@ -7,6 +7,7 @@
 
 #include "Session.hpp"
 #include "ShmCom.hpp"
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 //=============================================================================
@@ -22,6 +23,7 @@ struct Session::IPChannel {
     struct TransferDataPurpose { // see @Session::transferData()
         Integer bytesToCopy;
         Integer opc;
+        Mutex mutex;
         char data[FRX_SHMSESS_MAX_DATA_LENGTH];
     };
     TransferDataPurpose trData;
@@ -29,6 +31,17 @@ struct Session::IPChannel {
 //=============================================================================
 //  Class Session
 //=============================================================================
+//-----------------------------------------------------------------------------
+struct Session::TransferSenderGuard {
+    Mutex *mutex;
+    typedef boost::shared_ptr<TransferSenderGuard> Ptr;
+};
+struct Session::TransferReceiverGuard {
+    TransferReceiverGuard(Mutex *mutex) : mutex(mutex) {}
+    Mutex *mutex;
+    TransferReceiverGuard() { mutex->unlock(); }
+    typedef boost::shared_ptr<TransferReceiverGuard> Ptr;
+};
 //-----------------------------------------------------------------------------
 Session::Session(const std::string &id, ChannelSize a, ChannelSize b) : id(id)
 {
@@ -218,11 +231,13 @@ std::string Session::name() const {
     return ss.str();
 }
 //-----------------------------------------------------------------------------
-void * Session::waitForResultImpl(Opc opc, Integer timeout) const {
+void Session::waitForResultImpl(Opc opc, const void *args,
+size_t argsize, void *outrets, size_t retsize, Integer timeout) const
+{
     using namespace boost::interprocess;
     timeout*=1000; // millisec to microsec
     boost::posix_time::ptime ptout = boost::posix_time::from_time_t(std::time(NULL));
-    ptout += boost::posix_time::milliseconds(timeout);
+    ptout += boost::posix_time::microsec(timeout);
     
     scoped_lock<Mutex> lock(requestChannel->mutex, ptout);
     if (!lock) {
@@ -230,6 +245,11 @@ void * Session::waitForResultImpl(Opc opc, Integer timeout) const {
         ss<<name()<<" OPC("<<opc<<") busy";
         SAMBAG_THROW(TimeOut, ss.str());
     }
+    // copy argmem
+    if (args && argsize>0) {
+        memcpy(getArgmem(), args, argsize);
+    }
+    
     requestChannel->opc = opc;
     int waited = 0;
     while (requestChannel->opc!=IDLE) {
@@ -240,7 +260,9 @@ void * Session::waitForResultImpl(Opc opc, Integer timeout) const {
             SAMBAG_THROW(TimeOut, ss.str());
         }
     }
-    return getRetmem();
+    if (outrets && retsize>0) {
+        memcpy(outrets, getRetmem(), retsize);
+    }
 }
 //-----------------------------------------------------------------------------
 void * Session::getArgmem() const {
@@ -286,30 +308,38 @@ void Session::_transferData() {
     vec.insert(vec.end(), td.data, td.data + td.bytesToCopy);
 }
 //-----------------------------------------------------------------------------
-void Session::transferData(Opc opc, void *data, int size) {
-    waitForResult(CLEAR_DATA);
+void Session::transferData(Opc opc, void *data, int size, TransferSenderGuardPtr guard)
+{
+    waitForProcess(CLEAR_DATA);
     requestChannel->trData.opc=opc;
     static const int maxBytes = FRX_SHMSESS_MAX_DATA_LENGTH;
     while (size>0) {
         int bytesToCopy = size<maxBytes ? size:maxBytes;
         requestChannel->trData.bytesToCopy = bytesToCopy;
         memcpy(requestChannel->trData.data, data, bytesToCopy);
-        waitForResult(TRANSFER_DATA);
+        waitForProcess(TRANSFER_DATA);
         //iterate
         data=(char*)data+bytesToCopy;
         size-=bytesToCopy;
     }
 }
 //-----------------------------------------------------------------------------
-void * Session::getTransferedData(Opc opc) {
+std::pair<void *, Session::TransferReceiverGuard::Ptr>
+Session::getTransferedData(Opc opc)
+{
     if (trData.first != opc) {
         SAMBAG_LOG_WARN<<"Session::getTransferedDataPointer OPCs dosen't match";
-        return NULL;
+        return std::make_pair((void*)NULL, TransferReceiverGuard::Ptr());
     }
     if (trData.second.empty()) {
-        return NULL;
+        return std::make_pair((void*)NULL, TransferReceiverGuard::Ptr());
     }
-    return &(trData.second[0]);
+    
+    TransferReceiverGuard::Ptr guard(
+        new TransferReceiverGuard(&processChannel->trData.mutex)
+    );
+    
+    return std::make_pair(&(trData.second[0]), guard);
 }
 //-----------------------------------------------------------------------------
 size_t Session::getTransferedDataSize(Opc opc) const {
@@ -317,5 +347,35 @@ size_t Session::getTransferedDataSize(Opc opc) const {
         return 0;
     }
     return trData.second.size();
+}
+//-----------------------------------------------------------------------------
+Session::TransferSenderGuard::Ptr Session::getTransferSenderGuard(Integer timeout)
+{
+    using namespace boost::interprocess;
+    TransferSenderGuard::Ptr res( new TransferSenderGuard() );
+    res->mutex = &requestChannel->trData.mutex;
+    
+    boost::posix_time::ptime ptout = boost::posix_time::from_time_t(std::time(NULL));
+    ptout += boost::posix_time::millisec(timeout);
+    bool locked = res->mutex->timed_lock(ptout);
+    if (!locked) {
+        std::stringstream ss;
+        ss<<name()<<"Session::beginDataTransfer() timed out";
+        SAMBAG_THROW(TimeOut, ss.str());
+    }
+}
+//-----------------------------------------------------------------------------
+Session::MemoryGuard::Ptr Session::getMemoryGuard(Integer timeout) {
+    using namespace boost::interprocess;
+    MemoryGuard::Ptr res(new MemoryGuard(getArgmem(), getRetmem()));
+    boost::posix_time::ptime ptout = boost::posix_time::from_time_t(std::time(NULL));
+    ptout += boost::posix_time::millisec(timeout);
+    res->lock = scoped_lock<Mutex>(requestChannel->mutex, ptout);
+    if (!(res->lock)) {
+        std::stringstream ss;
+        ss<<name()<<"Session::getRequestMemory() timed out";
+        SAMBAG_THROW(TimeOut, ss.str());
+    }
+    return res;
 }
 }}} // namespace(s)

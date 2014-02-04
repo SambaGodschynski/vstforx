@@ -32,13 +32,13 @@ struct OpClose {
 
 struct OpWhoAreYou {
     enum {OPC = 2};
-    typedef struct Ret { char * value; } *RetPtr;
+    typedef struct Ret { char value[20]; } *RetPtr;
     typedef struct Arg {} *ArgPtr;
 };
 
 struct OpHello {
     enum {OPC = 3};
-    typedef struct Ret { char * value; } *RetPtr;
+    typedef struct Ret { char value[20]; } *RetPtr;
     typedef struct Arg {} *ArgPtr;
 };
 
@@ -72,15 +72,17 @@ struct HostSession : Session {
         }
         if (opc == OpHello::OPC) {
             // ask for callers name
-            char * name = waitForResult<char*>(OpWhoAreYou::OPC, 1000);
-            char * ret = static_cast<char*>(retmem);
+            OpWhoAreYou::Ret caller;
+            waitForResult(OpWhoAreYou::OPC, caller, 1000);
             std::string rstr("Hello ");
-            rstr+=name;
-            strcpy(ret, rstr.c_str());
+            rstr+=caller.value;
+            strcpy((char*)retmem, rstr.c_str());
         }
         if (opc == OpCpyLongString::OPC) {
             std::string ret("no luck, try again");
-            void * data = getTransferedData(OpCpyLongString::OPC);
+            void * data;
+            TransferReceiverGuardPtr guard;
+            boost::tie(data, guard) = getTransferedData(OpCpyLongString::OPC);
             if (data) {
                 int byteSize = getTransferedDataSize(OpCpyLongString::OPC);
                 char *toString = new char[byteSize+1];
@@ -91,7 +93,7 @@ struct HostSession : Session {
             } else {
                 SAMBAG_LOG_TRACE<<"nothing received";
             }
-            transferData(OpCpyLongString::OPC, (void*)ret.c_str(), ret.length());
+            transferData(OpCpyLongString::OPC, (void*)ret.c_str(), ret.length(), getTransferSenderGuard());
         }
     }
 
@@ -110,7 +112,7 @@ struct ClientSession : Session {
             
             if (causeChannelOverload) {
                 try {
-                    waitForResult<char*>(OpHello::OPC, 1000);
+                    waitForProcess(OpHello::OPC, 1000);
                 } catch (const Session::TimeOut &ex) {
                    timeout_catched = true;
                 }
@@ -121,9 +123,11 @@ struct ClientSession : Session {
     }
     
     std::string transferString(const std::string &str) {
-        transferData(OpCpyLongString::OPC, (void*)str.c_str(), str.length());
-        waitForResult(OpCpyLongString::OPC, 1000);
-        void * data = getTransferedData(OpCpyLongString::OPC);
+        transferData(OpCpyLongString::OPC, (void*)str.c_str(), str.length(), getTransferSenderGuard());
+        waitForProcess(OpCpyLongString::OPC, 1000);
+        void * data;
+        TransferReceiverGuardPtr guard;
+        boost::tie(data, guard) = getTransferedData(OpCpyLongString::OPC);
         std::string res;
         if (!data) {
             return "";
@@ -139,18 +143,20 @@ struct ClientSession : Session {
     }
     
     int add(int a, int b) {
-        OpAdd::ArgPtr args = static_cast<OpAdd::ArgPtr>(getArgmem());
-        args->a = a;
-        args->b = b;
-        OpAdd::RetPtr ret = waitForResult<OpAdd::RetPtr>(OpAdd::OPC, 1000);
-        return ret->value;
+        OpAdd::Arg args;
+        args.a = a;
+        args.b = b;
+        OpAdd::Ret ret;
+        waitForResult(OpAdd::OPC, args, ret, 1000);
+        return ret.value;
     }
     void closeHost() {
-        waitForResult(OpClose::OPC, 1000);
+        waitForProcess(OpClose::OPC, 1000);
     }
     std::string greetHost() {
-        char * res = waitForResult<char*>(OpHello::OPC, 1000);
-        return std::string(res);
+        OpHello::Ret res;
+        waitForResult(OpHello::OPC, res, 1000);
+        return std::string(res.value);
     }
     bool causeChannelOverload; // Cl requests Ho requests> Cl requests Ho
     bool timeout_catched;

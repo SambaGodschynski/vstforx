@@ -38,7 +38,7 @@ void BridgeSession::stopMainLoop() {
     SAMBAG_LOG_INFO<<getId()<<": closing main thread";
     typedef BridgeSessionClient::Operations::OnBridgeClosing Op;
     try {
-        waitForResult( BridgeSessionClient::OpcM::getOPC<Op>() );
+        waitForProcess( BridgeSessionClient::OpcM::getOPC<Op>() );
     } catch(...) {}
     
     sambag::disco::components::getWindowToolkit()->quit();
@@ -100,19 +100,22 @@ PluginSessionClientPtr BridgeSessionClient::createPluginSession(const std::strin
 {
     SAMBAG_LOG_INFO<<"try to establish a plugin session for: "<<path;
     typedef BridgeSession::Operations::CreatePluginSession Op;
-    Op::ArgPtr args = static_cast<Op::ArgPtr>(getArgmem());
-    shm_cpypath(args->path, path);
-    args->sampleRate = hI->getSampleRate();
-    args->blockSize = hI->getBlockSize();
-    Op::RetPtr rets = NULL;
+    Op::Arg args;
+    shm_cpypath(args.path, path);
+    args.sampleRate = hI->getSampleRate();
+    args.blockSize = hI->getBlockSize();
+    Op::Ret rets;
     try {
-        rets = waitForResult<Op::RetPtr>(
-            BridgeSession::OpcM::getOPC<Op>(), FRX_CREATE_PLUGINSESSION_TIME_OUT
+        waitForResult(
+            BridgeSession::OpcM::getOPC<Op>(),
+            args,
+            rets,
+            FRX_CREATE_PLUGINSESSION_TIME_OUT
         );
-        if (!rets->succeed) {
+        if (!rets.succeed) {
             SAMBAG_THROW(
                 sambag::com::exceptions::IllegalStateException,
-                "establishing bridge session failed: " + std::string( rets->result )
+                "establishing bridge session failed: " + std::string( rets.result )
             );
         }
     } catch (const std::exception &ex) {
@@ -122,7 +125,7 @@ PluginSessionClientPtr BridgeSessionClient::createPluginSession(const std::strin
         SAMBAG_LOG_ERR<<"establishing plugin session failed: unknown error, "<<path;
         throw;
     }
-    std::string id(rets->result);
+    std::string id(rets.result);
     PluginSessionClient::Ptr res = PluginSessionClient::create(id);
     res->setHostInfo(hI);
     SAMBAG_LOG_INFO<<"plugin session estabished: "<<path;
@@ -131,9 +134,9 @@ PluginSessionClientPtr BridgeSessionClient::createPluginSession(const std::strin
 //-----------------------------------------------------------------------------
 void BridgeSessionClient::closePluginSession(PluginSessionClientPtr session) {
     typedef SessionHost::Operations::ClosePluginSession Op;
-    Op::ArgPtr args = static_cast<Op::ArgPtr>(getArgmem());
-    shm_cpystr(args->id, session->getId());
-    waitForResult(BridgeSession::OpcM::getOPC<Op>(), FRX_CREATE_PLUGINSESSION_TIME_OUT);
+    Op::Arg args;
+    shm_cpystr(args.id, session->getId());
+    waitForProcess(BridgeSession::OpcM::getOPC<Op>(), FRX_CREATE_PLUGINSESSION_TIME_OUT);
 }
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
