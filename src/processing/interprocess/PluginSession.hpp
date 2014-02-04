@@ -16,6 +16,7 @@
 #include <processing/pluginTypes/PluginImpl.hpp>
 #include <processing/parameter/Parameter.h>
 #include <sambag/dsp/HostTimeInfo.hpp>
+#include <sambag/dsp/IMidiEvents.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 class BridgeSession;
@@ -77,8 +78,10 @@ public:
         FRX_OP_OPERATION(CloseEditor, FRX_OP_ARG(), FRX_OP_RET());
         FRX_OP_OPERATION(GetStateData, FRX_OP_ARG(), FRX_OP_RET()); // uses Session::trasferData()
         FRX_OP_OPERATION(SetStateData, FRX_OP_ARG(), FRX_OP_RET()); // uses Session::trasferData()
+        FRX_OP_OPERATION(CanHandleMidi, FRX_OP_ARG(), FRX_OP_RET_1(bool value));
+        FRX_OP_OPERATION(ProcessMidiEvents, FRX_OP_ARG(), FRX_OP_RET()); // uses Session::trasferData()
         //---------------------------------------------------------------------
-        typedef LOKI_TYPELIST_17(Open,
+        typedef LOKI_TYPELIST_19(Open,
             Close,
             GetPluginInfo,
             TurnOn,
@@ -94,12 +97,17 @@ public:
             OpenEditor,
             CloseEditor,
             GetStateData,
-            SetStateData
+            SetStateData,
+            CanHandleMidi,
+            ProcessMidiEvents
         ) OPs;
     FRX_OP_END_OPERATIONS_AND_IMPL_PROCESS(OPs)
     //-------------------------------------------------------------------------
     PluginSessionHost(BridgePluginDelegate::Ptr delegate);
 private:
+    //-------------------------------------------------------------------------
+    typedef boost::shared_ptr<sambag::dsp::IMidiEvents> MidiEventsPtr;
+    mutable MidiEventsPtr tmpMidiEvents;
     //-------------------------------------------------------------------------
     BridgeSession *host;
     //-------------------------------------------------------------------------
@@ -140,6 +148,8 @@ public:
     FRX_OP_CALLBACK_METHOD(CloseEditor);
     FRX_OP_CALLBACK_METHOD(GetStateData);
     FRX_OP_CALLBACK_METHOD(SetStateData);
+    FRX_OP_CALLBACK_METHOD(CanHandleMidi);
+    FRX_OP_CALLBACK_METHOD(ProcessMidiEvents);
 
 }; // PluginSession
 //=============================================================================
@@ -241,6 +251,8 @@ public:
     void closeEditor();
     std::pair<size_t, void*> getStateData();
     void setStateData(size_t size, void* data);
+    bool canHandleMidiEvent();
+    void processMidiEvents(sambag::dsp::IMidiEvents *ev);
 }; // PluginSession
 }}} // namespace(s)
 

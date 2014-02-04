@@ -124,10 +124,11 @@ int BridgedPlugin::getProgram() {
 }
 //-----------------------------------------------------------------------------
 bool BridgedPlugin::canHandleMidiEvent() const {
-    return false;
+    return session->canHandleMidiEvent();
 }
 //-----------------------------------------------------------------------------
 void BridgedPlugin::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
+    session->processMidiEvents(events);
 }
 //-----------------------------------------------------------------------------
 size_t BridgedPlugin::getInitialDelay() const {

@@ -48,7 +48,7 @@ void TestModelFactory::testArchiveRegister() {
         com::oArchive oa(ss);
         oa.register_type< ::processing::DummyFX >();
         fac.registerToArchive(oa);
-        IHostInfo::Ptr hI = ::processing::DummyFX::create(NULL);
+        ::processing::DummyFX::Ptr hI = ::processing::DummyFX::create(NULL);
         ProcessAdapter::Ptr volume = fac.create("frx.processing.internal.Volume", hI);
         oa<<hI;
         oa<<volume;
@@ -59,7 +59,6 @@ void TestModelFactory::testArchiveRegister() {
     ::processing::DummyFX::Ptr hI;
     ProcessAdapter::Ptr volume;
     ia>>hI;
-    throw std::runtime_error("crashes here:");
     ia>>volume;
     CPPUNIT_ASSERT(volume);
 }

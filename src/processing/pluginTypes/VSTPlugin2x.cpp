@@ -323,6 +323,7 @@ void VSTPluginImpl::onEditorParameterChanged (int index, float value){
 std::pair<size_t, void*> VSTPluginImpl::getStateData() const {
     void *data;
     size_t s = aEff->dispatcher ( aEff, effGetChunk, 0, 0, &data, 0 );
+    SAMBAG_LOG_TRACE<<"Vst2x getChunk "<<s<<" bytes got.";
     return std::make_pair(s, data);
 }
 //-----------------------------------------------------------------------------
@@ -341,6 +342,7 @@ void VSTPluginImpl::setStateData(size_t size, void* data)
         Parameter::Ptr p = parameters->at(i);
 		p->setValue ( aEff->getParameter ( aEff, i ) );
     }
+    SAMBAG_LOG_TRACE<<"Vst2x setChunk "<<size<<" bytes set.";
 
 }
 //-----------------------------------------------------------------------------

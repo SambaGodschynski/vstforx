@@ -232,6 +232,22 @@ FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionHost, SetStateData) {
     void * data = getTransferedData(OPC);
     delegate->getPluginImpl()->setStateData(byteSize, data);
 }
+//-----------------------------------------------------------------------------
+FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionHost, CanHandleMidi) {
+    ret->value = delegate->getPluginImpl()->canHandleMidiEvent();
+}
+//-----------------------------------------------------------------------------
+FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionHost, ProcessMidiEvents) {
+    enum { OPC = OpcM::GetOPC<Operations::ProcessMidiEvents>::Value };
+    size_t byteSize = getTransferedDataSize(OPC);
+    if (byteSize==0) {
+        return;
+    }
+    using sambag::dsp::IMidiEvents;
+    IMidiEvents::DataPtr data = (IMidiEvents::DataPtr)getTransferedData(OPC);
+    tmpMidiEvents = MidiEventsPtr(sambag::dsp::createMidiEvents(data, byteSize));
+    delegate->getPluginImpl()->processMidiEvents(tmpMidiEvents.get());
+}
 //=============================================================================
 //  Class PluginSessionClient
 //=============================================================================
@@ -392,19 +408,47 @@ void PluginSessionClient::setHostInfo(IHostInfo::Ptr hI) {
 }
 //-----------------------------------------------------------------------------
 std::pair<size_t, void*> PluginSessionClient::getStateData() {
+    SAMBAG_LOG_TRACE<<"demand bridged plugin state data";
     typedef SessionHost::Operations::GetStateData Op;
     enum {OPC = SessionHost::OpcM::GetOPC<Op>::Value};
     waitForResult(OPC);
-    return std::make_pair(
+    std::pair<size_t, void*> res = std::make_pair(
         getTransferedDataSize(OPC),
         getTransferedData(OPC)
     );
+    SAMBAG_LOG_TRACE<<"got "<<res.first<<" bytes.";
+    return res;
 }
 //-----------------------------------------------------------------------------
 void PluginSessionClient::setStateData(size_t size, void* data) {
     typedef SessionHost::Operations::SetStateData Op;
     enum {OPC = SessionHost::OpcM::GetOPC<Op>::Value};
     transferData(OPC, data, size);
+    waitForResult(OPC);
+    SAMBAG_LOG_TRACE<<"set bridged plugins state ("<<size<<" bytes)";
+}
+//-----------------------------------------------------------------------------
+bool PluginSessionClient::canHandleMidiEvent() {
+    typedef SessionHost::Operations::CanHandleMidi Op;
+    Op::RetPtr ret = waitForResult<Op::RetPtr>
+        (SessionHost::OpcM::GetOPC<Op>::Value);
+    return ret->value;
+}
+//-----------------------------------------------------------------------------
+void PluginSessionClient::processMidiEvents(sambag::dsp::IMidiEvents *ev) {
+    if (!ev) {
+        return;
+    }
+    using namespace sambag::dsp;
+    typedef SessionHost::Operations::ProcessMidiEvents Op;
+    enum {OPC = SessionHost::OpcM::GetOPC<Op>::Value};
+    // get raw event data
+    std::vector<IMidiEvents::Data> tmp;
+    createFlatRawData(*ev, tmp);
+    if (tmp.empty()) {
+        return;
+    }
+    transferData(OPC, &tmp[0], tmp.size());
     waitForResult(OPC);
 }
 ///////////////////////////////////////////////////////////////////////////////
