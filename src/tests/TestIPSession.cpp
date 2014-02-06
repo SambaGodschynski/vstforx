@@ -62,6 +62,7 @@ struct HostSession : Session {
         Session(id, ChannelSize(100,100), ChannelSize(100,100) ),
         isRunning(true)
     {
+        startProcessThread();
     }
     void processImpl(Opc opc, void *argmen, void *retmem) {
         if (opc == OpAdd::OPC) {
@@ -72,10 +73,11 @@ struct HostSession : Session {
         }
         if (opc == OpHello::OPC) {
             // ask for callers name
-            OpWhoAreYou::Ret caller;
-            waitForResult(OpWhoAreYou::OPC, caller, 1000);
+            MemoryGuard::Ptr g = getMemoryGuard();
+            OpHello::RetPtr rets = g->getRet<OpHello::Ret>();
+            waitForResult(OpWhoAreYou::OPC, g, 1000);
             std::string rstr("Hello ");
-            rstr+=caller.value;
+            rstr+=rets->value;
             strcpy((char*)retmem, rstr.c_str());
         }
         if (opc == OpCpyLongString::OPC) {
@@ -103,7 +105,9 @@ struct ClientSession : Session {
     ClientSession(const std::string &id) : Session(id),
         causeChannelOverload(false),
         timeout_catched(false)
-    {}
+    {
+        startProcessThread();
+    }
     void processImpl(Opc opc, void *argmen, void *retmem) {
         if (opc == OpWhoAreYou::OPC) {
             // ask for callers name
@@ -112,7 +116,7 @@ struct ClientSession : Session {
             
             if (causeChannelOverload) {
                 try {
-                    waitForProcess(OpHello::OPC, 1000);
+                    waitForProcess(OpHello::OPC, getMemoryGuard(), 1000);
                 } catch (const Session::TimeOut &ex) {
                    timeout_catched = true;
                 }
@@ -124,7 +128,7 @@ struct ClientSession : Session {
     
     std::string transferString(const std::string &str) {
         transferData(OpCpyLongString::OPC, (void*)str.c_str(), str.length(), getTransferSenderGuard());
-        waitForProcess(OpCpyLongString::OPC, 1000);
+        waitForProcess(OpCpyLongString::OPC, getMemoryGuard(), 5*1000);
         void * data;
         TransferReceiverGuardPtr guard;
         boost::tie(data, guard) = getTransferedData(OpCpyLongString::OPC);
@@ -143,20 +147,22 @@ struct ClientSession : Session {
     }
     
     int add(int a, int b) {
-        OpAdd::Arg args;
-        args.a = a;
-        args.b = b;
-        OpAdd::Ret ret;
-        waitForResult(OpAdd::OPC, args, ret, 1000);
-        return ret.value;
+        MemoryGuard::Ptr g = getMemoryGuard();
+        OpAdd::ArgPtr args = g->getArg<OpAdd::Arg>();
+        OpAdd::RetPtr rets = g->getRet<OpAdd::Ret>();
+        args->a = a;
+        args->b = b;
+        waitForResult(OpAdd::OPC, g, 1000);
+        return rets->value;
     }
     void closeHost() {
-        waitForProcess(OpClose::OPC, 1000);
+        waitForProcess(OpClose::OPC, getMemoryGuard(), 1000);
     }
     std::string greetHost() {
-        OpHello::Ret res;
-        waitForResult(OpHello::OPC, res, 1000);
-        return std::string(res.value);
+        MemoryGuard::Ptr g = getMemoryGuard();
+        OpHello::RetPtr rets = g->getRet<OpHello::Ret>();
+        waitForResult(OpHello::OPC, g, 1000);
+        return std::string(rets->value);
     }
     bool causeChannelOverload; // Cl requests Ho requests> Cl requests Ho
     bool timeout_catched;

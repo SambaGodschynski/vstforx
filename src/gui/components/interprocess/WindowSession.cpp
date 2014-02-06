@@ -31,17 +31,20 @@ WindowSessionHost::WindowSessionHost()
 WindowSessionHost::Ptr WindowSessionHost::create() {
     Ptr neu = Ptr( new WindowSessionHost() );
     neu->self=neu;
+    neu->startProcessThread();
     return neu;
 }
 //-----------------------------------------------------------------------------
 void WindowSessionHost::onOpen() {
     typedef SessionHost::Operations::OnOpen Op;
-    waitForProcess( SessionHost::OpcM::getOPC<Op>() );
+    MemoryGuard::Ptr g = getMemoryGuard();
+    waitForProcess(SessionHost::OpcM::getOPC<Op>(), g);
 }
 //-----------------------------------------------------------------------------
 void WindowSessionHost::onClose() {
     typedef SessionHost::Operations::OnClose Op;
-    waitForProcess( SessionHost::OpcM::getOPC<Op>() );
+    MemoryGuard::Ptr g = getMemoryGuard();
+    waitForProcess(SessionHost::OpcM::getOPC<Op>(), g);
     idleTimer->stop();
     window.reset();
     idleTimer.reset();
@@ -124,6 +127,7 @@ WindowSessionClient::WindowSessionClient(const std::string &id) : Session(id) {
 WindowSessionClient::Ptr WindowSessionClient::create(const std::string &id) {
     Ptr res = Ptr( new WindowSessionClient(id) );
     res->self = res;
+    res->startProcessThread();
     return res;
 }
 //-----------------------------------------------------------------------------
@@ -135,19 +139,22 @@ WindowSessionClient::getMouseEventCreator ()
 //-----------------------------------------------------------------------------
 void WindowSessionClient::open() {
     typedef SessionHost::Operations::Open Op;
-    waitForProcess(SessionHost::OpcM::getOPC<Op>());
+    MemoryGuard::Ptr g = getMemoryGuard();
+    waitForProcess(SessionHost::OpcM::getOPC<Op>(), g);
 }
 //-----------------------------------------------------------------------------
 void WindowSessionClient::close() {
     typedef SessionHost::Operations::Close Op;
-    waitForProcess(SessionHost::OpcM::getOPC<Op>());
+    MemoryGuard::Ptr g = getMemoryGuard();
+    waitForProcess(SessionHost::OpcM::getOPC<Op>(), g);
 }
 //-----------------------------------------------------------------------------
 void WindowSessionClient::setBounds(const sd::Rectangle &r) {
     typedef SessionHost::Operations::SetBounds Op;
-    Op::Arg arg;
-    arg.bounds = r;
-    waitForProcess(SessionHost::OpcM::getOPC<Op>(), arg);
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::ArgPtr args = g->getArg<Op::Arg>();
+    args->bounds = r;
+    waitForProcess(SessionHost::OpcM::getOPC<Op>(), g);
 }
 //-----------------------------------------------------------------------------
 void * WindowSessionClient::getSystemHandle () {
@@ -156,45 +163,50 @@ void * WindowSessionClient::getSystemHandle () {
 //-----------------------------------------------------------------------------
 void WindowSessionClient::setSize (const sd::Dimension &d) {
     typedef SessionHost::Operations::SetSize Op;
-    Op::Arg arg;
-    arg.size = d;
-    waitForProcess(SessionHost::OpcM::getOPC<Op>(), arg);
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::ArgPtr args = g->getArg<Op::Arg>();
+    args->size = d;
+    waitForProcess(SessionHost::OpcM::getOPC<Op>(), g);
 }
 //-----------------------------------------------------------------------------
 void WindowSessionClient::setLocation (const sd::Point2D &p) {
     typedef SessionHost::Operations::SetLocation Op;
-    Op::Arg arg;
-    arg.loc = p;
-    waitForProcess(SessionHost::OpcM::getOPC<Op>(), arg);
-
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::ArgPtr args = g->getArg<Op::Arg>();
+    args->loc = p;
+    waitForProcess(SessionHost::OpcM::getOPC<Op>(), g);
 }
 //-----------------------------------------------------------------------------
 sd::Rectangle WindowSessionClient::getBounds () const {
     typedef SessionHost::Operations::GetBounds Op;
-    Op::Ret ret;
-    waitForResult(SessionHost::OpcM::getOPC<Op>(), ret);
-    return ret.bounds;
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::RetPtr rets = g->getRet<Op::Ret>();
+    waitForResult(SessionHost::OpcM::getOPC<Op>(), g);
+    return rets->bounds;
 }
 //-----------------------------------------------------------------------------
 sd::Rectangle WindowSessionClient::getHostBounds () const {
     typedef SessionHost::Operations::GetHostBounds Op;
-    Op::Ret ret;
-    waitForResult(SessionHost::OpcM::getOPC<Op>(), ret);
-    return ret.bounds;
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::RetPtr rets = g->getRet<Op::Ret>();
+    waitForResult(SessionHost::OpcM::getOPC<Op>(), g);
+    return rets->bounds;
 }
 //-----------------------------------------------------------------------------
 sd::Dimension WindowSessionClient::getSize () const {
     typedef SessionHost::Operations::GetSize Op;
-    Op::Ret ret;
-    waitForResult(SessionHost::OpcM::getOPC<Op>(), ret);
-    return ret.size;
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::RetPtr rets = g->getRet<Op::Ret>();
+    waitForResult(SessionHost::OpcM::getOPC<Op>(), g);
+    return rets->size;
 }
 //-----------------------------------------------------------------------------
 sd::Point2D WindowSessionClient::getLocation () const {
     typedef SessionHost::Operations::GetLocation Op;
-    Op::Ret ret;
-    waitForResult( SessionHost::OpcM::getOPC<Op>(), ret);
-    return ret.loc;
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::RetPtr rets = g->getRet<Op::Ret>();
+    waitForResult( SessionHost::OpcM::getOPC<Op>(), g);
+    return rets->loc;
 }
 //-----------------------------------------------------------------------------
 void WindowSessionClient::setEnabled (bool b) {
@@ -222,23 +234,26 @@ bool WindowSessionClient::getFlag (sdc::WindowFlags::Flag flag) const {
 //-----------------------------------------------------------------------------
 bool WindowSessionClient::isVisible () const {
     typedef SessionHost::Operations::IsVisible Op;
-    Op::Ret ret;
-    waitForResult(SessionHost::OpcM::getOPC<Op>(), ret);
-    return ret.value;
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::RetPtr rets = g->getRet<Op::Ret>();
+    waitForResult(SessionHost::OpcM::getOPC<Op>(), g);
+    return rets->value;
 }
 //-----------------------------------------------------------------------------
 void WindowSessionClient::setTitle (const std::string &title) {
     typedef SessionHost::Operations::SetTitle Op;
-    Op::Arg arg;
-    fpi::shm_cpystr(arg.title, title);
-    waitForProcess(SessionHost::OpcM::getOPC<Op>(), arg);
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::ArgPtr args = g->getArg<Op::Arg>();
+    fpi::shm_cpystr(args->title, title);
+    waitForProcess(SessionHost::OpcM::getOPC<Op>(), g);
 }
 //-----------------------------------------------------------------------------
 std::string WindowSessionClient::getTitle () const {
     typedef SessionHost::Operations::GetTitle Op;
-    Op::Ret ret;
-    waitForResult(SessionHost::OpcM::getOPC<Op>(), ret);
-    return ret.title;
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::RetPtr rets = g->getRet<Op::Ret>();
+    waitForResult(SessionHost::OpcM::getOPC<Op>(), g);
+    return rets->title;
 }
 //-----------------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////

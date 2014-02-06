@@ -10,7 +10,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <string>
-#include <boost/interprocess/sync/interprocess_recursive_mutex.hpp>
+#include <boost/interprocess/sync/interprocess_upgradable_mutex.hpp>
 #include <boost/interprocess/sync/scoped_lock.hpp>
 #include <boost/interprocess/sync/sharable_lock.hpp>
 #include <processing/Frames.h>
@@ -276,7 +276,8 @@ public:
     static const Priority DEFAULT_PRIORITY = Normal;
     static const int FRX_PRIOR_HIGH_MICROSEC = 10;
     static const int FRX_PRIOR_NORMAL_MICROSEC = 50 * 1000;
-    
+protected:
+    struct MemoryGuard;
 private:
     //-------------------------------------------------------------------------
     /**
@@ -328,7 +329,7 @@ private:
     //-------------------------------------------------------------------------
     sambag::com::interprocess::PointerIterator pIt;
     //-------------------------------------------------------------------------
-    typedef boost::interprocess::interprocess_recursive_mutex Mutex;
+    typedef boost::interprocess::interprocess_upgradable_mutex Mutex;
     //-------------------------------------------------------------------------
     Integer *priority;
     //-------------------------------------------------------------------------
@@ -346,12 +347,7 @@ private:
     void assignMemory(sambag::com::interprocess::PointerIterator &pIt,
         boost::optional<ChannelSizes> channelSizes = boost::optional<ChannelSizes>());
     //-------------------------------------------------------------------------
-    void startProcessThread();
-    //-------------------------------------------------------------------------
-    void waitForResultImpl(Opc opc,
-        const void *args, size_t argSize,
-        void *outrets, size_t retSize, // assumes that rets memory is already allocated
-        Integer timeout) const;
+    void waitForResultImpl(Opc opc, boost::shared_ptr<MemoryGuard>, Integer timeout) const;
     //-------------------------------------------------------------------------
     /**
      * @return argmem for an request.
@@ -373,6 +369,8 @@ private:
      */
     void * getRetmem();
 protected:
+    //-------------------------------------------------------------------------
+    void startProcessThread();
     //-------------------------------------------------------------------------
     class TransferSenderGuard;
     typedef boost::shared_ptr<TransferSenderGuard> TransferSenderGuardPtr;
@@ -401,6 +399,27 @@ protected:
     virtual void processImpl(Opc opc, void *argmen, void *retmem) = 0;
     //-------------------------------------------------------------------------
     /**
+     * @brief The memory guard ensures that manipulating shm is safe in terms
+     * of synchronization.
+     */
+    struct MemoryGuard {
+        boost::interprocess::scoped_lock<Mutex> lock;
+        MemoryGuard(void * arg, void *ret) : argmem(arg), retmem(ret){}
+        MemoryGuard(const MemoryGuard&) : argmem(NULL), retmem(NULL){}
+        typedef boost::shared_ptr<MemoryGuard> Ptr;
+        void * const argmem;
+        void * const retmem;
+        template <class T> T * getArg() { return static_cast<T*>(argmem); }
+        template <class T> T * getRet() { return static_cast<T*>(retmem); }
+    };
+    //-------------------------------------------------------------------------
+    /**
+     * @return the raw arg/ret memory pointer for the request channel.
+     * @note locks the channel while MemoryGuard in scope.
+     * @throw TimeOut
+     */
+    MemoryGuard::Ptr getMemoryGuard(Integer timeout=FRX_SHMSESS_DEFAULT_TIMEOUT_MS) const;
+    /**
      * @brief puts opc into related channel and waits until request is processed.
      * \code{.cpp}
      * // example call
@@ -413,31 +432,17 @@ protected:
      * waitForResult<Op::RetPtr>( Host::OpcM::getOPC<Op>(), args, rets );
      * \endcode
      * @param opcode
+     * @param the memory guard
      * @param time in millisec to wait, throws TimeOut after elapsed with no result.
      * @return retmem ptr
      */
-    void waitForProcess(Opc opc, Integer timeout=FRX_SHMSESS_DEFAULT_TIMEOUT_MS) const
+    void waitForProcess(Opc opc, MemoryGuard::Ptr g, Integer timeout=FRX_SHMSESS_DEFAULT_TIMEOUT_MS) const
     {
-        waitForResultImpl(opc, NULL, 0, NULL, 0, timeout);
+        waitForResultImpl(opc, g, timeout);
     }
-    template <typename Args>
-    void waitForProcess(Opc opc, const Args &args, Integer timeout=FRX_SHMSESS_DEFAULT_TIMEOUT_MS) const
+    void waitForResult(Opc opc, MemoryGuard::Ptr g, Integer timeout=FRX_SHMSESS_DEFAULT_TIMEOUT_MS) const
     {
-        //BOOST_STATIC_ASSERT( boost::is_pod<Args>::value ); dosen't work with gcc-llvm4.2 on mac -> always false
-        waitForResultImpl(opc, &args, sizeof(args), NULL, 0, timeout);
-    }
-    template <typename Rets>
-    void waitForResult(Opc opc, Rets &rets, Integer timeout=FRX_SHMSESS_DEFAULT_TIMEOUT_MS) const
-    {
-        //BOOST_STATIC_ASSERT( boost::is_pod<Rets>::value );
-        waitForResultImpl(opc, NULL, 0, &rets, sizeof(rets), timeout);
-    }
-    template <typename Args, typename Rets>
-    void waitForResult(Opc opc, const Args &args, Rets &rets, Integer timeout=FRX_SHMSESS_DEFAULT_TIMEOUT_MS) const
-    {
-        //BOOST_STATIC_ASSERT( boost::is_pod<Args>::value );
-        //BOOST_STATIC_ASSERT( boost::is_pod<Rets>::value );
-        waitForResultImpl(opc, &args, sizeof(args), &rets, sizeof(rets), timeout);
+        waitForResultImpl(opc, g, timeout);
     }
     //-------------------------------------------------------------------------
     /**
@@ -468,21 +473,6 @@ protected:
         }
         return (Integer)*priority;
      }
-    //-------------------------------------------------------------------------
-    struct MemoryGuard {
-        boost::interprocess::scoped_lock<Mutex> lock;
-        MemoryGuard(void * arg, void *ret) : argmem(arg), retmem(ret){}
-        MemoryGuard(const MemoryGuard&) : argmem(NULL), retmem(NULL){}
-        typedef boost::shared_ptr<MemoryGuard> Ptr;
-        void * const argmem;
-        void * const retmem;
-    };
-    /**
-     * @return the raw arg/ret memory pointer for the request channel.
-     * @note locks the channel while MemoryGuard in scope.
-     * @throw TimeOut
-     */
-    MemoryGuard::Ptr getMemoryGuard(Integer timeout=FRX_SHMSESS_DEFAULT_TIMEOUT_MS);
 public:
     //-------------------------------------------------------------------------
     const std::string & getId() const {

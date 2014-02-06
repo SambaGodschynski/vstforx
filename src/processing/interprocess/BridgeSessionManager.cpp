@@ -71,11 +71,16 @@ void BridgeSessionManager::startBridge() {
         SAMBAG_THROW(IllegalStateException, getBridgePath() + " not found.");
     }
     std::string id = getBridgeSessionId();
+    
+    // note: to make startup syncronization easier,
+    //       the client creates the session memory
+    ___bridge_ = BridgeSessionClient::create(id);
+    
+    // start process now
     const char *args[] = { id.c_str() };
     com::startProcess(getBridgePath().c_str(), 1, &args[0]);
-    boost::this_thread::sleep(boost::posix_time::seconds(1));
-    ___bridge_ = BridgeSessionClient::create(id);
     SAMBAG_ASSERT(___bridge_);
+    
     ___bridge_->EventSender<BridgeSessionClient::ClosingEvent>::addEventListener(
         boost::bind(&BridgeSessionManager::onHostClosing, this)
     );

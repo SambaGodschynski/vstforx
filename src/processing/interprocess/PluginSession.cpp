@@ -67,6 +67,7 @@ PluginSessionHost::Ptr PluginSessionHost::create(BridgePluginDelegate::Ptr dg,
     }
     Ptr neu = Ptr( new PluginSessionHost(dg) );
     neu->host = host;
+    neu->startProcessThread();
     return neu;
 }
 //-----------------------------------------------------------------------------
@@ -91,18 +92,20 @@ void PluginSessionHost::onPluginEditorResized(const APluginImpl::EditorSize &val
 {
     SAMBAG_LOG_TRACE<<"PluginSessionHost";
     typedef SessionHost::Operations::OnEditorResized Op;
-    Op::Arg arg;
-    arg.val = val;
-    waitForProcess( SessionHost::OpcM::getOPC<Op>() );
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::ArgPtr args = g->getArg<Op::Arg>();
+    args->val = val;
+    waitForProcess( SessionHost::OpcM::getOPC<Op>(), g );
 }
 //-----------------------------------------------------------------------------
 sdsp::HostTimeInfo PluginSessionHost::getHostTimeInfo(int filter) {
     typedef SessionHost::Operations::GetTimeInfo Op;
-    Op::Arg arg;
-    arg.filter = (Integer)filter;
-    Op::Ret ret;
-    waitForResult(SessionHost::OpcM::getOPC<Op>(), arg, ret);
-    return ret.info;
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::ArgPtr args = g->getArg<Op::Arg>();
+    Op::RetPtr rets = g->getRet<Op::Ret>();
+    args->filter = (Integer)filter;
+    waitForResult(SessionHost::OpcM::getOPC<Op>(), g);
+    return rets->info;
 }
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
@@ -266,88 +269,99 @@ PluginSessionClient::PluginSessionClient(const std::string &id) : Session(id),
 PluginSessionClient::Ptr PluginSessionClient::create(const std::string &id) {
     Ptr res = Ptr( new PluginSessionClient(id) );
     res->self = res;
+    res->startProcessThread();
     return res;
 }
 //-----------------------------------------------------------------------------
 void PluginSessionClient::updatePluginInfo (::processing::PluginInfo &inf) {
     typedef PluginSessionHost::Operations::GetPluginInfo Op;
-    Op::Ret res;
-    waitForResult( SessionHost::OpcM::getOPC<Op>(), res);
-    inf.name = res.name;
-    inf.vendor = res.vendor;
-    inf.isSynth = res.isSynth;
-    inf.uid = res.uid;
-    inf.pluginType = res.type;
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::RetPtr rets = g->getRet<Op::Ret>();
+    waitForResult( SessionHost::OpcM::getOPC<Op>(), g);
+    inf.name = rets->name;
+    inf.vendor = rets->vendor;
+    inf.isSynth = rets->isSynth;
+    inf.uid = rets->uid;
+    inf.pluginType = rets->type;
 }
 //-----------------------------------------------------------------------------
 void PluginSessionClient::turnOff() {
     typedef SessionHost::Operations::TurnOff Op;
-    waitForProcess(SessionHost::OpcM::getOPC<Op>());
+    MemoryGuard::Ptr g = getMemoryGuard();
+    waitForProcess(SessionHost::OpcM::getOPC<Op>(), g);
 }
 //-----------------------------------------------------------------------------
 void PluginSessionClient::turnOn() {
     typedef SessionHost::Operations::TurnOn Op;
-    waitForProcess(SessionHost::OpcM::getOPC<Op>());
+    MemoryGuard::Ptr g = getMemoryGuard();
+    waitForProcess(SessionHost::OpcM::getOPC<Op>(), g);
 }
 //-----------------------------------------------------------------------------
 void PluginSessionClient::openPlugin() {
     typedef SessionHost::Operations::Open Op;
-    waitForProcess(SessionHost::OpcM::getOPC<Op>());
+    MemoryGuard::Ptr g = getMemoryGuard();
+    waitForProcess(SessionHost::OpcM::getOPC<Op>(), g);
 }
 //-----------------------------------------------------------------------------
 void PluginSessionClient::closePlugin() {
     typedef SessionHost::Operations::Close Op;
-    waitForProcess(SessionHost::OpcM::getOPC<Op>());
+    MemoryGuard::Ptr g = getMemoryGuard();
+    waitForProcess(SessionHost::OpcM::getOPC<Op>(), g);
 }
 //-----------------------------------------------------------------------------
 size_t PluginSessionClient::getNumInputChannels() {
     typedef SessionHost::Operations::GetNumInputChannels Op;
-    Op::Ret res;
-    waitForResult(SessionHost::OpcM::getOPC<Op>(), res);
-    tmpNumInputs = res.num;
-    return res.num;
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::RetPtr rets = g->getRet<Op::Ret>();
+    waitForResult(SessionHost::OpcM::getOPC<Op>(), g);
+    tmpNumInputs = rets->num;
+    return rets->num;
 }
 //-----------------------------------------------------------------------------
 size_t PluginSessionClient::getNumOutputChannels() {
     typedef SessionHost::Operations::GetNumOutputChannels Op;
-    Op::Ret res;
-    waitForResult(SessionHost::OpcM::getOPC<Op>(), res);
-    tmpNumOutputs = res.num;
-    return res.num;
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::RetPtr rets = g->getRet<Op::Ret>();
+    waitForResult(SessionHost::OpcM::getOPC<Op>(), g);
+    tmpNumOutputs = rets->num;
+    return rets->num;
 }
 //-----------------------------------------------------------------------------
 int PluginSessionClient::getNumParameter()
 {
     typedef SessionHost::Operations::GetNumParameter Op;
-    Op::Ret res;
-    waitForResult(SessionHost::OpcM::getOPC<Op>(), res);
-    return res.num;
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::RetPtr rets = g->getRet<Op::Ret>();
+    waitForResult(SessionHost::OpcM::getOPC<Op>(), g);
+    return rets->num;
 }
 //-----------------------------------------------------------------------------
 void PluginSessionClient::getParameterValues(
     ::processing::parameter::Parameter::Ptr p, size_t index)
 {
     typedef SessionHost::Operations::GetParameterValues Op;
-    Op::Arg args;
-    args.index = index;
-    Op::Ret res;
-    waitForResult(SessionHost::OpcM::getOPC<Op>(), args, res);
-    p->setName(res.name);
-    p->setDisplay(res.display);
-    p->setLabel(res.label);
-    p->setValue(res.value);
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::ArgPtr args = g->getArg<Op::Arg>();
+    Op::RetPtr rets = g->getRet<Op::Ret>();
+    args->index = index;
+    waitForResult(SessionHost::OpcM::getOPC<Op>(), g);
+    p->setName(rets->name);
+    p->setDisplay(rets->display);
+    p->setLabel(rets->label);
+    p->setValue(rets->value);
 }
 //-----------------------------------------------------------------------------
 void PluginSessionClient::setParameterValues(
     ::processing::parameter::Parameter::Ptr p, size_t index)
 {
     typedef SessionHost::Operations::SetParameterValue Op;
-    Op::Arg args;
-    args.index = index;
-    args.value = p->getValue();
-    Op::Ret res;
-    waitForResult(SessionHost::OpcM::getOPC<Op>(), args, res);
-    p->setDisplay(res.display);
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::ArgPtr args = g->getArg<Op::Arg>();
+    Op::RetPtr rets = g->getRet<Op::Ret>();
+    args->index = index;
+    args->value = p->getValue();
+    waitForResult(SessionHost::OpcM::getOPC<Op>(), g);
+    p->setDisplay(rets->display);
 }
 //-----------------------------------------------------------------------------
 void PluginSessionClient::process(SessionHost::Float **srcIns,
@@ -385,7 +399,7 @@ void PluginSessionClient::process(SessionHost::Float **srcIns,
         }
         // call process
         arg->numSamples = numSamples;
-        waitForProcess (SessionHost::OpcM::getOPC<Op>());
+        waitForProcess (SessionHost::OpcM::getOPC<Op>(), mem);
     
         // copy result into out memry
         for (int i=0; i<tmpNumOutputs; ++i) {
@@ -399,27 +413,31 @@ void PluginSessionClient::process(SessionHost::Float **srcIns,
 //-----------------------------------------------------------------------------
 bool PluginSessionClient::hasEditor() {
     typedef SessionHost::Operations::HasEditor Op;
-    Op::Ret res;
-    waitForResult(SessionHost::OpcM::getOPC<Op>(), res);
-    return res.value;
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::RetPtr rets = g->getRet<Op::Ret>();
+    waitForResult(SessionHost::OpcM::getOPC<Op>(), g);
+    return rets->value;
 }
 //-----------------------------------------------------------------------------
 std::string PluginSessionClient::getEditorSessionId() {
     typedef SessionHost::Operations::GetEditorSessionId Op;
-    Op::Ret res;
-    waitForResult(SessionHost::OpcM::getOPC<Op>(), res);
-    return res.id;
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::RetPtr rets = g->getRet<Op::Ret>();
+    waitForResult(SessionHost::OpcM::getOPC<Op>(), g);
+    return rets->id;
 }
 
 //-----------------------------------------------------------------------------
 void PluginSessionClient::openEditor() {
     typedef SessionHost::Operations::OpenEditor Op;
-    waitForProcess(SessionHost::OpcM::getOPC<Op>());
+    MemoryGuard::Ptr g = getMemoryGuard();
+    waitForProcess(SessionHost::OpcM::getOPC<Op>(), g);
 }
 //-----------------------------------------------------------------------------
 void PluginSessionClient::closeEditor() {
     typedef SessionHost::Operations::CloseEditor Op;
-    waitForProcess(SessionHost::OpcM::getOPC<Op>());
+    MemoryGuard::Ptr g = getMemoryGuard();
+    waitForProcess(SessionHost::OpcM::getOPC<Op>(), g);
 }
 //-----------------------------------------------------------------------------
 void PluginSessionClient::setHostInfo(IHostInfo::Ptr hI) {
@@ -430,7 +448,8 @@ std::pair<size_t, void*> PluginSessionClient::getStateData() {
     SAMBAG_LOG_TRACE<<"demand bridged plugin state data";
     typedef SessionHost::Operations::GetStateData Op;
     enum {OPC = SessionHost::OpcM::GetOPC<Op>::Value};
-    waitForProcess(OPC);
+    MemoryGuard::Ptr g = getMemoryGuard();
+    waitForProcess(OPC, g);
     void *data;
     TransferReceiverGuardPtr guard;
     boost::tie(data, guard) = getTransferedData(OPC);
@@ -446,15 +465,16 @@ void PluginSessionClient::setStateData(size_t size, void* data) {
     typedef SessionHost::Operations::SetStateData Op;
     enum {OPC = SessionHost::OpcM::GetOPC<Op>::Value};
     transferData(OPC, data, size, getTransferSenderGuard());
-    waitForProcess(OPC);
+    waitForProcess(OPC, getMemoryGuard());
     SAMBAG_LOG_TRACE<<"set bridged plugins state ("<<size<<" bytes)";
 }
 //-----------------------------------------------------------------------------
 bool PluginSessionClient::canHandleMidiEvent() {
     typedef SessionHost::Operations::CanHandleMidi Op;
-    Op::Ret res;
-    waitForResult(SessionHost::OpcM::GetOPC<Op>::Value, res);
-    return res.value;
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::RetPtr rets = g->getRet<Op::Ret>();
+    waitForResult(SessionHost::OpcM::GetOPC<Op>::Value, g);
+    return rets->value;
 }
 //-----------------------------------------------------------------------------
 void PluginSessionClient::processMidiEvents(sambag::dsp::IMidiEvents *ev) {
@@ -471,7 +491,7 @@ void PluginSessionClient::processMidiEvents(sambag::dsp::IMidiEvents *ev) {
         return;
     }
     transferData(OPC, &tmp[0], tmp.size(), getTransferSenderGuard());
-    waitForProcess(OPC);
+    waitForProcess(OPC, getMemoryGuard());
 }
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------

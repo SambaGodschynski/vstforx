@@ -8,6 +8,7 @@
 #include "Session.hpp"
 #include "ShmCom.hpp"
 #include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <sambag/com/exceptions/IllegalArgumentException.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 //=============================================================================
@@ -64,8 +65,10 @@ Session::~Session() {
     channelA = NULL;
     channelB = NULL;
     priority = NULL;
-    processThread->join();
-    processThread.reset();
+    if (processThread) {
+        processThread->join();
+        processThread.reset();
+    }
 
     if (num_references && --(*num_references)==0) {
        destroyShm();
@@ -145,7 +148,6 @@ void Session::openBuffer() {
 
     processChannel = channelB;
     requestChannel = channelA;
-    startProcessThread();
     SAMBAG_LOG_INFO<<"session established: '"<<name()<<"'";
 }
 //-----------------------------------------------------------------------------
@@ -184,13 +186,13 @@ void Session::createBuffer(ChannelSize a, ChannelSize b) {
     
     processChannel = channelA;
     requestChannel = channelB;
-    startProcessThread();
     SAMBAG_LOG_INFO<<"session created: '"<<name()<<"'";
 }
 //-----------------------------------------------------------------------------
 void Session::assignMemory(sambag::com::interprocess::PointerIterator &pIt,
         boost::optional<ChannelSizes> channelSizes)
 {
+    SAMBAG_LOG_TRACE<<sizeof(IPChannel);
     using namespace ::sambag::com::interprocess;
     typedef PlacementAlloc<Integer> Allocator;
     Allocator alloc(pIt);
@@ -231,24 +233,13 @@ std::string Session::name() const {
     return ss.str();
 }
 //-----------------------------------------------------------------------------
-void Session::waitForResultImpl(Opc opc, const void *args,
-size_t argsize, void *outrets, size_t retsize, Integer timeout) const
+void Session::waitForResultImpl(Opc opc, MemoryGuard::Ptr g, Integer timeout) const
 {
+
     using namespace boost::interprocess;
     timeout*=1000; // millisec to microsec
     boost::posix_time::ptime ptout = boost::posix_time::from_time_t(std::time(NULL));
     ptout += boost::posix_time::microsec(timeout);
-    
-    scoped_lock<Mutex> lock(requestChannel->mutex, ptout);
-    if (!lock) {
-        std::stringstream ss;
-        ss<<name()<<" OPC("<<opc<<") busy";
-        SAMBAG_THROW(TimeOut, ss.str());
-    }
-    // copy argmem
-    if (args && argsize>0) {
-        memcpy(getArgmem(), args, argsize);
-    }
     
     requestChannel->opc = opc;
     int waited = 0;
@@ -259,9 +250,6 @@ size_t argsize, void *outrets, size_t retsize, Integer timeout) const
             ss<<name()<<" OPC("<<opc<<") timed out";
             SAMBAG_THROW(TimeOut, ss.str());
         }
-    }
-    if (outrets && retsize>0) {
-        memcpy(outrets, getRetmem(), retsize);
     }
 }
 //-----------------------------------------------------------------------------
@@ -310,14 +298,18 @@ void Session::_transferData() {
 //-----------------------------------------------------------------------------
 void Session::transferData(Opc opc, void *data, int size, TransferSenderGuardPtr guard)
 {
-    waitForProcess(CLEAR_DATA);
+    if (!guard) {
+        SAMBAG_THROW(sambag::com::exceptions::IllegalArgumentException,
+        "Session::transferData no guard");
+    }
+    waitForProcess(CLEAR_DATA, getMemoryGuard());
     requestChannel->trData.opc=opc;
     static const int maxBytes = FRX_SHMSESS_MAX_DATA_LENGTH;
     while (size>0) {
         int bytesToCopy = size<maxBytes ? size:maxBytes;
         requestChannel->trData.bytesToCopy = bytesToCopy;
         memcpy(requestChannel->trData.data, data, bytesToCopy);
-        waitForProcess(TRANSFER_DATA);
+        waitForProcess(TRANSFER_DATA, getMemoryGuard());
         //iterate
         data=(char*)data+bytesToCopy;
         size-=bytesToCopy;
@@ -363,9 +355,10 @@ Session::TransferSenderGuard::Ptr Session::getTransferSenderGuard(Integer timeou
         ss<<name()<<"Session::beginDataTransfer() timed out";
         SAMBAG_THROW(TimeOut, ss.str());
     }
+    return res;
 }
 //-----------------------------------------------------------------------------
-Session::MemoryGuard::Ptr Session::getMemoryGuard(Integer timeout) {
+Session::MemoryGuard::Ptr Session::getMemoryGuard(Integer timeout) const {
     using namespace boost::interprocess;
     MemoryGuard::Ptr res(new MemoryGuard(getArgmem(), getRetmem()));
     boost::posix_time::ptime ptout = boost::posix_time::from_time_t(std::time(NULL));

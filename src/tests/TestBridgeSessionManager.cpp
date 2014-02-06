@@ -14,7 +14,7 @@
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include "DummyFX.h"
 #include <processing/Graph.h>
-
+#include <processing/interprocess/Session.hpp>
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::TestBridgeSessionManager );
 
@@ -29,17 +29,24 @@ void TestBridgeSessionManager::testStartupBridge() {
     Timer::WorkerThreadHolder wth = Timer::startWorkerThread();
     
     BridgeSessionManager &bm = BridgeSessionManager::instance();
-    bm.setBridgePath("./bridge");
+    bm.setBridgePath("./VSTForx.bridge");
     
-    CPPUNIT_ASSERT_THROW(
+    try {
         bm.createPluginSession("this is never ever a usable plugin path",
-        ::processing::DummyFX::create(NULL)),
-        sambag::com::exceptions::IllegalStateException
-    );
- 
+                                ::processing::DummyFX::create(NULL)
+        );
+    } catch(const Session::TimeOut &ex) {
+        throw;
+    } catch(sambag::com::exceptions::IllegalStateException &ex) {
+        // fine, go on
+    }
+    
+    std::cout<<"waiting for bridge"<<std::flush;
     while(bm.isBridgeSessionEstabished()) {
         boost::this_thread::sleep( boost::posix_time::seconds(1) );
+        std::cout<<"."<<std::flush;
     }
+    std::cout<<std::endl;
     
     Timer::closeAllTimer();
 }
