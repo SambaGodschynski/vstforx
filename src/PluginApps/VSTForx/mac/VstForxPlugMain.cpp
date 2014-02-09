@@ -20,13 +20,15 @@ namespace frx { namespace com {
     extern std::string getBundleLocation();
 }}
 
+extern const char * FRX_BRIDGE_EXEC_NAME;
+
 //-----------------------------------------------------------------------------
 AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
     // setup logging:
     ::sambag::com::addLogFile(getHomeDirectory() + "/VSTForx.log");
     // setup bridge path
     frx::processing::interprocess::BridgeSessionManager::instance().setBridgePath(
-        getHomeDirectory() + "/../bridge"
+        getHomeDirectory() + "/../" + FRX_BRIDGE_EXEC_NAME
     );
     
     SAMBAG_LOG_INFO<<"woke up";

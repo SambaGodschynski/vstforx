@@ -18,6 +18,8 @@ namespace com {
     extern void startProcess(const char *path, int argc, const char **argv);
 }
 
+const char * FRX_BRIDGE_EXEC_NAME = "VSTForx.bridge";
+
 namespace frx { namespace processing { namespace interprocess {
 #ifdef SAMBAG_64
     const std::string FRX_BRIDGE_ARCH_STR("64-32");
@@ -30,7 +32,8 @@ typedef Loki::SingletonHolder<BridgeSessionManager> BridgeSessionManagerHolder;
 //  Class BridgeSessionManager
 //=============================================================================
 //-----------------------------------------------------------------------------
-BridgeSessionManager::BridgeSessionManager() : path("./VSTForx.bridge") {
+BridgeSessionManager::BridgeSessionManager() : path(std::string("./") + FRX_BRIDGE_EXEC_NAME)
+{
 }
 //-----------------------------------------------------------------------------
 BridgeSessionManager & BridgeSessionManager::instance() {

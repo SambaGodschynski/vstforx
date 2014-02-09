@@ -22,6 +22,7 @@ target_link_libraries (remoteChannelCounterpart frx_core ${FRX_CLIBS})
 
 
 add_subdirectory(PluginApps)
+add_subdirectory(mobile)
 
 """
 
@@ -31,6 +32,7 @@ ignoreDirs = (
     #".*test.*",
     ".*GuiStandaloneApp",
      ".*PluginApps",
+     ".*mobile",
     ".*frxPluginDK"
 )
 ignoreFiles = (
