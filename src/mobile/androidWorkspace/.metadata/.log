@@ -4387,3 +4387,6 @@ Caused by: org.eclipse.core.commands.NotHandledException: There is no handler to
 
 !ENTRY com.android.ide.eclipse.adt 4 0 2014-02-13 13:31:59.281
 !MESSAGE Current file is not a match for the given config.
+
+!ENTRY com.android.ide.eclipse.adt 4 0 2014-02-13 14:34:59.816
+!MESSAGE session_view.xml: Dimension "50" in attribute "layout_margin" is missing unit!

@@ -12,3 +12,6 @@
 1392291706157	Rename type 'DefaultFragment'
 1392291737433	Rename resource 'default_fragment.xml'
 1392294741056	Delete element
+1392295122995	Rename type 'ViewPOD'
+1392299458343	Rename local variable 'myLayout'
+1392300132643	Rename method 'getThumb'

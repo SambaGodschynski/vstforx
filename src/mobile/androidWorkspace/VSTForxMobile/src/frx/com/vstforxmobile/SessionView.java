@@ -1,9 +1,12 @@
 package frx.com.vstforxmobile;
 
+import java.util.ArrayList;
+
 import com.example.vstforxmobile.R;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,40 +17,67 @@ import android.widget.SeekBar;
 import android.widget.Space;
 
 public class SessionView extends BaseFragment {
+	protected SessionPOD pod;
+	private View view;
+	private ArrayList<Runnable> onInit = new ArrayList<Runnable>();
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) 
 	{
-		View v = super.onCreateView(inflater, container, savedInstanceState);
-		
-		ViewGroup myLayout = (ViewGroup) v.findViewById(R.id.sliders);
-
-		for (int i=0; i<15; ++i) {
-			SeekBar obj = new SeekBar(v.getContext());
-			obj.setLayoutParams(new LinearLayout.LayoutParams(
-										 LinearLayout.LayoutParams.MATCH_PARENT,
-		                                 LinearLayout.LayoutParams.WRAP_CONTENT));
-			ShapeDrawable thumb = new ShapeDrawable();
-			thumb.setIntrinsicWidth(90);
-			thumb.setIntrinsicHeight(90);
-		  	thumb.setColorFilter(Color.GRAY, Mode.ADD);
-		  	thumb.setAlpha(128);
-			obj.setThumb(thumb);
-			myLayout.addView(obj);
-			Space space = new Space(v.getContext());
-			
-		   	space.setLayoutParams(new LinearLayout.LayoutParams(
-					 LinearLayout.LayoutParams.MATCH_PARENT,
-		             30));
-		   	myLayout.addView(space);
+		view = super.onCreateView(inflater, container, savedInstanceState);
+		for (final Runnable x : onInit) {
+			x.run();
 		}
+		return view;
+	}
+	
+	Drawable createThumb() {
+		ShapeDrawable thumb = new ShapeDrawable();
+		thumb.setIntrinsicWidth(90);
+		thumb.setIntrinsicHeight(90);
+		thumb.setColorFilter(Color.GRAY, Mode.ADD);
+		return thumb;
+	}
+	
+	private void addSliderImpl(SessionPOD.Slider slider) {
+		ViewGroup dst = (ViewGroup) view.findViewById(R.id.sliders);
 		
+		SeekBar obj = new SeekBar(view.getContext());
+		obj.setLayoutParams(new LinearLayout.LayoutParams(
+								LinearLayout.LayoutParams.MATCH_PARENT,
+		                        LinearLayout.LayoutParams.WRAP_CONTENT));
 		
-		
-		return v;
+		obj.setThumb(createThumb());
+		dst.addView(obj);
+		Space space = new Space(view.getContext());
+		space.setLayoutParams(new LinearLayout.LayoutParams(
+					              LinearLayout.LayoutParams.MATCH_PARENT,
+                                  30)
+		);
+		obj.setProgress( (int)(slider.value * obj.getMax()));
+		dst.addView(space);
+	}
+	
+	void addSlider(final SessionPOD.Slider slider) {
+		if (view==null) {
+			onInit.add(new Runnable(){
+				public void run() {
+					addSliderImpl(slider);
+				}
+			});
+			return;
+		}
+		addSliderImpl(slider);
 	}
 
 	protected View getRootView(LayoutInflater inflater, ViewGroup container) {
 		return inflater.inflate(R.layout.session_view, container, false);
+	}
+	
+	public void setSessionPOD(SessionPOD x) {
+		this.pod = x;
+		for (final SessionPOD.Slider slider : x.sliders) {
+			addSlider(slider);
+		}
 	}
 }

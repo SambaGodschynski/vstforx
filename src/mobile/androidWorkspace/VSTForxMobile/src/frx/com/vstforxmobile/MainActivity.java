@@ -111,12 +111,13 @@ public class MainActivity extends FragmentActivity implements AsioHandler.Handle
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {}
 
 	@Override
-	public void addSession(String x) {
-		final String name = x;
-		this.runOnUiThread(new Runnable(){
+	public void addSession(final SessionPOD x) {
+		runOnUiThread(new Runnable(){
 			@Override
 			public void run() {
-				addTab(new SessionView(), name);
+				final SessionView view = new SessionView();
+				addTab(view, x.name);
+				view.setSessionPOD(x);
 			}
 		});
 	}

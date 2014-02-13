@@ -33,15 +33,15 @@ import android.widget.Space;
  * @author samba
  */
 public class AsioHandler  implements MessageEventListener {
-	interface ResponseHandler {
+	static interface ResponseHandler {
 		public void handle(MessageEvent msg);
 	}
-	interface HandlerImpl {
+	static interface HandlerImpl {
 		/**
 		 * @brief called when a new session was created
 		 * @param name
 		 */
-		public void addSession(String name);
+		public void addSession(final SessionPOD name);
 	}
 	private final HandlerImpl impl;
 	Map<String, ResponseHandler> handlers = new LinkedHashMap<String, ResponseHandler>();
@@ -52,13 +52,10 @@ public class AsioHandler  implements MessageEventListener {
 		handlers.put("main/hello", new ResponseHandler() {
 			@Override
 			public void handle(MessageEvent ev) {
-				Log.i("MainActivity", "HELLO: " + ev.getMessage());
 				try {
-					JSONObject json = new JSONObject(ev.getMessage());
-					Iterator<String> it = json.keys();
-					while(it.hasNext()) {
-						String name = it.next();
-						impl.addSession(name);
+					SessionPOD[] sessions = SessionPOD.createSessions(ev.getMessage());
+					for (int i=0; i<sessions.length; ++i) {
+						impl.addSession(sessions[i]);
 					}
 				} catch (JSONException e) {
 					Log.e("MainActivity", e.getMessage());
