@@ -1,0 +1,34 @@
+package frx.com.vstforxmobile;
+
+import com.example.vstforxmobile.R;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+public class BaseFragment extends Fragment {
+	
+	private static int colors[] = {Color.RED, Color.GREEN, Color.BLUE, Color.MAGENTA};
+	private static int colorIt = 0;
+	private int color = getColor();
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) 
+	{
+		super.onCreateView(inflater, container, savedInstanceState);
+		View rootView = getRootView(inflater, container);
+		rootView.setBackgroundColor(color);
+		return rootView;
+	}
+	private static int getColor() {
+		int res = colors[colorIt];
+		colorIt = (++colorIt) % colors.length;
+		return res;
+	}
+	
+	abstract protected View getRootView(LayoutInflater inflater, ViewGroup container);
+}

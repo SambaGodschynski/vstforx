@@ -1,0 +1,105 @@
+package frx.com.vstforxmobile;
+
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.example.vstforxmobile.R;
+import frx.com.vstforxmobile.events.MessageEvent;
+import frx.com.vstforxmobile.events.MessageEventListener;
+import android.os.Bundle;
+import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.ShapeDrawable;
+import android.util.Log;
+import android.view.Menu;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.Space;
+
+public class MainActivity extends Activity implements MessageEventListener {
+	TCPClient tcp;
+	interface Handler {
+		public void handle(MessageEvent msg);
+	}
+	Map<String, Handler> handlers = new LinkedHashMap<String, Handler>();
+	
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        initResponseHandler();
+        setContentView(R.layout.activity_main);
+        ViewGroup myLayout = (ViewGroup) findViewById(R.id.sliders);
+        
+        for (int i=0; i<15; ++i) {
+        	SeekBar obj = new SeekBar(this);
+        	obj.setLayoutParams(new LinearLayout.LayoutParams(
+        								 LinearLayout.LayoutParams.MATCH_PARENT,
+                                         LinearLayout.LayoutParams.WRAP_CONTENT));
+        	ShapeDrawable thumb = new ShapeDrawable();
+        	thumb.setIntrinsicWidth(90);
+        	thumb.setIntrinsicHeight(90);
+          	thumb.setColorFilter(Color.GRAY, Mode.ADD);
+          	thumb.setAlpha(128);
+        	obj.setThumb(thumb);
+        	myLayout.addView(obj);
+        	Space space = new Space(this);
+        	
+           	space.setLayoutParams(new LinearLayout.LayoutParams(
+					 LinearLayout.LayoutParams.MATCH_PARENT,
+                     30));
+           	myLayout.addView(space);
+        }
+        
+        tcp = new TCPClient("192.168.0.104",8080);
+        tcp.addMessageEventListener(this);
+        tcp.asyncRequest("main/hello");
+    }
+
+
+    private void initResponseHandler() {
+		handlers.put("main/hello", new Handler() {
+			@Override
+			public void handle(MessageEvent ev) {
+				Log.i("MainActivity", "HELLO: " + ev.getMessage());
+				try {
+					JSONObject json = new JSONObject(ev.getMessage());
+					Iterator<String> it = json.keys();
+					while(it.hasNext()) {
+						String k = it.next();
+						Log.i("json.it", k);
+					}
+				} catch (JSONException e) {
+					Log.e("MainActivity", e.getMessage());
+				}
+				
+			}});
+	}
+
+
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+    
+    	// Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+
+	@Override
+	public void onMessage(MessageEvent ev) {
+		Handler handler = handlers.get(ev.getRequest());
+		if (handler!=null) {
+			handler.handle(ev);
+		} else {
+			Log.e("MainActivity", ev.getRequest() + " not found");
+		}
+	}
+    
+}

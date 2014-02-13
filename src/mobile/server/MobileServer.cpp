@@ -9,6 +9,7 @@
 #include <boost/xpressive/xpressive.hpp>
 #include <boost/bind.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <sambag/com/Common.hpp>
 
 namespace frx { namespace mobile {
 namespace {
@@ -56,25 +57,29 @@ public:
     }
     //-------------------------------------------------------------------------
     void start() {
-        size_t s = socket_.receive(boost::asio::buffer(request_));
-        std::string srq(request_.data(), s);
-        Request rq;
-        parseRequest(srq, rq);
-        Response rp;
-        const std::string &target = rq["TARGET"];
-        MobileServer::RequestHandlers::const_iterator it =
-            handlers.find(target);
-        if (it==handlers.end()) {
-            rp<<target<<" Not Found";
-        } else {
-            it->second(rq, rp);
-        }
-        responseStr = rp.str();
-        boost::asio::async_write(socket_, boost::asio::buffer(responseStr),
-            boost::bind(&TcpConnection::handleWrite, shared_from_this(),
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred)
-        );
+        try {
+            size_t s = socket_.receive(boost::asio::buffer(request_));
+            std::string srq(request_.data(), s);
+            Request rq;
+            parseRequest(srq, rq);
+            Response rp;
+            const std::string &target = rq["TARGET"];
+            SAMBAG_LOG_INFO<<socket_.local_endpoint()<<" requests:"<<target;
+            MobileServer::RequestHandlers::const_iterator it = handlers.find(target);
+            if (it==handlers.end()) {
+                rp<<target<<" Not Found";
+            } else {
+                it->second(rq, rp);
+            }
+            responseStr = rp.str();
+            boost::asio::async_write(socket_, boost::asio::buffer(responseStr),
+                boost::bind(&TcpConnection::handleWrite, shared_from_this(),
+                boost::asio::placeholders::error,
+                boost::asio::placeholders::bytes_transferred)
+            );
+        } catch (const std::exception &ex) {
+            SAMBAG_LOG_ERR<<"exception: "<<ex.what();
+        } catch (...) {}
     }
 private:
     //-------------------------------------------------------------------------
@@ -99,6 +104,7 @@ private:
 MobileServer::MobileServer(boost::asio::io_service& io_service, int port)
     : acceptor_(io_service, bai::tcp::endpoint(bai::tcp::v4(), port))
 {
+    SAMBAG_LOG_INFO<<"server listen to:"<<acceptor_.local_endpoint();
     startAccept();
 }
 //-----------------------------------------------------------------------------

@@ -1,0 +1,123 @@
+package frx.com.vstforxmobile;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import com.example.vstforxmobile.R;
+import frx.com.vstforxmobile.asio.TCPClient;
+import frx.com.vstforxmobile.events.MessageEvent;
+import frx.com.vstforxmobile.events.MessageEventListener;
+import android.os.Bundle;
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
+import android.app.Activity;
+import android.app.FragmentTransaction;
+import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.ShapeDrawable;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.view.Menu;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.Space;
+
+
+//ViewGroup myLayout = (ViewGroup) findViewById(R.id.sliders);
+
+/*for (int i=0; i<15; ++i) {
+	SeekBar obj = new SeekBar(this);
+	obj.setLayoutParams(new LinearLayout.LayoutParams(
+								 LinearLayout.LayoutParams.MATCH_PARENT,
+                                 LinearLayout.LayoutParams.WRAP_CONTENT));
+	ShapeDrawable thumb = new ShapeDrawable();
+	thumb.setIntrinsicWidth(90);
+	thumb.setIntrinsicHeight(90);
+  	thumb.setColorFilter(Color.GRAY, Mode.ADD);
+  	thumb.setAlpha(128);
+	obj.setThumb(thumb);
+	myLayout.addView(obj);
+	Space space = new Space(this);
+	
+   	space.setLayoutParams(new LinearLayout.LayoutParams(
+			 LinearLayout.LayoutParams.MATCH_PARENT,
+             30));
+   	myLayout.addView(space);
+}*/
+
+
+public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
+	private ViewPager viewPager;
+	private TabsPagerAdapter mAdapter;
+	private ActionBar actionBar;
+	// Tab titles
+	private String[] tabs = { "Top Rated", "Games", "Movies" };
+	private AsioHandler asioHandler = new AsioHandler();
+	TCPClient tcp;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        initTabs();
+        tcp = new TCPClient("192.168.0.104",8080);
+        tcp.addMessageEventListener(asioHandler);
+        tcp.asyncRequest("main/hello");
+    }
+
+	@Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+    
+	private void initTabs() {
+		viewPager = (ViewPager) findViewById(R.id.pager);
+		actionBar = getActionBar();
+		mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
+
+		viewPager.setAdapter(mAdapter);
+		actionBar.setHomeButtonEnabled(false);
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);		
+
+		// Adding Tabs
+		for (String tab_name : tabs) {
+			actionBar.addTab(actionBar.newTab().setText(tab_name)
+					.setTabListener(this));
+		}
+
+		/**
+		 * on swiping the viewpager make respective tab selected
+		 * 
+		 */
+		viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+			@Override
+			public void onPageSelected(int position) {
+				// on changing the page
+				// make respected tab selected
+				actionBar.setSelectedNavigationItem(position);
+			}
+
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+			}
+
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+			}
+		});
+	}
+	@Override
+	public void onTabReselected(Tab tab, FragmentTransaction ft) {}
+	@Override
+	public void onTabSelected(Tab tab, FragmentTransaction ft) {
+		viewPager.setCurrentItem(tab.getPosition());
+	}
+	@Override
+	public void onTabUnselected(Tab tab, FragmentTransaction ft) {}
+}
