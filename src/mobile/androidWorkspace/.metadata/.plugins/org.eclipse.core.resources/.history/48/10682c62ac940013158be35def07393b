@@ -1,0 +1,78 @@
+package frx.com.vstforxmobile;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import com.example.vstforxmobile.R;
+import frx.com.vstforxmobile.asio.TCPClient;
+import frx.com.vstforxmobile.events.MessageEvent;
+import frx.com.vstforxmobile.events.MessageEventListener;
+import android.os.Bundle;
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
+import android.app.Activity;
+import android.app.FragmentTransaction;
+import android.graphics.Color;
+import android.graphics.PorterDuff.Mode;
+import android.graphics.drawable.ShapeDrawable;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.view.Menu;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.Space;
+
+
+
+/**
+ * @brief Handler for asio messages
+ * @author samba
+ */
+public class AsioHandler  implements MessageEventListener {
+	interface ResponseHandler {
+		public void handle(MessageEvent msg);
+	}
+	interface HandlerImpl {
+		/**
+		 * @brief called when a new session was created
+		 * @param name
+		 */
+		public void addSession(String name);
+	}
+	private final HandlerImpl impl;
+	Map<String, ResponseHandler> handlers = new LinkedHashMap<String, ResponseHandler>();
+	
+	
+	public AsioHandler(HandlerImpl i) {
+		this.impl = i;
+		handlers.put("main/hello", new ResponseHandler() {
+			@Override
+			public void handle(MessageEvent ev) {
+				Log.i("MainActivity", "HELLO: " + ev.getMessage());
+				try {
+					JSONObject json = new JSONObject(ev.getMessage());
+					Iterator<String> it = json.keys();
+					while(it.hasNext()) {
+						String name = it.next();
+						impl.addSession(name);
+					}
+				} catch (JSONException e) {
+					Log.e("MainActivity", e.getMessage());
+				}	
+			}});
+	}
+
+	@Override
+	public void onMessage(MessageEvent ev) {
+		ResponseHandler handler = handlers.get(ev.getRequest());
+		if (handler!=null) {
+			handler.handle(ev);
+		} else {
+			Log.e("MainActivity", ev.getRequest() + " not found");
+		}
+	}
+}

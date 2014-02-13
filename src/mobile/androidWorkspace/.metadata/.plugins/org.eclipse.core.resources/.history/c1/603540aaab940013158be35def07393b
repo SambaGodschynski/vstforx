@@ -1,0 +1,10 @@
+package frx.com.vstforxmobile;
+
+public class ViewPOD {
+	public String viewName;
+	public class Slider {
+		public String name;
+		public double value;
+	}
+	public Slider sliders[];
+}

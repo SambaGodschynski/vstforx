@@ -1,0 +1,47 @@
+package frx.com.vstforxmobile;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class SessionPOD {
+	public String viewName;
+	public class Slider {
+		public String name;
+		public double value;
+	}
+	public Slider sliders[];
+	/**
+	 * 
+	 * @param json
+	 * @return
+	 * @throws JSONException
+	 */
+	static public SessionPOD createSession(String json) throws JSONException {
+		return createSession(new JSONObject(json));
+	} 
+	/**
+	 * 
+	 * @param json
+	 * @return
+	 * @throws JSONException 
+	 */
+	static public SessionPOD[] createSessions(String json) throws JSONException {
+		return createSessions(new JSONObject(json));
+	} 
+	/**
+	 * 
+	 * @param json
+	 * @return
+	 */
+	static public SessionPOD createSession(JSONObject json) {
+		return null;
+	} 
+	/**
+	 * 
+	 * @param json
+	 * @return
+	 */
+	static public SessionPOD[] createSessions(JSONObject json) {
+		return null;
+	} 
+}
