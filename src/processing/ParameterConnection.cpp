@@ -33,11 +33,12 @@ ParameterConnection::createConnection(IParameter::Ptr _a,
 }
 namespace {
 	namespace pp = ::processing::parameter;
-	typedef LOKI_TYPELIST_4(
+	typedef LOKI_TYPELIST_5(
 		pp::InverseConnection, 
 		pp::LogConnection, 
 		pp::ExpConnection,
-		pp::OffsetConnection
+		pp::OffsetConnection,
+        pp::MultiplierConnection
 	) ConnectionOps;
 	//#########################################################################
 	template <class COps>
