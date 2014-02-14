@@ -27,9 +27,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
     ::sambag::com::addLogFile(frx::com::getBundleLocation() + "/RemoteChannel.log");
     SAMBAG_LOG_INFO<<"woke up";
     
-    sambag::disco::components::getWindowToolkit()->useWithoutMainloop();
-    
-	// load plugin
+    // load plugin
 	using namespace sambag::dsp::vst;
 	// settingup plugin
 	typedef VST2xPluginWrapper<
