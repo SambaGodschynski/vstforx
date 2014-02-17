@@ -178,7 +178,7 @@ public:
 	//-------------------------------------------------------------------------
 	template <class String> 
 	void getProductName(String &outStr) const {
-		outStr = std::string( globGetProductName() ) + " - 1 ";
+		outStr = std::string( globGetProductName() );
 	} 
 	//-------------------------------------------------------------------------
 	int getProductVersion() const { 

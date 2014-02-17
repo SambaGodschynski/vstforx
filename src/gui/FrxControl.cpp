@@ -63,7 +63,7 @@
 
 
 namespace {
-    const long FRX_REFRESH_PARAMETER=10;
+    const long FRX_REFRESH_PARAMETER=30;
 }
 
 namespace frx { namespace gui {
@@ -139,6 +139,9 @@ struct RefreshParameter {
 		if (!p || !vp) {
 			return;
 		}
+        if (vp->getRangeModel()->getValue() == p->getValue()) {
+            return;
+        }
 		ignoreFrxParameterEvents(vp, true);
 		vp->getRangeModel()->setValue(p->getValue());
 		vp->setUpperFlagText(p->getName());

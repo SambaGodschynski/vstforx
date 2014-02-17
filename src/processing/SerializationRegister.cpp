@@ -36,6 +36,7 @@ void register_types_impl( Archive &ar ) {
 	ar.template register_type<pr::parameter::LogConnection>();
 	ar.template register_type<pr::parameter::OffsetConnection>();
 	ar.template register_type<pr::parameter::MultiplierConnection>();
+    ar.template register_type<pr::parameter::MinMaxConnection>();
 	ar.template register_type<pr::NOPNode>();
 	ar.template register_type<pr::ProcessAdapter::OutputNode>();
 	ar.template register_type<pr::ProcessAdapter::InputNode>();

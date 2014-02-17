@@ -13,8 +13,66 @@
 #include <set>
 #include <sambag/com/Thread.hpp>
 #include <gui/HandyNamespaces.hpp>
+#include <processing/FrxAsyncDSPTimer.hpp>
+#include <boost/function.hpp>
+#include <sambag/com/Thread.hpp>
+#include <sambag/disco/components/WindowToolkit.hpp>
 
 namespace frx { namespace gui {
+struct UpdaterUsingTimer {
+	typedef sambag::disco::components::Timer RefreshTimer;
+    RefreshTimer::Ptr refreshTimer;
+    template <class Function>
+    void init(int refreshTime, const Function &f) {
+        using namespace sambag::disco::components;
+        refreshTimer = RefreshTimer::create(refreshTime);
+        refreshTimer->sce::EventSender<RefreshTimer::Event>::addEventListener(f);
+        refreshTimer->setNumRepetitions(-1);
+        refreshTimer->start();
+    }
+    bool isReady() {
+        return refreshTimer.get() != NULL;
+    }
+};
+struct UpdaterUsingThread {
+    template <class Function>
+    struct Thread {
+        typedef Function F;
+        typedef Thread<F> Class;
+        Function f;
+        int refreshTime;
+        bool running;
+        boost::thread *thread;
+        Thread(int refreshTime, const Function &f) :
+            f(f),
+            refreshTime(refreshTime)
+        {
+            running = true;
+            thread = new boost::thread(boost::bind(&Class::onUpdate, this));
+        }
+        ~Thread() {
+            running = false;
+            thread->join();
+            delete thread;
+        }
+        void onUpdate() {
+            while(running) {
+                f();
+                boost::this_thread::sleep(boost::posix_time::milliseconds(refreshTime));
+            }
+        }
+    };
+    boost::shared_ptr<void> thread;
+    template <class Function>
+    void init(int refreshTime, const Function &f) {
+        thread = boost::shared_ptr<void>(
+            new Thread<Function>(refreshTime, f)
+        );
+    }
+    bool isReady() {
+        return thread.get() != NULL;
+    }
+};
 //=============================================================================
 /** 
   * @class TimedUpdater.
@@ -29,12 +87,15 @@ namespace frx { namespace gui {
 template <
 	class Value, 
 	template <class> class _DoUpdatePolicy,
-	int _RefreshTime
+	int _RefreshTime,
+    class _UpdaterPolicy = UpdaterUsingTimer
 >
-class TimedUpdater : public _DoUpdatePolicy<Value> {
+class TimedUpdater : public _DoUpdatePolicy<Value>, public _UpdaterPolicy {
 //=============================================================================
 friend struct Loki::CreateUsingNew<TimedUpdater>;
 public:
+    //-------------------------------------------------------------------------
+    typedef _UpdaterPolicy UpdaterPolicy;
 	//-------------------------------------------------------------------------
 	enum { RefreshTime = _RefreshTime };
 	//-------------------------------------------------------------------------
@@ -44,17 +105,13 @@ public:
 	//-------------------------------------------------------------------------
 	typedef std::set<ValueType> Values;
 	//-------------------------------------------------------------------------
-	typedef TimedUpdater<Value, _DoUpdatePolicy, RefreshTime> Class;
+	typedef TimedUpdater<Value, _DoUpdatePolicy, RefreshTime, UpdaterPolicy> Class;
 protected:
 	//-------------------------------------------------------------------------
-	void doUpdate(void *, const sambag::disco::components::TimerEvent &ev);
+	void doUpdate();
 private:
 	//-------------------------------------------------------------------------
 	sambag::com::Mutex mutex;
-	//-------------------------------------------------------------------------
-	void initTimer();
-	//-------------------------------------------------------------------------
-	sambag::disco::components::Timer::Ptr refreshTimer;
 	//-------------------------------------------------------------------------
 	Values values;
 	//-------------------------------------------------------------------------
@@ -66,8 +123,8 @@ public:
 			SAMBAG_TRY_TO_LOCK_TIMED(mutex)
 			values.insert(data);
 		}
-		if (!refreshTimer) {
-			initTimer();
+		if (!UpdaterPolicy::isReady()) {
+			UpdaterPolicy::init(RefreshTime, boost::bind(&Class::doUpdate, this));
 		}
 	}
 	//-------------------------------------------------------------------------
@@ -81,36 +138,17 @@ public:
 template <
 	class V, 
 	template <class> class P,
-	int T
+	int T,
+    class U
 >
-void TimedUpdater<V,P,T>::initTimer() {
-	using namespace sambag::disco::components;
-	refreshTimer = Timer::create(RefreshTime);
-	refreshTimer->sce::EventSender<TimerEvent>::addEventListener(
-		boost::bind(&Class::doUpdate, this, _1, _2)
-	);
-	refreshTimer->setNumRepetitions(-1);
-	refreshTimer->start();
-}
-//-----------------------------------------------------------------------------
-template <
-	class V, 
-	template <class> class P,
-	int T
->
-void TimedUpdater<V,P,T>::doUpdate(void *, 
-	const sambag::disco::components::TimerEvent &ev)
+void TimedUpdater<V,P,T,U>::doUpdate()
 {
 	using namespace frx::processing;
 	while (!values.empty()) {
-		ValueType v;
-		{
-			SAMBAG_TRY_TO_LOCK_TIMED(mutex)
-			typename Values::iterator it = values.begin();
-			v = *it;
-			values.erase(it);
-		}
-		DoUpdatePolicy::update(v);
+        SAMBAG_TRY_TO_LOCK_TIMED(mutex)
+        typename Values::iterator it = values.begin();
+		DoUpdatePolicy::update(*it);
+        values.erase(*it);
 	}
 }
 }} // namespace(s)
