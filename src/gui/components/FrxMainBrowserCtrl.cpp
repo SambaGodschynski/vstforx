@@ -22,7 +22,7 @@
 #include "FrxConcreteConnections.hpp"
 #include <gui/components/ShellPluginSelection.hpp>
 #include "FrxCircuidView.hpp"
-#include <gui/TimedUpdater.hpp>
+#include <sambag/disco/TimedUpdater.hpp>
 #include <processing/interprocess/RemoteChannelManager.hpp>
 
 static const int REMOTE_CHANNEL_POLL_TIME_MS = 3 * 1000;
@@ -482,19 +482,20 @@ void FrxMainBrowserCtrl::addMainProcessors()
 namespace {
 	template <class T>
 	struct RefreshBrowser { 
-		void update(const T &val) {
+		bool update(const T &val) {
 			FrxColumnBrowserPtr brws = val.lock();
 			if (!brws)
-				return;
+				return true;
 			// TODO: update specific list or better specific entry
 			brws->getBrowserImpl()->redraw();
+            return true;
 		}
 	};
 }
 void FrxMainBrowserCtrl::parameterChanged(void *src, 
 		float value, const BrowserNode &node)
 {
-	typedef TimedUpdater<FrxColumnBrowserWPtr, RefreshBrowser, 100> Updater;
+	typedef sd::TimedUpdater<FrxColumnBrowserWPtr, RefreshBrowser, 100> Updater;
 	Updater::instance().update(browser);
 }
 //-----------------------------------------------------------------------------
@@ -539,7 +540,7 @@ FrxMainBrowserCtrl::createParameterNode(BrowserNode &out,
 		browser
 	);
 	out.drawCallback = 
-		boost::bind(&FrxMainBrowserCtrl::parameterLabelRedraw, this, _1, 
+		boost::bind(&FrxMainBrowserCtrl::parameterLabelRedraw, this, _1,
 		wObj, boost::cref(out));
 	out.valueChanged =
 		boost::bind(&FrxMainBrowserCtrl::parameterLabelChanged, this, _1, wObj);

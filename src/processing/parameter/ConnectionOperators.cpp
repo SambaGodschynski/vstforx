@@ -9,7 +9,7 @@
 namespace processing{
 namespace parameter {
 
-const float MultiplierConnection::MaxFactor = 5.f;
+const float MultiplierConnection::MaxFactor = 10.f;
 
 }//namespace parameter
 }//namespace processing
