@@ -165,7 +165,7 @@ namespace {
     
     const bool INTERNAL_INSWITCH_Registered =
         frx::processing::ModelFactory::instance().
-            register_<InputSwitch>("internal.InputSwitch", &InputSwitch::create);
+		register_<InputSwitch>("internal.InputSwitch", boost::bind(&InputSwitch::create,_1,2,0));
 }
 
 }// namespace processing

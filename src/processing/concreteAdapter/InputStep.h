@@ -183,7 +183,7 @@ namespace {
     
     const bool INTERNAL_INSTEP_Registered =
         frx::processing::ModelFactory::instance().
-            register_<InputStep>("internal.InputStep", &InputStep::create);
+		register_<InputStep>("internal.InputStep", boost::bind(&InputStep::create, _1, 2, 0));
 }
 
 }// namespace processing

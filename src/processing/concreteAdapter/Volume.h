@@ -96,8 +96,8 @@ public:
 	 * @param initValue
 	 * @return neues Volume-Objekt
 	 */
-	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo, float initValue = 1.0f ) {
-		Ptr neu( new Volume(hostInfo, initValue ) );
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo ) {
+		Ptr neu( new Volume(hostInfo, 1.0f ) );
 		neu->self = neu;
 		neu->initListener();
 		return neu;

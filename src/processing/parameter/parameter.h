@@ -4,8 +4,8 @@
  *      Author: Johannes Unger
  * ===========================================================================================================
  */
-#ifndef PPICORE_PPIAPP_H
-#define PPICORE_PPIAPP_H
+#ifndef FRX_PARAMETER_HPP
+#define FRX_PARAMETER_HPP
 
 #include <vector>
 #include <string>
@@ -19,7 +19,7 @@
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/foreach.hpp>
 #include <boost/unordered_map.hpp>
-
+#include <boost/functional/hash.hpp>
 namespace processing {
 namespace parameter {
 //============================================================================================================
@@ -324,8 +324,8 @@ struct ParameterConnectionSetHash : std::unary_function<std::string, std::size_t
 		// create hash by the two target parameters
 		std::size_t a = (std::size_t)x.first.get();
 		std::size_t b = (std::size_t)x.second.get();
-		boost::hash_combine(seed, std::max(a,b)); // always higher value first
-		boost::hash_combine(seed, std::min(a,b));
+		boost::hash_combine(seed, ::com::getMax(a,b)); // always higher value first
+		boost::hash_combine(seed, ::com::getMin(a,b));
         return seed;
     }
 };
@@ -689,7 +689,7 @@ void Parameter::serialize( Archiv &ar, const unsigned int version) {
 }
 } // namespace parameter
 } // namespace processing
-#endif
+#endif // FRX_PARAMETER_HPP
 
 
 

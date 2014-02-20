@@ -1,7 +1,7 @@
 /**
  * resources.rc
  *
- *  Created on: Tue Dec 10 13:51:05 2013
+ *  Created on: Fri Feb 14 10:49:07 2014
  *      Author: createResources.py
  */
 
@@ -22,13 +22,12 @@
 240	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/knob.png"
 250	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/bkgrey.png"
 260	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/peak_tracker.png"
-270	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/sand.png"
-280	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/warning_icon.png"
-290	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/plus.png"
-300	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/hfolder.png"
-310	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/iplug.png"
-320	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/oSwitch.png"
-330	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/vstPlugNode.png"
-340	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/inf_icon.png"
-350	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/remoteChReceiver.png"
+270	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/warning_icon.png"
+280	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/plus.png"
+290	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/hfolder.png"
+300	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/iplug.png"
+310	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/oSwitch.png"
+320	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/vstPlugNode.png"
+330	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/inf_icon.png"
+340	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/remoteChReceiver.png"
 
