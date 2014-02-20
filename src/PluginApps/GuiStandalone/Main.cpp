@@ -42,6 +42,7 @@ namespace po = boost::program_options;
 po::variables_map vm;
 typedef std::string File;
 typedef std::vector<File> Files;
+typedef std::vector<std::string> Commands;
 //-----------------------------------------------------------------------------
 VstIntPtr testHostCallback(AEffect* effect, VstInt32 opcode,
 		VstInt32 index, VstIntPtr value, void* ptr, float opt)
@@ -176,11 +177,23 @@ void processScripts() {
 	}
 }
 //-----------------------------------------------------------------------------
+void processExecutes() {
+	if (vm.count("exec") == 0) {
+		std::cout<<"nothing to execute."<<std::endl;
+		return;
+	}
+	const Commands &execs = vm["exec"].as<Commands>();
+	BOOST_FOREACH(const std::string &c, execs) {
+		scriptCtrl->appendJob(c);
+	}
+}
+//-----------------------------------------------------------------------------
 bool processArguments(int narg, char **args) {
 	po::options_description options("options for standalone app");
 	options.add_options()
 	("help", "produce help message")
-    ("scripts,s", po::value<Files>(), "scripts");
+    ("scripts,s", po::value<Files>(), "script files to load on startup")
+    ("exec,e", po::value<Commands>(), "executes commands on startup");
 	
 	try {
 		po::store(po::parse_command_line(narg, args, options), vm);
@@ -227,6 +240,7 @@ int main(int narg, char **args) {
 	scriptCtrl->appendJob( "frxOpenEditor()" );
 	scriptCtrl->appendJob( "require\"scripts/util\"" );
 	processScripts();
+    processExecutes();
 	scriptCtrl->start();
 	// start console thread
 	bool consoleRunning = true;
