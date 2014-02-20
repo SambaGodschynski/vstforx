@@ -10,6 +10,7 @@
 #include <sambag/disco/Tweens.hpp>
 #include <sambag/com/Exception.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
+#include <algorithm>
 
 namespace processing {
 namespace parameter {
@@ -207,6 +208,14 @@ void ParameterConnection::onInertiaTypeChanged(void *src, const float &value)
     int n = ::com::mapInteger(value, Tween::TweenPolicy::NUM_TYPES);
     tween->TweenPolicy::setTweenType( (Tween::TweenPolicy::Type)n );
     inertiaType->setDisplay( tween->TweenPolicy::toString() );
+}
+//------------------------------------------------------------------------------------------------------------
+void ParameterConnection::removeOperator(ConnectionOperator::Ptr op) {
+    Operators::iterator it = std::find(ops.begin(), ops.end(), op);
+    if (it==ops.end()) {
+        return;
+    }
+    ops.erase(it);
 }
 //============================================================================================================
 // Klasse: Parameter.

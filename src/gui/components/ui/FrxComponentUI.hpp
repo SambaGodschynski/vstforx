@@ -47,9 +47,6 @@ protected:
 		FrxCircuidViewPtr view, 
 		FrxComponentPtr c);
 	//-------------------------------------------------------------------------
-	virtual sdc::PopupMenuPtr createPopupmenu(FrxComponentPtr c, 
-		FrxCircuidViewPtr view);
-	//-------------------------------------------------------------------------
 	virtual void installDefaults(sdc::AComponentPtr c);
 	//-------------------------------------------------------------------------
 	virtual void installListeners(sdc::AComponentPtr c);
@@ -59,6 +56,9 @@ private:
 	//-------------------------------------------------------------------------
 	sd::ISurface::Ptr image;
 public:
+	//-------------------------------------------------------------------------
+	virtual sdc::PopupMenuPtr createPopupmenu(FrxComponentPtr c, 
+		FrxCircuidViewPtr view);
 	//-------------------------------------------------------------------------
 	virtual ~FrxComponentUI();
 	//-------------------------------------------------------------------------

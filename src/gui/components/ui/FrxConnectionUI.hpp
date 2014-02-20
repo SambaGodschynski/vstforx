@@ -196,6 +196,53 @@ inline void getStyles<connectionTypes::ParameterOP>(sdsg::Style &normal,
 	sdc::ui::getUIManager().getProperty("ParameterOPCn.hoverStyle", hover);
 }
 //-----------------------------------------------------------------------------
+void _extendPopupMenu(sdc::PopupMenu::WPtr _menu,
+    FrxCircuidViewWPtr _view, FrxComponentWPtr _c)
+{
+    sdc::PopupMenu::Ptr menu = _menu.lock();
+    FrxCircuidViewPtr view = _view.lock();
+    FrxComponentPtr c = _c.lock();
+    if (!menu || !view || !c) {
+        return;
+    }
+    
+    sdc::Menu::Ptr smenu;
+    
+    c->getClientProperty("frxParameterConnection.ops.removemenu", smenu);
+
+    if (!smenu) {
+        smenu = sdc::Menu::create();
+        smenu->setText("remove operator");
+        menu->add(smenu);
+        c->putClientProperty("frxParameterConnection.ops.removemenu", smenu);
+    } else {
+        //smenu->removeAll();
+    }
+    
+    FrxConnection::Ptr connection =
+        boost::dynamic_pointer_cast<FrxConnection>(c);
+    if (!connection) {
+        return;
+    }
+    
+    IFrxControl &ctrl = getFrxControl(view);
+    std::vector<IFrxControl::Operator> ops;
+    ctrl.getOperators(view, connection, ops);
+    if (ops.empty()) {
+        return;
+    }
+    
+    BOOST_FOREACH(const IFrxControl::Operator &op, ops) {
+        sdc::MenuItem::Ptr item = sdc::MenuItem::create();
+        item->setText(op.second);
+        item->sce::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
+            boost::bind(&IFrxControl::removeOperator, &ctrl, view, connection, op.first),
+            c
+        );
+        smenu->add(item);
+    }
+}
+//-----------------------------------------------------------------------------
 template <class CT>
 void _createPopupmenuEntries(sdc::PopupMenuPtr menu, 
 	FrxCircuidViewPtr view, FrxComponentPtr c)
@@ -220,7 +267,15 @@ inline void _createPopupmenuEntries<connectionTypes::Parameter>(
 	sdc::Menu::Ptr smenu = sdc::Menu::create();
 	smenu->setText("add operator");
 	menu->add(smenu);
-	
+    
+    menu->sce::EventSender<sdc::PopupMenu::BeforeShowingEvent>::addTrackedEventListener(
+        boost::bind(&_extendPopupMenu,
+                    sdc::PopupMenu::WPtr(menu),
+                    FrxCircuidViewWPtr(view),
+                    FrxComponentWPtr(c)
+        ), c
+    );
+    
 	// get connection op's
 	IFrxControl::ParameterCnOpTypeIds opIds;
 	ctrl.getParameterCnOpTypeIds(view, opIds);

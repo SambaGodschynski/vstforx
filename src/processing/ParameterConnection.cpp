@@ -92,6 +92,7 @@ addParameterCnOp(const ParameterCnOpTypeId &opId)
 	using namespace ::processing::parameter;
 	ConnectionOperator::Ptr op = createCOp<ConnectionOps>(opId);
 	cn->addOperator(op);
+    operators.push_back(op);
 	HasParameter::Ptr hp = 
 		boost::dynamic_pointer_cast<HasParameter>(op);
 	if (!hp) {
@@ -103,6 +104,28 @@ addParameterCnOp(const ParameterCnOpTypeId &opId)
 		p = hp->getParameter(i);
 		parameters.insert(std::make_pair(op->getName(), ParameterAdapter::create(p)));
 	}
+}
+//-----------------------------------------------------------------------------
+size_t ParameterConnection::getNumConnectionOps() {
+    return operators.size();
+}
+//-----------------------------------------------------------------------------
+void ParameterConnection::removeConnectionOp(size_t index) {
+    if (index>operators.size()) {
+        SAMBAG_LOG_WARN<<"ParameterConnection::removeConnectionOp() out of bounds";
+        return;
+    }
+    ConnectionOperator::Ptr op = operators[index];
+    cn->removeOperator(op);
+    operators.erase(operators.begin()+index);
+}
+//-----------------------------------------------------------------------------
+std::string ParameterConnection::getConnectionOpName(size_t index) {
+    if (index>operators.size()) {
+        SAMBAG_LOG_WARN<<"ParameterConnection::getConnectionOpName() out of bounds";
+        return "";
+    }
+    return operators[index]->getName();
 }
 //-----------------------------------------------------------------------------
 void ParameterConnection::getParameterGroupKeys(ParameterGroupKeys &out) const {
@@ -130,9 +153,6 @@ getParameters(const ParameterGroupKey &key, Parameters &out) const
 	for (; it!=end; ++it) {
 		out.push_back(it->second);
 	}
-}
-//-----------------------------------------------------------------------------
-void ParameterConnection::getConnectionOps(ParameterCnOpTypeIds &out) {
 }
 //-----------------------------------------------------------------------------
 bool ParameterConnection::requestRemove() {

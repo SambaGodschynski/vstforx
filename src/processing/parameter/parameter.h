@@ -249,6 +249,8 @@ public:
 		initListener(op);
 	}
 	//--------------------------------------------------------------------------------------------------------
+	void removeOperator(ConnectionOperator::Ptr op);
+	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * erstellt ParameterConnection-Objekt
 	 * @param Parameter A 

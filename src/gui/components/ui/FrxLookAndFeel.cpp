@@ -196,6 +196,7 @@ void FrxLookAndFeel::installDefaults() {
 	stops[2] = Stop( sd::ColorRGBA(0.36862745098, 0.0, 0.176470588235, .7), 0.42);
 	stops[3] = Stop( sd::ColorRGBA(0.152941176471, 0.0078431372549, 0.0941176470588, .7), 1.0);
 	m.putProperty("FrxCircuidView.bg.gradient.colorStops", stops);
+    m.putProperty("FrxCircuidView.bg.parallaxEffect", 0.8); // 0=full speed; 0.5 = half speed; 1=stop
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<styles
 	Style style = createStyle("stroke:darkgrey; fill:lightgrey; font-size: 12; font-family: arial; font-style: italic;");
 	//style.fillPattern( sd::createPattern("lin(0,1,[D3D3D3FF:0, D3D3D3FF:0.66, D3D3D3FF:0.667, FF:1])") );
