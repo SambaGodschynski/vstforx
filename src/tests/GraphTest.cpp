@@ -829,7 +829,7 @@ void GraphTest::testDelayCompensationComplex1() {
 	Graph::Ptr graph = createGraph( BLOCKSIZE, 44100.0f );
 	typedef CreateAdapter< DelayAdapter<D1> > AdapterD1;
 	typedef CreateAdapter< DelayAdapter<D2> > AdapterD2;
-	Volume::Ptr nd = Volume::create( graph->getHostInfo(), 1.0f );
+	Volume::Ptr nd = Volume::create( graph->getHostInfo() );
 	Graph::Janitor::Ptr jan = graph->getJanitor();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add Adapter
 	jan->add(nd);

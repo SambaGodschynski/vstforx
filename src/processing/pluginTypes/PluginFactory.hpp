@@ -30,7 +30,8 @@ public:
     //-------------------------------------------------------------------------
     typedef Product* ProductPtr;
     //-------------------------------------------------------------------------
-    typedef ::processing::PluginInfo::PluginType Type;
+	typedef ::processing::PluginInfo PluginInfo;
+    typedef PluginInfo::PluginType Type;
 
 protected:
     //-------------------------------------------------------------------------
@@ -65,7 +66,7 @@ public:
     ProductPtr load(IHostInfo::Ptr,
         Parameters*,
         const std::string &,
-        Type type = ::processing::PluginInfo::UNKNOWN);
+        Type type = PluginInfo::UNKNOWN);
 
 
 }; // PluginFactory

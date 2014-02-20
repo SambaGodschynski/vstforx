@@ -26,19 +26,19 @@
 #define FRX_MODELFACTORY_REGISTER(type,prod)                                   \
     namespace { const bool type ## prod =                                      \
             frx::processing::ModelFactory::instance().register_<prod>(         \
-                std::string(#type) + "." + #prod, &prod::create                \
+			std::string(#type) + "." + #prod, boost::bind(&prod::create, _1)   \
         );}
 
-#define FRX_MODELFACTORY_REGISTER_IO(type,prod)                                \
-    namespace { const bool type ## prod =                                      \
-            frx::processing::ModelFactory::instance().registerWithIO<prod>(    \
-                std::string(#type) + "." + #prod, &prod::create                \
+#define FRX_MODELFACTORY_REGISTER_IO(type,prod)                                        \
+    namespace { const bool type ## prod =                                              \
+            frx::processing::ModelFactory::instance().registerWithIO<prod>(            \
+                std::string(#type) + "." + #prod, boost::bind(&prod::create, 1, 2, 3)  \
         );}
 
-#define FRX_MODELFACTORY_REGISTER_DETAILS(type,prod)                              \
-    namespace { const bool type ## prod =                                         \
-            frx::processing::ModelFactory::instance().registerWithDetail<prod>(   \
-                std::string(#type) + "." + #prod, &prod::create                   \
+#define FRX_MODELFACTORY_REGISTER_DETAILS(type,prod)                                  \
+    namespace { const bool type ## prod =                                             \
+            frx::processing::ModelFactory::instance().registerWithDetail<prod>(       \
+                std::string(#type) + "." + #prod, boost::bind(&prod::create, _1, _2)  \
         );}
 
 

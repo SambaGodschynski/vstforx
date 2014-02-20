@@ -119,7 +119,7 @@ public:
      * @param not used, needed to fit ModelFactory's create function signature
 	 * @return neues OutputStep-Objekt
 	 */
-	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo, int initSteps = 2, int notused=0 ) {
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo, int notUsed = 0, int initSteps=2 ) {
 		Ptr neu( new OutputStep(hostInfo, initSteps) );
 		neu->self = neu;
 		return neu;
@@ -178,7 +178,7 @@ namespace {
     
     const bool INTERNAL_OUTSTEP_Registered =
         frx::processing::ModelFactory::instance().
-            register_<OutputStep>("internal.OutputStep", &OutputStep::create);
+		register_<OutputStep>("internal.OutputStep", boost::bind(&OutputStep::create,_1,0,2));
 }
 
 }// namespace processing

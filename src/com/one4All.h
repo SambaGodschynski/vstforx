@@ -158,9 +158,17 @@ namespace com {
 		*u = ( *t==o1 ) ? dynamic_cast<U*>( o2 ) : dynamic_cast<U*>( o1 );
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @brief exists only because std::max fucks up sometimes on msvc with compile
+	 * errors and I have no clue why.
+	 */
 	template < typename T >
 	T getMax( const T& a, const T &b) { return (a > b) ? a : b; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @brief exists only because std::max fucks up sometimes on msvc with compile
+	 * errors and I have no clue why.
+	 */
 	template < typename T >
 	T getMin( const T& a, const T &b) { return (a < b) ? a : b; }
 	//--------------------------------------------------------------------------------------------------------
