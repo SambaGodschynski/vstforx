@@ -28,6 +28,12 @@ class RelativeConnection;
 
 static const float STD_SLOPE = 0.01f;
 
+/**
+ * TODO: new Op's have to be registered manually in ParameterConnection.cpp ConnectionOps AND
+ * SerilizationRegister.
+ * Consider a new approach such like ModelFactory with automatic registering
+ */
+
 namespace processing{
 namespace parameter {
 //============================================================================================================
@@ -388,6 +394,112 @@ public:
 	 */
 	virtual Parameter::Ptr getParameter ( size_t index ) const {
 		return slope;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return 1
+	 */
+	virtual size_t getNumParameter () const { return 1; }
+};
+//============================================================================================================
+// Klasse: MultiplierConnection.
+// Proportionale Verbindung mit log Anstieg.
+//============================================================================================================
+class MultiplierConnection : public ConnectionOperator, public HasParameter {
+friend class boost::serialization::access;
+BOOST_SERIALIZATION_SPLIT_MEMBER()
+public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::shared_ptr<MultiplierConnection> Ptr;
+private:
+    //--------------------------------------------------------------------------------------------------------
+    static const float MaxFactor;
+	//--------------------------------------------------------------------------------------------------------
+	void initListener() {
+        m->addValueChangedListener(
+			boost::bind(&MultiplierConnection::onMulChanged, this, _1, _2)
+		);
+    }
+    //--------------------------------------------------------------------------------------------------------
+    void onMulChanged(void*, const float &value) {
+        m->setDisplay(com::MyString(value*(float)MaxFactor));
+    }
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Serialisiert LogConnection-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
+	void save ( com::oArchive &ar, const unsigned int version ) const {
+		ar << boost::serialization::base_object<ConnectionOperator> ( *this );
+		ar << m;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Deserialisiert LogConnection-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
+	void load ( com::iArchive &ar, const unsigned int version ) {
+		ar >> boost::serialization::base_object<ConnectionOperator> ( *this );
+		ar >> m;
+		initListener();
+	}
+	//--------------------------------------------------------------------------------------------------------
+	MultiplierConnection () : ConnectionOperator () {	
+		setName (name());
+		m = Parameter::create();
+		*m = STD_SLOPE;
+		m->setMin(0.0001f);
+		m->setMax(1.0f);
+		m->setName("multiplier");
+		initListener();
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Slope-Parameter der Log. funktion
+	 */
+	Parameter::Ptr m;
+public:
+	//--------------------------------------------------------------------------------------------------------
+	inline static std::string name() {
+		return "Multiplier Operator";
+	};
+	//--------------------------------------------------------------------------------------------------------
+	static Ptr create() {
+		return Ptr(new MultiplierConnection());
+	}
+	//--------------------------------------------------------------------------------------------------------
+	virtual ~MultiplierConnection(){}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * implementiert Operation
+	 * @param f urspuengl. Parameter Wert
+	 * @return Parameterwert nach Operation
+	 */
+	virtual com::VstNumber operate ( com::VstNumber x ){
+		return x * *m * MaxFactor;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * implementiert inverse Operation
+	 * @param f urspuengl. Parameter Wert
+	 * @return Parameterwert nach Operation
+	 */
+	virtual com::VstNumber operateInverse ( com::VstNumber x ) {
+        if (*m==0) {
+            SAMBAG_LOG_WARN<<"multiplier op div by zero";
+            return FLT_MAX;
+        }
+		return x / (*m * MaxFactor);
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param index
+	 * @return Slope-Parameter unabhaengig von index.
+	 */
+	virtual Parameter::Ptr getParameter ( size_t index ) const {
+		return m;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
