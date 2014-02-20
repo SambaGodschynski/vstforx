@@ -268,13 +268,13 @@ inline void _createPopupmenuEntries<connectionTypes::Parameter>(
 	smenu->setText("add operator");
 	menu->add(smenu);
     
-    menu->sce::EventSender<sdc::PopupMenu::BeforeShowingEvent>::addTrackedEventListener(
+    /*menu->sce::EventSender<sdc::PopupMenu::BeforeShowingEvent>::addTrackedEventListener(
         boost::bind(&_extendPopupMenu,
                     sdc::PopupMenu::WPtr(menu),
                     FrxCircuidViewWPtr(view),
                     FrxComponentWPtr(c)
         ), c
-    );
+    );*/
     
 	// get connection op's
 	IFrxControl::ParameterCnOpTypeIds opIds;
