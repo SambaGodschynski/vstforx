@@ -14,6 +14,7 @@
 #include <sambag/disco/components/windowImpl/AWindowImpl.hpp>
 #include <sambag/disco/components/Timer.hpp>
 #include <gui/HandyNamespaces.hpp>
+#include <sambag/com/Thread.hpp>
 
 namespace frx { namespace gui { namespace components {
 class FrxPluginEditor;
@@ -177,6 +178,7 @@ public:
     virtual bool isVisible () const;
     virtual void setTitle (const std::string &title);
     virtual std::string getTitle () const;
+	sambag::com::ThreadId getThreadId() const { return sambag::com::ThreadId(); }
     // AWindowImpl
 };
 }}}} // namespace(s)

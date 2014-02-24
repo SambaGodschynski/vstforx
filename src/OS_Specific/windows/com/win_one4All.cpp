@@ -13,12 +13,14 @@
 #include <Shlobj.h>
 #include <sstream>
 #include <windows.h>
+#include <exception>
 
 extern void* hInstance;
 
 namespace com {
 //------------------------------------------------------------------------------------------------------------
 void startProcess(const char *path, int argc, const char **argv) {
+	throw std::runtime_error("todo");
 }
 //------------------------------------------------------------------------------------------------------------
 std::string getRootDirectory() {

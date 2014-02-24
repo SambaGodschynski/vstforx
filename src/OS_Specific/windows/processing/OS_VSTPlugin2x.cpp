@@ -99,8 +99,9 @@ bool OS_VSTPlugNode2x::loadModule( const HostCallBackOnInit &_callBkOnInit ) {
 		OS_VSTPlugNode2x::callBkOnInit = HostCallBackOnInit(NULL, NULL);
 		shellPlugIdOnInit = 0;
 	}
-	if ( aEff ) 
+	if ( aEff ) {
 		return true;
+	}
 	aEff = &nullAEff;
 	::unloadModule ( module );
 	return false;
