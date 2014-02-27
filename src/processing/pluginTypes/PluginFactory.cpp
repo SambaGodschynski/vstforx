@@ -9,6 +9,13 @@
 #include <processing/ModelFactory.hpp>
 #include <processing/interprocess/BridgeSessionManager.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <boost/filesystem.hpp>
+
+namespace com {
+    // defined in OS_Specific/com/xxx_one4All.cpp
+    extern const char * FRX_VST_EXT;
+    extern const char * FRX_LUA_EXT;
+}
 
 namespace frx { namespace processing {
 typedef Loki::SingletonHolder<PluginFactory> PluginFactoryHolder;
@@ -23,6 +30,9 @@ extern PluginFactory::ProductPtr createVST2xPluginImpl(IHostInfo::Ptr,
     PluginFactory::Parameters*, const std::string&);
     
 extern PluginFactory::ProductPtr createBridgedPluginImpl(IHostInfo::Ptr,
+    PluginFactory::Parameters*, const std::string&);
+    
+extern PluginFactory::ProductPtr createLuaImpl(IHostInfo::Ptr,
     PluginFactory::Parameters*, const std::string&);
 
 //=============================================================================
@@ -62,9 +72,23 @@ PluginFactory::loadAU(IHostInfo::Ptr hI, Parameters*par, const std::string &loc)
     return NULL;
 }
 //-----------------------------------------------------------------------------
-PluginFactory::Type PluginFactory::detectType(const std::string &) {
+PluginFactory::ProductPtr
+PluginFactory::loadLua(IHostInfo::Ptr hI, Parameters*par, const std::string &loc)
+{
+    return createLuaImpl(hI, par, loc);
+}
+//-----------------------------------------------------------------------------
+PluginFactory::Type PluginFactory::detectType(const std::string &loc) {
     using ::processing::PluginInfo;
-    return PluginInfo::VST2X;
+    boost::filesystem::path path(loc);
+    std::string ext = path.extension().string();
+    if (ext==std::string(com::FRX_VST_EXT)) {
+        return PluginInfo::VST2X;
+    }
+    if (ext==std::string(com::FRX_LUA_EXT)) {
+        return PluginInfo::LUA;
+    }
+    return PluginInfo::UNKNOWN;
 }
 //-----------------------------------------------------------------------------
 PluginFactory::ProductPtr
@@ -75,11 +99,16 @@ PluginFactory::load(IHostInfo::Ptr hI,
     
     if (type == PluginInfo::UNKNOWN) {
         type = detectType(loc);
+        if (type==PluginInfo::UNKNOWN) {
+            using sambag::com::exceptions::IllegalStateException;
+            SAMBAG_THROW(IllegalStateException,"unsupportet pluginformat");
+        }
     }
     
     try {
         switch (type) {
         case PluginInfo::VST2X : return loadVST2x(hI, par, loc);
+        case PluginInfo::LUA : return loadLua(hI, par, loc);
         default : return NULL;
         
         }

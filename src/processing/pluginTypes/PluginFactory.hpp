@@ -55,6 +55,11 @@ protected:
      */
     ProductPtr loadAU(IHostInfo::Ptr, Parameters*, const std::string &);
     //-------------------------------------------------------------------------
+    /**
+     * @return au plugin impl
+     */
+    ProductPtr loadLua(IHostInfo::Ptr, Parameters*, const std::string &);
+    //-------------------------------------------------------------------------
     Type detectType(const std::string &);
 public:
 	//-------------------------------------------------------------------------

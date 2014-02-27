@@ -22,7 +22,7 @@ struct PluginInfo {
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	enum PluginType { UNKNOWN, VST2X, VST3X, DX, AU };
+	enum PluginType { UNKNOWN, VST2X, VST3X, DX, AU, LUA };
 	//--------------------------------------------------------------------------------------------------------
 	enum AccessState { NOT_CHECKED, SUCCEED, FAILED };
 private:
