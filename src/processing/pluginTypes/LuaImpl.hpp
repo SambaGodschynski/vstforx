@@ -14,7 +14,8 @@
 #include <sambag/lua/LuaHelper.hpp>
 #include <sambag/lua/LuaSequence.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
-
+#include <boost/unordered_map.hpp>
+#include <processing/parameter/parameter.h>
 
 #define FRX_LUA_FUNC(_name,r1) \
 struct _name ## _Tag { \
@@ -92,6 +93,7 @@ struct _name ## _Tag { \
 
 namespace frx { namespace processing {
 namespace oldPr = ::processing;
+namespace oldPrPa = ::processing::parameter;
 //=============================================================================
 /** 
   * @class PluginImpl.
@@ -100,14 +102,31 @@ class LuaImpl : public APluginImpl {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-    typedef sambag::lua::LuaSequenceEx<oldPr::Frames::T> LuaFloatSeq;
+    typedef sambag::lua::LuaSequenceEx<oldPr::Frames::T> LuaFloatSeqEx;
+	//-------------------------------------------------------------------------
+    typedef sambag::lua::LuaSequence<oldPr::Frames::T> LuaFloatSeq;
     //-------------------------------------------------------------------------
-	typedef boost::tuple< LuaFloatSeq > LuaFrames;
+	typedef boost::tuple< LuaFloatSeqEx > LuaFrames;
 	//-------------------------------------------------------------------------
 	// r,i
-	typedef boost::tuple< sambag::lua::LuaSequence<float>,
-        sambag::lua::LuaSequence<oldPr::Frames::T> > FFTData;
+	typedef boost::tuple< LuaFloatSeq, LuaFloatSeq > FFTData;
+    //-------------------------------------------------------------------------
+    enum Flag {
+        IsValid,
+        HasParameterChangedFunction,
+        HasProcessFunction,
+        HasProcessMidiFunction,
+        HasSetAudioConfigFunction,
+        HasInitFunction
+    };
 private:
+    //-------------------------------------------------------------------------
+	typedef std::pair<oldPrPa::Parameter::Ptr,
+        oldPrPa::Parameter::Connection> ParameterContainer;
+	//-------------------------------------------------------------------------
+	typedef boost::unordered_map<std::string, ParameterContainer> ParameterMap;
+	//-------------------------------------------------------------------------
+	ParameterMap parameterMap;
     //-------------------------------------------------------------------------
 	sambag::lua::LuaStateRef luaState;
 	//-------------------------------------------------------------------------
@@ -115,20 +134,37 @@ private:
     //-------------------------------------------------------------------------
     std::string scriptFile;
     //-------------------------------------------------------------------------
+    std::string scriptName;
+    //-------------------------------------------------------------------------
     typedef sambag::lua::LuaMap<std::string, std::string> Config;
     mutable Config config;
     //-------------------------------------------------------------------------
 	// lock lua calls 
 	com::Mutex mutex;
     //-------------------------------------------------------------------------
-    sambag::com::ArithmeticWrapper<bool> valid;
-    //-------------------------------------------------------------------------
-    sambag::com::ArithmeticWrapper<bool> hasParameterListener;
+    unsigned int flags;
     //-------------------------------------------------------------------------
     size_t numInputs, numOutputs, currNumSamples;
     //-------------------------------------------------------------------------
-    oldPr::Frames::T ** currInputs;
-protected:
+    oldPr::Frames::T **currInputs, **currOutputs;
+    protected:
+    //-------------------------------------------------------------------------
+    void setFlag(Flag aFlag, bool b) {
+        if (b) {
+            flags |= (1 << aFlag);
+        } else {
+            flags &= ~(1 << aFlag);
+        }
+    }
+    //-------------------------------------------------------------------------
+    bool getFlag(Flag aFlag) const {
+        unsigned int mask = (1 << (unsigned int)aFlag);
+        return ((flags & mask) == mask);
+    }
+    //-------------------------------------------------------------------------
+    inline std::string logName() const {
+        return scriptName + ": ";
+    }
     //-------------------------------------------------------------------------
     void log(const std::string &msg);
     //-------------------------------------------------------------------------
@@ -146,13 +182,19 @@ protected:
     //-------------------------------------------------------------------------
     void loadIOs();
     //-------------------------------------------------------------------------
+    void initScript();
+    //-------------------------------------------------------------------------
     void checkFunctions();
     //-------------------------------------------------------------------------
     void onParameterChanged(void *src, float value, std::string id);
     //-------------------------------------------------------------------------
-    LuaFrames frxGetFramesFromInput(int channel);
+    LuaFrames frxGetInput(int channel);
     //-------------------------------------------------------------------------
-    void frxSetFramesToOutput();
+    FFTData frxFFT(int numSamples);
+    //-------------------------------------------------------------------------
+    void frxToOutput();
+    //-------------------------------------------------------------------------
+    void frxSetParameter(const std::string &name, float value);
 public:
     ///////////////////////////////////////////////////////////////////////////
     // AWindowImpl

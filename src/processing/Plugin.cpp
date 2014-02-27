@@ -316,7 +316,7 @@ void Plugin::loadImplState(com::iArchive &ar, const unsigned int version, Int2Ty
 	{
         if (impl->statusMsg.length()==0) {
             impl->statusMsg = " I/O configuration has changed between save and restore. \
-Processing is stopped. Please Reload.";
+Processing is stopped. Please remove and load new.";
         }
 		processing = false;
 	}

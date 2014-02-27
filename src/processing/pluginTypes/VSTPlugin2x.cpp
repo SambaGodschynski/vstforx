@@ -377,8 +377,7 @@ void VSTPluginImpl::closeEditor(void *window) {
 	aEff->dispatcher ( aEff, effEditClose, 0, 0, window, 0);
 }
 //-----------------------------------------------------------------------------
-void VSTPluginImpl::onEditorIdle() {
-    SAMBAG_LOG_TRACE<<"ED IDLE";
+void VSTPluginImpl::onEditorIdle() { 
 	aEff->dispatcher ( aEff, effEditIdle, 0, 0, 0, 0);
 }
 //-----------------------------------------------------------------------------
