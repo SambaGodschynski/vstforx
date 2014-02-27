@@ -449,11 +449,11 @@ private:
 	MultiplierConnection () : ConnectionOperator () {	
 		setName (name());
 		m = Parameter::create();
-		*m = STD_SLOPE;
 		m->setMin(0.0001f);
 		m->setMax(1.0f);
 		m->setName("multiplier");
 		initListener();
+        *m = 1.f / MaxFactor;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -506,6 +506,112 @@ public:
 	 * @return 1
 	 */
 	virtual size_t getNumParameter () const { return 1; }
+};
+//============================================================================================================
+// Klasse: MinMaxConnection.
+//============================================================================================================
+class MinMaxConnection : public ConnectionOperator, public HasParameter {
+friend class boost::serialization::access;
+BOOST_SERIALIZATION_SPLIT_MEMBER()
+public:
+	//--------------------------------------------------------------------------------------------------------
+	typedef boost::shared_ptr<MinMaxConnection> Ptr;
+private:
+	//--------------------------------------------------------------------------------------------------------
+	void initListener() {}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Serialisiert LogConnection-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
+	void save ( com::oArchive &ar, const unsigned int version ) const {
+		ar << boost::serialization::base_object<ConnectionOperator> ( *this );
+		ar << min_;
+        ar << max_;
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Deserialisiert LogConnection-Objekt
+	 * @param ar boost::Archive-Objekt
+	 * @param version
+	 */
+	void load ( com::iArchive &ar, const unsigned int version ) {
+		ar >> boost::serialization::base_object<ConnectionOperator> ( *this );
+		ar >> min_;
+        ar >> max_;
+		initListener();
+	}
+	//--------------------------------------------------------------------------------------------------------
+	MinMaxConnection () : ConnectionOperator () {	
+		setName (name());
+		min_ = Parameter::create();
+		min_->setMin(0.f);
+		min_->setMax(1.f);
+		min_->setName("min");
+        min_->setValue(0.f);
+    
+		max_ = Parameter::create();
+		max_->setMin(0.f);
+		max_->setMax(1.f);
+		max_->setName("max");
+        max_->setValue(1.f);
+		initListener();
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * Slope-Parameter der Log. funktion
+	 */
+	Parameter::Ptr min_, max_;
+public:
+	//--------------------------------------------------------------------------------------------------------
+	inline static std::string name() {
+		return "MinMax Operator";
+	};
+	//--------------------------------------------------------------------------------------------------------
+	static Ptr create() {
+		return Ptr(new MinMaxConnection());
+	}
+	//--------------------------------------------------------------------------------------------------------
+	virtual ~MinMaxConnection(){}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * implementiert Operation
+	 * @param f urspuengl. Parameter Wert
+	 * @return Parameterwert nach Operation
+	 */
+	virtual com::VstNumber operate ( com::VstNumber x ){
+		x = com::getMax(x, min_->getValue());
+        return com::getMin(x, max_->getValue());
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * implementiert inverse Operation
+	 * @param f urspuengl. Parameter Wert
+	 * @return Parameterwert nach Operation
+	 */
+	virtual com::VstNumber operateInverse ( com::VstNumber x ) {
+        return operate(x);
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param index
+	 * @return Slope-Parameter unabhaengig von index.
+	 */
+	virtual Parameter::Ptr getParameter ( size_t index ) const {
+		switch (index) {
+            case 0:
+                return min_;
+            case 1:
+                return max_;
+        }
+        return Parameter::Ptr();
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @return 1
+	 */
+	virtual size_t getNumParameter () const { return 2; }
 };
 } //namespace parameter 
 } //namespace processing

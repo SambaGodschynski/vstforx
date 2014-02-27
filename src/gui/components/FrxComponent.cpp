@@ -8,6 +8,8 @@
 #include "FrxComponent.hpp"
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <boost/algorithm/string.hpp>
+#include <gui/components/ui/FrxComponentUI.hpp>
+#include <gui/components/FrxCircuidView.hpp>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================

@@ -21,6 +21,7 @@
 #include <gui/HandyNamespaces.hpp>
 #include <processing/IModelController.hpp>
 #include "IViewModelMap.hpp"
+#include <gui/components/FrxConnection.hpp>
 
 #define SAMBAG_CREATE_FRXCONTROL_CMD(frxctrl, view, frxcomponent, frxcmdfunction) \
   ((frxctrl).createCtrlCommandFunction(                                           \
@@ -124,6 +125,18 @@ public:
 	//-------------------------------------------------------------------------
 	virtual void getParameterCnOpTypeIds(fgc::FrxCircuidViewPtr view, 
 		ParameterCnOpTypeIds &out) const = 0;
+    //-------------------------------------------------------------------------
+    typedef size_t OperatorId;
+    typedef std::string OperatorName;
+    typedef std::pair<OperatorId, OperatorName> Operator;
+    /**
+     * @return operator names contained by connection
+     */
+    virtual void getOperators( fgc::FrxCircuidViewPtr view,
+        fgc::FrxConnection::Ptr con, std::vector<Operator> &out) = 0;
+    //-------------------------------------------------------------------------
+    virtual void removeOperator(fgc::FrxCircuidViewPtr view,
+        fgc::FrxConnection::Ptr con, OperatorId) = 0;
 	//-------------------------------------------------------------------------
 	///////////////////////////////////////////////////////////////////////////
 	// CtrlCmd's: use it with createCtrlCommandFunction() to create

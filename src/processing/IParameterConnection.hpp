@@ -34,16 +34,19 @@ public:
 	typedef boost::shared_ptr<IParameterConnection> Ptr;
 	//-------------------------------------------------------------------------
 	/**
-	 * @return parameter connection operator type ids on connection.
+	 * @return the number of ops on connection.
 	 */
-	virtual void getConnectionOps(ParameterCnOpTypeIds &out) = 0;
+	virtual size_t getNumConnectionOps() = 0;
 	//-------------------------------------------------------------------------
-	// TODO: 
 	/**
-	 * removes connection operator on index i which compares to the index
-	 * in the ParameterCnOpTypeIds container getten by getConnectionOps().
+	 * @brief removes connection operator on index i
 	 */
-	//virtual void removeConnectionOp(size_t index) = 0;
+    virtual void removeConnectionOp(size_t index) = 0;
+    //-------------------------------------------------------------------------
+    /**
+     * @name of op on index
+     */
+    virtual std::string getConnectionOpName(size_t index) = 0;
 }; // IParameterConnection
 }} // namespace(s)
 

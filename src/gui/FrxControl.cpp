@@ -38,6 +38,7 @@
 #include <processing/IParameter.hpp>
 #include <processing/IProcessor.hpp>
 #include <processing/IPluginAdapter.hpp>
+#include <processing/IParameterConnection.hpp>
 #include <processing/processing.h>
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <sambag/disco/components/DefaultBoundedRangeModel.hpp>
@@ -53,7 +54,7 @@
 #include "components/FrxPluginEditor.hpp"
 #include "components/FrxPluginEditorCtrl.hpp"
 #include "components/FrxIO.hpp"
-#include "TimedUpdater.hpp"
+#include <sambag/disco/TimedUpdater.hpp>
 #include <gui/components/FrxFlag.hpp>
 #include <gui/components/About.hpp>
 
@@ -127,28 +128,50 @@ typedef std::pair<frx::processing::IParameter::WPtr,
 		components::FrxParameter::WPtr> ParameterRefreshInfo;
 template <class T>
 struct RefreshParameter {
-	void update(const T &inf) {
+	static bool updateImpl(const T &inf) {
 		using namespace frx::processing;
 		IParameter::Ptr p = inf.first.lock();
 		components::FrxParameter::Ptr vp = inf.second.lock(); 
 		if (!p || !vp) {
-			return;
+			return true;
 		}
+        if (vp->getRangeModel()->getValue() == p->getValue()) {
+            if (vp->getLowerFlagText() == p->getDisplay()) {
+                return true;
+            }
+        }
 		ignoreFrxParameterEvents(vp, true);
 		vp->getRangeModel()->setValue(p->getValue());
 		vp->setUpperFlagText(p->getName());
 		vp->setLowerFlagText(p->getDisplay());
+        vp->redraw();
 		ignoreFrxParameterEvents(vp, false);
+        return true;
 	}
+    inline bool update(const T &inf) {
+        return updateImpl(inf);
+    }
 };
 void parameterChanged(void *src, float value, 
 	frx::processing::IParameter::WPtr _par,
 	FrxParameter::WPtr _knob)
 {
-	if (!_par.lock() || !_knob.lock()) {
+    FrxParameter::Ptr knob = _knob.lock();
+	if (!_par.lock() || !knob) {
 		return;
 	}
-	TimedUpdater<ParameterRefreshInfo,
+    
+    if (knob->getWindowThreadId() == sambag::com::getThreadId()) {
+        // redraw request came from window thread so we can
+        // redraw immediately
+        RefreshParameter<ParameterRefreshInfo>::updateImpl(
+            std::make_pair(_par, _knob)
+        );
+        return;
+    }
+    // redraw request came not from the window thread so in order
+    // to avoid threadlocks we need to sync the redrawing
+	sd::TimedUpdater<ParameterRefreshInfo,
 		RefreshParameter, FRX_REFRESH_PARAMETER>::instance().update(
 		std::make_pair(_par, _knob)
 	);
@@ -224,13 +247,13 @@ FrxIO::Ptr getStateChangedNode(FrxProcessorNode::Ptr pr, const SwitchState &sws)
 }
 template <class T>
 struct RefreshStates {
-	void update(const T &data) {
+	bool update(const T &data) {
 		FrxProcessorNode::WPtr _pr;
 		SwitchState old, _new;
 		boost::tie(_pr, old, _new) = data;
 		FrxProcessorNode::Ptr pr = _pr.lock();
 		if (!pr) {
-			return;
+			return true;
 		}
 		FrxIO::Ptr oldNode = getStateChangedNode(pr, old);
 		FrxIO::Ptr newNode = getStateChangedNode(pr, _new);
@@ -240,11 +263,12 @@ struct RefreshStates {
 		if (newNode) {
 			newNode->setState(FrxIO::Activated, true);
 		}
+        return true;
 	}
 };
 void processorSwitchStateChanged(const StateData &data)
 {
-	TimedUpdater<StateData, RefreshStates, 5>::instance().update(data);
+	sd::TimedUpdater<StateData, RefreshStates, 5>::instance().update(data);
 }
 //-----------------------------------------------------------------------------
 void processorPropertyChanged(void *src, 
@@ -1153,6 +1177,38 @@ getParameterCnOpTypeIds(fgc::FrxCircuidViewPtr view, ParameterCnOpTypeIds &out) 
 		return;
 	}
 	mCtrl->getParameterCnOpTypeIds(out);
+}
+//-----------------------------------------------------------------------------
+void FrxControl::getOperators(fgc::FrxCircuidViewPtr view,
+    fgc::FrxConnection::Ptr con, std::vector<Operator> &out)
+{
+    frx::processing::IModelController::Ptr mctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(mctrl, map) = getControllerAndMap(view);
+    using frx::processing::IParameterConnection;
+    IParameterConnection::Ptr mObj =
+		boost::dynamic_pointer_cast<IParameterConnection> (map->getModelObject(con));
+    if (!mObj) {
+        return;
+    }
+    for (size_t i=0; i<mObj->getNumConnectionOps(); ++i) {
+        out.push_back(Operator(i, mObj->getConnectionOpName(i)));
+    }
+}
+//-----------------------------------------------------------------------------
+void FrxControl::removeOperator(fgc::FrxCircuidViewPtr view,
+    fgc::FrxConnection::Ptr con, OperatorId id)
+{
+    frx::processing::IModelController::Ptr mctrl;
+	IViewModelMap::Ptr map;
+	boost::tie(mctrl, map) = getControllerAndMap(view);
+    using frx::processing::IParameterConnection;
+    IParameterConnection::Ptr mObj =
+		boost::dynamic_pointer_cast<IParameterConnection> (map->getModelObject(con));
+    if (!mObj) {
+        return;
+    }
+    mObj->removeConnectionOp(id);
 }
 //-----------------------------------------------------------------------------
 void FrxControl::addWindow(sdc::WindowPtr win, const std::string &wndClass) {

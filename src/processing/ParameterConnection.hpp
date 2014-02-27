@@ -12,6 +12,7 @@
 #include "IParameterConnection.hpp"
 #include "ParameterAdapter.hpp"
 #include "parameter/parameter.h"
+#include <vector>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -27,6 +28,8 @@ public:
 	typedef boost::shared_ptr<ParameterConnection> Ptr;
 	//-------------------------------------------------------------------------
 	typedef ::processing::parameter::ConnectionOperator ConnectionOperator;
+    //-------------------------------------------------------------------------
+    typedef std::vector<ConnectionOperator::Ptr> Operators;
 protected:
 	//-------------------------------------------------------------------------
 	ParameterConnection() {}
@@ -39,6 +42,8 @@ private:
 	ParameterAdapter::Ptr dst;
 	//-------------------------------------------------------------------------
 	::processing::parameter::ParameterConnection::Ptr cn;
+    //-------------------------------------------------------------------------
+    Operators operators;
 	//-------------------------------------------------------------------------
 	typedef std::multimap<ParameterGroupKey, ParameterAdapter::Ptr> ParameterGroupMap;
 	ParameterGroupMap parameters;
@@ -54,6 +59,9 @@ private:
 		ar & dst;
 		ar & parameters;
 		ar & cn;
+        if (version>0) {
+            ar & operators;
+        }
 	}
 public:
     //-------------------------------------------------------------------------
@@ -109,10 +117,25 @@ public:
 	 */
 	virtual void getParameters(const ParameterGroupKey &key, Parameters &out) const;
 	//-------------------------------------------------------------------------
-	virtual void getConnectionOps(ParameterCnOpTypeIds &out);
-	//-------------------------------------------------------------------------
 	virtual bool requestRemove();
+	//-------------------------------------------------------------------------
+	/**
+	 * @return the number of ops on connection.
+	 */
+	virtual size_t getNumConnectionOps() ;
+	//-------------------------------------------------------------------------
+	/**
+	 * @brief removes connection operator on index i
+	 */
+    virtual void removeConnectionOp(size_t index);
+    //-------------------------------------------------------------------------
+    /**
+     * @name of op on index
+     */
+    virtual std::string getConnectionOpName(size_t index);
 }; // ParameterConnection
 }} // namespace(s)
+
+BOOST_CLASS_VERSION(frx::processing::ParameterConnection, 1)
 
 #endif /* SAMBAG_PARAMETERCONNECTION_H */
