@@ -64,7 +64,6 @@ end
 function lcProcess(numSamples)
    v={}
    for i=1, numSamples, 1 do
-      frxTrace(tostring(p['frq']))
       v[i] = bff[math.floor(phase)]
       phase = phase + p['frq'] * (buffSize/sampleRate)
       if phase > buffSize then

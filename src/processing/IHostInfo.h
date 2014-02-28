@@ -54,7 +54,7 @@ struct IHostInfo {
 	 */
 	virtual int getBlockSize() const = 0;
 	//-------------------------------------------------------------------------
-	virtual TimeInfo * getHostTimeInfo (int filter) = 0;
+	virtual TimeInfo * getHostTimeInfo (int filter=0) = 0;
 	//-------------------------------------------------------------------------
 	/**
 	 * @return target dependent audio effect ptr. 

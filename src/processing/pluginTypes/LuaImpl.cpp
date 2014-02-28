@@ -10,31 +10,32 @@
 #include <boost/foreach.hpp>
 #include <processing/parameter/parameter.h>
 #include <processing/dspTools.h>
+#include <sstream>
+#include <com/MyString.h>
+#include <processing/FrxAsyncDSPTimer.hpp>
+#include <gui/HandyNamespaces.hpp>
+
+#define LC_NAME(_name) LuaCall::_name::name()
+#define LC_STR(_name) std::string(LuaCall::_name::name())
+
+#define IF_LC_MISSING(_name)                                                   \
+if (!has<LuaCall::_name>())
+
+#define IF_HAS_LC(_name)                                                       \
+if (has<LuaCall::_name>())
+
 
 namespace frx { namespace processing {
 namespace {
 	// LC = lua call (frx2lua)
 	// GP = global parameter
-	const std::string LC_PARAMETER_CHANGED = "lcOnParameterChanged";
     const std::string GP_CONFIG = "gpConfig";
 	const std::string GP_PARAMETER_SETUP = "gpParameterSetup";
-	const std::string LC_PROCESS = "lcProcess";
-	const std::string LC_PROCESS_MIDI = "lcProcessMidi";
-    const std::string LC_SET_AUDIOCONFIG = "lcSetAudioConfig";
-	const std::string LC_INIT = "lcInit";
     const size_t MAX_IO = 64;
     const std::string PROCESS_MIDI_DELTAFRAMES = "deltaFrames";
 	const std::string PROCESS_MIDI_BYTESIZE = "size";
 	const std::string PROCESS_MIDI_DATA = "data";
 
-    FRX_LUA_FUNC_1(frxLog, void, std::string);
-    FRX_LUA_FUNC_1(frxErr, void, std::string);
-    FRX_LUA_FUNC_1(frxWarn, void, std::string);
-    FRX_LUA_FUNC_1(frxTrace, void, std::string);
-    FRX_LUA_FUNC_2(frxSetParameter, void, std::string, float);
-    FRX_LUA_FUNC_1(frxGetInput, LuaImpl::LuaFrames, int);
-    FRX_LUA_FUNC_1(frxFFT, LuaImpl::FFTData, int);
-    FRX_LUA_FUNC(frxToOutput, void);
 }
 //=============================================================================
 //-----------------------------------------------------------------------------
@@ -72,50 +73,23 @@ void LuaImpl::scriptFailed(const std::string &msg) {
 LuaImpl::LuaImpl(IHostInfo::Ptr hI, const std::string &location,
         Parameters *parameters) :
     APluginImpl(hI, location, parameters),
+    lcFlags(0),
     flags(0)
 {
     scriptFile = location;
     loadScript();
 }
 //-----------------------------------------------------------------------------
-void LuaImpl::checkFunctions() {
-    if (!sambag::lua::hasFunction(luaState.get(), LC_PROCESS)) {
-        setFlag(HasProcessFunction, false);
-    } else {
-        setFlag(HasProcessFunction, true);
-    }
-    if (!sambag::lua::hasFunction(luaState.get(), LC_PARAMETER_CHANGED)) {
-        setFlag(HasParameterChangedFunction, false);
-    } else {
-        setFlag(HasParameterChangedFunction, true);
-    }
-    if (!sambag::lua::hasFunction(luaState.get(), LC_PROCESS_MIDI)) {
-        setFlag(HasProcessMidiFunction, false);
-    } else {
-        setFlag(HasProcessMidiFunction, true);
-    }
-    if (!sambag::lua::hasFunction(luaState.get(), LC_SET_AUDIOCONFIG)) {
-        setFlag(HasSetAudioConfigFunction, false);
-    } else {
-        setFlag(HasSetAudioConfigFunction, true);
-    }
-    if (!sambag::lua::hasFunction(luaState.get(), LC_INIT)) {
-        setFlag(HasInitFunction, false);
-    } else {
-        setFlag(HasInitFunction, true);
-    }
-}
-//-----------------------------------------------------------------------------
 void LuaImpl::initScript() {
-    if (!getFlag(HasInitFunction)) {
+    IF_LC_MISSING(LuaCall::lcInit) {
         return;
     }
     try {
-        sambag::lua::callLuaFunc(luaState.get(), LC_INIT);
+        sambag::lua::callLuaFunc(luaState.get(), LC_NAME(lcInit));
     } catch(const sambag::lua::ExecutionFailed &ex) {
-        scriptFailed("calling " + LC_INIT + " failed: " + ex.errMsg);
+        scriptFailed("calling " + LC_STR(lcInit) + " failed: " + ex.errMsg);
     } catch(...) {
-        scriptFailed("calling " + LC_INIT + " failed");
+        scriptFailed("calling " + LC_STR(lcInit) + " failed");
     }
 }
 //-----------------------------------------------------------------------------
@@ -177,20 +151,21 @@ void LuaImpl::loadIOs() {
     }
 }
 //-----------------------------------------------------------------------------
-void LuaImpl::onParameterChanged(void *src, float value, std::string id) {
+void LuaImpl::onParameterChanged(void *src, float value, const std::string &id)
+{
     TRY_TO_LOCK_TIMED(mutex);
     sambag::lua::executeString(luaState.get(),
             GP_PARAMETER_SETUP+"[\"" + id + "\"] = " + sambag::com::toString(value)
     );
-    if (getFlag(HasParameterChangedFunction)) {
+    IF_HAS_LC(lcOnParameterChanged) {
         try {
-            sambag::lua::callLuaFunc(luaState.get(), LC_PARAMETER_CHANGED,
+            sambag::lua::callLuaFunc(luaState.get(), LC_NAME(lcOnParameterChanged),
                 boost::make_tuple(id, value)
             );
         } catch(const sambag::lua::ExecutionFailed &ex) {
-            scriptFailed("calling " + LC_PARAMETER_CHANGED + " failed: " + ex.errMsg);
+            scriptFailed("calling " + LC_STR(lcOnParameterChanged) + " failed: " + ex.errMsg);
         } catch(...) {
-            scriptFailed("calling " + LC_PARAMETER_CHANGED + " failed");
+            scriptFailed("calling " + LC_STR(lcOnParameterChanged) + " failed");
         }
     }
 }
@@ -232,7 +207,7 @@ void LuaImpl::turnOff() {
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::turnOn() {
-    if (!getFlag(HasSetAudioConfigFunction)) {
+    IF_LC_MISSING(lcSetAudioConfig) {
         return;
     }
     IHostInfo::Ptr hI = hostInfo.lock();
@@ -240,13 +215,13 @@ void LuaImpl::turnOn() {
         return;
     }
     try {
-        sambag::lua::callLuaFunc(luaState.get(), LC_SET_AUDIOCONFIG,
+        sambag::lua::callLuaFunc(luaState.get(), LC_NAME(lcSetAudioConfig),
             boost::make_tuple(hI->getBlockSize(), hI->getSampleRate())
         );
     } catch(const sambag::lua::ExecutionFailed &ex) {
-        scriptFailed("calling " + LC_SET_AUDIOCONFIG + " failed: " + ex.errMsg);
+        scriptFailed("calling " + LC_STR(lcSetAudioConfig) + " failed: " + ex.errMsg);
     } catch(...) {
-        scriptFailed("calling " + LC_SET_AUDIOCONFIG + " failed");
+        scriptFailed("calling " + LC_STR(lcSetAudioConfig) + " failed");
     }
 }
 //-----------------------------------------------------------------------------
@@ -303,8 +278,11 @@ bool LuaImpl::canHandleMidiEvent() const {
 void LuaImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
 	using namespace sambag::lua;
     using namespace sambag::dsp;
-	if (!getFlag(IsValid) || !getFlag(HasProcessMidiFunction)) {
+	if (!getFlag(IsValid)) {
 		return;
+    }
+    IF_LC_MISSING(lcProcessMidi) {
+        return;
     }
 	TRY_TO_LOCK_TIMED(mutex); // lock lua calls
 	// prepare data
@@ -313,7 +291,7 @@ void LuaImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
 	// - unable to use callLuaFunc
 	// - do all sequence init. manually
 	lua_State *L = luaState.get();
-	lua_getglobal(L, LC_PROCESS_MIDI.c_str());
+	lua_getglobal(L, LC_NAME(lcProcessMidi));
 	lua_newtable(L);
 	int top = lua_gettop(L);
 	for (size_t i = 0; i<(size_t)events->getNumEvents(); ++i) {
@@ -345,6 +323,8 @@ void LuaImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
 	} catch (const LuaException &ex) {
 		scriptFailed(ex.errMsg);
 		return;
+    } catch(...) {
+        scriptFailed("calling " + LC_STR(lcProcessMidi) + " failed");
     }
 }
 //-----------------------------------------------------------------------------
@@ -362,9 +342,12 @@ void LuaImpl::updatePluginInfo(::processing::PluginInfo &inf) const {
 void LuaImpl::processPlugin(oldPr::Frames::T ** ins,
         oldPr::Frames::T **outs, size_t numSamples)
 {
-	if (!getFlag(IsValid) || !getFlag(HasProcessFunction)) {
+	if (!getFlag(IsValid)) {
 		return;
 	}
+    IF_LC_MISSING(lcProcess) {
+        return;
+    }
 	// prepare input
 	using namespace sambag::lua;
 	try {
@@ -373,21 +356,22 @@ void LuaImpl::processPlugin(oldPr::Frames::T ** ins,
         currInputs = ins;
         currOutputs = outs;
         currNumSamples = numSamples;
-		callLuaFunc(luaState.get(), LC_PROCESS, boost::make_tuple(numSamples));
+		callLuaFunc(luaState.get(), LC_NAME(lcProcess), boost::make_tuple(numSamples));
         currInputs = NULL;
         currOutputs = NULL;
         currNumSamples = 0;
 	} catch( const sambag::lua::LuaException &ex ) {
 		scriptFailed(ex.errMsg);
-		return;
-	}
+	} catch(...) {
+        scriptFailed("calling " + LC_STR(lcProcess) + " failed");
+    }
 }
 //-----------------------------------------------------------------------------
 LuaImpl::LuaFrames LuaImpl::frxGetInput(int channel) {
 	using namespace sambag::lua;
 	if (!currInputs) {
 		std::stringstream ss;
-		ss<<"inputs  not available. Call only within "<<LC_PROCESS<<".";
+		ss<<"inputs  not available. Call only within "<<LC_NAME(lcProcess)<<".";
 		lua_pushstring (luaState.get(), ss.str().c_str());
 		lua_error(luaState.get());
 	}
@@ -407,7 +391,7 @@ void LuaImpl::frxToOutput() {
     using namespace sambag::lua;
 	if (!currOutputs) {
 		std::stringstream ss;
-		ss<<"outputs not available. Call only within "<<LC_PROCESS<<".";
+		ss<<"outputs not available. Call only within "<<LC_NAME(lcProcess)<<".";
 		lua_pushstring (luaState.get(), ss.str().c_str());
 		lua_error(luaState.get());
 	}
@@ -446,7 +430,7 @@ std::pair<size_t, void*> LuaImpl::getStateData() const {
 void LuaImpl::setStateData(size_t size, void* data) {
 }
 //-----------------------------------------------------------------------------
-void LuaImpl::frxSetParameter(const std::string &name, float value) {
+void LuaImpl::frxSetParameterValue(const std::string &name, float value) {
     ParameterMap::iterator it = parameterMap.find(name);
     if (it==parameterMap.end()) {
         std::stringstream ss;
@@ -460,16 +444,192 @@ void LuaImpl::frxSetParameter(const std::string &name, float value) {
     it->second.first->setValue(value);
 }
 //-----------------------------------------------------------------------------
-void LuaImpl::registerFunctions(sambag::lua::LuaStateRef luaState) {
-    using namespace sambag;
-	FRX_LUA_REG_1(frxLog, log);
-    FRX_LUA_REG_1(frxErr, log_err);
-    FRX_LUA_REG_1(frxWarn, log_warn);
-    FRX_LUA_REG_1(frxTrace, log_trace);
-    FRX_LUA_REG_1(frxGetInput, frxGetInput);
-    FRX_LUA_REG(frxToOutput, frxToOutput);
-    FRX_LUA_REG_2(frxSetParameter, frxSetParameter);
-    FRX_LUA_REG_1(frxFFT, frxFFT);
+void LuaImpl::frxSetParameterDisplay(const std::string &name,
+    const std::string &value)
+{
+    ParameterMap::iterator it = parameterMap.find(name);
+    if (it==parameterMap.end()) {
+        std::stringstream ss;
+		ss<<"parameter "<<name<<" not found.";
+		lua_pushstring (luaState.get(), ss.str().c_str());
+		lua_error(luaState.get());
+        return;
+    }
+    it->second.first->setDisplay(value);
 }
+//-----------------------------------------------------------------------------
+double LuaImpl::frxGetSamplePos() {
+    using sambag::dsp::HostTimeInfo;
+    IHostInfo::Ptr hI = hostInfo.lock();
+    if (!hI) {
+        return 0;
+    }
+    HostTimeInfo *inf = hI->getHostTimeInfo();
+    if(!inf) {
+        return 0;
+    }
+    return inf->samplePos;
+}
+//-----------------------------------------------------------------------------
+double LuaImpl::frxGetBarStartPos() {
+    using sambag::dsp::HostTimeInfo;
+    IHostInfo::Ptr hI = hostInfo.lock();
+    if (!hI) {
+        return 0;
+    }
+    HostTimeInfo *inf = hI->getHostTimeInfo(HostTimeInfo::FrxBarsValid);
+    if(!inf) {
+        return 0;
+    }
+    return inf->barStartPos;
+}
+//-----------------------------------------------------------------------------
+double LuaImpl::frxGetPpqPos() {
+    using sambag::dsp::HostTimeInfo;
+    IHostInfo::Ptr hI = hostInfo.lock();
+    if (!hI) {
+        return 0;
+    }
+    HostTimeInfo *inf = hI->getHostTimeInfo(HostTimeInfo::FrxPpqPos);
+    if(!inf) {
+        return 0;
+    }
+    return inf->ppqPos;
+}
+//-----------------------------------------------------------------------------
+int LuaImpl::frxGetTimeSigNumerator() {
+    using sambag::dsp::HostTimeInfo;
+    IHostInfo::Ptr hI = hostInfo.lock();
+    if (!hI) {
+        return 0;
+    }
+    HostTimeInfo *inf = hI->getHostTimeInfo(HostTimeInfo::FrxTimeSigValid);
+    if(!inf) {
+        return 0;
+    }
+    return inf->timeSigNumerator;
+
+}
+//-----------------------------------------------------------------------------
+int LuaImpl::frxGetTimeSigDenominator() {
+    using sambag::dsp::HostTimeInfo;
+    IHostInfo::Ptr hI = hostInfo.lock();
+    if (!hI) {
+        return 0;
+    }
+    HostTimeInfo *inf = hI->getHostTimeInfo(HostTimeInfo::FrxTimeSigValid);
+    if(!inf) {
+        return 0;
+    }
+    return inf->timeSigDenominator;
+}
+//-----------------------------------------------------------------------------
+double LuaImpl::frxGetTempo() {
+    using sambag::dsp::HostTimeInfo;
+    IHostInfo::Ptr hI = hostInfo.lock();
+    if (!hI) {
+        return 0;
+    }
+    HostTimeInfo *inf = hI->getHostTimeInfo();
+    if(!inf) {
+        return 0;
+    }
+    return inf->tempo;
+}
+//-----------------------------------------------------------------------------
+void LuaImpl::onTimer(const std::string &luaCallback) {
+    if(!sambag::lua::hasFunction(luaState.get(), luaCallback.c_str())) {
+        std::stringstream ss;
+		ss<<"timer callback: '"<<luaCallback<<"' not found.";
+		lua_pushstring (luaState.get(), ss.str().c_str());
+		lua_error(luaState.get());
+        return;
+    }
+    try {
+       sambag::lua::callLuaFunc(luaState.get(), luaCallback.c_str());
+    } catch( const sambag::lua::LuaException &ex ) {
+		scriptFailed(ex.errMsg);
+	} catch(...) {
+        scriptFailed("calling " + luaCallback + " failed");
+    }
+}
+//-----------------------------------------------------------------------------
+void LuaImpl::frxAddTimer(const std::string &luaCallback, int ms, int numRepetitions)
+{
+    typedef FrxAsyncDSPTimer Timer;
+    Timer::Ptr timer = Timer::create(ms);
+    timer->sce::EventSender<Timer::Event>::addTrackedEventListener(
+        boost::bind(&LuaImpl::onTimer, this, luaCallback),
+        luaState
+    );
+    timer->setNumRepetitions(numRepetitions);
+    timer->start();
+}
+///////////////////////////////////////////////////////////////////////////////
+// template magic
+//-----------------------------------------------------------------------------
+namespace {
+
+template <class Functions, class Master>
+struct RegFunction {
+    typedef typename Functions::Head T;
+    typedef typename Functions::Tail Tail;
+    static void reg(sambag::lua::LuaStateRef l, Master *master) {
+        T::reg(l, master);
+        RegFunction<Tail, Master>::reg(l, master);
+    }
+};
+
+template <class Master>
+struct RegFunction<Loki::NullType, Master> {
+    static void reg(sambag::lua::LuaStateRef l, Master *master) {}
+};
+
+} // namespace
+
+void LuaImpl::registerFunctions(sambag::lua::LuaStateRef luaState) {
+    RegFunction<FrxFunctions::List, LuaImpl>::reg(luaState, this);
+}
+//-----------------------------------------------------------------------------
+namespace {
+
+template <class It, class Functions = It>
+struct CheckLCFunction {
+    typedef typename It::Head T;
+    typedef typename It::Tail Tail;
+    static void check(sambag::lua::LuaStateRef l, unsigned int &flags) {
+        enum { Flag = Loki::TL::IndexOf<Functions, T>::value };
+        if(!sambag::lua::hasFunction(l.get(), T::name())) {
+            flags &= ~(1 << Flag);
+        } else {
+            flags |= (1 << Flag);
+        }
+        CheckLCFunction<Tail, Functions>::check(l, flags);
+    }
+    static void toString(std::ostream &os, unsigned int flags, int indent = 0) {
+        enum { Flag = Loki::TL::IndexOf<Functions, T>::value };
+        unsigned int mask = (1 << Flag);
+        bool has = (flags & mask) == mask;
+        os<<com::MyString(" ")*indent;
+        os<<T::name()<<": "<<(has?"yes":"no")<<std::endl;
+        CheckLCFunction<Tail, Functions>::toString(os, flags, indent);
+    }
+};
+template<class Functions>
+struct CheckLCFunction<Loki::NullType, Functions> {
+    static void check(sambag::lua::LuaStateRef, unsigned int&) {}
+    static void toString(std::ostream &os, unsigned int flags, int indent = 0) {}
+};
+
+
+} // namespace
+
+void LuaImpl::checkFunctions() {
+    CheckLCFunction<LuaCall::List>::check(luaState, lcFlags);
+    std::stringstream ss;
+    CheckLCFunction<LuaCall::List>::toString(ss, lcFlags, 4);
+    log_trace(ss.str());
+}
+
 
 }}// namespace(s)
