@@ -4,6 +4,7 @@
 #include <boost/asio.hpp>
 #include <fstream>
 #include <exception>
+#include <iostream>
 namespace frx { namespace mobile {
 
 
