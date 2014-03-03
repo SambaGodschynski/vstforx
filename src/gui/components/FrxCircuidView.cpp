@@ -43,6 +43,9 @@ protected:
 	sd::IPattern::Ptr shaderPat;
 	sd::ISurface::Ptr logo;
     sd::ColorRGBA bg;
+    double parallaxEffect;
+    sd::Matrix bgTrans;
+    sdc::Viewport::WPtr parent;
 	virtual void postConstructor();
 	void drawShadingLayer(sd::IDrawContext::Ptr cn, 
 		const sd::Rectangle &r);
@@ -137,6 +140,24 @@ void BgPane::drawComponent(sd::IDrawContext::Ptr cn) {
 	}
 	sd::Rectangle r;
 	_getViewportRect(getPtr(), r);
+    
+    
+    if (parallaxEffect>0.) {
+        sdc::Viewport::Ptr vp = parent.lock();
+        if (!vp) {
+            parent = vp = getFirstContainer<sdc::Viewport>();
+            if (!vp) {
+                SAMBAG_LOG_ERR<<"BgPane::drawComponent() Viewport==NULL";
+                return;
+            }
+        }
+        sd::Point2D p = vp->getViewPosition();
+        pat->setMatrix(
+            boost::numeric::ublas::prod(bgTrans,
+            sd::translate2D(-p.x()*parallaxEffect, -p.y()*parallaxEffect))
+        );
+    }
+    
 	cn->setFillPattern(pat);
 	cn->rect(sd::Rectangle(0, 0, getWidth(), getHeight()));
 	cn->fill();
@@ -155,17 +176,18 @@ void BgPane::postConstructor() {
 	pat = sd::getDiscoFactory()->createSurfacePattern(fillImg);
 	if (!pat)
 		return;
-	sambag::math::Matrix m = IDENTITY_MATRIX;
-	ui.getProperty("FrxCircuidView.bgTransfomation", m);
+	bgTrans = IDENTITY_MATRIX;
+	ui.getProperty("FrxCircuidView.bgTransfomation", bgTrans);
 	sd::IPattern::Extend e = sd::IPattern::DISCO_EXTEND_REPEAT;
 	ui.getProperty("FrxCircuidView.bgExtend", e);
 	double opac = 0.3;
 	ui.getProperty("FrxCircuidView.bgOpacity", opac);
-	pat->setMatrix(m);
+	pat->setMatrix(bgTrans);
 	pat->setExtendType(e);
 	pat->setOpacity(opac);
-    
     logo = sd::getResourceManager().getImage("FrxCircuidView.logo");
+    parallaxEffect = 0.;
+    ui.getProperty("FrxCircuidView.bg.parallaxEffect", parallaxEffect);
 }
 //-----------------------------------------------------------------------------
 sdc::AComponentPtr BgPane::findComponentAt(const sd::Point2D &p,

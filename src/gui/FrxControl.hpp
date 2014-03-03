@@ -107,8 +107,14 @@ public:
 	virtual void addParamterCnOp(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c, const ParameterCnOpTypeId &id);
 	//-------------------------------------------------------------------------
-	virtual void getParameterCnOpTypeIds(fgc::FrxCircuidViewPtr view, 
+	virtual void getParameterCnOpTypeIds(fgc::FrxCircuidViewPtr view,
 		ParameterCnOpTypeIds &out) const;
+    //-------------------------------------------------------------------------
+    virtual void getOperators(fgc::FrxCircuidViewPtr view,
+        fgc::FrxConnection::Ptr con, std::vector<Operator> &out);
+    //-------------------------------------------------------------------------
+    virtual void removeOperator(fgc::FrxCircuidViewPtr view,
+        fgc::FrxConnection::Ptr con,OperatorId);
 }; // FrxControl
 ///////////////////////////////////////////////////////////////////////////////	
 //-----------------------------------------------------------------------------

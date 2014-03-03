@@ -48,6 +48,9 @@ namespace {
 	}
 }
 //------------------------------------------------------------------------------------------------------------
+const char * FRX_VST_EXT = ".dll";
+const char * FRX_LUA_EXT = ".lua";
+//------------------------------------------------------------------------------------------------------------
 void startProcess(const char *path, int argc, const char **argv) {
 	std::stringstream ss;
 	if (argc>0) {
@@ -74,7 +77,9 @@ std::string getRootDirectory() {
 }
 //------------------------------------------------------------------------------------------------------------
 bool isPlugFilename ( const std::string &filename ) { 
-	return Filename(filename).extension() == ".dll"; 
+    std::string ext = Filename(filename).extension().string();
+	return ext == std::string(FRX_VST_EXT) ||
+           ext == std::string(FRX_LUA_EXT);
 } 
 //------------------------------------------------------------------------------------------------------------
 bool isDirectory ( const std::string &filename ) { 

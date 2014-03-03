@@ -20,6 +20,7 @@
 #include <boost/serialization/split_member.hpp>
 #include <sambag/disco/GeometrySerialization.hpp>
 #include <gui/HandyNamespaces.hpp>
+#include <sambag/disco/components/Forward.hpp>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -109,6 +110,11 @@ private:
 		boost::serialization::split_member(ar, *this, version);
 	}
 public:
+    //-------------------------------------------------------------------------
+    Ptr getPtr() const {
+        return boost::dynamic_pointer_cast<FrxComponent>(self.lock());
+    }
+    //-------------------------------------------------------------------------
 	virtual ~FrxComponent();
 	//-------------------------------------------------------------------------
 	/**

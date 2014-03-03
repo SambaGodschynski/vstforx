@@ -16,16 +16,25 @@
 
 
 namespace com {
+const char * FRX_VST_EXT = ".vst";
+const char * FRX_LUA_EXT = ".lua";
+const char * FRX_APP_EXT = ".app";
 //-----------------------------------------------------------------------------
 bool isPlugFilename ( const std::string &filename ) {
-	return Filename(filename).extension() == ".vst"; 
+    std::string ext = Filename(filename).extension().string();
+	return ext == std::string(FRX_VST_EXT) ||
+           ext == std::string(FRX_LUA_EXT);
 } 
 //-----------------------------------------------------------------------------
 bool isDirectory ( const std::string &filename ) {
 	sambag::com::Location p(filename);
 	boost::filesystem::file_status s = boost::filesystem::status(p); 
-	// unter OSX sind plugs und apps verzeichnisse
-	return is_directory (s) &&  p.extension() != ".vst" &&  p.extension() != ".app";
+	// in osx (vst) bundles are directories
+    // but we want to treat them as file
+    std::string ext = Filename(filename).extension().string();
+	return is_directory (s) &&
+           ext != std::string(FRX_VST_EXT) &&
+           ext != std::string(FRX_APP_EXT);
 } 	
 //-----------------------------------------------------------------------------
 MessageBoxReturn osMessageBox ( const std::string &title, const std::string &text, const MessageBoxType &type ) {
