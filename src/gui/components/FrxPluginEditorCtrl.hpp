@@ -35,7 +35,7 @@ protected:
 	//-------------------------------------------------------------------------
 	typedef frx::processing::IPluginAdapter Plugin;
 	//-------------------------------------------------------------------------
-	Plugin::WPtr _plugin;
+	Plugin::Ptr _plugin;
 	//-------------------------------------------------------------------------
 	sdc::Timer::Ptr idleTimer;
 private:
@@ -64,7 +64,7 @@ public:
 	void setPlugin(Plugin::Ptr plugin);
 	//-------------------------------------------------------------------------
 	Plugin::Ptr getPlugin() const {
-		return _plugin.lock();
+		return _plugin;
 	}
 }; // FrxPluginEditorCtrl
 }}} // namespace(s)

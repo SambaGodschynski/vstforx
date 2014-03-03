@@ -154,6 +154,7 @@ string getPrgNameX ( AEffect *aEff, size_t index ) {
 	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
 	if ( !aEff->dispatcher ( aEff, effGetProgramNameIndexed, index, 0, &bff[0], 0.0f ) ) {
 		aEff->dispatcher ( aEff, effSetProgram, 0, index, NULL, 0.0f );
+        bff[0]='\0';
 		aEff->dispatcher ( aEff, effGetProgramName, 0, 0, &bff[0], 0.0f ); 
 	}
 	return string( &bff[0] );
@@ -215,21 +216,14 @@ void VSTPluginImpl::valueChanged(void *src, const float &v) {
     }
 	Parameter::Ptr param = parameters->at(index);
 	aEff->setParameter ( aEff, index, param->getValue() );	
-	char bff[255];
+	char bff[255] = {0};
 	// hole Parameter name
-	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
-	// aEff->dispatcher ( aEff, effGetParamName, index, NULL, &bff[0], NULL );
-	// param->setName ( MyString(&bff[0]) );
-	// hole Parameter label
-	// aEff->dispatcher ( aEff, effGetParamLabel, index, NULL, &bff[0], NULL );
-	// param->setLabel ( MyString(&bff[0]) );
-	// hole Parameter Display
-	aEff->dispatcher ( aEff, effGetParamDisplay, index, NULL, &bff[0], NULL );
+    aEff->dispatcher ( aEff, effGetParamDisplay, index, NULL, &bff[0], NULL );
 	param->setDisplay( MyString(&bff[0]) );
 }
 //-----------------------------------------------------------------------------
 void VSTPluginImpl::initParameter(){
-	char bff[255];
+	char bff[255] = {0};
 	parameters->resize( aEff->numParams );
 	// initalisiere parameter
 	for ( size_t i=0; i<parameters->size(); i++ ) {
@@ -244,9 +238,11 @@ void VSTPluginImpl::initParameter(){
             aEff->dispatcher ( aEff, effGetParamName, i, NULL, &bff[0], NULL );
             p->setName ( MyString(bff) );
             // hole Parameter label
+            bff[0]='\0';
             aEff->dispatcher ( aEff, effGetParamLabel, i, NULL, &bff[0], NULL );
             p->setLabel ( MyString(bff) );
             // hole Parameter Display
+            bff[0]='\0';
             aEff->dispatcher ( aEff, effGetParamDisplay, i, NULL, &bff[0], NULL );
             p->setDisplay( MyString(bff) );
         }
