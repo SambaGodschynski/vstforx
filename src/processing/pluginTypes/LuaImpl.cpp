@@ -81,7 +81,7 @@ LuaImpl::LuaImpl(IHostInfo::Ptr hI, const std::string &location,
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::initScript() {
-    IF_LC_MISSING(LuaCall::lcInit) {
+    IF_LC_MISSING(lcInit) {
         return;
     }
     try {
