@@ -96,6 +96,9 @@ protected:
 	void unRegisterInstance();
 	//-------------------------------------------------------------------------
 	void initHostParameter();
+    //-------------------------------------------------------------------------
+    void updateLegacy(::processing::ProcessAdapterPtr old,
+        ::processing::ProcessAdapterPtr _new);
 public:
 	//-------------------------------------------------------------------------
 	bool isOpen() const { return _open; }

@@ -21,7 +21,7 @@
 #include <sambag/dsp/VstMidiEventAdapter.hpp>
 #include <processing/pluginTypes/VstShellPlugin.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
-
+#include <com/Legacy.hpp>
 
 /*namespace legacy {*/ namespace processing {
 //============================================================================================================
@@ -32,6 +32,7 @@
 class VSTPlugin: 
 	public ::processing::OS_VSTPlugNode2x, // Plattformspezifische impl.
 	public Plugin,
+    public ::com::Legacy<ProcessAdapter>,
 	public ::com::Serializable
 {
 //============================================================================================================
@@ -48,6 +49,11 @@ public:
 	 * C:/VSTPlugin.dll => VSTPlugin
 	 */
 	static ::com::MyString extractNameFromFilename ( const string &fileName );
+    //--------------------------------------------------------------------------------------------------------
+    /**
+     * @return a appropriate new version of this legacy object 
+     */
+    virtual ProcessAdapter::Ptr updateLegacy();
 private:
     //--------------------------------------------------------------------------------------------------------
     mutable sambag::com::ArithmeticWrapper<size_t> _processDelay;

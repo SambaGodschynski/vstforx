@@ -230,6 +230,10 @@ protected:
     IdleHandlerPtr getIdleHandler();
 public:
     //--------------------------------------------------------------------------------------------------------
+    const GraphObjectContainer & getGraphObjects() const {
+        return graphObjects;
+    }
+    //--------------------------------------------------------------------------------------------------------
     typedef boost::function<void()> Function;
     void addIdleTask(const Function &f);
 	//--------------------------------------------------------------------------------------------------------

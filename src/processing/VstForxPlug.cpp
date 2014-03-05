@@ -19,7 +19,8 @@
 #include <gui/components/FrxSerializationRegister.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
 #include <sambag/com/Common.hpp>
-
+#include <com/Legacy.hpp>
+#include <processing/ProcessorAdapter.hpp>
 namespace frx { namespace processing {
 namespace {
     /**
@@ -82,7 +83,35 @@ namespace {
 			return NULL;
 		return it->second;
 	}
-
+    //-------------------------------------------------------------------------
+    template <class CommonBaseType, class InContainer, class OutContainer>
+    void findLegacies(const InContainer &graphObjects, OutContainer &outLegacies)
+    {
+        typedef typename ::com::Legacy<CommonBaseType> _Legacy;
+        typedef typename _Legacy::CommonBasePtr ObjectPtr;
+        BOOST_FOREACH(typename InContainer::value_type obj, graphObjects)
+        {
+            typename _Legacy::Ptr legacy = boost::dynamic_pointer_cast<_Legacy>(obj);
+            ObjectPtr old = boost::dynamic_pointer_cast<CommonBaseType>(obj);
+            if (!legacy || !old) {
+                continue;
+            }
+            SAMBAG_LOG_TRACE<<"legacy object found, try to create updated version";
+            try {
+                ObjectPtr _new = legacy->updateLegacy();
+                outLegacies.push_back(
+                    typename OutContainer::value_type(old, _new)
+                );
+            } catch (const std::exception &ex) {
+                SAMBAG_LOG_ERR<<"legacy convertion failed: "<<ex.what();
+                continue;
+            } catch (...) {
+                SAMBAG_LOG_ERR<<"legacy convertion failed";
+                continue;
+            }
+            SAMBAG_LOG_ERR<<"legacy convertion succeed.";
+        }
+}
 
 	int _instances = 0;
 	FrxAsyncDSPTimer::WorkerThreadHolder _timerThreadHolder;
@@ -435,6 +464,62 @@ void VstForxPlug::saveEditor(::com::oArchive &ar) {
 	}
 }
 //-----------------------------------------------------------------------------
+void VstForxPlug::updateLegacy(::processing::ProcessAdapterPtr old,
+        ::processing::ProcessAdapterPtr _new)
+{
+    SAMBAG_LOG_TRACE<<"try to adopt legacy object";
+    if (old->getNumInputNodes()!=_new->getNumInputNodes() ||
+        old->getNumOutputNodes()!=_new->getNumOutputNodes())
+    {
+        SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"trying to adopt legacy processor with unequal io config"
+		);
+    }
+    using ::processing::ProcessorNode;
+    typedef std::list<ProcessorNode::Ptr> Nodes;
+    ::processing::Graph::Janitor::Ptr janitor = graph->getJanitor();
+    // adopt input connections
+    size_t numNodes = old->getNumInputNodes();
+    Nodes nodes;
+    for (size_t i=0; i<numNodes; ++i) {
+        graph->getParentNodes(old->getInputNode(i), nodes);
+        BOOST_FOREACH(ProcessorNode::Ptr x, nodes) {
+            janitor->connectNodes(x, _new->getInputNode(i));
+        }
+        nodes.clear(); // !!
+    }
+    // adopt output connections
+    numNodes = old->getNumOutputNodes();
+    for (size_t i=0; i<numNodes; ++i) {
+        graph->getChildNodes(old->getOutputNode(i), nodes);
+        BOOST_FOREACH(ProcessorNode::Ptr x, nodes) {
+            janitor->connectNodes(_new->getOutputNode(i), x);
+        }
+        nodes.clear(); // !!
+    }
+    // remove old
+    SAMBAG_ASSERT(
+        janitor->remove(old) == ::processing::Graph::Janitor::SUCCEED
+    );
+    SAMBAG_LOG_TRACE<<"adopt legacy object: SUCCEED";
+    // update viewmodel map
+    std::vector<ModelObject::Ptr> modelObjects;
+    modelObjects.reserve(map->getSize());
+    map->getModelObjects(modelObjects);
+    BOOST_FOREACH(ModelObject::Ptr x, modelObjects) {
+        ProcessorAdapter::Ptr adapter =
+            boost::dynamic_pointer_cast<ProcessorAdapter>(x);
+        if (!adapter) {
+            continue;
+        }
+        if (adapter->getAdaptee() == old) {
+            adapter->setAdaptee(_new);
+            SAMBAG_LOG_TRACE<<"adapter updated";
+        }
+    }
+}
+//-----------------------------------------------------------------------------
 void VstForxPlug::loadEditor(::com::iArchive &ar, int version) {
 	using frx::gui::components::VstForxEditor;
 	VstForxEditor * editor = static_cast<VstForxEditor*>(
@@ -453,6 +538,16 @@ void VstForxPlug::loadEditor(::com::iArchive &ar, int version) {
 	std::string serializedViewStream;
 	ar & serializedViewStream; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<1.
 	ar & map;				   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<2.
+    // update legacies
+    using ::processing::ProcessAdapter;
+    typedef std::pair<ProcessAdapter::Ptr, ProcessAdapter::Ptr> OldAndNew;
+    typedef std::list<OldAndNew> Legacies;
+    Legacies legacies;
+    findLegacies<ProcessAdapter>(graph->getGraphObjects(), legacies);
+    BOOST_FOREACH(OldAndNew &x, legacies) {
+        updateLegacy(x.first, x.second);
+    }
+    
 	if (editor->isOpen()) {
 		std::stringstream tmpss;
 		tmpss<<serializedViewStream;

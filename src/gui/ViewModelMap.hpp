@@ -118,7 +118,8 @@ public:
 	 */
 	void unlock(::com::iArchive &ar);
 	//-------------------------------------------------------------------------
-
+    typedef std::vector<frx::processing::ModelObject::Ptr> ModelObjects;
+    void getModelObjects(ModelObjects &out) const;
 }; // ModelMap
 }} // namespace(s)
 

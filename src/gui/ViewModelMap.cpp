@@ -128,6 +128,19 @@ size_t ViewModelMap::getSize() const {
 	return map.size();
 }
 //-----------------------------------------------------------------------------
+void ViewModelMap::getModelObjects(ModelObjects &out) const {
+    if (isLocked()) {
+        BOOST_FOREACH(frx::processing::ModelObject::Ptr x, bedroom) {
+            out.push_back(x);
+        }
+        return;
+    }
+    BOOST_FOREACH(const Map::left_map::value_type &x, map.left) {
+        out.push_back(x.second);
+    }
+}
+
+//-----------------------------------------------------------------------------
 void ViewModelMap::lock(::com::oArchive &ar) {
 	ViewObjects l;
 	BOOST_FOREACH(const Map::left_map::value_type &v, map.left) {

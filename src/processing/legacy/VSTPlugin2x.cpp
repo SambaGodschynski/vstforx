@@ -15,6 +15,8 @@
 #include <limits>
 #include <OS_Specific/OS_com.h>
 #include <processing/pluginTypes/TestAeffect.hpp>
+#include <processing/ModelFactory.hpp>
+#include <processing/Plugin.h>
 
 #define MAX_BFF_STR 2048
 
@@ -65,7 +67,22 @@ ioChangedLock(false)
 	initPlug ( *this ); // muss nach init i/o erfolgen
 }
 //------------------------------------------------------------------------------------------------------------
-::com::MyString VSTPlugin::extractNameFromFilename( const std::string &fileName ){
+ProcessAdapter::Ptr VSTPlugin::updateLegacy() {
+    frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+	if (!hI) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+			"Hostinfo == NULL"
+		);
+	}
+    std::stringstream ss;
+    ss << "frx.processing.vst2x.Plugin('"<<getLocation()<<"')";
+    using frx::processing::ModelFactory;
+    typedef frx::processing::Plugin NewPlugin;
+    NewPlugin::Ptr res = ModelFactory::instance().create<NewPlugin>(ss.str(), hI);
+    return res;
+}
+//------------------------------------------------------------------------------------------------------------
+::com::MyString VSTPlugin::extractNameFromFilename( const std::string &fileName ) {
 	boost::filesystem::path p(fileName);
 	return ::com::MyString ( p.stem().string() );
 }
@@ -329,6 +346,7 @@ VSTPlugin::~VSTPlugin() {
 	// TODO: hier gab es probleme, unload muss aber stattfinden
 	if ( aEff != &::processing::nullAEff )
 		unloadModule();
+    SAMBAG_LOG_TRACE<<"legacy vst2x unloaded";
 }
 //------------------------------------------------------------------------------------------------------------
 inline VSTPlugin * VSTPlugin::getVSTPlugNode(AEffect *aEff){
@@ -401,7 +419,8 @@ void VSTPlugin::save(com::oArchive &ar, const unsigned int version) const {
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
-	TRY_TO_LOCK_TIMED(mutex);
+	
+    TRY_TO_LOCK_TIMED(mutex);
 	ar >> boost::serialization::base_object< Plugin > ( *this ); //..........................................1
 	// get plugInfo
 	::processing::PluginInfo plugInfo;
