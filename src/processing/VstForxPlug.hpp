@@ -65,11 +65,11 @@ private:
 	//-------------------------------------------------------------------------
 	void save(std::ostream &os);
 	//-------------------------------------------------------------------------
-	void load(std::istream &is);
+	void load(std::istream &is, int version = FRX_ARCHIVE_VERSION);
 	//-------------------------------------------------------------------------
 	void saveEditor(::com::oArchive &ar);
 	//-------------------------------------------------------------------------
-	void loadEditor(::com::iArchive &ar);
+	void loadEditor(::com::iArchive &ar, int version = FRX_ARCHIVE_VERSION);
 	//-------------------------------------------------------------------------
 	sambag::com::Mutex processingLoadLock;
 protected:
@@ -167,7 +167,7 @@ public:
 	//-------------------------------------------------------------------------
 	int getChunk(void **data);
 	//-------------------------------------------------------------------------
-	int setChunk(void *data, int byteSize);
+	int setChunk(void *data, int byteSize, int version = FRX_ARCHIVE_VERSION);
 	//-------------------------------------------------------------------------
 	int getLatency() const;
 	//-------------------------------------------------------------------------

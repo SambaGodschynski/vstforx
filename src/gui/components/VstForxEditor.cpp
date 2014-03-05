@@ -31,7 +31,8 @@ namespace frx { namespace gui { namespace components {
 //-----------------------------------------------------------------------------
 VstForxEditor::VstForxEditor (AudioEffect *aEff) : 
 AEffEditor(aEff),
-plug(NULL)
+plug(NULL),
+hiChamber("", FRX_ARCHIVE_VERSION)
 {
 }
 //-----------------------------------------------------------------------------
@@ -108,10 +109,11 @@ void VstForxEditor::serializeViewTemp(::com::oArchive &ar, FrxCircuidView::Ptr v
 	}
 }
 //-----------------------------------------------------------------------------
-FrxCircuidView::Ptr VstForxEditor::deserializeViewTemp(::com::iArchive &ar) {
+FrxCircuidView::Ptr VstForxEditor::deserializeViewTemp(::com::iArchive &ar, int version)
+{
 	FrxCircuidView::Ptr view;
 	try {
-		register_types(ar);
+		register_types(ar, version);
 		getPlugin()->getViewModelMap()->unlock(ar);
 		view = FrxControl::deserializeView(ar);
 		getPlugin()->registerView(view);
@@ -166,12 +168,12 @@ FrxCircuidViewPtr VstForxEditor::createView(sdc::Window::Ptr win) {
 	}
 
 	FrxCircuidView::Ptr res;
-	if (hiChamber.length()!=0) { //deserialize view
+	if (hiChamber.first.length()!=0) { //deserialize view
 		std::stringstream ss;
-		ss<<hiChamber;
+		ss<<hiChamber.first;
 		::com::iArchive ar(ss);
-		res = deserializeViewTemp(ar);
-		hiChamber = "";
+		res = deserializeViewTemp(ar, hiChamber.second);
+		hiChamber.first = "";
 		if (res) {
 			return res;
 		}
@@ -283,7 +285,8 @@ void VstForxEditor::close() {
 		std::stringstream ss;
 		::com::oArchive ar(ss);
 		serializeViewTemp(ar, circView);
-		hiChamber = ss.str();
+		hiChamber.first = ss.str();
+        hiChamber.second = FRX_ARCHIVE_VERSION;
 		SAMBAG_END_SYNCHRONIZED
 	} catch (const std::exception &ex) {
 		std::stringstream ss;

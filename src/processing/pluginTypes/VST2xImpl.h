@@ -4,8 +4,8 @@
  *      Author: Johannes Unger
  * ============================================================================
  */
-#ifndef _VST2XPLUGNODE_H
-#define _VST2XPLUGNODE_H
+#ifndef _VST2XIMPL_H
+#define _VST2XIMPL_H
 
 #include "com/one4All.h"
 #include "boost/unordered_map.hpp"
@@ -21,31 +21,23 @@
 #include "PluginImpl.hpp"
 #include <aeffectx.h>
 
-namespace processing{
-using namespace com;
-using namespace processing;
-using namespace parameter;
+namespace frx { namespace processing {
+namespace oldPr = ::processing;
+namespace oldPrPr = ::processing::parameter;
 //=============================================================================
 /**
  * @class: VSTPluginImpl.
  * Represaentriert ein VST-Plugin.
  */
 class VSTPluginImpl: 
-	public OS_VSTPlugNode2x, // Plattformspezifische impl.
-	public frx::processing::APluginImpl,
-	public Serializable
+	public oldPr::OS_VSTPlugNode2x, // Plattformspezifische impl.
+	public APluginImpl,
+	public com::Serializable
 {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<VSTPluginImpl> Ptr;
-	//-------------------------------------------------------------------------
-	/**
-	 * @param fileName
-	 * @return Liefert Pluginname aus Speicherort. Zb.:
-	 * C:/VSTPlugin.dll => VSTPlugin
-	 */
-	static MyString extractNameFromFilename ( const string &fileName );
 private:
     //-------------------------------------------------------------------------
     VstTimeInfo tmpInfo;
@@ -91,7 +83,7 @@ private:
 	 * Blockiert Deserialisierung gegen nebenlaufige
 	 * Parameteraenderungen, verursacht durch Host.
 	 */
-	Mutex mutex;
+	com::Mutex mutex;
 	//-------------------------------------------------------------------------
 	static VSTPluginImpl * getVSTPlugImpl ( AEffect *aEff ); // ermittelt ueber Aeffect=>vstplugnode map
 	//-------------------------------------------------------------------------
@@ -116,7 +108,7 @@ private:
 	 */
 	int onPlugChangeParameterIndex;
 	//-------------------------------------------------------------------------
-	void getShellPluginInfos(ShellPluginInfos &out);
+	void getShellPluginInfos(oldPr::ShellPluginInfos &out);
     //-------------------------------------------------------------------------
     /**
      * @brief processes plugin VST2x request call
@@ -169,7 +161,7 @@ public:
 	/**
 	 * @return true, wenn von Client ausfuehrbar.
 	 */
-	virtual bool isAccessable() const { return aEff != &nullAEff; }
+	virtual bool isAccessable() const { return aEff != &oldPr::nullAEff; }
 	//-------------------------------------------------------------------------
 	/**
 	 * @return true, wenn Plugin Midi-Event verarbeiten kann.
@@ -241,7 +233,7 @@ public:
 	 * @return liefert Wahrheitswert zu VST-Plugin spezifiscer can-flags
 	 */
 	bool can ( VstInt32 flag ) const {
-		return isFlag(flag, aEff->flags); 
+		return com::isFlag(flag, aEff->flags);
 	}
 	//-------------------------------------------------------------------------
 	/**
@@ -250,7 +242,7 @@ public:
 	 * @return liefert Wahrheitswert zu VST-Plugin spezifiscer can-flags
 	 */
 	static bool can ( VstInt32 flag, AEffect *aEff ) {
-		return isFlag(flag, aEff->flags); 
+		return com::isFlag(flag, aEff->flags);
 	}
 	//-------------------------------------------------------------------------
 	/**
@@ -270,8 +262,8 @@ public:
 									void* ptr, 
 									float opt );
     //-------------------------------------------------------------------------
-    virtual void processPlugin(Frames::T **_in,
-        Frames::T **_out, size_t numSamples);
+    virtual void processPlugin(oldPr::Frames::T **_in,
+        oldPr::Frames::T **_out, size_t numSamples);
     //-------------------------------------------------------------------------
     size_t getNumInputChannels() const {
         SAMBAG_ASSERT(aEff);
@@ -287,7 +279,7 @@ public:
     //-------------------------------------------------------------------------
     void setStateData(size_t size, void* data);
 }; // class VSTPluginImpl
-} // namespace processing
+}} // namespace processing
 
 #endif
 

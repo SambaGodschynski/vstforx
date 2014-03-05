@@ -19,7 +19,7 @@
 #include <processing/NodeAdapter.hpp>
 #include <com/one4All.h>
 #include <processing/Plugin.h>
-#include <processing/pluginTypes/VSTPlugin2x.h>
+#include <processing/pluginTypes/VST2xImpl.h>
 #include "PluginAdapter.hpp"
 #include <processing/ModelFactory.hpp>
 
@@ -88,8 +88,6 @@ IProcessor::Ptr ModelController::createProcessor(const std::string &idStr,
 //-----------------------------------------------------------------------------
 IProcessor::Ptr ModelController::createPlugin(const std::string &id)
 {
-	
-	typedef ::processing::Plugin Plugin;
     Plugin::Ptr plugin;
     plugin = ModelFactory::instance().create<Plugin>(id, graph->getHostInfo());
 		

@@ -5,21 +5,18 @@
  *      Author: Johannes Unger
  */
 
-#include "FrxSerializationRegister.hpp"
+#include <com/Serialization.h>
 #include <boost/shared_ptr.hpp>
-#include "FrxConcreteConnections.hpp"
-#include "FrxConcreteIO.hpp"
-#include "FrxConcreteParameter.hpp"
-#include "FrxSelection.hpp"
-#include "FrxHover.hpp"
-#include "FrxFlag.hpp"
-#include <gui/ViewFactory.hpp>
-#include <exception>
+#include <gui/components/FrxConcreteConnections.hpp>
+#include <gui/components/FrxConcreteProcessor.hpp>
+#include <gui/components/FrxConcreteIO.hpp>
+#include <gui/components/FrxConcreteParameter.hpp>
+#include <gui/components/FrxSelection.hpp>
+#include <gui/components/FrxHover.hpp>
+#include <gui/components/FrxFlag.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace legacy { namespace v0 {
-    extern void register_types( ::com::iArchive &ar );
-}}
 //=============================================================================
 //  Class FrxSerializationRegister
 //=============================================================================
@@ -32,7 +29,19 @@ void register_types_impl( Archive &ar ) {
 	ar.template register_type<ProcessorParameterCn>();
 	ar.template register_type<ParameterCn>();
 	ar.template register_type<ParameterOPCn>();
-    ar.template register_type<FrxInputNode>();
+	ar.template register_type<FrxPluginNode>();
+	ar.template register_type<FrxVolumeNode>();
+	ar.template register_type<FrxPanNode>();
+	ar.template register_type<FrxInStepNode>();
+	ar.template register_type<FrxOutStepNode>();
+	ar.template register_type<FrxInSwitchNode>();
+	ar.template register_type<FrxOutSwitchNode>();
+	ar.template register_type<FrxADSRNode>();
+	ar.template register_type<FrxPeakTrackerNode>();
+	ar.template register_type<FrxMIDIReceiver>();
+	ar.template register_type<FrxRemoteChReceiver>();
+	ar.template register_type<FrxDCTester>();
+	ar.template register_type<FrxInputNode>();
 	ar.template register_type<FrxOutputNode>();
 	ar.template register_type<FrxEntryNode>();
 	ar.template register_type<FrxExitNode>();
@@ -42,20 +51,7 @@ void register_types_impl( Archive &ar ) {
 	ar.template register_type<FrxFlag>();
 }
 //-----------------------------------------------------------------------------
-void register_types( ::com::iArchive &ar, int version ) {
-    if (version == 0) {
-        SAMBAG_LOG_TRACE<<"gui: legacy archive version "<<version;
-        legacy::v0::register_types(ar);
-        return;
-    }
+void register_types( ::com::iArchive &ar ) {
 	register_types_impl(ar);
-    ViewFactory::instance().registerToArchive(ar);
 }
-void register_types( ::com::oArchive &ar, int version ) {
-    if (version != FRX_ARCHIVE_VERSION) {
-        throw std::runtime_error("registering an invalid archive version");
-    }
-	register_types_impl(ar);
-    ViewFactory::instance().registerToArchive(ar);
-}
-}}} // namespace(s)
+}}}}} // namespace(s)

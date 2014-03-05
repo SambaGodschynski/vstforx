@@ -57,6 +57,11 @@ std::string createVSTPluginFilename(const std::string &filename, int shellId) {
 	ss<<filename<<"@"<<shellId;
 	return ss.str();
 }
+//------------------------------------------------------------------------------------------------------------
+std::string getFileNameFromPath( const std::string &fileName ) {
+	boost::filesystem::path p(fileName);
+	return std::string( p.stem().string() );
+}
 //============================================================================================================
 // class IdParser
 //============================================================================================================

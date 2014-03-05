@@ -5,8 +5,6 @@
  * ===========================================================================================================
  */
 
-#if 0
-
 #include "processing/processing.h"
 #include "VSTPlugin2x.h"
 #include "com/Settings.h"
@@ -22,7 +20,7 @@
 
 typedef AEffect* (*PluginEntryProc) (audioMasterCallback audioMaster);
 
-namespace legacy { namespace processing{
+/*namespace legacy { */ namespace processing{
 //------------------------------------------------------------------------------------------------------------
 boost::unordered_map < AEffect*, VSTPlugin* > VSTPlugin::relatedPlugNode;
 //------------------------------------------------------------------------------------------------------------
@@ -570,8 +568,7 @@ VstIntPtr VSTPlugin::_hostCallback ( AEffect* effect,
 		opt
 	);
 }
-}} //namespace processing
+} //namespace processing
 
 
-#endif
 

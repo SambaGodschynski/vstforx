@@ -19,8 +19,7 @@ extern void * __getHandlerForVstPlugins_(void*);
 
 namespace frx { namespace processing {
 namespace {
-namespace pr = ::processing;
-void onPluginEditorResize(void *, const pr::ResizeEditorEvent &ev, 
+void onPluginEditorResize(void *, const ResizeEditorEvent &ev, 
 	sdc::WindowWPtr _win)
 {
 	sdc::WindowPtr win = _win.lock();
@@ -33,14 +32,14 @@ void onPluginEditorResize(void *, const pr::ResizeEditorEvent &ev,
 		)
 	);
 }
-void onPluginEditorRepos(void *, const pr::EditorPositionEvent &ev, 
+void onPluginEditorRepos(void *, const EditorPositionEvent &ev, 
 	sdc::WindowWPtr _win)
 {
 	sdc::WindowPtr win = _win.lock();
 	if (!win)
 		return;
 }
-void onPluginEditorOpenParameter(void *, const pr::EditorOpenParameterChanged &ev, 
+void onPluginEditorOpenParameter(void *, const EditorOpenParameterChanged &ev, 
 	sdc::WindowWPtr _win)
 {
 	sdc::WindowPtr win = _win.lock();
@@ -63,7 +62,7 @@ void PluginAdapter::openEditor(sdc::WindowPtr win) {
 	if (!plug)
 		return;
     
-    plug->com::events::EventSender<pr::ResizeEditorEvent>::addTrackedEventListener(
+    plug->com::events::EventSender<ResizeEditorEvent>::addTrackedEventListener(
         boost::bind(&onPluginEditorResize, _1, _2, sdc::WindowWPtr(win)),
         win
     );

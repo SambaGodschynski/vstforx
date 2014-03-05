@@ -5,7 +5,7 @@
  * ============================================================================
  */
 #include "processing/processing.h"
-#include "VSTPlugin2x.h"
+#include "VST2xImpl.h"
 #include "com/Settings.h"
 #include <boost/filesystem.hpp> 
 #include "com/PluginCollection.h"
@@ -23,15 +23,11 @@ static const int FRX_VST2XPLUGIN_MAX_IDLE_MS = 20;
 typedef AEffect* (*PluginEntryProc) (audioMasterCallback audioMaster);
 
 namespace frx { namespace processing {
-    APluginImpl * createVST2xPluginImpl(IHostInfo::Ptr hI,
-        APluginImpl::Parameters *parameters,
-        const std::string &location)
-    {
-        return new ::processing::VSTPluginImpl(hI, parameters, location);
-    }
-}}
-
-namespace processing {
+APluginImpl * createVST2xPluginImpl(IHostInfo::Ptr hI,
+    APluginImpl::Parameters *parameters, const std::string &location)
+{
+    return new VSTPluginImpl(hI, parameters, location);
+}
 //-----------------------------------------------------------------------------
 boost::unordered_map < AEffect*, VSTPluginImpl* > VSTPluginImpl::relatedPlugNode;
 //-----------------------------------------------------------------------------
@@ -57,12 +53,12 @@ void VSTPluginImpl::openPlugin()
 	// shellplugid is setted by loadModule (the filename contains the
 	// information eg.: 'plugin.dll@12345')
 	if (shellPlugId==0 && pluginCategory==kPlugCategShell) {
-		ShellPluginInfos infos;
+		oldPr::ShellPluginInfos infos;
 		getShellPluginInfos(infos);
 		// plugin delivers shell plugins, at this point we can't go
 		// on because we have to specify which plugin we want.
 		if (!infos.empty()) {
-			throw ShellPluginException(location, infos);
+			throw oldPr::ShellPluginException(location, infos);
         }
     }
 	initPlug ( *this );
@@ -73,14 +69,9 @@ void VSTPluginImpl::closePlugin()
 	turnOff();
 	aEff->dispatcher ( aEff, effClose, 0, 0, 0, 0.0 );
 	// TODO: hier gab es probleme, unload muss aber stattfinden
-	if ( aEff != &nullAEff ) {
+	if ( aEff != &oldPr::nullAEff ) {
         unloadModule();
     }
-}
-//-----------------------------------------------------------------------------
-MyString VSTPluginImpl::extractNameFromFilename( const string &fileName ){
-	boost::filesystem::path p(fileName);
-	return MyString ( p.stem().string() );
 }
 //-----------------------------------------------------------------------------
 void VSTPluginImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
@@ -104,14 +95,14 @@ void VSTPluginImpl::updatePluginInfo (::processing::PluginInfo &inf) const {
 	aEff->dispatcher ( aEff, effGetEffectName, 0, NULL, &bff[0], NULL );
 	inf.name = std::string(bff);
 	if ( inf.name.length() == 0 ) {
-        inf.name = extractNameFromFilename(location);
+        inf.name = com::getFileNameFromPath(location);
     }
 	bff[0] = '\0';
 	aEff->dispatcher ( aEff, effGetVendorString, 0, NULL, &bff[0], NULL );
 	inf.vendor = string (bff);
 	inf.isSynth  = can(effFlagsIsSynth);
 	inf.uid = aEff->uniqueID;
-	inf.pluginType = PluginInfo::VST2X;
+	inf.pluginType = oldPr::PluginInfo::VST2X;
 }
 //-----------------------------------------------------------------------------
 void VSTPluginImpl::initPlug( VSTPluginImpl &plug ) {
@@ -119,7 +110,7 @@ void VSTPluginImpl::initPlug( VSTPluginImpl &plug ) {
 	// Objekt registrieren
 	relatedPlugNode.insert ( pair < AEffect*, VSTPluginImpl* >( plug.aEff, &plug ) );
     plug._processDelay = plug.aEff->initialDelay;
-	if ( plug.aEff == &nullAEff ) {
+	if ( plug.aEff == &oldPr::nullAEff ) {
 		plug.statusMsg = "could not load " + plug.location;
 	}
 		
@@ -161,7 +152,7 @@ string getPrgNameX ( AEffect *aEff, size_t index ) {
 }
 //-----------------------------------------------------------------------------
 string getPrgName ( size_t index ) {
-	return "Init " + MyString(index);
+	return "Init " + com::MyString(index);
 }
 //-----------------------------------------------------------------------------
 void VSTPluginImpl::initProgramNames() {
@@ -207,19 +198,19 @@ void VSTPluginImpl::baseConfigChanged() {
 }
 //-----------------------------------------------------------------------------
 void VSTPluginImpl::valueChanged(void *src, const float &v) {
-	Parameter *p = (Parameter*) src;
+	oldPrPr::Parameter *p = (oldPrPr::Parameter*) src;
 	size_t index = p->getIndex();
 	if ( onPlugChangeParameterIndex == index ) 
 		return; // called by editorParameterChanged
 	if ( index>=parameters->size() ) {
         return;
     }
-	Parameter::Ptr param = parameters->at(index);
+	oldPrPr::Parameter::Ptr param = parameters->at(index);
 	aEff->setParameter ( aEff, index, param->getValue() );	
 	char bff[255] = {0};
 	// hole Parameter name
     aEff->dispatcher ( aEff, effGetParamDisplay, index, NULL, &bff[0], NULL );
-	param->setDisplay( MyString(&bff[0]) );
+	param->setDisplay( com::MyString(&bff[0]) );
 }
 //-----------------------------------------------------------------------------
 void VSTPluginImpl::initParameter(){
@@ -227,24 +218,24 @@ void VSTPluginImpl::initParameter(){
 	parameters->resize( aEff->numParams );
 	// initalisiere parameter
 	for ( size_t i=0; i<parameters->size(); i++ ) {
-        Parameter::Ptr p = parameters->at(i);
+        oldPrPr::Parameter::Ptr p = parameters->at(i);
         if (!p) {
-            (*parameters)[i] = p = Parameter::create(i);
-            p->setMin( (VstNumber)INT_MIN ); //entferne min, max ( siehe issue: 0000049 )
-            p->setMax( (VstNumber)INT_MAX );
+            (*parameters)[i] = p = oldPrPr::Parameter::create(i);
+            p->setMin( (com::VstNumber)INT_MIN ); //entferne min, max ( siehe issue: 0000049 )
+            p->setMax( (com::VstNumber)INT_MAX );
             // hole Parameter wert
             p->setValue ( aEff->getParameter ( aEff, i ) );
             // hole Parameter namelo
             aEff->dispatcher ( aEff, effGetParamName, i, NULL, &bff[0], NULL );
-            p->setName ( MyString(bff) );
+            p->setName ( com::MyString(bff) );
             // hole Parameter label
             bff[0]='\0';
             aEff->dispatcher ( aEff, effGetParamLabel, i, NULL, &bff[0], NULL );
-            p->setLabel ( MyString(bff) );
+            p->setLabel ( com::MyString(bff) );
             // hole Parameter Display
             bff[0]='\0';
             aEff->dispatcher ( aEff, effGetParamDisplay, i, NULL, &bff[0], NULL );
-            p->setDisplay( MyString(bff) );
+            p->setDisplay( com::MyString(bff) );
         }
         // add listener
 		p->addValueChangedListener (
@@ -257,8 +248,8 @@ size_t VSTPluginImpl::getInitialDelay() const {
 	return _processDelay = (size_t)aEff->initialDelay;
 }
 //-----------------------------------------------------------------------------
-void VSTPluginImpl::processPlugin(Frames::T **_in,
-        Frames::T **_out, size_t numSamples)
+void VSTPluginImpl::processPlugin(oldPr::Frames::T **_in,
+        oldPr::Frames::T **_out, size_t numSamples)
 {
     // Process Event
     if ( can( effFlagsCanReplacing ) ) { 
@@ -335,7 +326,7 @@ void VSTPluginImpl::setStateData(size_t size, void* data)
     resetPlugin();
     
     for ( size_t i=0; i<parameters->size(); i++ ) {
-        Parameter::Ptr p = parameters->at(i);
+        oldPrPr::Parameter::Ptr p = parameters->at(i);
 		p->setValue ( aEff->getParameter ( aEff, i ) );
     }
     SAMBAG_LOG_TRACE<<"Vst2x setChunk "<<size<<" bytes set.";
@@ -377,7 +368,7 @@ void VSTPluginImpl::onEditorIdle() {
 	aEff->dispatcher ( aEff, effEditIdle, 0, 0, 0, 0);
 }
 //-----------------------------------------------------------------------------
-void VSTPluginImpl::getShellPluginInfos(ShellPluginInfos &out) {
+void VSTPluginImpl::getShellPluginInfos(oldPr::ShellPluginInfos &out) {
 	// scan shell for subplugins
 	char tempName[256] = {0}; 
 	VstInt32 plugUniqueID = 0;
@@ -385,7 +376,7 @@ void VSTPluginImpl::getShellPluginInfos(ShellPluginInfos &out) {
 	while ((plugUniqueID = aEff->dispatcher (aEff, effShellGetNextPlugin, 0, 0, tempName, 0)) != 0) { 
 		// subplug needs a name 
 		if (tempName[0] != 0) {
-			out.push_back(ShellPluginInfo(std::string(tempName), plugUniqueID));
+			out.push_back(oldPr::ShellPluginInfo(std::string(tempName), plugUniqueID));
 		}
 	}
 }
@@ -635,7 +626,7 @@ std::pair<VstIntPtr, bool> VSTPluginImpl::processRequest( frx::processing::IHost
     return std::make_pair(0, false);
 }
 
-} //namespace processing
+}} //namespace processing
 
 //-----------------------------------------------------------------------------
 // Callback Methode.
@@ -674,7 +665,7 @@ VstIntPtr VSTCALLBACK pluginCallToPlugNode (AEffect* effect,
 		}
 	}
 
-	return processing::VSTPluginImpl::_hostCallback ( effect, opcode, index, value, ptr, opt );
+	return frx::processing::VSTPluginImpl::_hostCallback ( effect, opcode, index, value, ptr, opt );
 }
 
 

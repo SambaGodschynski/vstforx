@@ -12,7 +12,6 @@
 #include "PluginCollectionSQL.h"
 #include <boost/filesystem.hpp>
 #include "OS_Specific/OS_com.h"
-#include "processing/pluginTypes/VSTPlugin2x.h"
 #include "processing/pluginTypes/VstShellPlugin.hpp"
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <sambag/com/Thread.hpp>
@@ -252,11 +251,11 @@ void PluginCollection::update(  frx::processing::IHostInfo::Ptr hostInfo ) {
 	com::events::EventSender<ScanComplete>::notifyEventListeners ( this, ScanComplete() );
 }
 //------------------------------------------------------------------------------------------------------------
-void PluginCollection::appendLog ( const string &log_msg ) {
-	ofstream f;
+void PluginCollection::appendLog ( const std::string &log_msg ) {
+	std::ofstream f;
 	try {
-		f.open ( SETTINGS.getPlugInitLogFilename().c_str(), ios::app );
-		f<<log_msg<<endl;
+		f.open ( SETTINGS.getPlugInitLogFilename().c_str(), std::ios::app );
+		f<<log_msg<<std::endl;
 	}
 	catch ( ... ) {
 		f.close();
@@ -265,9 +264,9 @@ void PluginCollection::appendLog ( const string &log_msg ) {
 	f.close();
 }
 //------------------------------------------------------------------------------------------------------------
-string PluginCollection::analyzeLog() {
-	ifstream f;
-	string str;
+std::string PluginCollection::analyzeLog() {
+	std::ifstream f;
+	std::string str;
 	try {
 		f.open ( SETTINGS.getPlugInitLogFilename().c_str() );
 		while ( !f.eof() ) {
@@ -302,15 +301,15 @@ processing::PluginInfo PluginCollection::restorePluginInfo ( processing::PluginI
 	return info;
 }
 //------------------------------------------------------------------------------------------------------------
-processing::Plugin::Ptr PluginCollection::restorePlugNode ( frx::processing::IHostInfo::Ptr hostInfo, 
+frx::processing::Plugin::Ptr PluginCollection::restorePlugNode ( frx::processing::IHostInfo::Ptr hostInfo,
 															 processing::PluginInfo &info ) 
 {
 	using namespace processing;
 	PluginInfo pI = restorePluginInfo (info);
 	if ( !pI.isValid() ) {
-        return processing::Plugin::Ptr(); // NULL
+        return frx::processing::Plugin::Ptr(); // NULL
     }
-	return frx::processing::ModelFactory::instance().create<Plugin> ( info.getFactoryId(), hostInfo );
+	return frx::processing::ModelFactory::instance().create<frx::processing::Plugin> ( info.getFactoryId(), hostInfo );
 }
 //------------------------------------------------------------------------------------------------------------
 void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::processing::IHostInfo::Ptr hostinfo )
@@ -327,17 +326,17 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 	}
 	TOLOG ("peek " + out_info.location );
 	appendLog ( out_info.location );		   // eintrag ins scan log	
-	Plugin::Ptr n;
+	frx::processing::Plugin::Ptr n;
 	try {
-		n = Plugin::create(hostinfo, out_info.location);
+		n = frx::processing::Plugin::create(hostinfo, out_info.location);
 	} catch(const ShellPluginException &ex) {
 		// TODO: insert as folder with concrete shell ids as content
 		out_info.access = PluginInfo::SUCCEED;
-		out_info.name = VSTPluginImpl::extractNameFromFilename(out_info.location);
+		out_info.name = com::getFileNameFromPath(out_info.location);
 		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
 		return;
 	} catch(...) {
-		n = Plugin::Ptr();
+		n = frx::processing::Plugin::Ptr();
 	}
 	if ( !n ) { // loading failed
 		appendLog ( "?" + out_info.location );
@@ -346,14 +345,14 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 		out_info.access = PluginInfo::FAILED;
 		// set timestamp and name
 		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
-		out_info.name = VSTPluginImpl::extractNameFromFilename(out_info.location);
+		out_info.name = com::getFileNameFromPath(out_info.location);
 		return;
 	}
 	if ( ! n->isAccessable() ) {
 		out_info.access = PluginInfo::FAILED;
 		// set timestamp and name
 		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
-		out_info.name = VSTPluginImpl::extractNameFromFilename(out_info.location);
+		out_info.name = com::getFileNameFromPath(out_info.location);
 		return;
 	}
 	// fill out

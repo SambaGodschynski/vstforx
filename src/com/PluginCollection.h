@@ -441,7 +441,7 @@ public:
 	 * @return Plugin-Objekt zu PluginInfo-Objekt
 	 * @throw sambag::cpsqlite::DataBaseQueryFailed
 	 */
-	processing::Plugin::Ptr restorePlugNode ( frx::processing::IHostInfo::Ptr hostInfo, processing::PluginInfo &pI );
+	frx::processing::Plugin::Ptr restorePlugNode ( frx::processing::IHostInfo::Ptr hostInfo, processing::PluginInfo &pI );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * aktualisiert Pluginfo-Objekt

@@ -13,7 +13,7 @@
 #include <sambag/com/Common.hpp>
 #include <com/PluginCollection.h>
 
-namespace processing{
+namespace frx { namespace processing {
 
 enum { ALL_CHANNEL = 16 };
 	
@@ -24,11 +24,11 @@ enum { ALL_CHANNEL = 16 };
 Plugin::Plugin() : impl(NULL), processing(true) {}
 //-----------------------------------------------------------------------------
 Plugin::Plugin ( frx::processing::IHostInfo::Ptr hostInfo,
-    const string &location, PluginInfo::PluginType type ) :
+    const std::string &location, oldPr::PluginInfo::PluginType type ) :
         ProcessAdapter ( hostInfo, 0, 0 ),
-        editorPosX ( processing::parameter::Parameter::create() ),
-        editorPosY ( processing::parameter::Parameter::create() ),
-        editorOpen ( processing::parameter::Parameter::create() ),
+        editorPosX ( oldPrPr::Parameter::create() ),
+        editorPosY ( oldPrPr::Parameter::create() ),
+        editorOpen ( oldPrPr::Parameter::create() ),
         impl(NULL),
         processing(true)
 {
@@ -92,7 +92,7 @@ void Plugin::loadImpl() {
 }
 //-----------------------------------------------------------------------------
 void Plugin::initListener() {
-    using namespace parameter;
+    using oldPrPr::Parameter;
 	Parameter::ParameterListenerFunction xC = boost::bind( 
 		&Plugin::paramEditorPosXChanged, this, _1, _2 
 	);
@@ -142,18 +142,18 @@ void Plugin::onImplPropertyChanged(void*,
 
 }
 //-----------------------------------------------------------------------------
-void Plugin::processAdapter( Processor::Int numSamples ) {
+void Plugin::processAdapter( oldPr::Processor::Int numSamples ) {
 	// breite daten vor ( mappe frames => matrix )
     size_t c=0;
 	for ( size_t i=0; i<getNumInputNodes(); ++i ) {
-		ProcessorNode::Ptr pr = getInputNode(i);
+		oldPr::ProcessorNode::Ptr pr = getInputNode(i);
 		
 		if ( !pr->isActive() ) { // inaktiver input
 			inMatrix[c++] = nullFrame[0];
 			inMatrix[c++] = nullFrame[1];
 			continue;
 		}
-		Frames *fr = pr->popFrame();    
+		oldPr::Frames *fr = pr->popFrame();    
 		inMatrix[c++] = (*fr)[0];
 		inMatrix[c++] = (*fr)[1];
 	}
@@ -191,7 +191,7 @@ void Plugin::setupFramesbuffer() {
 	size_t blockSize = hI->getBlockSize();
 	// mappe von frames nach float[][]
 	for ( size_t i=0; i<getNumOutputNodes()*2; i+=2 ) {
-		Frames *fr = &( framebuffer[i/2] );
+		oldPr::Frames *fr = &( framebuffer[i/2] );
 		fr->setSize ( blockSize );
 		fr->setZero( blockSize );
 		outMatrix[i] = (*fr)[0];
@@ -339,7 +339,7 @@ Plugin::Ptr Plugin::create(frx::processing::IHostInfo::Ptr hI, const std::string
 {
     using frx::processing::PluginFactory;
     using frx::processing::APluginImpl;
-    Ptr res( new Plugin(hI, location, PluginInfo::UNKNOWN) );
+    Ptr res( new Plugin(hI, location, oldPr::PluginInfo::UNKNOWN) );
     res->self = res;
     return res;
 }
@@ -348,7 +348,7 @@ Plugin::Ptr Plugin::createVST2x(frx::processing::IHostInfo::Ptr hI, const std::s
 {
     using frx::processing::PluginFactory;
     using frx::processing::APluginImpl;
-    Ptr res( new Plugin(hI, location, PluginInfo::VST2X) );
+    Ptr res( new Plugin(hI, location, oldPr::PluginInfo::VST2X) );
     res->self = res;
     return res;
 }
@@ -357,7 +357,7 @@ Plugin::Ptr Plugin::createVST3x(frx::processing::IHostInfo::Ptr hI, const std::s
 {
     using frx::processing::PluginFactory;
     using frx::processing::APluginImpl;
-    Ptr res( new Plugin(hI, location, PluginInfo::VST3X) );
+    Ptr res( new Plugin(hI, location, oldPr::PluginInfo::VST3X) );
     res->self = res;
     return res;
 }
@@ -366,8 +366,8 @@ Plugin::Ptr Plugin::createAU(frx::processing::IHostInfo::Ptr hI, const std::stri
 {
     using frx::processing::PluginFactory;
     using frx::processing::APluginImpl;
-    Ptr res( new Plugin(hI, location, PluginInfo::AU) );
+    Ptr res( new Plugin(hI, location, oldPr::PluginInfo::AU) );
     res->self = res;
     return res;
 }
-}//namespace processing
+}} //namespace processing

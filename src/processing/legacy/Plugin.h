@@ -7,8 +7,6 @@
 #ifndef FRX_LEGACY_PLUGNODE_H
 #define FRX_LEGACY_PLUGNODE_H
 
-#if 0 
-
 #include "processing/processing.h"
 #include "processing/parameter/parameter.h"
 #include "com/one4All.h"
@@ -18,7 +16,7 @@
 #include "processing/MidiEventProcessor.h"
 
 
-namespace legacy { namespace processing {
+namespace processing {
 //============================================================================================================
 /**
  * @class: ResizeEditor.
@@ -316,9 +314,6 @@ public:
 	 */
 	const ::processing::PluginInfo & getPluginInfo() const { return pluginInfo; }
 };
-}}
+}
 
 #endif
-
-#endif
-

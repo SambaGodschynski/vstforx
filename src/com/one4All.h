@@ -183,6 +183,13 @@ namespace com {
 	typedef std::list<std::string> StringList;
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::function< void ( const Filename& ) > FileFoundFuncPtr;
+    //--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param fileName
+	 * @return file name e.g:
+	 * C:/VSTPlugin.dll => VSTPlugin
+	 */
+	std::string getFileNameFromPath (const std::string &fileName);
 	//========================================================================================================
 	bool isSubDirectory ( const sambag::com::Location &parent, const sambag::com::Location &sub );
 	//========================================================================================================

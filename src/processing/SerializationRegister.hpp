@@ -10,11 +10,12 @@
 
 
 #include <com/Serialization.h>
+#include <com/FrxConfig.h>
 
 namespace frx { namespace processing {
 
-	void register_types(::com::iArchive &ar);
-	void register_types(::com::oArchive &ar);
+	void register_types(::com::iArchive &ar, int version = FRX_ARCHIVE_VERSION);
+	void register_types(::com::oArchive &ar, int version = FRX_ARCHIVE_VERSION);
 
 
 }} // namespace(s)

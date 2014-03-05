@@ -7,8 +7,6 @@
 #ifndef FRX_LEGACY_VST2XPLUGNODE_H
 #define FRX_LEGACY_VST2XPLUGNODE_H
 
-#if 0
-
 #include "com/one4All.h"
 #include "processing/processing.h"
 #include "Plugin.h"
@@ -25,7 +23,7 @@
 #include <sambag/com/ArithmeticWrapper.hpp>
 
 
-namespace legacy { namespace processing {
+/*namespace legacy {*/ namespace processing {
 //============================================================================================================
 /**
  * @class: VSTPlugin.
@@ -33,7 +31,7 @@ namespace legacy { namespace processing {
  */
 class VSTPlugin: 
 	public ::processing::OS_VSTPlugNode2x, // Plattformspezifische impl.
-	public Plugin, 
+	public Plugin,
 	public ::com::Serializable
 {
 //============================================================================================================
@@ -337,9 +335,8 @@ public:
 									void* ptr, 
 									float opt ); 
 }; // class VSTPlugin
-}} // namespace processing
+} // namespace processing
 
 #endif
 
-#endif
 

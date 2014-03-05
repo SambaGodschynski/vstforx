@@ -21,7 +21,9 @@
 #include <processing/ModelFactory.hpp>
 
 
-namespace processing {
+namespace frx { namespace processing {
+namespace oldPr = ::processing;
+namespace oldPrPr = ::processing::parameter;
 //=============================================================================
 /**
  * @class: ResizeEditor.
@@ -55,9 +57,9 @@ struct EditorOpenParameterChanged : public com::events::Event {
  * Oberklasse fuer Plugin.
  */
 class Plugin: 
-	public ProcessAdapter,
-	public parameter::HasParameter,
-	public MidiEventProcessor,
+	public oldPr::ProcessAdapter,
+	public oldPr::parameter::HasParameter,
+	public oldPr::MidiEventProcessor,
 	public com::events::EventSender<EditorPositionEvent>,
 	public com::events::EventSender<EditorOpenParameterChanged>,
 	public com::events::EventSender<ResizeEditorEvent>
@@ -71,16 +73,16 @@ private:
     //-------------------------------------------------------------------------
 	bool processing;
 	//-------------------------------------------------------------------------
-	parameter::Parameter::Connection paramEditorOpenConnection;
+	oldPrPr::Parameter::Connection paramEditorOpenConnection;
 	//-------------------------------------------------------------------------
-	PluginInfo pluginInfo;
+	oldPr::PluginInfo pluginInfo;
 	//-------------------------------------------------------------------------
 	std::string plugVendor;
 	//-------------------------------------------------------------------------
 	// editor parameter:
 	// They will be processed by GObjectController. To save their states independendly from view,
 	// they are stored here and not in VSTPlugView.
-	processing::parameter::Parameter::Ptr editorPosX, editorPosY, editorOpen;
+	oldPrPr::Parameter::Ptr editorPosX, editorPosY, editorOpen;
     //-------------------------------------------------------------------------
     void restorePluginInfo();
     //-------------------------------------------------------------------------
@@ -105,9 +107,8 @@ private:
 	 */
 	template <typename Archive>
 	void serialize ( Archive &ar, const unsigned int version ) {
-		using namespace processing::parameter;
-		ar & boost::serialization::base_object<ProcessAdapter> ( *this );
-		ar & boost::serialization::base_object<MidiEventProcessor> ( *this );
+		ar & boost::serialization::base_object<oldPr::ProcessAdapter> ( *this );
+		ar & boost::serialization::base_object<oldPr::MidiEventProcessor> ( *this );
 		ar & pluginInfo;
 		ar & plugVendor;
 		ar & editorPosX;
@@ -125,19 +126,19 @@ private:
         }
     }
     //-------------------------------------------------------------------------
-    frx::processing::APluginImpl *impl;
+    APluginImpl *impl;
     //-------------------------------------------------------------------------
-	typedef std::vector<Frames> Framebuffer;
+	typedef std::vector<oldPr::Frames> Framebuffer;
 	//-------------------------------------------------------------------------
 	Framebuffer framebuffer;
     //-------------------------------------------------------------------------
-	Frames nullFrame; // fuer nicht genutzte eingaenge ( beim frame=>float[] )
+	oldPr::Frames nullFrame; // fuer nicht genutzte eingaenge ( beim frame=>float[] )
 	//-------------------------------------------------------------------------
-	float ** inMatrix;
+	oldPr::Frames::T ** inMatrix;
 	//-------------------------------------------------------------------------
-	float ** outMatrix;
+	oldPr::Frames::T ** outMatrix;
     //-------------------------------------------------------------------------
-    frx::processing::APluginImpl::Parameters parameters;
+    APluginImpl::Parameters parameters;
 	//-------------------------------------------------------------------------
 	/**
 	 * INITALISIERT Framesbuffer
@@ -155,23 +156,23 @@ protected:
 	//-------------------------------------------------------------------------
 	Plugin();
 	//-------------------------------------------------------------------------
-    Plugin( frx::processing::IHostInfo::Ptr hostInfo,
+    Plugin( IHostInfo::Ptr hostInfo,
         const std::string &location,
-        PluginInfo::PluginType type
+        oldPr::PluginInfo::PluginType type
     );
 public:
     //-------------------------------------------------------------------------
-    frx::processing::APluginImpl * getPluginImpl() const {
+    APluginImpl * getPluginImpl() const {
         return impl;
     }
     //-------------------------------------------------------------------------
-    static Ptr create(frx::processing::IHostInfo::Ptr, const std::string &location);
+    static Ptr create(IHostInfo::Ptr, const std::string &location);
     //-------------------------------------------------------------------------
-    static Ptr createVST2x(frx::processing::IHostInfo::Ptr, const std::string &location);
+    static Ptr createVST2x(IHostInfo::Ptr, const std::string &location);
     //-------------------------------------------------------------------------
-    static Ptr createVST3x(frx::processing::IHostInfo::Ptr, const std::string &location);
+    static Ptr createVST3x(IHostInfo::Ptr, const std::string &location);
     //-------------------------------------------------------------------------
-    static Ptr createAU(frx::processing::IHostInfo::Ptr, const std::string &location);
+    static Ptr createAU(IHostInfo::Ptr, const std::string &location);
     //-------------------------------------------------------------------------
     /**
      * @override
@@ -183,28 +184,28 @@ public:
 	 * TODO: schlechte Loesung!
 	 * @return Parameter-EditorOpenChanged-Connection
 	 */
-	const parameter::Parameter::Connection & getParamEditorOpenConnection() const {
+	const oldPrPr::Parameter::Connection & getParamEditorOpenConnection() const {
 		return paramEditorOpenConnection;
 	}
 	//-------------------------------------------------------------------------
-	parameter::Parameter::Connection & getParamEditorOpenConnection() {
+	oldPrPr::Parameter::Connection & getParamEditorOpenConnection() {
 		return paramEditorOpenConnection;
 	}
 	//-------------------------------------------------------------------------
 	/**
 	 * @return Editor-Pos-X Parameter
 	 */
-	processing::parameter::Parameter::Ptr getEditorPosX() const { return editorPosX; }
+	oldPrPr::Parameter::Ptr getEditorPosX() const { return editorPosX; }
 	//-------------------------------------------------------------------------
 	/**
 	 * @return Editor-Pos-Y Parameter
 	 */
-	processing::parameter::Parameter::Ptr getEditorPosY() const { return editorPosY; }
+	oldPrPr::Parameter::Ptr getEditorPosY() const { return editorPosY; }
 	//-------------------------------------------------------------------------
 	/**
 	 * @return Editor-Open/Close Parameter
 	 */
-	processing::parameter::Parameter::Ptr getEditorOpen() const { return editorOpen; }
+	oldPrPr::Parameter::Ptr getEditorOpen() const { return editorOpen; }
 	//-------------------------------------------------------------------------
 	/**
 	 * Editor-PosX Parameter Handler
@@ -272,13 +273,13 @@ public:
 	/**
 	 * @return Plugin-Typ (@see PluginInfo::PluginType)
 	 */
-	PluginInfo::PluginType getType() const { return pluginInfo.pluginType; }
+	oldPr::PluginInfo::PluginType getType() const { return pluginInfo.pluginType; }
 	//-------------------------------------------------------------------------
 	/**
 	 * setzt Plugin-Typ (@see PluginInfo::PluginType)
 	 * @param type
 	 */
-	void setType( const PluginInfo::PluginType & type ) { pluginInfo.pluginType = type; }
+	void setType( const oldPr::PluginInfo::PluginType & type ) { pluginInfo.pluginType = type; }
 	//-------------------------------------------------------------------------
 	/**
 	 * @return true, wenn Plugin == Synthesizer
@@ -311,7 +312,7 @@ public:
 	 * Verarbeitet Samplemenge des Eingangsknoten und fuegt Ergebniss Ausgangsknoten hinzu.
 	 * @param numSamples Anzahl der zu bearbeitenden Samples
 	 */
-	void processAdapter( Processor::Int numSamples );
+	void processAdapter( oldPr::Processor::Int numSamples );
 	//-------------------------------------------------------------------------
 	/**
 	 * Verarbeitet Midi-Events (@see VST-SDK VstEvents)
@@ -357,14 +358,14 @@ public:
 	/**
 	 * @return PluginInfo zu Plugin.
 	 */
-	const PluginInfo & getPluginInfo() const { return pluginInfo; }
+	const oldPr::PluginInfo & getPluginInfo() const { return pluginInfo; }
 	//-------------------------------------------------------------------------
 	/**
 	 * Host-Info changed Handler
 	 */
 	void hostBaseConfigChanged();
     //-------------------------------------------------------------------------
-    parameter::ParameterPtr getParameter (size_t nr=0) const {
+    oldPrPr::Parameter::Ptr getParameter (size_t nr=0) const {
         return parameters.at(nr);
     }
     //-------------------------------------------------------------------------
@@ -417,7 +418,7 @@ namespace {
                 "au.Plugin", &Plugin::createAU
     );
 }
-}// namespace processing
+}}// namespace processing
 
 #endif
 

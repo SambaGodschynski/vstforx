@@ -5,15 +5,12 @@
  * ===========================================================================================================
  */
 
-#if 0
-
 #include "Plugin.h"
 #include "OS_Specific/os_processing.h"
-#include <processing/pluginTypes/VSTPlugin2x.h>
 #include "com/One4All.h"
 #include <boost/filesystem.hpp>
 
-namespace legacy { namespace processing {
+namespace processing {
 
 enum { ALL_CHANNEL = 16 };
 	
@@ -65,6 +62,4 @@ editorOpen ( ::processing::parameter::Parameter::create() )
 //------------------------------------------------------------------------------------------------------------
 Plugin::~Plugin() {
 }
-}}//namespace processing
-
-#endif
+}//namespace processing

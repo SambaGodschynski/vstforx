@@ -13,6 +13,7 @@
 #include <com/Serialization.h>
 #include <sambag/com/Thread.hpp>
 #include <gui/HandyNamespaces.hpp>
+#include <com/FrxConfig.h>
 
 namespace frx { namespace processing {
 	class VstForxPlug;
@@ -52,7 +53,9 @@ private:
 	 */
 	void initEntryExit(FrxCircuidViewPtr view);
 	//-------------------------------------------------------------------------
-	std::string hiChamber;
+    typedef int Version;
+	typedef std::pair<std::string, Version> HibernateChamber;
+    HibernateChamber hiChamber;
 	//-------------------------------------------------------------------------
 	sambag::com::RecursiveMutex mutex;
 	//-------------------------------------------------------------------------
@@ -70,7 +73,8 @@ protected:
 	/**
 	 * deserializes the view wich was serializeViewTemp.
 	 */
-	FrxCircuidViewPtr deserializeViewTemp(::com::iArchive &ar);
+	FrxCircuidViewPtr deserializeViewTemp(::com::iArchive &ar,
+        int version = FRX_ARCHIVE_VERSION);
 	//-------------------------------------------------------------------------
 	FrxCircuidViewPtr createView(sdc::Window::Ptr win);
 	//-------------------------------------------------------------------------
