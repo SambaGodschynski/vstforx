@@ -464,8 +464,88 @@ void VstForxPlug::saveEditor(::com::oArchive &ar) {
 	}
 }
 //-----------------------------------------------------------------------------
+void VstForxPlug::updateLegacies() {
+    // assuming that ViewModelMap is already restored!
+    // update legacies
+    using ::processing::ProcessAdapter;
+    typedef std::pair<ProcessAdapter::Ptr, ProcessAdapter::Ptr> OldAndNew;
+    typedef std::list<OldAndNew> Legacies;
+    Impl2AdapterMap adapterMap;
+    Legacies legacies;
+    fillAdapterMap(adapterMap);
+    findLegacies<ProcessAdapter>(graph->getGraphObjects(), legacies);
+    BOOST_FOREACH(OldAndNew &x, legacies) {
+        updateLegacy(x.first, x.second, adapterMap);
+    }
+}
+//-----------------------------------------------------------------------------
+template <class T>
+static void __fillAdapterMap(VstForxPlug::Impl2AdapterMap &adapterMap,
+    const std::vector<ModelObject::Ptr> &modelObjects)
+{
+    typedef VstForxPlug::Impl2AdapterMap::value_type Value;
+    BOOST_FOREACH(ModelObject::Ptr x, modelObjects) {
+        typename com::IAdapter<T>::Ptr adapter =
+            boost::dynamic_pointer_cast< com::IAdapter<T> >(x);
+        // is adapter
+        if (adapter) {
+            ModelObject::Ptr obj = boost::dynamic_pointer_cast<ModelObject>(adapter);
+            SAMBAG_ASSERT(obj);
+            adapterMap.insert(Value(adapter->getAdaptee(), obj));
+        }
+        IConnection::Ptr cn =
+            boost::dynamic_pointer_cast<IConnection>(x);
+        // is connection:
+        if (cn) {
+            // connection source
+            adapter =
+                boost::dynamic_pointer_cast< com::IAdapter<T> >(cn->getSource());
+            if (adapter) {
+                ModelObject::Ptr obj = boost::dynamic_pointer_cast<ModelObject>(adapter);
+                SAMBAG_ASSERT(obj);
+                adapterMap.insert(Value(adapter->getAdaptee(), obj));
+            }
+            // connection destination
+            adapter =
+                boost::dynamic_pointer_cast< com::IAdapter<T> >(cn->getDestination());
+            if (adapter) {
+                ModelObject::Ptr obj = boost::dynamic_pointer_cast<ModelObject>(adapter);
+                SAMBAG_ASSERT(obj);
+                adapterMap.insert(Value(adapter->getAdaptee(), obj));
+            }
+        }
+    }
+}
+void VstForxPlug::fillAdapterMap(Impl2AdapterMap &adapterMap) {
+    std::vector<ModelObject::Ptr> modelObjects;
+    modelObjects.reserve(map->getSize());
+    map->getModelObjects(modelObjects);
+    __fillAdapterMap< ::processing::ProcessorNode >(adapterMap, modelObjects);
+    __fillAdapterMap< ::processing::parameter::Parameter >(adapterMap, modelObjects);
+    __fillAdapterMap< ::processing::ProcessAdapter >(adapterMap, modelObjects);
+}
+//-----------------------------------------------------------------------------
+template <typename T>
+static int updateAdapter(const VstForxPlug::Impl2AdapterMap &adapterMap,
+    boost::shared_ptr<T> old, boost::shared_ptr<T> _new)
+{
+    VstForxPlug::Impl2AdapterMap::const_iterator it, end;
+    boost::tie(it, end) = adapterMap.equal_range(old);
+    size_t res = 0;
+    for (; it!=end; ++it) {
+        typedef com::IAdapter<T> Adapter;
+        typename Adapter::Ptr adapter = boost::dynamic_pointer_cast<Adapter>(it->second);
+        if (!adapter) {
+            throw std::runtime_error("failing update adapter");
+        }
+        adapter->setAdaptee(_new);
+        ++res;
+    }
+    return res;
+}
 void VstForxPlug::updateLegacy(::processing::ProcessAdapterPtr old,
-        ::processing::ProcessAdapterPtr _new)
+        ::processing::ProcessAdapterPtr _new,
+        const Impl2AdapterMap &adapterMap)
 {
     SAMBAG_LOG_TRACE<<"try to adopt legacy object";
     if (old->getNumInputNodes()!=_new->getNumInputNodes() ||
@@ -477,47 +557,76 @@ void VstForxPlug::updateLegacy(::processing::ProcessAdapterPtr old,
 		);
     }
     using ::processing::ProcessorNode;
+    using ::processing::ProcessAdapter;
     typedef std::list<ProcessorNode::Ptr> Nodes;
     ::processing::Graph::Janitor::Ptr janitor = graph->getJanitor();
-    // adopt input connections
-    size_t numNodes = old->getNumInputNodes();
+    size_t updatedAdapter = 0;
     Nodes nodes;
+    janitor->add(_new);
+    
+    // adopt inputs
+    size_t numNodes = old->getNumInputNodes();
     for (size_t i=0; i<numNodes; ++i) {
-        graph->getParentNodes(old->getInputNode(i), nodes);
+        ProcessAdapter::InputNode::Ptr oldNode = old->getInputNode(i);
+        ProcessAdapter::InputNode::Ptr newNode = _new->getInputNode(i);
+        // adopt connections
+        graph->getParentNodes(oldNode, nodes);
         BOOST_FOREACH(ProcessorNode::Ptr x, nodes) {
-            janitor->connectNodes(x, _new->getInputNode(i));
+            janitor->add(newNode);
+            janitor->connectNodes(x, newNode);
         }
+        // update related adapter
+        updatedAdapter +=
+            updateAdapter<ProcessorNode>(adapterMap, oldNode, newNode);
+        // clear for further usement
         nodes.clear(); // !!
     }
-    // adopt output connections
+    // adopt outputs
     numNodes = old->getNumOutputNodes();
     for (size_t i=0; i<numNodes; ++i) {
-        graph->getChildNodes(old->getOutputNode(i), nodes);
+        ProcessAdapter::OutputNode::Ptr oldNode = old->getOutputNode(i);
+        ProcessAdapter::OutputNode::Ptr newNode = _new->getOutputNode(i);
+        // adopt connections
+        graph->getChildNodes(oldNode, nodes);
         BOOST_FOREACH(ProcessorNode::Ptr x, nodes) {
-            janitor->connectNodes(_new->getOutputNode(i), x);
+            janitor->add(newNode);
+            janitor->connectNodes(newNode, x);
         }
+        // update related adapter
+        updatedAdapter +=
+            updateAdapter<ProcessorNode>(adapterMap, oldNode, newNode);
+        // clear for further usement
         nodes.clear(); // !!
     }
-    // remove old
-    SAMBAG_ASSERT(
-        janitor->remove(old) == ::processing::Graph::Janitor::SUCCEED
-    );
-    SAMBAG_LOG_TRACE<<"adopt legacy object: SUCCEED";
-    // update viewmodel map
-    std::vector<ModelObject::Ptr> modelObjects;
-    modelObjects.reserve(map->getSize());
-    map->getModelObjects(modelObjects);
-    BOOST_FOREACH(ModelObject::Ptr x, modelObjects) {
-        ProcessorAdapter::Ptr adapter =
-            boost::dynamic_pointer_cast<ProcessorAdapter>(x);
-        if (!adapter) {
-            continue;
+    // update parameter
+    using ::processing::parameter::HasParameter;
+    using ::processing::parameter::Parameter;
+    HasParameter::Ptr oldHp =
+        boost::dynamic_pointer_cast<HasParameter>(old);
+    HasParameter::Ptr newHp =
+        boost::dynamic_pointer_cast<HasParameter>(_new);
+    if (oldHp && newHp) {
+        size_t numParams = oldHp->getNumParameter();
+        if (numParams!=newHp->getNumParameter()) {
+            throw std::runtime_error("failing update legacy parameter");
         }
-        if (adapter->getAdaptee() == old) {
-            adapter->setAdaptee(_new);
-            SAMBAG_LOG_TRACE<<"adapter updated";
+        for (size_t i=0; i<numParams; ++i) {
+            Parameter::Ptr old = oldHp->getParameter(i);
+            Parameter::Ptr _new = newHp->getParameter(i);
+            if (old==_new) {
+                continue;
+            }
+            updatedAdapter += updateAdapter<Parameter>(adapterMap, old, _new);
         }
     }
+    // update adapter
+    updatedAdapter += updateAdapter<ProcessAdapter>(adapterMap, old, _new);
+    // remove old
+    janitor->remove(old);
+    
+    SAMBAG_LOG_TRACE<<updatedAdapter<<" adapter updated";
+    SAMBAG_LOG_TRACE<<"adopt legacy object: SUCCEED";
+
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::loadEditor(::com::iArchive &ar, int version) {
@@ -538,14 +647,9 @@ void VstForxPlug::loadEditor(::com::iArchive &ar, int version) {
 	std::string serializedViewStream;
 	ar & serializedViewStream; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<1.
 	ar & map;				   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<2.
-    // update legacies
-    using ::processing::ProcessAdapter;
-    typedef std::pair<ProcessAdapter::Ptr, ProcessAdapter::Ptr> OldAndNew;
-    typedef std::list<OldAndNew> Legacies;
-    Legacies legacies;
-    findLegacies<ProcessAdapter>(graph->getGraphObjects(), legacies);
-    BOOST_FOREACH(OldAndNew &x, legacies) {
-        updateLegacy(x.first, x.second);
+    
+    if (version!=FRX_ARCHIVE_VERSION) {
+        updateLegacies();
     }
     
 	if (editor->isOpen()) {

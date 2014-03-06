@@ -15,6 +15,36 @@ namespace frx { namespace processing {
 //=============================================================================
 //  Class ParameterConnection
 //=============================================================================
+void ParameterConnection::onParameterAdatpeeChanged(ParameterAdapter::Ptr src,
+        ParameterAdapter::Ptr dst)
+{
+    ParameterAdapter::Ptr a = src ? src : this->src;
+    ParameterAdapter::Ptr b = dst ? dst : this->dst;
+    cn = ::processing::parameter::ParameterConnection::create(
+		a->getAdaptee(), b->getAdaptee());
+    using ::processing::parameter::ConnectionOperator;
+    BOOST_FOREACH(ConnectionOperator::Ptr x, operators) {
+        cn->addOperator(x);
+    }
+    initConnectionParameter();
+}
+//-----------------------------------------------------------------------------
+void ParameterConnection::initAdapterListener() {
+    if (src) {
+        src->sce::EventSender<sce::PropertyChanged>::addTrackedEventListener(
+            boost::bind(&ParameterConnection::onParameterAdatpeeChanged,
+                this, src, ParameterAdapter::Ptr()),
+            self
+        );
+    }
+    if (dst) {
+        dst->sce::EventSender<sce::PropertyChanged>::addTrackedEventListener(
+            boost::bind(&ParameterConnection::onParameterAdatpeeChanged,
+                this, ParameterAdapter::Ptr(), dst),
+            self
+        );
+    }
+}
 //-----------------------------------------------------------------------------
 ParameterConnection::Ptr 
 ParameterConnection::createConnection(IParameter::Ptr _a, 
@@ -29,6 +59,7 @@ ParameterConnection::createConnection(IParameter::Ptr _a,
 		a->getAdaptee(), b->getAdaptee());
     res->initConnectionParameter();
 	b->setValue(a->getValue());
+    res->initAdapterListener();
 	return res;
 }
 namespace {
@@ -74,6 +105,7 @@ void ParameterConnection::getParameterCnOpTypeIds(ParameterCnOpTypeIds &out) {
 //-----------------------------------------------------------------------------
 void ParameterConnection::initConnectionParameter() {
     using namespace ::processing::parameter;
+    parameters.clear();
 	HasParameter::Ptr hp = boost::dynamic_pointer_cast<HasParameter>(cn);
 	if (!hp) {
 		return;

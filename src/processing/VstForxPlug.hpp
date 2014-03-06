@@ -21,6 +21,8 @@
 #include <com/Serialization.h>
 #include <sambag/com/Thread.hpp>
 #include <com/FrxConfig.h>
+#include <boost/unordered_map.hpp>
+#include <com/IAdapter.hpp>
 
 extern const char * globGetProductName();
 
@@ -37,6 +39,9 @@ class VstForxPlug : public sambag::dsp::PluginProcessorBase,
 public:
 	//-------------------------------------------------------------------------
 	typedef sambag::dsp::PluginProcessorBase Super;
+    //-------------------------------------------------------------------------
+    typedef boost::unordered_multimap< ::processing::PObject::Ptr,
+        ModelObject::Ptr > Impl2AdapterMap;
 private:
 	//-------------------------------------------------------------------------
 	void *effectPtr;
@@ -72,6 +77,16 @@ private:
 	void loadEditor(::com::iArchive &ar, int version = FRX_ARCHIVE_VERSION);
 	//-------------------------------------------------------------------------
 	sambag::com::Mutex processingLoadLock;
+    //-------------------------------------------------------------------------
+    /**
+     * @brief searches for legacy objects (@see Legacy) creates appropriate
+     * new object and replaces the old with the new.
+     */
+    void updateLegacies();
+    void fillAdapterMap(Impl2AdapterMap &map);
+    void updateLegacy(::processing::ProcessAdapterPtr old,
+        ::processing::ProcessAdapterPtr _new,
+        const Impl2AdapterMap &adapterMap);
 protected:
 	//-------------------------------------------------------------------------
 	void installGraphListener();
@@ -96,9 +111,6 @@ protected:
 	void unRegisterInstance();
 	//-------------------------------------------------------------------------
 	void initHostParameter();
-    //-------------------------------------------------------------------------
-    void updateLegacy(::processing::ProcessAdapterPtr old,
-        ::processing::ProcessAdapterPtr _new);
 public:
 	//-------------------------------------------------------------------------
 	bool isOpen() const { return _open; }

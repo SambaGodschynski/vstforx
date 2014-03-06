@@ -12,12 +12,17 @@
 #include <sambag/com/Common.hpp>
 #include "INode.hpp"
 #include "processing.h"
+#include <com/IAdapter.hpp>
+
 namespace frx { namespace processing {
 //=============================================================================
 /** 
   * @class NodeAdapter.
   */
-class NodeAdapter : public INode {
+class NodeAdapter :
+    public INode,
+    public com::IAdapter< ::processing::ProcessorNode >
+{
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
