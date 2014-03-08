@@ -49,7 +49,7 @@ private:
 	CPPUNIT_TEST_SUITE_END();
 	TestPlugin * plug;
 	TestPlugin * createPlug();
-	frx::scripts::PluginScriptCtrl *scriptCtrl;
+	frx::scripts::PluginScriptCtrl::Ptr scriptCtrl;
 	bool failed;
 	void onScriptExeFailed(void *src, const frx::scripts::ScriptExeFailedEvent &ev);
 	void onScriptEnd(void *src, const frx::scripts::ScriptEnded &ev);

@@ -9,14 +9,41 @@
 #include "OS_Specific/os_processing.h"
 #include "com/One4All.h"
 #include <boost/filesystem.hpp>
+#include <sambag/disco/Geometry.hpp>
+#include <processing/Plugin.h> // new plugin
 
 namespace processing {
 
 enum { ALL_CHANNEL = 16 };
-	
+
 //============================================================================================================
 // Plugin
 //============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void Plugin::paramEditorPosXChanged ( void *src, const float &val ) {
+    using namespace sambag::disco;
+    typedef frx::processing::Plugin PluginMII;
+    Point2D p((Coordinate)*editorPosX, (Coordinate)*editorPosY);
+    sce::EventSender<sce::PropertyChanged>::notifyListeners (this,
+			sce::PropertyChanged (PluginMII::PROPERTY_PARAMETER_EDITOR_POSITION, p, p)
+		);
+	}
+//------------------------------------------------------------------------------------------------------------
+void Plugin::paramEditorPosYChanged ( void *src, const float &val ) {
+    using namespace sambag::disco;
+    typedef frx::processing::Plugin PluginMII;
+    Point2D p((Coordinate)*editorPosX, (Coordinate)*editorPosY);
+    sce::EventSender<sce::PropertyChanged>::notifyListeners (this,
+			sce::PropertyChanged (PluginMII::PROPERTY_PARAMETER_EDITOR_POSITION, p, p)
+		);
+	}
+//------------------------------------------------------------------------------------------------------------
+void Plugin::paramEditorOpenChanged ( void *src, const float &val ) {
+    typedef frx::processing::Plugin PluginMII;
+    sce::EventSender<sce::PropertyChanged>::notifyListeners (this,
+			sce::PropertyChanged(PluginMII::PROPERTY_PARAMETER_EDITOR_OPENSTATE, val>0.5, val>0.5 )
+		);
+	}
 //------------------------------------------------------------------------------------------------------------
 void Plugin::setStatusMsg( const std::string &msg ) {
 	statusMsg = msg;

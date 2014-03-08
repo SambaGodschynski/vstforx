@@ -12,20 +12,13 @@
 #include "IParameter.hpp"
 #include "parameter/parameter.h"
 #include <sambag/com/Exception.hpp>
-#include <com/IAdapter.hpp>
-#include <sambag/com/events/Events.hpp>
-#include <sambag/com/events/PropertyChanged.hpp>
-#include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace processing {
 //=============================================================================
 /** 
   * @class ParameterAdapter.
   */
-class ParameterAdapter : public IParameter,
-    public com::IAdapter< ::processing::parameter::Parameter>,
-    public sce::EventSender<sce::PropertyChanged>
-{
+class ParameterAdapter : public IParameter {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
@@ -70,12 +63,7 @@ public:
 	}
 	//-------------------------------------------------------------------------
 	void setAdaptee(Adaptee::Ptr p) {
-		Adaptee::Ptr old = parameter;
-        parameter = p;
-        sce::EventSender<sce::PropertyChanged>::notifyListeners(
-            this,
-            sce::PropertyChanged("adaptee", old, parameter)
-        );
+		parameter = p;
 	}
 	//-------------------------------------------------------------------------
 	Adaptee::Ptr getAdaptee() const {

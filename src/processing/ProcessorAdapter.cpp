@@ -170,7 +170,6 @@ void ProcessorAdapter::initParameter() {
 	using ::processing::parameter::Parameter;
 	using ::processing::parameter::HasParameter;
 	using ::processing::MidiEventProcessor;
-    parameters.clear();
 	HasParameter::Ptr hp =
 		boost::dynamic_pointer_cast<HasParameter>(processor);
 	if (hp) {

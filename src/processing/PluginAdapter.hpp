@@ -11,9 +11,8 @@
 #include <boost/shared_ptr.hpp>
 #include "IPluginAdapter.hpp"
 #include "ProcessorAdapter.hpp"
-#include "Plugin.h"
+#include "IPlugin.hpp"
 #include "Forward.hpp"
-
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -26,7 +25,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<PluginAdapter> Ptr;
 	//-------------------------------------------------------------------------
-	typedef Plugin Adaptee;
+	typedef IPlugin Adaptee;
 private:
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
@@ -36,7 +35,7 @@ private:
 	template <typename Archive> 
 	void serialize(Archive &ar, const unsigned int version) {
 		ar & boost::serialization::base_object<ProcessorAdapter> ( *this );
-	}
+  	}
 protected:
 	//-------------------------------------------------------------------------
 	Adaptee::Ptr getPlugin() const {
@@ -45,9 +44,8 @@ protected:
 private:
 public:
 	//-------------------------------------------------------------------------
-	static Ptr create(Adaptee::Ptr a = Adaptee::Ptr()) {
+	static Ptr create() {
 		Ptr res(new PluginAdapter());
-		res->setAdaptee(a);
 		res->self = res;
 		return res;
 	}
@@ -79,5 +77,6 @@ public:
     virtual bool isBridged() const;
 }; // PluginAdapter
 }} // namespace(s)
+
 
 #endif /* SAMBAG_PLUGINADAPTER_H */

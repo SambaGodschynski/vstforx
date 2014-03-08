@@ -25,6 +25,7 @@
 #include <gui/IViewModelMap.hpp>
 #include <gui/components/FrxConcreteIO.hpp>
 #include <gui/HandyNamespaces.hpp>
+#include <processing/VstForxPlug.hpp>
 
 namespace frx { namespace scripts {
 namespace {
@@ -34,7 +35,7 @@ namespace {
 	const int FRX_OPENCLOSE_WORKAROUND_WAIT=700;
 	///////////////////////////////////////////////////////////////////////////
 	// FrxFunction impl.
-	#define FRX_START_SCRIPTCALL ctrl->startScriptCall(std::string(name())); 
+	#define FRX_START_SCRIPTCALL ctrl->__startScriptCall(std::string(name())); 
     
     /*\
     boost::this_thread::sleep(boost::posix_time::milliseconds(FRX_OPENCLOSE_WORKAROUND_WAIT));*/
@@ -1005,15 +1006,20 @@ void PluginScriptCtrl::join() {
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::execute(const std::string &str) {
 	using namespace sambag::lua;
-	SAMBAG_TRY_TO_LOCK_TIMED(scriptCallMutex)
+	SAMBAG_TRY_TO_LOCK_RECURSIVE(scriptCallMutex)
 	executeString(luaState.get(), str);
+}
+//-----------------------------------------------------------------------------
+void PluginScriptCtrl::executeFile(const std::string &path) {
+	SAMBAG_TRY_TO_LOCK_RECURSIVE(scriptCallMutex)
+	sambag::lua::executeFile(luaState.get(), path);
 }
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::runThread() {
 	using namespace sambag::lua;
 	BOOST_FOREACH(const std::string &script, scripts) {
 		try {
-			SAMBAG_TRY_TO_LOCK_TIMED(scriptCallMutex)
+			SAMBAG_TRY_TO_LOCK_RECURSIVE(scriptCallMutex)
 			executeString(luaState.get(), script);
 		} catch(const ExecutionFailed &ex) {
 			SAMBAG_LOG_ERR<<"executation failed: "<<ex.errMsg;
@@ -1030,7 +1036,19 @@ void PluginScriptCtrl::runThread() {
 	);
 }
 //-----------------------------------------------------------------------------
-void PluginScriptCtrl::startScriptCall(const std::string &fname) {
+PluginScriptCtrl::LuaState PluginScriptCtrl::getLuaState()  {
+    LockPtr lock( new Lock(scriptCallMutex, boost::try_to_lock));
+	if (!lock->owns_lock()) {
+        lock->timed_lock(boost::get_system_time() +
+        boost::posix_time::seconds(SAMBAG_LOCK_TIMEOUT));
+    }
+	if ( !lock->owns_lock() ) {
+        SAMBAG_THROW(SAMBAG_DEADLOCK_EXCEPTION, "PluginScriptCtrl: deadlock exception");
+    }
+    return LuaState(luaState, lock);
+}
+//-----------------------------------------------------------------------------
+void PluginScriptCtrl::__startScriptCall(const std::string &fname) {
 	if (fname!="" && verbose) {
         if (fname == "frxOpenEditor" ||
             fname == "frxOpenPlugin" ||
@@ -1043,7 +1061,7 @@ void PluginScriptCtrl::startScriptCall(const std::string &fname) {
 	lastCall = fname;
 }
 //-----------------------------------------------------------------------------
-void PluginScriptCtrl::endScriptCall() {
+void PluginScriptCtrl::__endScriptCall() {
 	//boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 }
 ///////////////////////////////////////////////////////////////////////////////
@@ -1111,6 +1129,7 @@ void _registerFunctions(sambag::lua::LuaStateRef luaState, Ctrl *ctrl)
 	// register next
 	_registerFunctions<typename FuncList::Tail>(luaState, ctrl);
 }
+
 template <>
 void _registerFunctions<Loki::NullType>
 (sambag::lua::LuaStateRef luaState,  Ctrl *ctrl) {}

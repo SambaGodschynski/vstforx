@@ -21,10 +21,20 @@
 #include <processing/VstForxPlug.hpp>
 #include <sambag/com/Config.h>
 #include <sambag/com/Common.hpp>
+#include <scripts/PluginScriptCtrl.hpp>
+#include <boost/filesystem.hpp>
+
 
 extern void * __getHandlerForVstPlugins_(void *ptr);
 extern void* hInstance;
-namespace frx { namespace gui { namespace components {
+namespace frx {
+
+namespace processing {
+    extern scripts::PluginScriptCtrl::Ptr
+    getScriptControl(frx::gui::components::FrxCircuidViewPtr view);
+}
+
+namespace gui { namespace components {
 //=============================================================================
 //	Klasse VstForxEditor:
 //=============================================================================
@@ -152,6 +162,30 @@ void VstForxEditor::setCircuidView(FrxCircuidViewPtr view) {
 	circView->setEditorResizeHandler(
 		boost::bind(&VstForxEditor::setEditorSize, this, _1, _2)
 	);
+    sambag::disco::components::getWindowToolkit()->invokeLater(
+        boost::bind(&VstForxEditor::loadInitScript, this)
+    );
+}
+//-----------------------------------------------------------------------------
+void VstForxEditor::loadInitScript() {
+    std::string file = com::getSettings().getHomeDirectory() + "/vstforx-init.lua";
+    scripts::PluginScriptCtrl::Ptr sctrl =
+        frx::processing::getScriptControl(circView);
+    if (!sctrl) {
+        SAMBAG_LOG_WARN<<"get script control failed.";
+        return;
+    }
+    if (!boost::filesystem::exists(file)) {
+        SAMBAG_LOG_INFO<<file<<" not found";
+        return;
+    }
+    try {
+        sctrl->executeFile(file);
+    } catch(const sambag::lua::ExecutionFailed &ex) {
+        errorMessage("executing "+file+" failed: " + ex.errMsg);
+    } catch(...) {
+        errorMessage("executing "+file+" failed: unkown reason");
+    }
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::setEditorSize(int width, int height) {

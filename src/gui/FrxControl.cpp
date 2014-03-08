@@ -21,6 +21,7 @@
 #include <loki/Typelist.h>
 #include <loki/LokiTypeinfo.h>
 #include <sambag/disco/components/PopupMenu.hpp>
+#include <sambag/disco/components/Label.hpp>
 #include <sambag/disco/components/MenuSelectionManager.hpp>
 #include <sambag/disco/components/Window.hpp>
 #include <sambag/com/Exception.hpp>
@@ -57,12 +58,20 @@
 #include <sambag/disco/TimedUpdater.hpp>
 #include <gui/components/FrxFlag.hpp>
 #include <gui/components/About.hpp>
-
+#include <scripts/PluginScriptCtrl.hpp>
+#include <sambag/lua/LuaMap.hpp>
+#include <sambag/lua/LuaSequence.hpp>
 namespace {
     const long FRX_REFRESH_PARAMETER=30;
 }
 
-namespace frx { namespace gui {
+
+namespace frx {
+namespace processing {
+    extern scripts::PluginScriptCtrl::Ptr
+    getScriptControl(frx::gui::components::FrxCircuidViewPtr view);
+}
+namespace gui {
 SAMBAG_DERIVATED_EXCEPTION_CLASS(
         sambag::com::exceptions::IllegalStateException, __ControllerMapEx
 );
@@ -548,13 +557,43 @@ typedef std::pair<std::string, IFrxControl::CtrlCmd> Entry;
 //-----------------------------------------------------------------------------
 typedef std::list<Entry> Entries;
 //-----------------------------------------------------------------------------
-void createMainMenuEntries(Entries &out) {
+void onScriptMenu(FrxCircuidViewPtr view, const std::string &f) {
+    using frx::scripts::PluginScriptCtrl;
+    //using namespace sambag::disco::components;
+    //Menu::Ptr sMenu = Menu::create();
+    // get custom menus
+    PluginScriptCtrl::Ptr sctrl = frx::processing::getScriptControl(view);
+    try {
+        sctrl->execute(f);
+    } catch(const sambag::lua::ExecutionFailed &ex) {
+        view->errorMessage("executing "+f+" failed: " + ex.errMsg);
+    } catch(...) {
+        view->errorMessage("executing "+f+" failed: unkown reason");
+    }
+}
+//-----------------------------------------------------------------------------
+void createMainMenuEntries(FrxCircuidViewPtr view, Entries &out) {
+
 	out.push_back( Entry("Modify Scene...",
 		boost::bind(&openMainBrowser, _1, _2)));
 	out.push_back( Entry("Open Setup Dialog...",
 		boost::bind(&openSetup, _1, _2)));
 	out.push_back( Entry("About...",
 		boost::bind(&openAbout, _1, _2)));
+
+}
+namespace {
+	struct MenuLabel : public sdc::Label {
+		typedef boost::shared_ptr<MenuLabel> Ptr;
+		typedef sdc::Label Super;
+		MenuLabel(){ setOpaque(false); }
+		SAMBAG_STD_STATIC_COMPONENT_CREATOR(MenuLabel)
+		virtual sd::Dimension getPreferredSize() {
+			sd::Dimension sz = Super::getMinimumSize();
+			sz.height( sz.height() + 10. );
+			return sz; 
+		} 
+	};
 }
 //-----------------------------------------------------------------------------
 sdc::PopupMenuPtr createPopupMenu(FrxCircuidViewPtr view, 
@@ -562,6 +601,11 @@ sdc::PopupMenuPtr createPopupMenu(FrxCircuidViewPtr view,
 {
 	using namespace sambag::disco::components;
 	PopupMenuPtr res = PopupMenu::create();
+    
+    MenuLabel::Ptr label = MenuLabel::create();
+    label->setText("VSTForx");
+    res->add(label);
+    
 	BOOST_FOREACH(const Entry &e, entries) {
 		MenuItem::Ptr item = MenuItem::create();
 		item->setText(e.first);
@@ -571,6 +615,36 @@ sdc::PopupMenuPtr createPopupMenu(FrxCircuidViewPtr view,
 		);
 		res->add(item);
 	}
+    
+    using frx::scripts::PluginScriptCtrl;
+    //using namespace sambag::disco::components;
+    // get custom menus
+    PluginScriptCtrl::Ptr sctrl = frx::processing::getScriptControl(view);
+    PluginScriptCtrl::LuaState lua = sctrl->getLuaState();
+    typedef sambag::lua::LuaMap<std::string, std::string> Menus;
+    Menus menus;
+    if(!sambag::lua::getGlobal(lua.first.get(), menus, "gpCustomMenus")) {
+        return res;
+    }
+    BOOST_FOREACH(const Menus::value_type &menuIt, menus) {
+        typedef sambag::lua::LuaMap<std::string, std::string> MenuDefMap;
+        MenuDefMap menuDefs;
+        if(!sambag::lua::getGlobal(lua.first.get(), menuDefs, menuIt.second)) {
+           continue;
+        }
+        Menu::Ptr sMenu = Menu::create();
+        sMenu->setText(menuIt.first);
+        BOOST_FOREACH(const MenuDefMap::value_type &x, menuDefs) {
+            MenuItem::Ptr item = MenuItem::create();
+            item->setText(x.first);
+            item->EventSender<sdc::events::ActionEvent>::addTrackedEventListener(
+                boost::bind(&onScriptMenu, view, x.second),
+                view
+            );
+            sMenu->add(item);
+        }
+        res->add(sMenu);
+    }
 	return res;
 }
 //=============================================================================
@@ -973,7 +1047,7 @@ void FrxControl::removeComponent(FrxCircuidViewPtr _view, FrxComponentPtr _c)
 //-----------------------------------------------------------------------------
 sdc::PopupMenuPtr FrxControl::getCircuidViewPopup(FrxCircuidViewPtr c) {
 	Entries mainMenuEntries;
-	createMainMenuEntries(mainMenuEntries);
+	createMainMenuEntries(c, mainMenuEntries);
 	return createPopupMenu(c, mainMenuEntries);
 }
 //-----------------------------------------------------------------------------
@@ -1010,8 +1084,15 @@ void FrxControl::handleContextMenuPopup(const sdc::events::MouseEvent &ev) {
 		return;
 	}
 	sdc::PopupMenuPtr popup = ev.getSource()->getComponentPopupMenu();
-	if (!popup)
-		return;
+	if (!popup) {
+        FrxCircuidView::Ptr circ = ev.getSource()->getFirstContainer<FrxCircuidView>();
+        if (circ && !circ->getComponentPopupMenu()) { // lazy init of main menu
+            popup = getCircuidViewPopup(circ);
+            circ->setComponentPopupMenu( popup );
+        } else {
+            return;
+        }
+    }
 	if (!popup->isPopupVisible()) {
 		MenuSelectionManager &m = MenuSelectionManager::defaultManager();
 		m.clearSelectedPath();

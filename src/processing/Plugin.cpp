@@ -12,14 +12,21 @@
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <sambag/com/Common.hpp>
 #include <com/PluginCollection.h>
+#include <sambag/disco/Geometry.hpp>
 
 namespace frx { namespace processing {
 
 enum { ALL_CHANNEL = 16 };
-	
+
 //=============================================================================
 // Plugin
 //=============================================================================
+//-----------------------------------------------------------------------------
+const std::string Plugin::PROPERTY_PARAMETER_EDITOR_POSITION = "editor-position";
+//-----------------------------------------------------------------------------
+const std::string Plugin::PROPERTY_PARAMETER_EDITOR_SIZE = "editor-size";
+//-----------------------------------------------------------------------------
+const std::string Plugin::PROPERTY_PARAMETER_EDITOR_OPENSTATE = "editor-openstate";
 //-----------------------------------------------------------------------------
 Plugin::Plugin() : impl(NULL), processing(true) {}
 //-----------------------------------------------------------------------------
@@ -121,10 +128,9 @@ Plugin::~Plugin() {
 void Plugin::onImplPropertyChanged(void*,
         const sambag::com::events::PropertyChanged &ev)
 {
-    namespace newEvents=sambag::com::events;
-    namespace oldEvents=::com::events;
+    using namespace sambag::disco;
     if (ev.getPropertyName() == "process delay") {
-        newEvents::EventSender<newEvents::PropertyChanged>::notifyListeners(
+        sce::EventSender<sce::PropertyChanged>::notifyListeners(
             this,
             ev
         );
@@ -132,10 +138,14 @@ void Plugin::onImplPropertyChanged(void*,
     }
     if (ev.getPropertyName() == "editor size") {
         frx::processing::APluginImpl::EditorSize _new;
+        frx::processing::APluginImpl::EditorSize old;
         ev.getNewValue(_new);
-        com::events::EventSender<ResizeEditorEvent>::notifyEventListeners(
+        ev.getNewValue(old);
+        Dimension nd(_new.first, _new.second);
+        Dimension od(old.first, old.second);
+        sce::EventSender<sce::PropertyChanged>::notifyListeners(
             this,
-            ResizeEditorEvent(_new.first, _new.second)
+            sce::PropertyChanged(PROPERTY_PARAMETER_EDITOR_SIZE, od, nd)
         );
         return;
     }
@@ -370,4 +380,26 @@ Plugin::Ptr Plugin::createAU(frx::processing::IHostInfo::Ptr hI, const std::stri
     res->self = res;
     return res;
 }
+//-----------------------------------------------------------------------------
+void Plugin::paramEditorPosXChanged ( void *src, const float &val ) {
+    using namespace sambag::disco;
+    Point2D p((Coordinate)*editorPosX, (Coordinate)*editorPosY);
+    sce::EventSender<sce::PropertyChanged>::notifyListeners (this,
+			sce::PropertyChanged (PROPERTY_PARAMETER_EDITOR_POSITION, p, p)
+		);
+	}
+//-----------------------------------------------------------------------------
+void Plugin::paramEditorPosYChanged ( void *src, const float &val ) {
+    using namespace sambag::disco;
+    Point2D p((Coordinate)*editorPosX, (Coordinate)*editorPosY);
+    sce::EventSender<sce::PropertyChanged>::notifyListeners (this,
+			sce::PropertyChanged (PROPERTY_PARAMETER_EDITOR_POSITION, p, p)
+		);
+	}
+//-----------------------------------------------------------------------------
+void Plugin::paramEditorOpenChanged ( void *src, const float &val ) {
+    sce::EventSender<sce::PropertyChanged>::notifyListeners (this,
+			sce::PropertyChanged(PROPERTY_PARAMETER_EDITOR_OPENSTATE, val>0.5, val>0.5)
+		);
+	}
 }} //namespace processing

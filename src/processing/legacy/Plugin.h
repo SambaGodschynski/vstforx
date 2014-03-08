@@ -14,45 +14,22 @@
 #include "com/Events.h"
 #include <processing/PlugInfo.h>
 #include "processing/MidiEventProcessor.h"
-
+#include <processing/IPlugin.hpp>
+#include <sambag/com/events/PropertyChanged.hpp>
+#include <sambag/com/events/Events.hpp>
 
 namespace processing {
-//============================================================================================================
-/**
- * @class: ResizeEditor.
- * Event: wird aufgerufen wenn Plugin, Editor-Resize, anfordert.
- */
-struct ResizeEditorEvent : public com::events::Event {
-//============================================================================================================
-	size_t w, h;
-	ResizeEditorEvent ( size_t width, size_t height ) : w(width), h(height) {}
-};
-//------------------------------------------------------------------------------------------------------------
-typedef std::pair< float, float > EditorPosition; 
-//------------------------------------------------------------------------------------------------------------
-typedef com::events::ValueChangedEvent<EditorPosition> EditorPositionEvent;
-//============================================================================================================
-/**
- * @class EditorOpenParameterChanged.
- * Event: wird aufgerufen wenn Plugin-Editor, Open/Close-Parameter geandert
- */
-struct EditorOpenParameterChanged : public com::events::Event {
-//============================================================================================================
-	bool open;
-	EditorOpenParameterChanged( bool open ) : open(open) {}
-};
+namespace sce = sambag::com::events;
 //============================================================================================================
 /**
  * Klasse: Plugin.
  * Oberklasse fuer Plugin.
  */
-class Plugin: 
+class Plugin:
+    public frx::processing::IPlugin,
 	public ::processing::ProcessAdapter,
 	public ::processing::parameter::HasParameter,
-	public ::processing::MidiEventProcessor,
-	public com::events::EventSender<EditorPositionEvent>,
-	public com::events::EventSender<EditorOpenParameterChanged>,
-	public com::events::EventSender<ResizeEditorEvent>
+	public ::processing::MidiEventProcessor
 {
 //============================================================================================================
 friend class boost::serialization::access;
@@ -145,36 +122,21 @@ public:
 	 * @param src
 	 * @param val
 	 */
-	void paramEditorPosXChanged ( void *src, const float &val ) {
-		com::events::EventSender<EditorPositionEvent>::notifyEventListeners (
-			this,
-			EditorPosition ( *editorPosX, *editorPosY )
-		);
-	}
+	void paramEditorPosXChanged ( void *src, const float &val );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Editor-PosY Parameter Handler
 	 * @param src
 	 * @param val
 	 */
-	void paramEditorPosYChanged ( void *src, const float &val ) {
-		com::events::EventSender<EditorPositionEvent>::notifyEventListeners ( 
-			this,
-			EditorPosition ( *editorPosX, *editorPosY )
-		);
-	}
+	void paramEditorPosYChanged ( void *src, const float &val );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Editor-Open/Close Parameter Handler. Loest EditorOpenParameterChanged-Event aus.
 	 * @param src
 	 * @param val
 	 */
-	void paramEditorOpenChanged ( void *src, const float &val ) {
-		com::events::EventSender<EditorOpenParameterChanged>::notifyEventListeners ( 
-			this,
-			EditorOpenParameterChanged ( val > 0.5 )
-		);
-	}
+	void paramEditorOpenChanged ( void *src, const float &val );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Editor-Open/Close Parameter Handler. Aktualisiert Parameter-Display.
@@ -284,12 +246,12 @@ public:
 	/**
 	 * @return Pluginname
 	 */
-	com::MyString getPlugName() const { return pluginInfo.name; }
+	std::string getPlugName() const { return pluginInfo.name; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Pluginhersteller
 	 */
-	com::MyString getPlugVendor() const { return plugVendor; }
+	std::string getPlugVendor() const { return plugVendor; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Setzt Pluginhersteller
@@ -313,6 +275,10 @@ public:
 	 * @return PluginInfo zu Plugin.
 	 */
 	const ::processing::PluginInfo & getPluginInfo() const { return pluginInfo; }
+    //--------------------------------------------------------------------------------------------------------
+    virtual frx::processing::APluginImpl * getPluginImpl() const {
+        return NULL;
+    }
 };
 }
 

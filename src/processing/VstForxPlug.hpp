@@ -21,8 +21,7 @@
 #include <com/Serialization.h>
 #include <sambag/com/Thread.hpp>
 #include <com/FrxConfig.h>
-#include <boost/unordered_map.hpp>
-#include <com/IAdapter.hpp>
+#include <scripts/PluginScriptCtrl.hpp>
 
 extern const char * globGetProductName();
 
@@ -31,7 +30,8 @@ namespace sce=sambag::com::events;
 namespace fg = frx::gui;
 namespace fgc = fg::components;
 //=============================================================================
-class VstForxPlug : public sambag::dsp::PluginProcessorBase,
+class VstForxPlug :
+    public sambag::dsp::PluginProcessorBase,
 	public IHostInfo,
 	public sce::EventSender<HostIOChanged>
 {
@@ -39,10 +39,12 @@ class VstForxPlug : public sambag::dsp::PluginProcessorBase,
 public:
 	//-------------------------------------------------------------------------
 	typedef sambag::dsp::PluginProcessorBase Super;
-    //-------------------------------------------------------------------------
-    typedef boost::unordered_multimap< ::processing::PObject::Ptr,
-        ModelObject::Ptr > Impl2AdapterMap;
+	//-------------------------------------------------------------------------
+	typedef ::frx::scripts::PluginScriptCtrl ScriptCtrl;
+    typedef boost::shared_ptr<ScriptCtrl> ScriptCtrlPtr;
 private:
+    //-------------------------------------------------------------------------
+    ScriptCtrlPtr scriptCtrl;
 	//-------------------------------------------------------------------------
 	void *effectPtr;
 	//-------------------------------------------------------------------------
@@ -77,17 +79,11 @@ private:
 	void loadEditor(::com::iArchive &ar, int version = FRX_ARCHIVE_VERSION);
 	//-------------------------------------------------------------------------
 	sambag::com::Mutex processingLoadLock;
-    //-------------------------------------------------------------------------
-    /**
-     * @brief searches for legacy objects (@see Legacy) creates appropriate
-     * new object and replaces the old with the new.
-     */
-    void updateLegacies();
-    void fillAdapterMap(Impl2AdapterMap &map);
-    void updateLegacy(::processing::ProcessAdapterPtr old,
-        ::processing::ProcessAdapterPtr _new,
-        const Impl2AdapterMap &adapterMap);
 protected:
+    //-------------------------------------------------------------------------
+    void onScriptExeFailed(const frx::scripts::ScriptExeFailedEvent &ev);
+    //-------------------------------------------------------------------------
+    void onScriptEnd(const frx::scripts::ScriptEnded &ev);
 	//-------------------------------------------------------------------------
 	void installGraphListener();
 	//-------------------------------------------------------------------------
@@ -111,6 +107,9 @@ protected:
 	void unRegisterInstance();
 	//-------------------------------------------------------------------------
 	void initHostParameter();
+    //-------------------------------------------------------------------------
+    void updateLegacy(::processing::ProcessAdapterPtr old,
+        ::processing::ProcessAdapterPtr _new);
 public:
 	//-------------------------------------------------------------------------
 	bool isOpen() const { return _open; }
@@ -142,7 +141,9 @@ public:
 	frx::gui::ViewModelMap::Ptr getViewModelMap() const {
 		return map;
 	}
-	//-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
+    ScriptCtrlPtr getScriptCtrl();
+    //-------------------------------------------------------------------------
 	void setEffectPtr(void *effPtr);
 	//-------------------------------------------------------------------------
 	void setMasterCallback(void *mCallbk);

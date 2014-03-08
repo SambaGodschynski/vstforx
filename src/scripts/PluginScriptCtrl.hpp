@@ -9,7 +9,7 @@
 #define SAMBAG_PLUGINSCRIPTCTRL_H
 
 #include <boost/shared_ptr.hpp>
-#include <processing/VstForxPlug.hpp>
+#include <boost/weak_ptr.hpp>
 #include <gui/components/VstForxEditor.hpp>
 #include <sambag/disco/components/Forward.hpp>
 #include <gui/components/Forward.hpp>
@@ -23,7 +23,13 @@
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include <processing/ModelObject.hpp>
 
-namespace frx { namespace scripts {
+namespace frx {
+
+namespace processing {
+    class VstForxPlug;
+}
+
+namespace scripts {
 struct ScriptExeFailedEvent{
     std::string errMsg;
     ScriptExeFailedEvent(const std::string &msg="unknown error") : errMsg(msg) {}
@@ -39,16 +45,25 @@ class PluginScriptCtrl :
 {
 //=============================================================================
 public:
+    //-------------------------------------------------------------------------
+    typedef boost::shared_ptr<PluginScriptCtrl> Ptr;
+    //-------------------------------------------------------------------------
+    typedef boost::weak_ptr<PluginScriptCtrl> WPtr;
 	//-------------------------------------------------------------------------
 	typedef std::string LuaPtr;
 protected:
 	//-------------------------------------------------------------------------
 	void runThread();
+	//-------------------------------------------------------------------------
+    friend class frx::processing::VstForxPlug;
+	PluginScriptCtrl();
+    //-------------------------------------------------------------------------
+	void setPlugin(frx::processing::VstForxPlug *plug);
 private:
 	//-------------------------------------------------------------------------
 	sambag::com::ArithmeticWrapper<bool> verbose;
 	//-------------------------------------------------------------------------
-	sambag::com::Mutex scriptCallMutex;
+	sambag::com::RecursiveMutex scriptCallMutex;
 	//-------------------------------------------------------------------------
 	std::string lastCall;
 	//-------------------------------------------------------------------------
@@ -76,6 +91,15 @@ private:
 	typedef boost::unordered_map<LuaPtr, ModelObjectPtr> ModelObjectMap;
 	ModelObjectMap modelObjectMap;
 public:
+    //-------------------------------------------------------------------------
+    typedef boost::unique_lock<sambag::com::RecursiveMutex> Lock;
+    typedef boost::shared_ptr<Lock> LockPtr;
+    typedef std::pair<sambag::lua::LuaStateRef, LockPtr> LuaState;
+    LuaState getLuaState();
+    //-------------------------------------------------------------------------
+	void __startScriptCall(const std::string &fname="");
+	//-------------------------------------------------------------------------
+	void __endScriptCall();
 	//-------------------------------------------------------------------------
 	void setVerbose(bool val) { verbose = val; }
 	//-------------------------------------------------------------------------
@@ -96,10 +120,6 @@ public:
 	 */
 	const std::string & getLastCall() { return lastCall; }
 	//-------------------------------------------------------------------------
-	void startScriptCall(const std::string &fname="");
-	//-------------------------------------------------------------------------
-	void endScriptCall();
-	//-------------------------------------------------------------------------
 	sambag::disco::components::WindowPtr getEditorWindow() const;
 	//-------------------------------------------------------------------------
 	void start();
@@ -119,13 +139,14 @@ public:
 	 */
 	void execute(const std::string &str);
 	//-------------------------------------------------------------------------
-	void setPlugin(frx::processing::VstForxPlug *plug);
+	/**
+	 * executes scriptfile in callers thread.
+	 */
+	void executeFile(const std::string &path);
 	//-------------------------------------------------------------------------
 	frx::processing::VstForxPlug * getPlugin() const { return plug; }
 	//-------------------------------------------------------------------------
 	frx::gui::components::VstForxEditor * getEditor() const { return editor; }
-	//-------------------------------------------------------------------------
-	PluginScriptCtrl();
 }; // PluginScriptCtrl
 }} // namespace(s)
 

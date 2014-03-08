@@ -17,6 +17,7 @@
 #include <processing/pluginTypes/TestAeffect.hpp>
 #include <processing/ModelFactory.hpp>
 #include <processing/Plugin.h>
+#include <sambag/disco/Geometry.hpp>
 
 #define MAX_BFF_STR 2048
 
@@ -65,21 +66,6 @@ ioChangedLock(false)
 	}
 	
 	initPlug ( *this ); // muss nach init i/o erfolgen
-}
-//------------------------------------------------------------------------------------------------------------
-ProcessAdapter::Ptr VSTPlugin::updateLegacy() {
-    frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
-	if (!hI) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
-			"Hostinfo == NULL"
-		);
-	}
-    std::stringstream ss;
-    ss << "frx.processing.vst2x.Plugin('"<<getLocation()<<"')";
-    using frx::processing::ModelFactory;
-    typedef frx::processing::Plugin NewPlugin;
-    NewPlugin::Ptr res = ModelFactory::instance().create<NewPlugin>(ss.str(), hI);
-    return res;
 }
 //------------------------------------------------------------------------------------------------------------
 ::com::MyString VSTPlugin::extractNameFromFilename( const std::string &fileName ) {
@@ -346,7 +332,6 @@ VSTPlugin::~VSTPlugin() {
 	// TODO: hier gab es probleme, unload muss aber stattfinden
 	if ( aEff != &::processing::nullAEff )
 		unloadModule();
-    SAMBAG_LOG_TRACE<<"legacy vst2x unloaded";
 }
 //------------------------------------------------------------------------------------------------------------
 inline VSTPlugin * VSTPlugin::getVSTPlugNode(AEffect *aEff){
@@ -487,7 +472,12 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::onPlugRequestWindowResize (size_t w, size_t h) {
-	com::events::EventSender<ResizeEditorEvent>::notifyEventListeners( this, ResizeEditorEvent(w,h) );
+    using namespace sambag::disco;
+    typedef frx::processing::Plugin PluginMII;
+    Dimension d(w, h);
+    sce::EventSender<sce::PropertyChanged>::notifyListeners (this,
+			sce::PropertyChanged (PluginMII::PROPERTY_PARAMETER_EDITOR_SIZE, d, d)
+    );
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::openEditor(void *window) {

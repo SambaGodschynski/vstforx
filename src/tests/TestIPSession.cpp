@@ -237,7 +237,7 @@ void TestIPSession::testFailures() {
     }
 }
 //-----------------------------------------------------------------------------
-void TestIPSession::testTransferData() {
+/*void TestIPSession::testTransferData() {
     using frx::processing::interprocess::SessionManager;
     std::string sId("testTransferData."+SessionManager::createUniqueName());
     boost::thread host( boost::bind( &th_host, sId ));
@@ -258,7 +258,7 @@ void TestIPSession::testTransferData() {
     
     session.closeHost();
     host.join();
-}
+}*/
 //-----------------------------------------------------------------------------
 namespace {
     struct OP0 {

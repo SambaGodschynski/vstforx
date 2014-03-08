@@ -10,6 +10,7 @@
 #include "ParameterAdapter.hpp"
 #include <sambag/disco/components/Window.hpp>
 #include <sambag/disco/components/WindowToolkit.hpp>
+#include <processing/Plugin.h>
 
 /**
  * get the apropriate handler from a window.
@@ -19,32 +20,47 @@ extern void * __getHandlerForVstPlugins_(void*);
 
 namespace frx { namespace processing {
 namespace {
-void onPluginEditorResize(void *, const ResizeEditorEvent &ev, 
-	sdc::WindowWPtr _win)
+void editorSize(const sce::PropertyChanged &ev, sdc::WindowPtr win)
 {
-	sdc::WindowPtr win = _win.lock();
-	if (!win)
-		return;
-	win->setWindowSize(
-		sd::Dimension(
-			(sd::Coordinate)ev.w, 
-			(sd::Coordinate)ev.h
-		)
-	);
+    sd::Dimension dim;
+    ev.getNewValue(dim);
+    if (dim!=NULL_DIMENSION) {
+        win->setWindowSize(dim);
+    }
 }
-void onPluginEditorRepos(void *, const EditorPositionEvent &ev, 
-	sdc::WindowWPtr _win)
+void editorPosition(const sce::PropertyChanged &ev, sdc::WindowPtr win)
 {
-	sdc::WindowPtr win = _win.lock();
-	if (!win)
-		return;
+    sd::Point2D p;
+    ev.getNewValue(p);
+    if (p!=NULL_POINT2D) {
+        win->setWindowLocation(p);
+    }
 }
-void onPluginEditorOpenParameter(void *, const EditorOpenParameterChanged &ev, 
-	sdc::WindowWPtr _win)
+void editorOpenState(const sce::PropertyChanged &ev, sdc::WindowPtr win)
 {
-	sdc::WindowPtr win = _win.lock();
-	if (!win)
-		return;
+    bool open = false;
+    ev.getNewValue(open);
+    if (open) {
+        win->open();
+    } else {
+        win->close();
+    }
+}
+void onPluginEditorChanged(const sce::PropertyChanged &ev, sdc::WindowWPtr _win)
+{
+    sdc::WindowPtr win = _win.lock();
+    if (!win) {
+        return;
+    }
+    if (ev.getPropertyName() == Plugin::PROPERTY_PARAMETER_EDITOR_SIZE) {
+        editorSize(ev, win);
+    }
+    if (ev.getPropertyName() == Plugin::PROPERTY_PARAMETER_EDITOR_POSITION) {
+        editorPosition(ev, win);
+    }
+    if (ev.getPropertyName() == Plugin::PROPERTY_PARAMETER_EDITOR_OPENSTATE) {
+        editorOpenState(ev, win);
+    }
 }
 
 } // namespace(s)
@@ -53,17 +69,23 @@ void onPluginEditorOpenParameter(void *, const EditorOpenParameterChanged &ev,
 //=============================================================================
 //-----------------------------------------------------------------------------
 void PluginAdapter::openEditor(sdc::WindowPtr win) {
-	if (!win)
+	if (!win) {
 		return;
+    }
 	sdc::AWindowImpl::Ptr winImpl = win->getWindowImpl();
-	if (!winImpl)
+	if (!winImpl) {
 		return;
+    }
 	Adaptee::Ptr plug = getPlugin();
-	if (!plug)
+	if (!plug) {
 		return;
-    
-    plug->com::events::EventSender<ResizeEditorEvent>::addTrackedEventListener(
-        boost::bind(&onPluginEditorResize, _1, _2, sdc::WindowWPtr(win)),
+    }
+    ProcessorAdapter::Adaptee::Ptr pr = getAdaptee(); // processor is property changed ev sender
+    if (!pr) {
+        return;
+    }
+    pr->sce::EventSender<sce::PropertyChanged>::addTrackedEventListener(
+        boost::bind(&onPluginEditorChanged, _2, sdc::WindowWPtr(win)),
         win
     );
         
@@ -130,11 +152,19 @@ void PluginAdapter::setPreset(int i) {
 //-----------------------------------------------------------------------------
 sdc::AWindowImplPtr PluginAdapter::getWindowImpl() {
     Adaptee::Ptr plug = getPlugin();
-    return plug->getPluginImpl()->getWindowImpl();
+    APluginImpl *impl = plug->getPluginImpl();
+    if (!impl) {
+        return sdc::AWindowImplPtr();
+    }
+    return impl->getWindowImpl();
 }
 //-----------------------------------------------------------------------------
 bool PluginAdapter::isBridged() const {
     Adaptee::Ptr plug = getPlugin();
-    return plug->getPluginImpl()->isBridged();
+    APluginImpl *impl = plug->getPluginImpl();
+    if (!impl) {
+        return false;
+    }
+    return impl->isBridged();
 }
 }} // namespace(s)

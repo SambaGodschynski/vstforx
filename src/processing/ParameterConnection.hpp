@@ -36,11 +36,6 @@ protected:
 	//-------------------------------------------------------------------------
 	virtual bool removeImpl(IModelControllerPtr ctrl);
 private:
-    //-------------------------------------------------------------------------
-    void initAdapterListener();
-    //-------------------------------------------------------------------------
-    void onParameterAdatpeeChanged(ParameterAdapter::Ptr src,
-        ParameterAdapter::Ptr dst);
 	//-------------------------------------------------------------------------
 	ParameterAdapter::Ptr src;
 	//-------------------------------------------------------------------------
@@ -66,9 +61,6 @@ private:
 		ar & cn;
         if (version>0) {
             ar & operators;
-        }
-        if (Archive::is_loading::value) {
-            initAdapterListener();
         }
 	}
 public:

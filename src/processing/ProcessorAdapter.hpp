@@ -18,7 +18,6 @@
 #include <boost/bimap/multiset_of.hpp> 
 #include "processing.h"
 #include "Forward.hpp"
-#include <com/IAdapter.hpp>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -27,7 +26,6 @@ namespace frx { namespace processing {
   */
 class ProcessorAdapter : 
 	public IProcessor,
-    public com::IAdapter< ::processing::ProcessAdapter>,
 	public IProcessor::IOChangedEventSender
 {
 //=============================================================================

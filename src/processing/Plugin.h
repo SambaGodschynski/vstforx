@@ -19,56 +19,38 @@
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include "pluginTypes/PluginImpl.hpp"
 #include <processing/ModelFactory.hpp>
-
+#include <processing/IPlugin.hpp>
+#include <sambag/com/events/PropertyChanged.hpp>
+#include <sambag/com/events/Events.hpp>
 
 namespace frx { namespace processing {
 namespace oldPr = ::processing;
 namespace oldPrPr = ::processing::parameter;
-//=============================================================================
-/**
- * @class: ResizeEditor.
- * Event: wird aufgerufen wenn Plugin, Editor-Resize, anfordert.
- */
-struct ResizeEditorEvent : public com::events::Event {
-//=============================================================================
-	size_t w, h;
-	ResizeEditorEvent ( size_t width, size_t height ) : w(width), h(height) {}
-};
-//-----------------------------------------------------------------------------
-typedef std::pair< float, float > EditorPosition; 
-//-----------------------------------------------------------------------------
-typedef com::events::ValueChangedEvent<EditorPosition> EditorPositionEvent;
-//=============================================================================
-/**
- * @class EditorOpenParameterChanged.
- * Event: wird aufgerufen wenn Plugin-Editor, Open/Close-Parameter geandert
- */
-struct EditorOpenParameterChanged : public com::events::Event {
-//=============================================================================
-	bool open;
-	EditorOpenParameterChanged( bool open ) : open(open) {}
-};
-//=============================================================================
-
-
+namespace sce = sambag::com::events;
 //=============================================================================
 /**
  * Klasse: Plugin.
  * Oberklasse fuer Plugin.
  */
-class Plugin: 
+class Plugin:
+    public IPlugin,
 	public oldPr::ProcessAdapter,
 	public oldPr::parameter::HasParameter,
-	public oldPr::MidiEventProcessor,
-	public com::events::EventSender<EditorPositionEvent>,
-	public com::events::EventSender<EditorOpenParameterChanged>,
-	public com::events::EventSender<ResizeEditorEvent>
+	public oldPr::MidiEventProcessor
 {
 //=============================================================================
 friend class boost::serialization::access;
 public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<Plugin> Ptr;
+    //-------------------------------------------------------------------------
+    static const std::string IO_CONFIG_CHANGED_MSG;
+    //-------------------------------------------------------------------------
+    static const std::string PROPERTY_PARAMETER_EDITOR_POSITION;
+    //-------------------------------------------------------------------------
+    static const std::string PROPERTY_PARAMETER_EDITOR_SIZE;
+    //-------------------------------------------------------------------------
+    static const std::string PROPERTY_PARAMETER_EDITOR_OPENSTATE;
 private:
     //-------------------------------------------------------------------------
 	bool processing;
@@ -162,6 +144,16 @@ protected:
     );
 public:
     //-------------------------------------------------------------------------
+    /**
+     * @brief stops plugin processing
+     */
+    void stopProcessing(const std::string &reason = "");
+    //-------------------------------------------------------------------------
+    /**
+     * @brief resumes plugin processing
+     */
+    void resumeProcessing();
+    //-------------------------------------------------------------------------
     APluginImpl * getPluginImpl() const {
         return impl;
     }
@@ -212,37 +204,21 @@ public:
 	 * @param src
 	 * @param val
 	 */
-	void paramEditorPosXChanged ( void *src, const float &val ) {
-		com::events::EventSender<EditorPositionEvent>::notifyEventListeners (
-			this,
-			EditorPosition ( *editorPosX, *editorPosY )
-		);
-	}
+	void paramEditorPosXChanged ( void *src, const float &val );
 	//-------------------------------------------------------------------------
 	/**
 	 * Editor-PosY Parameter Handler
 	 * @param src
 	 * @param val
 	 */
-	void paramEditorPosYChanged ( void *src, const float &val ) {
-		com::events::EventSender<EditorPositionEvent>::notifyEventListeners ( 
-			this,
-			EditorPosition ( *editorPosX, *editorPosY )
-		);
-	}
+	void paramEditorPosYChanged ( void *src, const float &val );
 	//-------------------------------------------------------------------------
 	/**
 	 * Editor-Open/Close Parameter Handler. Loest EditorOpenParameterChanged-Event aus.
 	 * @param src
 	 * @param val
 	 */
-	void paramEditorOpenChanged ( void *src, const float &val )
-    {
-		com::events::EventSender<EditorOpenParameterChanged>::notifyEventListeners ( 
-			this,
-			EditorOpenParameterChanged ( val > 0.5 )
-		);
-	}
+	void paramEditorOpenChanged ( void *src, const float &val );
 	//-------------------------------------------------------------------------
 	/**
 	 * Editor-Open/Close Parameter Handler. Aktualisiert Parameter-Display.
@@ -330,7 +306,7 @@ public:
 	/**
 	 * @return Pluginname
 	 */
-	com::MyString getPlugName() const { return pluginInfo.name; }
+	std::string getPlugName() const { return pluginInfo.name; }
 	//-------------------------------------------------------------------------
 	/**
 	 * @return Pluginhersteller
