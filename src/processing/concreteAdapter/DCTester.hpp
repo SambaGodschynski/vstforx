@@ -113,9 +113,13 @@ public:
 	virtual ~DCTester () {}
 };
 
-#ifdef FRX_FEATURE_DC_TESTER
-FRX_MODELFACTORY_REGISTER(internal, DCTester);
-#endif
+
+FRX_MODELFACTORY_REGISTER(private_int, DCTester);
+namespace { const bool DCTester_Registered =   
+    frx::processing::ModelFactory::instance().register_<DCTester>( 
+        "internal-private.DCTester", boost::bind(&DCTester::create, _1)
+    );
+}
 
 }// namespace processing
 

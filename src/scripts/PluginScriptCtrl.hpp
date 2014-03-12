@@ -54,11 +54,6 @@ public:
 protected:
 	//-------------------------------------------------------------------------
 	void runThread();
-	//-------------------------------------------------------------------------
-    friend class frx::processing::VstForxPlug;
-	PluginScriptCtrl();
-    //-------------------------------------------------------------------------
-	void setPlugin(frx::processing::VstForxPlug *plug);
 private:
 	//-------------------------------------------------------------------------
 	sambag::com::ArithmeticWrapper<bool> verbose;
@@ -91,6 +86,13 @@ private:
 	typedef boost::unordered_map<LuaPtr, ModelObjectPtr> ModelObjectMap;
 	ModelObjectMap modelObjectMap;
 public:
+	//-------------------------------------------------------------------------
+	/**
+     * @param if is true functions are registered for public purpose
+     */
+    PluginScriptCtrl(bool isPublic = false);
+    //-------------------------------------------------------------------------
+	void setPlugin(frx::processing::VstForxPlug *plug);
     //-------------------------------------------------------------------------
     typedef boost::unique_lock<sambag::com::RecursiveMutex> Lock;
     typedef boost::shared_ptr<Lock> LockPtr;

@@ -1,20 +1,20 @@
-frxOpenPlugin()
-frxOpenEditor()
+frx.openPlugin()
+frx.openEditor()
 
-p = frxGetProcessorTypes() -- insert all available processors
+p = frx.getProcessorTypes() -- insert all available processors
 for i, x in pairs(p) do
-	frxAddProcessor(x)
+	frx.addProcessor(x)
 end
 
 -- brute force connection
-a = frxGetViewNodes()
+a = frx.getViewNodes()
 b = a
 for i, x in pairs(a) do
 	for j, y in pairs(b) do 
 		if not (x == y) then
-			if ( frxConnectComponents(x,y) == frxTrue() ) then 
-				--print(frxGetComponentName(x), frxGetComponentName(y))
-				--frxWait(600)
+			if ( frx.connectComponents(x,y) == frx.true() ) then
+				--print(frx.getComponentName(x), frx.getComponentName(y))
+				--frx.wait(600)
 			end
 		end		
 	end	

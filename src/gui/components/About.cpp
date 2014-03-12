@@ -19,7 +19,7 @@
 #include <sambag/disco/IDiscoFactory.hpp>
 #include <sambag/disco/components/Timer.hpp>
 #include <math.h>
-
+#include <lua.h>
 #include <boost/version.hpp>
 #include <cairo-version.h>
 #include <sqlite3.h>
@@ -99,6 +99,9 @@ void About::getTextLines( Lines &out ) {
 	ss.str("");
 	ss << SQLITE_VERSION;
 	std::string sqll_version = ss.str();
+	ss.str("");
+    ss << LUA_VERSION;
+	std::string lua_version = ss.str();
 	out = boost::assign::list_of
 		( com::getSettings().versionToString() )
 		("www.vstforx.de")
@@ -107,7 +110,8 @@ void About::getTextLines( Lines &out ) {
 		("boost-"+boost_version)
 		("cairo-"+cairo_version)
 		("sqlite-"+sqll_version)
-		("loki-0.1.7");
+		("loki-0.1.7")
+        (lua_version);
 }
 //-----------------------------------------------------------------------------
 void About::onMouseEvent(void *src, const sdce::MouseEvent &ev) {

@@ -46,181 +46,181 @@ namespace {
 	// Access
 	typedef PluginScriptCtrl Ctrl;
 	typedef Ctrl::LuaPtr LuaPtr;
-	typedef int Bool; // #244 workaround
-	const int True = 1;
-	const int False = 0;
+	typedef bool Bool; // #244 workaround
+	const int True = true;
+	const int False = false;
 	const LuaPtr NULL_LUAPTR = "";
 	std::list<std::string> registeredFs;
 	//-------------------------------------------------------------------------
 	struct FrxOpenPlugin {
 		typedef boost::function<void()> Function;
-		static const char * name() { return "frxOpenPlugin"; }
+		static const char * name() { return "openPlugin"; }
 		static void process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxClosePlugin {
 		typedef boost::function<void()> Function;
-		static const char * name() { return "frxClosePlugin"; }
+		static const char * name() { return "closePlugin"; }
 		static void process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxOpenEditor {
 		typedef boost::function<void()> Function;
-		static const char * name() { return "frxOpenEditor"; }
+		static const char * name() { return "openEditor"; }
 		static void process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxCloseEditor {
 		typedef boost::function<void()> Function;
-		static const char * name() { return "frxCloseEditor"; }
+		static const char * name() { return "closeEditor"; }
 		static void process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxWait {
 		typedef boost::function<void(int)> Function;
-		static const char * name() { return "frxWait"; }
+		static const char * name() { return "wait"; }
 		static void process(int sec, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxTrue {
 		typedef boost::function<Bool()> Function;
-		static const char * name() { return "frxTrue"; }
+		static const char * name() { return "true"; }
 		static Bool process(Ctrl *ctrl) { return True; }
 	};
 	//-------------------------------------------------------------------------
 	struct FrxFalse {
 		typedef boost::function<Bool()> Function;
-		static const char * name() { return "frxFalse"; }
+		static const char * name() { return "false"; }
 		static Bool process(Ctrl *ctrl) { return False; }
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetProcessorTypes {
 		typedef sambag::lua::LuaSequence<std::string> Strings;
 		typedef boost::function<Strings()> Function;
-		static const char * name() { return "frxGetProcessorTypes"; }
+		static const char * name() { return "getProcessorTypes"; }
 		static Strings process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxAddProcessor {
 		typedef boost::function<LuaPtr(std::string)> Function;
-		static const char * name() { return "frxAddProcessor"; }
+		static const char * name() { return "addProcessor"; }
 		static LuaPtr process(std::string, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxSerializePlugin {
 		typedef boost::function<std::string()> Function;
-		static const char * name() { return "frxSerializePlugin"; }
+		static const char * name() { return "serializePlugin"; }
 		static std::string process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxDeserializePlugin {
 		typedef boost::function<void(std::string)> Function;
-		static const char * name() { return "frxDeserializePlugin"; }
+		static const char * name() { return "deserializePlugin"; }
 		static void process(std::string, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetViewComponents {
 		typedef sambag::lua::LuaSequence<LuaPtr> Components;
 		typedef boost::function<Components()> Function;
-		static const char * name() { return "frxGetViewComponents"; }
+		static const char * name() { return "getViewComponents"; }
 		static Components process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxIsEditorOpen {
 		typedef boost::function<Bool()> Function;
-		static const char * name() { return "frxIsEditorOpen"; }
+		static const char * name() { return "isEditorOpen"; }
 		static Bool process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxVerbose {
 		typedef boost::function<void(Bool val)> Function;
-		static const char * name() { return "frxVerbose"; }
+		static const char * name() { return "verbose"; }
 		static void process(Bool val, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxRemoveProcessor {
 		typedef boost::function<void(LuaPtr)> Function;
-		static const char * name() { return "frxRemoveProcessor"; }
+		static const char * name() { return "removeProcessor"; }
 		static void process(LuaPtr obj, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxClearView {
 		typedef boost::function<void()> Function;
-		static const char * name() { return "frxClearView"; }
+		static const char * name() { return "clearView"; }
 		static void process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetViewComponentTypeName {
 		typedef boost::function<std::string(LuaPtr)> Function;
-		static const char * name() { return "frxGetViewComponentTypeName"; }
+		static const char * name() { return "getViewComponentTypeName"; }
 		static std::string process(LuaPtr, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetTypeName {
 		typedef boost::function<std::string(LuaPtr)> Function;
-		static const char * name() { return "frxGetTypeName"; }
+		static const char * name() { return "getTypeName"; }
 		static std::string process(LuaPtr, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetComponentParameter {
 		typedef sambag::lua::LuaSequence<LuaPtr> Components;
 		typedef boost::function<Components(LuaPtr)> Function;
-		static const char * name() { return "frxGetComponentParameter"; }
+		static const char * name() { return "getComponentParameter"; }
 		static Components process(LuaPtr, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxAddComponentParameter {
 		typedef boost::function<void(LuaPtr, LuaPtr)> Function;
-		static const char * name() { return "frxAddComponentParameter"; }
+		static const char * name() { return "addComponentParameter"; }
 		static void process(LuaPtr, LuaPtr, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxSetParameterValue {
 		typedef boost::function<void(LuaPtr, float)> Function;
-		static const char * name() { return "frxSetParameterValue"; }
+		static const char * name() { return "setParameterValue"; }
 		static void process(LuaPtr, float, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetParameterValue {
 		typedef boost::function<float(LuaPtr)> Function;
-		static const char * name() { return "frxGetParameterValue"; }
+		static const char * name() { return "getParameterValue"; }
 		static float process(LuaPtr, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetComponentName {
 		typedef boost::function<std::string(LuaPtr)> Function;
-		static const char * name() { return "frxGetComponentName"; }
+		static const char * name() { return "getComponentName"; }
 		static std::string process(LuaPtr, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxConnectComponents {
 		typedef boost::function<Bool(LuaPtr, LuaPtr)> Function;
-		static const char * name() { return "frxConnectComponents"; }
+		static const char * name() { return "connectComponents"; }
 		static Bool process(LuaPtr, LuaPtr, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetViewNodes {
 		typedef sambag::lua::LuaSequence<LuaPtr> Components;
 		typedef boost::function<Components()> Function;
-		static const char * name() { return "frxGetViewNodes"; }
+		static const char * name() { return "getViewNodes"; }
 		static Components process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxAddFreeKnob {
 		typedef boost::function<LuaPtr()> Function;
-		static const char * name() { return "frxAddFreeKnob"; }
+		static const char * name() { return "addFreeKnob"; }
 		static LuaPtr process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxSetEditorExitOnClose {
 		typedef boost::function<void(Bool)> Function;
-		static const char * name() { return "frxSetEditorExitOnClose"; }
+		static const char * name() { return "setEditorExitOnClose"; }
 		static void process(Bool val, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxListCommands {
 		typedef boost::function<void()> Function;
-		static const char * name() { return "frxListCommands"; }
+		static const char * name() { return "listCommands"; }
 		static void process(Ctrl *ctrl) {
 			FRX_START_SCRIPTCALL
 			BOOST_FOREACH(const std::string &f, registeredFs) {
@@ -232,46 +232,46 @@ namespace {
 	struct FrxGetProcessorsOnView {
 		typedef sambag::lua::LuaSequence<LuaPtr> Components;
 		typedef boost::function<Components()> Function;
-		static const char * name() { return "frxGetProcessorsOnView"; }
+		static const char * name() { return "getProcessorsOnView"; }
 		static Components process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetProcessorInputs {
 		typedef sambag::lua::LuaSequence<LuaPtr> Components;
 		typedef boost::function<Components(LuaPtr)> Function;
-		static const char * name() { return "frxGetProcessorInputs"; }
+		static const char * name() { return "getProcessorInputs"; }
 		static Components process(LuaPtr, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetProcessorOutputs {
 		typedef sambag::lua::LuaSequence<LuaPtr> Components;
 		typedef boost::function<Components(LuaPtr)> Function;
-		static const char * name() { return "frxGetProcessorOutputs"; }
+		static const char * name() { return "getProcessorOutputs"; }
 		static Components process(LuaPtr, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxAddProcessorOutput {
 		typedef boost::function<LuaPtr(LuaPtr)> Function;
-		static const char * name() { return "frxAddProcessorOutput"; }
+		static const char * name() { return "addProcessorOutput"; }
 		static LuaPtr process(LuaPtr, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxAddProcessorInput {
 		typedef boost::function<LuaPtr(LuaPtr)> Function;
-		static const char * name() { return "frxAddProcessorInput"; }
+		static const char * name() { return "addProcessorInput"; }
 		static LuaPtr process(LuaPtr, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetEntryExit {
 		typedef boost::tuple<LuaPtr, LuaPtr> EntryExit;
 		typedef boost::function<EntryExit()> Function;
-		static const char * name() { return "frxGetEntryExit"; }
+		static const char * name() { return "getEntryExit"; }
 		static EntryExit process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetGraphDelay {
         typedef boost::function<int()> Function;
-		static const char * name() { return "frxGetGraphDelay"; }
+		static const char * name() { return "getGraphDelay"; }
 		static int process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
@@ -311,6 +311,14 @@ namespace {
         FrxSetParameterValue,
         FrxGetParameterValue
 	) FrxFunctionList;
+	//-------------------------------------------------------------------------
+	typedef LOKI_TYPELIST_5(
+		FrxWait,
+		FrxGetProcessorTypes,
+		FrxAddProcessor,
+	    FrxSerializePlugin,
+		FrxDeserializePlugin
+	) FrxPublicFunctionList;
 //-----------------------------------------------------------------------------
 int FrxGetGraphDelay::process(Ctrl *ctrl)
 {
@@ -920,7 +928,7 @@ LuaPtr FrxAddProcessor::process(std::string _name, Ctrl *ctrl) {
 //  Class PluginScriptCtrl
 //=============================================================================
 //-----------------------------------------------------------------------------
-PluginScriptCtrl::PluginScriptCtrl() : plug(NULL), editor(NULL) {
+PluginScriptCtrl::PluginScriptCtrl(bool isPublic) : plug(NULL), editor(NULL) {
 	using namespace sambag::lua;
 	luaState = createLuaStateRef();
 	registerFunctions(luaState);
@@ -1071,72 +1079,72 @@ template <int Val>
 struct Int2Type {
 	enum { Value = Val };
 };
-template <class FrxFunction> 
-void registerFunctionImpl(sambag::lua::LuaStateRef luaState, Ctrl *ctrl, Int2Type<0>)
+template <class FrxFunction, class Result>
+void __bind(Ctrl *ctrl,
+    Result &out,
+    Int2Type<0>)
 {
-	sambag::lua::registerFunction<FrxFunction>(
-		luaState.get(),
-		boost::bind(&FrxFunction::process, ctrl)
-	);
-	registeredFs.push_back(FrxFunction::name());
+	out = boost::bind(&FrxFunction::process, ctrl);
 }
-template <class FrxFunction> 
-void registerFunctionImpl(sambag::lua::LuaStateRef luaState, Ctrl *ctrl, Int2Type<1>)
+template <class FrxFunction, class Result>
+void __bind(Ctrl *ctrl,
+    Result &out,
+    Int2Type<1>)
 {
-	sambag::lua::registerFunction<FrxFunction>(
-		luaState.get(),
-		boost::bind(&FrxFunction::process, _1, ctrl)
-	);
+    out = boost::bind(&FrxFunction::process, _1, ctrl);
 }
-template <class FrxFunction> 
-void registerFunctionImpl(sambag::lua::LuaStateRef luaState, Ctrl *ctrl, Int2Type<2>)
+template <class FrxFunction, class Result>
+void __bind(Ctrl *ctrl,
+    Result &out,
+    Int2Type<2>)
 {
-	sambag::lua::registerFunction<FrxFunction>(
-		luaState.get(),
-		boost::bind(&FrxFunction::process, _1, _2, ctrl)
-	);
+    out = boost::bind(&FrxFunction::process, _1, _2, ctrl);
 }
-template <class FrxFunction> 
-void registerFunctionImpl(sambag::lua::LuaStateRef luaState, Ctrl *ctrl, Int2Type<3>)
+template <class FrxFunction, class Result>
+void __bind(Ctrl *ctrl,
+    Result &out,
+    Int2Type<3>)
 {
-	sambag::lua::registerFunction<FrxFunction>(
-		luaState.get(),
-		boost::bind(&FrxFunction::process, _1, _2, _3, ctrl)
-	);
+    out = boost::bind(&FrxFunction::process, _1, _2, _3, ctrl);
 }
-template <class FrxFunction> 
-void registerFunctionImpl(sambag::lua::LuaStateRef luaState, Ctrl *ctrl, Int2Type<4>)
+template <class FrxFunction, class Result>
+void __bind(Ctrl *ctrl,
+    Result &out,
+    Int2Type<4>)
 {
-	sambag::lua::registerFunction<FrxFunction>(
-		luaState.get(),
-		boost::bind(&FrxFunction::process, _1, _2, _3, _4, ctrl)
-	);
+    out = boost::bind(&FrxFunction::process, _1, _2, _3, _4, ctrl);
 }
-template <class FrxFunction> 
-void registerFunctionImpl(sambag::lua::LuaStateRef luaState, Ctrl *ctrl, Int2Type<5>)
+template <class FrxFunction, class Result>
+void __bind(Ctrl *ctrl,
+    Result &out,
+    Int2Type<5>)
 {
-	sambag::lua::registerFunction<FrxFunction>(
-		luaState.get(),
-		boost::bind(&FrxFunction::process, _1, _2, _3, _4, _5, ctrl)
-	);
-}
-template <class FuncList>
-void _registerFunctions(sambag::lua::LuaStateRef luaState, Ctrl *ctrl) 
-{
-	typedef typename FuncList::Head FrxFunction;
-	enum { NumArgs = FrxFunction::Function::arity };
-	registerFunctionImpl<FrxFunction>(luaState, ctrl, Int2Type<NumArgs>());
-	// register next
-	_registerFunctions<typename FuncList::Tail>(luaState, ctrl);
+    out = boost::bind(&FrxFunction::process, _1, _2, _3, _4, _5, ctrl);
 }
 
-template <>
-void _registerFunctions<Loki::NullType>
-(sambag::lua::LuaStateRef luaState,  Ctrl *ctrl) {}
+
+template <class _FList>
+struct Functions {
+    typedef _FList FList;
+    Functions(PluginScriptCtrl *master) : master(master) {}
+    PluginScriptCtrl *master;
+};
+
+template <class Functions>
+struct Accessor {
+    template <int Index, class _Result>
+    static void get(const Functions &f, _Result &out) {
+        typedef typename Loki::TL::TypeAt<typename Functions::FList, Index>::Result FX;
+        enum { NumArgs = FX::Function::arity };
+        __bind<FX>(f.master, out, Int2Type<NumArgs>());
+    }
+};
+
 } // namespace(s)
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::registerFunctions(sambag::lua::LuaStateRef luaState) {
-	using namespace sambag::lua;
-	_registerFunctions<FrxFunctionList>(luaState, this);
+	sambag::lua::registerFunctions<FrxFunctionList, Accessor>(
+        luaState.get(), Functions<FrxFunctionList>(this), "frx"
+    );
 }
 }} // namespace(s)

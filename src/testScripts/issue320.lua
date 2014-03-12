@@ -1,24 +1,24 @@
-frxOpenPlugin()
-frxOpenEditor()
+frx.openPlugin()
+frx.openEditor()
 
-sw = frxAddProcessor("FrxInSwitch")
-swi = frxGetProcessorInputs(sw)
-swo = frxGetProcessorOutputs(sw)
-entry, exit = frxGetEntryExit()
+sw = frx.addProcessor("internal.InputSwitch")
+swi = frx.getProcessorInputs(sw)
+swo = frx.getProcessorOutputs(sw)
+entry, exit = frx.getEntryExit()
 
 
-frxConnectComponents(exit, swo[1])
+frx.connectComponents(exit, swo[1])
 
-data = frxSerializePlugin()
+data = frx.serializePlugin()
 
-frxWait(500)
-frxClearView()
-frxWait(500)
+frx.wait(500)
+frx.clearView()
+frx.wait(500)
 
-frxDeserializePlugin(data)
+frx.deserializePlugin(data)
 
-frxWait(500)
+frx.wait(500)
 
-frxCloseEditor()
-frxClosePlugin()
+frx.closeEditor()
+frx.closePlugin()
 

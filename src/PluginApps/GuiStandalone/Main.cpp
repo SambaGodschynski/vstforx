@@ -34,7 +34,7 @@ typedef sambag::dsp::vst::VST2xPluginWrapper<
 
 Plugin * plug;
 Plugin * createPlug();
-frx::scripts::PluginScriptCtrl::Ptr scriptCtrl;
+frx::scripts::PluginScriptCtrl *scriptCtrl;
 bool failed;
 boost::thread processingThread;
 bool plugProcessing = false;
@@ -114,7 +114,8 @@ void setUp() {
 		std::cout<<"createPlug failed."<<std::endl;	
 		return;
 	}
-	scriptCtrl = plug->getScriptCtrl();
+	scriptCtrl = new frx::scripts::PluginScriptCtrl();
+	scriptCtrl->setPlugin(plug);
 	scriptCtrl->sce::EventSender<frx::scripts::ScriptExeFailedEvent>::addEventListener(
 		&onScriptExeFailed
 	);
@@ -129,6 +130,7 @@ void tearDown() {
 	std::cout<<"tearing down..";
 	plugProcessing = false;
 	processingThread.join();
+	delete scriptCtrl;
 	delete plug;
 	std::cout<<"succeed."<<std::endl;
 }
@@ -234,8 +236,8 @@ int main(int narg, char **args) {
 		std::cout<<"creating script ctrl failed!"<<std::endl;
 		return -1;
 	}
-	scriptCtrl->appendJob( "frxOpenPlugin()" );
-	scriptCtrl->appendJob( "frxOpenEditor()" );
+	scriptCtrl->appendJob( "frx.openPlugin()" );
+	scriptCtrl->appendJob( "frx.openEditor()" );
 	scriptCtrl->appendJob( "require\"scripts/util\"" );
 	processScripts();
     processExecutes();
@@ -256,4 +258,3 @@ int main(int narg, char **args) {
 	std::cout<<"bye dave."<<std::endl;
 	return 0;
 }
-

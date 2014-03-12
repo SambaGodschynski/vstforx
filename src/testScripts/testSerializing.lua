@@ -1,36 +1,36 @@
 -- ### BEGIN FUNCTIONS
 
---frxVerbose(frxTrue())
+--frx.verbose(frx.true())
 
 function clearView()
-    frxClearView()
+    frx.clearView()
     num = getNumElements()
 	-- entry + exit + connection = 3
     assert( num == 3, "clear view failed:"..tostring(num))
 end
 
-OP = frxOpenPlugin
-OE = frxOpenEditor
-CP = frxClosePlugin
-CE = frxCloseEditor
+OP = frx.openPlugin
+OE = frx.openEditor
+CP = frx.closePlugin
+CE = frx.closeEditor
 CV = clearView
 function doSequence(seq)
   for i, x in pairs(seq) do
     x()
-	frxWait(100)
+	frx.wait(100)
   end
 end
 
 --brute connecting of all components on view
 function connectAllComponents()
-	a = frxGetViewNodes()
+	a = frx.getViewNodes()
 	b = a
 	for i, x in pairs(a) do
 		for j, y in pairs(b) do 
 			if not (x == y) then
-				--print(frxGetComponentName(x)..x, frxGetComponentName(y)..y)
-				if frxConnectComponents(x,y) == frxTrue() then
-					--frxWait(600)
+				--print(frx.getComponentName(x)..x, frx.getComponentName(y)..y)
+				if frx.connectComponents(x,y) == frx.true() then
+					--frx.wait(600)
 				end	
 			end		
 		end	
@@ -40,8 +40,8 @@ end
 -- assumes that the editor is isOpen
 -- to get the elements
 function getNumElements()
-    assert(frxIsEditorOpen() == frxTrue(), "assert(frxIsEditorOpen())")
-    components = frxGetViewComponents()
+    assert(frx.isEditorOpen() == frx.true(), "assert(frx.isEditorOpen())")
+    components = frx.getViewComponents()
     return #components
 end
 
@@ -65,19 +65,19 @@ doSequence({OP, OE})
 
 assert(getNumElements() == 2, tostring(#components))
 
-p = frxGetProcessorTypes()  -- insert all available processors
+p = frx.getProcessorTypes()  -- insert all available processors
 for i, x in pairs(p) do
-    new = frxAddProcessor(x)
+    new = frx.addProcessor(x)
 end
 
 connectAllComponents()
 
-c = frxGetViewComponents()
+c = frx.getViewComponents()
 for i, x in pairs(c) do	
-	pars = frxGetComponentParameter(x)
+	pars = frx.getComponentParameter(x)
 	for j, y in pairs(pars) do
 		-- TODO: flag objects remains in view => clearView assertion
- 		-- frxAddComponentParameter(x ,y)
+ 		-- frx.addComponentParameter(x ,y)
 	end
 end
 
@@ -93,35 +93,35 @@ doSequenceAssertElements({CP, CE, OP, OE}, numElements)
 doSequenceAssertElements({CE, CP, OE, OP}, numElements)
 
 -- editor is open, serialize / editor is closed, deserialize
-stream = frxSerializePlugin()
+stream = frx.serializePlugin()
 doSequence({CV, CE, CP})
-frxDeserializePlugin(stream)
+frx.deserializePlugin(stream)
 doSequenceAssertElements({OP, OE}, numElements)
 
 
 -- editor is open, serialize / editor is open, deserialize
-stream = frxSerializePlugin()
+stream = frx.serializePlugin()
 doSequence({CV})
-frxDeserializePlugin(stream)
+frx.deserializePlugin(stream)
 assert(getNumElements() == numElements)
 
 -- editor is closed, serialize / editor is closed, deserialize
 doSequence({CE})
-stream = frxSerializePlugin()
-frxDeserializePlugin(stream)
+stream = frx.serializePlugin()
+frx.deserializePlugin(stream)
 doSequenceAssertElements({OE}, numElements)
 
 
 -- editor is closed, serialize / editor is open, deserialize
 doSequence({CE})
-stream = frxSerializePlugin()
+stream = frx.serializePlugin()
 doSequence({OE, CV})
-frxDeserializePlugin(stream)
+frx.deserializePlugin(stream)
 assert(getNumElements() == numElements)
 
 
 -- editor is open, serialize / !no deserialize
-stream = frxSerializePlugin()
+stream = frx.serializePlugin()
 doSequenceAssertElements({CE, CP, OE, OP}, numElements)
 doSequence({CV})
 

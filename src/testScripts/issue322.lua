@@ -1,35 +1,35 @@
-frxOpenPlugin()
-frxOpenEditor()
+frx.openPlugin()
+frx.openEditor()
 
 function addSwitch(name)
-	sw = frxAddProcessor(name)
-	swo = frxGetProcessorOutputs(sw)
-	entry, exit = frxGetEntryExit()
-	frxConnectComponents(exit, swo[1])
+	sw = frx.addProcessor(name)
+	swo = frx.getProcessorOutputs(sw)
+	entry, exit = frx.getEntryExit()
+	frx.connectComponents(exit, swo[1])
 	return sw
 end
 
-isw = addSwitch("FrxInSwitch")
-ist = addSwitch("FrxInStep")
-osw = addSwitch("FrxOutSwitch")
-ost = addSwitch("FrxOutStep")
+isw = addSwitch("internal.InputSwitch")
+ist = addSwitch("internal.InputStep")
+osw = addSwitch("internal.OutputSwitch")
+ost = addSwitch("internal.OutputStep")
 
 for i = 1,10,1 do 
-	frxAddProcessorInput(isw)
+	frx.addProcessorInput(isw)
 end
 
 for i = 1,10,1 do 
-	frxAddProcessorInput(ist)
+	frx.addProcessorInput(ist)
 end
 
 for i = 1,10,1 do 
-	frxAddProcessorOutput(osw)
+	frx.addProcessorOutput(osw)
 end
 for i = 1,10,1 do 
-	frxAddProcessorOutput(ost)
+	frx.addProcessorOutput(ost)
 end
 
-frxWait(100)
+frx.wait(100)
 
-frxClosePlugin()
-frxCloseEditor()
+frx.closePlugin()
+frx.closeEditor()

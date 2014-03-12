@@ -79,7 +79,7 @@ const char * ADSR::Details::ns             = "internal";
 const char * PeakTracker::Details::ns      = "internal";
 const char * MIDIReceiver::Details::ns     = "internal";
 const char * RemoteChReceiver::Details::ns = "interprocess";
-const char * DCTester::Details::ns         = "internal";
+const char * DCTester::Details::ns         = "internal-private";
 
 
 } // namespace processorTypes

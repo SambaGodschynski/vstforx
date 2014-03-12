@@ -61,12 +61,16 @@ void processPlugin(TestPlugin * plug) {
 //=============================================================================
 //-----------------------------------------------------------------------------
 ScriptedTests::ScriptedTests() {
+
 }
 //-----------------------------------------------------------------------------
 void ScriptedTests::setUp() {
 	namespace sce = sambag::com::events;
 	plug = createPlug();
-	scriptCtrl = plug->getScriptCtrl();
+	scriptCtrl = new frx::scripts::PluginScriptCtrl();
+	scriptCtrl->setPlugin(plug);
+    
+    //scriptCtrl->setVerbose(true);
     
 	scriptCtrl->sce::EventSender<frx::scripts::ScriptExeFailedEvent>::addEventListener(
 		boost::bind(&ScriptedTests::onScriptExeFailed, this, _1, _2)
@@ -84,6 +88,7 @@ void ScriptedTests::setUp() {
 void ScriptedTests::tearDown() {
 	plugProcessing = false;
 	processingThread.join();
+	delete scriptCtrl;
 	delete plug;
 }
 //-----------------------------------------------------------------------------
