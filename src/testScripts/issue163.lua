@@ -11,7 +11,7 @@ frx.openEditor()
 
 assertGraphDelay(0)
 
-p = frx.addProcessor("private_int.DCTester")
+p = frx.addProcessor("internal-private.DCTester")
 assert(#p>0, "adding FrxDCTester failed. Is FRX_FEATURE_DC_TESTER enabled?");
 delay = frx.getComponentParameter(p)[1]
 
@@ -42,7 +42,7 @@ assertGraphDelay(0)
 frx.deserializePlugin(save)
 assertGraphDelay(32768)
 
-p = findByName("DC Tester_1")
+p = findByName("DC Tester")
 assert(#p>0)
 delay = frx.getComponentParameter(p)[1]
 frx.setParameterValue(delay, 0)

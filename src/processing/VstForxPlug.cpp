@@ -514,9 +514,6 @@ void VstForxPlug::onScriptExeFailed(const frx::scripts::ScriptExeFailedEvent &ev
 {
 }
 //-----------------------------------------------------------------------------
-void VstForxPlug::onScriptEnd(const frx::scripts::ScriptEnded &ev) {
-}
-//-----------------------------------------------------------------------------
 void * VstForxPlug::getEditor() {
 	return host->getEditor();
 }
@@ -530,13 +527,10 @@ int VstForxPlug::getLatency() const {
 //-----------------------------------------------------------------------------
 VstForxPlug::ScriptCtrlPtr VstForxPlug::getScriptCtrl() {
     if (!scriptCtrl) {
-        scriptCtrl = ScriptCtrlPtr(new frx::scripts::PluginScriptCtrl());
+        scriptCtrl = ScriptCtrlPtr(new frx::scripts::PluginScriptCtrl(true));
         scriptCtrl->setPlugin(this);
         scriptCtrl->sce::EventSender<frx::scripts::ScriptExeFailedEvent>::addEventListener(
             boost::bind(&VstForxPlug::onScriptExeFailed, this, _2)
-        );
-        scriptCtrl->sce::EventSender<frx::scripts::ScriptEnded>::addEventListener(
-            boost::bind(&VstForxPlug::onScriptEnd, this, _2)
         );
     }
     return scriptCtrl;

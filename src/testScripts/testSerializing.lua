@@ -29,7 +29,7 @@ function connectAllComponents()
 		for j, y in pairs(b) do 
 			if not (x == y) then
 				--print(frx.getComponentName(x)..x, frx.getComponentName(y)..y)
-				if frx.connectComponents(x,y) == frx.true() then
+				if frx.connectComponents(x,y) == true then
 					--frx.wait(600)
 				end	
 			end		
@@ -40,7 +40,7 @@ end
 -- assumes that the editor is isOpen
 -- to get the elements
 function getNumElements()
-    assert(frx.isEditorOpen() == frx.true(), "assert(frx.isEditorOpen())")
+    assert(frx.isEditorOpen() == true, "assert(frx.isEditorOpen())")
     components = frx.getViewComponents()
     return #components
 end

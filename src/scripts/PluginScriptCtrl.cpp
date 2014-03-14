@@ -26,8 +26,18 @@
 #include <gui/components/FrxConcreteIO.hpp>
 #include <gui/HandyNamespaces.hpp>
 #include <processing/VstForxPlug.hpp>
+#include <OS_Specific/OS_com.h>
+#include <sambag/disco/components/Viewport.hpp>
+#include <com/FrxConfig.h>
+#include <sambag/disco/components/Window.hpp>
 
-namespace frx { namespace scripts {
+namespace frx {
+
+namespace gui {
+    extern std::string __lastBrowserSelection;
+}
+
+namespace scripts {
 namespace {
 	/**
 	 * open/close sequences needs to wait before call the next. 
@@ -275,50 +285,285 @@ namespace {
 		static int process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
-	typedef LOKI_TYPELIST_35(FrxOpenPlugin,
+	struct FrxMessageBox {
+        typedef boost::function<void(std::string)> Function;
+		static const char * name() { return "messageBox"; }
+		static void process(std::string, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxSelectFile {
+        typedef boost::function<std::string(std::string)> Function;
+		static const char * name() { return "selectFile"; }
+		static std::string process(std::string, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxSelectDirectory {
+        typedef boost::function<std::string(std::string)> Function;
+		static const char * name() { return "selectDirectory"; }
+		static std::string process(std::string, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxOpenSceneBrowser {
+        typedef boost::function<void(std::string)> Function;
+		static const char * name() { return "openSceneBrowser"; }
+		static void process(std::string, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxOpenUrl {
+        typedef boost::function<void(std::string)> Function;
+		static const char * name() { return "openUrl"; }
+		static void process(std::string, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxOpenSetup {
+        typedef boost::function<void()> Function;
+		static const char * name() { return "openSetup"; }
+		static void process(Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxOpenAbout {
+        typedef boost::function<void()> Function;
+		static const char * name() { return "openAbout"; }
+		static void process(Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxGetLastBrowserSelection {
+        typedef boost::function<std::string()> Function;
+		static const char * name() { return "getLastSceneBrowserSelection"; }
+		static std::string process(Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxSetViewPos {
+        typedef boost::function<void(float, float)> Function;
+		static const char * name() { return "setViewPos"; }
+		static void process(float, float, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxGetViewPos {
+        typedef boost::function<boost::tuple<float, float>()> Function;
+		static const char * name() { return "getViewPos"; }
+		static boost::tuple<float, float> process(Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxGetEditorDim {
+        typedef boost::function<boost::tuple<float, float>()> Function;
+		static const char * name() { return "getEditorDim"; }
+		static boost::tuple<float, float> process(Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxSetEditorDim {
+        typedef boost::function<void(float, float)> Function;
+		static const char * name() { return "setEditorDim"; }
+		static void process(float, float, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxGetVersionInteger {
+        typedef boost::function<int()> Function;
+		static const char * name() { return "getVersionInteger"; }
+		static int process(Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxGetVersionString {
+        typedef boost::function<std::string()> Function;
+		static const char * name() { return "getVersionString"; }
+		static std::string process(Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxResetMainMenu {
+        typedef boost::function<void()> Function;
+		static const char * name() { return "resetMainMenu"; }
+		static void process(Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	typedef LOKI_TYPELIST_29(FrxOpenPlugin,
 		FrxClosePlugin,
 		FrxOpenEditor,
 		FrxCloseEditor,
-		FrxWait,
 		FrxTrue,
 		FrxFalse,
-		FrxGetProcessorTypes,
-		FrxAddProcessor,
-/*10*/	FrxSerializePlugin,
-		FrxDeserializePlugin,
 		FrxGetViewComponents,
 		FrxIsEditorOpen,
 		FrxVerbose,
-		FrxClearView,
+/*10*/	FrxClearView,
 		FrxRemoveProcessor,
 		FrxGetViewComponentTypeName,
 		FrxGetComponentParameter,
 		FrxAddComponentParameter,
-/*20*/  FrxGetComponentName,
+        FrxGetComponentName,
 		FrxConnectComponents,
 		FrxGetViewNodes,
 		FrxAddFreeKnob,
 		FrxSetEditorExitOnClose,
-		FrxListCommands,
+/*20*/	FrxListCommands,
 		FrxGetTypeName,
 		FrxGetProcessorsOnView,
 		FrxGetProcessorInputs,
 		FrxGetProcessorOutputs,
-/*30*/	FrxGetEntryExit,
+        FrxGetEntryExit,
 		FrxAddProcessorOutput,
 		FrxAddProcessorInput,
-        FrxGetGraphDelay,
         FrxSetParameterValue,
         FrxGetParameterValue
-	) FrxFunctionList;
+) FrxPrivateFunctionList;
 	//-------------------------------------------------------------------------
-	typedef LOKI_TYPELIST_5(
+	typedef LOKI_TYPELIST_20(
 		FrxWait,
-		FrxGetProcessorTypes,
+		FrxGetLastBrowserSelection,
 		FrxAddProcessor,
 	    FrxSerializePlugin,
-		FrxDeserializePlugin
+		FrxDeserializePlugin,
+        FrxMessageBox,
+        FrxSelectDirectory,
+        FrxSelectFile,
+        FrxGetGraphDelay,
+/*10*/  FrxOpenSceneBrowser,
+        FrxOpenSetup,
+        FrxOpenAbout,
+        FrxOpenUrl,
+        FrxSetViewPos,
+        FrxGetViewPos,
+        FrxSetEditorDim,
+        FrxGetEditorDim,
+        FrxGetVersionString,
+        FrxGetVersionInteger,
+/*20*/  FrxResetMainMenu
 	) FrxPublicFunctionList;
+//-----------------------------------------------------------------------------
+void FrxResetMainMenu::process(Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+    using namespace frx::gui;
+	using namespace frx::gui::components;
+    FrxCircuidViewPtr view = editor->getCircuidView();
+    view->setComponentPopupMenu( sdc::PopupMenuPtr() );
+}
+//-----------------------------------------------------------------------------
+std::string FrxGetVersionString::process(Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	std::stringstream ss;
+    ss<<FRX_VERSION_MAJOR<<"."<<FRX_VERSION_MINOR<<"."<<FRX_VERSION_MICRO;
+    return ss.str();
+}
+//-----------------------------------------------------------------------------
+int FrxGetVersionInteger::process(Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+    return FRX_VERSION_MAJOR * 100 + FRX_VERSION_MINOR * 10 + FRX_VERSION_MICRO;
+}
+//-----------------------------------------------------------------------------
+void FrxSetEditorDim::process(float x, float y, Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+    using namespace frx::gui;
+	using namespace frx::gui::components;
+    FrxCircuidViewPtr view = editor->getCircuidView();
+    view->requestEditorResize(sd::Dimension(x,y));
+}
+//-----------------------------------------------------------------------------
+boost::tuple<float, float> FrxGetEditorDim::process(Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+    using namespace frx::gui;
+	using namespace frx::gui::components;
+    FrxCircuidViewPtr view = editor->getCircuidView();
+    sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
+    sd::Dimension d = win->getWindowSize();
+    return boost::make_tuple(d.width(), d.height());
+}
+//-----------------------------------------------------------------------------
+void FrxSetViewPos::process(float x, float y, Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+    using namespace frx::gui;
+	using namespace frx::gui::components;
+    FrxCircuidViewPtr view = editor->getCircuidView();
+    sdc::Viewport::Ptr vp = view->getViewport();
+    vp->setViewPosition(sd::Point2D(x, y));
+}
+//-----------------------------------------------------------------------------
+boost::tuple<float, float> FrxGetViewPos::process(Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+    using namespace frx::gui;
+	using namespace frx::gui::components;
+    FrxCircuidViewPtr view = editor->getCircuidView();
+    sdc::Viewport::Ptr vp = view->getViewport();
+    sd::Point2D pos = vp->getViewPosition();
+    return boost::make_tuple(pos.x(), pos.y());
+}
+//-----------------------------------------------------------------------------
+std::string FrxGetLastBrowserSelection::process(Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+    return frx::gui::__lastBrowserSelection;
+}
+//-----------------------------------------------------------------------------
+void FrxOpenSceneBrowser::process(std::string path, Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+    using namespace frx::gui;
+	using namespace frx::gui::components;
+    FrxCircuidViewPtr view = editor->getCircuidView();
+	IFrxControl &frxctrl = getFrxControl(view);
+    frxctrl.openSceneBrowser(view, path);
+}
+//-----------------------------------------------------------------------------
+void FrxOpenSetup::process(Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+    using namespace frx::gui;
+	using namespace frx::gui::components;
+    FrxCircuidViewPtr view = editor->getCircuidView();
+	IFrxControl &frxctrl = getFrxControl(view);
+    frxctrl.openSetup(view);
+}
+//-----------------------------------------------------------------------------
+void FrxOpenAbout::process(Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+	FRX_START_SCRIPTCALL
+    using namespace frx::gui;
+	using namespace frx::gui::components;
+    FrxCircuidViewPtr view = editor->getCircuidView();
+	IFrxControl &frxctrl = getFrxControl(view);
+    frxctrl.openAbout(view);
+}
+//-----------------------------------------------------------------------------
+void FrxMessageBox::process(std::string msg, Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+    ::com::osMessageBox("Lua", msg, ::com::MSG_ALERT);
+}
+//-----------------------------------------------------------------------------
+void FrxOpenUrl::process(std::string url, Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+    ::com::openLink(url);
+}
+//-----------------------------------------------------------------------------
+std::string FrxSelectFile::process(std::string startPath, Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+    return ::com::osSelectFile("select file", startPath, NULL);
+}
+//-----------------------------------------------------------------------------
+std::string FrxSelectDirectory::process(std::string startPath, Ctrl *ctrl) {
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+    return ::com::osSelectFile("select directory", startPath, NULL);
+}
 //-----------------------------------------------------------------------------
 int FrxGetGraphDelay::process(Ctrl *ctrl)
 {
@@ -931,7 +1176,7 @@ LuaPtr FrxAddProcessor::process(std::string _name, Ctrl *ctrl) {
 PluginScriptCtrl::PluginScriptCtrl(bool isPublic) : plug(NULL), editor(NULL) {
 	using namespace sambag::lua;
 	luaState = createLuaStateRef();
-	registerFunctions(luaState);
+	registerFunctions(luaState, isPublic);
 }
 //-----------------------------------------------------------------------------
 PluginScriptCtrl::LuaPtr 
@@ -1142,9 +1387,21 @@ struct Accessor {
 
 } // namespace(s)
 //-----------------------------------------------------------------------------
-void PluginScriptCtrl::registerFunctions(sambag::lua::LuaStateRef luaState) {
-	sambag::lua::registerFunctions<FrxFunctionList, Accessor>(
-        luaState.get(), Functions<FrxFunctionList>(this), "frx"
-    );
+void PluginScriptCtrl::registerFunctions(sambag::lua::LuaStateRef luaState, bool isPublic)
+{
+    if (isPublic) {
+        typedef Loki::TL::NoDuplicates<FrxPublicFunctionList>::Result Fz; // arf
+        sambag::lua::registerFunctions<Fz, Accessor>(
+            luaState.get(), Functions<Fz>(this), "frx"
+        );
+    } else {
+        typedef Loki::TL::Append<FrxPublicFunctionList,
+            FrxPrivateFunctionList>::Result FsUnion;
+        typedef Loki::TL::NoDuplicates<FsUnion>::Result Fz; // arf
+        sambag::lua::registerFunctions<Fz, Accessor>(
+            luaState.get(), Functions<Fz>(this), "frx"
+        );
+
+    }
 }
 }} // namespace(s)

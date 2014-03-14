@@ -11,6 +11,7 @@
 #include "win_one4All.h"
 #include "com/one4All.h"
 #include <Shlobj.h>
+#include <Shellapi.h>
 #include <sstream>
 #include <windows.h>
 #include <exception>
@@ -153,6 +154,40 @@ std::string osSelectDirectory ( const std::string &wndTitle,
         }
     }
 	return ret;
+}
+//--------------------------------------------------------------------------------------------------------
+std::string osSelectFile ( const std::string &wndTitle,
+						    const std::string &startPath,
+							void *parentWindow)
+{
+	std::string ret;
+	BROWSEINFO bi = { 0 };
+	bi.lpfn = &BrowseCallbackProc;
+	bi.lpszTitle = ( wndTitle.c_str() );
+	bi.hwndOwner = (HWND)parentWindow;
+	bi.ulFlags = BIF_USENEWUI | BIF_BROWSEINCLUDEFILES;
+    _startPath = startPath;
+	LPITEMIDLIST pidl = SHBrowseForFolder ( &bi );
+    if ( pidl != 0 )
+    {
+        // get the name of the folder
+        char path[MAX_PATH];
+        if ( SHGetPathFromIDList ( pidl, path ) ) {
+			ret = std::string(path);
+        }
+
+        // free memory used
+        IMalloc * imalloc = 0;
+        if ( SUCCEEDED( SHGetMalloc ( &imalloc )) ) {
+            imalloc->Free ( pidl );
+            imalloc->Release ( );
+        }
+    }
+	return ret;
+}
+//--------------------------------------------------------------------------------------------------------
+void openLink(const std::string &url) {
+    ShellExecute(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
 } // namespace com
 

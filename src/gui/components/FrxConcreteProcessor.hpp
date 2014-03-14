@@ -71,7 +71,7 @@ protected:
 		ProcessorType::init( getPtr() );
 		if (getName() == "") {
 			setName(getProcessorBeautyName<ConcreteProcessor>());
-			setName(getName()+"_"+sambag::com::toString(instances));
+			setName(getName());
 		}
 		setUpperFlagText(getName());
 		setTooltipText( getProcessorTooltip<ConcreteProcessor>() );

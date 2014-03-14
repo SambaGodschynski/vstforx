@@ -93,8 +93,17 @@ std::string osSelectDirectory ( const std::string &wndTitle, const std::string &
 	return frx::com::CocoaImpl::selectDirectory(wndTitle, startPath);
 }
 //-----------------------------------------------------------------------------
+std::string osSelectFile ( const std::string &wndTitle, const std::string &startPath, void *parentWindow)
+{
+	return frx::com::CocoaImpl::selectFile(wndTitle, startPath);
+}
+//-----------------------------------------------------------------------------
 void startProcess(const char *path, int argc, const char **argv) {
     frx::com::CocoaImpl::startProcess(path, argc, argv);
+}
+//-----------------------------------------------------------------------------
+void openLink (const std::string &url) {
+    frx::com::CocoaImpl::openLink(url);
 }
 } // namespace com
 

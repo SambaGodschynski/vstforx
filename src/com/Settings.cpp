@@ -101,6 +101,12 @@ std::string Settings::getLogFilename() const {
 	return absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
+std::string Settings::getInitScriptFilename() const {
+	std::string str = SETTINGS.getHomeDirectory() + "/" + NAME + "-init.lua";
+	boost::filesystem::path p(str);
+	return absolute(p).string();
+}
+//------------------------------------------------------------------------------------------------------------
 std::string Settings::getConfFilename() const { 
 	std::string str = SETTINGS.getHomeDirectory() + "/" + CONFIG_FILE; 
 	boost::filesystem::path p(str);

@@ -74,7 +74,7 @@ private:
 	//-------------------------------------------------------------------------
 	sambag::lua::LuaStateRef luaState;
 	//-------------------------------------------------------------------------
-	void registerFunctions(sambag::lua::LuaStateRef luaState);
+	void registerFunctions(sambag::lua::LuaStateRef luaState, bool isPublic);
 	//-------------------------------------------------------------------------
 	typedef frx::gui::components::FrxComponentPtr FrxComponentPtr;
 	//-------------------------------------------------------------------------

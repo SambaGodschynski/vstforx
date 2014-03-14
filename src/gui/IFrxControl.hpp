@@ -137,6 +137,22 @@ public:
     //-------------------------------------------------------------------------
     virtual void removeOperator(fgc::FrxCircuidViewPtr view,
         fgc::FrxConnection::Ptr con, OperatorId) = 0;
+    //-------------------------------------------------------------------------
+    /**
+     * @param the main view
+     * @param the selection path
+     */
+    virtual void openSceneBrowser(fgc::FrxCircuidViewPtr view, const std::string &path) = 0;
+    //-------------------------------------------------------------------------
+    /**
+     * @param the main view
+     */
+    virtual void openSetup(fgc::FrxCircuidViewPtr view) = 0;
+    //-------------------------------------------------------------------------
+    /**
+     * @param the main view
+     */
+    virtual void openAbout(fgc::FrxCircuidViewPtr view) = 0;
 	//-------------------------------------------------------------------------
 	///////////////////////////////////////////////////////////////////////////
 	// CtrlCmd's: use it with createCtrlCommandFunction() to create

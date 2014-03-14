@@ -115,6 +115,12 @@ public:
     //-------------------------------------------------------------------------
     virtual void removeOperator(fgc::FrxCircuidViewPtr view,
         fgc::FrxConnection::Ptr con,OperatorId);
+    //-------------------------------------------------------------------------
+    virtual void openSceneBrowser(fgc::FrxCircuidViewPtr view, const std::string &path);
+    //-------------------------------------------------------------------------
+    virtual void openSetup(fgc::FrxCircuidViewPtr view);
+    //-------------------------------------------------------------------------
+    virtual void openAbout(fgc::FrxCircuidViewPtr view);
 }; // FrxControl
 ///////////////////////////////////////////////////////////////////////////////	
 //-----------------------------------------------------------------------------

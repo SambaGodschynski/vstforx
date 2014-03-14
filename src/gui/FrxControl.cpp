@@ -76,6 +76,7 @@ SAMBAG_DERIVATED_EXCEPTION_CLASS(
         sambag::com::exceptions::IllegalStateException, __ControllerMapEx
 );
 using namespace components;
+std::string __lastBrowserSelection;
 //------------------------------------------------------------------------------
 boost::tuple<
 	frx::processing::IModelController::Ptr,
@@ -487,7 +488,7 @@ void installBrowserListeners(sdc::WindowWPtr _browser, fgc::FrxCircuidViewPtr vi
 	);
 }
 //-----------------------------------------------------------------------------
-FrxColumnBrowser::Ptr openMainBrowser(fgc::FrxCircuidViewPtr view, 
+FrxColumnBrowser::Ptr __openMainBrowser(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr alwaysNull)
 {
 	FrxMainBrowser::Ptr browser;
@@ -510,7 +511,7 @@ FrxColumnBrowser::Ptr openMainBrowser(fgc::FrxCircuidViewPtr view,
 	return browser;
 }
 //-----------------------------------------------------------------------------
-void openSetup(fgc::FrxCircuidViewPtr view, 
+void __openSetup(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c)
 {
 	SetupWindow::Ptr setup;
@@ -536,7 +537,7 @@ void __onViewMouse(void *src, const sdce::MouseEvent &ev, About::WPtr _about) {
 		}
 	}
 }
-void openAbout(fgc::FrxCircuidViewPtr view, 
+void __openAbout(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c)
 {
 	About::Ptr about = About::create( view->getLastContainer<sdc::Window>() );
@@ -575,11 +576,11 @@ void onScriptMenu(FrxCircuidViewPtr view, const std::string &f) {
 void createMainMenuEntries(FrxCircuidViewPtr view, Entries &out) {
 
 	out.push_back( Entry("Modify Scene...",
-		boost::bind(&openMainBrowser, _1, _2)));
+		boost::bind(&__openMainBrowser, _1, _2)));
 	out.push_back( Entry("Open Setup Dialog...",
-		boost::bind(&openSetup, _1, _2)));
+		boost::bind(&__openSetup, _1, _2)));
 	out.push_back( Entry("About...",
-		boost::bind(&openAbout, _1, _2)));
+		boost::bind(&__openAbout, _1, _2)));
 
 }
 namespace {
@@ -642,12 +643,16 @@ void addScriptEntry(FrxCircuidViewPtr view, sdc::PopupMenuPtr res, lua_State *lu
         return;
     }
     // add menu item
+    if (action.length()==0) {
+        MenuLabel::Ptr label = MenuLabel::create();
+        label->setText(name);
+        res->add(label);
+        return;
+    } 
     MenuItem::Ptr item = MenuItem::create();
-    item->setText(name);
     item->EventSender<sdc::events::ActionEvent>::addTrackedEventListener(
-        boost::bind(&onScriptMenu, view, action),
-        view
-    );
+        boost::bind(&onScriptMenu, view, action),  view);
+    item->setText(name);
     res->add(item);
 }
 void addScriptPopup(FrxCircuidViewPtr view, sdc::PopupMenuPtr res) {
@@ -680,6 +685,14 @@ sdc::PopupMenuPtr createPopupMenu(FrxCircuidViewPtr view,
 	using namespace sambag::disco::components;
 	PopupMenuPtr res = PopupMenu::create();
     
+    addScriptPopup(view, res);
+    
+    if (res->getComponentCount()>0) {
+        return res;
+    }
+    
+    view->errorMessage("missing " + ::com::getSettings().getInitScriptFilename() + " gpCustomMenus");
+    
     MenuLabel::Ptr label = MenuLabel::create();
     label->setText("VSTForx");
     res->add(label);
@@ -693,7 +706,6 @@ sdc::PopupMenuPtr createPopupMenu(FrxCircuidViewPtr view,
 		);
 		res->add(item);
 	}
-    addScriptPopup(view, res);
     return res;
 }
 //=============================================================================
@@ -750,6 +762,42 @@ namespace {
 	void _registerIfType<Loki::NullType>(fgc::FrxCircuidViewPtr view, FrxComponentPtr c) 
 	{	
 	}
+}
+//-----------------------------------------------------------------------------
+namespace {
+    void __setPath(FrxColumnBrowser::WPtr browser, const std::string &path) {
+        FrxColumnBrowser::Ptr b = browser.lock();
+        if (!b) {
+            return;
+        }
+        b->getBrowserImpl()->setSelectionPath(path);
+    }
+    void __onBrowserClose(FrxColumnBrowser::WPtr browser) {
+        FrxColumnBrowser::Ptr b = browser.lock();
+        if (!b) {
+            return;
+        }
+        __lastBrowserSelection = b->getBrowserImpl()->selectionPathToString();
+    }
+} // namespace
+void FrxControl::openSceneBrowser(fgc::FrxCircuidViewPtr view, const std::string &path)
+{
+    FrxColumnBrowser::Ptr b = __openMainBrowser(view, fgc::FrxComponentPtr());
+    b->addOnCloseEventListener(
+        boost::bind(&__onBrowserClose, FrxColumnBrowser::WPtr(b))
+    );
+    sdc::getWindowToolkit()->invokeLater(
+        boost::bind(&__setPath, FrxColumnBrowser::WPtr(b), path),
+        500
+    );
+}
+//-----------------------------------------------------------------------------
+void FrxControl::openSetup(fgc::FrxCircuidViewPtr view) {
+    __openSetup(view, fgc::FrxComponentPtr());
+}
+//-----------------------------------------------------------------------------
+void FrxControl::openAbout(fgc::FrxCircuidViewPtr view) {
+    __openAbout(view, fgc::FrxComponentPtr());
 }
 //-----------------------------------------------------------------------------
 void FrxControl::registerComponent(fgc::FrxCircuidViewPtr view, FrxComponentPtr c)

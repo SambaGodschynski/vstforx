@@ -21,6 +21,7 @@
 #include <boost/serialization/utility.hpp>
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/weak_ptr.hpp>
+#include <boost/serialization/map.hpp>
 #include <gui/IFrxControl.hpp>
 #include "FrxHover.hpp"
 #include <sambag/disco/components/Forward.hpp>
@@ -29,6 +30,7 @@
 #include <sambag/disco/components/Panel.hpp>
 #include <gui/HandyNamespaces.hpp>
 #include "FrxStatusBar.hpp"
+#include <map>
 
 namespace frx { namespace gui { namespace components {
 struct FrxCircuidViewEvent {
@@ -94,6 +96,11 @@ public:
 	typedef std::pair<FrxComponentPtr, ZOrder> FrxComponentInfo;
 	//-------------------------------------------------------------------------
 	typedef boost::function<void(int width, int height)> EditorResizeHandler;
+    //-------------------------------------------------------------------------
+    /**
+     * @brief ensure that no name exists twice on view
+     */
+    typedef std::map<std::string, size_t> NameMap;
 protected:
 	//-------------------------------------------------------------------------
 	FrxStatusBar::Ptr statusBar;
@@ -105,6 +112,10 @@ protected:
 	FrxCircuidView();
 	//-------------------------------------------------------------------------
 	virtual void postConstructor();
+    //-------------------------------------------------------------------------
+    NameMap nameMap;
+    //-------------------------------------------------------------------------
+    std::string uniqueName(const std::string &name);
 private:
 	//-------------------------------------------------------------------------
 	void fireViewEvent(FrxCircuidViewEvent::Type, 
@@ -155,11 +166,15 @@ public:
 	template <typename Archive> 
 	void serializeComponents(Archive &ar, const unsigned int version) {
 		SAMBAG_ASSERT(getPtr());
+        putClientProperty("serializing", true);
 		std::list<FrxComponentInfo> l;
 		if (Archive::is_saving::value) {
 			collectFrxComponentInfo(l);
 		}
 		ar & l;
+        if (version>0) {
+            ar & nameMap;
+        }
 		IFrxControl &ctrl = getFrxControl(getPtr());
 		FrxCircuidViewPtr slf = getPtr();
 		if (Archive::is_loading::value) {
@@ -169,6 +184,7 @@ public:
 			}
 		}
 		l.clear();
+        putClientProperty("serializing", false);
 	}
 	//-------------------------------------------------------------------------
 	void setEditorResizeHandler(const EditorResizeHandler &f);
@@ -207,22 +223,22 @@ public:
 	std::string getStatusMessage() const;
 	//-------------------------------------------------------------------------
 	/**
-	 * will show text as status bar hint message
+	 * @brief will show text as status bar hint message
 	 */
 	void hintMessage(const std::string &str);
 	//-------------------------------------------------------------------------
 	/**
-	 * will show text as status bar message
+	 * @brief will show text as status bar message
 	 */
 	void message(const std::string &str);
 	//-------------------------------------------------------------------------
 	/**
-	 * will show warning as status bar warning
+	 * @brief will show warning as status bar warning
 	 */
 	void warnMessage(const std::string &str);
 	//-------------------------------------------------------------------------
 	/**
-	 * will show error as message box
+	 * @brief will show error as message box
 	 */
 	void errorMessage(const std::string &str);
 	//-------------------------------------------------------------------------
@@ -236,6 +252,7 @@ public:
 	 * @param the z-order value
 	 * @param set whether normalize components location to content pane translation
 	 *        values
+     * @note if name already exists in view the component name will be changed
 	 */
 	virtual void add(sdc::AComponentPtr comp, 
 		ZOrder zord = Z_Default, 
@@ -390,4 +407,7 @@ void FrxCircuidView::collectFrxComponentInfo(FrxComponentInfoContainer &out) con
 	}
 }
 }}} // namespace(s)
+
+BOOST_CLASS_VERSION(frx::gui::components::FrxCircuidView, 1)
+
 #endif /* SAMBAG_FRXCIRCUIDVIEW_H */

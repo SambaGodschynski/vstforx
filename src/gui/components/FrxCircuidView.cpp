@@ -28,6 +28,8 @@
 #include <sambag/disco/svg/StyleParser.hpp>
 #include <sambag/math/Matrix.hpp>
 #include <com/Settings.h>
+#include <boost/xpressive/xpressive.hpp>
+#include <boost/xpressive/regex_primitives.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace {
@@ -254,8 +256,40 @@ const float FrxCircuidView::ZArea_BeginNodes = Z_Knobs;
 //-----------------------------------------------------------------------------
 const float FrxCircuidView::ZArea_EndNodes = Z_IO;
 //-----------------------------------------------------------------------------
+std::string FrxCircuidView::uniqueName(const std::string &x) {
+    bool serializing = false;
+    getClientProperty("serializing", serializing);
+    if (serializing) {
+        return x;
+    }
+    using namespace boost::xpressive;
+	mark_tag tName(1), tCounter(2);
+	cregex pat = (tName= -+_) >> "_" >> (tCounter= +_d) >> eol;
+	cmatch what;
+    std::string name;
+    int counter;
+	if(regex_search(x.c_str(), what, pat)) {
+		std::stringstream ss;
+		ss << what[tCounter];
+		ss >> counter;
+		name = what[tName];
+	}
+    if (name.length() == 0) {
+        name = x;
+    }
+    NameMap::iterator it = nameMap.find(name);
+    if (it==nameMap.end()) {
+        nameMap[name] = 0;
+        return name;
+    }
+    ++(it->second);
+    return name + "_" + sambag::com::toString(it->second);
+    
+}
+//-----------------------------------------------------------------------------
 void FrxCircuidView::add(sdc::AComponentPtr comp, ZOrder zord, bool normalize) 
 {
+    comp->setName( uniqueName(comp->getName()) );
 	SAMBAG_BEGIN_SYNCHRONIZED(getTreeLock())
 	if (normalize) {
 		sd::Point2D loc = comp->getLocation();
@@ -481,3 +515,6 @@ void FrxCircuidView::setEditorResizeHandler(const EditorResizeHandler &f) {
 	rszHandler = f;
 }
 }}} // namespace(s)
+
+
+
