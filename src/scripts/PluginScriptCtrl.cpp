@@ -30,6 +30,8 @@
 #include <sambag/disco/components/Viewport.hpp>
 #include <com/FrxConfig.h>
 #include <sambag/disco/components/Window.hpp>
+#include "LuaParameter.hpp"
+#include "LuaFrxView.hpp"
 
 namespace frx {
 
@@ -38,6 +40,7 @@ namespace gui {
 }
 
 namespace scripts {
+    namespace slua = sambag::lua;
 namespace {
 	/**
 	 * open/close sequences needs to wait before call the next. 
@@ -404,6 +407,7 @@ namespace {
 		FrxAddProcessorInput,
         FrxSetParameterValue,
         FrxGetParameterValue
+/*30*/  
 ) FrxPrivateFunctionList;
 	//-------------------------------------------------------------------------
 	typedef LOKI_TYPELIST_20(
@@ -1156,6 +1160,7 @@ LuaPtr FrxAddProcessor::process(std::string _name, Ctrl *ctrl) {
     FrxCircuidViewPtr view = editor->getCircuidView();
 	IFrxComponentFactory &fac = getComponentFactory(view);
 	IFrxControl &frxctrl = getFrxControl(view);
+    IViewModelMap::Ptr map = getViewModelMap(view);
 	FrxProcessorNodePtr res;
     try {
         res = fac.getProcessorCreator(_name)(view);
@@ -1165,7 +1170,7 @@ LuaPtr FrxAddProcessor::process(std::string _name, Ctrl *ctrl) {
 	if (!res) {
 		return NULL_LUAPTR;
 	}
-	frxctrl.addProcessorToView(view, res);
+  	frxctrl.addProcessorToView(view, res);
 	return ctrl->getLuaPtr(res);
 }
 } // namespace
@@ -1173,10 +1178,9 @@ LuaPtr FrxAddProcessor::process(std::string _name, Ctrl *ctrl) {
 //  Class PluginScriptCtrl
 //=============================================================================
 //-----------------------------------------------------------------------------
-PluginScriptCtrl::PluginScriptCtrl(bool isPublic) : plug(NULL), editor(NULL) {
-	using namespace sambag::lua;
-	luaState = createLuaStateRef();
-	registerFunctions(luaState, isPublic);
+PluginScriptCtrl::PluginScriptCtrl(bool isPublic) :
+    isPublic(isPublic), plug(NULL), editor(NULL)
+{
 }
 //-----------------------------------------------------------------------------
 PluginScriptCtrl::LuaPtr 
@@ -1240,6 +1244,10 @@ void PluginScriptCtrl::setPlugin(frx::processing::VstForxPlug *plug) {
 			"VstForxEditor = NULL"
 		);
 	}
+    
+    using namespace sambag::lua;
+	luaState = createLuaStateRef();
+	registerFunctions(luaState, isPublic);
 }
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::appendJob(const std::string &str) {
@@ -1403,5 +1411,9 @@ void PluginScriptCtrl::registerFunctions(sambag::lua::LuaStateRef luaState, bool
         );
 
     }
+    lua_getglobal(luaState.get(), "frx");
+    int index = lua_gettop(luaState.get());
+    LuaFrxView::createAndPush(luaState.get(), editor);
+    lua_setfield(luaState.get(), index, "view");
 }
 }} // namespace(s)
