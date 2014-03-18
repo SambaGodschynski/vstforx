@@ -207,7 +207,7 @@ namespace com {
 	};
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * If Plugin is shellplugtype specific shell id comes with filename(eg): "plugin.dll@172832".
+	 * @note If Plugin is shellplugtype specific shell id comes with filename(eg): "plugin.dll@172832".
 	 * @return pair<filename, shellid>
 	 */
 	std::pair<std::string, int> extractVSTPluginFilename(const std::string &filename);
@@ -220,6 +220,8 @@ namespace com {
                          std::string  // details
             > IdData;
    /**
+     * @brief parses creator ids. A creator id is composed of frx.$namespace.$type.$name[$detail][($numInputs, $numInputs)]
+     * @note the descriptor "type" is a bit missleading its more thought as subnamespace 
 	 * @note: eg. frx.processing.vst2x.FrxTestplugin(2,2) -> tuple(processing, vst2x, FrxTestplugin, 2, 2)
      *            frx.processing.vst2x.DelayX -> tuple(processing, vst2x, DelayX, -1, -1)
      *            frx.processing.internal.FrxADSR -> tuple(processing, internal, FrxADSR, -1, -1)

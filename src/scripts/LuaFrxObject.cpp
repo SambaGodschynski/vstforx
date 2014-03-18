@@ -14,6 +14,7 @@
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/uuid/uuid_generators.hpp>
+#include <com/one4All.h>
 
 namespace frx { namespace scripts {
 //=============================================================================
@@ -28,14 +29,14 @@ std::string LuaFrxObject::toString(lua_State *lua) const {
     return c->getName();
 }
 //-----------------------------------------------------------------------------
-LuaFrxObject::Ptr LuaFrxObject::getFromLuaStack(lua_State *lua) {
-    if (!lua_istable(lua, -1)) {
+LuaFrxObject::Ptr LuaFrxObject::getFromLuaStack(lua_State *lua, int index) {
+    if (!lua_istable(lua, index)) {
         SAMBAG_THROW(
             sambag::com::exceptions::IllegalStateException,
             "argument is no valid object"
         );
     }
-    lua_getfield(lua, -1, "__frxUID");
+    lua_getfield(lua, index, "__frxUID");
     if (!lua_isstring(lua, -1)) {
          SAMBAG_THROW(
             sambag::com::exceptions::IllegalStateException,
@@ -56,6 +57,8 @@ LuaFrxObject::Ptr LuaFrxObject::getFromLuaStack(lua_State *lua) {
 }
 //-----------------------------------------------------------------------------
 LuaFrxObject::UIdMap LuaFrxObject::uidMap;
+//-----------------------------------------------------------------------------
+LuaFrxObject::CreatorMap LuaFrxObject::creatorMap;
 //-----------------------------------------------------------------------------
 LuaFrxObject::Ptr LuaFrxObject::getByUId(const UId &uid) {
     UIdMap::iterator it = uidMap.find(uid);
@@ -142,8 +145,42 @@ void LuaFrxObject::addLuaFields(lua_State *lua, int index) {
     uidMap[uid] = boost::dynamic_pointer_cast<LuaFrxObject>(shared_from_this());
 }
 //-----------------------------------------------------------------------------
+bool LuaFrxObject::isequal(lua_State *lua) const {
+    try {
+        LuaFrxObject::Ptr a = getFromLuaStack(lua, -1);
+        LuaFrxObject::Ptr b = getFromLuaStack(lua, -2);
+        return a->getModelObject() == b->getModelObject();
+    } catch(...) {
+        return false;
+    }
+}
+//-----------------------------------------------------------------------------
 void LuaFrxObject::__gc(lua_State *lua) {
     uidMap.erase(uid);
+    Super::__gc(lua);
+}
+//-----------------------------------------------------------------------------
+bool LuaFrxObject::registerCreator(const std::string &id, const Creator &f) {
+    if (com::IdParser(id).namespace_() != "lua") {
+        SAMBAG_LOG_WARN<<"tried to register: " << id << " as lua object creator";
+    }
+    return creatorMap.insert(
+        CreatorMap::value_type(id, f)
+    ).second;
+}
+//-----------------------------------------------------------------------------
+LuaFrxObject::Ptr LuaFrxObject::createAndPush(const std::string &id,
+        lua_State * lua, ModelObject::Ptr obj, ViewModelMap::Ptr map)
+{
+    CreatorMap::const_iterator it = creatorMap.find(id);
+    if (it==creatorMap.end()) {
+        return LuaFrxObject::Ptr();
+    }
+    return it->second(lua, obj, map);
+}
+//-----------------------------------------------------------------------------
+bool LuaFrxObject::isRegistered(const std::string &id) {
+    return creatorMap.find(id)!=creatorMap.end();
 }
 ///////////////////////////////////////////////////////////////////////////////
 }} // namespace(s)

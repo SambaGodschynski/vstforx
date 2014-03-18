@@ -16,6 +16,8 @@
 #include <gui/IViewModelMap.hpp>
 #include <boost/unordered_map.hpp>
 #include <gui/components/Forward.hpp>
+#include <map>
+#include <boost/function.hpp>
 
 namespace frx { namespace scripts {
 namespace slua = sambag::lua;
@@ -29,6 +31,8 @@ namespace slua = sambag::lua;
 class LuaFrxObject : public slua::ALuaObject {
 //=============================================================================
 public:
+    //-------------------------------------------------------------------------
+    typedef slua::ALuaObject Super;
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<LuaFrxObject> Ptr;
 	//-------------------------------------------------------------------------
@@ -44,6 +48,10 @@ public:
     //-------------------------------------------------------------------------
     typedef std::string UId;
     typedef boost::unordered_map<UId, LuaFrxObject::WPtr> UIdMap;
+    //-------------------------------------------------------------------------
+    typedef boost::function<LuaFrxObject::Ptr(lua_State * lua,
+        ModelObject::Ptr obj, ViewModelMap::Ptr map)> Creator;
+    typedef std::map<std::string, Creator> CreatorMap;
 private:
     //-------------------------------------------------------------------------
     UId uid;
@@ -53,6 +61,8 @@ private:
     ModelObject::WPtr obj;
     //-------------------------------------------------------------------------
     static UIdMap uidMap;
+    //-------------------------------------------------------------------------
+    static CreatorMap creatorMap;
 protected:
     //-------------------------------------------------------------------------
     /**
@@ -76,7 +86,35 @@ protected:
     // lua2frx impl
     //-------------------------------------------------------------------------
     virtual std::string toString(lua_State *lua) const;
+    //-------------------------------------------------------------------------
+    virtual bool isequal(lua_State *lua) const;
 public:
+    //-------------------------------------------------------------------------
+    /**
+     * @brief registeres creator function. Same purpose as @see ViewFactory and
+     * @see ModelFactory
+     * @note id structure is mostly the same as in @see ViewFactory and
+     * @see ModelFactory: e.g.: frx.lua.internal.ADSTrigger
+     * frx.lua.parameter.Parameter, frx.lua.connections.ParameterConnection ...
+     */
+    static bool registerCreator(const std::string &id, const Creator &f);
+    //-------------------------------------------------------------------------
+    /**
+     * @brief creates object by creator id and pushes to lua stack
+     * @see ModelFactory
+     * @param creator id. @see registerCreator()
+     */
+    static LuaFrxObject::Ptr createAndPush(const std::string &id,
+        lua_State * lua, ModelObject::Ptr obj, ViewModelMap::Ptr map);
+    //-------------------------------------------------------------------------
+    /**
+     * @return true if id is registered as creator
+     */
+    static bool isRegistered(const std::string &id);
+    //-------------------------------------------------------------------------
+    const UId & getUId() const {
+        return uid;
+    }
     //-------------------------------------------------------------------------
     static LuaFrxObject::Ptr getByUId(const UId &uid);
     //-------------------------------------------------------------------------
@@ -86,7 +124,7 @@ public:
      * @return a LuaFrxObject pointer
      * @throws IllegalStateException
      */
-    static LuaFrxObject::Ptr getFromLuaStack(lua_State *lua);
+    static LuaFrxObject::Ptr getFromLuaStack(lua_State *lua, int index = -1);
     //-------------------------------------------------------------------------
     /**
      * @return related model object.

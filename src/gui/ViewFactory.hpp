@@ -86,6 +86,10 @@ public:
         return creators.size();
     }
     //-------------------------------------------------------------------------
+    /**
+     * @return registered ids without namespace: 
+     * frx.gui.internal.XY => internal.XY
+     */
     template <class Container>
     void getRegisteredIds(Container &out) const {
         BOOST_FOREACH(const CreatorMap::value_type &v, creators) {

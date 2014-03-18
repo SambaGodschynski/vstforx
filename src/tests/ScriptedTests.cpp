@@ -223,6 +223,17 @@ void ScriptedTests::issue163() {
 	scriptCtrl->join();
 	CPPUNIT_ASSERT(!failed);
 }
+//-----------------------------------------------------------------------------
+void ScriptedTests::frxLuaObjects() {
+	sambag::disco::IResourceManager &rm =
+		sambag::disco::getResourceManager();
+	
+	scriptCtrl->appendJob( rm.getString("testScripts/frxLuaObjects.lua") );
+	scriptCtrl->start();
+	sambag::disco::components::Window::startMainLoop();
+	scriptCtrl->join();
+	CPPUNIT_ASSERT(!failed);
+}
 ///////////////////////////////////////////////////////////////////////////////
 VstIntPtr testHostCallback(AEffect* effect, VstInt32 opcode,
  VstInt32 index, VstIntPtr value, void* ptr, float opt) 
