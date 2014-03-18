@@ -16,6 +16,9 @@ namespace frx { namespace gui { namespace components {
 //-----------------------------------------------------------------------------
 template <class _ProcessorType>
 std::string getIOName();
+
+template <class _ProcessorType>
+std::string getIOType();
 //=============================================================================
 /** 
   * @class FrxConcreteIO.
@@ -34,6 +37,7 @@ protected:
 	//-------------------------------------------------------------------------
 	virtual void postConstructor() {
 		IOType::init(getPtr());
+        putClientProperty("frx.component.type", getIOType<IOType>());
 	}
 	//-------------------------------------------------------------------------
 	typedef FrxConcreteIO<IOType> ThisClassType;
@@ -86,6 +90,17 @@ template <>
 inline std::string getIOName<ioTypes::Entry>() {return "FrxEntry";}
 template <>
 inline std::string getIOName<ioTypes::Exit>() {return "FrxExit";}
+
+template <class _ProcessorType>
+std::string getIOType() {return "unkonwn iotype";}
+template <>
+inline std::string getIOType<ioTypes::Input>() {return "frx.gui.io.Input";}
+template <>
+inline std::string getIOType<ioTypes::Output>() {return "frx.gui.io.Output";}
+template <>
+inline std::string getIOType<ioTypes::Entry>() {return "frx.gui.io.Entry";}
+template <>
+inline std::string getIOType<ioTypes::Exit>() {return "frx.gui.io.Exit";}
 }}} // namespace(s)
 
 #endif /* SAMBAG_FRXCONCRETEIO_H */

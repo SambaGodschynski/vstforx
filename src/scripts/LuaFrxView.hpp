@@ -44,15 +44,18 @@ protected:
     SAMBAG_LUA_FTAG(addProcessor, slua::IgnoreReturn(std::string));
     SAMBAG_LUA_FTAG(remove, void());
     SAMBAG_LUA_FTAG(getObjects, slua::IgnoreReturn());
-    typedef LOKI_TYPELIST_3(Frx_addProcessor_Tag,
+    SAMBAG_LUA_FTAG(connect, slua::IgnoreReturn());
+    typedef LOKI_TYPELIST_4(Frx_addProcessor_Tag,
         Frx_remove_Tag,
-        Frx_getObjects_Tag
+        Frx_getObjects_Tag,
+        Frx_connect_Tag
     ) Functions;
     ///////////////////////////////////////////////////////////////////////////
     // Lua impl.
     slua::IgnoreReturn addProcessor(lua_State *lua, const std::string &id);
     void remove(lua_State *lua);
     slua::IgnoreReturn getObjects(lua_State *lua);
+    slua::IgnoreReturn connect(lua_State *lua);
 private:
     //-------------------------------------------------------------------------
     fgc::VstForxEditor *editor;

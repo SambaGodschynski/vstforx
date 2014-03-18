@@ -16,6 +16,7 @@
 #include <gui/components/FrxProcessorNode.hpp>
 #include <gui/IFrxControl.hpp>
 #include "LuaFrxProcessor.hpp"
+#include "LuaFrxIO.hpp"
 #include <com/one4All.h>
 
 namespace frx { namespace scripts {
@@ -68,6 +69,33 @@ void LuaFrxView::remove(lua_State *lua) {
     }
 }
 //-----------------------------------------------------------------------------
+slua::IgnoreReturn LuaFrxView::connect(lua_State *lua) {
+    using namespace frx::gui;
+	using namespace frx::gui::components;
+    FrxCircuidViewPtr view = getView(lua);
+    if (!view) {
+        return slua::IgnoreReturn();
+    }
+    try {
+        // get objects
+        LuaFrxObject::Ptr a = LuaFrxObject::getFromLuaStack(lua, -1);
+        LuaFrxObject::Ptr b = LuaFrxObject::getFromLuaStack(lua, -2);
+        // remove object
+        IFrxControl &frxctrl = getFrxControl(view);
+        FrxNode::Ptr na = boost::dynamic_pointer_cast<FrxNode>(a->getViewObject());
+        FrxNode::Ptr nb = boost::dynamic_pointer_cast<FrxNode>(b->getViewObject());
+        if (!na || !nb) {
+            return false;
+        }
+        return frxctrl.connect(view, na, nb);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, std::string("connecting failed: ") + ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "connecting failed: unkown error");
+    }
+    return slua::IgnoreReturn();
+}
+//-----------------------------------------------------------------------------
 slua::IgnoreReturn LuaFrxView::getObjects(lua_State *lua) {
     using namespace frx::gui;
 	using namespace frx::gui::components;
@@ -92,15 +120,17 @@ slua::IgnoreReturn LuaFrxView::getObjects(lua_State *lua) {
         processing::ModelObject::Ptr mObj = map->getModelObject(vObj);
         std::string type;
         vObj->getClientProperty("frx.component.type", type); // set in FrxComponentFactory
+                                                             // or in FrxConcreteXXX postConstructor
         if (type.empty()) {
             continue;
         }
         std::string id = com::IdParser(type).namespace_("lua").toString();
-        if (!LuaFrxObject::isRegistered(id)) {
+        LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
+        if (!fac.isRegistered(id)) {
             continue;
         }
         lua_pushnumber(lua, lua_index++);
-        LuaFrxObject::Ptr lobj = LuaFrxObject::createAndPush(
+        LuaFrxObject::Ptr lobj = fac.createAndPush(
             id,
             lua,
             mObj,
@@ -124,7 +154,8 @@ void LuaFrxView::addLuaFields(lua_State *lua, int index) {
         boost::make_tuple(
             bind(&LuaFrxView::addProcessor, this, lua, _1),
             bind(&LuaFrxView::remove, this, lua),
-            bind(&LuaFrxView::getObjects, this, lua)
+            bind(&LuaFrxView::getObjects, this, lua),
+            bind(&LuaFrxView::connect, this, lua)
         ),
         index
     );

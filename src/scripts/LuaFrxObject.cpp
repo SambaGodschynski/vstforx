@@ -58,8 +58,6 @@ LuaFrxObject::Ptr LuaFrxObject::getFromLuaStack(lua_State *lua, int index) {
 //-----------------------------------------------------------------------------
 LuaFrxObject::UIdMap LuaFrxObject::uidMap;
 //-----------------------------------------------------------------------------
-LuaFrxObject::CreatorMap LuaFrxObject::creatorMap;
-//-----------------------------------------------------------------------------
 LuaFrxObject::Ptr LuaFrxObject::getByUId(const UId &uid) {
     UIdMap::iterator it = uidMap.find(uid);
     if (it==uidMap.end()) {
@@ -137,6 +135,7 @@ fgc::FrxComponent::Ptr LuaFrxObject::getViewObject(lua_State *lua) const {
 }
 //-----------------------------------------------------------------------------
 void LuaFrxObject::addLuaFields(lua_State *lua, int index) {
+    Super::addLuaFields(lua, index);
     using namespace boost::uuids;
     uuid uuid = random_generator()();
     uid = boost::uuids::to_string(uuid);
@@ -159,8 +158,11 @@ void LuaFrxObject::__gc(lua_State *lua) {
     uidMap.erase(uid);
     Super::__gc(lua);
 }
+//=============================================================================
+// LuaFrxObject::Factory
+//=============================================================================
 //-----------------------------------------------------------------------------
-bool LuaFrxObject::registerCreator(const std::string &id, const Creator &f) {
+bool LuaFrxObject::Factory::registerCreator(const std::string &id, const Creator &f) {
     if (com::IdParser(id).namespace_() != "lua") {
         SAMBAG_LOG_WARN<<"tried to register: " << id << " as lua object creator";
     }
@@ -169,7 +171,7 @@ bool LuaFrxObject::registerCreator(const std::string &id, const Creator &f) {
     ).second;
 }
 //-----------------------------------------------------------------------------
-LuaFrxObject::Ptr LuaFrxObject::createAndPush(const std::string &id,
+LuaFrxObject::Ptr LuaFrxObject::Factory::createAndPush(const std::string &id,
         lua_State * lua, ModelObject::Ptr obj, ViewModelMap::Ptr map)
 {
     CreatorMap::const_iterator it = creatorMap.find(id);
@@ -179,8 +181,13 @@ LuaFrxObject::Ptr LuaFrxObject::createAndPush(const std::string &id,
     return it->second(lua, obj, map);
 }
 //-----------------------------------------------------------------------------
-bool LuaFrxObject::isRegistered(const std::string &id) {
+bool LuaFrxObject::Factory::isRegistered(const std::string &id) {
     return creatorMap.find(id)!=creatorMap.end();
+}
+//-----------------------------------------------------------------------------
+LuaFrxObject::Factory & LuaFrxObject::Factory::instance() {
+    typedef Loki::SingletonHolder<Factory> FactoryHolder;
+    return FactoryHolder::Instance();
 }
 ///////////////////////////////////////////////////////////////////////////////
 }} // namespace(s)

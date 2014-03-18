@@ -1,11 +1,11 @@
 /*
  * ============================================================================
- * LuaFrxProcessor.h
+ * LuaFrxIO.h
  *      Author: Johannes Unger
  * ============================================================================
  */
-#ifndef FORX_LuaFrxProcessor_H
-#define FORX_LuaFrxProcessor_H
+#ifndef FORX_LuaFrxIO_H
+#define FORX_LuaFrxIO_H
 
 #include <boost/shared_ptr.hpp>
 #include "LuaFrxObject.hpp"
@@ -15,51 +15,41 @@
 namespace frx { namespace scripts {
 //=============================================================================
 /** 
-  * @class LuaFrxProcessor.
+  * @class LuaFrxIO.
   */
-class LuaFrxProcessor : public LuaFrxObject {
+class LuaFrxIO : public LuaFrxObject {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<LuaFrxProcessor> Ptr;
+	typedef boost::shared_ptr<LuaFrxIO> Ptr;
     //-------------------------------------------------------------------------
     typedef LuaFrxObject Super;
 protected:
     //-------------------------------------------------------------------------
     virtual void addLuaFields(lua_State * lua, int index);
     //-------------------------------------------------------------------------
-    LuaFrxProcessor();
+    LuaFrxIO();
 private:
 public:
     //-------------------------------------------------------------------------
     static Ptr createAndPush(lua_State * lua,
         ModelObject::Ptr obj, ViewModelMap::Ptr map);
-}; // LuaFrxProcessor
+}; // LuaFrxIO
 
 namespace {
-    /**
-     * @brief adopts registered VieFactory ids
-     */
-    inline bool registerAllProcessors() {
-        std::vector<std::string> ids;
-        using frx::gui::components::ViewFactory;
-        ViewFactory::instance().getRegisteredIds(ids);
-        bool res = true;
-        std::string ns="frx.gui.";
+    inline bool registerAllIos() {
         LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
-        BOOST_FOREACH(const std::string &id, ids) {
-            res &= fac.registerCreator(
-                com::IdParser(ns+id).namespace_("lua").toString(),
-                &LuaFrxProcessor::createAndPush
-            );
-        }
-        return res;
+        return fac.registerCreator("frx.lua.io.Input", &LuaFrxIO::createAndPush)
+        && fac.registerCreator("frx.lua.io.Output", &LuaFrxIO::createAndPush)
+        && fac.registerCreator("frx.lua.io.Entry", &LuaFrxIO::createAndPush)
+        && fac.registerCreator("frx.lua.io.Exit", &LuaFrxIO::createAndPush);
     }
-    const bool LuaFrxProcessor_Registered = registerAllProcessors();
+    const bool LuaFrxIO_Registered = registerAllIos();
+
 }
 
 
 }} // namespace(s)
-#endif  // FORX_LuaFrxProcessor_H
+#endif  // FORX_LuaFrxIO_H
 
 
