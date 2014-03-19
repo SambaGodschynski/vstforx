@@ -64,7 +64,8 @@ public:
 	//-------------------------------------------------------------------------
 	sdc::PopupMenuPtr getCircuidViewPopup(fgc::FrxCircuidViewPtr c);
 	//-------------------------------------------------------------------------
-	bool connect(fgc::FrxCircuidViewPtr, fgc::FrxNodePtr from, fgc::FrxNodePtr to);
+	fgc::FrxConnection::Ptr
+    connect(fgc::FrxCircuidViewPtr, fgc::FrxNodePtr from, fgc::FrxNodePtr to);
 	//-------------------------------------------------------------------------
 	void handleContextMenuPopup(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------

@@ -336,30 +336,6 @@ namespace {
 		static std::string process(Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
-	struct FrxSetViewPos {
-        typedef boost::function<void(float, float)> Function;
-		static const char * name() { return "setViewPos"; }
-		static void process(float, float, Ctrl *ctrl);
-	};
-	//-------------------------------------------------------------------------
-	struct FrxGetViewPos {
-        typedef boost::function<boost::tuple<float, float>()> Function;
-		static const char * name() { return "getViewPos"; }
-		static boost::tuple<float, float> process(Ctrl *ctrl);
-	};
-	//-------------------------------------------------------------------------
-	struct FrxGetEditorDim {
-        typedef boost::function<boost::tuple<float, float>()> Function;
-		static const char * name() { return "getEditorDim"; }
-		static boost::tuple<float, float> process(Ctrl *ctrl);
-	};
-	//-------------------------------------------------------------------------
-	struct FrxSetEditorDim {
-        typedef boost::function<void(float, float)> Function;
-		static const char * name() { return "setEditorDim"; }
-		static void process(float, float, Ctrl *ctrl);
-	};
-	//-------------------------------------------------------------------------
 	struct FrxGetVersionInteger {
         typedef boost::function<int()> Function;
 		static const char * name() { return "getVersionInteger"; }
@@ -410,7 +386,7 @@ namespace {
 /*30*/  
 ) FrxPrivateFunctionList;
 	//-------------------------------------------------------------------------
-	typedef LOKI_TYPELIST_20(
+	typedef LOKI_TYPELIST_16(
 		FrxWait,
 		FrxGetLastBrowserSelection,
 		FrxAddProcessor,
@@ -424,13 +400,9 @@ namespace {
         FrxOpenSetup,
         FrxOpenAbout,
         FrxOpenUrl,
-        FrxSetViewPos,
-        FrxGetViewPos,
-        FrxSetEditorDim,
-        FrxGetEditorDim,
         FrxGetVersionString,
         FrxGetVersionInteger,
-/*20*/  FrxResetMainMenu
+        FrxResetMainMenu
 	) FrxPublicFunctionList;
 //-----------------------------------------------------------------------------
 void FrxResetMainMenu::process(Ctrl *ctrl) {
@@ -453,51 +425,6 @@ std::string FrxGetVersionString::process(Ctrl *ctrl) {
 int FrxGetVersionInteger::process(Ctrl *ctrl) {
 	FRX_START_SCRIPTCALL
     return FRX_VERSION_MAJOR * 100 + FRX_VERSION_MINOR * 10 + FRX_VERSION_MICRO;
-}
-//-----------------------------------------------------------------------------
-void FrxSetEditorDim::process(float x, float y, Ctrl *ctrl) {
-	FRX_START_SCRIPTCALL
-	FRX_GET_PLUG
-	FRX_GET_EDITOR
-    using namespace frx::gui;
-	using namespace frx::gui::components;
-    FrxCircuidViewPtr view = editor->getCircuidView();
-    view->requestEditorResize(sd::Dimension(x,y));
-}
-//-----------------------------------------------------------------------------
-boost::tuple<float, float> FrxGetEditorDim::process(Ctrl *ctrl) {
-	FRX_START_SCRIPTCALL
-	FRX_GET_PLUG
-	FRX_GET_EDITOR
-    using namespace frx::gui;
-	using namespace frx::gui::components;
-    FrxCircuidViewPtr view = editor->getCircuidView();
-    sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
-    sd::Dimension d = win->getWindowSize();
-    return boost::make_tuple(d.width(), d.height());
-}
-//-----------------------------------------------------------------------------
-void FrxSetViewPos::process(float x, float y, Ctrl *ctrl) {
-	FRX_START_SCRIPTCALL
-	FRX_GET_PLUG
-	FRX_GET_EDITOR
-    using namespace frx::gui;
-	using namespace frx::gui::components;
-    FrxCircuidViewPtr view = editor->getCircuidView();
-    sdc::Viewport::Ptr vp = view->getViewport();
-    vp->setViewPosition(sd::Point2D(x, y));
-}
-//-----------------------------------------------------------------------------
-boost::tuple<float, float> FrxGetViewPos::process(Ctrl *ctrl) {
-	FRX_START_SCRIPTCALL
-	FRX_GET_PLUG
-	FRX_GET_EDITOR
-    using namespace frx::gui;
-	using namespace frx::gui::components;
-    FrxCircuidViewPtr view = editor->getCircuidView();
-    sdc::Viewport::Ptr vp = view->getViewport();
-    sd::Point2D pos = vp->getViewPosition();
-    return boost::make_tuple(pos.x(), pos.y());
 }
 //-----------------------------------------------------------------------------
 std::string FrxGetLastBrowserSelection::process(Ctrl *ctrl) {

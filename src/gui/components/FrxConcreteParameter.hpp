@@ -16,6 +16,8 @@
 #include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components {
+template <class ParameterType>
+std::string getParameterType();
 //=============================================================================
 /** 
   * @class FrxConcreteParameter.
@@ -39,6 +41,7 @@ protected:
 	//-------------------------------------------------------------------------
 	FrxConcreteParameter() {
 		instances++;
+        putClientProperty("frx.component.type", getParameterType<_ControllerType>());
 	}
 	//-------------------------------------------------------------------------
 	virtual void postConstructor() {
@@ -100,6 +103,12 @@ namespace contollerTypes {
 	};	
 } // namespace
 typedef FrxConcreteParameter<contollerTypes::StdKnob> FrxStdKnob;
+
+template <class ParameterType>
+std::string getParameterType() {return "unkonwn connection type";}
+template <>
+inline std::string getParameterType<contollerTypes::StdKnob>() {return "frx.gui.parameter.StdKnob";}
+
 }}} // namespace(s)
 
 #endif /* SAMBAG_FRXCONCRETEPARAMETER_H */

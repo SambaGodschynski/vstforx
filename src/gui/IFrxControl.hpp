@@ -57,7 +57,7 @@ public:
 	virtual void registerComponent(fgc::FrxCircuidViewPtr view, fgc::FrxComponentPtr c) = 0;
 	//-------------------------------------------------------------------------
 	/**
-	 * holds window pointer until window is closed.
+	 * @brief holds window pointer until window is closed.
 	 * @param the window
 	 * @param the windowClassName, if setted only one ptr per class will be stored
 	 */
@@ -81,14 +81,17 @@ public:
 	virtual sdc::PopupMenuPtr 
 	getCircuidViewPopup(fgc::FrxCircuidViewPtr c) = 0;
 	//-------------------------------------------------------------------------
-	virtual bool 
+	/**
+     * @return FrxConnection pointer or NULL
+     */
+    virtual fgc::FrxConnection::Ptr
 	connect(fgc::FrxCircuidViewPtr, fgc::FrxNodePtr from, fgc::FrxNodePtr to) = 0;
 	//-------------------------------------------------------------------------
 	virtual void 
 	handleContextMenuPopup(const sdc::events::MouseEvent &ev) = 0;
 	//-------------------------------------------------------------------------
 	/**
-	 * creates and adds a knob which is related to another view object to view.
+	 * @brief creates and adds a knob which is related to another view object to view.
 	 * @return new created knob
 	 * @param the view
 	 * @param the related view object

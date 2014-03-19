@@ -11,9 +11,6 @@
 #include <gui/IFrxControl.hpp>
 #include <gui/HandyNamespaces.hpp>
 #include <gui/components/FrxComponent.hpp>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <boost/uuid/uuid_generators.hpp>
 #include <com/one4All.h>
 
 namespace frx { namespace scripts {
@@ -36,7 +33,7 @@ LuaFrxObject::Ptr LuaFrxObject::getFromLuaStack(lua_State *lua, int index) {
             "argument is no valid object"
         );
     }
-    lua_getfield(lua, index, "__frxUID");
+    lua_getfield(lua, index, FIELDNAME_UID.c_str());
     if (!lua_isstring(lua, -1)) {
          SAMBAG_THROW(
             sambag::com::exceptions::IllegalStateException,
@@ -136,12 +133,23 @@ fgc::FrxComponent::Ptr LuaFrxObject::getViewObject(lua_State *lua) const {
 //-----------------------------------------------------------------------------
 void LuaFrxObject::addLuaFields(lua_State *lua, int index) {
     Super::addLuaFields(lua, index);
-    using namespace boost::uuids;
-    uuid uuid = random_generator()();
-    uid = boost::uuids::to_string(uuid);
-    slua::push(lua, uid);
-    lua_setfield(lua, index, "__frxUID");
-    uidMap[uid] = boost::dynamic_pointer_cast<LuaFrxObject>(shared_from_this());
+    uidMap[getUId()] = boost::dynamic_pointer_cast<LuaFrxObject>(shared_from_this());
+
+    using boost::bind;
+    sambag::lua::registerClassFunctions<Functions,
+        sambag::lua::TupleAccessor>
+    (
+        lua,
+        boost::make_tuple(
+            bind(&LuaFrxObject::getLocation, this, lua),
+            bind(&LuaFrxObject::setLocation, this, lua, _1, _2),
+            bind(&LuaFrxObject::getSize, this, lua)
+        ),
+        index,
+        getUId()
+    );
+
+
 }
 //-----------------------------------------------------------------------------
 bool LuaFrxObject::isequal(lua_State *lua) const {
@@ -155,8 +163,34 @@ bool LuaFrxObject::isequal(lua_State *lua) const {
 }
 //-----------------------------------------------------------------------------
 void LuaFrxObject::__gc(lua_State *lua) {
-    uidMap.erase(uid);
+    uidMap.erase(getUId());
     Super::__gc(lua);
+}
+//-----------------------------------------------------------------------------
+boost::tuple<float,float>  LuaFrxObject::getLocation(lua_State *lua) {
+    fgc::FrxComponent::Ptr c = getViewObject(lua);
+    if (!c) {
+        return boost::make_tuple(0.f, 0.f);
+    }
+    sd::Point2D p = c->getLocation();
+    return boost::make_tuple(p.x(), p.y());
+}
+//-----------------------------------------------------------------------------
+void LuaFrxObject::setLocation(lua_State *lua, float x, float y) {
+    fgc::FrxComponent::Ptr c = getViewObject(lua);
+    if (!c) {
+        return;
+    }
+    c->setLocation(sd::Point2D(x,y));
+}
+//-----------------------------------------------------------------------------
+boost::tuple<float,float>  LuaFrxObject::getSize(lua_State *lua) {
+    fgc::FrxComponent::Ptr c = getViewObject(lua);
+    if (!c) {
+        return boost::make_tuple(0.f, 0.f);
+    }
+    sd::Dimension p = c->getSize();
+    return boost::make_tuple(p.width(), p.height());
 }
 //=============================================================================
 // LuaFrxObject::Factory

@@ -1,0 +1,73 @@
+/*
+ * ============================================================================
+ * LuaFrxParameter.cpp
+ *      Author: Johannes Unger
+ * ============================================================================
+ */
+
+#include "LuaFrxParameter.hpp"
+#include <sambag/com/Common.hpp>
+#include <gui/components/FrxParameter.hpp>
+
+namespace frx { namespace scripts {
+//=============================================================================
+//  Class LuaFrxParameter
+//=============================================================================
+//-----------------------------------------------------------------------------
+std::string LuaFrxParameter::toString(lua_State * lua) const {
+    std::stringstream ss;
+    ss << Super::toString(lua) << " " << getValue(lua);
+    return ss.str();
+}
+//-----------------------------------------------------------------------------
+void LuaFrxParameter::setValue(lua_State * lua, float v) {
+    using frx::gui::components::FrxParameter;
+    FrxParameter::Ptr p =
+        boost::dynamic_pointer_cast<FrxParameter>(getViewObject(lua));
+    if (!p) {
+        return;
+    }
+    p->getRangeModel()->setValue(v);
+}
+//-----------------------------------------------------------------------------
+float LuaFrxParameter::getValue(lua_State * lua) const {
+    using frx::gui::components::FrxParameter;
+    FrxParameter::Ptr p =
+        boost::dynamic_pointer_cast<FrxParameter>(getViewObject(lua));
+    if (!p) {
+        return 0;
+    }
+    return p->getRangeModel()->getValue();
+}
+//-----------------------------------------------------------------------------
+void LuaFrxParameter::addLuaFields(lua_State *lua, int index) {
+    Super::addLuaFields(lua, index);
+    using boost::bind;
+    sambag::lua::registerClassFunctions<Functions,
+        sambag::lua::TupleAccessor>
+    (
+        lua,
+        boost::make_tuple(
+            bind(&LuaFrxParameter::setValue, this, lua, _1),
+            bind(&LuaFrxParameter::getValue, this, lua)
+        ),
+        index,
+        getUId()
+    );
+
+}
+//-----------------------------------------------------------------------------
+LuaFrxParameter::LuaFrxParameter() {
+}
+//-----------------------------------------------------------------------------
+LuaFrxParameter::Ptr
+LuaFrxParameter::createAndPush(lua_State *lua,
+    ModelObject::Ptr obj, ViewModelMap::Ptr map)
+{
+    Ptr res(new LuaFrxParameter());
+    res->setModelObject(obj);
+    res->setViewModelMap(map);
+    res->createLuaObject(lua, "lua_frxparameter");
+    return res;
+}
+}} // namespace(s)

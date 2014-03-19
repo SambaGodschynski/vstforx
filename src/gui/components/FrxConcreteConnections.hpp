@@ -15,6 +15,8 @@ namespace frx { namespace gui { namespace components {
 //-----------------------------------------------------------------------------
 template <class _ConnectionType>
 std::string getConnectionName();
+template <class _ConnectionType>
+std::string getCnType();
 //=============================================================================
 /** 
   * @class FrxConnection.
@@ -39,6 +41,7 @@ protected:
 	//-------------------------------------------------------------------------
 	FrxConcreteConnection() {
 		setName(getConnectionName<ConnectionType>());
+        putClientProperty("frx.component.type", getCnType<ConnectionType>());
 	}
 private:
 	///////////////////////////////////////////////////////////////////////////
@@ -114,6 +117,22 @@ template <>
 inline std::string getConnectionName<connectionTypes::ParameterOP>() { 
 	return "parameter/operator parameter connection"; 
 }
+
+template <class _ConnectionType>
+std::string getCnType() {return "unkonwn connection type";}
+template <>
+inline std::string getCnType<connectionTypes::IO>() {return "frx.gui.connection.IO";}
+template <>
+inline std::string getCnType<connectionTypes::ProcessorInput>() {return "frx.gui.connection.ProcessorInput";}
+template <>
+inline std::string getCnType<connectionTypes::ProcessorOutput>() {return "frx.gui.connection.ProcessorOutput";}
+template <>
+inline std::string getCnType<connectionTypes::ProcessorParameter>() {return "frx.gui.connection.ProcessorParameter";}
+template <>
+inline std::string getCnType<connectionTypes::Parameter>() {return "frx.gui.connection.Parameter";}
+template <>
+inline std::string getCnType<connectionTypes::ParameterOP>() {return "frx.gui.connection.ParameterOp";}
+
 }}} // namespace(s)
 
 #endif /* SAMBAG_CONCRETECONNECTIONS_H */

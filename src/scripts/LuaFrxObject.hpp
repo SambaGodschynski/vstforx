@@ -47,7 +47,6 @@ public:
     //-------------------------------------------------------------------------
     typedef frx::gui::ViewObject ViewObject;
     //-------------------------------------------------------------------------
-    typedef std::string UId;
     typedef boost::unordered_map<UId, LuaFrxObject::WPtr> UIdMap;
     //-------------------------------------------------------------------------
     struct Factory {
@@ -84,8 +83,6 @@ public:
     };
 private:
     //-------------------------------------------------------------------------
-    UId uid;
-    //-------------------------------------------------------------------------
     ViewModelMapWPtr modelMap; // modelObject2ViewObject
     //-------------------------------------------------------------------------
     ModelObject::WPtr obj;
@@ -110,17 +107,23 @@ protected:
      * @brief called when lua object will be removed.
      */
     virtual void __gc(lua_State *lua);
+    //-------------------------------------------------------------------------
+    typedef boost::tuple<float,float> Point;
+    SAMBAG_LUA_FTAG(getLocation, Point());
+    SAMBAG_LUA_FTAG(setLocation, void(float, float));
+    SAMBAG_LUA_FTAG(getSize, Point());
+    typedef LOKI_TYPELIST_3(Frx_getLocation_Tag,
+        Frx_setLocation_Tag,
+        Frx_getSize_Tag
+    ) Functions;
     ///////////////////////////////////////////////////////////////////////////
     // lua2frx impl
-    //-------------------------------------------------------------------------
     virtual std::string toString(lua_State *lua) const;
-    //-------------------------------------------------------------------------
     virtual bool isequal(lua_State *lua) const;
+    boost::tuple<float,float> getLocation(lua_State *lua);
+    boost::tuple<float,float> getSize(lua_State *lua);
+    void setLocation(lua_State *lua, float x, float y);
 public:
-    //-------------------------------------------------------------------------
-    const UId & getUId() const {
-        return uid;
-    }
     //-------------------------------------------------------------------------
     static LuaFrxObject::Ptr getByUId(const UId &uid);
     //-------------------------------------------------------------------------

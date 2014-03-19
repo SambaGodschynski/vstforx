@@ -395,7 +395,8 @@ inline connectModelObjects<ParameterCn>(fp::IModelController::Ptr ctrl,
 
 //-----------------------------------------------------------------------------
 template <class ConnectionType>
-bool perfomConnect(FrxCircuidView::Ptr view, 
+fgc::FrxConnection::Ptr
+perfomConnect(FrxCircuidView::Ptr view,
 				   FrxComponent::Ptr src, 
 				   FrxComponent::Ptr dst)
 {
@@ -413,14 +414,14 @@ bool perfomConnect(FrxCircuidView::Ptr view,
 	frx::processing::IConnection::Ptr mcnt = 
 		connectModelObjects<ConnectionType>(ctrl, msrc, mdst);
 	if (!mcnt)
-		return false;
+		return fgc::FrxConnection::Ptr();
 	// view stuff
 	typename ConnectionType::Ptr cn = ConnectionType::create();
 	cn->setSrcComponent(src);
 	cn->setDstComponent(dst);
     map->registerObjects(cn, mcnt);
 	view->add(cn, FrxCircuidView::Z_Wires);
-	return true;
+	return cn;
 }
 //-----------------------------------------------------------------------------
 template <class Browser>
@@ -714,22 +715,26 @@ sdc::PopupMenuPtr createPopupMenu(FrxCircuidViewPtr view,
 struct Connector {
 	FrxCircuidView::Ptr view;
 	Connector(FrxCircuidView::Ptr view) : view(view) {}
-	bool OnError(FrxNode &a, FrxNode &b) {return false;}
-	bool Fire(FrxNode &a, FrxNode &b) {return false;}
+	fgc::FrxConnection::Ptr OnError(FrxNode &a, FrxNode &b) {
+        return fgc::FrxConnection::Ptr();
+    }
+	fgc::FrxConnection::Ptr Fire(FrxNode &a, FrxNode &b) {
+        return fgc::FrxConnection::Ptr();
+    }
 	// consider direction: out->in
-	bool Fire(FrxInputNode &a, FrxOutputNode &b) { 
+	fgc::FrxConnection::Ptr Fire(FrxInputNode &a, FrxOutputNode &b) { 
 		return perfomConnect<IOCn>(view, b.getPtr(), a.getPtr());
 	}
-	bool Fire(FrxInputNode &a, FrxEntryNode &b) {
+	fgc::FrxConnection::Ptr Fire(FrxInputNode &a, FrxEntryNode &b) {
 		return perfomConnect<IOCn>(view, b.getPtr(), a.getPtr());
 	}
-	bool Fire(FrxOutputNode &a, FrxExitNode &b) {
+	fgc::FrxConnection::Ptr Fire(FrxOutputNode &a, FrxExitNode &b) {
 		return perfomConnect<IOCn>(view, a.getPtr(), b.getPtr());
 	}
-	bool Fire(FrxEntryNode &a, FrxExitNode &b) {
+	fgc::FrxConnection::Ptr Fire(FrxEntryNode &a, FrxExitNode &b) {
 		return perfomConnect<IOCn>(view, a.getPtr(), b.getPtr());
 	}
-	bool Fire(FrxStdKnob &a, FrxStdKnob &b) {
+	fgc::FrxConnection::Ptr Fire(FrxStdKnob &a, FrxStdKnob &b) {
 		return perfomConnect<ParameterCn>(view, a.getPtr(), b.getPtr());
 	}
 };
@@ -1148,7 +1153,8 @@ sdc::PopupMenuPtr FrxControl::getCircuidViewPopup(FrxCircuidViewPtr c) {
 	return createPopupMenu(c, mainMenuEntries);
 }
 //-----------------------------------------------------------------------------
-bool FrxControl::connect(FrxCircuidViewPtr view, FrxNodePtr from, FrxNodePtr to) 
+fgc::FrxConnection::Ptr
+FrxControl::connect(FrxCircuidViewPtr view, FrxNodePtr from, FrxNodePtr to)
 {
 	typedef LOKI_TYPELIST_5(
 		FrxInputNode,
@@ -1164,12 +1170,12 @@ bool FrxControl::connect(FrxCircuidViewPtr view, FrxNodePtr from, FrxNodePtr to)
 		true,
         FrxNode,
         Types,
-        bool
+        fgc::FrxConnection::Ptr
     > Dispatcher;
 	try {
 		return Dispatcher::Go(*(from.get()), *(to.get()), Connector(view));
 	} catch (...) {
-		return false;
+		return fgc::FrxConnection::Ptr();
 	}
 }
 //-----------------------------------------------------------------------------

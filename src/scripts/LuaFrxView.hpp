@@ -41,14 +41,27 @@ protected:
     //-------------------------------------------------------------------------
     fgc::FrxCircuidViewPtr getView(lua_State *lua) const;
     //-------------------------------------------------------------------------
+    typedef boost::tuple<float,float> Point;
     SAMBAG_LUA_FTAG(addProcessor, slua::IgnoreReturn(std::string));
     SAMBAG_LUA_FTAG(remove, void());
     SAMBAG_LUA_FTAG(getObjects, slua::IgnoreReturn());
     SAMBAG_LUA_FTAG(connect, slua::IgnoreReturn());
-    typedef LOKI_TYPELIST_4(Frx_addProcessor_Tag,
+    SAMBAG_LUA_FTAG(addKnob, slua::IgnoreReturn());
+    SAMBAG_LUA_FTAG(addHostKnob, slua::IgnoreReturn(int));
+    SAMBAG_LUA_FTAG(getLocation, Point());
+    SAMBAG_LUA_FTAG(setLocation, void(float, float));
+    SAMBAG_LUA_FTAG(getSize, Point());
+    SAMBAG_LUA_FTAG(setSize, void(float, float));
+    typedef LOKI_TYPELIST_10(Frx_addProcessor_Tag,
         Frx_remove_Tag,
         Frx_getObjects_Tag,
-        Frx_connect_Tag
+        Frx_connect_Tag,
+        Frx_addKnob_Tag,
+        Frx_addHostKnob_Tag,
+        Frx_getLocation_Tag,
+        Frx_setLocation_Tag,
+        Frx_getSize_Tag,
+/*10*/  Frx_setSize_Tag
     ) Functions;
     ///////////////////////////////////////////////////////////////////////////
     // Lua impl.
@@ -56,6 +69,12 @@ protected:
     void remove(lua_State *lua);
     slua::IgnoreReturn getObjects(lua_State *lua);
     slua::IgnoreReturn connect(lua_State *lua);
+    slua::IgnoreReturn addKnob(lua_State *lua);
+    slua::IgnoreReturn addHostKnob(lua_State *lua, int index);
+    boost::tuple<float,float> getLocation(lua_State *lua) const;
+    void setLocation(lua_State *lua, float x, float y);
+    boost::tuple<float,float> getSize(lua_State *lua) const;
+    void setSize(lua_State *lua, float x, float y);
 private:
     //-------------------------------------------------------------------------
     fgc::VstForxEditor *editor;

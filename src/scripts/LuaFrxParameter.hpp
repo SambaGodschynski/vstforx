@@ -1,0 +1,62 @@
+/*
+ * ============================================================================
+ * LuaFrxParameter.h
+ *      Author: Johannes Unger
+ * ============================================================================
+ */
+#ifndef FORX_LuaFrxParameter_H
+#define FORX_LuaFrxParameter_H
+
+#include <boost/shared_ptr.hpp>
+#include "LuaFrxObject.hpp"
+#include <gui/ViewFactory.hpp>
+#include <com/one4All.h>
+
+namespace frx { namespace scripts {
+//=============================================================================
+/** 
+  * @class LuaFrxParameter.
+  */
+class LuaFrxParameter : public LuaFrxObject {
+//=============================================================================
+public:
+	//-------------------------------------------------------------------------
+	typedef boost::shared_ptr<LuaFrxParameter> Ptr;
+    //-------------------------------------------------------------------------
+    typedef LuaFrxObject Super;
+protected:
+    //-------------------------------------------------------------------------
+    virtual void addLuaFields(lua_State * lua, int index);
+    //-------------------------------------------------------------------------
+    LuaFrxParameter();
+    //-------------------------------------------------------------------------
+    SAMBAG_LUA_FTAG(setValue, void(float));
+    SAMBAG_LUA_FTAG(getValue, float());
+    typedef LOKI_TYPELIST_2(Frx_setValue_Tag,
+        Frx_getValue_Tag
+    ) Functions;
+    ///////////////////////////////////////////////////////////////////////////
+    // Lua impl.
+    //-------------------------------------------------------------------------
+    virtual std::string toString(lua_State * lua) const;
+    void setValue(lua_State * lua, float v);
+    float getValue(lua_State * lua) const;
+private:
+public:
+    //-------------------------------------------------------------------------
+    static Ptr createAndPush(lua_State * lua,
+        ModelObject::Ptr obj, ViewModelMap::Ptr map);
+}; // LuaFrxParameter
+
+namespace {
+    const bool LuaFrxParameter_Registered =
+        LuaFrxObject::Factory::instance().
+            registerCreator("frx.lua.parameter.StdKnob", &LuaFrxParameter::createAndPush);
+
+}
+
+
+}} // namespace(s)
+#endif  // FORX_LuaFrxParameter_H
+
+

@@ -13,10 +13,14 @@
 #include <gui/components/IFrxComponentFactory.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/components/FrxComponent.hpp>
+#include <gui/components/FrxConnection.hpp>
 #include <gui/components/FrxProcessorNode.hpp>
+#include <gui/components/FrxParameter.hpp>
 #include <gui/IFrxControl.hpp>
 #include "LuaFrxProcessor.hpp"
 #include "LuaFrxIO.hpp"
+#include "LuaFrxConnection.hpp"
+#include "LuaFrxParameter.hpp"
 #include <com/one4All.h>
 
 namespace frx { namespace scripts {
@@ -49,6 +53,56 @@ slua::IgnoreReturn LuaFrxView::addProcessor(lua_State *lua, const std::string &i
     return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
+slua::IgnoreReturn LuaFrxView::addKnob(lua_State *lua)
+{
+    using namespace frx::gui;
+	using namespace frx::gui::components;
+    FrxCircuidViewPtr view = getView(lua);
+    if (!view) {
+        return slua::IgnoreReturn();
+    }
+	IFrxComponentFactory &fac = getComponentFactory(view);
+	IFrxControl &frxctrl = getFrxControl(view);
+    IViewModelMap::Ptr map = getViewModelMap(view);
+	fgc::FrxParameter::Ptr res;
+    try {
+        res = fac.getFreeParameterCreator()(view);
+    } catch (...) {
+    }
+	if (!res) {
+        slua::pushLuaError(lua, "creation of knob failed.");
+		return slua::IgnoreReturn();
+	}
+  	frxctrl.addParameterToView(view, res);
+    LuaFrxParameter::createAndPush(lua, map->getModelObject(res), map);
+    return slua::IgnoreReturn();
+}
+//-----------------------------------------------------------------------------
+slua::IgnoreReturn LuaFrxView::addHostKnob(lua_State *lua, int index)
+{
+    using namespace frx::gui;
+	using namespace frx::gui::components;
+    FrxCircuidViewPtr view = getView(lua);
+    if (!view) {
+        return slua::IgnoreReturn();
+    }
+	IFrxComponentFactory &fac = getComponentFactory(view);
+	IFrxControl &frxctrl = getFrxControl(view);
+    IViewModelMap::Ptr map = getViewModelMap(view);
+	fgc::FrxParameter::Ptr res;
+    try {
+        res = fac.getHostParameterCreator()(view, index);
+    } catch (...) {
+    }
+	if (!res) {
+        slua::pushLuaError(lua, "creation of knob failed.");
+		return slua::IgnoreReturn();
+	}
+  	frxctrl.addParameterToView(view, res);
+    LuaFrxParameter::createAndPush(lua, map->getModelObject(res), map);
+    return slua::IgnoreReturn();
+}
+//-----------------------------------------------------------------------------
 void LuaFrxView::remove(lua_State *lua) {
     using namespace frx::gui;
 	using namespace frx::gui::components;
@@ -73,6 +127,7 @@ slua::IgnoreReturn LuaFrxView::connect(lua_State *lua) {
     using namespace frx::gui;
 	using namespace frx::gui::components;
     FrxCircuidViewPtr view = getView(lua);
+    IViewModelMap::Ptr map = getViewModelMap(view);
     if (!view) {
         return slua::IgnoreReturn();
     }
@@ -85,9 +140,13 @@ slua::IgnoreReturn LuaFrxView::connect(lua_State *lua) {
         FrxNode::Ptr na = boost::dynamic_pointer_cast<FrxNode>(a->getViewObject());
         FrxNode::Ptr nb = boost::dynamic_pointer_cast<FrxNode>(b->getViewObject());
         if (!na || !nb) {
-            return false;
+            return slua::IgnoreReturn();
         }
-        return frxctrl.connect(view, na, nb);
+        FrxConnection::Ptr cn = frxctrl.connect(view, na, nb);
+        if (!cn) {
+            return slua::IgnoreReturn();
+        }
+        LuaFrxConnection::createAndPush(lua, map->getModelObject(cn), map);
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua, std::string("connecting failed: ") + ex.what());
     } catch(...) {
@@ -144,10 +203,64 @@ slua::IgnoreReturn LuaFrxView::getObjects(lua_State *lua) {
     return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
+boost::tuple<float,float> LuaFrxView::getLocation(lua_State *lua) const {
+    using namespace frx::gui;
+	using namespace frx::gui::components;
+    FrxCircuidViewPtr view = getView(lua);
+    if (!view) {
+        return boost::make_tuple(0.f, 0.f);
+    }
+    sdc::Viewport::Ptr vp = view->getViewport();
+    if (!vp) {
+        return boost::make_tuple(0.f, 0.f);
+    }
+    sd::Point2D pos = vp->getViewPosition();
+    return boost::make_tuple(pos.x(), pos.y());
+}
+//-----------------------------------------------------------------------------
+void LuaFrxView::setLocation(lua_State *lua, float x, float y) {
+   using namespace frx::gui;
+    using namespace frx::gui::components;
+    FrxCircuidViewPtr view = getView(lua);
+    if (!view) {
+        return;
+    }
+    sdc::Viewport::Ptr vp = view->getViewport();
+    if (!vp) {
+        return;
+    }
+    vp->setViewPosition(sd::Point2D(x, y));
+}
+//-----------------------------------------------------------------------------
+boost::tuple<float,float> LuaFrxView::getSize(lua_State *lua) const {
+    using namespace frx::gui;
+	using namespace frx::gui::components;
+    FrxCircuidViewPtr view = getView(lua);
+    if (!view) {
+        return boost::make_tuple(0.f, 0.f);
+    }
+    sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
+    if (!win) {
+        return boost::make_tuple(0.f, 0.f);
+    }
+    sd::Dimension d = win->getWindowSize();
+    return boost::make_tuple(d.width(), d.height());
+}
+//-----------------------------------------------------------------------------
+void LuaFrxView::setSize(lua_State *lua, float x, float y) {
+   using namespace frx::gui;
+    using namespace frx::gui::components;
+    FrxCircuidViewPtr view = getView(lua);
+    if (!view) {
+        return;
+    }
+    view->requestEditorResize(sd::Dimension(x,y));
+}
+//-----------------------------------------------------------------------------
 void LuaFrxView::addLuaFields(lua_State *lua, int index) {
     using boost::bind;
     Super::addLuaFields(lua, index);
-    sambag::lua::registerFunctions<Functions,
+    sambag::lua::registerClassFunctions<Functions,
         sambag::lua::TupleAccessor>
     (
         lua,
@@ -155,9 +268,16 @@ void LuaFrxView::addLuaFields(lua_State *lua, int index) {
             bind(&LuaFrxView::addProcessor, this, lua, _1),
             bind(&LuaFrxView::remove, this, lua),
             bind(&LuaFrxView::getObjects, this, lua),
-            bind(&LuaFrxView::connect, this, lua)
+            bind(&LuaFrxView::connect, this, lua),
+            bind(&LuaFrxView::addKnob, this, lua),
+            bind(&LuaFrxView::addHostKnob, this, lua, _1),
+            bind(&LuaFrxView::getLocation, this, lua),
+            bind(&LuaFrxView::setLocation, this, lua, _1, _2),
+            bind(&LuaFrxView::getSize, this, lua),
+            bind(&LuaFrxView::setSize, this, lua, _1, _2)
         ),
-        index
+        index,
+        getUId()
     );
 }
 //-----------------------------------------------------------------------------
