@@ -103,7 +103,9 @@ FrxProcessorNodePtr createProcessor(FrxCircuidViewPtr circ, std::string id)
         invisibleOuts ? 0 : mObj->getNumOutputs()
     );
     registerComponent(map, viewObj, mObj);
-    viewObj->__setTypeId_(pid.details("").numInputs(-1).numOutputs(-1).toString());
+    viewObj->__setTypeId_(
+        pid.namespace_("gui").details("").numInputs(-1).numOutputs(-1).toString()
+    );
 	return viewObj;
 }
 //-----------------------------------------------------------------------------

@@ -25,6 +25,8 @@
 #include <com/one4All.h>
 #include <gui/components/FrxConcreteIO.hpp>
 #include <processing/IParameter.hpp>
+#include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>
 
 namespace frx { namespace scripts {
 //=============================================================================
@@ -386,48 +388,109 @@ slua::IgnoreReturn LuaFrxView::getExit(lua_State *lua) {
 //-----------------------------------------------------------------------------
 slua::IgnoreReturn LuaFrxView::getByName(lua_State *lua, const std::string &name)
 {
-	using namespace frx::gui::components; 
+	using namespace frx::gui::components;
 	using namespace sambag::disco::components;
     using namespace frx::gui;
-	FrxComponent::Ptr res;
-    FrxCircuidViewPtr view = getView(lua);
-    IViewModelMap::Ptr map = getViewModelMap(view);
-    if (!view || !map) {
-        //not here because getview pushes error already: lua_pushnil(lua);
-        return slua::IgnoreReturn();
-    }
-	const FrxCircuidView::Components &comps = view->getContentPane()->getComponents();
-	BOOST_FOREACH(AComponentPtr c, comps) {
-        FrxComponent::Ptr x = boost::dynamic_pointer_cast<FrxComponent>(c);
-        if (!x) {
-            continue;
+    try {
+        FrxComponent::Ptr res;
+        FrxCircuidViewPtr view = getView();
+        IViewModelMap::Ptr map = getViewModelMap(view);
+        const FrxCircuidView::Components &comps = view->getContentPane()->getComponents();
+        BOOST_FOREACH(AComponentPtr c, comps) {
+            FrxComponent::Ptr x = boost::dynamic_pointer_cast<FrxComponent>(c);
+            if (!x) {
+                continue;
+            }
+            if(x->getName()==name) {
+                res = x;
+                break;
+            }
         }
-        if(x->getName()==name) {
-            res = x;
-            break;
+        if (!res) {
+            lua_pushnil(lua);
+            return slua::IgnoreReturn();
         }
-	}
-    if (!res) {
-        lua_pushnil(lua);
-        return slua::IgnoreReturn();
+        std::string type = res->getTypeId();
+        if (type.empty()) {
+            lua_pushnil(lua);
+            return slua::IgnoreReturn();
+        }
+        std::string id = com::IdParser(type).namespace_("lua").toString();
+        LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
+        if (!fac.isRegistered(id)) {
+            lua_pushnil(lua);
+            return slua::IgnoreReturn();
+        }
+        LuaFrxObject::Ptr lobj = fac.createAndPush(
+            id,
+            lua,
+            map->getModelObject(res),
+            map
+        );
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unknown error");
     }
-    std::string type = res->getTypeId();
-    if (type.empty()) {
-        lua_pushnil(lua);
-        return slua::IgnoreReturn();
+    return slua::IgnoreReturn();
+}
+//-----------------------------------------------------------------------------
+namespace {
+    bool _matchType(const std::string &_a, const std::string &_b) {
+        com::IdParser ia(_a);
+        // remove detail and io
+        std::string a = ia.details("").numInputs(-1).numOutputs(-1).toString();
+        // convert b into regex
+        std::string b = "frx.gui."+_b;
+        b = boost::algorithm::replace_all_copy(b, ".", "\\.");
+        b = boost::algorithm::replace_all_copy(b, "*", ".*?");
+        SAMBAG_LOG_TRACE<<a<<" "<<b;
+        return boost::regex_match(a, boost::regex(b));
     }
-    std::string id = com::IdParser(type).namespace_("lua").toString();
-    LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
-    if (!fac.isRegistered(id)) {
-        lua_pushnil(lua);
-        return slua::IgnoreReturn();
+}
+slua::IgnoreReturn LuaFrxView::getByType(lua_State *lua, const std::string &serachid)
+{
+	using namespace frx::gui::components;
+	using namespace sambag::disco::components;
+    using namespace frx::gui;
+    lua_createtable(lua, 0, 0);
+    int tbl = lua_gettop(lua), lua_index=0;
+    try {
+        FrxCircuidViewPtr view = getView();
+        IViewModelMap::Ptr map = getViewModelMap(view);
+        LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
+        const FrxCircuidView::Components &comps = view->getContentPane()->getComponents();
+        std::string compType;
+        BOOST_FOREACH(AComponentPtr c, comps) {
+            FrxComponent::Ptr x = boost::dynamic_pointer_cast<FrxComponent>(c);
+            if (!x) {
+                continue;
+            }
+            compType = x->getTypeId();
+            if(!_matchType(compType, serachid)) {
+                continue;
+            }
+            if (compType.empty()) {
+                continue;
+            }
+            std::string id = com::IdParser(compType).namespace_("lua").toString();
+            if (!fac.isRegistered(id)) {
+                continue;
+            }
+            lua_pushinteger(lua, ++lua_index);
+            LuaFrxObject::Ptr lobj = fac.createAndPush(
+                id,
+                lua,
+                map->getModelObject(x),
+                map
+            );
+            lua_settable(lua, tbl);
+        }
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unknown error");
     }
-    LuaFrxObject::Ptr lobj = fac.createAndPush(
-        id,
-        lua,
-        map->getModelObject(res),
-        map
-    );
     return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
@@ -464,7 +527,8 @@ void LuaFrxView::addLuaFields(lua_State *lua, int index) {
         boost::make_tuple(
             bind(&LuaFrxView::getEntry, this, lua),
             bind(&LuaFrxView::getExit, this, lua),
-            bind(&LuaFrxView::getByName, this, lua, _1)
+            bind(&LuaFrxView::getByName, this, lua, _1),
+            bind(&LuaFrxView::getByType, this, lua, _1)
         ),
         index,
         getUId()

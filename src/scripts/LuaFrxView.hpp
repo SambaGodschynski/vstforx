@@ -55,6 +55,7 @@ protected:
     SAMBAG_LUA_FTAG(getEntry, slua::IgnoreReturn());
     SAMBAG_LUA_FTAG(getExit, slua::IgnoreReturn());
     SAMBAG_LUA_FTAG(getByName, slua::IgnoreReturn(std::string));
+    SAMBAG_LUA_FTAG(getByType, slua::IgnoreReturn(std::string));
     typedef LOKI_TYPELIST_10(Frx_add_Tag,
         Frx_remove_Tag,
         Frx_getObjects_Tag,
@@ -66,9 +67,10 @@ protected:
         Frx_getSize_Tag,
         Frx_setSize_Tag) Functions1;
     
-    typedef LOKI_TYPELIST_3(Frx_getEntry_Tag,
+    typedef LOKI_TYPELIST_4(Frx_getEntry_Tag,
         Frx_getExit_Tag,
-        Frx_getByName_Tag
+        Frx_getByName_Tag,
+        Frx_getByType_Tag
     ) Functions2;
     ///////////////////////////////////////////////////////////////////////////
     // Lua impl.
@@ -84,6 +86,7 @@ protected:
     slua::IgnoreReturn getEntry(lua_State *lua);
     slua::IgnoreReturn getExit(lua_State *lua);
     slua::IgnoreReturn getByName(lua_State *lua, const std::string &name);
+    slua::IgnoreReturn getByType(lua_State *lua, const std::string &type);
     boost::tuple<float,float> getLocation(lua_State *lua) const;
     void setLocation(lua_State *lua, float x, float y);
     boost::tuple<float,float> getSize(lua_State *lua) const;
