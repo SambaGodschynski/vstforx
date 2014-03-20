@@ -45,13 +45,15 @@ private:
 public:
     //-------------------------------------------------------------------------
     static Ptr createAndPush(lua_State * lua,
-        ModelObject::Ptr obj, ViewModelMap::Ptr map);
+        ModelObject::Ptr obj, ViewModelMap::Ptr map, const std::string &typeId);
 }; // LuaFrxParameter
 
 namespace {
     const bool LuaFrxParameter_Registered =
         LuaFrxObject::Factory::instance().
-            registerCreator("frx.lua.parameter.StdKnob", &LuaFrxParameter::createAndPush);
+            registerCreator("frx.lua.parameter.StdKnob",
+                boost::bind(&LuaFrxParameter::createAndPush, _1, _2, _3, "frx.lua.parameter.StdKnob")
+            );
 
 }
 

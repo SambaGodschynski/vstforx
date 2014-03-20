@@ -42,7 +42,7 @@ protected:
     fgc::FrxCircuidViewPtr getView(lua_State *lua) const;
     //-------------------------------------------------------------------------
     typedef boost::tuple<float,float> Point;
-    SAMBAG_LUA_FTAG(addProcessor, slua::IgnoreReturn(std::string));
+    SAMBAG_LUA_FTAG(add, slua::IgnoreReturn());
     SAMBAG_LUA_FTAG(remove, void());
     SAMBAG_LUA_FTAG(getObjects, slua::IgnoreReturn());
     SAMBAG_LUA_FTAG(connect, slua::IgnoreReturn());
@@ -52,7 +52,10 @@ protected:
     SAMBAG_LUA_FTAG(setLocation, void(float, float));
     SAMBAG_LUA_FTAG(getSize, Point());
     SAMBAG_LUA_FTAG(setSize, void(float, float));
-    typedef LOKI_TYPELIST_10(Frx_addProcessor_Tag,
+    SAMBAG_LUA_FTAG(getEntry, slua::IgnoreReturn());
+    SAMBAG_LUA_FTAG(getExit, slua::IgnoreReturn());
+    SAMBAG_LUA_FTAG(getByName, slua::IgnoreReturn(std::string));
+    typedef LOKI_TYPELIST_10(Frx_add_Tag,
         Frx_remove_Tag,
         Frx_getObjects_Tag,
         Frx_connect_Tag,
@@ -61,16 +64,26 @@ protected:
         Frx_getLocation_Tag,
         Frx_setLocation_Tag,
         Frx_getSize_Tag,
-/*10*/  Frx_setSize_Tag
-    ) Functions;
+        Frx_setSize_Tag) Functions1;
+    
+    typedef LOKI_TYPELIST_3(Frx_getEntry_Tag,
+        Frx_getExit_Tag,
+        Frx_getByName_Tag
+    ) Functions2;
     ///////////////////////////////////////////////////////////////////////////
     // Lua impl.
+    slua::IgnoreReturn add(lua_State *lua);
+    slua::IgnoreReturn addObject(lua_State *lua);
     slua::IgnoreReturn addProcessor(lua_State *lua, const std::string &id);
+    slua::IgnoreReturn addProcessorParameter(lua_State *lua);
     void remove(lua_State *lua);
     slua::IgnoreReturn getObjects(lua_State *lua);
     slua::IgnoreReturn connect(lua_State *lua);
     slua::IgnoreReturn addKnob(lua_State *lua);
     slua::IgnoreReturn addHostKnob(lua_State *lua, int index);
+    slua::IgnoreReturn getEntry(lua_State *lua);
+    slua::IgnoreReturn getExit(lua_State *lua);
+    slua::IgnoreReturn getByName(lua_State *lua, const std::string &name);
     boost::tuple<float,float> getLocation(lua_State *lua) const;
     void setLocation(lua_State *lua, float x, float y);
     boost::tuple<float,float> getSize(lua_State *lua) const;

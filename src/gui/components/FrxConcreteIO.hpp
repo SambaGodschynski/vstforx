@@ -37,7 +37,7 @@ protected:
 	//-------------------------------------------------------------------------
 	virtual void postConstructor() {
 		IOType::init(getPtr());
-        putClientProperty("frx.component.type", getIOType<IOType>());
+        __setTypeId_(getIOType<IOType>());
 	}
 	//-------------------------------------------------------------------------
 	typedef FrxConcreteIO<IOType> ThisClassType;

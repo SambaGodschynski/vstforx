@@ -66,6 +66,17 @@ LuaFrxObject::Ptr LuaFrxObject::getByUId(const UId &uid) {
 LuaFrxObject::LuaFrxObject() {
 }
 //-----------------------------------------------------------------------------
+LuaFrxObject::ViewModelMap::Ptr LuaFrxObject::getViewModelMap() const {
+    ViewModelMap::Ptr res = modelMap.lock();
+    if (!res) {
+        SAMBAG_THROW(
+            sambag::com::exceptions::IllegalStateException,
+            "set: modelMap == NULL"
+        );
+    }
+    return res;
+}
+//-----------------------------------------------------------------------------
 void LuaFrxObject::setModelObject(ModelObject::Ptr obj) {
     if (!obj) {
         SAMBAG_THROW(
@@ -131,6 +142,22 @@ fgc::FrxComponent::Ptr LuaFrxObject::getViewObject(lua_State *lua) const {
     return c;
 }
 //-----------------------------------------------------------------------------
+void LuaFrxObject::setName(lua_State *lua, const std::string &name) {
+    fgc::FrxComponent::Ptr obj = getViewObject(lua);
+    if (!obj) {
+        return;
+    }
+    obj->setName(name);
+}
+//-----------------------------------------------------------------------------
+std::string LuaFrxObject::getName(lua_State *lua) const {
+    fgc::FrxComponent::Ptr obj = getViewObject(lua);
+    if (!obj) {
+        return "";
+    }
+    return obj->getName();
+}
+//-----------------------------------------------------------------------------
 void LuaFrxObject::addLuaFields(lua_State *lua, int index) {
     Super::addLuaFields(lua, index);
     uidMap[getUId()] = boost::dynamic_pointer_cast<LuaFrxObject>(shared_from_this());
@@ -143,13 +170,26 @@ void LuaFrxObject::addLuaFields(lua_State *lua, int index) {
         boost::make_tuple(
             bind(&LuaFrxObject::getLocation, this, lua),
             bind(&LuaFrxObject::setLocation, this, lua, _1, _2),
-            bind(&LuaFrxObject::getSize, this, lua)
+            bind(&LuaFrxObject::getSize, this, lua),
+            bind(&LuaFrxObject::setSize, this, lua, _1, _2),
+            bind(&LuaFrxObject::setName, this, lua, _1),
+            bind(&LuaFrxObject::getName, this, lua)
         ),
         index,
         getUId()
     );
-
-
+    if (getTypeId().empty()) {
+        SAMBAG_THROW(
+            sambag::com::exceptions::IllegalStateException,
+            "internal error: missing typeid"
+        );
+    }
+    slua::push(lua, getTypeId());
+    lua_setfield(lua, index, "__frxtype");
+}
+//-----------------------------------------------------------------------------
+void LuaFrxObject::setTypeId(const std::string &typeId) {
+    this->typeId = typeId;
 }
 //-----------------------------------------------------------------------------
 bool LuaFrxObject::isequal(lua_State *lua) const {
@@ -191,6 +231,14 @@ boost::tuple<float,float>  LuaFrxObject::getSize(lua_State *lua) {
     }
     sd::Dimension p = c->getSize();
     return boost::make_tuple(p.width(), p.height());
+}
+//-----------------------------------------------------------------------------
+void LuaFrxObject::setSize(lua_State *lua, float w, float h) {
+    fgc::FrxComponent::Ptr c = getViewObject(lua);
+    if (!c) {
+        return;
+    }
+    c->setSize(sd::Dimension(w,h));
 }
 //=============================================================================
 // LuaFrxObject::Factory

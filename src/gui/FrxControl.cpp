@@ -793,7 +793,7 @@ void FrxControl::openSceneBrowser(fgc::FrxCircuidViewPtr view, const std::string
     );
     sdc::getWindowToolkit()->invokeLater(
         boost::bind(&__setPath, FrxColumnBrowser::WPtr(b), path),
-        500
+        100
     );
 }
 //-----------------------------------------------------------------------------

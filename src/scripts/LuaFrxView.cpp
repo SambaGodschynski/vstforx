@@ -21,37 +21,98 @@
 #include "LuaFrxIO.hpp"
 #include "LuaFrxConnection.hpp"
 #include "LuaFrxParameter.hpp"
+#include "LuaModelObject.hpp"
 #include <com/one4All.h>
+#include <gui/components/FrxConcreteIO.hpp>
+#include <processing/IParameter.hpp>
 
 namespace frx { namespace scripts {
 //=============================================================================
 //  Class LuaFrxView
 //=============================================================================
 //-----------------------------------------------------------------------------
+slua::IgnoreReturn LuaFrxView::add(lua_State *lua)
+{
+    try {
+        // determine what to add
+        if (lua_istable(lua, -1)) {
+            return addObject(lua);
+        }
+        if (lua_isstring(lua, -1)) {
+            boost::tuple<std::string> id;
+            slua::pop(lua, id);
+            return addProcessor(lua, boost::get<0>(id));
+        }
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unknown error");
+    }
+}
+//-----------------------------------------------------------------------------
+slua::IgnoreReturn LuaFrxView::addObject(lua_State *lua)
+{
+    lua_getfield(lua, -1, "__frxtype");
+    if (!lua_isstring(lua, -1)) {
+        throw std::runtime_error("unknown table type");
+    }
+    boost::tuple<std::string> id;
+    slua::pop(lua, id);
+    if (boost::get<0>(id)=="frx.lua.parameter.Parameter") {
+        return addProcessorParameter(lua);
+    }
+    throw std::runtime_error("cannot add " + boost::get<0>(id));
+}
+//-----------------------------------------------------------------------------
 slua::IgnoreReturn LuaFrxView::addProcessor(lua_State *lua, const std::string &id)
 {
     using namespace frx::gui;
 	using namespace frx::gui::components;
-    FrxCircuidViewPtr view = getView(lua);
-    if (!view) {
-        return slua::IgnoreReturn();
-    }
+    FrxCircuidViewPtr view = getView();
 	IFrxComponentFactory &fac = getComponentFactory(view);
 	IFrxControl &frxctrl = getFrxControl(view);
     IViewModelMap::Ptr map = getViewModelMap(view);
 	FrxProcessorNodePtr res;
-    try {
-        res = fac.getProcessorCreator(id)(view);
-    } catch (...) {
-    }
+   res = fac.getProcessorCreator(id)(view);
 	if (!res) {
         slua::pushLuaError(lua, "creation of " + id + " failed.");
 		return slua::IgnoreReturn();
 	}
   	frxctrl.addProcessorToView(view, res);
-    LuaFrxProcessor::createAndPush(lua, map->getModelObject(res), map);
+    com::IdParser newId(res->getTypeId());
+    LuaFrxProcessor::createAndPush(lua,
+        map->getModelObject(res), map,
+        newId.namespace_("lua").numInputs(-1).numOutputs(-1).details("").toString());
     return slua::IgnoreReturn();
 }
+//-----------------------------------------------------------------------------
+slua::IgnoreReturn LuaFrxView::addProcessorParameter(lua_State *lua) {
+    using namespace frx::gui;
+	using namespace frx::gui::components;
+    FrxCircuidViewPtr view = getView();
+    IFrxControl &frxctrl = getFrxControl(view);
+    IViewModelMap::Ptr map = getViewModelMap(view);
+    // get related processor
+    lua_getfield(lua, -1, "__processor");
+    if (!lua_isstring(lua, -1)) {
+        throw std::runtime_error("no related processor found");
+    }
+    boost::tuple<std::string> prId;
+    slua::pop(lua, prId);
+    LuaFrxObject::Ptr fobj = LuaFrxObject::getByUId(boost::get<0>(prId));
+    // get object
+    LuaModelObject::Ptr mobj = LuaModelObject::getFromLuaStack(lua, -1);
+    
+    using frx::processing::IParameter;
+    IParameter::Ptr par =
+        boost::dynamic_pointer_cast<IParameter>(mobj->getModelObject());
+    SAMBAG_ASSERT(par);
+    FrxComponent::Ptr res =
+        frxctrl.addRelatedKnobToView(view, fobj->getViewObject(), par);
+    LuaFrxParameter::createAndPush(lua, mobj->getModelObject(), map, "frx.lua.parameter.StdKnob");
+    return slua::IgnoreReturn();
+}
+
 //-----------------------------------------------------------------------------
 slua::IgnoreReturn LuaFrxView::addKnob(lua_State *lua)
 {
@@ -59,6 +120,7 @@ slua::IgnoreReturn LuaFrxView::addKnob(lua_State *lua)
 	using namespace frx::gui::components;
     FrxCircuidViewPtr view = getView(lua);
     if (!view) {
+        //not here because getview pushes error already: lua_pushnil(lua)
         return slua::IgnoreReturn();
     }
 	IFrxComponentFactory &fac = getComponentFactory(view);
@@ -74,7 +136,8 @@ slua::IgnoreReturn LuaFrxView::addKnob(lua_State *lua)
 		return slua::IgnoreReturn();
 	}
   	frxctrl.addParameterToView(view, res);
-    LuaFrxParameter::createAndPush(lua, map->getModelObject(res), map);
+    LuaFrxParameter::createAndPush(lua,
+        map->getModelObject(res), map, "frx.lua.parameter.StdKnob");
     return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
@@ -99,7 +162,8 @@ slua::IgnoreReturn LuaFrxView::addHostKnob(lua_State *lua, int index)
 		return slua::IgnoreReturn();
 	}
   	frxctrl.addParameterToView(view, res);
-    LuaFrxParameter::createAndPush(lua, map->getModelObject(res), map);
+    LuaFrxParameter::createAndPush(lua,
+        map->getModelObject(res), map, "frx.lua.parameter.StdKnob");
     return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
@@ -140,13 +204,16 @@ slua::IgnoreReturn LuaFrxView::connect(lua_State *lua) {
         FrxNode::Ptr na = boost::dynamic_pointer_cast<FrxNode>(a->getViewObject());
         FrxNode::Ptr nb = boost::dynamic_pointer_cast<FrxNode>(b->getViewObject());
         if (!na || !nb) {
+            lua_pushnil(lua);
             return slua::IgnoreReturn();
         }
         FrxConnection::Ptr cn = frxctrl.connect(view, na, nb);
         if (!cn) {
+            lua_pushnil(lua);
             return slua::IgnoreReturn();
         }
-        LuaFrxConnection::createAndPush(lua, map->getModelObject(cn), map);
+        std::string newId = com::IdParser(cn->getTypeId()).namespace_("lua").toString();
+        LuaFrxConnection::createAndPush(lua, map->getModelObject(cn), map, newId);
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua, std::string("connecting failed: ") + ex.what());
     } catch(...) {
@@ -159,46 +226,53 @@ slua::IgnoreReturn LuaFrxView::getObjects(lua_State *lua) {
     using namespace frx::gui;
 	using namespace frx::gui::components;
     using namespace sambag::disco::components;
-    FrxCircuidViewPtr view = getView(lua);
-    if (!view) {
-        return slua::IgnoreReturn();
-    }
-    IViewModelMap::Ptr map = getViewModelMap(view);
-    const FrxCircuidView::Components &comps =
-        view->getContentPane()->getComponents();
+    try {
+        FrxCircuidViewPtr view = getView(lua);
+        if (!view) {
+            //not here because getview pushes error already: lua_pushnil(lua);
+            return slua::IgnoreReturn();
+        }
+        IViewModelMap::Ptr map = getViewModelMap(view);
+        const FrxCircuidView::Components &comps =
+            view->getContentPane()->getComponents();
 	
-    lua_createtable(lua, comps.size(), 0);
-    int top = lua_gettop(lua);
+        lua_createtable(lua, comps.size(), 0);
+        int top = lua_gettop(lua);
     
-    int lua_index = 1;
-    BOOST_FOREACH(AComponentPtr c, comps) {
-        FrxComponent::Ptr vObj = boost::dynamic_pointer_cast<FrxComponent>(c);
-        if (!vObj) {
-            continue;
+        int lua_index = 1;
+        BOOST_FOREACH(AComponentPtr c, comps) {
+            FrxComponent::Ptr vObj = boost::dynamic_pointer_cast<FrxComponent>(c);
+            if (!vObj) {
+                continue;
+            }
+            processing::ModelObject::Ptr mObj = map->getModelObject(vObj);
+            std::string type = vObj->getTypeId();
+        
+            if (type.empty()) {
+                continue;
+            }
+            std::string id = com::IdParser(type).namespace_("lua").toString();
+            LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
+            if (!fac.isRegistered(id)) {
+                continue;
+            }
+            lua_pushnumber(lua, lua_index++);
+            LuaFrxObject::Ptr lobj = fac.createAndPush(
+                id,
+                lua,
+                mObj,
+                map
+            );
+            if (!lobj) {
+                lua_pushnil(lua);
+            }
+            lua_settable(lua, top);
         }
-        processing::ModelObject::Ptr mObj = map->getModelObject(vObj);
-        std::string type;
-        vObj->getClientProperty("frx.component.type", type); // set in FrxComponentFactory
-                                                             // or in FrxConcreteXXX postConstructor
-        if (type.empty()) {
-            continue;
-        }
-        std::string id = com::IdParser(type).namespace_("lua").toString();
-        LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
-        if (!fac.isRegistered(id)) {
-            continue;
-        }
-        lua_pushnumber(lua, lua_index++);
-        LuaFrxObject::Ptr lobj = fac.createAndPush(
-            id,
-            lua,
-            mObj,
-            map
-        );
-        if (!lobj) {
-            lua_pushnil(lua);
-        }
-        lua_settable(lua, top);
+        return slua::IgnoreReturn();
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unkown error");
     }
     return slua::IgnoreReturn();
 }
@@ -257,15 +331,117 @@ void LuaFrxView::setSize(lua_State *lua, float x, float y) {
     view->requestEditorResize(sd::Dimension(x,y));
 }
 //-----------------------------------------------------------------------------
+slua::IgnoreReturn LuaFrxView::getEntry(lua_State *lua) {
+	using namespace frx::gui::components; 
+	using namespace sambag::disco::components;
+    using namespace frx::gui;
+    FrxNode::Ptr entry;
+    FrxCircuidViewPtr view = getView(lua);
+    IViewModelMap::Ptr map = getViewModelMap(view);
+    if (!view || !map) {
+        //not here because getview pushes error already: lua_pushnil(lua);
+        return slua::IgnoreReturn();
+    }
+	const FrxCircuidView::Components &comps = view->getContentPane()->getComponents();
+	BOOST_FOREACH(AComponentPtr c, comps) {
+		entry = boost::dynamic_pointer_cast<FrxEntryNode>(c);
+        if (entry) {
+            break;
+        }
+	}
+    if (!entry) {
+        lua_pushnil(lua);
+        return slua::IgnoreReturn();
+    }
+    LuaFrxIO::createAndPush(lua,
+        map->getModelObject(entry), map, "frx.lua.io.Entry");
+    return slua::IgnoreReturn();
+}
+//-----------------------------------------------------------------------------
+slua::IgnoreReturn LuaFrxView::getExit(lua_State *lua) {
+	using namespace frx::gui::components; 
+	using namespace sambag::disco::components;
+    using namespace frx::gui;
+	FrxNode::Ptr exit;
+    FrxCircuidViewPtr view = getView(lua);
+    IViewModelMap::Ptr map = getViewModelMap(view);
+    if (!view || !map) {
+        return slua::IgnoreReturn();
+    }
+	const FrxCircuidView::Components &comps = view->getContentPane()->getComponents();
+	BOOST_FOREACH(AComponentPtr c, comps) {
+		exit = boost::dynamic_pointer_cast<FrxExitNode>(c);
+        if (exit) {
+            break;
+        }
+	}
+    if (!exit) {
+        lua_pushnil(lua);
+        return slua::IgnoreReturn();
+    }
+    LuaFrxIO::createAndPush(lua,
+        map->getModelObject(exit), map, "frx.lua.io.Exit");
+    return slua::IgnoreReturn();
+}
+//-----------------------------------------------------------------------------
+slua::IgnoreReturn LuaFrxView::getByName(lua_State *lua, const std::string &name)
+{
+	using namespace frx::gui::components; 
+	using namespace sambag::disco::components;
+    using namespace frx::gui;
+	FrxComponent::Ptr res;
+    FrxCircuidViewPtr view = getView(lua);
+    IViewModelMap::Ptr map = getViewModelMap(view);
+    if (!view || !map) {
+        //not here because getview pushes error already: lua_pushnil(lua);
+        return slua::IgnoreReturn();
+    }
+	const FrxCircuidView::Components &comps = view->getContentPane()->getComponents();
+	BOOST_FOREACH(AComponentPtr c, comps) {
+        FrxComponent::Ptr x = boost::dynamic_pointer_cast<FrxComponent>(c);
+        if (!x) {
+            continue;
+        }
+        if(x->getName()==name) {
+            res = x;
+            break;
+        }
+	}
+    if (!res) {
+        lua_pushnil(lua);
+        return slua::IgnoreReturn();
+    }
+    std::string type = res->getTypeId();
+    if (type.empty()) {
+        lua_pushnil(lua);
+        return slua::IgnoreReturn();
+    }
+    std::string id = com::IdParser(type).namespace_("lua").toString();
+    LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
+    if (!fac.isRegistered(id)) {
+        lua_pushnil(lua);
+        return slua::IgnoreReturn();
+    }
+    LuaFrxObject::Ptr lobj = fac.createAndPush(
+        id,
+        lua,
+        map->getModelObject(res),
+        map
+    );
+    return slua::IgnoreReturn();
+}
+//-----------------------------------------------------------------------------
 void LuaFrxView::addLuaFields(lua_State *lua, int index) {
     using boost::bind;
     Super::addLuaFields(lua, index);
-    sambag::lua::registerClassFunctions<Functions,
+    
+    // 1-10
+    sambag::lua::registerClassFunctions<Functions1,
         sambag::lua::TupleAccessor>
     (
         lua,
         boost::make_tuple(
-            bind(&LuaFrxView::addProcessor, this, lua, _1),
+            bind(&LuaFrxView::add, this, lua),
             bind(&LuaFrxView::remove, this, lua),
             bind(&LuaFrxView::getObjects, this, lua),
             bind(&LuaFrxView::connect, this, lua),
@@ -279,6 +455,21 @@ void LuaFrxView::addLuaFields(lua_State *lua, int index) {
         index,
         getUId()
     );
+
+    // 10-20
+    sambag::lua::registerClassFunctions<Functions2,
+        sambag::lua::TupleAccessor>
+    (
+        lua,
+        boost::make_tuple(
+            bind(&LuaFrxView::getEntry, this, lua),
+            bind(&LuaFrxView::getExit, this, lua),
+            bind(&LuaFrxView::getByName, this, lua, _1)
+        ),
+        index,
+        getUId()
+    );
+
 }
 //-----------------------------------------------------------------------------
 LuaFrxView::LuaFrxView() {

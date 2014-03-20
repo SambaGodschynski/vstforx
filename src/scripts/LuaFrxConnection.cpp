@@ -22,11 +22,12 @@ LuaFrxConnection::LuaFrxConnection() {
 //-----------------------------------------------------------------------------
 LuaFrxConnection::Ptr
 LuaFrxConnection::createAndPush(lua_State *lua,
-    ModelObject::Ptr obj, ViewModelMap::Ptr map)
+    ModelObject::Ptr obj, ViewModelMap::Ptr map, const std::string &typeId)
 {
     Ptr res(new LuaFrxConnection());
     res->setModelObject(obj);
     res->setViewModelMap(map);
+    res->setTypeId(typeId);
     res->createLuaObject(lua, "lua_connection");
     return res;
 }

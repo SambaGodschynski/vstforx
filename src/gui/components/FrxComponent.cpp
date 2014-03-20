@@ -38,6 +38,10 @@ void FrxComponent::postConstructor() {
 	}
 }
 //-----------------------------------------------------------------------------
+void FrxComponent::__setTypeId_(const std::string &id) {
+    typeId = id;
+}
+//-----------------------------------------------------------------------------
 FrxComponent::FrxComponent() {
 	setName("");
 }

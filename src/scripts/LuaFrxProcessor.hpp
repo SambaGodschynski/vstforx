@@ -11,6 +11,7 @@
 #include "LuaFrxObject.hpp"
 #include <gui/ViewFactory.hpp>
 #include <com/one4All.h>
+#include <gui/IFrxControl.hpp>
 
 namespace frx { namespace scripts {
 //=============================================================================
@@ -29,11 +30,24 @@ protected:
     virtual void addLuaFields(lua_State * lua, int index);
     //-------------------------------------------------------------------------
     LuaFrxProcessor();
+    //-------------------------------------------------------------------------
+    SAMBAG_LUA_FTAG(getInputs, slua::IgnoreReturn());
+    SAMBAG_LUA_FTAG(getOutputs, slua::IgnoreReturn());
+    SAMBAG_LUA_FTAG(getParameters, slua::IgnoreReturn());
+    typedef LOKI_TYPELIST_3(Frx_getInputs_Tag,
+        Frx_getOutputs_Tag,
+        Frx_getParameters_Tag
+    ) Functions;
+    //////////////////////////////////////////////////////////////////////////fr/
+    // lua2frx impl
+    slua::IgnoreReturn getInputs(lua_State *lua) const;
+    slua::IgnoreReturn getOutputs(lua_State *lua) const;
+    slua::IgnoreReturn getParameters(lua_State *lua) const;
 private:
 public:
     //-------------------------------------------------------------------------
     static Ptr createAndPush(lua_State * lua,
-        ModelObject::Ptr obj, ViewModelMap::Ptr map);
+        ModelObject::Ptr obj, ViewModelMap::Ptr map, const std::string &typeId);
 }; // LuaFrxProcessor
 
 namespace {
@@ -48,9 +62,11 @@ namespace {
         std::string ns="frx.gui.";
         LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
         BOOST_FOREACH(const std::string &id, ids) {
+            SAMBAG_LOG_TRACE<<id;
+            std::string new_id = com::IdParser(ns+id).namespace_("lua").toString();
             res &= fac.registerCreator(
-                com::IdParser(ns+id).namespace_("lua").toString(),
-                &LuaFrxProcessor::createAndPush
+                new_id,
+                boost::bind(&LuaFrxProcessor::createAndPush, _1, _2, _3, new_id)
             );
         }
         return res;

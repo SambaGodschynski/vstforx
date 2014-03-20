@@ -31,6 +31,9 @@ void FrxSelectionMouseListener::translateSelection(FrxSelectionPtr sel,
 	Transl transl(distance.x(), distance.y());
 	BOOST_FOREACH(sdc::AComponent::WPtr _sc, sel->getContent()) {
 		sdc::AComponent::Ptr sc = _sc.lock();
+        if (!sc) {
+            continue;
+        }
 		sd::Point2D loc; 
 		geom::transform(sc->getLocation(), loc, transl);
 		sc->setLocation(loc);

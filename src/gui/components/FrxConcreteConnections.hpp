@@ -41,7 +41,7 @@ protected:
 	//-------------------------------------------------------------------------
 	FrxConcreteConnection() {
 		setName(getConnectionName<ConnectionType>());
-        putClientProperty("frx.component.type", getCnType<ConnectionType>());
+        __setTypeId_(getCnType<ConnectionType>());
 	}
 private:
 	///////////////////////////////////////////////////////////////////////////

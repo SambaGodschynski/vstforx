@@ -41,7 +41,7 @@ protected:
 	//-------------------------------------------------------------------------
 	FrxConcreteParameter() {
 		instances++;
-        putClientProperty("frx.component.type", getParameterType<_ControllerType>());
+        __setTypeId_(getParameterType<_ControllerType>());
 	}
 	//-------------------------------------------------------------------------
 	virtual void postConstructor() {

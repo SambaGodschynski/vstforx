@@ -88,7 +88,11 @@ private:
     ModelObject::WPtr obj;
     //-------------------------------------------------------------------------
     static UIdMap uidMap;
+    //-------------------------------------------------------------------------
+    std::string typeId;
 protected:
+    //-------------------------------------------------------------------------
+    void setTypeId(const std::string &typeId);
     //-------------------------------------------------------------------------
     /**
      * @return related view object.
@@ -112,18 +116,36 @@ protected:
     SAMBAG_LUA_FTAG(getLocation, Point());
     SAMBAG_LUA_FTAG(setLocation, void(float, float));
     SAMBAG_LUA_FTAG(getSize, Point());
-    typedef LOKI_TYPELIST_3(Frx_getLocation_Tag,
+    SAMBAG_LUA_FTAG(setSize, void(float, float));
+    SAMBAG_LUA_FTAG(setName, void(std::string));
+    SAMBAG_LUA_FTAG(getName, std::string());
+    typedef LOKI_TYPELIST_6(Frx_getLocation_Tag,
         Frx_setLocation_Tag,
-        Frx_getSize_Tag
+        Frx_getSize_Tag,
+        Frx_setSize_Tag,
+        Frx_setName_Tag,
+        Frx_getName_Tag
     ) Functions;
-    ///////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////fr/
     // lua2frx impl
     virtual std::string toString(lua_State *lua) const;
     virtual bool isequal(lua_State *lua) const;
     boost::tuple<float,float> getLocation(lua_State *lua);
-    boost::tuple<float,float> getSize(lua_State *lua);
     void setLocation(lua_State *lua, float x, float y);
+    boost::tuple<float,float> getSize(lua_State *lua);
+    void setSize(lua_State *lua, float x, float y);
+    void setName(lua_State *lua, const std::string &name);
+    std::string getName(lua_State *lua) const;
 public:
+    //-------------------------------------------------------------------------
+    const std::string & getTypeId() const {
+        return typeId;
+    }
+    //-------------------------------------------------------------------------
+    /**
+     * @throws IllegalStateException
+     */
+    ViewModelMap::Ptr getViewModelMap() const;
     //-------------------------------------------------------------------------
     static LuaFrxObject::Ptr getByUId(const UId &uid);
     //-------------------------------------------------------------------------

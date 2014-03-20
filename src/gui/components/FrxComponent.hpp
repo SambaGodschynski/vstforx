@@ -61,7 +61,7 @@ protected:
 	FrxComponent();
 private:
 	//-------------------------------------------------------------------------
-	std::string uFlagTxt, lFlagTxt;
+	std::string uFlagTxt, lFlagTxt, typeId;
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
 	//-------------------------------------------------------------------------
@@ -84,6 +84,9 @@ private:
 		ar & lFlagTxt;
 		std::string name = getName();
 		ar & name;
+        if (version>0) {
+            ar & typeId;
+        }
 		if (Archive::is_loading::value) {
 			self = tmpSelf;
 			setName(name);
@@ -110,6 +113,18 @@ private:
 		boost::serialization::split_member(ar, *this, version);
 	}
 public:
+    //-------------------------------------------------------------------------
+    /**
+     * @brief set type id. no to call by client
+     */
+    void __setTypeId_(const std::string &id);
+    //-------------------------------------------------------------------------
+    /**
+     * @return type id, such as frx.gui.internal.XY
+     */
+    const std::string & getTypeId() const {
+        return typeId;
+    }
     //-------------------------------------------------------------------------
     Ptr getPtr() const {
         return boost::dynamic_pointer_cast<FrxComponent>(self.lock());
@@ -183,4 +198,7 @@ public:
 	}
 }; // FrxComponent
 }}} // namespace(s)
+
+BOOST_CLASS_VERSION(frx::gui::components::FrxComponent, 1);
+
 #endif /* SAMBAG_FRXCOMPONENT_H */

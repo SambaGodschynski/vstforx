@@ -33,14 +33,16 @@ private:
 public:
     //-------------------------------------------------------------------------
     static Ptr createAndPush(lua_State * lua,
-        ModelObject::Ptr obj, ViewModelMap::Ptr map);
+        ModelObject::Ptr obj, ViewModelMap::Ptr map, const std::string &typeId);
 }; // LuaFrxConnection
 
 namespace {
     inline bool registerAllConnections() {
         LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
-        return fac.registerCreator("frx.lua.connection.IO", &LuaFrxConnection::createAndPush)
-        && fac.registerCreator("frx.lua.connection.Parameter", &LuaFrxConnection::createAndPush);
+        return fac.registerCreator("frx.lua.connection.IO",
+            boost::bind(&LuaFrxConnection::createAndPush, _1, _2, _3, "frx.lua.connection.IO"))
+        && fac.registerCreator("frx.lua.connection.Parameter",
+            boost::bind(&LuaFrxConnection::createAndPush, _1, _2, _3, "frx.lua.connection.Parameter"));
     }
     const bool LuaFrxConnections_Registered = registerAllConnections();
 }

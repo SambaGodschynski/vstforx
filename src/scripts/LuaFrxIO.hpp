@@ -33,16 +33,20 @@ private:
 public:
     //-------------------------------------------------------------------------
     static Ptr createAndPush(lua_State * lua,
-        ModelObject::Ptr obj, ViewModelMap::Ptr map);
+        ModelObject::Ptr obj, ViewModelMap::Ptr map, const std::string &typeId);
 }; // LuaFrxIO
 
 namespace {
     inline bool registerAllIos() {
         LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
-        return fac.registerCreator("frx.lua.io.Input", &LuaFrxIO::createAndPush)
-        && fac.registerCreator("frx.lua.io.Output", &LuaFrxIO::createAndPush)
-        && fac.registerCreator("frx.lua.io.Entry", &LuaFrxIO::createAndPush)
-        && fac.registerCreator("frx.lua.io.Exit", &LuaFrxIO::createAndPush);
+        return fac.registerCreator("frx.lua.io.Input",
+            boost::bind(&LuaFrxIO::createAndPush, _1, _2, _3, "frx.lua.io.Input"))
+        && fac.registerCreator("frx.lua.io.Output",
+            boost::bind(&LuaFrxIO::createAndPush, _1, _2, _3, "frx.lua.io.Output"))
+        && fac.registerCreator("frx.lua.io.Entry",
+            boost::bind(&LuaFrxIO::createAndPush, _1, _2, _3, "frx.lua.io.Entry"))
+        && fac.registerCreator("frx.lua.io.Exit",
+            boost::bind(&LuaFrxIO::createAndPush, _1, _2, _3, "frx.lua.io.Exit"));
     }
     const bool LuaFrxIO_Registered = registerAllIos();
 
