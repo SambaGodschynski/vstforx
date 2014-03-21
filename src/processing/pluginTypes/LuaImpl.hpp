@@ -133,8 +133,7 @@ public:
         FRX_LUA_FUNC(frxGetTempo, LuaImpl::frxGetTempo, double);
         FRX_LUA_FUNC(frxGetTimeSigNumerator, LuaImpl::frxGetTimeSigNumerator, int);
         FRX_LUA_FUNC(frxGetTimeSigDenominator, LuaImpl::frxGetTimeSigDenominator, int);
-        FRX_LUA_FUNC_3(frxAddTimer, LuaImpl::frxAddTimer, void, std::string, int, int);
-        typedef LOKI_TYPELIST_16(frxLog,
+        typedef LOKI_TYPELIST_15(frxLog,
             frxErr,
             frxWarn,
             frxTrace,
@@ -148,8 +147,7 @@ public:
             frxGetPpqPos,
             frxGetTimeSigNumerator,
             frxGetTimeSigDenominator,
-            frxGetTempo,
-            frxAddTimer) List;
+            frxGetTempo) List;
     };
     //-------------------------------------------------------------------------
     struct LuaCall { // frxlLua
@@ -274,8 +272,6 @@ public:
     int frxGetTimeSigDenominator();
     //-------------------------------------------------------------------------
     double frxGetTempo();
-    //-------------------------------------------------------------------------
-    void frxAddTimer(const std::string &luaCallback, int ms, int numRepetitions);
 public:
     ///////////////////////////////////////////////////////////////////////////
     // AWindowImpl

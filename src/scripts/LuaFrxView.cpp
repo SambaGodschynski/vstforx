@@ -50,6 +50,7 @@ slua::IgnoreReturn LuaFrxView::add(lua_State *lua)
     } catch(...) {
         slua::pushLuaError(lua, "unknown error");
     }
+    return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
 slua::IgnoreReturn LuaFrxView::addObject(lua_State *lua)
@@ -75,7 +76,7 @@ slua::IgnoreReturn LuaFrxView::addProcessor(lua_State *lua, const std::string &i
 	IFrxControl &frxctrl = getFrxControl(view);
     IViewModelMap::Ptr map = getViewModelMap(view);
 	FrxProcessorNodePtr res;
-   res = fac.getProcessorCreator(id)(view);
+    res = fac.getProcessorCreator(id)(view);
 	if (!res) {
         slua::pushLuaError(lua, "creation of " + id + " failed.");
 		return slua::IgnoreReturn();
@@ -183,9 +184,8 @@ void LuaFrxView::remove(lua_State *lua) {
         IFrxControl &frxctrl = getFrxControl(view);
         frxctrl.removeComponent(view, obj->getViewObject());
     } catch(const std::exception &ex) {
-        slua::pushLuaError(lua, std::string("removing failed: ") + ex.what());
+        // wenns nich geht dann gehts halt nich -- for convenience
     } catch(...) {
-        slua::pushLuaError(lua, "removing failed: unkown error");
     }
 }
 //-----------------------------------------------------------------------------
@@ -229,48 +229,38 @@ slua::IgnoreReturn LuaFrxView::getObjects(lua_State *lua) {
 	using namespace frx::gui::components;
     using namespace sambag::disco::components;
     try {
-        FrxCircuidViewPtr view = getView(lua);
-        if (!view) {
-            //not here because getview pushes error already: lua_pushnil(lua);
-            return slua::IgnoreReturn();
-        }
-        IViewModelMap::Ptr map = getViewModelMap(view);
+        FrxCircuidViewPtr view = getView();
         const FrxCircuidView::Components &comps =
             view->getContentPane()->getComponents();
-	
-        lua_createtable(lua, comps.size(), 0);
-        int top = lua_gettop(lua);
-    
-        int lua_index = 1;
-        BOOST_FOREACH(AComponentPtr c, comps) {
-            FrxComponent::Ptr vObj = boost::dynamic_pointer_cast<FrxComponent>(c);
-            if (!vObj) {
-                continue;
-            }
-            processing::ModelObject::Ptr mObj = map->getModelObject(vObj);
-            std::string type = vObj->getTypeId();
         
-            if (type.empty()) {
+        pushComponents(lua, comps);
+        
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unkown error");
+    }
+    return slua::IgnoreReturn();
+}
+//-----------------------------------------------------------------------------
+slua::IgnoreReturn LuaFrxView::getSelectedObjects(lua_State *lua) {
+    using namespace frx::gui;
+	using namespace frx::gui::components;
+    using namespace sambag::disco::components;
+    try {
+        FrxCircuidViewPtr view = getView();
+        const FrxSelection::ContentContainer & c =
+            view->getSelection()->getContent();
+        std::vector<AComponent::Ptr> vec;
+        vec.reserve(c.size());
+        BOOST_FOREACH(AComponent::WPtr x, c) {
+            AComponent::Ptr ptr = x.lock();
+            if (!ptr) {
                 continue;
             }
-            std::string id = com::IdParser(type).namespace_("lua").toString();
-            LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
-            if (!fac.isRegistered(id)) {
-                continue;
-            }
-            lua_pushnumber(lua, lua_index++);
-            LuaFrxObject::Ptr lobj = fac.createAndPush(
-                id,
-                lua,
-                mObj,
-                map
-            );
-            if (!lobj) {
-                lua_pushnil(lua);
-            }
-            lua_settable(lua, top);
+            vec.push_back(ptr);
         }
-        return slua::IgnoreReturn();
+        pushComponents(lua, vec);
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua, ex.what());
     } catch(...) {
@@ -401,7 +391,7 @@ slua::IgnoreReturn LuaFrxView::getByName(lua_State *lua, const std::string &name
             if (!x) {
                 continue;
             }
-            if(x->getName()==name) {
+            if(x->getName() == name) {
                 res = x;
                 break;
             }
@@ -444,7 +434,6 @@ namespace {
         std::string b = "frx.gui."+_b;
         b = boost::algorithm::replace_all_copy(b, ".", "\\.");
         b = boost::algorithm::replace_all_copy(b, "*", ".*?");
-        SAMBAG_LOG_TRACE<<a<<" "<<b;
         return boost::regex_match(a, boost::regex(b));
     }
 }
@@ -453,13 +442,11 @@ slua::IgnoreReturn LuaFrxView::getByType(lua_State *lua, const std::string &sera
 	using namespace frx::gui::components;
 	using namespace sambag::disco::components;
     using namespace frx::gui;
-    lua_createtable(lua, 0, 0);
-    int tbl = lua_gettop(lua), lua_index=0;
     try {
         FrxCircuidViewPtr view = getView();
-        IViewModelMap::Ptr map = getViewModelMap(view);
-        LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
-        const FrxCircuidView::Components &comps = view->getContentPane()->getComponents();
+        const FrxCircuidView::Components &comps =
+            view->getContentPane()->getComponents();
+        std::vector<sdc::AComponent::Ptr> res;
         std::string compType;
         BOOST_FOREACH(AComponentPtr c, comps) {
             FrxComponent::Ptr x = boost::dynamic_pointer_cast<FrxComponent>(c);
@@ -470,22 +457,9 @@ slua::IgnoreReturn LuaFrxView::getByType(lua_State *lua, const std::string &sera
             if(!_matchType(compType, serachid)) {
                 continue;
             }
-            if (compType.empty()) {
-                continue;
-            }
-            std::string id = com::IdParser(compType).namespace_("lua").toString();
-            if (!fac.isRegistered(id)) {
-                continue;
-            }
-            lua_pushinteger(lua, ++lua_index);
-            LuaFrxObject::Ptr lobj = fac.createAndPush(
-                id,
-                lua,
-                map->getModelObject(x),
-                map
-            );
-            lua_settable(lua, tbl);
+            res.push_back(x);
         }
+        pushComponents(lua, res);
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua, ex.what());
     } catch(...) {
@@ -528,7 +502,8 @@ void LuaFrxView::addLuaFields(lua_State *lua, int index) {
             bind(&LuaFrxView::getEntry, this, lua),
             bind(&LuaFrxView::getExit, this, lua),
             bind(&LuaFrxView::getByName, this, lua, _1),
-            bind(&LuaFrxView::getByType, this, lua, _1)
+            bind(&LuaFrxView::getByType, this, lua, _1),
+            bind(&LuaFrxView::getSelectedObjects, this, lua)
         ),
         index,
         getUId()

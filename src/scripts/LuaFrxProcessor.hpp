@@ -62,7 +62,6 @@ namespace {
         std::string ns="frx.gui.";
         LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
         BOOST_FOREACH(const std::string &id, ids) {
-            SAMBAG_LOG_TRACE<<id;
             std::string new_id = com::IdParser(ns+id).namespace_("lua").toString();
             res &= fac.registerCreator(
                 new_id,

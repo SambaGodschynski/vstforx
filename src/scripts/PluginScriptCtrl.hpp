@@ -88,6 +88,10 @@ private:
 	typedef boost::unordered_map<LuaPtr, ModelObjectPtr> ModelObjectMap;
 	ModelObjectMap modelObjectMap;
 public:
+    //-------------------------------------------------------------------------
+    sambag::com::RecursiveMutex & getMutex() {
+        return scriptCallMutex;
+    }
 	//-------------------------------------------------------------------------
 	/**
      * @param if is true functions are registered for public purpose

@@ -22,9 +22,6 @@ namespace slua = sambag::lua;
 //=============================================================================
 /** 
   * @class LuaModelObject.
-  * @brief lua representation of a @see FrxComponent.
-  * @because the view object is only available for one editor session
-  * we save the model object and access the view object via the view2model map.
   */
 class LuaModelObject : public slua::ALuaObject {
 //=============================================================================

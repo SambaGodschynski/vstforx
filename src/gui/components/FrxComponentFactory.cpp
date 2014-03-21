@@ -106,6 +106,24 @@ FrxProcessorNodePtr createProcessor(FrxCircuidViewPtr circ, std::string id)
     viewObj->__setTypeId_(
         pid.namespace_("gui").details("").numInputs(-1).numOutputs(-1).toString()
     );
+    
+    // add flag if processor == plugin
+    // flag
+	FrxFlag::Ptr flag = FrxFlag::create();
+	flag->setTarget(viewObj);
+	circ->add(flag, FrxCircuidView::Z_Flags, true);
+	frx::processing::IPluginAdapter::Ptr plAd = 
+		boost::dynamic_pointer_cast<frx::processing::IPluginAdapter>(mObj);
+	if (plAd) {
+        FrxPluginNode::Ptr plObj =
+            boost::dynamic_pointer_cast<FrxPluginNode>(viewObj);
+        if(plObj) {
+            plObj->setName(plAd->getName());
+            plObj->setUpperFlagText(plAd->getName());
+            plObj->setLowerFlagText(mObj->getStatusMessage());
+            plObj->isSynth( plAd->isSynth() );
+        }
+	}
 	return viewObj;
 }
 //-----------------------------------------------------------------------------
@@ -119,36 +137,8 @@ FrxProcessorNodePtr createPlugin(FrxCircuidViewPtr circ, ::processing::PluginInf
     std::string id = pI.getFactoryId();
     // remove frx.processing
     boost::algorithm::erase_first(id, "frx.processing.");
-    SAMBAG_LOG_TRACE<<id;
-    FrxPluginNode::Ptr viewObj = boost::dynamic_pointer_cast<FrxPluginNode>(
-        createProcessor(circ, id)
-    );
     
-	// create model obj.
-	frx::processing::IProcessor::Ptr mObj =
-        boost::dynamic_pointer_cast<frx::processing::IProcessor>(
-            getViewModelMap(circ)->getModelObject(viewObj)
-        );
-
-    if (!mObj) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"modelObject == NULL");
-	}
-
-    // flag
-	FrxFlag::Ptr flag = FrxFlag::create();
-	flag->setTarget(viewObj);
-	circ->add(flag, FrxCircuidView::Z_Flags, true);
-	frx::processing::IPluginAdapter::Ptr plAd = 
-		boost::dynamic_pointer_cast<frx::processing::IPluginAdapter>(mObj);
-	if (plAd) {
-		viewObj->setName(plAd->getName());
-		viewObj->setUpperFlagText(plAd->getName());
-		viewObj->setLowerFlagText(mObj->getStatusMessage());
-		viewObj->isSynth( plAd->isSynth() );
-	}
-	
-    return viewObj;
+    return createProcessor(circ, id);
 }
 //-----------------------------------------------------------------------------
 FrxParameterPtr createFreeParameter(FrxCircuidViewPtr circ) {

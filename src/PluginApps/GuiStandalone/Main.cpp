@@ -239,6 +239,7 @@ int main(int narg, char **args) {
 	scriptCtrl->appendJob( "frx.openPlugin()" );
 	scriptCtrl->appendJob( "frx.openEditor()" );
 	scriptCtrl->appendJob( "require\"scripts/util\"" );
+    scriptCtrl->appendJob( "require\"vstforx-helper\"" );
 	processScripts();
     processExecutes();
 	scriptCtrl->start();

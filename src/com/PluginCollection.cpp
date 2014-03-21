@@ -153,7 +153,7 @@ PluginCollection::PluginCollection() :
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-bool PluginCollection::isScanning() {
+bool PluginCollection::isScanning() const {
 	boost::unique_lock<boost::timed_mutex> lock( mutex, boost::try_to_lock);
 	if (!lock.owns_lock()) return true;
 	return false;

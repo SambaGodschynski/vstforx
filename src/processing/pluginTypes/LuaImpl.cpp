@@ -536,35 +536,6 @@ double LuaImpl::frxGetTempo() {
     }
     return inf->tempo;
 }
-//-----------------------------------------------------------------------------
-void LuaImpl::onTimer(const std::string &luaCallback) {
-    if(!sambag::lua::hasFunction(luaState.get(), luaCallback.c_str())) {
-        std::stringstream ss;
-		ss<<"timer callback: '"<<luaCallback<<"' not found.";
-		lua_pushstring (luaState.get(), ss.str().c_str());
-		lua_error(luaState.get());
-        return;
-    }
-    try {
-       sambag::lua::callLuaFunc(luaState.get(), luaCallback.c_str());
-    } catch( const sambag::lua::LuaException &ex ) {
-		scriptFailed(ex.errMsg);
-	} catch(...) {
-        scriptFailed("calling " + luaCallback + " failed");
-    }
-}
-//-----------------------------------------------------------------------------
-void LuaImpl::frxAddTimer(const std::string &luaCallback, int ms, int numRepetitions)
-{
-    typedef FrxAsyncDSPTimer Timer;
-    Timer::Ptr timer = Timer::create(ms);
-    timer->sce::EventSender<Timer::Event>::addTrackedEventListener(
-        boost::bind(&LuaImpl::onTimer, this, luaCallback),
-        luaState
-    );
-    timer->setNumRepetitions(numRepetitions);
-    timer->start();
-}
 ///////////////////////////////////////////////////////////////////////////////
 // template magic
 //-----------------------------------------------------------------------------

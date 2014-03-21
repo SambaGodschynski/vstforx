@@ -29,7 +29,14 @@ protected:
     virtual void addLuaFields(lua_State * lua, int index);
     //-------------------------------------------------------------------------
     LuaFrxConnection();
+    SAMBAG_LUA_FTAG(getObjects, slua::IgnoreReturn2());
+    ///////////////////////////////////////////////////////////////////////////
+    typedef LOKI_TYPELIST_1(Frx_getObjects_Tag
+    ) Functions1;
+    slua::IgnoreReturn2 getObjects(lua_State *lua) const;
 private:
+    //-------------------------------------------------------------------------
+    void pushComponent(lua_State *lua, fgc::FrxComponentPtr c) const;
 public:
     //-------------------------------------------------------------------------
     static Ptr createAndPush(lua_State * lua,

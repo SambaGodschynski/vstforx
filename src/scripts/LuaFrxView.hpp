@@ -12,6 +12,8 @@
 #include <sambag/lua/ALuaObject.hpp>
 #include "LuaFrxObject.hpp"
 #include <gui/HandyNamespaces.hpp>
+#include <sambag/disco/components/Forward.hpp>
+#include <gui/components/FrxCircuidView.hpp>
 
 namespace frx {
 namespace gui { namespace components {
@@ -35,6 +37,12 @@ public:
     typedef sambag::lua::ALuaObject Super;
 protected:
     //-------------------------------------------------------------------------
+    /**
+     * @brief push components representations into lua stack 
+     */
+    template <class Container>
+    void pushComponents(lua_State *lua, const Container &components);
+    //-------------------------------------------------------------------------
     virtual void addLuaFields(lua_State *lua, int index);
     //-------------------------------------------------------------------------
     LuaFrxView();
@@ -56,6 +64,7 @@ protected:
     SAMBAG_LUA_FTAG(getExit, slua::IgnoreReturn());
     SAMBAG_LUA_FTAG(getByName, slua::IgnoreReturn(std::string));
     SAMBAG_LUA_FTAG(getByType, slua::IgnoreReturn(std::string));
+    SAMBAG_LUA_FTAG(getSelectedObjects, slua::IgnoreReturn());
     typedef LOKI_TYPELIST_10(Frx_add_Tag,
         Frx_remove_Tag,
         Frx_getObjects_Tag,
@@ -67,10 +76,11 @@ protected:
         Frx_getSize_Tag,
         Frx_setSize_Tag) Functions1;
     
-    typedef LOKI_TYPELIST_4(Frx_getEntry_Tag,
+    typedef LOKI_TYPELIST_5(Frx_getEntry_Tag,
         Frx_getExit_Tag,
         Frx_getByName_Tag,
-        Frx_getByType_Tag
+        Frx_getByType_Tag,
+        Frx_getSelectedObjects_Tag
     ) Functions2;
     ///////////////////////////////////////////////////////////////////////////
     // Lua impl.
@@ -80,6 +90,7 @@ protected:
     slua::IgnoreReturn addProcessorParameter(lua_State *lua);
     void remove(lua_State *lua);
     slua::IgnoreReturn getObjects(lua_State *lua);
+    slua::IgnoreReturn getSelectedObjects(lua_State *lua);
     slua::IgnoreReturn connect(lua_State *lua);
     slua::IgnoreReturn addKnob(lua_State *lua);
     slua::IgnoreReturn addHostKnob(lua_State *lua, int index);
@@ -101,6 +112,52 @@ public:
     static Ptr createAndPush(lua_State *lua,
         fgc::VstForxEditor *editor);
 }; // LuaFrxView
+///////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------
+template <class Container>
+void LuaFrxView::pushComponents(lua_State *lua, const Container &components) {
+    using namespace frx::gui;
+	using namespace frx::gui::components;
+    using namespace sambag::disco::components;
+    
+    IViewModelMap::Ptr map = getViewModelMap(getView());
+    
+    lua_createtable(lua, components.size(), 0);
+    int top = lua_gettop(lua);
+    
+    int lua_index = 1;
+    BOOST_FOREACH(const typename Container::value_type &_c, components) {
+        AComponentPtr c = _c;
+        FrxComponent::Ptr vObj = boost::dynamic_pointer_cast<FrxComponent>(c);
+        if (!vObj) {
+            continue;
+        }
+        processing::ModelObject::Ptr mObj = map->getModelObject(vObj);
+        std::string type = vObj->getTypeId();
+        
+        if (type.empty()) {
+            continue;
+        }
+        std::string id = com::IdParser(type).namespace_("lua").toString();
+        LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
+        if (!fac.isRegistered(id)) {
+            continue;
+        }
+        lua_pushnumber(lua, lua_index++);
+        LuaFrxObject::Ptr lobj = fac.createAndPush(
+            id,
+            lua,
+            mObj,
+            map
+        );
+        if (!lobj) {
+            lua_pushnil(lua);
+        }
+        lua_settable(lua, top);
+    }
+}
+
+
 }} // namespace(s)
 #endif  // FORX_LuaFrxView_H
 
