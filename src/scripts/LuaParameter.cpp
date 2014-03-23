@@ -7,7 +7,7 @@
 
 #include "LuaParameter.hpp"
 #include <sambag/com/Common.hpp>
-#include <processing/IParameter.hpp>
+#include <processing/parameter/parameter.h>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 
 namespace frx { namespace scripts {
@@ -45,10 +45,10 @@ LuaParameter::createAndPush(lua_State * lua, ModelObject::Ptr obj) {
 }
 //-----------------------------------------------------------------------------
 void LuaParameter::setValue(lua_State * lua, float v) {
-    using frx::processing::IParameter;
+    using ::processing::parameter::Parameter;
     try {
-        IParameter::Ptr x =
-            boost::dynamic_pointer_cast<IParameter>(getModelObject());
+        Parameter::Ptr x =
+            boost::dynamic_pointer_cast<Parameter>(getModelObject());
         return x->setValue(v);
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua, ex.what());
@@ -58,10 +58,10 @@ void LuaParameter::setValue(lua_State * lua, float v) {
 }
 //-----------------------------------------------------------------------------
 float LuaParameter::getValue(lua_State * lua) const {
-    using frx::processing::IParameter;
+    using ::processing::parameter::Parameter;
     try {
-        IParameter::Ptr x =
-            boost::dynamic_pointer_cast<IParameter>(getModelObject());
+        Parameter::Ptr x =
+            boost::dynamic_pointer_cast<Parameter>(getModelObject());
         return x->getValue();
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua, ex.what());
@@ -72,10 +72,10 @@ float LuaParameter::getValue(lua_State * lua) const {
 }
 //-----------------------------------------------------------------------------
 std::string LuaParameter::getName(lua_State * lua) const {
-    using frx::processing::IParameter;
+    using ::processing::parameter::Parameter;
     try {
-        IParameter::Ptr x =
-            boost::dynamic_pointer_cast<IParameter>(getModelObject());
+        Parameter::Ptr x =
+            boost::dynamic_pointer_cast<Parameter>(getModelObject());
         return x->getName();
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua, ex.what());

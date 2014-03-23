@@ -12,7 +12,7 @@
 #include "LuaFrxIO.hpp"
 #include <gui/components/FrxCircuidView.hpp>
 #include <exception>
-#include "LuaParameter.hpp"
+#include "LuaFrxParameter.hpp"
 #include <processing/IParameter.hpp>
 
 namespace frx { namespace scripts {
@@ -62,6 +62,7 @@ slua::IgnoreReturn LuaFrxProcessor::getOutputs(lua_State *lua) const {
             return slua::IgnoreReturn();
         }
         IViewModelMap::Ptr map;
+        map = getViewModelMap();
         const FrxProcessorNode::IOContainer &cont = obj->getOutputs();
         lua_createtable(lua, cont.size(), 0);
         int top = lua_gettop(lua);
@@ -83,8 +84,12 @@ slua::IgnoreReturn LuaFrxProcessor::getOutputs(lua_State *lua) const {
 //-----------------------------------------------------------------------------
 slua::IgnoreReturn LuaFrxProcessor::getParameters(lua_State *lua) const {
     using frx::processing::IParameter;
+    using namespace frx::gui;
+    using namespace frx::gui::components;
     try {
         ModelObject::Ptr obj = getModelObject();
+        IViewModelMap::Ptr map;
+        map = getViewModelMap();
         ModelObject::Parameters parameters;
         obj->getParameters("*", parameters);
         lua_createtable(lua, parameters.size(), 0);
@@ -92,7 +97,7 @@ slua::IgnoreReturn LuaFrxProcessor::getParameters(lua_State *lua) const {
         int lua_index = 0;
         BOOST_FOREACH(IParameter::Ptr x, parameters) {
             lua_pushinteger(lua, ++lua_index);
-            LuaParameter::createAndPush(lua, x);
+            LuaFrxParameter::createAndPush(lua, x, map, "frx.lua.parameter.StdKnob");
             int table = lua_gettop(lua);
             lua_pushstring(lua, getUId().c_str());
             lua_setfield(lua, table, "__processor");

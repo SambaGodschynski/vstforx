@@ -61,7 +61,7 @@ slua::IgnoreReturn LuaFrxView::addObject(lua_State *lua)
     }
     boost::tuple<std::string> id;
     slua::pop(lua, id);
-    if (boost::get<0>(id)=="frx.lua.parameter.Parameter") {
+    if (boost::get<0>(id)=="frx.lua.parameter.StdKnob") {
         return addProcessorParameter(lua);
     }
     throw std::runtime_error("cannot add " + boost::get<0>(id));
@@ -104,15 +104,14 @@ slua::IgnoreReturn LuaFrxView::addProcessorParameter(lua_State *lua) {
     slua::pop(lua, prId);
     LuaFrxObject::Ptr fobj = LuaFrxObject::getByUId(boost::get<0>(prId));
     // get object
-    LuaModelObject::Ptr mobj = LuaModelObject::getFromLuaStack(lua, -1);
-    
+    LuaFrxObject::Ptr vobj = LuaFrxObject::getFromLuaStack(lua, -1);
     using frx::processing::IParameter;
     IParameter::Ptr par =
-        boost::dynamic_pointer_cast<IParameter>(mobj->getModelObject());
+        boost::dynamic_pointer_cast<IParameter>(vobj->getModelObject());
     SAMBAG_ASSERT(par);
     FrxComponent::Ptr res =
         frxctrl.addRelatedKnobToView(view, fobj->getViewObject(), par);
-    LuaFrxParameter::createAndPush(lua, mobj->getModelObject(), map, "frx.lua.parameter.StdKnob");
+    
     return slua::IgnoreReturn();
 }
 
@@ -285,8 +284,9 @@ boost::tuple<float,float> LuaFrxView::getLocation(lua_State *lua) const {
 }
 //-----------------------------------------------------------------------------
 void LuaFrxView::setLocation(lua_State *lua, float x, float y) {
-   using namespace frx::gui;
+    using namespace frx::gui;
     using namespace frx::gui::components;
+    
     FrxCircuidViewPtr view = getView(lua);
     if (!view) {
         return;

@@ -8,6 +8,7 @@
 #include "LuaFrxParameter.hpp"
 #include <sambag/com/Common.hpp>
 #include <gui/components/FrxParameter.hpp>
+#include <processing/IParameter.hpp>
 
 namespace frx { namespace scripts {
 //=============================================================================
@@ -21,23 +22,36 @@ std::string LuaFrxParameter::toString(lua_State * lua) const {
 }
 //-----------------------------------------------------------------------------
 void LuaFrxParameter::setValue(lua_State * lua, float v) {
-    using frx::gui::components::FrxParameter;
-    FrxParameter::Ptr p =
-        boost::dynamic_pointer_cast<FrxParameter>(getViewObject(lua));
-    if (!p) {
-        return;
+    try {
+        using frx::processing::IParameter;
+        IParameter::Ptr p =
+            boost::dynamic_pointer_cast<IParameter>(getModelObject());
+        if (!p) {
+            return;
+        }
+        p->setValue(v);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unknown error");
     }
-    p->getRangeModel()->setValue(v);
 }
 //-----------------------------------------------------------------------------
 float LuaFrxParameter::getValue(lua_State * lua) const {
-    using frx::gui::components::FrxParameter;
-    FrxParameter::Ptr p =
-        boost::dynamic_pointer_cast<FrxParameter>(getViewObject(lua));
-    if (!p) {
-        return 0;
+    try {
+        using frx::processing::IParameter;
+        IParameter::Ptr p =
+            boost::dynamic_pointer_cast<IParameter>(getModelObject());
+        if (!p) {
+            return 0.f;
+        }
+        return p->getValue();
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unknown error");
     }
-    return p->getRangeModel()->getValue();
+    return 0.f;
 }
 //-----------------------------------------------------------------------------
 void LuaFrxParameter::addLuaFields(lua_State *lua, int index) {

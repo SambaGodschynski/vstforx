@@ -11,7 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <sambag/lua/ALuaObject.hpp>
-#include <processing/ModelObject.hpp>
+#include <processing/PObject.h>
 #include <gui/IViewModelMap.hpp>
 #include <boost/unordered_map.hpp>
 #include <map>
@@ -22,6 +22,7 @@ namespace slua = sambag::lua;
 //=============================================================================
 /** 
   * @class LuaModelObject.
+  * @brief representation of a @see processing::PObject
   */
 class LuaModelObject : public slua::ALuaObject {
 //=============================================================================
@@ -33,7 +34,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::weak_ptr<LuaModelObject> WPtr;
     //-------------------------------------------------------------------------
-    typedef frx::processing::ModelObject ModelObject;
+    typedef ::processing::PObject ModelObject;
     //-------------------------------------------------------------------------
     typedef boost::unordered_map<UId, LuaModelObject::WPtr> UIdMap;
 private:
