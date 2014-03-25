@@ -27,7 +27,7 @@ end
 function lcSetAudioConfig(bs, sr)
    sampleRate = sr
    setBuffer()
-   frxLog("audioConfig set")
+   frx.log("audioConfig set")
 end 
 
 function initParam()
@@ -47,7 +47,7 @@ function setFFTTable()
    n = buffSize/2
    for index=1, buffSize, 1 do
       if index < numBand then
-	 r[index] = p[key(index)]
+	 r[index] = p[key(index)]:getValue()
       else
 	 r[index] = 0
       end
@@ -58,26 +58,25 @@ end
 
 function setBuffer()
    r, i = setFFTTable()
-   i, _ENV.bff = frxFFT(i, r, buffSize)
+   i, _ENV.bff = frx.plug:fft(i, r)
 end
 
 function lcProcess(numSamples)
    v={}
    for i=1, numSamples, 1 do
       v[i] = bff[math.floor(phase)]
-      phase = phase + p['frq'] * (buffSize/sampleRate)
+      phase = phase + _ENV.frq * (buffSize/sampleRate)
       if phase > buffSize then
 	 phase = 1 + phase - buffSize
       end
    end 
-   frxToOutput(1, v)
-   frxToOutput(2, v)
+   frx.plug:toOutput(1, v)
+   frx.plug:toOutput(2, v)
 end
 
-function lcOnParameterChanged(name, value)
-   if name=='frq' then
-      value = value * maxFrq
+function lcOnParameterChanged(x)
+   if x == p['frq'] then
+      _ENV.frq = x:getValue() * maxFrq
    end
-   p[name] = value
    setBuffer()
 end

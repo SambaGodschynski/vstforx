@@ -13,7 +13,15 @@
 #include <sambag/com/events/Events.hpp>
 #include <sambag/dsp/HostTimeInfo.hpp>
 
-namespace frx { namespace processing {
+namespace frx {
+
+namespace scripts {
+    class PluginScriptCtrl;
+    typedef boost::shared_ptr<PluginScriptCtrl> PluginScriptCtrlPtr;
+    typedef boost::weak_ptr<PluginScriptCtrl> PluginScriptCtrlWPtr;
+}
+
+namespace processing {
 namespace sce = sambag::com::events;
 //=============================================================================
 // Event HostChanged
@@ -83,6 +91,8 @@ struct IHostInfo {
 	 *         the return value means.
 	 */
 	virtual bool ioChanged() = 0;
+    //-------------------------------------------------------------------------
+    virtual scripts::PluginScriptCtrlPtr getScriptController() const = 0;
 	///////////////////////////////////////////////////////////////////////////
 	// Events
 	//-------------------------------------------------------------------------

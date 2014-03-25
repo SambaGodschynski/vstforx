@@ -13,83 +13,12 @@
 #include <sambag/lua/LuaMap.hpp>
 #include <sambag/lua/LuaHelper.hpp>
 #include <sambag/lua/LuaSequence.hpp>
+#include <sambag/lua/ALuaObject.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include <boost/unordered_map.hpp>
 #include <processing/parameter/parameter.h>
 #include <loki/Typelist.h>
 
-#define FRX_LUA_FUNC(_name,impl,r1)                                            \
-struct _name {                                                                 \
-    typedef boost::function<r1()> Function;                                    \
-    static const char * name() { return #_name ; }                             \
-    template <class T>                                                         \
-    static void reg(sambag::lua::LuaStateRef l, T *master) {                   \
-        sambag::lua::registerFunction<_name>(                                  \
-            l.get(),                                                           \
-            boost::bind(&impl, master)                                         \
-        );                                                                     \
-    }                                                                          \
-}
-#define FRX_LUA_FUNC_1(_name,impl,r1,a1)                                       \
-struct _name {                                                                 \
-    typedef boost::function<r1(a1)> Function;                                  \
-    static const char * name() { return #_name ; }                             \
-    template <class T>                                                         \
-    static void reg(sambag::lua::LuaStateRef l, T *master) {                   \
-        sambag::lua::registerFunction<_name>(                                  \
-            l.get(),                                                           \
-            boost::bind(&impl, master, _1)                                     \
-        );                                                                     \
-    }                                                                          \
-}
-#define FRX_LUA_FUNC_2(_name,impl,r1,a1,a2)                                    \
-struct _name {                                                                 \
-    typedef boost::function<r1(a1,a2)> Function;                               \
-    static const char * name() { return #_name ; }                             \
-    template <class T>                                                         \
-    static void reg(sambag::lua::LuaStateRef l, T *master) {                   \
-        sambag::lua::registerFunction<_name>(                                  \
-            l.get(),                                                           \
-            boost::bind(&impl, master, _1, _2)                                 \
-        );                                                                     \
-    }                                                                          \
-}
-#define FRX_LUA_FUNC_3(_name,impl,r1,a1,a2,a3)                                 \
-struct _name {                                                                 \
-    typedef boost::function<r1(a1,a2,a3)> Function;                            \
-    static const char * name() { return #_name ; }                             \
-    template <class T>                                                         \
-    static void reg(sambag::lua::LuaStateRef l, T *master) {                   \
-        sambag::lua::registerFunction<_name>(                                  \
-            l.get(),                                                           \
-            boost::bind(&impl, master, _1, _2,_3)                              \
-        );                                                                     \
-    }                                                                          \
-}
-#define FRX_LUA_FUNC_4(_name,impl,r1,a1,a2,a3,a4)                              \
-struct _name {                                                                 \
-    typedef boost::function<r1(a1,a2,a3,a4)> Function;                         \
-    static const char * name() { return #_name ; }                             \
-    template <class T>                                                         \
-    static void reg(sambag::lua::LuaStateRef l, T *master) {                   \
-        sambag::lua::registerFunction<_name>(                                  \
-            l.get(),                                                           \
-            boost::bind(&impl, master, _1, _2,_3,_4)                           \
-        );                                                                     \
-    }                                                                          \
-}
-#define FRX_LUA_FUNC_5(_name,impl,r1,a1,a2,a3,a4,a5)                           \
-struct _name {                                                                 \
-    typedef boost::function<r1(a1,a2,a3,a4,a5)> Function;                      \
-    static const char * name() { return #_name ; }                             \
-    template <class T>                                                         \
-    static void reg(sambag::lua::LuaStateRef l, T *master) {                   \
-        sambag::lua::registerFunction<_name>(                                  \
-            l.get(),                                                           \
-            boost::bind(&impl, master, _1, _2,_3,_4,_5)                        \
-        );                                                                     \
-    }                                                                          \
-}
 
 #define LUA_CALL(_name)                                                        \
 struct _name {                                                                 \
@@ -117,38 +46,25 @@ public:
 	// r,i
 	typedef boost::tuple< LuaFloatSeq, LuaFloatSeq > FFTData;
     //-------------------------------------------------------------------------
-    struct FrxFunctions { // lua2frx
-        FRX_LUA_FUNC_1(frxLog, LuaImpl::log, void, std::string);
-        FRX_LUA_FUNC_1(frxErr, LuaImpl::log_err,void, std::string);
-        FRX_LUA_FUNC_1(frxWarn, LuaImpl::log_warn,void, std::string);
-        FRX_LUA_FUNC_1(frxTrace, LuaImpl::log_trace,void, std::string);
-        FRX_LUA_FUNC_2(frxSetParameterValue, LuaImpl::frxSetParameterValue,void, std::string, float);
-        FRX_LUA_FUNC_2(frxSetParameterDisplay, LuaImpl::frxSetParameterDisplay,void, std::string, std::string);
-        FRX_LUA_FUNC_1(frxGetInput, LuaImpl::frxGetInput, LuaImpl::LuaFrames, int);
-        FRX_LUA_FUNC_1(frxFFT, LuaImpl::frxFFT,LuaImpl::FFTData, int);
-        FRX_LUA_FUNC(frxToOutput, LuaImpl::frxToOutput, void);
-        FRX_LUA_FUNC(frxGetSamplePos, LuaImpl::frxGetSamplePos, double);
-        FRX_LUA_FUNC(frxGetBarStartPos, LuaImpl::frxGetBarStartPos, double);
-        FRX_LUA_FUNC(frxGetPpqPos, LuaImpl::frxGetPpqPos, double);
-        FRX_LUA_FUNC(frxGetTempo, LuaImpl::frxGetTempo, double);
-        FRX_LUA_FUNC(frxGetTimeSigNumerator, LuaImpl::frxGetTimeSigNumerator, int);
-        FRX_LUA_FUNC(frxGetTimeSigDenominator, LuaImpl::frxGetTimeSigDenominator, int);
-        typedef LOKI_TYPELIST_15(frxLog,
-            frxErr,
-            frxWarn,
-            frxTrace,
-            frxSetParameterValue,
-            frxSetParameterDisplay,
-            frxGetInput,
-            frxFFT,
-            frxToOutput,
-            frxGetSamplePos,
-            frxGetBarStartPos, // 10
-            frxGetPpqPos,
-            frxGetTimeSigNumerator,
-            frxGetTimeSigDenominator,
-            frxGetTempo) List;
-    };
+    SAMBAG_LUA_FTAG(getInput,  LuaImpl::LuaFrames(int));
+    SAMBAG_LUA_FTAG(fft,  LuaImpl::FFTData());
+    SAMBAG_LUA_FTAG(toOutput, void());
+    SAMBAG_LUA_FTAG(getSamplePos, double());
+    SAMBAG_LUA_FTAG(getBarStartPos, double());
+    SAMBAG_LUA_FTAG(getPpqPos, double());
+    SAMBAG_LUA_FTAG(getTempo, double());
+    SAMBAG_LUA_FTAG(getTimeSigNumerator, int());
+    SAMBAG_LUA_FTAG(getTimeSigDenominator, int());
+    typedef LOKI_TYPELIST_9(Frx_getInput_Tag,
+        Frx_fft_Tag,
+        Frx_toOutput_Tag,
+        Frx_getSamplePos_Tag,
+        Frx_getBarStartPos_Tag,
+        Frx_getPpqPos_Tag,
+        Frx_getTimeSigNumerator_Tag,
+        Frx_getTimeSigDenominator_Tag,
+        Frx_getTempo_Tag
+    ) Functions1;
     //-------------------------------------------------------------------------
     struct LuaCall { // frxlLua
        	LUA_CALL(lcOnParameterChanged);
@@ -169,6 +85,14 @@ public:
         IsValid
     };
 private:
+   //-------------------------------------------------------------------------
+    void log(const std::string &msg);
+    //-------------------------------------------------------------------------
+    void log_err(const std::string &msg);
+    //-------------------------------------------------------------------------
+    void log_warn(const std::string &msg);
+    //-------------------------------------------------------------------------
+    void log_trace(const std::string &msg);
     //-------------------------------------------------------------------------
 	typedef std::pair<oldPrPa::Parameter::Ptr,
         oldPrPa::Parameter::Connection> ParameterContainer;
@@ -179,7 +103,7 @@ private:
     //-------------------------------------------------------------------------
 	sambag::lua::LuaStateRef luaState;
 	//-------------------------------------------------------------------------
-	void registerFunctions(sambag::lua::LuaStateRef luaState);
+	void initLuaEnv(sambag::lua::LuaStateRef luaState);
     //-------------------------------------------------------------------------
     std::string scriptFile;
     //-------------------------------------------------------------------------
@@ -229,19 +153,11 @@ public:
     ///////////////////////////////////////////////////////////////////////////
     // lua2frx impl
     //-------------------------------------------------------------------------
-    void log(const std::string &msg);
-    //-------------------------------------------------------------------------
-    void log_err(const std::string &msg);
-    //-------------------------------------------------------------------------
-    void log_warn(const std::string &msg);
-    //-------------------------------------------------------------------------
-    void log_trace(const std::string &msg);
-    //-------------------------------------------------------------------------
     void scriptFailed(const std::string &msg);
     //-------------------------------------------------------------------------
     void loadScript();
     //-------------------------------------------------------------------------
-    void loadParameter();
+    void loadParameters();
     //-------------------------------------------------------------------------
     void loadIOs();
     //-------------------------------------------------------------------------
@@ -253,13 +169,9 @@ public:
     //-------------------------------------------------------------------------
     LuaFrames frxGetInput(int channel);
     //-------------------------------------------------------------------------
-    FFTData frxFFT(int numSamples);
+    FFTData frxFFT();
     //-------------------------------------------------------------------------
     void frxToOutput();
-    //-------------------------------------------------------------------------
-    void frxSetParameterValue(const std::string &name, float value);
-    //-------------------------------------------------------------------------
-    void frxSetParameterDisplay(const std::string &name, const std::string &value);
     //-------------------------------------------------------------------------
     double frxGetSamplePos();
     //-------------------------------------------------------------------------

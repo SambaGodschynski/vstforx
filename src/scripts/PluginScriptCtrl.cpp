@@ -212,6 +212,24 @@ namespace {
 		static slua::IgnoreReturn process(const std::string &, int, int, Ctrl *ctrl);
 	};
 	//-------------------------------------------------------------------------
+	struct FrxSetPersistData {
+		typedef boost::function<void()> Function;
+		static const char * name() { return "setPersistData"; }
+		static void process(Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxGetPersistData {
+		typedef boost::function<slua::IgnoreReturn(std::string)> Function;
+		static const char * name() { return "getPersistData"; }
+		static slua::IgnoreReturn process(const std::string &, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxLog {
+		typedef boost::function<void(std::string)> Function;
+		static const char * name() { return "log"; }
+		static void process(const std::string &, Ctrl *ctrl);
+	};
+	//-------------------------------------------------------------------------
 	typedef LOKI_TYPELIST_7(FrxOpenPlugin,
 		FrxClosePlugin,
 		FrxOpenEditor,
@@ -221,7 +239,7 @@ namespace {
 		FrxSetEditorExitOnClose
     ) FrxPrivateFunctionList;
 	//-------------------------------------------------------------------------
-	typedef LOKI_TYPELIST_17(
+	typedef LOKI_TYPELIST_20(
 		FrxWait,
 		FrxGetLastBrowserSelection,
 	    FrxSerializePlugin,
@@ -238,8 +256,59 @@ namespace {
         FrxGetVersionInteger,
         FrxResetMainMenu,
         FrxQueryDB,
-        FrxAddTimer
+        FrxAddTimer,
+        FrxSetPersistData,
+        FrxGetPersistData,
+/*20*/  FrxLog
 	) FrxPublicFunctionList;
+//-----------------------------------------------------------------------------
+void FrxLog::process(const std::string &msg, Ctrl *ctrl) {
+    SAMBAG_LOG_INFO<<msg;
+}
+//-----------------------------------------------------------------------------
+void FrxSetPersistData::process(Ctrl *ctrl)
+{
+    PluginScriptCtrl::LuaState l = ctrl->getLuaState();
+    try {
+        if(!lua_isstring(l.first.get(), -2)) {
+            throw std::runtime_error("arguments mismatch");
+        }
+        std::string key( lua_tostring(l.first.get(), -2) );
+
+        if(!lua_istable(l.first.get(), -1)) {
+            throw std::runtime_error("arguments mismatch");
+        }
+        int index = -1;
+        lua_pushnil(l.first.get()); /* first key */
+        --index;
+        while (lua_next(l.first.get(), index) != 0) {
+            boost::tuple<std::string> value;
+            slua::pop(l.first.get(), value);
+            ctrl->getPersistUserData().insert(std::make_pair(
+                key,
+                boost::get<0>(value)));
+        }
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(l.first.get(), ex.what());
+    } catch (...) {
+        slua::pushLuaError(l.first.get(), "unkown error");
+    }
+}
+//-----------------------------------------------------------------------------
+slua::IgnoreReturn FrxGetPersistData::process(const std::string &key, Ctrl *ctrl){
+    Ctrl::PersistUserData::iterator it, end;
+    boost::tie(it, end) = ctrl->getPersistUserData().equal_range(key);
+    PluginScriptCtrl::LuaState l = ctrl->getLuaState();
+    lua_createtable(l.first.get(), 0, 0);
+    int tbl = lua_gettop(l.first.get());
+    int index=0;
+    for(; it!=end; ++it) {
+        lua_pushinteger(l.first.get(), ++index);
+        lua_pushstring(l.first.get(), it->second.c_str());
+        lua_settable(l.first.get(), tbl);
+    }
+    return slua::IgnoreReturn();
+}
 //-----------------------------------------------------------------------------
 slua::IgnoreReturn FrxAddTimer::
 process(const std::string &luaCallback, int ms, int numRepetitions, Ctrl *ctrl)
@@ -580,7 +649,7 @@ void PluginScriptCtrl::setPlugin(frx::processing::VstForxPlug *plug) {
     
     using namespace sambag::lua;
 	luaState = createLuaStateRef();
-	registerFunctions(luaState, isPublic);
+	registerFunctions(luaState, isPublic, true);
 }
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::appendJob(const std::string &str) {
@@ -728,7 +797,8 @@ struct Accessor {
 
 } // namespace(s)
 //-----------------------------------------------------------------------------
-void PluginScriptCtrl::registerFunctions(sambag::lua::LuaStateRef luaState, bool isPublic)
+void PluginScriptCtrl::registerFunctions(sambag::lua::LuaStateRef luaState,
+    bool isPublic, bool includeView)
 {
     if (isPublic) {
         typedef Loki::TL::NoDuplicates<FrxPublicFunctionList>::Result Fz; // arf
@@ -744,9 +814,11 @@ void PluginScriptCtrl::registerFunctions(sambag::lua::LuaStateRef luaState, bool
         );
 
     }
-    lua_getglobal(luaState.get(), "frx");
-    int index = lua_gettop(luaState.get());
-    LuaFrxView::createAndPush(luaState.get(), editor);
-    lua_setfield(luaState.get(), index, "view");
+    if (includeView) {
+        lua_getglobal(luaState.get(), "frx");
+        int index = lua_gettop(luaState.get());
+        LuaFrxView::createAndPush(luaState.get(), editor);
+        lua_setfield(luaState.get(), index, "view");
+    }
 }
 }} // namespace(s)

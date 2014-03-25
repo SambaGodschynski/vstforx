@@ -70,6 +70,9 @@ namespace {
         virtual MasterType getMasterType() const {
 			return hostInfo->getMasterType();
 		}
+        virtual scripts::PluginScriptCtrlPtr getScriptController() const {
+            return hostInfo->getScriptController();
+        }
         int archiveVersion;
 	};
 	//-------------------------------------------------------------------------
@@ -473,6 +476,8 @@ void VstForxPlug::save(std::ostream &os) {
 	ar & hostInfoAdapter;
 	ar & graph;
 	saveEditor(ar);
+    // script ctrl user data
+    ar & getScriptCtrl()->getPersistUserData();
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::load(std::istream &is, int version) {
@@ -508,6 +513,10 @@ void VstForxPlug::load(std::istream &is, int version) {
 		janitor->hostBaseConfigChanged();
 	}
 	initHostParameter();
+    // script ctrl user data
+    if (version>0) {
+        ar & getScriptCtrl()->getPersistUserData();
+    }
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::onScriptExeFailed(const frx::scripts::ScriptExeFailedEvent &ev)

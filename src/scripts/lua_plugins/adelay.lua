@@ -7,10 +7,13 @@ gpConfig = {
    numInputs=2, 
    numOutputs=2
 }
-gpParameterSetup = { direct = 0.5, delay=0.5, feedback=0.4 }
-p = gpParameterSetup
-maxbuff = 44100
 
+
+gpParameterSetup={direct=0.5, delay=0.5, feedback=0.4}
+p=gpParameterSetup
+
+plug=frx.plug
+maxbuff = 44100
 
 function initBuffer(numSamples)
    res={}
@@ -25,30 +28,31 @@ cursor = 1
 
 function incCursor()
    cursor = cursor + 1
-   if cursor > p['delay'] then
+   if cursor > p['delay']:getValue() * maxbuff then
       cursor = 1
    end
 end
 
 
 function lcProcess(numSamples)
-   l = frxGetInput(1)
-   r = frxGetInput(2)
+   l = plug:getInput(1)
+   r = plug:getInput(2)
    for i=1, numSamples, 1 do
       x = l[i]
       y = buffer[cursor]
-      buffer[cursor] = x + y * p['feedback']
+      buffer[cursor] = x + y * p['feedback']:getValue()
       incCursor()
-      l[i] = y + p['direct'] * l[i]
-      r[i] = y + p['direct'] * r[i]
+      l[i] = y + p['direct']:getValue() * l[i]
+      r[i] = y + p['direct']:getValue() * r[i]
    end
-   frxToOutput(1, l)
-   frxToOutput(2, r)
+   frx.plug:toOutput(1, l)
+   frx.plug:toOutput(2, r)
 end
 
-function lcOnParameterChanged(name,value)
-   if name=='delay' then
-      value = value * maxbuff
-   end
-   p[name]=value
+
+function lcOnParameterChanged(x)
+   --if name=='delay' then
+     --value = value * maxbuff
+   --end
+   print(x)
 end

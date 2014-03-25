@@ -67,6 +67,9 @@ namespace {
         float sampleRate;
         int blockSize;
         BridgePluginDelegate *master;
+        scripts::PluginScriptCtrlPtr getScriptController() const {
+            return scripts::PluginScriptCtrlPtr();
+        }
     };
 } // namespace
 

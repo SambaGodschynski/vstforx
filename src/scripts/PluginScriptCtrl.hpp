@@ -22,7 +22,8 @@
 #include <boost/unordered_map.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include <processing/ModelObject.hpp>
-
+#include <map>
+#include <com/Serialization.h>
 namespace frx {
 
 namespace processing {
@@ -51,10 +52,22 @@ public:
     typedef boost::weak_ptr<PluginScriptCtrl> WPtr;
 	//-------------------------------------------------------------------------
 	typedef std::string LuaPtr;
+    //-------------------------------------------------------------------------
+    typedef std::multimap<std::string, std::string> PersistUserData;
 protected:
 	//-------------------------------------------------------------------------
 	void runThread();
 private:
+	///////////////////////////////////////////////////////////////////////////
+	// Archive:
+	//-------------------------------------------------------------------------
+	friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive &ar, const unsigned int version) {
+        ar & persistUserData;
+    }
+    //-------------------------------------------------------------------------
+    PersistUserData persistUserData;
 	//-------------------------------------------------------------------------
 	sambag::com::ArithmeticWrapper<bool> verbose;
 	//-------------------------------------------------------------------------
@@ -76,8 +89,6 @@ private:
 	//-------------------------------------------------------------------------
 	sambag::lua::LuaStateRef luaState;
 	//-------------------------------------------------------------------------
-	void registerFunctions(sambag::lua::LuaStateRef luaState, bool isPublic);
-	//-------------------------------------------------------------------------
 	typedef frx::gui::components::FrxComponentPtr FrxComponentPtr;
 	//-------------------------------------------------------------------------
 	typedef frx::processing::ModelObject::Ptr ModelObjectPtr;
@@ -88,6 +99,17 @@ private:
 	typedef boost::unordered_map<LuaPtr, ModelObjectPtr> ModelObjectMap;
 	ModelObjectMap modelObjectMap;
 public:
+	//-------------------------------------------------------------------------
+	void registerFunctions(sambag::lua::LuaStateRef luaState,
+        bool publicOnly, bool includeView);
+    //-------------------------------------------------------------------------
+    const PersistUserData & getPersistUserData() const {
+        return persistUserData;
+    }
+    //-------------------------------------------------------------------------
+    PersistUserData & getPersistUserData() {
+        return persistUserData;
+    }
     //-------------------------------------------------------------------------
     sambag::com::RecursiveMutex & getMutex() {
         return scriptCallMutex;
