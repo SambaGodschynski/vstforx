@@ -73,7 +73,10 @@ private:
 	//-------------------------------------------------------------------------
 	sambag::com::ArithmeticWrapper<bool> isPublic;
 	//-------------------------------------------------------------------------
-	sambag::com::RecursiveMutex scriptCallMutex;
+	typedef sambag::com::RecursiveMutex Mutex;
+    typedef boost::shared_ptr<Mutex> MutexPtr;
+    typedef boost::weak_ptr<Mutex> MutexWPtr;
+    Mutex __scriptCallMutex;
 	//-------------------------------------------------------------------------
 	std::string lastCall;
 	//-------------------------------------------------------------------------
@@ -87,7 +90,7 @@ private:
 	//-------------------------------------------------------------------------
 	boost::thread thread;
 	//-------------------------------------------------------------------------
-	sambag::lua::LuaStateRef luaState;
+	sambag::lua::LuaStateRef __luaState;
 	//-------------------------------------------------------------------------
 	typedef frx::gui::components::FrxComponentPtr FrxComponentPtr;
 	//-------------------------------------------------------------------------
@@ -99,9 +102,6 @@ private:
 	typedef boost::unordered_map<LuaPtr, ModelObjectPtr> ModelObjectMap;
 	ModelObjectMap modelObjectMap;
 public:
-	//-------------------------------------------------------------------------
-	void registerFunctions(sambag::lua::LuaStateRef luaState,
-        bool publicOnly, bool includeView);
     //-------------------------------------------------------------------------
     const PersistUserData & getPersistUserData() const {
         return persistUserData;
@@ -112,7 +112,7 @@ public:
     }
     //-------------------------------------------------------------------------
     sambag::com::RecursiveMutex & getMutex() {
-        return scriptCallMutex;
+        return __scriptCallMutex;
     }
 	//-------------------------------------------------------------------------
 	/**
@@ -124,8 +124,21 @@ public:
     //-------------------------------------------------------------------------
     typedef boost::unique_lock<sambag::com::RecursiveMutex> Lock;
     typedef boost::shared_ptr<Lock> LockPtr;
+    /**
+     * @brief a lua state with lock guard, to ensure
+     * no async access while external use @see getLuaState()
+     */
     typedef std::pair<sambag::lua::LuaStateRef, LockPtr> LuaState;
     LuaState getLuaState();
+    /**
+     * @brief for some luacalls we need a mutex (timers e.g. have a async behaviour)
+     * so for registering controller lua function we need a state and
+     * a mutex
+     */
+    typedef std::pair<sambag::lua::LuaStateWRef, Mutex*> LuaProcessor;
+	//-------------------------------------------------------------------------
+	void registerFunctions(const LuaProcessor &lp,
+        bool publicOnly, bool includeView);
     //-------------------------------------------------------------------------
 	void __startScriptCall(const std::string &fname="");
 	//-------------------------------------------------------------------------

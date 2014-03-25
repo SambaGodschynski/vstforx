@@ -18,10 +18,14 @@ namespace frx { namespace scripts {
 //  Class LuaTimer
 //=============================================================================
 //-----------------------------------------------------------------------------
-void LuaTimer::__onTimer(lua_State *lua, const std::string &luaCallback) {
+void LuaTimer::__onTimer(sambag::lua::LuaStateWRef _lua, const std::string &luaCallback) {
+    sambag::lua::LuaStateRef lua = _lua.lock();
+    if (!lua) {
+        return;
+    }
     try {
         SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex)
-        slua::executeString(lua, luaCallback.c_str());
+        slua::executeString(lua.get(), luaCallback.c_str());
     } catch(...) {
         SAMBAG_LOG_ERR<<"script ctrl. on timer failed.";
     }
@@ -60,17 +64,21 @@ void LuaTimer::__gc(lua_State *lua) {
     Super::__gc(lua);
 }
 //-----------------------------------------------------------------------------
-LuaTimer::Ptr LuaTimer::createAndPush(lua_State *lua, Mutex &mutex,
+LuaTimer::Ptr LuaTimer::createAndPush(sambag::lua::LuaStateWRef _lua, Mutex &mutex,
     const std::string &callback, int ms, int numRep)
 {
+    sambag::lua::LuaStateRef lua = _lua.lock();
+    if (!lua) {
+        throw std::runtime_error("luastate == NULL");
+    }
     Ptr res(new LuaTimer(mutex));
     res->timer = Timer::create(ms);
     res->timer->sce::EventSender<Timer::Event>::addTrackedEventListener(
-        boost::bind(&LuaTimer::__onTimer, res.get(), lua, callback),
+        boost::bind(&LuaTimer::__onTimer, res.get(), _lua, callback),
         res
     );
     res->timer->setNumRepetitions(numRep);
-    res->createLuaObject(lua, "lua_timer");
+    res->createLuaObject(lua.get(), "lua_timer");
     return res;
 }
 }} // namespace(s)

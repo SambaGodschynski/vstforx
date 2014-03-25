@@ -36,7 +36,7 @@ private:
     typedef sambag::com::RecursiveMutex Mutex;
     Mutex &mutex;
     //-------------------------------------------------------------------------
-    void __onTimer(lua_State *lua, const std::string &luaCallback);
+    void __onTimer(sambag::lua::LuaStateWRef _lua, const std::string &luaCallback);
 protected:
     //-------------------------------------------------------------------------
     LuaTimer(Mutex &mutex);
@@ -66,7 +66,7 @@ public:
      * @param timer time in milliseconds
      * @param timer number of repetitions
      */
-    static Ptr createAndPush(lua_State *, Mutex &mutex,
+    static Ptr createAndPush(sambag::lua::LuaStateWRef lua, Mutex &mutex,
         const std::string &callback, int ms, int numRep);
 }; // LuaTimer
 }} // namespace(s)

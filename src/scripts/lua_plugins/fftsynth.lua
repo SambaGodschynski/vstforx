@@ -41,6 +41,22 @@ function initParam()
    end
 end
 
+function lcProcessMidi(messages) 
+   for i=0,#messages,1 do
+      status, v1, v2 = unpack(messages[i])
+      if (status~=nil) then 
+	 status=bit32.band(0xF0, status)
+	 channel=bit32.band(0x0F, status)
+	 if status==0x80 then
+	    --noteoff
+	 end
+	 if status==0x90 then
+	    --noteon
+	 end
+      end
+   end
+end
+
 function setFFTTable()
    r = {}
    i = {}
@@ -77,7 +93,7 @@ end
 function lcOnParameterChanged(name, value)
    if name=='frq' then
       value = value * maxFrq
-      frx.plug:setParameterDisplay(name, tostring(value).."hz")
+      frx.plug:setParameterDisplay(name, string.format("%0.2f", value).."hz")
    end
    p[name] = value
    setBuffer()

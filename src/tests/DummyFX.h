@@ -67,7 +67,10 @@ public:
 		ar & boost::serialization::base_object<frx::processing::IHostInfo> ( *this );
 		ar & sampleRate;
 		ar & blockSize;
-	} 
+	}
+    virtual frx::scripts::PluginScriptCtrlPtr getScriptController() const {
+        return frx::scripts::PluginScriptCtrlPtr();
+    }
 };
 
 } // namespace

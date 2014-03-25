@@ -18,7 +18,7 @@
 #include <boost/unordered_map.hpp>
 #include <processing/parameter/parameter.h>
 #include <loki/Typelist.h>
-
+#include <sambag/com/Thread.hpp>
 
 #define LUA_CALL(_name)                                                        \
 struct _name {                                                                 \
@@ -118,7 +118,7 @@ private:
     mutable Config config;
     //-------------------------------------------------------------------------
 	// lock lua calls 
-	com::Mutex mutex;
+	sambag::com::RecursiveMutex mutex;
     //-------------------------------------------------------------------------
     unsigned int lcFlags;
     //-------------------------------------------------------------------------

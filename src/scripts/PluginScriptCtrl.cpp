@@ -71,163 +71,163 @@ namespace {
 	struct FrxOpenPlugin {
 		typedef boost::function<void()> Function;
 		static const char * name() { return "openPlugin"; }
-		static void process(Ctrl *ctrl);
+		static void process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxClosePlugin {
 		typedef boost::function<void()> Function;
 		static const char * name() { return "closePlugin"; }
-		static void process(Ctrl *ctrl);
+		static void process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxOpenEditor {
 		typedef boost::function<void()> Function;
 		static const char * name() { return "openEditor"; }
-		static void process(Ctrl *ctrl);
+		static void process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxCloseEditor {
 		typedef boost::function<void()> Function;
 		static const char * name() { return "closeEditor"; }
-		static void process(Ctrl *ctrl);
+		static void process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxWait {
 		typedef boost::function<void(int)> Function;
 		static const char * name() { return "wait"; }
-		static void process(int sec, Ctrl *ctrl);
+		static void process(int sec, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxSerializePlugin {
 		typedef boost::function<std::string()> Function;
 		static const char * name() { return "serializePlugin"; }
-		static std::string process(Ctrl *ctrl);
+		static std::string process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxDeserializePlugin {
 		typedef boost::function<void(std::string)> Function;
 		static const char * name() { return "deserializePlugin"; }
-		static void process(const std::string &, Ctrl *ctrl);
+		static void process(const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxIsEditorOpen {
 		typedef boost::function<Bool()> Function;
 		static const char * name() { return "isEditorOpen"; }
-		static Bool process(Ctrl *ctrl);
+		static Bool process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxVerbose {
 		typedef boost::function<void(Bool val)> Function;
 		static const char * name() { return "verbose"; }
-		static void process(Bool val, Ctrl *ctrl);
+		static void process(Bool val, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetGraphDelay {
         typedef boost::function<int()> Function;
 		static const char * name() { return "getGraphDelay"; }
-		static int process(Ctrl *ctrl);
+		static int process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxMessageBox {
         typedef boost::function<void(std::string)> Function;
 		static const char * name() { return "messageBox"; }
-		static void process(const std::string&, Ctrl *ctrl);
+		static void process(const std::string&, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxSelectFile {
         typedef boost::function<std::string(std::string)> Function;
 		static const char * name() { return "selectFile"; }
-		static std::string process(const std::string&, Ctrl *ctrl);
+		static std::string process(const std::string&, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxSelectDirectory {
         typedef boost::function<std::string(std::string)> Function;
 		static const char * name() { return "selectDirectory"; }
-		static std::string process(const std::string&, Ctrl *ctrl);
+		static std::string process(const std::string&, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxOpenSceneBrowser {
         typedef boost::function<void(std::string)> Function;
 		static const char * name() { return "openSceneBrowser"; }
-		static void process(const std::string&, Ctrl *ctrl);
+		static void process(const std::string&, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxOpenUrl {
         typedef boost::function<void(std::string)> Function;
 		static const char * name() { return "openUrl"; }
-		static void process(const std::string&, Ctrl *ctrl);
+		static void process(const std::string&, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxOpenSetup {
         typedef boost::function<void()> Function;
 		static const char * name() { return "openSetup"; }
-		static void process(Ctrl *ctrl);
+		static void process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxOpenAbout {
         typedef boost::function<void()> Function;
 		static const char * name() { return "openAbout"; }
-		static void process(Ctrl *ctrl);
+		static void process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetLastBrowserSelection {
         typedef boost::function<std::string()> Function;
 		static const char * name() { return "getLastSceneBrowserSelection"; }
-		static std::string process(Ctrl *ctrl);
+		static std::string process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetVersionInteger {
         typedef boost::function<int()> Function;
 		static const char * name() { return "getVersionInteger"; }
-		static int process(Ctrl *ctrl);
+		static int process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetVersionString {
         typedef boost::function<std::string()> Function;
 		static const char * name() { return "getVersionString"; }
-		static std::string process(Ctrl *ctrl);
+		static std::string process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxResetMainMenu {
         typedef boost::function<void()> Function;
 		static const char * name() { return "resetMainMenu"; }
-		static void process(Ctrl *ctrl);
+		static void process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxSetEditorExitOnClose {
 		typedef boost::function<void(Bool)> Function;
 		static const char * name() { return "setEditorExitOnClose"; }
-		static void process(Bool val, Ctrl *ctrl);
+		static void process(Bool val, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxQueryDB {
 		typedef boost::function<slua::IgnoreReturn(std::string)> Function;
 		static const char * name() { return "queryDB"; }
-		static slua::IgnoreReturn process(const std::string &query, Ctrl *ctrl);
+		static slua::IgnoreReturn process(const std::string &query, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxAddTimer {
 		typedef boost::function<slua::IgnoreReturn(std::string, int, int)> Function;
 		static const char * name() { return "addTimer"; }
-		static slua::IgnoreReturn process(const std::string &, int, int, Ctrl *ctrl);
+		static slua::IgnoreReturn process(const std::string &, int, int, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxSetPersistData {
 		typedef boost::function<void()> Function;
 		static const char * name() { return "setPersistData"; }
-		static void process(Ctrl *ctrl);
+		static void process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetPersistData {
 		typedef boost::function<slua::IgnoreReturn(std::string)> Function;
 		static const char * name() { return "getPersistData"; }
-		static slua::IgnoreReturn process(const std::string &, Ctrl *ctrl);
+		static slua::IgnoreReturn process(const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxLog {
 		typedef boost::function<void(std::string)> Function;
 		static const char * name() { return "log"; }
-		static void process(const std::string &, Ctrl *ctrl);
+		static void process(const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	typedef LOKI_TYPELIST_7(FrxOpenPlugin,
@@ -262,68 +262,77 @@ namespace {
 /*20*/  FrxLog
 	) FrxPublicFunctionList;
 //-----------------------------------------------------------------------------
-void FrxLog::process(const std::string &msg, Ctrl *ctrl) {
+void FrxLog::process(const std::string &msg, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
     SAMBAG_LOG_INFO<<msg;
 }
 //-----------------------------------------------------------------------------
-void FrxSetPersistData::process(Ctrl *ctrl)
-{
-    PluginScriptCtrl::LuaState l = ctrl->getLuaState();
+void FrxSetPersistData::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return;
+    }
     try {
-        if(!lua_isstring(l.first.get(), -2)) {
+        if(!lua_isstring(lua.get(),  -2)) {
             throw std::runtime_error("arguments mismatch");
         }
-        std::string key( lua_tostring(l.first.get(), -2) );
+        std::string key( lua_tostring(lua.get(),  -2) );
 
-        if(!lua_istable(l.first.get(), -1)) {
+        if(!lua_istable(lua.get(),  -1)) {
             throw std::runtime_error("arguments mismatch");
         }
         int index = -1;
-        lua_pushnil(l.first.get()); /* first key */
+        lua_pushnil(lua.get()); /* first key */
         --index;
-        while (lua_next(l.first.get(), index) != 0) {
+        while (lua_next(lua.get(),  index) != 0) {
             boost::tuple<std::string> value;
-            slua::pop(l.first.get(), value);
+            slua::pop(lua.get(),  value);
             ctrl->getPersistUserData().insert(std::make_pair(
                 key,
                 boost::get<0>(value)));
         }
     } catch(const std::exception &ex) {
-        slua::pushLuaError(l.first.get(), ex.what());
+        slua::pushLuaError(lua.get(),  ex.what());
     } catch (...) {
-        slua::pushLuaError(l.first.get(), "unkown error");
+        slua::pushLuaError(lua.get(),  "unkown error");
     }
 }
 //-----------------------------------------------------------------------------
-slua::IgnoreReturn FrxGetPersistData::process(const std::string &key, Ctrl *ctrl){
+slua::IgnoreReturn FrxGetPersistData::process(const std::string &key, Ctrl *ctrl, const Ctrl::LuaProcessor &lp){
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return slua::IgnoreReturn();
+    }
     Ctrl::PersistUserData::iterator it, end;
     boost::tie(it, end) = ctrl->getPersistUserData().equal_range(key);
-    PluginScriptCtrl::LuaState l = ctrl->getLuaState();
-    lua_createtable(l.first.get(), 0, 0);
-    int tbl = lua_gettop(l.first.get());
+    lua_createtable(lua.get(), 0, 0);
+    int tbl = lua_gettop(lua.get());
     int index=0;
     for(; it!=end; ++it) {
-        lua_pushinteger(l.first.get(), ++index);
-        lua_pushstring(l.first.get(), it->second.c_str());
-        lua_settable(l.first.get(), tbl);
+        lua_pushinteger(lua.get(), ++index);
+        lua_pushstring(lua.get(), it->second.c_str());
+        lua_settable(lua.get(), tbl);
     }
     return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
 slua::IgnoreReturn FrxAddTimer::
-process(const std::string &luaCallback, int ms, int numRepetitions, Ctrl *ctrl)
-{
+process(const std::string &luaCallback, int ms, int numRepetitions, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
     FRX_START_SCRIPTCALL
-    PluginScriptCtrl::LuaState l = ctrl->getLuaState();
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return slua::IgnoreReturn();
+    }
     LuaTimer::Ptr tm = LuaTimer::createAndPush(
-        l.first.get(), ctrl->getMutex(), luaCallback, ms, numRepetitions);
+        lp.first, *(lp.second), luaCallback, ms, numRepetitions);
     return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
-slua::IgnoreReturn FrxQueryDB::process(const std::string &query, Ctrl *ctrl)
-{
+slua::IgnoreReturn FrxQueryDB::process(const std::string &query, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return slua::IgnoreReturn();
+    }
 	FRX_START_SCRIPTCALL
-    PluginScriptCtrl::LuaState l = ctrl->getLuaState();
     try {
         sambag::cpsqlite::DataBase::Ptr db = com::getPluginCollection()->getDataBase();
         if (!db) {
@@ -335,29 +344,33 @@ slua::IgnoreReturn FrxQueryDB::process(const std::string &query, Ctrl *ctrl)
         exec->execute(query, res);
         typedef DataBase::Results::value_type ResultPtr;
         typedef DataBase::Result::Column2Entry Columns;
-        lua_createtable(l.first.get(), res.size(), 0);
-        int tbl = lua_gettop(l.first.get()), lindex=0;
+        lua_createtable(lua.get(), res.size(), 0);
+        int tbl = lua_gettop(lua.get()), lindex=0;
         BOOST_FOREACH(ResultPtr x, res) {
-            lua_pushinteger(l.first.get(), ++lindex);
-            lua_createtable(l.first.get(), 0, 0);
-            int entry = lua_gettop(l.first.get());
+            lua_pushinteger(lua.get(), ++lindex);
+            lua_createtable(lua.get(), 0, 0);
+            int entry = lua_gettop(lua.get());
             BOOST_FOREACH(const Columns::value_type &col, x->col2Entry) { // iterate colums
-                lua_pushstring(l.first.get(), col.first.c_str()); // first is key
-                lua_pushstring(l.first.get(), col.second.c_str()); // second is value
-                lua_settable(l.first.get(), entry);
+                lua_pushstring(lua.get(), col.first.c_str()); // first is key
+                lua_pushstring(lua.get(), col.second.c_str()); // second is value
+                lua_settable(lua.get(), entry);
             }
-            lua_settable(l.first.get(), tbl);
+            lua_settable(lua.get(), tbl);
         }
     } catch(const std::exception &ex) {
-        slua::pushLuaError(l.first.get(), ex.what());
+        slua::pushLuaError(lua.get(), ex.what());
     } catch (...) {
-        slua::pushLuaError(l.first.get(), "unkown error");
+        slua::pushLuaError(lua.get(), "unkown error");
     }
     
     return sambag::lua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
-void FrxResetMainMenu::process(Ctrl *ctrl) {
+void FrxResetMainMenu::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return;
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
@@ -367,26 +380,42 @@ void FrxResetMainMenu::process(Ctrl *ctrl) {
     view->setComponentPopupMenu( sdc::PopupMenuPtr() );
 }
 //-----------------------------------------------------------------------------
-std::string FrxGetVersionString::process(Ctrl *ctrl) {
+std::string FrxGetVersionString::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return std::string();
+    }
 	FRX_START_SCRIPTCALL
 	std::stringstream ss;
     ss<<FRX_VERSION_MAJOR<<"."<<FRX_VERSION_MINOR<<"."<<FRX_VERSION_MICRO;
     return ss.str();
 }
 //-----------------------------------------------------------------------------
-int FrxGetVersionInteger::process(Ctrl *ctrl) {
+int FrxGetVersionInteger::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return 0;
+    }
 	FRX_START_SCRIPTCALL
     return FRX_VERSION_MAJOR * 100 + FRX_VERSION_MINOR * 10 + FRX_VERSION_MICRO;
 }
 //-----------------------------------------------------------------------------
-std::string FrxGetLastBrowserSelection::process(Ctrl *ctrl) {
+std::string FrxGetLastBrowserSelection::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return std::string();
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
     return frx::gui::__lastBrowserSelection;
 }
 //-----------------------------------------------------------------------------
-void FrxOpenSceneBrowser::process(const std::string &path, Ctrl *ctrl) {
+void FrxOpenSceneBrowser::process(const std::string &path, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return;
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
@@ -397,7 +426,11 @@ void FrxOpenSceneBrowser::process(const std::string &path, Ctrl *ctrl) {
     frxctrl.openSceneBrowser(view, path);
 }
 //-----------------------------------------------------------------------------
-void FrxOpenSetup::process(Ctrl *ctrl) {
+void FrxOpenSetup::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return;
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
@@ -408,7 +441,11 @@ void FrxOpenSetup::process(Ctrl *ctrl) {
     frxctrl.openSetup(view);
 }
 //-----------------------------------------------------------------------------
-void FrxOpenAbout::process(Ctrl *ctrl) {
+void FrxOpenAbout::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return;
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
@@ -420,36 +457,55 @@ void FrxOpenAbout::process(Ctrl *ctrl) {
     frxctrl.openAbout(view);
 }
 //-----------------------------------------------------------------------------
-void FrxMessageBox::process(const std::string &msg, Ctrl *ctrl) {
+void FrxMessageBox::process(const std::string &msg, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return;
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
     ::com::osMessageBox("Lua", msg, ::com::MSG_ALERT);
 }
 //-----------------------------------------------------------------------------
-void FrxOpenUrl::process(const std::string &url, Ctrl *ctrl) {
+void FrxOpenUrl::process(const std::string &url, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return;
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
     ::com::openLink(url);
 }
 //-----------------------------------------------------------------------------
-std::string FrxSelectFile::process(const std::string &startPath, Ctrl *ctrl) {
+std::string FrxSelectFile::process(const std::string &startPath, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return std::string();
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
     return ::com::osSelectFile("select file", startPath, NULL);
 }
 //-----------------------------------------------------------------------------
-std::string FrxSelectDirectory::process(const std::string &startPath, Ctrl *ctrl) {
+std::string FrxSelectDirectory::process(const std::string &startPath, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return std::string();
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
     return ::com::osSelectFile("select directory", startPath, NULL);
 }
 //-----------------------------------------------------------------------------
-int FrxGetGraphDelay::process(Ctrl *ctrl)
-{
+int FrxGetGraphDelay::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return 0;
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
     FRX_GET_EDITOR
@@ -464,7 +520,11 @@ int FrxGetGraphDelay::process(Ctrl *ctrl)
     return mctrl->getGraphDelay();
 }
 //-----------------------------------------------------------------------------
-void FrxSetEditorExitOnClose::process(Bool val, Ctrl *ctrl) {
+void FrxSetEditorExitOnClose::process(Bool val, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return;
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_EDITOR
 	using sambag::disco::components::Window;
@@ -474,18 +534,30 @@ void FrxSetEditorExitOnClose::process(Bool val, Ctrl *ctrl) {
 	);
 }
 //-----------------------------------------------------------------------------
-void FrxVerbose::process(Bool val, Ctrl *ctrl) {
+void FrxVerbose::process(Bool val, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return;
+    }
 	FRX_START_SCRIPTCALL
 	ctrl->setVerbose( val == 1 ? true : false );
 }
 //-----------------------------------------------------------------------------
-Bool FrxIsEditorOpen::process(Ctrl *ctrl) {
+Bool FrxIsEditorOpen::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return false;
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_EDITOR
 	return editor->isOpen() ? True : False;
 }
 //-----------------------------------------------------------------------------
-std::string FrxSerializePlugin::process(Ctrl *ctrl) {
+std::string FrxSerializePlugin::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return std::string();
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	char *chunk[1];
@@ -496,13 +568,21 @@ std::string FrxSerializePlugin::process(Ctrl *ctrl) {
 	return std::string(res);
 }
 //-----------------------------------------------------------------------------
-void FrxDeserializePlugin::process(const std::string &bytes, Ctrl *ctrl) {
+void FrxDeserializePlugin::process(const std::string &bytes, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return;
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	plug->setChunk((void*)bytes.c_str(), bytes.size());
 }
 //-----------------------------------------------------------------------------
-void FrxOpenPlugin::process(Ctrl *ctrl) {
+void FrxOpenPlugin::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return;
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
@@ -510,7 +590,11 @@ void FrxOpenPlugin::process(Ctrl *ctrl) {
 	boost::this_thread::sleep(boost::posix_time::milliseconds(FRX_OPENCLOSE_WORKAROUND_WAIT));
 }
 //-----------------------------------------------------------------------------
-void FrxClosePlugin::process(Ctrl *ctrl) {
+void FrxClosePlugin::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return;
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
@@ -518,12 +602,15 @@ void FrxClosePlugin::process(Ctrl *ctrl) {
 	boost::this_thread::sleep(boost::posix_time::milliseconds(FRX_OPENCLOSE_WORKAROUND_WAIT));
 }
 //-----------------------------------------------------------------------------
-void onEditorOpen(void *src, const frx::gui::components::ViewIsReadyEvent &ev, bool *isOpen) 
-{
+void onEditorOpen(void *src, const frx::gui::components::ViewIsReadyEvent &ev, bool *isOpen)  {
 	*isOpen = true;
 }
 //-----------------------------------------------------------------------------
-void FrxOpenEditor::process(Ctrl *ctrl) {
+void FrxOpenEditor::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return;
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
@@ -544,12 +631,15 @@ void FrxOpenEditor::process(Ctrl *ctrl) {
     boost::this_thread::sleep(boost::posix_time::milliseconds(FRX_OPENCLOSE_WORKAROUND_WAIT));
 }
 //-----------------------------------------------------------------------------
-void onEditorClose(void *src, const sambag::disco::components::OnCloseEvent &ev, bool *isClose) 
-{
+void onEditorClose(void *src, const sambag::disco::components::OnCloseEvent &ev, bool *isClose)  {
 	*isClose = true;
 }
 //-----------------------------------------------------------------------------
-void FrxCloseEditor::process(Ctrl *ctrl) {
+void FrxCloseEditor::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return;
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
@@ -569,7 +659,11 @@ void FrxCloseEditor::process(Ctrl *ctrl) {
     boost::this_thread::sleep(boost::posix_time::milliseconds(FRX_OPENCLOSE_WORKAROUND_WAIT));
 }
 //-----------------------------------------------------------------------------
-void FrxWait::process(int millis, Ctrl *ctrl) {
+void FrxWait::process(int millis, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return;
+    }
 	FRX_START_SCRIPTCALL
 	FRX_GET_PLUG
 	FRX_GET_EDITOR
@@ -648,8 +742,8 @@ void PluginScriptCtrl::setPlugin(frx::processing::VstForxPlug *plug) {
 	}
     
     using namespace sambag::lua;
-	luaState = createLuaStateRef();
-	registerFunctions(luaState, isPublic, true);
+	__luaState = createLuaStateRef();
+	registerFunctions(LuaProcessor(__luaState, &__scriptCallMutex), isPublic, true);
 }
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::appendJob(const std::string &str) {
@@ -669,21 +763,21 @@ void PluginScriptCtrl::join() {
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::execute(const std::string &str) {
 	using namespace sambag::lua;
-	SAMBAG_TRY_TO_LOCK_RECURSIVE(scriptCallMutex)
-	executeString(luaState.get(), str);
+	SAMBAG_TRY_TO_LOCK_RECURSIVE(__scriptCallMutex)
+	executeString(__luaState.get(), str);
 }
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::executeFile(const std::string &path) {
-	SAMBAG_TRY_TO_LOCK_RECURSIVE(scriptCallMutex)
-	sambag::lua::executeFile(luaState.get(), path);
+	SAMBAG_TRY_TO_LOCK_RECURSIVE(__scriptCallMutex)
+	sambag::lua::executeFile(__luaState.get(), path);
 }
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::runThread() {
 	using namespace sambag::lua;
 	BOOST_FOREACH(const std::string &script, scripts) {
 		try {
-			SAMBAG_TRY_TO_LOCK_RECURSIVE(scriptCallMutex)
-			executeString(luaState.get(), script);
+			SAMBAG_TRY_TO_LOCK_RECURSIVE(__scriptCallMutex)
+			executeString(__luaState.get(), script);
 		} catch(const ExecutionFailed &ex) {
 			SAMBAG_LOG_ERR<<"executation failed: "<<ex.errMsg;
 			sce::EventSender<ScriptExeFailedEvent>::notifyListeners(
@@ -697,18 +791,6 @@ void PluginScriptCtrl::runThread() {
 		this,
 		ScriptEnded()
 	);
-}
-//-----------------------------------------------------------------------------
-PluginScriptCtrl::LuaState PluginScriptCtrl::getLuaState()  {
-    LockPtr lock( new Lock(scriptCallMutex, boost::try_to_lock));
-	if (!lock->owns_lock()) {
-        lock->timed_lock(boost::get_system_time() +
-        boost::posix_time::seconds(SAMBAG_LOCK_TIMEOUT));
-    }
-	if ( !lock->owns_lock() ) {
-        SAMBAG_THROW(SAMBAG_DEADLOCK_EXCEPTION, "PluginScriptCtrl: deadlock exception");
-    }
-    return LuaState(luaState, lock);
 }
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::__startScriptCall(const std::string &fname) {
@@ -727,6 +809,19 @@ void PluginScriptCtrl::__startScriptCall(const std::string &fname) {
 void PluginScriptCtrl::__endScriptCall() {
 	//boost::this_thread::sleep(boost::posix_time::milliseconds(100));
 }
+
+//-----------------------------------------------------------------------------
+PluginScriptCtrl::LuaState PluginScriptCtrl::getLuaState()  {
+    LockPtr lock( new Lock(__scriptCallMutex, boost::try_to_lock));
+	if (!lock->owns_lock()) {
+        lock->timed_lock(boost::get_system_time() +
+        boost::posix_time::seconds(SAMBAG_LOCK_TIMEOUT));
+    }
+	if ( !lock->owns_lock() ) {
+        SAMBAG_THROW(SAMBAG_DEADLOCK_EXCEPTION, "PluginScriptCtrl: deadlock exception");
+    }
+    return LuaState(__luaState, lock);
+}
 ///////////////////////////////////////////////////////////////////////////////
 // register function approach
 namespace {
@@ -735,90 +830,97 @@ struct Int2Type {
 	enum { Value = Val };
 };
 template <class FrxFunction, class Result>
-void __bind(Ctrl *ctrl,
+void __bind(Ctrl *ctrl, const Ctrl::LuaProcessor &lp,
     Result &out,
     Int2Type<0>)
 {
-	out = boost::bind(&FrxFunction::process, ctrl);
+	out = boost::bind(&FrxFunction::process, ctrl, lp);
 }
 template <class FrxFunction, class Result>
-void __bind(Ctrl *ctrl,
+void __bind(Ctrl *ctrl, const Ctrl::LuaProcessor &lp,
     Result &out,
     Int2Type<1>)
 {
-    out = boost::bind(&FrxFunction::process, _1, ctrl);
+    out = boost::bind(&FrxFunction::process, _1, ctrl, lp);
 }
 template <class FrxFunction, class Result>
-void __bind(Ctrl *ctrl,
+void __bind(Ctrl *ctrl, const Ctrl::LuaProcessor &lp,
     Result &out,
     Int2Type<2>)
 {
-    out = boost::bind(&FrxFunction::process, _1, _2, ctrl);
+    out = boost::bind(&FrxFunction::process, _1, _2, ctrl, lp);
 }
 template <class FrxFunction, class Result>
-void __bind(Ctrl *ctrl,
+void __bind(Ctrl *ctrl, const Ctrl::LuaProcessor &lp,
     Result &out,
     Int2Type<3>)
 {
-    out = boost::bind(&FrxFunction::process, _1, _2, _3, ctrl);
+    out = boost::bind(&FrxFunction::process, _1, _2, _3, ctrl, lp);
 }
 template <class FrxFunction, class Result>
-void __bind(Ctrl *ctrl,
+void __bind(Ctrl *ctrl, const Ctrl::LuaProcessor &lp,
     Result &out,
     Int2Type<4>)
 {
-    out = boost::bind(&FrxFunction::process, _1, _2, _3, _4, ctrl);
+    out = boost::bind(&FrxFunction::process, _1, _2, _3, _4, ctrl, lp);
 }
 template <class FrxFunction, class Result>
-void __bind(Ctrl *ctrl,
+void __bind(Ctrl *ctrl, const Ctrl::LuaProcessor &lp,
     Result &out,
     Int2Type<5>)
 {
-    out = boost::bind(&FrxFunction::process, _1, _2, _3, _4, _5, ctrl);
+    out = boost::bind(&FrxFunction::process, _1, _2, _3, _4, _5, ctrl, lp);
 }
 
 
 template <class _FList>
 struct Functions {
     typedef _FList FList;
-    Functions(PluginScriptCtrl *master) : master(master) {}
+    Functions(PluginScriptCtrl *master, const Ctrl::LuaProcessor &lp) :
+        master(master), lp(lp) {}
     PluginScriptCtrl *master;
+    const Ctrl::LuaProcessor &lp;
 };
 
 template <class Functions>
-struct Accessor {
+struct Accessor {;
     template <int Index, class _Result>
     static void get(const Functions &f, _Result &out) {
         typedef typename Loki::TL::TypeAt<typename Functions::FList, Index>::Result FX;
         enum { NumArgs = FX::Function::arity };
-        __bind<FX>(f.master, out, Int2Type<NumArgs>());
+        __bind<FX>(f.master, f.lp, out, Int2Type<NumArgs>());
     }
 };
 
 } // namespace(s)
 //-----------------------------------------------------------------------------
-void PluginScriptCtrl::registerFunctions(sambag::lua::LuaStateRef luaState,
+void PluginScriptCtrl::registerFunctions(const LuaProcessor &lp,
     bool isPublic, bool includeView)
 {
+    sambag::lua::LuaStateRef state = lp.first.lock();
+    if (!state) {
+        return;
+    }
     if (isPublic) {
         typedef Loki::TL::NoDuplicates<FrxPublicFunctionList>::Result Fz; // arf
         sambag::lua::registerFunctions<Fz, Accessor>(
-            luaState.get(), Functions<Fz>(this), "frx"
+            state.get(), Functions<Fz>(this, lp), "frx"
         );
     } else {
         typedef Loki::TL::Append<FrxPublicFunctionList,
             FrxPrivateFunctionList>::Result FsUnion;
         typedef Loki::TL::NoDuplicates<FsUnion>::Result Fz; // arf
         sambag::lua::registerFunctions<Fz, Accessor>(
-            luaState.get(), Functions<Fz>(this), "frx"
+            state.get(), Functions<Fz>(this, lp), "frx"
         );
 
     }
     if (includeView) {
-        lua_getglobal(luaState.get(), "frx");
-        int index = lua_gettop(luaState.get());
-        LuaFrxView::createAndPush(luaState.get(), editor);
-        lua_setfield(luaState.get(), index, "view");
+        lua_getglobal(state.get(), "frx");
+        int index = lua_gettop(state.get());
+        LuaFrxView::createAndPush(state.get(), editor);
+        lua_setfield(state.get(), index, "view");
+        lua_pop(state.get(), 1); // pop frx
     }
 }
 }} // namespace(s)

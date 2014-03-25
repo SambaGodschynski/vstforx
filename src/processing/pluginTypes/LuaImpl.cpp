@@ -156,10 +156,14 @@ void LuaImpl::loadIOs() {
 void LuaImpl::onParameterChanged(void *src, float value, const std::string &id)
 {
     
-    TRY_TO_LOCK_TIMED(mutex);
-    sambag::lua::executeString(luaState.get(),
-            GP_PARAMETER_SETUP+"[\"" + id + "\"] = " + sambag::com::toString(value)
-    );
+    SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+    lua_getglobal(luaState.get(), GP_PARAMETER_SETUP.c_str());
+    int tbl = lua_gettop(luaState.get());
+    if (lua_istable(luaState.get(), -1)) {
+        lua_pushnumber(luaState.get(), value);
+        lua_setfield(luaState.get(), tbl, id.c_str());
+    }
+    lua_pop(luaState.get(), 1); // remove tbl
     IF_HAS_LC(lcOnParameterChanged) {
         try {
             sambag::lua::callLuaFunc(luaState.get(), LC_NAME(lcOnParameterChanged),
@@ -314,7 +318,7 @@ void LuaImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
     IF_LC_MISSING(lcProcessMidi) {
         return;
     }
-	TRY_TO_LOCK_TIMED(mutex); // lock lua calls
+	SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex); // lock lua calls
 	// prepare data
 	// we can't use LuaMap because we have different value types (LuaMap<std::string,?>)
 	// what occurs some unhandy circumstances:
@@ -381,7 +385,7 @@ void LuaImpl::processPlugin(oldPr::Frames::T ** ins,
 	// prepare input
 	using namespace sambag::lua;
 	try {
-		TRY_TO_LOCK_TIMED(mutex);
+		SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
 		// execute processFunction
         currInputs = ins;
         currOutputs = outs;
@@ -443,9 +447,6 @@ void LuaImpl::frxToOutput() {
 //-----------------------------------------------------------------------------
 LuaImpl::FFTData LuaImpl::frxFFT() {
     try {
-        SAMBAG_LOG_TRACE<<sambag::lua::getLen(luaState.get(), -1);
-        SAMBAG_LOG_TRACE<<sambag::lua::getLen(luaState.get(), -2);
-        SAMBAG_LOG_TRACE<<sambag::lua::getLen(luaState.get(), -3);
         FFTData data;
         if(!sambag::lua::pop(luaState.get(), data)) {
             throw std::runtime_error("arguments mismatch");
@@ -564,10 +565,10 @@ void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
         SAMBAG_LOG_WARN<<"hostinfo == NULL";
         return;
     }
-    
     scripts::PluginScriptCtrlPtr ctrl = hI->getScriptController();
     if (ctrl) {
-        ctrl->registerFunctions(luaState, true, false);
+        typedef scripts::PluginScriptCtrl::LuaProcessor LP;
+        ctrl->registerFunctions(LP(luaState, &mutex), true, false);
     }
     
     lua_getglobal(luaState.get(), "frx");
@@ -606,7 +607,7 @@ void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
     );
     
     lua_setfield(luaState.get(), frxTbl, "plug");
-    lua_pop(luaState.get(), 1); // remove frxtbl
+    lua_pop(luaState.get(), 2); // remove frxtbl
 }
 //-----------------------------------------------------------------------------
 namespace {
