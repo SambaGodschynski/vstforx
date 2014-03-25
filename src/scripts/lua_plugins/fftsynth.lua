@@ -47,7 +47,7 @@ function setFFTTable()
    n = buffSize/2
    for index=1, buffSize, 1 do
       if index < numBand then
-	 r[index] = p[key(index)]:getValue()
+	 r[index] = p[key(index)]
       else
 	 r[index] = 0
       end
@@ -65,7 +65,7 @@ function lcProcess(numSamples)
    v={}
    for i=1, numSamples, 1 do
       v[i] = bff[math.floor(phase)]
-      phase = phase + _ENV.frq * (buffSize/sampleRate)
+      phase = phase + p['frq'] * (buffSize/sampleRate)
       if phase > buffSize then
 	 phase = 1 + phase - buffSize
       end
@@ -74,9 +74,11 @@ function lcProcess(numSamples)
    frx.plug:toOutput(2, v)
 end
 
-function lcOnParameterChanged(x)
-   if x == p['frq'] then
-      _ENV.frq = x:getValue() * maxFrq
+function lcOnParameterChanged(name, value)
+   if name=='frq' then
+      value = value * maxFrq
+      frx.plug:setParameterDisplay(name, tostring(value).."hz")
    end
+   p[name] = value
    setBuffer()
 end

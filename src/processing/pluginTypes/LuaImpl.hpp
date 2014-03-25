@@ -55,7 +55,9 @@ public:
     SAMBAG_LUA_FTAG(getTempo, double());
     SAMBAG_LUA_FTAG(getTimeSigNumerator, int());
     SAMBAG_LUA_FTAG(getTimeSigDenominator, int());
-    typedef LOKI_TYPELIST_9(Frx_getInput_Tag,
+    SAMBAG_LUA_FTAG(setParameterValue, void(std::string, float));
+    SAMBAG_LUA_FTAG(setParameterDisplay, void(std::string, std::string));
+    typedef LOKI_TYPELIST_10(Frx_getInput_Tag,
         Frx_fft_Tag,
         Frx_toOutput_Tag,
         Frx_getSamplePos_Tag,
@@ -63,8 +65,11 @@ public:
         Frx_getPpqPos_Tag,
         Frx_getTimeSigNumerator_Tag,
         Frx_getTimeSigDenominator_Tag,
-        Frx_getTempo_Tag
+        Frx_getTempo_Tag,
+        Frx_setParameterValue_Tag
     ) Functions1;
+    typedef LOKI_TYPELIST_1(Frx_setParameterDisplay_Tag
+    ) Functions2;
     //-------------------------------------------------------------------------
     struct LuaCall { // frxlLua
        	LUA_CALL(lcOnParameterChanged);
@@ -184,6 +189,11 @@ public:
     int frxGetTimeSigDenominator();
     //-------------------------------------------------------------------------
     double frxGetTempo();
+    //-------------------------------------------------------------------------
+    void frxSetParameterValue(const std::string &name, float value);
+    //-------------------------------------------------------------------------
+    void frxSetParameterDisplay(const std::string &name,
+        const std::string &value);
 public:
     ///////////////////////////////////////////////////////////////////////////
     // AWindowImpl
