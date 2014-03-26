@@ -221,7 +221,9 @@ void LuaFrxObject::setLocation(lua_State *lua, float x, float y) {
     if (!c) {
         return;
     }
-    c->setLocation(sd::Point2D(x,y));
+    SAMBAG_BEGIN_SYNCHRONIZED(c->getTreeLock())
+        c->setLocation(sd::Point2D(x,y));
+    SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 boost::tuple<float,float>  LuaFrxObject::getSize(lua_State *lua) {

@@ -295,7 +295,9 @@ void LuaFrxView::setLocation(lua_State *lua, float x, float y) {
     if (!vp) {
         return;
     }
-    vp->setViewPosition(sd::Point2D(x, y));
+    SAMBAG_BEGIN_SYNCHRONIZED(vp->getTreeLock())
+        vp->setViewPosition(sd::Point2D(x, y));
+    SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 boost::tuple<float,float> LuaFrxView::getSize(lua_State *lua) const {
