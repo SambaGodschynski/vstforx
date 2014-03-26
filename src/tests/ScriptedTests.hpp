@@ -46,7 +46,7 @@ private:
 	CPPUNIT_TEST_KNOWN_ISSUE( issue265 );
 	CPPUNIT_TEST_KNOWN_ISSUE( issue269 );
 	CPPUNIT_TEST_KNOWN_ISSUE( testOpenClose );
-//	CPPUNIT_TEST_KNOWN_ISSUE( testSerializing );
+	CPPUNIT_TEST_KNOWN_ISSUE( testSerializing );
 	CPPUNIT_TEST_SUITE_END();
 	TestPlugin * plug;
 	TestPlugin * createPlug();

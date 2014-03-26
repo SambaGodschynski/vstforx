@@ -40,6 +40,12 @@ function ___getConnectables()
    for k,v in pairs(frx.view:getByType("*Knob")) do
       table.insert(res, v)
    end
+   for k,v in pairs(frx.view:getByType("*Entry")) do
+      table.insert(res, v)
+   end
+   for k,v in pairs(frx.view:getByType("*Exit")) do
+      table.insert(res, v)
+   end
    return res
 end
 
