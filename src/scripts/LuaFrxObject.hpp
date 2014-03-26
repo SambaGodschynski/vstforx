@@ -110,7 +110,7 @@ protected:
     /**
      * @brief called when lua object will be removed.
      */
-    virtual void __gc(lua_State *lua);
+    virtual void __lua_gc(lua_State *lua);
     //-------------------------------------------------------------------------
     typedef boost::tuple<float,float> Point;
     SAMBAG_LUA_FTAG(getLocation, Point());
