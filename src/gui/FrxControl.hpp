@@ -100,10 +100,10 @@ public:
 	virtual void addWindow(sdc::WindowPtr win, const std::string &wndClass="");
 	//-------------------------------------------------------------------------
 	virtual fgc::FrxComponentPtr addProcessorInput(fgc::FrxCircuidViewPtr view, 
-		fgc::FrxComponentPtr c); 
+		fgc::FrxComponentPtr c, bool followMouse=true);
 	//-------------------------------------------------------------------------
 	virtual fgc::FrxComponentPtr addProcessorOutput(fgc::FrxCircuidViewPtr view, 
-		fgc::FrxComponentPtr c); 
+		fgc::FrxComponentPtr c, bool followMouse=true);
 	//-------------------------------------------------------------------------
 	virtual void addParamterCnOp(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c, const ParameterCnOpTypeId &id);

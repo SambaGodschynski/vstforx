@@ -112,6 +112,70 @@ slua::IgnoreReturn LuaFrxProcessor::getParameters(lua_State *lua) const {
     return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
+slua::IgnoreReturn LuaFrxProcessor::addInput(lua_State *lua) {
+    using namespace frx::gui;
+    using namespace frx::gui::components;
+    try {
+        FrxProcessorNode::Ptr obj =
+            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject(lua));
+        if (!obj) {
+            lua_pushnil(lua);
+            return slua::IgnoreReturn();
+        }
+        FrxCircuidView::Ptr view = obj->getFirstContainer<FrxCircuidView>();
+        if (!view) {
+            lua_pushnil(lua);
+            return slua::IgnoreReturn();
+        }
+        IFrxControl &frxctrl = getFrxControl(view);
+        FrxComponent::Ptr newIn = frxctrl.addProcessorInput(view, obj, false);
+        if (!newIn) {
+            lua_pushnil(lua);
+            return slua::IgnoreReturn();
+        }
+        IViewModelMap::Ptr map;
+        map = getViewModelMap();
+        LuaFrxIO::createAndPush(lua, map->getModelObject(newIn), map, "frx.lua.io.Input");
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unkown error");
+    }
+    return slua::IgnoreReturn();
+}
+//-----------------------------------------------------------------------------
+slua::IgnoreReturn LuaFrxProcessor::addOutput(lua_State *lua) {
+    using namespace frx::gui;
+    using namespace frx::gui::components;
+    try {
+        FrxProcessorNode::Ptr obj =
+            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject(lua));
+        if (!obj) {
+            lua_pushnil(lua);
+            return slua::IgnoreReturn();
+        }
+        FrxCircuidView::Ptr view = obj->getFirstContainer<FrxCircuidView>();
+        if (!view) {
+            lua_pushnil(lua);
+            return slua::IgnoreReturn();
+        }
+        IFrxControl &frxctrl = getFrxControl(view);
+        FrxComponent::Ptr newOut = frxctrl.addProcessorOutput(view, obj, false);
+        if (!newOut) {
+            lua_pushnil(lua);
+            return slua::IgnoreReturn();
+        }
+        IViewModelMap::Ptr map;
+        map = getViewModelMap();
+        LuaFrxIO::createAndPush(lua, map->getModelObject(newOut), map, "frx.lua.io.Input");
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unkown error");
+    }
+    return slua::IgnoreReturn();
+}
+//-----------------------------------------------------------------------------
 void LuaFrxProcessor::addLuaFields(lua_State *lua, int index) {
     Super::addLuaFields(lua, index);
     using boost::bind;
@@ -122,7 +186,9 @@ void LuaFrxProcessor::addLuaFields(lua_State *lua, int index) {
         boost::make_tuple(
             bind(&LuaFrxProcessor::getInputs, this, lua),
             bind(&LuaFrxProcessor::getOutputs, this, lua),
-            bind(&LuaFrxProcessor::getParameters, this, lua)
+            bind(&LuaFrxProcessor::getParameters, this, lua),
+            bind(&LuaFrxProcessor::addInput, this, lua),
+            bind(&LuaFrxProcessor::addOutput, this, lua)
         ),
         index,
         getUId()

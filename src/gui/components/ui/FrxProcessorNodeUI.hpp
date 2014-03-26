@@ -225,8 +225,7 @@ void FrxProcessorNodeUI<CT>::addHasMultipleInputEntry(sdc::PopupMenuPtr menu,
 	m->setText("add input");
 	IFrxControl &ctrl = getFrxControl(view); 
 	m->sdc::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
-		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
-		&IFrxControl::addProcessorInput),
+		boost::bind(&IFrxControl::addProcessorInput, &ctrl, view, c, true),
 		c
 	);
 	menu->add(m);
@@ -240,8 +239,7 @@ void FrxProcessorNodeUI<CT>::addHasMultipleOutputEntry(sdc::PopupMenuPtr menu,
 	m->setText("add output");
 	IFrxControl &ctrl = getFrxControl(view); 
 	m->sdc::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
-		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
-		&IFrxControl::addProcessorOutput),
+		boost::bind(&IFrxControl::addProcessorOutput, &ctrl, view, c, true),
 		c
 	);
 	menu->add(m); 

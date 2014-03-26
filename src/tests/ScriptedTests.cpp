@@ -82,6 +82,9 @@ void ScriptedTests::setUp() {
 	processingThread = boost::thread(
 		boost::bind(&processPlugin, plug)
 	);
+    
+    scriptCtrl->appendJob( "require\"vstforx-helper\"" );
+    
 	failed = false;
 }
 //-----------------------------------------------------------------------------

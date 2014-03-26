@@ -1,5 +1,5 @@
 frx.openPlugin()
 frx.openEditor()
-frx.addProcessor("internal.PeakTracker")
+frx.view:add("internal.PeakTracker")
 frx.closeEditor()
 frx.openEditor()

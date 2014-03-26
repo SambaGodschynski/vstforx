@@ -102,15 +102,21 @@ public:
 	//-------------------------------------------------------------------------
 	/**
 	 * @return new created input node
+     * @param 
+     * @param
+     * @param if true new created view object follows mouse until clicked
 	 */
 	virtual fgc::FrxComponentPtr addProcessorInput(fgc::FrxCircuidViewPtr view, 
-		fgc::FrxComponentPtr c) = 0; 
+		fgc::FrxComponentPtr c, bool followMouse=true) = 0;
 	//-------------------------------------------------------------------------
 	/**
 	 * @return new created output node
+     * @param 
+     * @param
+     * @param if true new created view object follows mouse until clicked
 	 */
 	virtual fgc::FrxComponentPtr addProcessorOutput(fgc::FrxCircuidViewPtr view, 
-		fgc::FrxComponentPtr c) = 0; 
+		fgc::FrxComponentPtr c, bool followMouse=true) = 0; 
 	//-------------------------------------------------------------------------
 	/**
 	 * @return a function object which is able to be executed by

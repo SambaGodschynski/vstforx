@@ -49,7 +49,7 @@ void FrxProcessorNode::addInputNodeToView(FrxCircuidViewPtr view, FrxNode::Ptr n
 	ProcessorInputCn::Ptr inc = ProcessorInputCn::create();
 	inc->setSrcComponent(node);
 	inc->setDstComponent(getPtr());
-	view->add(node, FrxCircuidView::Z_IO);
+	view->add(node, FrxCircuidView::Z_IO, true);
 	view->add(inc, FrxCircuidView::Z_Wires);
 }
 //-----------------------------------------------------------------------------
@@ -61,7 +61,7 @@ void FrxProcessorNode::addOutputNodeToView(FrxCircuidViewPtr view, FrxNode::Ptr 
 	ProcessorOutputCn::Ptr onc = ProcessorOutputCn::create();
 	onc->setSrcComponent(getPtr());
 	onc->setDstComponent(node);
-	view->add(node, FrxCircuidView::Z_IO);
+	view->add(node, FrxCircuidView::Z_IO, true);
 	view->add(onc, FrxCircuidView::Z_Wires);
 }
 //-----------------------------------------------------------------------------

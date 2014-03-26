@@ -859,7 +859,7 @@ fgc::FrxComponentPtr FrxControl::addRelatedKnobToView(FrxCircuidViewPtr view,
 }
 //-----------------------------------------------------------------------------
 FrxComponentPtr FrxControl::addProcessorInput(fgc::FrxCircuidViewPtr view, 
-		fgc::FrxComponentPtr c)
+		fgc::FrxComponentPtr c, bool followMouse)
 {
 	FrxProcessorNode::Ptr proV = 
 		boost::dynamic_pointer_cast<FrxProcessorNode>(c);
@@ -888,16 +888,18 @@ FrxComponentPtr FrxControl::addProcessorInput(fgc::FrxCircuidViewPtr view,
 	io->addRemoveRequestExecuter(
 		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
 	);
-	// add hover
-	FrxHover::Ptr sel = FrxHover::create();
-	view->add(sel);
-	sel->addElement(viewIo);
-	sel->setVisible(true);
+    if (followMouse) {
+        // add hover
+        FrxHover::Ptr sel = FrxHover::create();
+        view->add(sel);
+        sel->addElement(viewIo);
+        sel->setVisible(true);
+    }
 	return viewIo;
 }
 //-----------------------------------------------------------------------------
 FrxComponentPtr FrxControl::addProcessorOutput(fgc::FrxCircuidViewPtr view, 
-		fgc::FrxComponentPtr c)
+		fgc::FrxComponentPtr c, bool followMouse)
 {
 	FrxProcessorNode::Ptr proV = 
 		boost::dynamic_pointer_cast<FrxProcessorNode>(c);
@@ -928,11 +930,13 @@ FrxComponentPtr FrxControl::addProcessorOutput(fgc::FrxCircuidViewPtr view,
 	io->addRemoveRequestExecuter(
 		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
 	);
-	// add hover
-	FrxHover::Ptr sel = FrxHover::create();
-	view->add(sel);
-	sel->addElement(viewIo);
-	sel->setVisible(true);
+    if (followMouse) {
+        // add hover
+        FrxHover::Ptr sel = FrxHover::create();
+        view->add(sel);
+        sel->addElement(viewIo);
+        sel->setVisible(true);
+    }
 	return viewIo;
 }
 //-----------------------------------------------------------------------------

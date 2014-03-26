@@ -34,15 +34,21 @@ protected:
     SAMBAG_LUA_FTAG(getInputs, slua::IgnoreReturn());
     SAMBAG_LUA_FTAG(getOutputs, slua::IgnoreReturn());
     SAMBAG_LUA_FTAG(getParameters, slua::IgnoreReturn());
-    typedef LOKI_TYPELIST_3(Frx_getInputs_Tag,
+    SAMBAG_LUA_FTAG(addInput, slua::IgnoreReturn());
+    SAMBAG_LUA_FTAG(addOutput, slua::IgnoreReturn());
+    typedef LOKI_TYPELIST_5(Frx_getInputs_Tag,
         Frx_getOutputs_Tag,
-        Frx_getParameters_Tag
+        Frx_getParameters_Tag,
+        Frx_addInput_Tag,
+        Frx_addOutput_Tag
     ) Functions;
-    //////////////////////////////////////////////////////////////////////////fr/
+    ///////////////////////////////////////////////////////////////////////////
     // lua2frx impl
     slua::IgnoreReturn getInputs(lua_State *lua) const;
     slua::IgnoreReturn getOutputs(lua_State *lua) const;
     slua::IgnoreReturn getParameters(lua_State *lua) const;
+    slua::IgnoreReturn addInput(lua_State *lua);
+    slua::IgnoreReturn addOutput(lua_State *lua);
 private:
 public:
     //-------------------------------------------------------------------------

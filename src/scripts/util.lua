@@ -22,11 +22,5 @@ function oc(x)
 end
 
 function findByName(name)
-  c=frx.getViewComponents()
-  for k, v in pairs(c) do
-      if name == frx.getComponentName(v) then
-      	 return v
-      end
-  end
-  return ""
+    return frx.view:getByName(name)
 end
