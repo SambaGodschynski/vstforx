@@ -20,7 +20,6 @@ entry, exit = frx.view:getEntry(), frx.view:getExit()
 delay:setValue(1)
 frx.view:connect( p:getInputs()[1], entry )
 frx.view:connect( p:getOutputs()[1], exit )
-frx.wait(1000000)
 assertGraphDelay(32768)
 
 -- change delay AFTER DCTester is hooked in
@@ -43,7 +42,6 @@ frx.deserializePlugin(save)
 assertGraphDelay(32768)
 
 p = findByName("DC Tester")
-assert(#p>0)
 delay = p:getParameters()[1]
 delay:setValue(0)
 assertGraphDelay(0)

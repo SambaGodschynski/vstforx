@@ -67,7 +67,7 @@ slua::IgnoreReturn LuaFrxProcessor::getOutputs(lua_State *lua) const {
         lua_createtable(lua, cont.size(), 0);
         int top = lua_gettop(lua);
         int lua_index = 0;
-        BOOST_FOREACH(FrxIO::Ptr x, obj->getInputs()) {
+        BOOST_FOREACH(FrxIO::Ptr x, obj->getOutputs()) {
             lua_pushinteger(lua, ++lua_index);
             LuaFrxIO::createAndPush(lua,
                 map->getModelObject(x), map, "frx.lua.io.Output");
