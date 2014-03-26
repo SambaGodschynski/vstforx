@@ -59,9 +59,9 @@ void LuaTimer::addLuaFields(lua_State *lua, int index) {
     );
 } 
 //-----------------------------------------------------------------------------
-void LuaTimer::__gc(lua_State *lua) {
+void LuaTimer::__lua_gc(lua_State *lua) {
     timer->stop();
-    Super::__gc(lua);
+    Super::__lua_gc(lua);
 }
 //-----------------------------------------------------------------------------
 LuaTimer::Ptr LuaTimer::createAndPush(sambag::lua::LuaStateWRef _lua, Mutex &mutex,

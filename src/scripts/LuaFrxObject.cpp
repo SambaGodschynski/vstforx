@@ -202,9 +202,9 @@ bool LuaFrxObject::isequal(lua_State *lua) const {
     }
 }
 //-----------------------------------------------------------------------------
-void LuaFrxObject::__gc(lua_State *lua) {
+void LuaFrxObject::__lua_gc(lua_State *lua) {
     uidMap.erase(getUId());
-    Super::__gc(lua);
+    Super::__lua_gc(lua);
 }
 //-----------------------------------------------------------------------------
 boost::tuple<float,float>  LuaFrxObject::getLocation(lua_State *lua) {

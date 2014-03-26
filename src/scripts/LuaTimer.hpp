@@ -44,7 +44,7 @@ protected:
     /**
      * @brief called when lua object will be removed.
      */
-    virtual void __gc(lua_State *lua);
+    virtual void __lua_gc(lua_State *lua);
     ///////////////////////////////////////////////////////////////////////////
     SAMBAG_LUA_FTAG(start, void());
     SAMBAG_LUA_FTAG(stop, void());

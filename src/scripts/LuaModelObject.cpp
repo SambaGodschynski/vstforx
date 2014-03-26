@@ -123,8 +123,8 @@ bool LuaModelObject::isequal(lua_State *lua) const {
     }
 }
 //-----------------------------------------------------------------------------
-void LuaModelObject::__gc(lua_State *lua) {
+void LuaModelObject::__lua_gc(lua_State *lua) {
     uidMap.erase(getUId());
-    Super::__gc(lua);
+    Super::__lua_gc(lua);
 }
 }} // namespace(s)
