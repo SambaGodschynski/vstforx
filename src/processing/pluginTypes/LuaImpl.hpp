@@ -57,6 +57,7 @@ public:
     SAMBAG_LUA_FTAG(getTimeSigDenominator, int());
     SAMBAG_LUA_FTAG(setParameterValue, void(std::string, float));
     SAMBAG_LUA_FTAG(setParameterDisplay, void(std::string, std::string));
+    SAMBAG_LUA_FTAG(sendMidi, void());
     typedef LOKI_TYPELIST_10(Frx_getInput_Tag,
         Frx_fft_Tag,
         Frx_toOutput_Tag,
@@ -68,7 +69,8 @@ public:
         Frx_getTempo_Tag,
         Frx_setParameterValue_Tag
     ) Functions1;
-    typedef LOKI_TYPELIST_1(Frx_setParameterDisplay_Tag
+    typedef LOKI_TYPELIST_2(Frx_setParameterDisplay_Tag,
+        Frx_sendMidi_Tag
     ) Functions2;
     //-------------------------------------------------------------------------
     struct LuaCall { // frxlLua
@@ -167,6 +169,8 @@ public:
     void loadIOs();
     //-------------------------------------------------------------------------
     void initScript();
+    //-------------------------------------------------------------------------
+    void sendMidi();
     //-------------------------------------------------------------------------
     void checkFunctions();
     //-------------------------------------------------------------------------

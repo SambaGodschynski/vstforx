@@ -51,7 +51,7 @@ Plugin::Plugin ( frx::processing::IHostInfo::Ptr hostInfo,
 	*editorPosY = 0.72f; // 0.5 = 0 SCREEN_Y
 	*editorOpen = 0.0f;
 	
-    initListener();
+    installListener();
 
     // init i/o
     size_t tmp=impl->getNumInputChannels();
@@ -93,12 +93,21 @@ void Plugin::loadImpl() {
     impl->se::EventSender<se::PropertyChanged>::addEventListener(
         boost::bind(&Plugin::onImplPropertyChanged, this, _1, _2)
     );
+    
+    impl->addMidiEventListener(
+        boost::bind(&Plugin::onImplMidiEvent, this, _2)
+    );
+    
 
     impl->openPlugin();
     impl->updatePluginInfo(pluginInfo);
 }
 //-----------------------------------------------------------------------------
-void Plugin::initListener() {
+void Plugin::onImplMidiEvent(sambag::dsp::IMidiEvents *ev) {
+    sendMidiEvents(ev);
+}
+//-----------------------------------------------------------------------------
+void Plugin::installListener() {
     using oldPrPr::Parameter;
 	Parameter::ParameterListenerFunction xC = boost::bind( 
 		&Plugin::paramEditorPosXChanged, this, _1, _2 
@@ -387,7 +396,7 @@ void Plugin::paramEditorPosXChanged ( void *src, const float &val ) {
     sce::EventSender<sce::PropertyChanged>::notifyListeners (this,
 			sce::PropertyChanged (PROPERTY_PARAMETER_EDITOR_POSITION, p, p)
 		);
-	}
+}
 //-----------------------------------------------------------------------------
 void Plugin::paramEditorPosYChanged ( void *src, const float &val ) {
     using namespace sambag::disco;
@@ -395,11 +404,11 @@ void Plugin::paramEditorPosYChanged ( void *src, const float &val ) {
     sce::EventSender<sce::PropertyChanged>::notifyListeners (this,
 			sce::PropertyChanged (PROPERTY_PARAMETER_EDITOR_POSITION, p, p)
 		);
-	}
+}
 //-----------------------------------------------------------------------------
 void Plugin::paramEditorOpenChanged ( void *src, const float &val ) {
     sce::EventSender<sce::PropertyChanged>::notifyListeners (this,
 			sce::PropertyChanged(PROPERTY_PARAMETER_EDITOR_OPENSTATE, val>0.5, val>0.5)
 		);
-	}
+}
 }} //namespace processing

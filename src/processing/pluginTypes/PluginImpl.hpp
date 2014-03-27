@@ -11,6 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <processing/IHostInfo.h>
+#include <processing/IMidiEventProcessor.h>
 #include <sambag/dsp/IMidiEvents.hpp>
 #include <processing/PlugInfo.h>
 #include <processing/Frames.h>
@@ -49,7 +50,8 @@ namespace oldPr = ::processing;
 struct APluginImpl :
 	public sambag::com::events::EventSender<
         sambag::com::events::PropertyChanged
-    >
+    >,
+    public oldPr::IMidiEventProcessor::EventSender
 {
 //=============================================================================
     //-------------------------------------------------------------------------
@@ -159,6 +161,13 @@ struct APluginImpl :
     virtual AWindowImplPtr getWindowImpl() {
         return AWindowImplPtr();
     }
+    //-------------------------------------------------------------------------
+    virtual oldPr::IMidiEventProcessor::Connection
+    addMidiEventListener(const oldPr::IMidiEventProcessor::EventFunction &f);
+    //-------------------------------------------------------------------------
+    virtual oldPr::IMidiEventProcessor::Connection
+    addTrackedMidiEventListener(const oldPr::IMidiEventProcessor::EventFunction &f,
+        oldPr::IMidiEventProcessor::AnyWPtr trackingObject);
     //-------------------------------------------------------------------------
     ///////////////////////////////////////////////////////////////////////////
     // Fields

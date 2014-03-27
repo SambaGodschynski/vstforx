@@ -16,6 +16,8 @@
 #include <gui/HandyNamespaces.hpp>
 #include <scripts/PluginScriptCtrl.hpp>
 #include <scripts/LuaParameter.hpp>
+#include <sambag/dsp/DefaultMidiEvents.hpp>
+#include <processing/IMidiEventProcessor.h>
 
 #define LC_NAME(_name) LuaCall::_name::name()
 #define LC_STR(_name) std::string(LuaCall::_name::name())
@@ -362,6 +364,98 @@ void LuaImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
     }
 }
 //-----------------------------------------------------------------------------
+namespace {
+    sambag::dsp::DefaultMidiEvents::DataPtr __addMidiData(lua_State *L, sambag::dsp::DefaultMidiEvents &midiEvents)
+    {
+        
+        if(!lua_istable(L, -1)) {
+            throw std::runtime_error("invalid midi data");
+        }
+        size_t size = sambag::lua::getLen(L, -1);
+        if (size==0) {
+            return NULL;
+        }
+        typedef sambag::dsp::DefaultMidiEvents::Data Data;
+        sambag::dsp::DefaultMidiEvents::DataArray data(new Data[size]);
+        lua_pushnil(L); /* first key */
+        int i=0;
+        while (lua_next(L, -2) != 0) {
+            if(!lua_isnumber(L, -1)) {
+                throw std::runtime_error("invalid midi data");
+            }
+            data[i++] = lua_tointeger(L, -1);
+            lua_pop(L, 1);
+        }
+        midiEvents.dataContainer.push_back(data);
+        return data.get();
+
+    }
+    void __addMidiEvent(lua_State *L, sambag::dsp::DefaultMidiEvents &midiEvents)
+    {
+        if(!lua_istable(L, -1)) {
+            throw std::runtime_error("invalid midi event");
+        }
+        lua_pushnil(L); /* first key */
+        int delta;
+        size_t size;
+        sambag::dsp::DefaultMidiEvents::DataPtr data;
+        while (lua_next(L, -2) != 0) {
+            if (!lua_isstring(L, -2)) {
+                SAMBAG_LOG_WARN<<"sendMidi: invalid key found";
+                return;
+            }
+            std::string key(lua_tostring(L, -2));
+            if (key=="deltaFrames") {
+                if (!lua_isnumber(L, -1)) {
+                    throw std::runtime_error("invalid midimessage delta frames");
+                }
+                delta = lua_tointeger(L, -1);
+            }
+            if (key=="size") {
+                if (!lua_isnumber(L, -1)) {
+                    throw std::runtime_error("invalid midimessage size");
+                }
+                size = lua_tointeger(L, -1);
+            }
+            if (key=="data") {
+                data = __addMidiData(L, midiEvents);
+            }
+            lua_pop(L, 1);
+        }
+        if (size>0 && !data) {
+            throw std::runtime_error("invalid midimessage data");
+        }
+        midiEvents.events.push_back(
+            sambag::dsp::IMidiEvents::MidiEvent(size, delta, data)
+        );
+    }
+}
+void LuaImpl::sendMidi() {
+    lua_State *L = luaState.get();
+    try {
+        if(!lua_istable(L, -1)) {
+            throw std::runtime_error("missing midi data argument");
+        }
+        size_t size = sambag::lua::getLen(L, -1);
+        if (size==0) {
+            return;
+        }
+        sambag::dsp::DefaultMidiEvents midiEvents;
+        midiEvents.reserve(size);
+        lua_pushnil(L); /* first key */
+        while (lua_next(L, -2) != 0) {
+            __addMidiEvent(L, midiEvents);
+            lua_pop(L, 1);
+        }
+        using ::processing::IMidiEventProcessor;
+        IMidiEventProcessor::EventSender::notifyListeners(this, &midiEvents);
+    } catch (const std::exception &ex) {
+        sambag::lua::pushLuaError(L, ex.what());
+    } catch (...) {
+        sambag::lua::pushLuaError(L, "unkown error");
+    }
+}
+//-----------------------------------------------------------------------------
 size_t LuaImpl::getInitialDelay() const {
     return 0;
 }
@@ -600,7 +694,8 @@ void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
     (
         luaState.get(),
         boost::make_tuple(
-            bind(&LuaImpl::frxSetParameterDisplay, this, _1, _2)
+            boost::bind(&LuaImpl::frxSetParameterDisplay, this, _1, _2),
+            boost::bind(&LuaImpl::sendMidi, this)
         ),
         plugTbl,
         boost::get<0>(uid)

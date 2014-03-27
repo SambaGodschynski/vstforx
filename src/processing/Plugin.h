@@ -102,7 +102,7 @@ private:
 		if ( IsLoading ) {
 			loadImplState(ar, version, Int2Type<IsLoading>());
             impl->updatePluginInfo(pluginInfo);
-            initListener();
+            installListener();
 		} else {
             saveImplState(ar, version, Int2Type<!IsLoading>());
         }
@@ -130,11 +130,13 @@ private:
     void onImplPropertyChanged(void*,
         const sambag::com::events::PropertyChanged &ev);
 protected:
+    //-------------------------------------------------------------------------
+    void onImplMidiEvent(sambag::dsp::IMidiEvents *ev);
 	//-------------------------------------------------------------------------
 	/**
 	 * Initalisiert Listener.
 	 */
-	void initListener();
+	void installListener();
 	//-------------------------------------------------------------------------
 	Plugin();
 	//-------------------------------------------------------------------------

@@ -251,6 +251,20 @@ void Graph::onPropertyChanged(void*,
     }
 }
 //------------------------------------------------------------------------------------------------------------
+void Graph::onProcessorMidiEvent(void *src, sambag::dsp::IMidiEvents * events) {
+  	GraphObjectContainer::iterator it = graphObjects.begin();
+	for ( ; it!=graphObjects.end(); ++it ){
+		IMidiEventProcessor *pr = 
+			dynamic_cast<IMidiEventProcessor*> ( it->get() );
+		if ((void*)pr==src) { // don't produce feedbacks
+            continue;
+        }
+        if ( pr ) {
+			pr->processEvents(events);
+        }
+    }
+}
+//------------------------------------------------------------------------------------------------------------
 void Graph::installListener( ProcessAdapter::Ptr obj ) {
     if (!obj) {
         return;
@@ -258,6 +272,14 @@ void Graph::installListener( ProcessAdapter::Ptr obj ) {
     namespace sce = sambag::com::events;
     obj->sce::EventSender<sce::PropertyChanged>::addTrackedEventListener(
         boost::bind(&Graph::onPropertyChanged, this, _1, _2, ProcessAdapter::WPtr(obj), self),
+        self
+    );
+    IMidiEventProcessor *midi = dynamic_cast<IMidiEventProcessor*>(obj.get());
+    if (!midi) {
+        return;
+    }
+    midi->addTrackedListener(
+        boost::bind(&Graph::onProcessorMidiEvent, this, _1, _2),
         self
     );
 }

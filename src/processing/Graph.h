@@ -205,6 +205,8 @@ private:
     typedef boost::shared_ptr<IdleHandler> IdleHandlerPtr;
     IdleHandlerPtr __idle_;
 protected:
+    //--------------------------------------------------------------------------------------------------------
+    void onProcessorMidiEvent(void *src, sambag::dsp::IMidiEvents * events);
 	//--------------------------------------------------------------------------------------------------------
 	frx::processing::IHostInfo::WPtr hostInfo;
 	//--------------------------------------------------------------------------------------------------------

@@ -16,6 +16,7 @@
 #include "TestAeffect.hpp"
 #include <sambag/com/Thread.hpp>
 #include <sambag/dsp/TimeInfoVst2xHelper.hpp>
+#include <sambag/dsp/VstMidiEventAdapter.hpp>
 
 #define MAX_BFF_STR 2048
 static const int FRX_VST2XPLUGIN_MAX_IDLE_MS = 20;
@@ -439,7 +440,10 @@ VstIntPtr VSTPluginImpl::_hostCallback ( AEffect* effect,
 			"Hostinfo == NULL"
 		);
 	}
-    if (hI->getMasterType() == IHostInfo::VST2X) {
+    if (hI->getMasterType() == IHostInfo::VST2X
+        // execludes these:
+        && opcode!=audioMasterProcessEvents)
+    {
         // master is vst2x we can call master directly:
         audioMasterCallback hostCallback =
             (audioMasterCallback)(hI->getMasterCallback());
@@ -526,14 +530,26 @@ std::pair<VstIntPtr, bool> VSTPluginImpl::processRequest( frx::processing::IHost
             return std::make_pair((VstIntPtr)&tmpInfo, true);
         }
         //---------------------------------------------------------------------
+        case audioMasterProcessEvents: {
+            VstEvents *ev = static_cast<VstEvents*>(ptr);
+            if (!ev || ev->numEvents==0) {
+                return std::make_pair(0, true);
+            }
+            sambag::dsp::VstMidiEventAdapter midiev(ev);
+            try {
+                oldPr::IMidiEventProcessor::EventSender::notifyListeners(this, &midiev);
+            } catch(...) {
+                SAMBAG_LOG_ERR<<"VST2xImpl. audioMasterProcessEvents failed";
+                return std::make_pair(0, true);
+            }
+            return std::make_pair(1, true);
+        }
+        //---------------------------------------------------------------------
         case audioMasterGetCurrentProcessLevel:
             return std::make_pair(kVstProcessLevelUnknown, true);
         //---------------------------------------------------------------------
         // TODOs:
         case DECLARE_VST_DEPRECATED(audioMasterPinConnected):
-            return std::make_pair(0, false);
-        //---------------------------------------------------------------------
-        case audioMasterProcessEvents:
             return std::make_pair(0, false);
         //---------------------------------------------------------------------
         case DECLARE_VST_DEPRECATED(audioMasterSetTime):
@@ -659,6 +675,21 @@ VstIntPtr VSTCALLBACK pluginCallToPlugNode (AEffect* effect,
 			}
 			if (!strcmp (text, "shellCategory") ) {
 				return 1;
+			}
+            if (!strcmp (text, "receiveVstMidiEvent") ) {
+				return 1;
+			}
+            if (!strcmp (text, "sendVstMidiEvent") ) {
+				return 1;
+			}
+            if (!strcmp (text, "sendVstTimeInfo") ) {
+				return 1;
+			}
+            if (!strcmp (text, "acceptIOChanges") ) {
+				return -1;
+			}
+            if (!strcmp (text, "reportConnectionChanges") ) {
+				return -1;
 			}
 			else
 				break;

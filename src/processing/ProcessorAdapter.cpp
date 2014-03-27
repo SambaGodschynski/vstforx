@@ -202,6 +202,8 @@ void ProcessorAdapter::initParameter() {
 	if (mevp) {
 		Parameter::Ptr p = mevp->getMidiChannelParameter();
 		parameters.insert(ParameterGroupMap::value_type("midi config", getAdapter(p)));
+		p = mevp->getMidiSendParameter();
+		parameters.insert(ParameterGroupMap::value_type("midi config", getAdapter(p)));
 	}
 }
 //-----------------------------------------------------------------------------
