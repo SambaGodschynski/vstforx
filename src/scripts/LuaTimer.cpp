@@ -26,8 +26,10 @@ void LuaTimer::__onTimer(sambag::lua::LuaStateWRef _lua, const std::string &luaC
     try {
         SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex)
         slua::executeString(lua.get(), luaCallback.c_str());
+    } catch(const std::exception &ex) {
+        SAMBAG_LOG_ERR<<"timer callback failed: "<<ex.what();
     } catch(...) {
-        SAMBAG_LOG_ERR<<"script ctrl. on timer failed.";
+        SAMBAG_LOG_ERR<<"timer callback failed.";
     }
 }
 //-----------------------------------------------------------------------------

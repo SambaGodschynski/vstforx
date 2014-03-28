@@ -30,6 +30,16 @@ function incCursor()
    end
 end
 
+function lcOnSave()
+   frx.plug:setPersistUserData("userkey", {"hallo", "du", "penner"})
+end
+
+function lcOnLoad()
+   data = frx.plug:getPersistUserData("userkey")
+   for k,v in pairs(data) do
+      print (k,v)
+   end
+end
 
 function lcProcess(numSamples)
    l = frx.plug:getInput(1)

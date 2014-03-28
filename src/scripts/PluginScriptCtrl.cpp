@@ -224,12 +224,6 @@ namespace {
 		static slua::IgnoreReturn process(const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
-	struct FrxLog {
-		typedef boost::function<void(std::string)> Function;
-		static const char * name() { return "log"; }
-		static void process(const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
-	};
-	//-------------------------------------------------------------------------
 	typedef LOKI_TYPELIST_7(FrxOpenPlugin,
 		FrxClosePlugin,
 		FrxOpenEditor,
@@ -239,7 +233,7 @@ namespace {
 		FrxSetEditorExitOnClose
     ) FrxPrivateFunctionList;
 	//-------------------------------------------------------------------------
-	typedef LOKI_TYPELIST_20(
+	typedef LOKI_TYPELIST_19(
 		FrxWait,
 		FrxGetLastBrowserSelection,
 	    FrxSerializePlugin,
@@ -258,13 +252,8 @@ namespace {
         FrxQueryDB,
         FrxAddTimer,
         FrxSetPersistData,
-        FrxGetPersistData,
-/*20*/  FrxLog
+        FrxGetPersistData
 	) FrxPublicFunctionList;
-//-----------------------------------------------------------------------------
-void FrxLog::process(const std::string &msg, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
-    SAMBAG_LOG_INFO<<msg;
-}
 //-----------------------------------------------------------------------------
 void FrxSetPersistData::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
     sambag::lua::LuaStateRef lua = lp.first.lock();
@@ -276,7 +265,9 @@ void FrxSetPersistData::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
             throw std::runtime_error("arguments mismatch");
         }
         std::string key( lua_tostring(lua.get(),  -2) );
-
+        // first remove old values
+        ctrl->getPersistUserData().erase(key);
+        
         if(!lua_istable(lua.get(),  -1)) {
             throw std::runtime_error("arguments mismatch");
         }

@@ -7,7 +7,7 @@ gpConfig = {
    author="Samba Godschynski",
    license="GPL",
    numInputs=0, 
-   numOutputs=2
+   numOutputs=0
 }
 gpParameterSetup = {}
 p = gpParameterSetup
@@ -42,16 +42,20 @@ function initParam()
 end
 
 function lcProcessMidi(messages) 
-   for i=0,#messages,1 do
-      status, v1, v2 = unpack(messages[i])
-      if (status~=nil) then 
-	 status=bit32.band(0xF0, status)
-	 channel=bit32.band(0x0F, status)
+   for k,v in pairs(messages) do
+      print(#v.data)
+      _status, v1, v2 = unpack(v.data)
+      print(_status, v1, v2)
+      if (_status~=nil) then 
+	 status=bit32.band(0xF0, _status)
+	 channel=bit32.band(0x0F, _status)
 	 if status==0x80 then
 	    --noteoff
+	    frx.plug:log(channel, "note off")
 	 end
 	 if status==0x90 then
 	    --noteon
+	    frx.plug:log(channel, "note on")
 	 end
       end
    end

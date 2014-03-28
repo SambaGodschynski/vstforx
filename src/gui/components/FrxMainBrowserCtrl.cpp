@@ -656,7 +656,6 @@ void FrxMainBrowserCtrl::initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr br
 	tree->setNodeData(scene, node);
 	
 	scene_plugins = tree->addNode(scene, BrowserNode("Plugins", true));
-	scene_processors = tree->addNode(scene, BrowserNode("Processors", true));
 	scene_parameter = tree->addNode(scene, BrowserNode("Parameter", true));
 	// add_knobs
 	add_knobs = 
@@ -678,6 +677,12 @@ void FrxMainBrowserCtrl::initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr br
 	);
 	tree->setNodeData(add_plugins, node);
     
+    // add_processors
+	add_processors = 
+		tree->addNode(scene_plugins, BrowserNode("Internal",
+			BrowserConstants::FRX_BROWSER_ADD_CONTENT_FOLDER));
+	addMainProcessors();
+    
     // history
     his_recent = tree->addNode(scene_plugins);
     node = BrowserNode("History", BrowserConstants::FRX_BROWSER_HISTORY_FOLDER);
@@ -691,12 +696,6 @@ void FrxMainBrowserCtrl::initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr br
 		boost::bind(&FrxMainBrowserCtrl::fillHistoryFolder, this, his_favourite, Favourite);
 	tree->setNodeData(his_favourite, node);
 
-
-	// add_processors
-	add_processors = 
-		tree->addNode(scene_processors, BrowserNode("Add Processor", 
-			BrowserConstants::FRX_BROWSER_ADD_CONTENT_FOLDER));
-	addMainProcessors();
     
     // remote channels
 #ifdef FRX_FEATURE_REMOTE_CHANNEL
@@ -783,7 +782,7 @@ Tree::Node FrxMainBrowserCtrl::addProcessorToSceneTree(FrxComponentPtr c, Reason
 		return Tree::NULL_NODE;
 	}
 	Tree::Ptr tree = browser->getBrowserImpl();
-	Tree::Node newNode = tree->addNode(scene_processors);
+	Tree::Node newNode = tree->addNode(scene_plugins);
 
 	BrowserNode browserNode(c->getName(), true);
 	addModelObjectParameter(pr, newNode);

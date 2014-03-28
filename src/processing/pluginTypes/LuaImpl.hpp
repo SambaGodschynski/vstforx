@@ -19,6 +19,8 @@
 #include <processing/parameter/parameter.h>
 #include <loki/Typelist.h>
 #include <sambag/com/Thread.hpp>
+#include <map>
+#include <list>
 
 #define LUA_CALL(_name)                                                        \
 struct _name {                                                                 \
@@ -26,7 +28,12 @@ struct _name {                                                                 \
 }
 
 
-namespace frx { namespace processing {
+namespace frx {
+namespace gui { namespace components {
+    class FrxScriptPluginEditor;
+    typedef boost::shared_ptr<FrxScriptPluginEditor> ScriptPluginEditorPtr;
+}}
+namespace processing {
 namespace oldPr = ::processing;
 namespace oldPrPa = ::processing::parameter;
 //=============================================================================
@@ -46,6 +53,8 @@ public:
 	// r,i
 	typedef boost::tuple< LuaFloatSeq, LuaFloatSeq > FFTData;
     //-------------------------------------------------------------------------
+    typedef std::multimap<std::string, std::string> PersistUserData;
+    //-------------------------------------------------------------------------
     SAMBAG_LUA_FTAG(getInput,  LuaImpl::LuaFrames(int));
     SAMBAG_LUA_FTAG(fft,  LuaImpl::FFTData());
     SAMBAG_LUA_FTAG(toOutput, void());
@@ -58,6 +67,12 @@ public:
     SAMBAG_LUA_FTAG(setParameterValue, void(std::string, float));
     SAMBAG_LUA_FTAG(setParameterDisplay, void(std::string, std::string));
     SAMBAG_LUA_FTAG(sendMidi, void());
+    SAMBAG_LUA_FTAG(getPersistUserData, sambag::lua::IgnoreReturn(std::string));
+    SAMBAG_LUA_FTAG(setPersistUserData, void());
+    SAMBAG_LUA_FTAG(log, void(std::string));
+    SAMBAG_LUA_FTAG(logWarn, void(std::string));
+    SAMBAG_LUA_FTAG(logErr, void(std::string));
+    SAMBAG_LUA_FTAG(logTrace, void(std::string));
     typedef LOKI_TYPELIST_10(Frx_getInput_Tag,
         Frx_fft_Tag,
         Frx_toOutput_Tag,
@@ -69,8 +84,14 @@ public:
         Frx_getTempo_Tag,
         Frx_setParameterValue_Tag
     ) Functions1;
-    typedef LOKI_TYPELIST_2(Frx_setParameterDisplay_Tag,
-        Frx_sendMidi_Tag
+    typedef LOKI_TYPELIST_8(Frx_setParameterDisplay_Tag,
+        Frx_sendMidi_Tag,
+        Frx_getPersistUserData_Tag,
+        Frx_setPersistUserData_Tag,
+        Frx_log_Tag,
+        Frx_logWarn_Tag,
+        Frx_logErr_Tag,
+        Frx_logTrace_Tag
     ) Functions2;
     //-------------------------------------------------------------------------
     struct LuaCall { // frxlLua
@@ -79,20 +100,37 @@ public:
         LUA_CALL(lcProcessMidi);
         LUA_CALL(lcSetAudioConfig);
         LUA_CALL(lcInit);
+        LUA_CALL(lcOnSave);
+        LUA_CALL(lcOnLoad);
         // num > 32 can violate flags integer bounds @see lcFlags
         // use boost::dynamic_bitset in that case
-        typedef LOKI_TYPELIST_5(lcOnParameterChanged,
+        typedef LOKI_TYPELIST_7(lcOnParameterChanged,
             lcProcess,
             lcProcessMidi,
             lcSetAudioConfig,
-            lcInit) List;
+            lcInit,
+            lcOnSave,
+            lcOnLoad) List;
     };
     //-------------------------------------------------------------------------
     enum Flag {
-        IsValid
+        IsValid,
+        NeedsReload
     };
+protected:
+    //-------------------------------------------------------------------------
+    void onReloadScript();
 private:
-   //-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
+    std::list<std::string> logHistory;
+    //-------------------------------------------------------------------------
+    frx::gui::components::ScriptPluginEditorPtr editor;
+    //-------------------------------------------------------------------------
+    PersistUserData persistUserData;
+    mutable std::string stringBuffer;
+    //-------------------------------------------------------------------------
+    void addToEditor(const std::string &msg);
+    //-------------------------------------------------------------------------
     void log(const std::string &msg);
     //-------------------------------------------------------------------------
     void log_err(const std::string &msg);
@@ -147,8 +185,6 @@ private:
         unsigned int mask = (1 << (unsigned int)aFlag);
         return ((flags & mask) == mask);
     }
-    //-------------------------------------------------------------------------
-    void onTimer(const std::string &luaCallback);
 public:
     //-------------------------------------------------------------------------
     template <class LC>
@@ -198,6 +234,10 @@ public:
     //-------------------------------------------------------------------------
     void frxSetParameterDisplay(const std::string &name,
         const std::string &value);
+    //-------------------------------------------------------------------------
+    sambag::lua::IgnoreReturn getPersistData(const std::string &key);
+    //-------------------------------------------------------------------------
+    void setPersistData();
 public:
     ///////////////////////////////////////////////////////////////////////////
     // AWindowImpl

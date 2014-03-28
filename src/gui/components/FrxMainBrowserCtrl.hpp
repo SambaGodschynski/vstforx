@@ -83,7 +83,7 @@ protected:
 	//-------------------------------------------------------------------------
 	void initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws);
 	//-------------------------------------------------------------------------
-	Tree::Node add, add_plugins, add_processors, add_knobs, scene, scene_processors,
+	Tree::Node add, add_plugins, add_processors, add_knobs, scene,
 		scene_plugins, scene_parameter, scene_connections, his_recent, his_favourite,
         remotes;
 	//-------------------------------------------------------------------------
