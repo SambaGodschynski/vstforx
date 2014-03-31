@@ -34,7 +34,9 @@ std::string osSelectDirectory ( const std::string &wndTitle, const std::string &
 //------------------------------------------------------------------------------------------------------------
 std::string osSelectFile ( const std::string &wndTitle, const std::string &startPath, void *parent);
 //------------------------------------------------------------------------------------------------------------
-void openLink (const std::string &url);
+void osOpenLink (const std::string &url);
+//------------------------------------------------------------------------------------------------------------
+ void osShowInputTextDlg(const std::string &title, std::string &inOutTxt, void *parentWnd);
 // Message Box
 } //namespace com
 

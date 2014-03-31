@@ -49,6 +49,8 @@ protected:
     slua::IgnoreReturn getParameters(lua_State *lua) const;
     slua::IgnoreReturn addInput(lua_State *lua);
     slua::IgnoreReturn addOutput(lua_State *lua);
+    //-------------------------------------------------------------------------
+    virtual void __lua_gc(lua_State *lua);
 private:
 public:
     //-------------------------------------------------------------------------

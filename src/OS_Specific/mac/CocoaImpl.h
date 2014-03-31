@@ -34,6 +34,8 @@ public:
     static void startProcess(const char *path, int argc, const char **argv);
     //-------------------------------------------------------------------------
     static void openLink(const std::string &url);
+    //-------------------------------------------------------------------------
+    static void showInputTextDlg(const std::string &title, std::string &inOutTxt);
 
 }; // CocoaHelper
 }} // namespace(s)

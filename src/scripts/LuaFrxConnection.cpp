@@ -14,6 +14,11 @@ namespace frx { namespace scripts {
 //  Class LuaFrxConnection
 //=============================================================================
 //-----------------------------------------------------------------------------
+void LuaFrxConnection::__lua_gc(lua_State *lua) {
+    slua::unregisterClassFunctions<Functions>(getUId());
+    Super::__lua_gc(lua);
+}
+//-----------------------------------------------------------------------------
 void LuaFrxConnection::
 pushComponent(lua_State *lua, fgc::FrxComponentPtr vObj) const
 {

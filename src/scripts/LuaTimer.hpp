@@ -14,16 +14,27 @@
 #include <boost/function.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
 #include <sambag/com/Thread.hpp>
+#include <sambag/com/events/Events.hpp>
 
 namespace frx { namespace scripts {
 namespace slua = sambag::lua;
+struct TimerExecFailed {
+    std::string msg;
+    TimerExecFailed(const std::string &msg) : msg(msg) {}
+};
 //=============================================================================
 /** 
   * @class LuaTimer.
   */
-class LuaTimer : public slua::ALuaObject {
+class LuaTimer : public slua::ALuaObject,
+    public sambag::com::events::EventSender<TimerExecFailed>
+{
 //=============================================================================
 public:
+    //-------------------------------------------------------------------------
+    typedef sambag::com::events::EventSender<TimerExecFailed> ExecFailedSender;
+    //-------------------------------------------------------------------------
+    typedef TimerExecFailed ExecFailedEvent;
     //-------------------------------------------------------------------------
     typedef slua::ALuaObject Super;
 	//-------------------------------------------------------------------------

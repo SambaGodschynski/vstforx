@@ -28,8 +28,10 @@ void LuaTimer::__onTimer(sambag::lua::LuaStateWRef _lua, const std::string &luaC
         slua::executeString(lua.get(), luaCallback.c_str());
     } catch(const std::exception &ex) {
         SAMBAG_LOG_ERR<<"timer callback failed: "<<ex.what();
+        ExecFailedSender::notifyListeners(this, ExecFailedEvent(ex.what()));
     } catch(...) {
         SAMBAG_LOG_ERR<<"timer callback failed.";
+        ExecFailedSender::notifyListeners(this, ExecFailedEvent("unknown error"));
     }
 }
 //-----------------------------------------------------------------------------
@@ -63,6 +65,7 @@ void LuaTimer::addLuaFields(lua_State *lua, int index) {
 //-----------------------------------------------------------------------------
 void LuaTimer::__lua_gc(lua_State *lua) {
     timer->stop();
+    slua::unregisterClassFunctions<Functions>(getUId());
     Super::__lua_gc(lua);
 }
 //-----------------------------------------------------------------------------

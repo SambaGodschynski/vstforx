@@ -102,6 +102,8 @@ protected:
     void setLocation(lua_State *lua, float x, float y);
     boost::tuple<float,float> getSize(lua_State *lua) const;
     void setSize(lua_State *lua, float x, float y);
+    //-------------------------------------------------------------------------
+    virtual void __lua_gc(lua_State *lua);
 private:
     //-------------------------------------------------------------------------
     fgc::VstForxEditor *editor;

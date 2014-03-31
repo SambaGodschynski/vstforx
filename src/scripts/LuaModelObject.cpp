@@ -85,23 +85,6 @@ void LuaModelObject::setTypeId(const std::string &typeId) {
 void LuaModelObject::addLuaFields(lua_State *lua, int index) {
     Super::addLuaFields(lua, index);
     uidMap[getUId()] = boost::dynamic_pointer_cast<LuaModelObject>(shared_from_this());
-
-/*    using boost::bind;
-    sambag::lua::registerClassFunctions<Functions,
-        sambag::lua::TupleAccessor>
-    (
-        lua,
-        boost::make_tuple(
-            bind(&LuaModelObject::getLocation, this, lua),
-            bind(&LuaModelObject::setLocation, this, lua, _1, _2),
-            bind(&LuaModelObject::getSize, this, lua),
-            bind(&LuaModelObject::setSize, this, lua, _1, _2),
-            bind(&LuaModelObject::setName, this, lua, _1),
-            bind(&LuaModelObject::getName, this, lua)
-        ),
-        index,
-        getUId()
-    );*/
     
     if (getTypeId().empty()) {
         SAMBAG_THROW(

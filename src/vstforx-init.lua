@@ -11,10 +11,16 @@ gpCustomMenus= {
    {name="VSTForx " .. frx.getVersionString() },
    {name="Modify Scene...", action="onOpenBrowser()"},
    {name="Open Setup Dialog", action="frx.openSetup()"},
+   {name="execute command...", action="onExecute()"},
    {name="About...", action="frx.openAbout()"},
-   {name="external"},
+   {Name="external"},
    {name="www.vstforx.de", action="frx.openUrl('http://www.vstforx.de')"},
 }
+
+function onExecute()
+   s=frx.showInputTextDlg('Command','')
+   loadstring(s)()
+end
 
 function onSave()
    print(frx.getGraphDelay())

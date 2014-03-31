@@ -94,4 +94,22 @@ void CocoaImpl::openLink(const std::string &url) {
         openURL: [NSURL URLWithString:[NSString stringWithUTF8String:url.c_str()]
     ]];
 }
+//-----------------------------------------------------------------------------
+void CocoaImpl::showInputTextDlg(const std::string &title, std::string &inOutTxt) {
+    NSAlert *alert = [NSAlert alertWithMessageText: [NSString stringWithUTF8String:title.c_str()]
+                                     defaultButton:@"OK"
+                                   alternateButton:@"Cancel"
+                                       otherButton:nil
+                         informativeTextWithFormat:@""];
+    NSTextField *input = [[NSTextField alloc] initWithFrame:NSMakeRect(0, 0, 200, 24)];
+    [input setStringValue:[NSString stringWithUTF8String:inOutTxt.c_str()]];
+    [input setEditable:YES];
+    [alert setAccessoryView:input];
+    NSInteger button = [alert runModal];
+    [input release];
+    if (button == NSAlertDefaultReturn) {
+        [input validateEditing];
+        inOutTxt = toString([input stringValue]);
+    }
+}
 }}

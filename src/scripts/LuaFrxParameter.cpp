@@ -15,6 +15,11 @@ namespace frx { namespace scripts {
 //  Class LuaFrxParameter
 //=============================================================================
 //-----------------------------------------------------------------------------
+void LuaFrxParameter::__lua_gc(lua_State *lua) {
+    slua::unregisterClassFunctions<Functions>(getUId());
+    Super::__lua_gc(lua);
+}
+//-----------------------------------------------------------------------------
 std::string LuaFrxParameter::toString(lua_State * lua) const {
     std::stringstream ss;
     ss << Super::toString(lua) << " " << getValue(lua);

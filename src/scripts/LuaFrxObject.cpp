@@ -204,6 +204,7 @@ bool LuaFrxObject::isequal(lua_State *lua) const {
 //-----------------------------------------------------------------------------
 void LuaFrxObject::__lua_gc(lua_State *lua) {
     uidMap.erase(getUId());
+    slua::unregisterClassFunctions<Functions>(getUId());
     Super::__lua_gc(lua);
 }
 //-----------------------------------------------------------------------------

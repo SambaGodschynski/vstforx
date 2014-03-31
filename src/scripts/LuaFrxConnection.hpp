@@ -34,6 +34,8 @@ protected:
     typedef LOKI_TYPELIST_1(Frx_getObjects_Tag
     ) Functions1;
     slua::IgnoreReturn2 getObjects(lua_State *lua) const;
+    //-------------------------------------------------------------------------
+    virtual void __lua_gc(lua_State *lua);
 private:
     //-------------------------------------------------------------------------
     void pushComponent(lua_State *lua, fgc::FrxComponentPtr c) const;

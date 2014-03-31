@@ -33,6 +33,12 @@ namespace frx { namespace scripts {
 //  Class LuaFrxView
 //=============================================================================
 //-----------------------------------------------------------------------------
+void LuaFrxView::__lua_gc(lua_State *lua) {
+    slua::unregisterClassFunctions<Functions1>(getUId());
+    slua::unregisterClassFunctions<Functions2>(getUId());
+    Super::__lua_gc(lua);
+}
+//-----------------------------------------------------------------------------
 slua::IgnoreReturn LuaFrxView::add(lua_State *lua)
 {
     try {

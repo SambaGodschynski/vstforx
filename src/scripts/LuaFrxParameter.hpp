@@ -41,6 +41,8 @@ protected:
     virtual std::string toString(lua_State * lua) const;
     void setValue(lua_State * lua, float v);
     float getValue(lua_State * lua) const;
+    //-------------------------------------------------------------------------
+    virtual void __lua_gc(lua_State *lua);
 private:
 public:
     //-------------------------------------------------------------------------

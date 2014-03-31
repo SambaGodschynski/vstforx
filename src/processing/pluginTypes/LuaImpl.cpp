@@ -302,6 +302,7 @@ void LuaImpl::onReloadScript() {
     size_t oldp = parameters->size();
     {
         SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+        closeLua();
         loadScript();
     }
     if (
@@ -662,6 +663,7 @@ LuaImpl::FFTData LuaImpl::frxFFT() {
 }
 //-----------------------------------------------------------------------------
 LuaImpl::~LuaImpl() {
+    closeLua();
 }
 //-----------------------------------------------------------------------------
 std::pair<size_t, void*> LuaImpl::getStateData() const {
@@ -817,7 +819,7 @@ void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
     boost::tuple<std::string> uid;
     lua_getfield(luaState.get(), plugTbl, SLUA_FIELDNAME_UID);
     sambag::lua::pop(luaState.get(), uid);
-
+    this->uuid = boost::get<0>(uid);
     sambag::lua::registerClassFunctions<Functions2,
         sambag::lua::TupleAccessor>
     (
@@ -838,6 +840,12 @@ void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
     
     lua_setfield(luaState.get(), frxTbl, "plug");
     lua_pop(luaState.get(), 2); // remove frxtbl
+}
+//-----------------------------------------------------------------------------
+void LuaImpl::closeLua() {
+    luaState.reset();
+    sambag::lua::unregisterClassFunctions<Functions1>(uuid);
+    sambag::lua::unregisterClassFunctions<Functions2>(uuid);
 }
 //-----------------------------------------------------------------------------
 namespace {

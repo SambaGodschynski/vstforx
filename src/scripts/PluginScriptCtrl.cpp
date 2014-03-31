@@ -223,6 +223,18 @@ namespace {
 		static const char * name() { return "getPersistData"; }
 		static slua::IgnoreReturn process(const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
+    //-------------------------------------------------------------------------
+	struct FrxShowInputTextDlg {
+		typedef boost::function<std::string(std::string, std::string)> Function;
+		static const char * name() { return "showInputTextDlg"; }
+		static std::string process(const std::string &, const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
+	};
+    //-------------------------------------------------------------------------
+	struct FrxRunOnUIThread {
+		typedef boost::function<void(std::string)> Function;
+		static const char * name() { return "runOnUIThread"; }
+		static void process(const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
+	};
 	//-------------------------------------------------------------------------
 	typedef LOKI_TYPELIST_7(FrxOpenPlugin,
 		FrxClosePlugin,
@@ -233,7 +245,7 @@ namespace {
 		FrxSetEditorExitOnClose
     ) FrxPrivateFunctionList;
 	//-------------------------------------------------------------------------
-	typedef LOKI_TYPELIST_19(
+	typedef LOKI_TYPELIST_21(
 		FrxWait,
 		FrxGetLastBrowserSelection,
 	    FrxSerializePlugin,
@@ -252,8 +264,70 @@ namespace {
         FrxQueryDB,
         FrxAddTimer,
         FrxSetPersistData,
-        FrxGetPersistData
+        FrxGetPersistData,
+ /*20*/ FrxShowInputTextDlg,
+        FrxRunOnUIThread
 	) FrxPublicFunctionList;
+//-----------------------------------------------------------------------------
+namespace {
+    void __runuiimpl(const std::string &cmd, const Ctrl::LuaProcessor &lp) {
+        sambag::lua::LuaStateRef lua = lp.first.lock();
+        if(!lua) {
+            return;
+        }
+        try {
+            SAMBAG_TRY_TO_LOCK_RECURSIVE(*lp.second)
+            sambag::lua::executeString(lua.get(), cmd);
+        } catch(const std::exception &ex) {
+            slua::pushLuaError(lua.get(),  ex.what());
+        } catch (...) {
+            slua::pushLuaError(lua.get(),  "unkown error");
+        }
+    }
+}
+void FrxRunOnUIThread::process(const std::string &cmd,
+    Ctrl *ctrl, const Ctrl::LuaProcessor &lp)
+{
+    sdc::getWindowToolkit()->invokeLater(
+        boost::bind(&__runuiimpl, cmd, lp),
+        10
+    );
+}
+//-----------------------------------------------------------------------------
+std::string FrxShowInputTextDlg::process(const std::string &title,
+    const std::string &txt, Ctrl *ctrl, const Ctrl::LuaProcessor &lp)
+{
+    using namespace frx::gui;
+	using namespace frx::gui::components;
+	FRX_START_SCRIPTCALL
+	FRX_GET_PLUG
+	FRX_GET_EDITOR
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return "";
+    }
+    try {
+        std::string res(txt);
+        FrxCircuidViewPtr view = editor->getCircuidView();
+        if (!view) {
+            return "";
+        }
+        sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
+        if (!win) {
+            return "";
+        }
+        if (win->getThreadId() != sambag::com::getThreadId()) {
+            throw std::runtime_error("this function need to be called from main thread. Use runOnUIThread for this purpose.");
+        }
+        ::com::osShowInputTextDlg(title, res, win->getWindowImpl()->getSystemHandle());
+        return res;
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua.get(),  ex.what());
+    } catch (...) {
+        slua::pushLuaError(lua.get(),  "unkown error");
+    }
+    return "";
+}
 //-----------------------------------------------------------------------------
 void FrxSetPersistData::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
     sambag::lua::LuaStateRef lua = lp.first.lock();
@@ -407,14 +481,29 @@ void FrxOpenSceneBrowser::process(const std::string &path, Ctrl *ctrl, const Ctr
     if(!lua) {
         return;
     }
-	FRX_START_SCRIPTCALL
-	FRX_GET_PLUG
-	FRX_GET_EDITOR
-    using namespace frx::gui;
-	using namespace frx::gui::components;
-    FrxCircuidViewPtr view = editor->getCircuidView();
-	IFrxControl &frxctrl = getFrxControl(view);
-    frxctrl.openSceneBrowser(view, path);
+    try {
+        FRX_START_SCRIPTCALL
+        FRX_GET_PLUG
+        FRX_GET_EDITOR
+        using namespace frx::gui;
+        using namespace frx::gui::components;
+        FrxCircuidViewPtr view = editor->getCircuidView();
+    
+        sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
+        if (!win) {
+            return;
+        }
+        if (win->getThreadId() != sambag::com::getThreadId()) {
+            throw std::runtime_error("this function need to be called from main thread. Use runOnUIThread for this purpose.");
+        }
+    
+        IFrxControl &frxctrl = getFrxControl(view);
+        frxctrl.openSceneBrowser(view, path);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua.get(), ex.what());
+    } catch (...) {
+        slua::pushLuaError(lua.get(), "unkown error");
+    }
 }
 //-----------------------------------------------------------------------------
 void FrxOpenSetup::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
@@ -422,14 +511,29 @@ void FrxOpenSetup::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
     if(!lua) {
         return;
     }
-	FRX_START_SCRIPTCALL
-	FRX_GET_PLUG
-	FRX_GET_EDITOR
-    using namespace frx::gui;
-	using namespace frx::gui::components;
-    FrxCircuidViewPtr view = editor->getCircuidView();
-	IFrxControl &frxctrl = getFrxControl(view);
-    frxctrl.openSetup(view);
+    try {
+        FRX_START_SCRIPTCALL
+        FRX_GET_PLUG
+        FRX_GET_EDITOR
+        using namespace frx::gui;
+        using namespace frx::gui::components;
+        FrxCircuidViewPtr view = editor->getCircuidView();
+        
+        sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
+        if (!win) {
+            return;
+        }
+        if (win->getThreadId() != sambag::com::getThreadId()) {
+            throw std::runtime_error("this function need to be called from main thread. Use runOnUIThread for this purpose.");
+        }
+        
+        IFrxControl &frxctrl = getFrxControl(view);
+        frxctrl.openSetup(view);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua.get(), ex.what());
+    } catch (...) {
+        slua::pushLuaError(lua.get(), "unkown error");
+    }
 }
 //-----------------------------------------------------------------------------
 void FrxOpenAbout::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
@@ -437,15 +541,30 @@ void FrxOpenAbout::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
     if(!lua) {
         return;
     }
-	FRX_START_SCRIPTCALL
-	FRX_GET_PLUG
-	FRX_GET_EDITOR
-	FRX_START_SCRIPTCALL
-    using namespace frx::gui;
-	using namespace frx::gui::components;
-    FrxCircuidViewPtr view = editor->getCircuidView();
-	IFrxControl &frxctrl = getFrxControl(view);
-    frxctrl.openAbout(view);
+    try {
+        FRX_START_SCRIPTCALL
+        FRX_GET_PLUG
+        FRX_GET_EDITOR
+        FRX_START_SCRIPTCALL
+        using namespace frx::gui;
+        using namespace frx::gui::components;
+        FrxCircuidViewPtr view = editor->getCircuidView();
+        
+        sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
+        if (!win) {
+            return;
+        }
+        if (win->getThreadId() != sambag::com::getThreadId()) {
+            throw std::runtime_error("this function need to be called from main thread. Use runOnUIThread for this purpose.");
+        }
+        
+        IFrxControl &frxctrl = getFrxControl(view);
+        frxctrl.openAbout(view);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua.get(), ex.what());
+    } catch (...) {
+        slua::pushLuaError(lua.get(), "unkown error");
+    }
 }
 //-----------------------------------------------------------------------------
 void FrxMessageBox::process(const std::string &msg, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
@@ -453,10 +572,27 @@ void FrxMessageBox::process(const std::string &msg, Ctrl *ctrl, const Ctrl::LuaP
     if(!lua) {
         return;
     }
-	FRX_START_SCRIPTCALL
-	FRX_GET_PLUG
-	FRX_GET_EDITOR
-    ::com::osMessageBox("Lua", msg, ::com::MSG_ALERT);
+    try {
+        FRX_START_SCRIPTCALL
+        FRX_GET_PLUG
+        FRX_GET_EDITOR
+        using namespace frx::gui;
+        using namespace frx::gui::components;
+        FrxCircuidViewPtr view = editor->getCircuidView();
+        
+        sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
+        if (!win) {
+            return;
+        }
+        if (win->getThreadId() != sambag::com::getThreadId()) {
+            throw std::runtime_error("this function need to be called from main thread. Use runOnUIThread for this purpose.");
+        }
+        ::com::osMessageBox("Lua", msg, ::com::MSG_ALERT);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua.get(), ex.what());
+    } catch (...) {
+        slua::pushLuaError(lua.get(), "unkown error");
+    }
 }
 //-----------------------------------------------------------------------------
 void FrxOpenUrl::process(const std::string &url, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
@@ -464,10 +600,27 @@ void FrxOpenUrl::process(const std::string &url, Ctrl *ctrl, const Ctrl::LuaProc
     if(!lua) {
         return;
     }
-	FRX_START_SCRIPTCALL
-	FRX_GET_PLUG
-	FRX_GET_EDITOR
-    ::com::openLink(url);
+    try {
+        FRX_START_SCRIPTCALL
+        FRX_GET_PLUG
+        FRX_GET_EDITOR
+        using namespace frx::gui;
+        using namespace frx::gui::components;
+        FrxCircuidViewPtr view = editor->getCircuidView();
+        
+        sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
+        if (!win) {
+            return;
+        }
+        if (win->getThreadId() != sambag::com::getThreadId()) {
+            throw std::runtime_error("this function need to be called from main thread. Use runOnUIThread for this purpose.");
+        }
+        ::com::osOpenLink(url);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua.get(), ex.what());
+    } catch (...) {
+        slua::pushLuaError(lua.get(), "unkown error");
+    }
 }
 //-----------------------------------------------------------------------------
 std::string FrxSelectFile::process(const std::string &startPath, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
@@ -475,10 +628,28 @@ std::string FrxSelectFile::process(const std::string &startPath, Ctrl *ctrl, con
     if(!lua) {
         return std::string();
     }
-	FRX_START_SCRIPTCALL
-	FRX_GET_PLUG
-	FRX_GET_EDITOR
-    return ::com::osSelectFile("select file", startPath, NULL);
+    try {
+        FRX_START_SCRIPTCALL
+        FRX_GET_PLUG
+        FRX_GET_EDITOR
+        using namespace frx::gui;
+        using namespace frx::gui::components;
+        FrxCircuidViewPtr view = editor->getCircuidView();
+        
+        sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
+        if (!win) {
+            return "";
+        }
+        if (win->getThreadId() != sambag::com::getThreadId()) {
+            throw std::runtime_error("this function need to be called from main thread. Use runOnUIThread for this purpose.");
+        }
+        return ::com::osSelectFile("select file", startPath, NULL);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua.get(), ex.what());
+    } catch (...) {
+        slua::pushLuaError(lua.get(), "unkown error");
+    }
+    return "";
 }
 //-----------------------------------------------------------------------------
 std::string FrxSelectDirectory::process(const std::string &startPath, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
@@ -486,10 +657,28 @@ std::string FrxSelectDirectory::process(const std::string &startPath, Ctrl *ctrl
     if(!lua) {
         return std::string();
     }
-	FRX_START_SCRIPTCALL
-	FRX_GET_PLUG
-	FRX_GET_EDITOR
-    return ::com::osSelectFile("select directory", startPath, NULL);
+    try {
+        FRX_START_SCRIPTCALL
+        FRX_GET_PLUG
+        FRX_GET_EDITOR
+        using namespace frx::gui;
+        using namespace frx::gui::components;
+        FrxCircuidViewPtr view = editor->getCircuidView();
+        
+        sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
+        if (!win) {
+            return "";
+        }
+        if (win->getThreadId() != sambag::com::getThreadId()) {
+            throw std::runtime_error("this function need to be called from main thread. Use runOnUIThread for this purpose.");
+        }
+        return ::com::osSelectFile("select directory", startPath, NULL);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua.get(), ex.what());
+    } catch (...) {
+        slua::pushLuaError(lua.get(), "unkown error");
+    }
+    return "";
 }
 //-----------------------------------------------------------------------------
 int FrxGetGraphDelay::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {

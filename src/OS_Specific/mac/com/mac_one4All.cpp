@@ -102,8 +102,14 @@ void startProcess(const char *path, int argc, const char **argv) {
     frx::com::CocoaImpl::startProcess(path, argc, argv);
 }
 //-----------------------------------------------------------------------------
-void openLink (const std::string &url) {
+void osOpenLink (const std::string &url) {
     frx::com::CocoaImpl::openLink(url);
+}
+//-----------------------------------------------------------------------------
+void osShowInputTextDlg(const std::string &title,
+    std::string &inOutTxt, void *parentWnd)
+{
+    frx::com::CocoaImpl::showInputTextDlg(title, inOutTxt);
 }
 } // namespace com
 

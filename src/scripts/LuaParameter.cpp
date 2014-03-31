@@ -15,6 +15,11 @@ namespace frx { namespace scripts {
 //  Class LuaParameter
 //=============================================================================
 //-----------------------------------------------------------------------------
+void LuaParameter::__lua_gc(lua_State *lua) {
+    slua::unregisterClassFunctions<Functions1>(getUId());
+    Super::__lua_gc(lua);
+}
+//-----------------------------------------------------------------------------
 void LuaParameter::addLuaFields(lua_State * lua, int index) {
     Super::addLuaFields(lua, index);
     using boost::bind;

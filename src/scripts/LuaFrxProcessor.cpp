@@ -20,6 +20,11 @@ namespace frx { namespace scripts {
 //  Class LuaFrxProcessor
 //=============================================================================
 //-----------------------------------------------------------------------------
+void LuaFrxProcessor::__lua_gc(lua_State *lua) {
+    slua::unregisterClassFunctions<Functions>(getUId());
+    Super::__lua_gc(lua);
+}
+//-----------------------------------------------------------------------------
 slua::IgnoreReturn LuaFrxProcessor::getInputs(lua_State *lua) const {
     using namespace frx::gui;
     using namespace frx::gui::components;
