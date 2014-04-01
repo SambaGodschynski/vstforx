@@ -16,6 +16,7 @@
 #include <windows.h>
 #include <exception>
 #include <sambag/com/Thread.hpp>
+#include <map>
 extern void* hInstance;
 
 namespace com {
@@ -186,8 +187,59 @@ std::string osSelectFile ( const std::string &wndTitle,
 	return ret;
 }
 //--------------------------------------------------------------------------------------------------------
-void openLink(const std::string &url) {
+void osOpenLink(const std::string &url) {
     ShellExecute(NULL, "open", url.c_str(), NULL, NULL, SW_SHOWNORMAL);
+}
+//--------------------------------------------------------------------------------------------------------
+namespace {
+	std::map<sambag::com::ThreadId, std::pair<std::string,std::string> > __dlgIO;
+	sambag::com::RecursiveMutex __dlgMutex;
+	enum{DLG_ID=101,
+		 DLG_TEXT=1001};
+	LRESULT CALLBACK dlgProc(HWND hWndDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
+		sambag::com::ThreadId id = sambag::com::getThreadId();
+		switch(msg) {
+		case WM_INITDIALOG:
+			SetWindowText(hWndDlg,__dlgIO[id].first.c_str());
+			SAMBAG_BEGIN_SYNCHRONIZED(__dlgMutex)
+				SetDlgItemText(hWndDlg,DLG_TEXT,__dlgIO[id].second.c_str());
+			SAMBAG_END_SYNCHRONIZED
+			return TRUE;
+		case WM_COMMAND:
+			switch(wParam) {
+			case IDOK: {
+				TCHAR szBuffer[512];
+				GetDlgItemText(hWndDlg,DLG_TEXT,szBuffer,512);
+				SAMBAG_BEGIN_SYNCHRONIZED(__dlgMutex)
+					__dlgIO[id].second = std::string(szBuffer);
+				SAMBAG_END_SYNCHRONIZED
+				EndDialog(hWndDlg, 0);
+				return TRUE;
+			}
+			case IDCANCEL:
+				EndDialog(hWndDlg, 0);
+				return TRUE;
+			}	   
+		}
+		return FALSE;
+	}
+} // namespace
+void osShowInputTextDlg(const std::string &title, std::string &inOut, void *parentWindow) {
+	
+	sambag::com::ThreadId id = sambag::com::getThreadId();
+	//prepare data
+	SAMBAG_BEGIN_SYNCHRONIZED(__dlgMutex)
+		__dlgIO[id].first = title;
+		__dlgIO[id].second = inOut;
+	SAMBAG_END_SYNCHRONIZED
+	//show dlg box
+	DialogBox(NULL, MAKEINTRESOURCE(DLG_ID),
+	          (HWND)parentWindow, (DLGPROC)dlgProc);
+	//get result
+	SAMBAG_BEGIN_SYNCHRONIZED(__dlgMutex)
+		inOut = __dlgIO[id].second;
+		__dlgIO.erase(id);
+	SAMBAG_END_SYNCHRONIZED
 }
 } // namespace com
 

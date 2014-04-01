@@ -18,8 +18,9 @@ gpCustomMenus= {
 }
 
 function onExecute()
-   s=frx.showInputTextDlg('Command','')
-   loadstring(s)()
+   s=frx.showInputTextDlg('Command','frx.openAbout()')
+   print(s)
+   --loadstring(s)()
 end
 
 function onSave()

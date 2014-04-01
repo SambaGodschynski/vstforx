@@ -168,6 +168,7 @@ void VstForxEditor::setCircuidView(FrxCircuidViewPtr view) {
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::loadInitScript() {
+	SAMBAG_LOG_TRACE<<"what?";
     std::string file = com::getSettings().getInitScriptFilename();
     scripts::PluginScriptCtrl::Ptr sctrl =
         frx::processing::getScriptControl(circView);
