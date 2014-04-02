@@ -71,6 +71,7 @@ protected:
     SAMBAG_LUA_FTAG(getSelectedObjects, slua::IgnoreReturn());
     SAMBAG_LUA_FTAG(addViewListener, void(std::string));
     SAMBAG_LUA_FTAG(removeViewListener, void(std::string));
+    SAMBAG_LUA_FTAG(setMenu, void());
     typedef LOKI_TYPELIST_10(Frx_add_Tag,
         Frx_remove_Tag,
         Frx_getObjects_Tag,
@@ -82,13 +83,14 @@ protected:
         Frx_getSize_Tag,
         Frx_setSize_Tag) Functions1;
     
-    typedef LOKI_TYPELIST_7(Frx_getEntry_Tag,
+    typedef LOKI_TYPELIST_8(Frx_getEntry_Tag,
         Frx_getExit_Tag,
         Frx_getByName_Tag,
         Frx_getByType_Tag,
         Frx_getSelectedObjects_Tag,
         Frx_addViewListener_Tag,
-        Frx_removeViewListener_Tag
+        Frx_removeViewListener_Tag,
+        Frx_setMenu_Tag
     ) Functions2;
     ///////////////////////////////////////////////////////////////////////////
     // Lua impl.
@@ -106,6 +108,9 @@ protected:
     slua::IgnoreReturn getExit(lua_State *lua);
     slua::IgnoreReturn getByName(lua_State *lua, const std::string &name);
     slua::IgnoreReturn getByType(lua_State *lua, const std::string &type);
+    void addMenuEntry(sdc::PopupMenuPtr res, lua_State *lua, int index);
+    void onMenu(lua_State *lua, const std::string &cmd);
+    void setMenu(lua_State *lua);
     void addViewListener(lua_State *lua, const std::string &listener);
     void removeViewListener(lua_State *lua, const std::string &listener);
     boost::tuple<float,float> getLocation(lua_State *lua) const;

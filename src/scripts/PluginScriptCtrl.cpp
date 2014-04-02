@@ -188,12 +188,6 @@ namespace {
 		static std::string process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
-	struct FrxResetMainMenu {
-        typedef boost::function<void()> Function;
-		static const char * name() { return "resetMainMenu"; }
-		static void process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
-	};
-	//-------------------------------------------------------------------------
 	struct FrxSetEditorExitOnClose {
 		typedef boost::function<void(Bool)> Function;
 		static const char * name() { return "setEditorExitOnClose"; }
@@ -251,7 +245,7 @@ namespace {
 		FrxSetEditorExitOnClose
     ) FrxPrivateFunctionList;
 	//-------------------------------------------------------------------------
-	typedef LOKI_TYPELIST_22(
+	typedef LOKI_TYPELIST_21(
 		FrxWait,
 		FrxGetLastBrowserSelection,
 	    FrxSerializePlugin,
@@ -266,13 +260,12 @@ namespace {
         FrxOpenUrl,
         FrxGetVersionString,
         FrxGetVersionInteger,
-        FrxResetMainMenu,
         FrxQueryDB,
         FrxAddTimer,
         FrxSetPersistData,
         FrxGetPersistData,
- /*20*/ FrxShowInputTextDlg,
-        FrxRunOnUIThread,
+        FrxShowInputTextDlg,
+/*20*/  FrxRunOnUIThread,
         FrxExec
 	) FrxPublicFunctionList;
 //-----------------------------------------------------------------------------
@@ -453,20 +446,6 @@ slua::IgnoreReturn FrxQueryDB::process(const std::string &query, Ctrl *ctrl, con
     }
     
     return sambag::lua::IgnoreReturn();
-}
-//-----------------------------------------------------------------------------
-void FrxResetMainMenu::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
-    sambag::lua::LuaStateRef lua = lp.first.lock();
-    if(!lua) {
-        return;
-    }
-	FRX_START_SCRIPTCALL
-	FRX_GET_PLUG
-	FRX_GET_EDITOR
-    using namespace frx::gui;
-	using namespace frx::gui::components;
-    FrxCircuidViewPtr view = editor->getCircuidView();
-    view->setComponentPopupMenu( sdc::PopupMenuPtr() );
 }
 //-----------------------------------------------------------------------------
 std::string FrxGetVersionString::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {

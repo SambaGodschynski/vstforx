@@ -8,15 +8,18 @@
 
 -- main menu def
 gpCustomMenus= {
-      {name="VSTForx " .. frx.getVersionString() },
-      {name="Modify Scene...", action="onOpenBrowser()"},
-      {name="Open Setup Dialog", action="frx.openSetup()"},
-      {name="execute command...", action="onExecute()"},
-      {name="About...", action="frx.openAbout()"},
-      {Name="external"},
-      {name="www.vstforx.de", action="frx.openUrl('http://www.vstforx.de')"}
+   {name="VSTForx " .. frx.getVersionString() },
+   {name="Modify Scene...", action="onOpenBrowser()"},
+   {name="Open Setup Dialog", action="frx.openSetup()"},
+   {name="execute command...", action="onExecute()"},
+   {name="About...", action="frx.openAbout()"},
+   {Name="external"},
+   {name="www.vstforx.de", action="frx.openUrl('http://www.vstforx.de')"}
 }
 
+-- global lines will be executed at startup
+-- so we can use them for setting up:
+frx.view:setMenus(gpCustomMenus)
 frx.view:addViewListener("onViewEvent")
 
 

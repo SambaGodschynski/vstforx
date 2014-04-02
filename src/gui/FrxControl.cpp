@@ -559,21 +559,6 @@ typedef std::pair<std::string, IFrxControl::CtrlCmd> Entry;
 //-----------------------------------------------------------------------------
 typedef std::list<Entry> Entries;
 //-----------------------------------------------------------------------------
-void onScriptMenu(FrxCircuidViewPtr view, const std::string &f) {
-    using frx::scripts::PluginScriptCtrl;
-    //using namespace sambag::disco::components;
-    //Menu::Ptr sMenu = Menu::create();
-    // get custom menus
-    PluginScriptCtrl::Ptr sctrl = frx::processing::getScriptControl(view);
-    try {
-        sctrl->execute(f);
-    } catch(const sambag::lua::ExecutionFailed &ex) {
-        view->errorMessage("executing "+f+" failed: " + ex.errMsg);
-    } catch(...) {
-        view->errorMessage("executing "+f+" failed: unkown reason");
-    }
-}
-//-----------------------------------------------------------------------------
 void createMainMenuEntries(FrxCircuidViewPtr view, Entries &out) {
 
 	out.push_back( Entry("Modify Scene...",
@@ -584,119 +569,12 @@ void createMainMenuEntries(FrxCircuidViewPtr view, Entries &out) {
 		boost::bind(&__openAbout, _1, _2)));
 
 }
-namespace {
-	struct MenuLabel : public sdc::Label {
-		typedef boost::shared_ptr<MenuLabel> Ptr;
-		typedef sdc::Label Super;
-		MenuLabel(){ setOpaque(false); }
-		SAMBAG_STD_STATIC_COMPONENT_CREATOR(MenuLabel)
-		virtual sd::Dimension getPreferredSize() {
-			sd::Dimension sz = Super::getMinimumSize();
-			sz.height( sz.height() + 10. );
-			return sz; 
-		} 
-	};
-}
-//-----------------------------------------------------------------------------
-void addScriptEntry(FrxCircuidViewPtr view, sdc::PopupMenuPtr res, lua_State *lua, int index)
-{
-    namespace sl = sambag::lua;
-    using namespace sambag::disco::components;
-    lua_pushnil(lua); /* first key */
-    --index;
-    std::string name, action;
-    Menu::Ptr smenu;
-    while (lua_next(lua, index) != 0) { // -1 == key index, -2 == value index
-        std::string key, value;
-        if (lua_isstring(lua, -1) == 1) { // value
-            sl::get(value, lua, -1);
-        }
-        if (lua_istable(lua, -1)==1) { // is table
-            // create sub menu
-            smenu = Menu::create();
-            lua_pushnil(lua); /* first key */
-            while (lua_next(lua, -2) != 0) {
-                if (lua_istable(lua, -1)==1) {
-                    addScriptEntry(view, smenu->getPopupMenu(), lua, -1);
-                }
-                lua_pop(lua, 1);
-            }
-        }
-        if (lua_type(lua, -2) != LUA_TSTRING) { // ignore non string keys
-            lua_pop(lua, 1);
-            continue;
-        }
-        sl::get(key, lua, -2);
-        lua_pop(lua, 1);
-        if (key=="name") {
-            name = value;
-        }
-        if (key=="action") {
-            action = value;
-        }
-    }
-    if (name.empty()) {
-        return;
-    }
-    if (smenu) {
-        smenu->setText(name);
-        res->add(smenu);
-        return;
-    }
-    // add menu item
-    if (action.length()==0) {
-        MenuLabel::Ptr label = MenuLabel::create();
-        label->setText(name);
-        res->add(label);
-        return;
-    } 
-    MenuItem::Ptr item = MenuItem::create();
-    item->EventSender<sdc::events::ActionEvent>::addTrackedEventListener(
-        boost::bind(&onScriptMenu, view, action),  view);
-    item->setText(name);
-    res->add(item);
-}
-void addScriptPopup(FrxCircuidViewPtr view, sdc::PopupMenuPtr res) {
-    using frx::scripts::PluginScriptCtrl;
-    using namespace sambag::disco::components;
-    //using namespace sambag::disco::components;
-    // get custom menus
-    PluginScriptCtrl::Ptr sctrl = frx::processing::getScriptControl(view);
-    PluginScriptCtrl::LuaState lua = sctrl->getLuaState();
-    lua_getglobal(lua.first.get(), "gpCustomMenus");
-    // iterate through menu table
-    namespace sl = sambag::lua;
-    int index = -1;
-    if (lua_istable(lua.first.get(), index)!=1) {
-        return;
-    }
-    lua_pushnil(lua.first.get()); /* first key */
-    --index;
-    while (lua_next(lua.first.get(), index) != 0) {
-        if (lua_istable(lua.first.get(), -1)==1) {
-            addScriptEntry(view, res, lua.first.get(), -1);
-        }
-        lua_pop(lua.first.get(), 1);
-    }
-}
 //-----------------------------------------------------------------------------
 sdc::PopupMenuPtr createPopupMenu(FrxCircuidViewPtr view, 
 	const Entries &entries) 
 {
 	using namespace sambag::disco::components;
 	PopupMenuPtr res = PopupMenu::create();
-    
-    addScriptPopup(view, res);
-    
-    if (res->getComponentCount()>0) {
-        return res;
-    }
-    
-    view->errorMessage("missing " + ::com::getSettings().getInitScriptFilename() + " gpCustomMenus");
-    
-    MenuLabel::Ptr label = MenuLabel::create();
-    label->setText("VSTForx");
-    res->add(label);
     
 	BOOST_FOREACH(const Entry &e, entries) {
 		MenuItem::Ptr item = MenuItem::create();
