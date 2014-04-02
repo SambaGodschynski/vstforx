@@ -5,63 +5,17 @@
 --      xxx.xxx.xx                                             --
 -- author: Samba Godschynski                                   --
 -----------------------------------------------------------------
-
--- main menu def
-gpCustomMenus= {
-   {name="VSTForx " .. frx.getVersionString() },
-   {name="Modify Scene...", action="onOpenBrowser()"},
-   {name="Open Setup Dialog", action="frx.openSetup()"},
-   {name="execute command...", action="onExecute()"},
-   {name="About...", action="frx.openAbout()"},
-   {Name="external"},
-   {name="www.vstforx.de", action="frx.openUrl('http://www.vstforx.de')"}
-}
+require "vstforx-helper"
+require "vstforx-menusetup"
 
 -- global lines will be executed at startup
 -- so we can use them for setting up:
-frx.view:setMenus(gpCustomMenus)
+frx.view:setMenu(menus.main)
 frx.view:addViewListener("onViewEvent")
 
 
+
 function onViewEvent(evName, evObj)
-   print(evName, evObj:getTypeId())
+   if evName~="object added" then return end
+   setObjectMenu(evObj)
 end
-
-function onExecute()
-   s=frx.showInputTextDlg('Command','frx.openAbout()')
-   print(s)
-   --loadstring(s)()
-end
-
-function onSave()
-   print(frx.getGraphDelay())
-   _ENV.state = frx.serializePlugin()
-end
-
-function onLoad()	
-   if _ENV.state == nil then
-      return
-   end
-   frx.deserializePlugin(_ENV.state)
-end
-
-function onLoadFile()
-end
-
-function onSaveFile()
-   path = frx.selectFile("")
-   frx.messageBox(path)
-end
-
-function onAddDCTester()
-   frx.addProcessor('internal-private.DCTester')
-end
-
-function onShowGraphDelay()
-   frx.messageBox('delay: '..tostring(frx.getGraphDelay()))
-end
-
-function onOpenBrowser()
-   frx.openSceneBrowser(frx.getLastSceneBrowserSelection())
-end
-

@@ -17,6 +17,123 @@ namespace frx { namespace scripts {
 //=============================================================================
 //  Class LuaFrxObject
 //=============================================================================
+namespace {
+    struct MenuLabel : public sdc::Label {
+        typedef boost::shared_ptr<MenuLabel> Ptr;
+        typedef sdc::Label Super;
+        MenuLabel(){ setOpaque(false); }
+        SAMBAG_STD_STATIC_COMPONENT_CREATOR(MenuLabel)
+        virtual sd::Dimension getPreferredSize() {
+            sd::Dimension sz = Super::getMinimumSize();
+            sz.height( sz.height() + 10. );
+            return sz; 
+        }
+    };
+    void __onMenu(lua_State *lua, const std::string &cmd,
+        fgc::FrxCircuidView::WPtr _view)
+    {
+        fgc::FrxCircuidView::Ptr view = _view.lock();
+        if (!view) {
+            return;
+        }
+        try {
+            slua::executeString(lua, cmd);
+        } catch(const sambag::lua::ExecutionFailed &ex) {
+            view->errorMessage(cmd + " failed: " + ex.errMsg);
+        } catch(...) {
+            view->errorMessage(cmd + " failed for unkown reason");
+        }   
+    }
+} // namespace
+//-----------------------------------------------------------------------------
+void LuaFrxObject::addMenuEntry(sambag::disco::components::PopupMenuPtr res,
+    lua_State *lua, int index)
+{
+    using namespace sambag::disco::components;
+    lua_pushnil(lua); /* first key */
+    --index;
+    std::string name, action;
+    Menu::Ptr smenu;
+    while (lua_next(lua, index) != 0) { // -1 == key index, -2 == value index
+        std::string key, value;
+        if (lua_isstring(lua, -1) == 1) { // value
+            slua::get(value, lua, -1);
+        }
+        if (lua_istable(lua, -1)==1) { // is table
+            // create sub menu
+            smenu = Menu::create();
+            lua_pushnil(lua); /* first key */
+            while (lua_next(lua, -2) != 0) {
+                if (lua_istable(lua, -1)==1) {
+                    addMenuEntry(smenu->getPopupMenu(), lua, -1);
+                }
+                lua_pop(lua, 1);
+            }
+        }
+        if (lua_type(lua, -2) != LUA_TSTRING) { // ignore non string keys
+            lua_pop(lua, 1);
+            continue;
+        }
+        slua::get(key, lua, -2);
+        lua_pop(lua, 1);
+        if (key=="name") {
+            name = value;
+        }
+        if (key=="action") {
+            action = value;
+        }
+    }
+    if (name.empty()) {
+        return;
+    }
+    if (smenu) {
+        smenu->setText(name);
+        res->add(smenu);
+        return;
+    }
+    // add menu item
+    if (action.length()==0) {
+        MenuLabel::Ptr label = MenuLabel::create();
+        label->setText(name);
+        res->add(label);
+        return;
+    }
+    MenuItem::Ptr item = MenuItem::create();
+    fgc::FrxCircuidViewWPtr _view =
+        getViewObject()->getFirstContainer<fgc::FrxCircuidView>();
+    item->EventSender<sdc::events::ActionEvent>::addEventListener(
+        boost::bind(&__onMenu, lua, action, _view)
+    );
+    item->setText(name);
+    res->add(item);
+}
+//-----------------------------------------------------------------------------
+void LuaFrxObject::setMenu(lua_State *lua) {
+    using namespace sambag::disco::components;
+    try {
+        using namespace sambag::disco::components;
+        PopupMenuPtr res = PopupMenu::create();
+        // iterate through menu table
+        int index = -1;
+        if (lua_istable(lua, index)!=1) {
+            throw std::runtime_error("invalid value");
+        }
+        lua_pushnil(lua); /* first key */
+        --index;
+        while (lua_next(lua, index) != 0) {
+            if (lua_istable(lua, -1)==1) {
+                addMenuEntry(res, lua, -1);
+            }
+            lua_pop(lua, 1);
+        }
+        getViewObject()->setComponentPopupMenu(res);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unknown error");
+    }
+}
+
 //-----------------------------------------------------------------------------
 std::string LuaFrxObject::toString(lua_State *lua) const {
     fgc::FrxComponent::Ptr c = getViewObject(lua);
@@ -180,7 +297,8 @@ void LuaFrxObject::addLuaFields(lua_State *lua, int index) {
             bind(&LuaFrxObject::setSize, this, lua, _1, _2),
             bind(&LuaFrxObject::setName, this, lua, _1),
             bind(&LuaFrxObject::getName, this, lua),
-            bind(&LuaFrxObject::getTypeId, this, lua)
+            bind(&LuaFrxObject::getTypeId, this, lua),
+            bind(&LuaFrxObject::setMenu, this, lua)
         ),
         index,
         getUId()

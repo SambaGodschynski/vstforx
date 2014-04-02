@@ -19,6 +19,8 @@
 #include <map>
 #include <boost/function.hpp>
 #include <loki/Singleton.h>
+#include <sambag/disco/components/PopupMenu.hpp>
+#include <sambag/disco/components/Label.hpp>
 
 namespace frx { namespace scripts {
 namespace slua = sambag::lua;
@@ -120,13 +122,15 @@ protected:
     SAMBAG_LUA_FTAG(setName, void(std::string));
     SAMBAG_LUA_FTAG(getName, std::string());
     SAMBAG_LUA_FTAG(getTypeId, std::string());
-    typedef LOKI_TYPELIST_7(Frx_getLocation_Tag,
+    SAMBAG_LUA_FTAG(setMenu, void());
+    typedef LOKI_TYPELIST_8(Frx_getLocation_Tag,
         Frx_setLocation_Tag,
         Frx_getSize_Tag,
         Frx_setSize_Tag,
         Frx_setName_Tag,
         Frx_getName_Tag,
-        Frx_getTypeId_Tag
+        Frx_getTypeId_Tag,
+        Frx_setMenu_Tag
     ) Functions;
     //////////////////////////////////////////////////////////////////////////fr/
     // lua2frx impl
@@ -139,6 +143,8 @@ protected:
     void setName(lua_State *lua, const std::string &name);
     std::string getName(lua_State *lua) const;
     std::string getTypeId(lua_State *lua) const;
+    void addMenuEntry(sambag::disco::components::PopupMenuPtr res, lua_State *lua, int index);
+    void setMenu(lua_State *lua);
 public:
     //-------------------------------------------------------------------------
     const std::string & getTypeId() const {

@@ -107,14 +107,15 @@ FrxProcessorNodePtr createProcessor(FrxCircuidViewPtr circ, std::string id)
         pid.namespace_("gui").details("").numInputs(-1).numOutputs(-1).toString()
     );
     
+    
     // add flag if processor == plugin
     // flag
-	FrxFlag::Ptr flag = FrxFlag::create();
-	flag->setTarget(viewObj);
-	circ->add(flag, FrxCircuidView::Z_Flags, true);
 	frx::processing::IPluginAdapter::Ptr plAd = 
 		boost::dynamic_pointer_cast<frx::processing::IPluginAdapter>(mObj);
 	if (plAd) {
+        FrxFlag::Ptr flag = FrxFlag::create();
+        flag->setTarget(viewObj);
+        circ->add(flag, FrxCircuidView::Z_Flags, true);
         FrxPluginNode::Ptr plObj =
             boost::dynamic_pointer_cast<FrxPluginNode>(viewObj);
         if(plObj) {
