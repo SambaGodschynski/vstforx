@@ -7,15 +7,22 @@
 -----------------------------------------------------------------
 
 -- main menu def
-gpCustomMenus= { 
-   {name="VSTForx " .. frx.getVersionString() },
-   {name="Modify Scene...", action="onOpenBrowser()"},
-   {name="Open Setup Dialog", action="frx.openSetup()"},
-   {name="execute command...", action="onExecute()"},
-   {name="About...", action="frx.openAbout()"},
-   {Name="external"},
-   {name="www.vstforx.de", action="frx.openUrl('http://www.vstforx.de')"},
+gpCustomMenus= {
+      {name="VSTForx " .. frx.getVersionString() },
+      {name="Modify Scene...", action="onOpenBrowser()"},
+      {name="Open Setup Dialog", action="frx.openSetup()"},
+      {name="execute command...", action="onExecute()"},
+      {name="About...", action="frx.openAbout()"},
+      {Name="external"},
+      {name="www.vstforx.de", action="frx.openUrl('http://www.vstforx.de')"}
 }
+
+frx.view:addViewListener("onViewEvent")
+
+
+function onViewEvent(evName, evObj)
+   print(evName, evObj:getTypeId())
+end
 
 function onExecute()
    s=frx.showInputTextDlg('Command','frx.openAbout()')

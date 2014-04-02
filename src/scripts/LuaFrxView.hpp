@@ -14,7 +14,7 @@
 #include <gui/HandyNamespaces.hpp>
 #include <sambag/disco/components/Forward.hpp>
 #include <gui/components/FrxCircuidView.hpp>
-
+#include <boost/unordered_set.hpp>
 namespace frx {
 namespace gui { namespace components {
     class FrxCircuidView;
@@ -36,6 +36,10 @@ public:
     //-------------------------------------------------------------------------
     typedef sambag::lua::ALuaObject Super;
 protected:
+    //-------------------------------------------------------------------------
+    void initListenersIfNeccessary(lua_State *lua);
+    //-------------------------------------------------------------------------
+    void onViewEvent(lua_State *lua, const fgc::FrxCircuidViewEvent &ev);
     //-------------------------------------------------------------------------
     /**
      * @brief push components representations into lua stack 
@@ -65,6 +69,8 @@ protected:
     SAMBAG_LUA_FTAG(getByName, slua::IgnoreReturn(std::string));
     SAMBAG_LUA_FTAG(getByType, slua::IgnoreReturn(std::string));
     SAMBAG_LUA_FTAG(getSelectedObjects, slua::IgnoreReturn());
+    SAMBAG_LUA_FTAG(addViewListener, void(std::string));
+    SAMBAG_LUA_FTAG(removeViewListener, void(std::string));
     typedef LOKI_TYPELIST_10(Frx_add_Tag,
         Frx_remove_Tag,
         Frx_getObjects_Tag,
@@ -76,11 +82,13 @@ protected:
         Frx_getSize_Tag,
         Frx_setSize_Tag) Functions1;
     
-    typedef LOKI_TYPELIST_5(Frx_getEntry_Tag,
+    typedef LOKI_TYPELIST_7(Frx_getEntry_Tag,
         Frx_getExit_Tag,
         Frx_getByName_Tag,
         Frx_getByType_Tag,
-        Frx_getSelectedObjects_Tag
+        Frx_getSelectedObjects_Tag,
+        Frx_addViewListener_Tag,
+        Frx_removeViewListener_Tag
     ) Functions2;
     ///////////////////////////////////////////////////////////////////////////
     // Lua impl.
@@ -98,6 +106,8 @@ protected:
     slua::IgnoreReturn getExit(lua_State *lua);
     slua::IgnoreReturn getByName(lua_State *lua, const std::string &name);
     slua::IgnoreReturn getByType(lua_State *lua, const std::string &type);
+    void addViewListener(lua_State *lua, const std::string &listener);
+    void removeViewListener(lua_State *lua, const std::string &listener);
     boost::tuple<float,float> getLocation(lua_State *lua) const;
     void setLocation(lua_State *lua, float x, float y);
     boost::tuple<float,float> getSize(lua_State *lua) const;
@@ -107,6 +117,10 @@ protected:
 private:
     //-------------------------------------------------------------------------
     fgc::VstForxEditor *editor;
+    //-------------------------------------------------------------------------
+    boost::unordered_set<std::string> luaViewListener;
+    //-------------------------------------------------------------------------
+    fgc::FrxCircuidView::WPtr listenerInstalled;
 public:
     //-------------------------------------------------------------------------
     fgc::FrxCircuidViewPtr getView() const;

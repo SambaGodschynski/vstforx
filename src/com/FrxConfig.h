@@ -6,10 +6,10 @@
 #define FRX_VERSION_MAJOR 1
 #define FRX_VERSION_MINOR 0
 #define FRX_VERSION_MICRO 5
-#define FRX_VERSION_BUILD "a51dbbb" 
+#define FRX_VERSION_BUILD "799dc41" 
 #define FRX_VERSION_BRANCH "NEXT"
 
-#define FRX_USE_FONTCACHE 1
+#define FRX_USE_FONTCACHE 0
 
 
 // async dsp timer config

@@ -9,7 +9,7 @@ import argparse
 import time
 import os.path
 
-resCounter = 100
+resCounter = 200
 
 validImages = ['.png']
 

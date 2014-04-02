@@ -4,5 +4,21 @@
  *  Created on: $$$DATE$$$
  *      Author: createResources.py
  */
+#include <windows.h>
 
 $$$RESOURCE_DEFS$$$
+
+
+// inputtext dlg
+#define IDD_INPUTTEXT                   100
+#define IDC_EDIT1                       101
+
+IDD_INPUTTEXT DIALOGEX 0, 0, 313, 69
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,101,48,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,163,48,50,14
+    EDITTEXT        IDC_EDIT1,7,7,299,14,ES_AUTOHSCROLL
+END

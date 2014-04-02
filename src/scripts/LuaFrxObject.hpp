@@ -119,12 +119,14 @@ protected:
     SAMBAG_LUA_FTAG(setSize, void(float, float));
     SAMBAG_LUA_FTAG(setName, void(std::string));
     SAMBAG_LUA_FTAG(getName, std::string());
-    typedef LOKI_TYPELIST_6(Frx_getLocation_Tag,
+    SAMBAG_LUA_FTAG(getTypeId, std::string());
+    typedef LOKI_TYPELIST_7(Frx_getLocation_Tag,
         Frx_setLocation_Tag,
         Frx_getSize_Tag,
         Frx_setSize_Tag,
         Frx_setName_Tag,
-        Frx_getName_Tag
+        Frx_getName_Tag,
+        Frx_getTypeId_Tag
     ) Functions;
     //////////////////////////////////////////////////////////////////////////fr/
     // lua2frx impl
@@ -136,6 +138,7 @@ protected:
     void setSize(lua_State *lua, float x, float y);
     void setName(lua_State *lua, const std::string &name);
     std::string getName(lua_State *lua) const;
+    std::string getTypeId(lua_State *lua) const;
 public:
     //-------------------------------------------------------------------------
     const std::string & getTypeId() const {

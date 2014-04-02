@@ -194,8 +194,8 @@ void osOpenLink(const std::string &url) {
 namespace {
 	std::map<sambag::com::ThreadId, std::pair<std::string,std::string> > __dlgIO;
 	sambag::com::RecursiveMutex __dlgMutex;
-	enum{DLG_ID=101,
-		 DLG_TEXT=1001};
+	enum{DLG_ID=100, // hardcoded in resources.rc
+		 DLG_TEXT=101};
 	LRESULT CALLBACK dlgProc(HWND hWndDlg, UINT msg, WPARAM wParam, LPARAM lParam) {
 		sambag::com::ThreadId id = sambag::com::getThreadId();
 		switch(msg) {

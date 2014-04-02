@@ -235,6 +235,12 @@ namespace {
 		static const char * name() { return "runOnUIThread"; }
 		static void process(const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
+    //-------------------------------------------------------------------------
+	struct FrxExec {
+		typedef boost::function<void(std::string)> Function;
+		static const char * name() { return "exec"; }
+		static void process(const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
+	};
 	//-------------------------------------------------------------------------
 	typedef LOKI_TYPELIST_7(FrxOpenPlugin,
 		FrxClosePlugin,
@@ -245,7 +251,7 @@ namespace {
 		FrxSetEditorExitOnClose
     ) FrxPrivateFunctionList;
 	//-------------------------------------------------------------------------
-	typedef LOKI_TYPELIST_21(
+	typedef LOKI_TYPELIST_22(
 		FrxWait,
 		FrxGetLastBrowserSelection,
 	    FrxSerializePlugin,
@@ -266,8 +272,26 @@ namespace {
         FrxSetPersistData,
         FrxGetPersistData,
  /*20*/ FrxShowInputTextDlg,
-        FrxRunOnUIThread
+        FrxRunOnUIThread,
+        FrxExec
 	) FrxPublicFunctionList;
+//-----------------------------------------------------------------------------
+void FrxExec::process(const std::string &cmd,
+    Ctrl *ctrl, const Ctrl::LuaProcessor &lp)
+{
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return;
+    }
+    try {
+        sambag::lua::executeString(lua.get(), cmd);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua.get(),  ex.what());
+    } catch (...) {
+        slua::pushLuaError(lua.get(),  "unkown error");
+    }
+
+}
 //-----------------------------------------------------------------------------
 namespace {
     void __runuiimpl(const std::string &cmd, const Ctrl::LuaProcessor &lp) {

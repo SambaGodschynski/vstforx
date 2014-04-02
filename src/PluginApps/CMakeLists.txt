@@ -1,8 +1,6 @@
 SET ( FRX_STANDALONE
         GuiStandalone/Main.cpp
-	com/FrxPlugSettings.cpp
-	VSTForx/win/dlgs.rc
-)
+	com/FrxPlugSettings.cpp)
 
 # common files
 SET (PlugSources ${PlugSources}
@@ -32,7 +30,6 @@ IF(WIN32)
       ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp
       VSTForx/win/vstplug.def
       VSTForx/win/resources.rc
-      VSTForx/win/dlgs.rc
    )
   #remote channel
   SET (RemoteSrc ${RemoteSrc}

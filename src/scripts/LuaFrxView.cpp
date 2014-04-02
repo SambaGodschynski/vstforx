@@ -433,6 +433,15 @@ slua::IgnoreReturn LuaFrxView::getByName(lua_State *lua, const std::string &name
     return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
+void LuaFrxView::addViewListener(lua_State *lua, const std::string &listener) {
+    initListenersIfNeccessary(lua);
+    luaViewListener.insert(listener);
+}
+//-----------------------------------------------------------------------------
+void LuaFrxView::removeViewListener(lua_State *lua, const std::string &listener) {
+    luaViewListener.erase(listener);
+}
+//-----------------------------------------------------------------------------
 namespace {
     bool _matchType(const std::string &_a, const std::string &_b) {
         com::IdParser ia(_a);
@@ -511,7 +520,9 @@ void LuaFrxView::addLuaFields(lua_State *lua, int index) {
             bind(&LuaFrxView::getExit, this, lua),
             bind(&LuaFrxView::getByName, this, lua, _1),
             bind(&LuaFrxView::getByType, this, lua, _1),
-            bind(&LuaFrxView::getSelectedObjects, this, lua)
+            bind(&LuaFrxView::getSelectedObjects, this, lua),
+            bind(&LuaFrxView::addViewListener, this, lua, _1),
+            bind(&LuaFrxView::removeViewListener, this, lua, _1)
         ),
         index,
         getUId()
@@ -549,6 +560,74 @@ fgc::FrxCircuidViewPtr LuaFrxView::getView(lua_State *lua) const {
         slua::pushLuaError(lua, "view is not available");
         return fgc::FrxCircuidViewPtr();
     }
+}
+//-----------------------------------------------------------------------------
+void LuaFrxView::onViewEvent(lua_State *lua, const fgc::FrxCircuidViewEvent &ev)
+{
+	using namespace frx::gui::components;
+	using namespace sambag::disco::components;
+    using namespace frx::gui;
+    if (!ev.component) {
+        return;
+    }
+    try {
+        // prepare lua object
+        FrxCircuidViewPtr view = getView();
+        IViewModelMap::Ptr map = getViewModelMap(view);
+        std::string type = ev.component->getTypeId();
+        if (type.empty()) {
+            return;
+        }
+        std::string id = com::IdParser(type).namespace_("lua").toString();
+        LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
+        if (!fac.isRegistered(id)) {
+            return;
+        }
+        LuaFrxObject::Ptr lobj = fac.createAndPush(
+            id,
+            lua,
+            map->getModelObject(ev.component),
+            map
+        );
+        // determine event type
+        std::string evtype;
+        if (ev.type == fgc::FrxCircuidViewEvent::ComponentAdded) {
+            evtype = "object added";
+        }
+        if (ev.type == fgc::FrxCircuidViewEvent::ComponentRemoved) {
+            evtype = "object removed";
+        }
+        // notify
+        BOOST_FOREACH(const std::string &x, luaViewListener) {
+            lua_getglobal(lua, x.c_str());
+            // push event type
+            lua_pushstring(lua, evtype.c_str());
+            // push lua object
+            LuaFrxObject::Ptr lobj = fac.createAndPush(
+                id,
+                lua,
+                map->getModelObject(ev.component),
+                map
+            );
+            if (lua_pcall(lua, 2, 0, 0)!=0) {
+                SAMBAG_LOG_ERR<<lua_tostring(lua, -1);
+            }
+        }
+    } catch(...) {
+    }
+}
+//-----------------------------------------------------------------------------
+void LuaFrxView::initListenersIfNeccessary(lua_State *lua) {
+    fgc::FrxCircuidViewPtr view = listenerInstalled.lock();
+    if (view) {
+        //already installed
+        return;
+    }
+    listenerInstalled = view = getView();
+    view->sce::EventSender<fgc::FrxCircuidViewEvent>::addTrackedEventListener(
+        boost::bind(&LuaFrxView::onViewEvent, this, lua, _2),
+        shared_from_this()
+    );
 }
 //-----------------------------------------------------------------------------
 LuaFrxView::Ptr

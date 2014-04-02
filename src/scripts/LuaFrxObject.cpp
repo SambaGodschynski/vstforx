@@ -158,6 +158,12 @@ std::string LuaFrxObject::getName(lua_State *lua) const {
     return obj->getName();
 }
 //-----------------------------------------------------------------------------
+std::string LuaFrxObject::getTypeId(lua_State *lua) const {
+   com::IdParser id(getTypeId());
+   return id.type() + "." + id.name();
+}
+
+//-----------------------------------------------------------------------------
 void LuaFrxObject::addLuaFields(lua_State *lua, int index) {
     Super::addLuaFields(lua, index);
     uidMap[getUId()] = boost::dynamic_pointer_cast<LuaFrxObject>(shared_from_this());
@@ -173,7 +179,8 @@ void LuaFrxObject::addLuaFields(lua_State *lua, int index) {
             bind(&LuaFrxObject::getSize, this, lua),
             bind(&LuaFrxObject::setSize, this, lua, _1, _2),
             bind(&LuaFrxObject::setName, this, lua, _1),
-            bind(&LuaFrxObject::getName, this, lua)
+            bind(&LuaFrxObject::getName, this, lua),
+            bind(&LuaFrxObject::getTypeId, this, lua)
         ),
         index,
         getUId()
