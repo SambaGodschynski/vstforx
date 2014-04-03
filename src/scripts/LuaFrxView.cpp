@@ -29,6 +29,7 @@
 #include <boost/algorithm/string.hpp>
 #include <sambag/disco/components/PopupMenu.hpp>
 #include <sambag/disco/components/Label.hpp>
+#include <gui/components/FrxMenuLabel.hpp>
 
 namespace frx { namespace scripts {
 //=============================================================================
@@ -455,18 +456,6 @@ namespace {
         b = boost::algorithm::replace_all_copy(b, "*", ".*?");
         return boost::regex_match(a, boost::regex(b));
     }
-    
-    struct MenuLabel : public sdc::Label {
-        typedef boost::shared_ptr<MenuLabel> Ptr;
-        typedef sdc::Label Super;
-        MenuLabel(){ setOpaque(false); }
-        SAMBAG_STD_STATIC_COMPONENT_CREATOR(MenuLabel)
-        virtual sd::Dimension getPreferredSize() {
-            sd::Dimension sz = Super::getMinimumSize();
-            sz.height( sz.height() + 10. );
-            return sz; 
-        }
-    };
 } // namespace
 //-----------------------------------------------------------------------------
 void LuaFrxView::onMenu(lua_State *lua, const std::string &cmd) {
@@ -526,7 +515,7 @@ void LuaFrxView::addMenuEntry(sdc::PopupMenuPtr res, lua_State *lua, int index)
     }
     // add menu item
     if (action.length()==0) {
-        MenuLabel::Ptr label = MenuLabel::create();
+        fgc::FrxMenuLabel::Ptr label = fgc::FrxMenuLabel::create();
         label->setText(name);
         res->add(label);
         return;

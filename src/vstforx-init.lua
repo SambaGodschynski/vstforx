@@ -8,14 +8,23 @@
 require "vstforx-helper"
 require "vstforx-menusetup"
 
--- global lines will be executed at startup
--- so we can use them for setting up:
-frx.view:setMenu(menus.main)
-frx.view:addViewListener("onViewEvent")
-
-
-
 function onViewEvent(evName, evObj)
    if evName~="object added" then return end
-   setObjectMenu(evObj)
+   setObjectMenu(evObj) -- set a custom menu, will override the origin
 end
+
+function initViewObjects()
+   -- since all changes on view objects, caused
+   -- by this script, are lost after the editor 
+   -- is closed, we need to redo this.
+   o = frx.view:getObjects()
+   for i=1, #o, 1 do
+      setObjectMenu(o[i])
+   end
+end
+
+-- global statements will be executed while editor is opening
+-- so we can use them for setting things up:
+frx.view:setMenu(menus.main) -- set custom main menu (see vstforx-menusetup.lua)
+frx.view:addViewListener("onViewEvent") 
+initViewObjects()

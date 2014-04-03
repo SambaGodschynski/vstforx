@@ -12,23 +12,13 @@
 #include <gui/HandyNamespaces.hpp>
 #include <gui/components/FrxComponent.hpp>
 #include <com/one4All.h>
+#include <gui/components/FrxMenuLabel.hpp>
 
 namespace frx { namespace scripts {
 //=============================================================================
 //  Class LuaFrxObject
 //=============================================================================
 namespace {
-    struct MenuLabel : public sdc::Label {
-        typedef boost::shared_ptr<MenuLabel> Ptr;
-        typedef sdc::Label Super;
-        MenuLabel(){ setOpaque(false); }
-        SAMBAG_STD_STATIC_COMPONENT_CREATOR(MenuLabel)
-        virtual sd::Dimension getPreferredSize() {
-            sd::Dimension sz = Super::getMinimumSize();
-            sz.height( sz.height() + 10. );
-            return sz; 
-        }
-    };
     void __onMenu(lua_State *lua, const std::string &cmd,
         fgc::FrxCircuidView::WPtr _view)
     {
@@ -93,7 +83,7 @@ void LuaFrxObject::addMenuEntry(sambag::disco::components::PopupMenuPtr res,
     }
     // add menu item
     if (action.length()==0) {
-        MenuLabel::Ptr label = MenuLabel::create();
+        fgc::FrxMenuLabel::Ptr label = fgc::FrxMenuLabel::create();
         label->setText(name);
         res->add(label);
         return;
