@@ -58,15 +58,25 @@ function addParameterConnectionMenu(obj)
    end
    
    objMenu ={ {name=obj:getName()},
+	      {name="remove", action="onRemove()"},
 	      {name="show details...", 
 	       action=string.format("onOpenBrowser('Main Scene/Parameter/Parameter Connections/%s')", obj:getName())},
-	      {name="add operator", addEntries},
-	      {name="remove", action="onRemove()"}
+	      {name="add operator", addEntries}
 	    }
    if #removeEntries>0 then
-      table.insert(objMenu, 4, {name="remove operator", removeEntries})
+      table.insert(objMenu, 5, {name="remove operator", removeEntries})
    end
    obj:setMenu(objMenu)
+end
+
+function addInput()
+   o=frx.view:getContextObject()
+   o:addInput()
+end
+
+function addOutput()
+   o=frx.view:getContextObject()
+   o:addOutput()
 end
 
 function setObjectMenu(obj)
@@ -79,6 +89,15 @@ function setObjectMenu(obj)
       -- internal.* (e.g. internal.Volume)
       table.insert(objMenu, {name="show details...", 
 			     action=string.format("onOpenBrowser('Main Scene/Plugins/%s')", obj:getName())})
+      if string.match(objType, ".*Input.*") then
+	 -- Input Step/Switch
+	 table.insert(objMenu, {name="add input", 
+				action="addInput()"})
+      elseif string.match(objType, ".*Output.*") then
+	 -- Output Step/Switch
+	 table.insert(objMenu, {name="add output", 
+				action="addOutput()"})
+      end
    elseif string.match(objType, ".*%.Plugin")~=nil then
       -- *.Plugin (e.g. vst2x.Plugin)
       table.insert(objMenu, {name="show details...", 
@@ -98,7 +117,7 @@ function setObjectMenu(obj)
       return
    end
    table.insert(objMenu, 1, {name=obj:getName()})
-   table.insert(objMenu, {name="remove", action="onRemove()"})
+   table.insert(objMenu, 2, {name="remove", action="onRemove()"})
    obj:setMenu(objMenu)
 end
 
