@@ -20,6 +20,7 @@
 #include "LuaFrxProcessor.hpp"
 #include "LuaFrxIO.hpp"
 #include "LuaFrxConnection.hpp"
+#include "LuaFrxParameterConnection.hpp"
 #include "LuaFrxParameter.hpp"
 #include "LuaModelObject.hpp"
 #include <com/one4All.h>
@@ -71,7 +72,7 @@ slua::IgnoreReturn LuaFrxView::addObject(lua_State *lua)
     boost::tuple<std::string> id;
     slua::pop(lua, id);
     if (boost::get<0>(id)=="frx.lua.parameter.StdKnob") {
-        return addProcessorParameter(lua);
+        return addRelatedParameter(lua);
     }
     throw std::runtime_error("cannot add " + boost::get<0>(id));
 }
@@ -98,16 +99,16 @@ slua::IgnoreReturn LuaFrxView::addProcessor(lua_State *lua, const std::string &i
     return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
-slua::IgnoreReturn LuaFrxView::addProcessorParameter(lua_State *lua) {
+slua::IgnoreReturn LuaFrxView::addRelatedParameter(lua_State *lua) {
     using namespace frx::gui;
 	using namespace frx::gui::components;
     FrxCircuidViewPtr view = getView();
     IFrxControl &frxctrl = getFrxControl(view);
     IViewModelMap::Ptr map = getViewModelMap(view);
     // get related processor
-    lua_getfield(lua, -1, "__processor");
+    lua_getfield(lua, -1, "__related");
     if (!lua_isstring(lua, -1)) {
-        throw std::runtime_error("no related processor found");
+        throw std::runtime_error("no related object found");
     }
     boost::tuple<std::string> prId;
     slua::pop(lua, prId);
@@ -223,7 +224,17 @@ slua::IgnoreReturn LuaFrxView::connect(lua_State *lua) {
             return slua::IgnoreReturn();
         }
         std::string newId = com::IdParser(cn->getTypeId()).namespace_("lua").toString();
-        LuaFrxConnection::createAndPush(lua, map->getModelObject(cn), map, newId);
+        LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
+        if (!fac.isRegistered(newId)) {
+            lua_pushnil(lua);
+            return slua::IgnoreReturn();
+        }
+        LuaFrxObject::Ptr lobj = fac.createAndPush(
+            newId,
+            lua,
+            map->getModelObject(cn),
+            map
+        );
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua, std::string("connecting failed: ") + ex.what());
     } catch(...) {

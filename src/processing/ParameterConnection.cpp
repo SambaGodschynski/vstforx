@@ -10,6 +10,7 @@
 #include <processing/parameter/ConnectionOperators.h>
 #include <loki/Typelist.h>
 #include "IModelController.hpp"
+#include <sambag/com/exceptions/IllegalArgumentException.hpp>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -91,6 +92,9 @@ addParameterCnOp(const ParameterCnOpTypeId &opId)
 {
 	using namespace ::processing::parameter;
 	ConnectionOperator::Ptr op = createCOp<ConnectionOps>(opId);
+    if (!op) {
+        SAMBAG_THROW(sambag::com::exceptions::IllegalArgumentException,"invalid operator: "+opId);
+    }
 	cn->addOperator(op);
     operators.push_back(op);
 	HasParameter::Ptr hp = 
@@ -111,7 +115,7 @@ size_t ParameterConnection::getNumConnectionOps() {
 }
 //-----------------------------------------------------------------------------
 void ParameterConnection::removeConnectionOp(size_t index) {
-    if (index>operators.size()) {
+    if (index>=operators.size()) {
         SAMBAG_LOG_WARN<<"ParameterConnection::removeConnectionOp() out of bounds";
         return;
     }

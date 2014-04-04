@@ -100,7 +100,7 @@ protected:
     slua::IgnoreReturn add(lua_State *lua);
     slua::IgnoreReturn addObject(lua_State *lua);
     slua::IgnoreReturn addProcessor(lua_State *lua, const std::string &id);
-    slua::IgnoreReturn addProcessorParameter(lua_State *lua);
+    slua::IgnoreReturn addRelatedParameter(lua_State *lua);
     void remove(lua_State *lua);
     slua::IgnoreReturn getObjects(lua_State *lua);
     slua::IgnoreReturn getSelectedObjects(lua_State *lua);
