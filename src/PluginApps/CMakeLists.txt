@@ -172,7 +172,7 @@ ELSEIF(APPLE)
 #  SET_TARGET_PROPERTIES(VSTForx-CM PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/vstforxcm.plist")
 #  SET_TARGET_PROPERTIES(VSTForx-CM PROPERTIES LINK_FLAGS "-bundle")
 #  target_compile_definitions(VSTForx-CM PUBLIC "FRX_IS_CM"
-                                        PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.VSTForx-CM\"")
+#                                        PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.VSTForx-CM\"")
 
   #vstforxInstrument-CM
 #  ADD_EXECUTABLE(VSTForxInstrument-CM MACOSX_BUNDLE ${CMPlugSources})
@@ -180,8 +180,9 @@ ELSEIF(APPLE)
 #  SET_TARGET_PROPERTIES(VSTForxInstrument-CM PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/ivstforxcm.plist")
 #  SET_TARGET_PROPERTIES(VSTForxInstrument-CM PROPERTIES LINK_FLAGS "-bundle")
 #  target_compile_definitions(VSTForxInstrument-CM PUBLIC "FRX_IS_INSTRUMENT"
-  						  PUBLIC "FRX_IS_CM"
-  					          PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.VSTForxInstrument-CM\"")
+#  						  PUBLIC "FRX_IS_CM"
+#  					          PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.VSTForxInstrument-CM\"")
+ 
   #vstforxDemo
   ADD_EXECUTABLE(vstforxDEMO MACOSX_BUNDLE ${PlugSources})
   target_link_libraries (vstforxDEMO frx_core ${FRX_CLIBS})
