@@ -20,6 +20,55 @@ menus = {
    },   
 }
 
+function addOperator(x)
+   o=frx.view:getContextObject()
+   if o==nil then
+      return
+   end
+   o:addOperator(x)
+   -- reset menu
+   addParameterConnectionMenu(o)
+end
+
+function removeOperator(i)
+   o=frx.view:getContextObject()
+   if o==nil then
+      return
+   end
+   o:removeOperatorAt(i)
+   -- reset menu
+   addParameterConnectionMenu(o)
+end
+
+
+function addParameterConnectionMenu(obj)
+   --get operators which can be added
+   ops=viewHelper.getConnectionOpNames()
+   addEntries={}
+   -- create submenu table
+   for i=1,#ops,1 do
+      table.insert(addEntries,{name=ops[i], action=string.format("addOperator('%s')",ops[i])})
+   end
+   --get operators which can be removed
+   ops=obj:getOperatorNames() --op names on connection
+   -- create submenu table
+   removeEntries={}
+   for i=1,#ops,1 do
+      table.insert(removeEntries,{name=ops[i], action=string.format("removeOperator(%i)",i)})
+   end
+   
+   objMenu ={ {name=obj:getName()},
+	      {name="show details...", 
+	       action=string.format("onOpenBrowser('Main Scene/Parameter/Parameter Connections/%s')", obj:getName())},
+	      {name="add operator", addEntries},
+	      {name="remove", action="onRemove()"}
+	    }
+   if #removeEntries>0 then
+      table.insert(objMenu, 4, {name="remove operator", removeEntries})
+   end
+   obj:setMenu(objMenu)
+end
+
 function setObjectMenu(obj)
    if obj==nil then
       return
@@ -41,8 +90,8 @@ function setObjectMenu(obj)
    elseif string.match(objType, "connection%..*")~=nil then
       -- connection.* (e.g. connection.IO)
       if string.match(objType, "connection.Parameter") then
-	 table.insert(objMenu, {name="show details...", 
-				action=string.format("onOpenBrowser('Main Scene/Parameter/Parameter Connections/%s')", obj:getName())})
+	 addParameterConnectionMenu(obj)
+	 return
       end
    else 
       -- no menu type

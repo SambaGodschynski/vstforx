@@ -10,7 +10,7 @@ require "vstforx-menusetup"
 
 function onViewEvent(evName, evObj)
    if evName~="object added" then return end
---   setObjectMenu(evObj) -- set a custom menu, will override the origin
+   setObjectMenu(evObj) -- set a custom menu, will override the origin
 end
 
 function initViewObjects()
