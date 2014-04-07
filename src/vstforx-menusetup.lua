@@ -1,0 +1,224 @@
+-----------------------------------------------------------------
+-- VSTForx menu setup script                                   --
+-- While the init script will be executed when the editor      --
+-- is opening, this module will be executed on startup only    --
+-- a VSTForx.Lua documantation can be found under:             --
+--      xxx.xxx.xx                                             --
+-- author: Samba Godschynski                                   --
+-----------------------------------------------------------------
+require "vstforx-helper"
+
+viewportMenu={}
+viewports={}
+currentViewport=1
+
+-- main menu def
+menus = {
+   main={
+      {name="VSTForx " .. frx.getVersionString() },
+      {name="Modify Scene...", action="onOpenBrowser()"},
+      {name="Open Setup Dialog", action="frx.openSetup()"},
+      {name="Help", {
+	  {name="About VSTForx", action="frx.openAbout()"},
+	  {name="", action="frx.openUrl('http://vstforx.de/index.php/2014-01-12-14-49-45/report-a-bug')"},
+	  {name="Report A Bug", action="frx.openUrl('http://vstforx.de/index.php/2014-01-12-14-49-45/report-a-bug')"},
+	  {name="Known Issues", action="frx.openUrl('http://issues.vstforx.de/roadmap_page.php?version_id=27')"},
+      }},
+      {name="Auxiliaries"},
+      {name="Viewports", viewportMenu},
+      {name="Load...", action="load()"},
+      {name="Save...", action="save()"},
+      {name="Lua"},
+      {name="Execute Command...", action="onExecute()"}
+      
+   },   
+}
+
+function getViewportName(index, active)
+   res="Viewport "..index
+   if active then
+      res=res.." (X)"
+   end
+   return res
+end
+
+function initViewportMenu(num)
+   for i=1,num,1 do
+      table.insert(viewportMenu, 
+		   {name=getViewportName(i,i==1), 
+		    action=string.format("toViewport(%i)", i)})
+      table.insert(viewports,{frx.view:getLocation()})
+   end
+end
+
+function moveViewTo(x,y)
+   frx.view:setLocation(x,y)
+end
+
+function toViewport(newIndex)
+   --save old loc
+   oldIndex = currentViewport
+   viewports[oldIndex] = {frx.view:getLocation()}
+   -- move to new
+   px,py = unpack(viewports[newIndex])
+   moveViewTo(px,py)
+   --update menu
+   viewportMenu[oldIndex].name=getViewportName(oldIndex, false)
+   viewportMenu[newIndex].name=getViewportName(newIndex, true)
+   currentViewport=newIndex 
+   frx.view:setMenu(menus.main)
+end
+
+function save()
+   if _ENV.f==nil then
+      _ENV.f=""
+   end
+   path=frx.showSaveFileDlg(_ENV.f)
+   if path == nil or #path==0 then
+      return
+   end
+   _ENV.f = path
+   data=frx.serializePlugin()
+   fh=io.open(_ENV.f,"w")
+   fh:write(data)
+   fh:close()
+end
+
+function load()
+   if _ENV.f==nil then
+      _ENV.f=""
+   end
+   path=frx.showSelectFileDlg(_ENV.f)
+   if path == nil or #path==0 then
+      return
+   end
+   _ENV.f = path
+   fh=io.open(_ENV.f,"r")
+   data=fh:read("*a")
+   fh:close()
+   frx.deserializePlugin(data)
+end
+
+function addOperator(x)
+   o=frx.view:getContextObject()
+   if o==nil then
+      return
+   end
+   o:addOperator(x)
+   -- reset menu
+   addParameterConnectionMenu(o)
+end
+
+function removeOperator(i)
+   o=frx.view:getContextObject()
+   if o==nil then
+      return
+   end
+   o:removeOperatorAt(i)
+   -- reset menu
+   addParameterConnectionMenu(o)
+end
+
+
+function addParameterConnectionMenu(obj)
+   --get operators which can be added
+   ops=viewHelper.getConnectionOpNames()
+   addEntries={}
+   -- create submenu table
+   for i=1,#ops,1 do
+      table.insert(addEntries,{name=ops[i], action=string.format("addOperator('%s')",ops[i])})
+   end
+   --get operators which can be removed
+   ops=obj:getOperatorNames() --op names on connection
+   -- create submenu table
+   removeEntries={}
+   for i=1,#ops,1 do
+      table.insert(removeEntries,{name=ops[i], action=string.format("removeOperator(%i)",i)})
+   end
+   
+   objMenu ={ {name=obj:getName()},
+	      {name="remove", action="onRemove()"},
+	      {name="show details...", 
+	       action=string.format("onOpenBrowser('Main Scene/Parameter/Parameter Connections/%s')", obj:getName())},
+	      {name="add operator", addEntries}
+	    }
+   if #removeEntries>0 then
+      table.insert(objMenu, 5, {name="remove operator", removeEntries})
+   end
+   obj:setMenu(objMenu)
+end
+
+function addInput()
+   o=frx.view:getContextObject()
+   o:addInput()
+end
+
+function addOutput()
+   o=frx.view:getContextObject()
+   o:addOutput()
+end
+
+function setObjectMenu(obj)
+   if obj==nil then
+      return
+   end
+   objType = obj:getTypeId()
+   objMenu = {}
+   if string.match(objType, "internal%..*")~=nil then     
+      -- internal.* (e.g. internal.Volume)
+      table.insert(objMenu, {name="show details...", 
+			     action=string.format("onOpenBrowser('Main Scene/Plugins/%s')", obj:getName())})
+      if string.match(objType, ".*Input.*") then
+	 -- Input Step/Switch
+	 table.insert(objMenu, {name="add input", 
+				action="addInput()"})
+      elseif string.match(objType, ".*Output.*") then
+	 -- Output Step/Switch
+	 table.insert(objMenu, {name="add output", 
+				action="addOutput()"})
+      end
+   elseif string.match(objType, ".*%.Plugin")~=nil then
+      -- *.Plugin (e.g. vst2x.Plugin)
+      table.insert(objMenu, {name="show details...", 
+			     action=string.format("onOpenBrowser('Main Scene/Plugins/%s')", obj:getName())})
+   elseif string.match(objType, "parameter%..*")~=nil then
+      -- parameter.* (e.g. parameter.StdKnob)
+      table.insert(objMenu, {name="show details...", 
+			     action=string.format("onOpenBrowser('Main Scene/Parameter/%s')", obj:getName())})
+   elseif string.match(objType, "connection%..*")~=nil then
+      -- connection.* (e.g. connection.IO)
+      if string.match(objType, "connection.Parameter") then
+	 addParameterConnectionMenu(obj)
+	 return
+      end
+   else 
+      -- no menu type
+      return
+   end
+   table.insert(objMenu, 1, {name=obj:getName()})
+   table.insert(objMenu, 2, {name="remove", action="onRemove()"})
+   obj:setMenu(objMenu)
+end
+
+function onRemove()
+   o=frx.view:getContextObject()
+   if o~=nil then
+      frx.view:remove(o)
+   end
+end
+
+function onExecute()
+   s=frx.showInputTextDlg('Command','frx.openAbout()')
+   print(s)
+   --loadstring(s)()
+end
+
+function onOpenBrowser(x)
+   if(x==nil) then
+      frx.openSceneBrowser(frx.getLastSceneBrowserSelection())
+      return
+   end
+   print(x)
+   frx.openSceneBrowser(x)
+end
+

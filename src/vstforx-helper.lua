@@ -63,10 +63,20 @@ function ___getProcessorTypeNames()
    }
 end
 
+function ___getConnectionOpNames()
+   return {"Inverse Operator", 
+	   "Offset Operator", 
+	   "EXP Operator",
+	   "LOG Operator",
+	   "Multiplier Operator"
+   }
+end
+
 _ENV.viewHelper={
    addPlugins=___addPlugins,
    addPlugin=___addPlugin,
    removeAll=___clearView,
    getConnectables=___getConnectables,
-   getProcessorTypeNames=___getProcessorTypeNames
+   getProcessorTypeNames=___getProcessorTypeNames,
+   getConnectionOpNames=___getConnectionOpNames
 }

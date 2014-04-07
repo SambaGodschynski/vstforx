@@ -49,9 +49,7 @@ namespace {
     inline bool registerAllConnections() {
         LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
         return fac.registerCreator("frx.lua.connection.IO",
-            boost::bind(&LuaFrxConnection::createAndPush, _1, _2, _3, "frx.lua.connection.IO"))
-        && fac.registerCreator("frx.lua.connection.Parameter",
-            boost::bind(&LuaFrxConnection::createAndPush, _1, _2, _3, "frx.lua.connection.Parameter"));
+            boost::bind(&LuaFrxConnection::createAndPush, _1, _2, _3, "frx.lua.connection.IO"));
     }
     const bool LuaFrxConnections_Registered = registerAllConnections();
 }

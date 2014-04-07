@@ -48,7 +48,6 @@ std::string CocoaImpl::selectDirectory(const std::string &wndTitle,
     }
     return "";
 }
-
 //-----------------------------------------------------------------------------
 std::string CocoaImpl::selectFile(const std::string &wndTitle,
                                          const std::string &startPath)
@@ -74,6 +73,26 @@ std::string CocoaImpl::selectFile(const std::string &wndTitle,
     }
     return "";
 }
+//-----------------------------------------------------------------------------
+std::string CocoaImpl::saveFile(const std::string &wndTitle,
+                                         const std::string &startPath)
+{
+    NSSavePanel *panel = [NSSavePanel savePanel];
+    // Configure your panel the way you want it
+    [panel setLevel: NSFloatingWindowLevel];
+    [panel setTitle:[NSString stringWithUTF8String:wndTitle.c_str()]];
+    NSURL *_startPath = [NSURL
+                        fileURLWithPath:[NSString stringWithUTF8String:startPath.c_str()]
+                         isDirectory: YES];
+    [panel setDirectoryURL:_startPath];
+    [panel runModal];
+    NSURL *url = [panel URL];
+    if (url) {
+        return toString([url path]);
+    }
+    return "";
+}
+
 //-----------------------------------------------------------------------------
 void CocoaImpl::startProcess(const char *path, int argc, const char **argv) {
     NSTask *task = [[NSTask alloc] init];

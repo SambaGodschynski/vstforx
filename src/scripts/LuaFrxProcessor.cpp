@@ -25,16 +25,28 @@ void LuaFrxProcessor::__lua_gc(lua_State *lua) {
     Super::__lua_gc(lua);
 }
 //-----------------------------------------------------------------------------
+void LuaFrxProcessor::openCloseEditor(lua_State *lua) {
+    using namespace frx::gui;
+    using namespace frx::gui::components;
+    try {
+        FrxProcessorNode::Ptr obj =
+            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
+        FrxCircuidView::Ptr view = obj->getFirstContainer<FrxCircuidView>();
+        IFrxControl &frxctrl = getFrxControl(view);
+        frxctrl.openClosePluginEditor(view, obj);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unkown error");
+    }
+}
+//-----------------------------------------------------------------------------
 slua::IgnoreReturn LuaFrxProcessor::getInputs(lua_State *lua) const {
     using namespace frx::gui;
     using namespace frx::gui::components;
     try {
         FrxProcessorNode::Ptr obj =
-            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject(lua));
-        if (!obj) {
-            lua_pushnil(lua);
-            return slua::IgnoreReturn();
-        }
+            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
         IViewModelMap::Ptr map;
         map = getViewModelMap();
         const FrxProcessorNode::IOContainer &cont = obj->getInputs();
@@ -61,11 +73,7 @@ slua::IgnoreReturn LuaFrxProcessor::getOutputs(lua_State *lua) const {
     using namespace frx::gui::components;
     try {
         FrxProcessorNode::Ptr obj =
-            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject(lua));
-        if (!obj) {
-            lua_pushnil(lua);
-            return slua::IgnoreReturn();
-        }
+            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
         IViewModelMap::Ptr map;
         map = getViewModelMap();
         const FrxProcessorNode::IOContainer &cont = obj->getOutputs();
@@ -105,7 +113,7 @@ slua::IgnoreReturn LuaFrxProcessor::getParameters(lua_State *lua) const {
             LuaFrxParameter::createAndPush(lua, x, map, "frx.lua.parameter.StdKnob");
             int table = lua_gettop(lua);
             lua_pushstring(lua, getUId().c_str());
-            lua_setfield(lua, table, "__processor");
+            lua_setfield(lua, table, "__related");
             lua_settable(lua, top);
         }
         return slua::IgnoreReturn();
@@ -122,11 +130,7 @@ slua::IgnoreReturn LuaFrxProcessor::addInput(lua_State *lua) {
     using namespace frx::gui::components;
     try {
         FrxProcessorNode::Ptr obj =
-            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject(lua));
-        if (!obj) {
-            lua_pushnil(lua);
-            return slua::IgnoreReturn();
-        }
+            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
         FrxCircuidView::Ptr view = obj->getFirstContainer<FrxCircuidView>();
         if (!view) {
             lua_pushnil(lua);
@@ -154,11 +158,7 @@ slua::IgnoreReturn LuaFrxProcessor::addOutput(lua_State *lua) {
     using namespace frx::gui::components;
     try {
         FrxProcessorNode::Ptr obj =
-            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject(lua));
-        if (!obj) {
-            lua_pushnil(lua);
-            return slua::IgnoreReturn();
-        }
+            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
         FrxCircuidView::Ptr view = obj->getFirstContainer<FrxCircuidView>();
         if (!view) {
             lua_pushnil(lua);
@@ -193,7 +193,8 @@ void LuaFrxProcessor::addLuaFields(lua_State *lua, int index) {
             bind(&LuaFrxProcessor::getOutputs, this, lua),
             bind(&LuaFrxProcessor::getParameters, this, lua),
             bind(&LuaFrxProcessor::addInput, this, lua),
-            bind(&LuaFrxProcessor::addOutput, this, lua)
+            bind(&LuaFrxProcessor::addOutput, this, lua),
+            bind(&LuaFrxProcessor::openCloseEditor, this, lua)
         ),
         index,
         getUId()

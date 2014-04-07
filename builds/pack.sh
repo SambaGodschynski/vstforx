@@ -16,11 +16,14 @@ function packVSTForx() {
     then
 	cp $src/vstforx-init.lua $target/$folder/vstforx$post.$ext/
 	cp $src/vstforx-helper.lua $target/$folder/vstforx$post.$ext/
+	cp $src/vstforx-menusetup.lua $target/$folder/vstforx$post.$ext/
 	cp $src/vstforx-init.lua $target/$folder/vstforxInstrument$post.$ext/
 	cp $src/vstforx-helper.lua $target/$folder/vstforxInstrument$post.$ext/
+	cp $src/vstforx-menusetup.lua $target/$folder/vstforxInstrument$post.$ext/
     else 
 	cp $src/vstforx-init.lua $target/$folder
 	cp $src/vstforx-helper.lua $target/$folder
+	cp $src/vstforx-menusetup.lua $target/$folder
     fi
     cp ../Documents/manual/vstforx.EN/main.pdf $target/$folder/manual.pdf
     cd $target
@@ -60,6 +63,7 @@ function packStandalone() {
     cp -r $src/testScripts $target/$folder
     cp $src/vstforx-init.lua $target/$folder
     cp $src/vstforx-helper.lua $target/$folder
+    cp $src/vstforx-menusetup.lua $target/$folder
     cp $src/scripts/util.lua $target/$folder/scripts
     cp license.txt $target/$folder
     cd $target
