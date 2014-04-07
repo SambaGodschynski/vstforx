@@ -19,6 +19,18 @@ namespace {
 //============================================================================================================
 //ADSRTrigger
 //============================================================================================================
+//------------------------------------------------------------------------------------------------------------
+void ADSRTrigger::serialize ( ::com::iArchive &ar, const unsigned int version ){
+	ar & boost::serialization::base_object < ProcessAdapter > ( *this );
+	ar & out;
+	ar & adsr;
+}
+//------------------------------------------------------------------------------------------------------------
+void ADSRTrigger::serialize ( ::com::oArchive &ar, const unsigned int version ){
+	ar & boost::serialization::base_object < ProcessAdapter > ( *this );
+	ar & out;
+	ar & adsr;
+}
 const std::string states[] = {"_a", "_d", "_s", "_r"};
 //------------------------------------------------------------------------------------------------------------
 ADSRTrigger::ADSRTrigger( frx::processing::IHostInfo::Ptr hostInfo ) :

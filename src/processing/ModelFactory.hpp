@@ -89,8 +89,8 @@ public:
     typedef boost::unordered_map<Id, CreatorFunctions> CreatorMap;
     typedef boost::function<void(com::oArchive*)> OArchiveRegisterF;
     typedef boost::function<void(com::iArchive*)> IArchiveRegisterF;
-    typedef std::list<OArchiveRegisterF> OARegList;
-    typedef std::list<IArchiveRegisterF> IARegList;
+	typedef std::map<Id, OArchiveRegisterF> OARegList;
+	typedef std::map<Id, IArchiveRegisterF> IARegList;
 protected:
 private:
     //-------------------------------------------------------------------------
@@ -104,9 +104,9 @@ private:
     }
     //-------------------------------------------------------------------------
     template <class ConcreteProd>
-    bool registerArchives() {
-        oaregs.push_back( &toArchive<com::oArchive, ConcreteProd> );
-        iaregs.push_back( &toArchive<com::iArchive, ConcreteProd> );
+    bool registerArchives(const Id &id) {
+		oaregs.insert( OARegList::value_type(id, &toArchive<com::oArchive, ConcreteProd>) );
+        iaregs.insert( IARegList::value_type(id, &toArchive<com::iArchive, ConcreteProd>) );
         return true;
     }
     //-------------------------------------------------------------------------
@@ -148,7 +148,7 @@ public:
      */
     template <class ConcreteProd>
     bool register_(const Id &id, const CreatorDefault &creator) {
-        return _register(id, creator) && registerArchives<ConcreteProd>();
+        return _register(id, creator) && registerArchives<ConcreteProd>(id);
     }
     //-------------------------------------------------------------------------
     /**
@@ -156,7 +156,7 @@ public:
      */
     template <class ConcreteProd>
     bool registerWithIO(const Id &id, const CreatorWithIO &creator) {
-       return _register(id, creator) && registerArchives<ConcreteProd>();
+       return _register(id, creator) && registerArchives<ConcreteProd>(id);
     }
     //-------------------------------------------------------------------------
     /**
@@ -164,7 +164,7 @@ public:
      */
     template <class ConcreteProd>
     bool registerWithDetail(const Id &id, const CreatorWithDetail &creator) {
-        return _register(id, creator) && registerArchives<ConcreteProd>();
+        return _register(id, creator) && registerArchives<ConcreteProd>(id);
     }
     //-------------------------------------------------------------------------
     /**
@@ -191,6 +191,10 @@ public:
     void registerToArchive(com::iArchive &ar) const;
     //-------------------------------------------------------------------------
     void registerToArchive(com::oArchive &ar) const;
+    //-------------------------------------------------------------------------
+	void registerToArchive(com::iArchive &ar, const Id &id) const;
+    //-------------------------------------------------------------------------
+    void registerToArchive(com::oArchive &ar, const Id &id) const;
     //-------------------------------------------------------------------------
     size_t getNumRegisteredIds() const {
         return creators.size();

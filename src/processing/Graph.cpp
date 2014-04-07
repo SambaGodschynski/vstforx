@@ -413,6 +413,40 @@ bgl::Edge Graph::findEdge( ProcessorNode::Ptr source, ProcessorNode::Ptr target 
 //------------------------------------------------------------------------------------------------------------
 void Graph::onHostIOChanged(void *src, const frx::processing::HostIOChanged &ev) {
 }
+//------------------------------------------------------------------------------------------------------------
+void Graph::serialize ( com::iArchive &ar, const unsigned int version )
+{
+	ar & self;
+	ar & hostInfo;
+	ar & startNode;
+	ar & endNode;
+	ar & graphObjects;
+	ar & hostParameter;
+	ar & parameterConnections;
+	ar & g;
+	if ( com::iArchive::is_loading::value ) {
+        installListeners();
+		Ptr graph = self.lock();
+		graph->getJanitor()->updateProcessorNodeVertexRelations();
+	}
+}
+//------------------------------------------------------------------------------------------------------------
+void Graph::serialize ( com::oArchive &ar, const unsigned int version )
+{
+	ar & self;
+	ar & hostInfo;
+	ar & startNode;
+	ar & endNode;
+	ar & graphObjects;
+	ar & hostParameter;
+	ar & parameterConnections;
+	ar & g;
+	if ( com::oArchive::is_loading::value ) {
+        installListeners();
+		Ptr graph = self.lock();
+		graph->getJanitor()->updateProcessorNodeVertexRelations();
+	}
+}
 //============================================================================================================
 // Klasse Janitor
 // Ermoeglicht hinzufuegen und entfernen von PObjects und Verbindungen.

@@ -49,14 +49,32 @@ ModelFactory::Product ModelFactory::create(const std::string &pdStr,
 }
 //-----------------------------------------------------------------------------
 void ModelFactory::registerToArchive(com::iArchive &ar) const {
-    BOOST_FOREACH(const IArchiveRegisterF &f, iaregs) {
-        f(&ar);
+    BOOST_FOREACH(const IARegList::value_type &x, iaregs) {
+        x.second(&ar);
     }
 }
 //-----------------------------------------------------------------------------
 void ModelFactory::registerToArchive(com::oArchive &ar) const {
-    BOOST_FOREACH(const OArchiveRegisterF &f, oaregs) {
-        f(&ar);
+    BOOST_FOREACH(const OARegList::value_type &x, oaregs) {
+        x.second(&ar);
     }
+}
+//-----------------------------------------------------------------------------
+void ModelFactory::registerToArchive(com::iArchive &ar, const Id &id) const {
+	IARegList::const_iterator it = iaregs.find(id);
+	if (it==iaregs.end()) {
+		SAMBAG_LOG_WARN<<"registerToArchive: "<<id<<" not found";
+		return;
+	}
+	it->second(&ar);
+}
+//-----------------------------------------------------------------------------
+void ModelFactory::registerToArchive(com::oArchive &ar, const Id &id) const {
+  	OARegList::const_iterator it = oaregs.find(id);
+	if (it==oaregs.end()) {
+		SAMBAG_LOG_WARN<<"registerToArchive: "<<id<<" not found";
+		return;
+	}
+	it->second(&ar);
 }
 }} // namespace(s)

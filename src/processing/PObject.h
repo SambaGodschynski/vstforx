@@ -36,12 +36,8 @@ private:
 	 * @param ar boost::Archive-Objekt
 	 * @param version
 	 */
-	template< typename Archive >
-	void serialize ( Archive &ar, const unsigned int version ) {		
-		ar & name;
-		ar & self;
-		ar & owned;
-	} 
+	void serialize ( com::oArchive &ar, const unsigned int version );
+	void serialize ( com::iArchive &ar, const unsigned int version );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * POBject ist in einem Graph enthalten.

@@ -68,6 +68,6 @@ void register_types(::com::oArchive &ar, int version) {
         throw std::runtime_error("registering an invalid archive version");
     }
 	register_types_impl(ar);
-    ModelFactory::instance().registerToArchive(ar);
+	ModelFactory::instance().registerToArchive(ar);
 }
 }} // namespace(s)
