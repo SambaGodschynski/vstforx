@@ -7,18 +7,97 @@
 -- author: Samba Godschynski                                   --
 -----------------------------------------------------------------
 require "vstforx-helper"
+
+viewportMenu={}
+viewports={}
+currentViewport=1
+
 -- main menu def
 menus = {
    main={
       {name="VSTForx " .. frx.getVersionString() },
       {name="Modify Scene...", action="onOpenBrowser()"},
       {name="Open Setup Dialog", action="frx.openSetup()"},
-      {name="execute command...", action="onExecute()"},
-      {name="About...", action="frx.openAbout()"},
-      {name="external"},
-      {name="www.vstforx.de", action="frx.openUrl('http://www.vstforx.de')"}
+      {name="Help", {
+	  {name="About VSTForx", action="frx.openAbout()"},
+	  {name="", action="frx.openUrl('http://vstforx.de/index.php/2014-01-12-14-49-45/report-a-bug')"},
+	  {name="Report A Bug", action="frx.openUrl('http://vstforx.de/index.php/2014-01-12-14-49-45/report-a-bug')"},
+	  {name="Known Issues", action="frx.openUrl('http://issues.vstforx.de/roadmap_page.php?version_id=27')"},
+      }},
+      {name="Auxiliaries"},
+      {name="Viewports", viewportMenu},
+      {name="Load...", action="load()"},
+      {name="Save...", action="save()"},
+      {name="Lua"},
+      {name="Execute Command...", action="onExecute()"}
+      
    },   
 }
+
+function getViewportName(index, active)
+   res="Viewport "..index
+   if active then
+      res=res.." (X)"
+   end
+   return res
+end
+
+function initViewportMenu(num)
+   for i=1,num,1 do
+      table.insert(viewportMenu, 
+		   {name=getViewportName(i,i==1), 
+		    action=string.format("toViewport(%i)", i)})
+      table.insert(viewports,{frx.view:getLocation()})
+   end
+end
+
+function moveViewTo(x,y)
+   frx.view:setLocation(x,y)
+end
+
+function toViewport(newIndex)
+   --save old loc
+   oldIndex = currentViewport
+   viewports[oldIndex] = {frx.view:getLocation()}
+   -- move to new
+   px,py = unpack(viewports[newIndex])
+   moveViewTo(px,py)
+   --update menu
+   viewportMenu[oldIndex].name=getViewportName(oldIndex, false)
+   viewportMenu[newIndex].name=getViewportName(newIndex, true)
+   currentViewport=newIndex 
+   frx.view:setMenu(menus.main)
+end
+
+function save()
+   if _ENV.f==nil then
+      _ENV.f=""
+   end
+   path=frx.showSaveFileDlg(_ENV.f)
+   if path == nil or #path==0 then
+      return
+   end
+   _ENV.f = path
+   data=frx.serializePlugin()
+   fh=io.open(_ENV.f,"w")
+   fh:write(data)
+   fh:close()
+end
+
+function load()
+   if _ENV.f==nil then
+      _ENV.f=""
+   end
+   path=frx.showSelectFileDlg(_ENV.f)
+   if path == nil or #path==0 then
+      return
+   end
+   _ENV.f = path
+   fh=io.open(_ENV.f,"r")
+   data=fh:read("*a")
+   fh:close()
+   frx.deserializePlugin(data)
+end
 
 function addOperator(x)
    o=frx.view:getContextObject()
@@ -134,26 +213,6 @@ function onExecute()
    --loadstring(s)()
 end
 
-function onSave()
-   print(frx.getGraphDelay())
-   _ENV.state = frx.serializePlugin()
-end
-
-function onLoad()	
-   if _ENV.state == nil then
-      return
-   end
-   frx.deserializePlugin(_ENV.state)
-end
-
-function onLoadFile()
-end
-
-function onSaveFile()
-   path = frx.selectFile("")
-   frx.messageBox(path)
-end
-
 function onOpenBrowser(x)
    if(x==nil) then
       frx.openSceneBrowser(frx.getLastSceneBrowserSelection())
@@ -162,3 +221,4 @@ function onOpenBrowser(x)
    print(x)
    frx.openSceneBrowser(x)
 end
+

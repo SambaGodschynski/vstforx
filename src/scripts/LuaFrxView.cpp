@@ -474,9 +474,9 @@ void LuaFrxView::onMenu(lua_State *lua, const std::string &cmd) {
     try {
         slua::executeString(lua, cmd);
     } catch(const sambag::lua::ExecutionFailed &ex) {
-        view->errorMessage(ex.errMsg);
+        view->errorMessage(cmd + " failed: " + ex.errMsg);
     } catch(...) {
-        view->errorMessage("unkown reason");
+        view->errorMessage(cmd + " failed: unkown reason");
     }
 }
 //-----------------------------------------------------------------------------

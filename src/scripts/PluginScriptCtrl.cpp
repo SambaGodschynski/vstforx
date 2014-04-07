@@ -136,13 +136,19 @@ namespace {
 	//-------------------------------------------------------------------------
 	struct FrxSelectFile {
         typedef boost::function<std::string(std::string)> Function;
-		static const char * name() { return "selectFile"; }
+		static const char * name() { return "showSelectFileDlg"; }
 		static std::string process(const std::string&, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxSelectDirectory {
         typedef boost::function<std::string(std::string)> Function;
-		static const char * name() { return "selectDirectory"; }
+		static const char * name() { return "showSelectDirectory"; }
+		static std::string process(const std::string&, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
+	};
+	//-------------------------------------------------------------------------
+	struct FrxSaveFile {
+        typedef boost::function<std::string(std::string)> Function;
+		static const char * name() { return "showSaveFileDlg"; }
 		static std::string process(const std::string&, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
@@ -245,7 +251,7 @@ namespace {
 		FrxSetEditorExitOnClose
     ) FrxPrivateFunctionList;
 	//-------------------------------------------------------------------------
-	typedef LOKI_TYPELIST_21(
+	typedef LOKI_TYPELIST_22(
 		FrxWait,
 		FrxGetLastBrowserSelection,
 	    FrxSerializePlugin,
@@ -266,7 +272,8 @@ namespace {
         FrxGetPersistData,
         FrxShowInputTextDlg,
 /*20*/  FrxRunOnUIThread,
-        FrxExec
+        FrxExec,
+        FrxSaveFile
 	) FrxPublicFunctionList;
 //-----------------------------------------------------------------------------
 void FrxExec::process(const std::string &cmd,
@@ -604,20 +611,6 @@ void FrxOpenUrl::process(const std::string &url, Ctrl *ctrl, const Ctrl::LuaProc
         return;
     }
     try {
-        FRX_START_SCRIPTCALL
-        FRX_GET_PLUG
-        FRX_GET_EDITOR
-        using namespace frx::gui;
-        using namespace frx::gui::components;
-        FrxCircuidViewPtr view = editor->getCircuidView();
-        
-        sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
-        if (!win) {
-            return;
-        }
-        if (win->getThreadId() != sambag::com::getThreadId()) {
-            throw std::runtime_error("this function need to be called from main thread. Use runOnUIThread for this purpose.");
-        }
         ::com::osOpenLink(url);
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua.get(), ex.what());
@@ -654,6 +647,36 @@ std::string FrxSelectFile::process(const std::string &startPath, Ctrl *ctrl, con
     }
     return "";
 }
+//-----------------------------------------------------------------------------
+std::string FrxSaveFile::process(const std::string &startPath, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return std::string();
+    }
+    try {
+        FRX_START_SCRIPTCALL
+        FRX_GET_PLUG
+        FRX_GET_EDITOR
+        using namespace frx::gui;
+        using namespace frx::gui::components;
+        FrxCircuidViewPtr view = editor->getCircuidView();
+        
+        sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
+        if (!win) {
+            return "";
+        }
+        if (win->getThreadId() != sambag::com::getThreadId()) {
+            throw std::runtime_error("this function need to be called from main thread. Use runOnUIThread for this purpose.");
+        }
+        return ::com::osSaveFile("select file", startPath, NULL);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua.get(), ex.what());
+    } catch (...) {
+        slua::pushLuaError(lua.get(), "unkown error");
+    }
+    return "";
+}
+
 //-----------------------------------------------------------------------------
 std::string FrxSelectDirectory::process(const std::string &startPath, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
     sambag::lua::LuaStateRef lua = lp.first.lock();

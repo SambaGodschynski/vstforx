@@ -98,6 +98,11 @@ std::string osSelectFile ( const std::string &wndTitle, const std::string &start
 	return frx::com::CocoaImpl::selectFile(wndTitle, startPath);
 }
 //-----------------------------------------------------------------------------
+std::string osSaveFile ( const std::string &wndTitle, const std::string &startPath, void *parentWindow)
+{
+	return frx::com::CocoaImpl::saveFile(wndTitle, startPath);
+}
+//-----------------------------------------------------------------------------
 void startProcess(const char *path, int argc, const char **argv) {
     frx::com::CocoaImpl::startProcess(path, argc, argv);
 }

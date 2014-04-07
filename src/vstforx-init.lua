@@ -25,6 +25,9 @@ end
 
 -- global statements will be executed while editor is opening
 -- so we can use them for setting things up:
-frx.view:setMenu(menus.main) -- set custom main menu (see vstforx-menusetup.lua)
 frx.view:addViewListener("onViewEvent") 
 initViewObjects()
+
+ -- set custom main menu: (see vstforx-menusetup.lua)
+initViewportMenu(4)
+frx.view:setMenu(menus.main)

@@ -161,6 +161,7 @@ std::string osSelectFile ( const std::string &wndTitle,
 						    const std::string &startPath,
 							void *parentWindow)
 {
+    //http://msdn.microsoft.com/en-us/library/windows/desktop/ms646928%28v=vs.85%29.aspx
 	std::string ret;
 	BROWSEINFO bi = { 0 };
 	bi.lpfn = &BrowseCallbackProc;
