@@ -26,14 +26,8 @@ private:
 	 * @param ar boost::Archive-Objekt
 	 * @param version
 	 */
-	template < typename Archive >
-	void serialize ( Archive &ar, const unsigned int version ){
-		ar & boost::serialization::base_object < ValueTranslator > ( *this );
-		ar & oneMsInSamples;
-		ar & minInSampl;
-		ar & fak;
-		ar & minInMs;
-	}
+	void serialize ( ::com::iArchive &ar, const unsigned int version );
+	void serialize ( ::com::oArchive &ar, const unsigned int version );
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**

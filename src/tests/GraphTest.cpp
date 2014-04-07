@@ -12,7 +12,6 @@
 #include "processing/IHostInfo.h"
 #include "processing/parameter/parameter.h"
 #include "processing/parameter/ConnectionOperators.h"
-#include "processing/ConcreteProcessAdapter.h"
 #include "com/one4All.h"
 #include "GraphBuilder.hpp"
 #include "processing/BglGraph.h"
@@ -29,6 +28,9 @@
 #include <processing/FrxAsyncDSPTimer.hpp>
 #include <processing/Plugin.h>
 #include <processing/ModelFactory.hpp>
+#include <processing/concreteAdapter/DCTester.hpp>
+#include <processing/concreteAdapter/Volume.h>
+#include <processing/SerializationRegister.hpp>
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::GraphTest );
@@ -1323,35 +1325,8 @@ void GraphTest::testGraphComplex3() {
 //=============================================================================
 template < typename A >
 void register_types( A &ar ){
-	using namespace processing;
-	namespace pp = processing::parameter;
-	//graph
-	ar.template register_type<Parameter>();
-	ar.template register_type<pp::InverseConnection>();
-	ar.template register_type<pp::ExpConnection>();
-	ar.template register_type<pp::LogConnection>();
-	ar.template register_type<NOPNode>();
-	ar.template register_type<ProcessAdapter::OutputNode>();
-	ar.template register_type<ProcessAdapter::InputNode>();
-	ar.template register_type<StartNode>();
-	ar.template register_type<EndNode>();
-	ar.template register_type<ProcessAdapterNode>();
-	ar.template register_type<Volume>();
-	//ar.template register_type<VSTPlugin>();
-	ar.template register_type<Pan>();
-	ar.template register_type<OutputStep>();
-	ar.template register_type<InputStep>();
-	ar.template register_type<OutputSwitch>();
-	ar.template register_type<InputSwitch>();
-	ar.template register_type<PeakTracker>();
-	ar.template register_type<ADSRTrigger>();
-	ar.template register_type <FadeValue>();
-	ar.template register_type <DummyFX>();
-	//                 * 
-	// test klassen
-	ar.template register_type <HelperNode>();
+	frx::processing::register_types(ar);
 }
-
 //=============================================================================
 void GraphTest::testSerialization() { 
 //=============================================================================
