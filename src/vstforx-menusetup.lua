@@ -24,8 +24,8 @@ menus = {
 	  {name="Report A Bug", action="frx.openUrl('http://vstforx.de/index.php/2014-01-12-14-49-45/report-a-bug')"},
 	  {name="Known Issues", action="frx.openUrl('http://issues.vstforx.de/roadmap_page.php?version_id=27')"},
       }},
-      {name="Auxiliaries"},
       {name="Viewports", viewportMenu},
+      {name="State"},
       {name="Load...", action="load()"},
       {name="Save...", action="save()"},
       {name="Lua"},
@@ -42,13 +42,37 @@ function getViewportName(index, active)
    return res
 end
 
+function saveMenuData()
+   viewports[currentViewport] = {frx.view:getLocation()}
+   for i=1, #viewports, 1 do
+      frx.setPersistData(string.format("viewport.loc%i",i), viewports[i])
+   end
+   frx.setPersistData("viewport.index", {currentViewport})
+end
+
 function initViewportMenu(num)
+   for i=1,#viewportMenu,1 do
+      -- remove old entries, we can't just do
+      -- x={} because it creates a new reference which is unknown to
+      -- the main menu table
+      table.remove(viewportMenu)
+   end
+   _ENV.viewports={}
+   index=frx.getPersistData("viewport.index")
+   if #index>0 then
+      currentViewport=tonumber(index[1])
+   end
    for i=1,num,1 do
       table.insert(viewportMenu, 
-		   {name=getViewportName(i,i==1), 
+		   {name=getViewportName(i,i==currentViewport), 
 		    action=string.format("toViewport(%i)", i)})
-      table.insert(viewports,{frx.view:getLocation()})
+      loc = frx.getPersistData(string.format("viewport.loc%i",i))
+      if #loc==0 then
+	 loc={frx.view:getLocation()}
+      end
+      table.insert(viewports,loc)
    end
+   moveViewTo(unpack(viewports[currentViewport]))
 end
 
 function moveViewTo(x,y)

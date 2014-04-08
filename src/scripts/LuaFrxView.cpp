@@ -718,48 +718,49 @@ void LuaFrxView::onViewEvent(lua_State *lua, const fgc::FrxCircuidViewEvent &ev)
 	using namespace frx::gui::components;
 	using namespace sambag::disco::components;
     using namespace frx::gui;
-    if (!ev.component) {
-        return;
-    }
     std::string evtype;
     if (ev.type == fgc::FrxCircuidViewEvent::ComponentAdded) {
         evtype = "object added";
+    }
+    if (ev.type == fgc::FrxCircuidViewEvent::OnSerializing) {
+        evtype = "on saving view state";
+    }
+    if (ev.type == fgc::FrxCircuidViewEvent::OnDeserializing) {
+        // we can't catch this event because while deserializing
+        // the script isn't running.
     }
     if (evtype.empty()) {
         return;
     }
     try {
-        // prepare lua object
-        FrxCircuidViewPtr view = getView();
-        IViewModelMap::Ptr map = getViewModelMap(view);
-        std::string type = ev.component->getTypeId();
-        if (type.empty()) {
-            return;
+        std::string id;
+        FrxCircuidViewPtr view;
+        IViewModelMap::Ptr map;
+        if (ev.component) {
+            // prepare lua object
+            view = getView();
+            map = getViewModelMap(view);
+            std::string type = ev.component->getTypeId();
+            id = com::IdParser(type).namespace_("lua").toString();
         }
-        std::string id = com::IdParser(type).namespace_("lua").toString();
-        LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
-        if (!fac.isRegistered(id)) {
-            return;
-        }
-        LuaFrxObject::Ptr lobj = fac.createAndPush(
-            id,
-            lua,
-            map->getModelObject(ev.component),
-            map
-        );
         // determine event type
         // notify
+        LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
         BOOST_FOREACH(const std::string &x, luaViewListener) {
             lua_getglobal(lua, x.c_str());
             // push event type
             lua_pushstring(lua, evtype.c_str());
-            // push lua object
-            LuaFrxObject::Ptr lobj = fac.createAndPush(
-                id,
-                lua,
-                map->getModelObject(ev.component),
-                map
-            );
+            if (fac.isRegistered(id)) {
+                // push lua object
+                LuaFrxObject::Ptr lobj = fac.createAndPush(
+                    id,
+                    lua,
+                    map->getModelObject(ev.component),
+                    map
+                );
+            } else {
+                lua_pushnil(lua);
+            }
             if (lua_pcall(lua, 2, 0, 0)!=0) {
                 SAMBAG_LOG_ERR<<lua_tostring(lua, -1);
             }

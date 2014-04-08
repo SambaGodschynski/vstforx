@@ -151,11 +151,13 @@ private:
 	//-------------------------------------------------------------------------
 	template <typename Archive> 
 	void serialize(Archive &ar, const unsigned int version) {
-		fireViewEvent(Archive::is_loading::value ? 
-			FrxCircuidViewEvent::OnDeserializing :
-			FrxCircuidViewEvent::OnSerializing
-		);
+        if (Archive::is_saving::value) {
+            fireViewEvent(FrxCircuidViewEvent::OnSerializing);
+        }
 		serializeSelfPtr(ar, version);
+        if (Archive::is_loading::value) {
+            fireViewEvent(FrxCircuidViewEvent::OnDeserializing);
+        }
 	}
 public:
 	//-------------------------------------------------------------------------

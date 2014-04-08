@@ -9,8 +9,13 @@ require "vstforx-helper"
 require "vstforx-menusetup"
 
 function onViewEvent(evName, evObj)
-   if evName~="object added" then return end
-   setObjectMenu(evObj) -- set a custom menu, will override the origin
+   if evName=="object added" then 
+      setObjectMenu(evObj) -- setting a custom menu, will override the origin
+      return
+   end
+   if evName=="on saving view state" then
+      saveMenuData()
+   end
 end
 
 function initViewObjects()
