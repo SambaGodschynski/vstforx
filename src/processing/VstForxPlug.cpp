@@ -477,7 +477,18 @@ void VstForxPlug::save(std::ostream &os) {
 	ar & graph;
 	saveEditor(ar);
     // script ctrl user data
-    ar & getScriptCtrl()->getPersistUserData();
+    // the boost::serialization multimap impl. gives a fuck about
+    // map value order, so we have to do it manually
+    // (for some reason Map::value_type produces compiler errors)
+    typedef std::pair<std::string, std::string> Bodge;
+    std::vector<Bodge> tmp;
+    const scripts::PluginScriptCtrl::PersistUserData &data =
+        scriptCtrl->getPersistUserData();
+    tmp.reserve(data.size());
+    BOOST_FOREACH(const Bodge &x, data) {
+        tmp.push_back(x);
+    }
+    ar<<tmp;
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::load(std::istream &is, int version) {
@@ -515,7 +526,19 @@ void VstForxPlug::load(std::istream &is, int version) {
 	initHostParameter();
     // script ctrl user data
     if (version>0) {
-        ar & getScriptCtrl()->getPersistUserData();
+        getScriptCtrl()->getPersistUserData().clear();
+        // script ctrl user data
+        // the boost::serialization multimap impl. gives a fuck about
+        // map value order, so we have to do it manually
+        // (for some reason Map::value_type produces compiler errors)
+        typedef std::pair<std::string, std::string> Bodge;
+        std::vector<Bodge> tmp;
+        scripts::PluginScriptCtrl::PersistUserData &data =
+            scriptCtrl->getPersistUserData();
+        ar >> tmp;
+        BOOST_FOREACH(const Bodge &x, tmp) {
+            data.insert(x);
+        }
     }
 }
 //-----------------------------------------------------------------------------

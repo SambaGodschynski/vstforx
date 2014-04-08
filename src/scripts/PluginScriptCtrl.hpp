@@ -58,14 +58,6 @@ protected:
 	//-------------------------------------------------------------------------
 	void runThread();
 private:
-	///////////////////////////////////////////////////////////////////////////
-	// Archive:
-	//-------------------------------------------------------------------------
-	friend class boost::serialization::access;
-    template <class Archive>
-    void serialize(Archive &ar, const unsigned int version) {
-        ar & persistUserData;
-    }
     //-------------------------------------------------------------------------
     PersistUserData persistUserData;
 	//-------------------------------------------------------------------------
