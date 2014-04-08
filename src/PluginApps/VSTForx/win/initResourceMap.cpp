@@ -1,7 +1,7 @@
 /*
  * initResourceMap.cpp
  *
- *  Created on: Fri Apr 04 21:57:18 2014
+ *  Created on: Mon Apr 07 22:58:09 2014
  *      Author: createResources.py
  *
  * !! CREATED AUTOMATICALLY DO NOT CHANGE !!
@@ -29,14 +29,15 @@ void initResourceMap(RegisterResourceFunc registerF) {
 	registerF("images/knob.png", 340);
 	registerF("images/bkgrey.png", 350);
 	registerF("images/peak_tracker.png", 360);
-	registerF("images/warning_icon.png", 370);
-	registerF("images/plus.png", 380);
-	registerF("images/hfolder.png", 390);
-	registerF("images/iplug.png", 400);
-	registerF("images/oSwitch.png", 410);
-	registerF("images/vstPlugNode.png", 420);
-	registerF("images/inf_icon.png", 430);
-	registerF("images/remoteChReceiver.png", 440);
+	registerF("images/sand.png", 370);
+	registerF("images/warning_icon.png", 380);
+	registerF("images/plus.png", 390);
+	registerF("images/hfolder.png", 400);
+	registerF("images/iplug.png", 410);
+	registerF("images/oSwitch.png", 420);
+	registerF("images/vstPlugNode.png", 430);
+	registerF("images/inf_icon.png", 440);
+	registerF("images/remoteChReceiver.png", 450);
 
 }
 

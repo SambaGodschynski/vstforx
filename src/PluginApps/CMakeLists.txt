@@ -1,6 +1,7 @@
 SET ( FRX_STANDALONE
         GuiStandalone/Main.cpp
-	com/FrxPlugSettings.cpp)
+	com/FrxPlugSettings.cpp
+	VSTForx/win/resources.rc)
 
 # common files
 SET (PlugSources ${PlugSources}

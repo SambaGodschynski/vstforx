@@ -1,36 +1,37 @@
 /**
  * resources.rc
  *
- *  Created on: Fri Apr 04 21:57:18 2014
+ *  Created on: Mon Apr 07 22:58:09 2014
  *      Author: createResources.py
  */
 #include <windows.h>
 
-200	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/cmlogo.png"
-210	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/entry.png"
-220	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/logo.png"
-230	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/plugin.png"
-240	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/e.png"
-250	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/disco-floor.png"
-260	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/midiReceiver.png"
-270	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/volume_node.png"
-280	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/folder.png"
-290	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/adsr_trigger.png"
-300	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/processor.png"
-310	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/step_adapter.png"
-320	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/channel_split.png"
-330	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/exit.png"
-340	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/knob.png"
-350	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/bkgrey.png"
-360	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/peak_tracker.png"
-370	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/warning_icon.png"
-380	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/plus.png"
-390	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/hfolder.png"
-400	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/iplug.png"
-410	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/oSwitch.png"
-420	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/vstPlugNode.png"
-430	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/inf_icon.png"
-440	SAMBAG_CUSTOM	"c:/workspace/VST/Apps/vstforx/src/images/remoteChReceiver.png"
+200	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/cmlogo.png"
+210	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/entry.png"
+220	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/logo.png"
+230	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/plugin.png"
+240	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/e.png"
+250	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/disco-floor.png"
+260	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/midiReceiver.png"
+270	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/volume_node.png"
+280	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/folder.png"
+290	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/adsr_trigger.png"
+300	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/processor.png"
+310	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/step_adapter.png"
+320	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/channel_split.png"
+330	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/exit.png"
+340	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/knob.png"
+350	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/bkgrey.png"
+360	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/peak_tracker.png"
+370	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/sand.png"
+380	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/warning_icon.png"
+390	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/plus.png"
+400	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/hfolder.png"
+410	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/iplug.png"
+420	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/oSwitch.png"
+430	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/vstPlugNode.png"
+440	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/inf_icon.png"
+450	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/remoteChReceiver.png"
 
 
 

@@ -17,6 +17,8 @@
 #include <exception>
 #include <sambag/com/Thread.hpp>
 #include <map>
+#include <Commdlg.h>
+
 extern void* hInstance;
 
 namespace com {
@@ -161,7 +163,6 @@ std::string osSelectFile ( const std::string &wndTitle,
 						    const std::string &startPath,
 							void *parentWindow)
 {
-    //http://msdn.microsoft.com/en-us/library/windows/desktop/ms646928%28v=vs.85%29.aspx
 	std::string ret;
 	BROWSEINFO bi = { 0 };
 	bi.lpfn = &BrowseCallbackProc;
@@ -186,6 +187,26 @@ std::string osSelectFile ( const std::string &wndTitle,
         }
     }
 	return ret;
+}
+//--------------------------------------------------------------------------------------------------------
+std::string osSaveFile ( const std::string &wndTitle,
+						    const std::string &startPath,
+							void *parentWindow)
+{
+	//TCHAR szFilters[] = _T("Scribble Files (*.dat)\0*.dat\0\0");
+	char szFilePathName[_MAX_PATH] = "";
+	OPENFILENAME ofn = {0};
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = (HWND)parentWindow;
+	//ofn.lpstrFilter = szFilters;
+	ofn.lpstrFile = szFilePathName;
+	//ofn.lpstrDefExt = _T("dat");
+	ofn.nMaxFile = _MAX_PATH;
+	ofn.lpstrTitle = "Save File";
+	ofn.Flags = OFN_OVERWRITEPROMPT;
+	ofn.lpstrInitialDir = startPath.c_str();
+	GetSaveFileName(&ofn);
+	return std::string(ofn.lpstrFile);
 }
 //--------------------------------------------------------------------------------------------------------
 void osOpenLink(const std::string &url) {
@@ -218,7 +239,7 @@ namespace {
 				return TRUE;
 			}
 			case IDCANCEL:
-				EndDialog(hWndDlg, 0);
+				EndDialog(hWndDlg, 1);
 				return TRUE;
 			}	   
 		}
@@ -234,8 +255,11 @@ void osShowInputTextDlg(const std::string &title, std::string &inOut, void *pare
 		__dlgIO[id].second = inOut;
 	SAMBAG_END_SYNCHRONIZED
 	//show dlg box
-	DialogBox(NULL, MAKEINTRESOURCE(DLG_ID),
+	int res = DialogBox(NULL, MAKEINTRESOURCE(DLG_ID),
 	          (HWND)parentWindow, (DLGPROC)dlgProc);
+	if (res!=0) {
+		return;
+	}
 	//get result
 	SAMBAG_BEGIN_SYNCHRONIZED(__dlgMutex)
 		inOut = __dlgIO[id].second;
