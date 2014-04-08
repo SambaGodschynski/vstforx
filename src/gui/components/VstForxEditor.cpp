@@ -168,19 +168,23 @@ void VstForxEditor::setCircuidView(FrxCircuidViewPtr view) {
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::loadInitScript() {
-    std::string file = com::getSettings().getInitScriptFilename();
-    scripts::PluginScriptCtrl::Ptr sctrl =
-        frx::processing::getScriptControl(circView);
-    if (!sctrl) {
-        SAMBAG_LOG_WARN<<"get script control failed.";
-        return;
-    }
-    if (!boost::filesystem::exists(file)) {
-        SAMBAG_LOG_INFO<<file<<" not found";
-        return;
-    }
-    try {
-        sctrl->executeFile(file);
+	std::string file = com::getSettings().getInitScriptFilename();
+	try {
+		scripts::PluginScriptCtrl::Ptr sctrl =
+			frx::processing::getScriptControl(circView);
+		if (!sctrl) {
+			SAMBAG_LOG_WARN<<"get script control failed.";
+			return;
+		}
+		if (!boost::filesystem::exists(file)) {
+			SAMBAG_LOG_INFO<<file<<" not found";
+			return;
+		}
+		std::stringstream ss;
+		boost::filesystem::path luaPath(com::getSettings().getHomeDirectory());
+		ss<<"package.path='"<<luaPath.generic_string()<<"/?.lua;' .. package.path";
+		sctrl->execute(ss.str());
+		sctrl->executeFile(file);
     } catch(const sambag::lua::ExecutionFailed &ex) {
         errorMessage("executing "+file+" failed: " + ex.errMsg);
     } catch(...) {

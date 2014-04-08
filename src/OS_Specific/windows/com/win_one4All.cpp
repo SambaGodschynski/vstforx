@@ -241,7 +241,7 @@ namespace {
 			case IDCANCEL:
 				EndDialog(hWndDlg, 1);
 				return TRUE;
-			}	   
+			}
 		}
 		return FALSE;
 	}
@@ -255,9 +255,10 @@ void osShowInputTextDlg(const std::string &title, std::string &inOut, void *pare
 		__dlgIO[id].second = inOut;
 	SAMBAG_END_SYNCHRONIZED
 	//show dlg box
-	int res = DialogBox(NULL, MAKEINTRESOURCE(DLG_ID),
+	int res = DialogBox((HINSTANCE)hInstance, MAKEINTRESOURCE(DLG_ID),
 	          (HWND)parentWindow, (DLGPROC)dlgProc);
 	if (res!=0) {
+		inOut="";
 		return;
 	}
 	//get result

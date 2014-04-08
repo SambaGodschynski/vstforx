@@ -2,6 +2,7 @@
 #ifdef FRX_OS_WINDOWS
 	#define WIN32ONLY(x) x
 	#include <crtdbg.h>
+	void* hInstance=NULL;
 #else
 	#define WIN32ONLY(x)
 #endif

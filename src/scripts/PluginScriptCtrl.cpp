@@ -230,6 +230,12 @@ namespace {
 		static std::string process(const std::string &, const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
     //-------------------------------------------------------------------------
+	struct FrxShowYesNoDlg {
+		typedef boost::function<bool(std::string)> Function;
+		static const char * name() { return "showYesNoDlg"; }
+		static bool process(const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
+	};
+    //-------------------------------------------------------------------------
 	struct FrxRunOnUIThread {
 		typedef boost::function<void(std::string)> Function;
 		static const char * name() { return "runOnUIThread"; }
@@ -251,7 +257,7 @@ namespace {
 		FrxSetEditorExitOnClose
     ) FrxPrivateFunctionList;
 	//-------------------------------------------------------------------------
-	typedef LOKI_TYPELIST_22(
+	typedef LOKI_TYPELIST_23(
 		FrxWait,
 		FrxGetLastBrowserSelection,
 	    FrxSerializePlugin,
@@ -273,7 +279,8 @@ namespace {
         FrxShowInputTextDlg,
 /*20*/  FrxRunOnUIThread,
         FrxExec,
-        FrxSaveFile
+        FrxSaveFile,
+		FrxShowYesNoDlg
 	) FrxPublicFunctionList;
 //-----------------------------------------------------------------------------
 void FrxExec::process(const std::string &cmd,
@@ -597,12 +604,42 @@ void FrxMessageBox::process(const std::string &msg, Ctrl *ctrl, const Ctrl::LuaP
         if (win->getThreadId() != sambag::com::getThreadId()) {
             throw std::runtime_error("this function need to be called from main thread. Use runOnUIThread for this purpose.");
         }
-        ::com::osMessageBox("Lua", msg, ::com::MSG_ALERT);
+        ::com::osMessageBox("VSTForx", msg, ::com::MSG_ALERT);
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua.get(), ex.what());
     } catch (...) {
         slua::pushLuaError(lua.get(), "unkown error");
     }
+}
+//-----------------------------------------------------------------------------
+bool FrxShowYesNoDlg::process(const std::string &msg, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    sambag::lua::LuaStateRef lua = lp.first.lock();
+    if(!lua) {
+        return false;
+    }
+    try {
+        FRX_START_SCRIPTCALL
+        FRX_GET_PLUG
+        FRX_GET_EDITOR
+        using namespace frx::gui;
+        using namespace frx::gui::components;
+        FrxCircuidViewPtr view = editor->getCircuidView();
+        
+        sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
+        if (!win) {
+            return false;
+        }
+        if (win->getThreadId() != sambag::com::getThreadId()) {
+            throw std::runtime_error("this function need to be called from main thread. Use runOnUIThread for this purpose.");
+        }
+		return ::com::osMessageBox("VSTForx", msg, 
+			::com::MSG_QUESTION) == ::com::MSG_RET_YES;
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua.get(), ex.what());
+    } catch (...) {
+        slua::pushLuaError(lua.get(), "unkown error");
+    }
+	return false;
 }
 //-----------------------------------------------------------------------------
 void FrxOpenUrl::process(const std::string &url, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {

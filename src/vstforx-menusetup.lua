@@ -51,7 +51,7 @@ function saveMenuData()
 end
 
 function initViewportMenu(num)
-   for i=1,#viewportMenu,1 do
+--[[   for i=1,#viewportMenu,1 do
       -- remove old entries, we can't just do
       -- x={} because it creates a new reference which is unknown to
       -- the main menu table
@@ -72,7 +72,7 @@ function initViewportMenu(num)
       end
       table.insert(viewports,loc)
    end
-   moveViewTo(unpack(viewports[currentViewport]))
+   moveViewTo(unpack(viewports[currentViewport]))]]
 end
 
 function moveViewTo(x,y)
@@ -232,9 +232,11 @@ function onRemove()
 end
 
 function onExecute()
-   s=frx.showInputTextDlg('Command','frx.openAbout()')
-   print(s)
-   --loadstring(s)()
+   if _ENV.lastCommand == nil then
+       _ENV.lastCommand="frx.openAbout()"
+   end
+   _ENV.lastCommand=frx.showInputTextDlg('Command', _ENV.lastCommand)
+   frx.exec(_ENV.lastCommand)
 end
 
 function onOpenBrowser(x)

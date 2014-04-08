@@ -10,6 +10,8 @@
 #include <sambag/com/BoostTimer2.hpp>
 #include <sambag/com/Thread.hpp>
 
+void* hInstance=NULL;
+
 enum {
     FRX_BRIDGE_AUTOCLOSE_CHECK_INTERVAL = 1000,
     FRX_BRIDGE_AUTOCLOSE_WAIT_FOR_SURE_SEC = 60

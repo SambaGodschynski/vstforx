@@ -1,5 +1,5 @@
 --setup
-buffSize = 1024
+buffSize = 256
 sampleRate = 44100
 gpConfig = {
    type="frx_lua_plugin", 
@@ -7,7 +7,7 @@ gpConfig = {
    author="Samba Godschynski",
    license="GPL",
    numInputs=0, 
-   numOutputs=0
+   numOutputs=2
 }
 gpParameterSetup = {}
 p = gpParameterSetup
