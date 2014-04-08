@@ -58,7 +58,7 @@ function packStandalone() {
     folder=VSTForx
     mkdir -p $target/$folder/scripts
     cp $bin/standalone$ext $target/$folder
-    cp $bin/unit_tests$ext $target/$folder
+#    cp $bin/unit_tests$ext $target/$folder
     cp -r $src/images $target/$folder 
     cp -r $src/testScripts $target/$folder
     cp $src/vstforx-init.lua $target/$folder

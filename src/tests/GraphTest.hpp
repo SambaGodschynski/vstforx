@@ -57,7 +57,6 @@ class GraphTest : public CPPUNIT_NS::TestFixture {
 	CPPUNIT_TEST( testGraphComplex1 );
 	CPPUNIT_TEST( testGraphComplex2 );
 	CPPUNIT_TEST( testGraphComplex3 );
-	CPPUNIT_TEST( testSerialization );
     CPPUNIT_TEST_KNOWN_ISSUE( testGraphIdleHandler );
 	CPPUNIT_TEST_EXCEPTION( testJanitorLock, com::ppiError::DeadlockException );
 	CPPUNIT_TEST_SUITE_END();
@@ -77,7 +76,6 @@ public:
 	void testDCWithInputSwitch();
 	void testDCWithInputSwitch02();
 	void testDelayCompensationTree();
-	void testSerialization();
 	void testDelayCompensationComplex1();
 	void testDelayAdapter();
 	void testJanitorCreate();
