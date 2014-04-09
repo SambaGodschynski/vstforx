@@ -24,15 +24,38 @@ menus = {
 	  {name="Report A Bug", action="frx.openUrl('http://vstforx.de/index.php/2014-01-12-14-49-45/report-a-bug')"},
 	  {name="Known Issues", action="frx.openUrl('http://issues.vstforx.de/roadmap_page.php?version_id=27')"},
       }},
+      {name="Auxiliaries"},
+      {name="Add Plugin...", action="onAddPlugin()"},
       {name="Viewports", viewportMenu},
       {name="State"},
       {name="Load...", action="load()"},
       {name="Save...", action="save()"},
-      {name="Lua"},
-      {name="Execute Command...", action="onExecute()"}
+      --{name="Lua"},
+      --{name="Execute Command...", action="onExecute()"}
       
    },   
 }
+
+function onAddPlugin()
+   name=frx.showInputTextDlg("Plugin Name","")
+   if #name==0 then
+      return
+   end
+   r = frx.queryDB("SELECT location FROM plugins WHERE name LIKE '%" .. name .. "%';")
+   if #r == 0 then
+      frx.messageBox("no plugin "..name.." found")
+      return 
+   end
+   if #r > 1 then
+      if not frx.showYesNoDlg("found " .. #r .. " plugins '".. name .. "'. Add them all?") then
+	 return
+      end
+   end
+   for i=1,#r,1 do
+      loc = r[i]['location']
+      frx.view:add("unknown-plugin.Plugin('" .. loc .. "')")
+   end
+end
 
 function getViewportName(index, active)
    res="Viewport "..index
