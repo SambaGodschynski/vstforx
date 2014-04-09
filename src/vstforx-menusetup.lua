@@ -51,7 +51,7 @@ function saveMenuData()
 end
 
 function initViewportMenu(num)
---[[   for i=1,#viewportMenu,1 do
+   for i=1,#viewportMenu,1 do
       -- remove old entries, we can't just do
       -- x={} because it creates a new reference which is unknown to
       -- the main menu table
@@ -72,7 +72,7 @@ function initViewportMenu(num)
       end
       table.insert(viewports,loc)
    end
-   moveViewTo(unpack(viewports[currentViewport]))]]
+   moveViewTo(table.unpack(viewports[currentViewport]))
 end
 
 function moveViewTo(x,y)
@@ -84,7 +84,7 @@ function toViewport(newIndex)
    oldIndex = currentViewport
    viewports[oldIndex] = {frx.view:getLocation()}
    -- move to new
-   px,py = unpack(viewports[newIndex])
+   px,py = table.unpack(viewports[newIndex])
    moveViewTo(px,py)
    --update menu
    viewportMenu[oldIndex].name=getViewportName(oldIndex, false)

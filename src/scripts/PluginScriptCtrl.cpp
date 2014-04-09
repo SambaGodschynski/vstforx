@@ -29,6 +29,7 @@
 #include <OS_Specific/OS_com.h>
 #include <sambag/disco/components/Viewport.hpp>
 #include <com/FrxConfig.h>
+#include <sambag/com/Config.h>
 #include <sambag/disco/components/Window.hpp>
 #include "LuaParameter.hpp"
 #include "LuaFrxView.hpp"
@@ -247,6 +248,16 @@ namespace {
 		static const char * name() { return "exec"; }
 		static void process(const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
+    //-------------------------------------------------------------------------
+	struct FrxGetBuildHash {
+		typedef boost::function<std::string()> Function;
+		static const char * name() { return "getBuildHash"; }
+		static std::string process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+            std::stringstream ss;
+            ss<<FRX_GITHASH<<":"<<SAMBAG_VERSION_BUILD;
+            return ss.str();
+        }
+	};
 	//-------------------------------------------------------------------------
 	typedef LOKI_TYPELIST_7(FrxOpenPlugin,
 		FrxClosePlugin,
@@ -257,7 +268,7 @@ namespace {
 		FrxSetEditorExitOnClose
     ) FrxPrivateFunctionList;
 	//-------------------------------------------------------------------------
-	typedef LOKI_TYPELIST_23(
+	typedef LOKI_TYPELIST_24(
 		FrxWait,
 		FrxGetLastBrowserSelection,
 	    FrxSerializePlugin,
@@ -280,7 +291,8 @@ namespace {
 /*20*/  FrxRunOnUIThread,
         FrxExec,
         FrxSaveFile,
-		FrxShowYesNoDlg
+		FrxShowYesNoDlg,
+        FrxGetBuildHash
 	) FrxPublicFunctionList;
 //-----------------------------------------------------------------------------
 void FrxExec::process(const std::string &cmd,
@@ -310,9 +322,9 @@ namespace {
             SAMBAG_TRY_TO_LOCK_RECURSIVE(*lp.second)
             sambag::lua::executeString(lua.get(), cmd);
         } catch(const std::exception &ex) {
-            slua::pushLuaError(lua.get(),  ex.what());
+            SAMBAG_LOG_ERR<<ex.what();
         } catch (...) {
-            slua::pushLuaError(lua.get(),  "unkown error");
+            SAMBAG_LOG_ERR<<"unkown error";
         }
     }
 }

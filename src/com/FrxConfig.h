@@ -8,6 +8,7 @@
 #define FRX_VERSION_MICRO 5
 #define FRX_VERSION_BUILD "4" 
 #define FRX_VERSION_BRANCH "NEXT"
+#define FRX_GITHASH "b15532a"
 
 #define FRX_USE_FONTCACHE 0
 
