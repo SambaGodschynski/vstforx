@@ -34,7 +34,7 @@ std::ostream & operator<<(std::ostream &os, Int2Type<PlugSettings::CM>) {
 } // namespace
 std::string globVersionStr() {
   std::stringstream ss;
-  ss<<FRX_VERSION_MAJOR<<"."<<FRX_VERSION_MINOR<<"."<<FRX_VERSION_MICRO<<"-"<<FRX_VERSION_BUILD;
+  ss<<FRX_VERSION_MAJOR<<"."<<FRX_VERSION_MINOR<<"."<<FRX_VERSION_MICRO<<"."<<FRX_VERSION_BUILD;
   ss<<" "<<Int2Type<PlugSettings::Version>();
 #ifdef SAMBAG_64
   ss<<" - "<<"x86_64";

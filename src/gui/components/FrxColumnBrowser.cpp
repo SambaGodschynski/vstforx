@@ -29,6 +29,48 @@ sd::ISurface::Ptr BrowserConstants::getIcon(const std::string &type) {
 	return m.getImage("FrxBrowser." + type + ".image");
 }
 //=============================================================================
+//  Class BrowserNodeData
+//=============================================================================
+//-----------------------------------------------------------------------------
+BrowserNodeData::BrowserNodeData(const std::string &name, bool isFolder,
+    const AcceptedFunction &f
+) : name(name), f(f), actionText("add to scene")
+{
+    type = isFolder ? FRX_BROWSER_FOLDER : FRX_BROWSER_DEFAULT;
+    instantPerform = this->isFolder();
+}
+//-----------------------------------------------------------------------------
+BrowserNodeData::BrowserNodeData(const std::string &name, const std::string &type,
+    const AcceptedFunction &f
+) : name(name), f(f), type(type), actionText("add to scene")
+{
+    instantPerform = this->isFolder();
+}
+//-----------------------------------------------------------------------------
+BrowserNodeData::BrowserNodeData(const char *name) : name(name), 
+    type(FRX_BROWSER_DEFAULT), actionText("add to scene")
+{
+    instantPerform = this->isFolder();
+}
+//-----------------------------------------------------------------------------
+bool BrowserNodeData::operator==(const BrowserNodeData &n) const { 
+    return name==n.name && type==n.type
+        && &f == &(n.f) // boost::functions are incomparable
+        && id == n.id;
+}
+//-----------------------------------------------------------------------------
+BrowserNodeData::ResultPtr BrowserNodeData::accept() const {
+    if (f)
+        return f();
+    return ResultPtr();
+}
+//-----------------------------------------------------------------------------
+bool BrowserNodeData::isFolder() const {
+    return type == FRX_BROWSER_FOLDER
+        || type == FRX_BROWSER_HISTORY_FOLDER
+        || type == FRX_BROWSER_ADD_CONTENT_FOLDER;
+}
+//=============================================================================
 //  Class FrxColumnBrowser
 //=============================================================================
 //-----------------------------------------------------------------------------

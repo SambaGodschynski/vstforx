@@ -102,6 +102,16 @@ public:
      */
     typedef std::map<std::string, size_t> NameMap;
 protected:
+    //-------------------------------------------------------------------------
+    /**
+     * @throw IllegalArgumentException if name exists
+     */
+    void nameChanged(sdc::AComponent::Ptr comp);
+    //-------------------------------------------------------------------------
+    /**
+     * @throw IllegalArgumentException
+     */
+    void onPropertyChanged(const sce::PropertyChanged &ev, sdc::AComponent::WPtr comp);
 	//-------------------------------------------------------------------------
 	FrxStatusBar::Ptr statusBar;
 	//-------------------------------------------------------------------------

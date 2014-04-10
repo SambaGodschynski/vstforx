@@ -57,11 +57,22 @@ struct BrowserConstants {
  *                                     stamp rendering) dosent support component
  *                                     mouse event processing.
  *
- * TODO: name is a bit confusing, BrowserNodeData would be better.
  */
-struct BrowserNode : public BrowserConstants {
+struct BrowserNodeData : public BrowserConstants {
 //=============================================================================
-	std::string name;
+   /**
+     * @brief the name as shown in the browser
+     */
+    std::string name;
+   /**
+     * @brief related component if exists
+     */
+    sdc::AComponent::WPtr component;
+    /**
+     * @brief the id, a unique string to find the right object in the 
+     * browser tree, if not set the name will be used for that purpose
+     */
+    std::string id;
 	/**
 	 * specific draw callback: will be called with renderer 
 	 * component before rendering.
@@ -86,41 +97,20 @@ struct BrowserNode : public BrowserConstants {
 	std::string actionText; // eg. for browser button
 	std::string tooltipText;
 	bool instantPerform; // perform action when selecting instantly
-	BrowserNode(const std::string &name, bool isFolder = false,
+	BrowserNodeData(const std::string &name, bool isFolder = false,
 		const AcceptedFunction &f = AcceptedFunction()
-	) : name(name), f(f), actionText("add to scene")
-	{
-		type = isFolder ? FRX_BROWSER_FOLDER : FRX_BROWSER_DEFAULT;
-		instantPerform = this->isFolder();
-	}
-	BrowserNode(const std::string &name, const std::string &type,
+	);
+	BrowserNodeData(const std::string &name, const std::string &type,
 		const AcceptedFunction &f = AcceptedFunction()
-	) : name(name), f(f), type(type), actionText("add to scene")
-	{
-		instantPerform = this->isFolder();
-	}
-	BrowserNode(const char *name = "") : name(name), 
-		type(FRX_BROWSER_DEFAULT), actionText("add to scene")
-	{
-		instantPerform = this->isFolder();
-	}
-	bool operator==(const BrowserNode &n) const { 
-		return name==n.name && type==n.type
-			&& &f == &(n.f); // boost::functions are incomparable
-	}
-	ResultPtr accept() const {
-		if (f)
-			return f();
-		return ResultPtr();
-	}
-	bool isFolder() const {
-		return type == FRX_BROWSER_FOLDER
-            || type == FRX_BROWSER_HISTORY_FOLDER
-			|| type == FRX_BROWSER_ADD_CONTENT_FOLDER;
-	}
+	);
+	BrowserNodeData(const char *name = "");
+    bool operator==(const BrowserNodeData &n) const;
+    ResultPtr accept() const;
+    bool isFolder() const;
 };
-inline std::ostream & operator <<(std::ostream &os, const BrowserNode &n) {
-	os<<n.name;
+//-----------------------------------------------------------------------------
+inline std::ostream & operator <<(std::ostream &os, const BrowserNodeData &n) {
+	os<<(n.id.empty() ? n.name : n.id);
 	return os;
 }
 //=============================================================================
@@ -176,13 +166,17 @@ sdc::AComponentPtr FrxBrowserCellRenderer<T>::getListCellRendererComponent(
 		setBackground(list->getBackgroundPattern());
 		setForeground(list->getForegroundPattern());
 	}
-	
-	setText(sambag::com::toString(value.data));
+	sdc::AComponentPtr component = value.data.component.lock();
+    if (component) {
+        setText(component->getName());
+    } else {
+        setText(value.data.name);
+    }
 	sd::ISurface::Ptr icon = 
 		BrowserConstants::getIcon(value.data.type);
-	if (icon)
-		setIcon(icon);
-		
+	if (icon) {
+        setIcon(icon);
+    }
 	setEnabled(list->isEnabled());
 	setFont(list->getFont());
 	setValue(0.0);
@@ -201,7 +195,7 @@ class FrxColumnBrowser : public sdc::FramedWindow {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef BrowserNode T;
+	typedef BrowserNodeData T;
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<FrxColumnBrowser> Ptr;
 	//-------------------------------------------------------------------------

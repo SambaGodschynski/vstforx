@@ -98,6 +98,17 @@ void LuaFrxObject::addMenuEntry(sambag::disco::components::PopupMenuPtr res,
     res->add(item);
 }
 //-----------------------------------------------------------------------------
+std::string LuaFrxObject::getViewId(lua_State *lua) {
+    try {
+        return sambag::com::toString(getViewObject().get());
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unknown error");
+    }
+    return "";
+}
+//-----------------------------------------------------------------------------
 void LuaFrxObject::setMenu(lua_State *lua) {
     using namespace sambag::disco::components;
     try {
@@ -250,11 +261,15 @@ fgc::FrxComponent::Ptr LuaFrxObject::getViewObject(lua_State *lua) const {
 }
 //-----------------------------------------------------------------------------
 void LuaFrxObject::setName(lua_State *lua, const std::string &name) {
-    fgc::FrxComponent::Ptr obj = getViewObject(lua);
-    if (!obj) {
-        return;
+    try {
+        getViewObject()->setName(name);
+        getModelObject()->setName(name);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, std::string("view object is not available: ") + ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "view object is not available");
     }
-    obj->setName(name);
+
 }
 //-----------------------------------------------------------------------------
 std::string LuaFrxObject::getName(lua_State *lua) const {
@@ -288,7 +303,8 @@ void LuaFrxObject::addLuaFields(lua_State *lua, int index) {
             bind(&LuaFrxObject::setName, this, lua, _1),
             bind(&LuaFrxObject::getName, this, lua),
             bind(&LuaFrxObject::getTypeId, this, lua),
-            bind(&LuaFrxObject::setMenu, this, lua)
+            bind(&LuaFrxObject::setMenu, this, lua),
+            bind(&LuaFrxObject::getViewId, this, lua)
         ),
         index,
         getUId()

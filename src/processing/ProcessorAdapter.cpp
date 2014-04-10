@@ -296,9 +296,16 @@ addTrackedPropertyChangedListener(const PropertyChangedSender::EventFunction & f
 bool ProcessorAdapter::removeImpl(IModelControllerPtr ctrl) {
 	return ctrl->removeProcessor(getPtr());
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 std::string ProcessorAdapter::getStatusMessage() const {
     return getAdaptee()->getStatusMessage();
 }
-
+//-----------------------------------------------------------------------------
+void ProcessorAdapter::setName(const std::string &name) {
+    getAdaptee()->setName(name);
+}
+//-----------------------------------------------------------------------------
+std::string ProcessorAdapter::getName() const {
+    return getAdaptee()->getName();
+}
 }} // namespace(s)

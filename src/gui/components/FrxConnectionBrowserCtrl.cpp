@@ -33,7 +33,7 @@ void FrxConnectionBrowserCtrl::initTree(FrxCircuidViewPtr view,
 	typedef FrxColumnBrowser::BrowserImpl Tree;
 	Tree::Ptr tree = brws->getBrowserImpl();
 	Tree::Node parameter = 
-		tree->addNode(tree->getRootNode(), BrowserNode(c->getName() + " parameters"));
+		tree->addNode(tree->getRootNode(), BrowserNodeData(c->getName() + " parameters"));
 	
 	addModelObjectParameter(c, parameter);
 	tree->updateLists();

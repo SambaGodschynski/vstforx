@@ -16,5 +16,4 @@ namespace frx { namespace processing {
 bool ParameterAdapter::removeImpl(IModelControllerPtr ctrl) {
 	return ctrl->removeParameter(getPtr());
 }
-
 }} // namespace(s)

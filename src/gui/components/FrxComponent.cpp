@@ -104,8 +104,14 @@ void FrxComponent::serialize(::com::oArchive &ar, const unsigned int version) {
 	serializeSelfPtr(ar, version);
 	boost::serialization::split_member(ar, *this, version);
 }
+//------------------------------------------------------------------------------
 void FrxComponent::serialize(::com::iArchive &ar, const unsigned int version) {
 	serializeSelfPtr(ar, version);
 	boost::serialization::split_member(ar, *this, version);
+}
+//------------------------------------------------------------------------------
+void FrxComponent::setName (const std::string &name) {
+    Super::setName(name);
+    setUpperFlagText(name);
 }
 }}} // namespace(s)

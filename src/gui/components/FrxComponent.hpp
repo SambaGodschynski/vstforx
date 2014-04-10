@@ -167,6 +167,9 @@ public:
 	virtual std::string getObjectName() const {
 		return AComponent::getName();
 	}
+    //-------------------------------------------------------------------------
+    virtual void setName (const std::string &name);
+    
 }; // FrxComponent
 }}} // namespace(s)
 

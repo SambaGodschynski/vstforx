@@ -25,7 +25,7 @@ menus = {
 	  {name="Known Issues", action="frx.openUrl('http://issues.vstforx.de/roadmap_page.php?version_id=27')"},
       }},
       {name="Auxiliaries"},
-      {name="Add Plugin...", action="onAddPlugin()"},
+      {name="Find Plugin...", action="onAddPlugin()"},
       {name="Viewports", viewportMenu},
       {name="State"},
       {name="Load...", action="load()"},
@@ -214,7 +214,7 @@ function setObjectMenu(obj)
    if string.match(objType, "internal%..*")~=nil then     
       -- internal.* (e.g. internal.Volume)
       table.insert(objMenu, {name="show details...", 
-			     action=string.format("onOpenBrowser('Main Scene/Plugins/%s')", obj:getName())})
+			     action=string.format("onOpenBrowser('Main Scene/Plugins/%s')", obj:getViewId())})
       if string.match(objType, ".*Input.*") then
 	 -- Input Step/Switch
 	 table.insert(objMenu, {name="add input", 
@@ -227,11 +227,11 @@ function setObjectMenu(obj)
    elseif string.match(objType, ".*%.Plugin")~=nil then
       -- *.Plugin (e.g. vst2x.Plugin)
       table.insert(objMenu, {name="show details...", 
-			     action=string.format("onOpenBrowser('Main Scene/Plugins/%s')", obj:getName())})
+			     action=string.format("onOpenBrowser('Main Scene/Plugins/%s')", obj:getViewId())})
    elseif string.match(objType, "parameter%..*")~=nil then
       -- parameter.* (e.g. parameter.StdKnob)
       table.insert(objMenu, {name="show details...", 
-			     action=string.format("onOpenBrowser('Main Scene/Parameter/%s')", obj:getName())})
+			     action=string.format("onOpenBrowser('Main Scene/Parameter/%s')", obj:getViewId())})
    elseif string.match(objType, "connection%..*")~=nil then
       -- connection.* (e.g. connection.IO)
       if string.match(objType, "connection.Parameter") then
@@ -243,8 +243,17 @@ function setObjectMenu(obj)
       return
    end
    table.insert(objMenu, 1, {name=obj:getName()})
-   table.insert(objMenu, 2, {name="remove", action="onRemove()"})
+   table.insert(objMenu, 10, {name="rename...", action="onRename()"})
+   table.insert(objMenu, 20, {name="remove", action="onRemove()"})
    obj:setMenu(objMenu)
+end
+
+function onRename()
+   o=frx.view:getContextObject()
+   name=o:getName()
+   --name=frx.showInputTextDlg("rename "..name, name)
+   o:setName("HUBERT")
+   setObjectMenu(o) -- reset menu
 end
 
 function onRemove()
@@ -267,7 +276,6 @@ function onOpenBrowser(x)
       frx.openSceneBrowser(frx.getLastSceneBrowserSelection())
       return
    end
-   print(x)
    frx.openSceneBrowser(x)
 end
 

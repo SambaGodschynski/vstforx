@@ -83,6 +83,10 @@ protected:
 	//-------------------------------------------------------------------------
 	ParameterAdapterPtr getAdapter(::processing::parameter::Parameter::Ptr p);
 public:
+    //-------------------------------------------------------------------------
+    virtual void setName(const std::string &name);
+    //-------------------------------------------------------------------------
+    virtual std::string getName() const;
 	//-------------------------------------------------------------------------
 	virtual IProcessor::Ptr getPtr() const {
 		return boost::dynamic_pointer_cast<IProcessor>( self.lock() );

@@ -483,13 +483,6 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * nach VST-SDK:
-	 * Stuff text with the name
-	 * ("Time", "Gain", "RoomType", etc...) of parameter index.
-	 */
-	com::MyString name;
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * nach VST-SDK:
 	 * Stuff text with a string representation
 	 * ("0.5", "-3", "PLATE", etc...) of the value of parameter index.
 	 */
@@ -561,15 +554,10 @@ public:
 	void setIndex( int i ) { index = i; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * @return Parametername
-	 */
-	const com::MyString & getName() const { return name; }
-	//--------------------------------------------------------------------------------------------------------
-	/**
 	 * setzt Parametername
 	 * @param name
 	 */
-	void setName(const com::MyString &name){ Parameter::name = name.trim(); }
+	void setName(const std::string &name);
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return ParameterGroupName
@@ -678,7 +666,11 @@ public:
 template < typename Archiv >
 void Parameter::serialize( Archiv &ar, const unsigned int version) {
 	ar & boost::serialization::base_object<PObject>(*this);
-	ar & name;
+    if (version<1) {
+        std::string name;
+        ar & name;
+        setName(name);
+    }
 	ar & groupname;
 	ar & label;
 	ar & display;
@@ -691,6 +683,9 @@ void Parameter::serialize( Archiv &ar, const unsigned int version) {
 }
 } // namespace parameter
 } // namespace processing
+
+BOOST_CLASS_VERSION(processing::parameter::Parameter, 1);
+
 #endif // FRX_PARAMETER_HPP
 
 

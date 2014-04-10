@@ -241,7 +241,10 @@ Parameter::~Parameter() {
 void Parameter::setReadOnly(bool val) {
 	readOnly = val;
 }
-
+//------------------------------------------------------------------------------------------------------------
+void Parameter::setName(const std::string &name) {
+    PObject::setName(com::MyString(name).trim());
+}
 //------------------------------------------------------------------------------------------------------------
 int Parameter::instances = 0;
 

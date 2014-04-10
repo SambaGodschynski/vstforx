@@ -81,6 +81,10 @@ private:
 		ar & self;
 	}
 public:
+    //-------------------------------------------------------------------------
+    virtual void setName(const std::string &name) {}
+    //-------------------------------------------------------------------------
+    virtual std::string getName() const {return "";}
 	//-------------------------------------------------------------------------
 	/**
 	 * calls all connected remove handler.

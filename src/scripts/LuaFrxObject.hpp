@@ -123,14 +123,16 @@ protected:
     SAMBAG_LUA_FTAG(getName, std::string());
     SAMBAG_LUA_FTAG(getTypeId, std::string());
     SAMBAG_LUA_FTAG(setMenu, void());
-    typedef LOKI_TYPELIST_8(Frx_getLocation_Tag,
+    SAMBAG_LUA_FTAG(getViewId, std::string());
+    typedef LOKI_TYPELIST_9(Frx_getLocation_Tag,
         Frx_setLocation_Tag,
         Frx_getSize_Tag,
         Frx_setSize_Tag,
         Frx_setName_Tag,
         Frx_getName_Tag,
         Frx_getTypeId_Tag,
-        Frx_setMenu_Tag
+        Frx_setMenu_Tag,
+        Frx_getViewId_Tag
     ) Functions;
     //////////////////////////////////////////////////////////////////////////fr/
     // lua2frx impl
@@ -145,6 +147,7 @@ protected:
     std::string getTypeId(lua_State *lua) const;
     void addMenuEntry(sambag::disco::components::PopupMenuPtr res, lua_State *lua, int index);
     void setMenu(lua_State *lua);
+    std::string getViewId(lua_State *lua);
 public:
     //-------------------------------------------------------------------------
     const std::string & getTypeId() const {
