@@ -58,19 +58,31 @@ APluginImpl * createLuaImpl(IHostInfo::Ptr hI,
 //=============================================================================
 //-----------------------------------------------------------------------------
 void LuaImpl::addToEditor(const std::string &msg) {
-    
-    time_t rawtime;
-    struct tm * timeinfo;
-    char buffer [80];
-    time (&rawtime);
-    timeinfo = localtime (&rawtime);
-    strftime (buffer,80," %H:%M:%S ",timeinfo);
-    
-    logHistory.push_back(buffer + msg);
-    if (!editor) {
-        return;
-    }
-    editor->log(buffer + msg);
+    SAMBAG_BEGIN_SYNCHRONIZED(logMutex)
+        time_t rawtime;
+        struct tm * timeinfo;
+        char buffer [80];
+        time (&rawtime);
+        timeinfo = localtime (&rawtime);
+        strftime (buffer,80," %H:%M:%S ",timeinfo);
+        using gui::components::FrxScriptPluginEditor;
+        if (logHistory.size()>FrxScriptPluginEditor::MaxLog) {
+            size_t i=FrxScriptPluginEditor::MaxLog/2;
+            while (i-- > 0) {
+                logHistory.pop_front();
+            }
+        }
+        logHistory.push_back(buffer + msg);
+
+        if (!editor) {
+            return;
+        }
+        editor->log(buffer + msg);
+    SAMBAG_END_SYNCHRONIZED
+}
+//-----------------------------------------------------------------------------
+void LuaImpl::onExecError(const std::string &msg) {
+    log_err(msg);
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::log(const std::string &msg) {
@@ -793,7 +805,10 @@ void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
     scripts::PluginScriptCtrlPtr ctrl = hI->getScriptController();
     if (ctrl) {
         typedef scripts::PluginScriptCtrl::LuaProcessor LP;
-        ctrl->registerFunctions(LP(luaState, &mutex), true, false);
+        ctrl->registerFunctions(
+            LP(luaState,&mutex,
+                boost::bind(&LuaImpl::onExecError, this, _1)
+            ), true, false);
     }
     
     lua_getglobal(luaState.get(), "frx");

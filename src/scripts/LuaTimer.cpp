@@ -28,7 +28,9 @@ void LuaTimer::__onTimer(sambag::lua::LuaStateWRef _lua, const std::string &luaC
         slua::executeString(lua.get(), luaCallback.c_str());
     } catch(const std::exception &ex) {
         SAMBAG_LOG_ERR<<"timer callback failed: "<<ex.what();
-        ExecFailedSender::notifyListeners(this, ExecFailedEvent(ex.what()));
+        ExecFailedSender::notifyListeners(this,
+            ExecFailedEvent(std::string("timer execution failed: ") + ex.what())
+        );
     } catch(...) {
         SAMBAG_LOG_ERR<<"timer callback failed.";
         ExecFailedSender::notifyListeners(this, ExecFailedEvent("unknown error"));

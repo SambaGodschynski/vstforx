@@ -130,6 +130,12 @@ std::string PluginAdapter::getName() const {
     return res;
 }
 //-----------------------------------------------------------------------------
+std::string PluginAdapter::getLocation() const {
+	Adaptee::Ptr plug = getPlugin();
+	return plug->getPluginImpl()->location;
+    
+}
+//-----------------------------------------------------------------------------
 bool PluginAdapter::isSynth() const {
 	Adaptee::Ptr plug = getPlugin();
 	return plug->isSynth();

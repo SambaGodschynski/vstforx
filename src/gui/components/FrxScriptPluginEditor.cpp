@@ -25,19 +25,29 @@ namespace frx { namespace gui { namespace components {
 //=============================================================================
 //-----------------------------------------------------------------------------
 void FrxScriptPluginEditor::log(const std::string &msg) {
+    sdc::getWindowToolkit()->invokeLater(
+        boost::bind(&FrxScriptPluginEditor::delayedLog, this, msg),
+        50, window
+    );
+}
+//-----------------------------------------------------------------------------
+void FrxScriptPluginEditor::delayedLog(const std::string &msg) {
 
     std::vector<std::string> res;
     boost::algorithm::split(res, msg, boost::algorithm::is_any_of("\n"));
+    if (consoleList->ListModel::getSize()>MaxLog) {
+        consoleList->removeRange(0, MaxLog/2);
+    }
     
     BOOST_FOREACH(const std::string &x, res) {
         consoleList->addElement(x);
-	}
+    }
+    int i = consoleList->ListModel::getSize() - 1;
+    consoleList->ensureIndexIsVisible(i);
+    consoleList->revalidate();
+    consoleList->redraw();
     console->revalidate();
-	int i = consoleList->ListModel::getSize() - 1;
-	consoleList->ensureIndexIsVisible(i);
-	consoleList->revalidate();
-	consoleList->redraw();
-    
+    console->getVerticalScrollBar()->setEnabled(true);
 }
 //-----------------------------------------------------------------------------
 FrxScriptPluginEditor::FrxScriptPluginEditor(void *ptr, const sd::Dimension &size)

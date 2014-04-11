@@ -29,30 +29,24 @@ class FrxConcreteParameter :
 {
 //=============================================================================
 public:
-	//-------------------------------------------------------------------------
-	typedef FrxParameter Super;
-	//-------------------------------------------------------------------------
-	typedef _ControllerType ControllerType;
-	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxConcreteParameter> Ptr;
-	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxConcreteParameter> WPtr;
+    //-------------------------------------------------------------------------
+    typedef FrxParameter Super;
+    //-------------------------------------------------------------------------
+    typedef _ControllerType ControllerType;
+    //-------------------------------------------------------------------------
+    typedef boost::shared_ptr<FrxConcreteParameter> Ptr;
+    //-------------------------------------------------------------------------
+    typedef boost::weak_ptr<FrxConcreteParameter> WPtr;
 protected:
 	//-------------------------------------------------------------------------
 	FrxConcreteParameter() {
-		instances++;
         __setTypeId_(getParameterType<_ControllerType>());
 	}
 	//-------------------------------------------------------------------------
 	virtual void postConstructor() {
 		ControllerType::init( getPtr() );
-		if (getName() == "") {
-			setName(getName()+"_"+sambag::com::toString(instances));
-		}
 	}
 private:
-	//-------------------------------------------------------------------------
-	static int instances;
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
 	//-------------------------------------------------------------------------
@@ -82,9 +76,6 @@ public:
 		return res;
 	}
 }; // FrxConcreteParameter
-//-----------------------------------------------------------------------------
-template <class C>
-int FrxConcreteParameter<C>::instances = 0;
 //=============================================================================
 // Types
 //=============================================================================
@@ -93,7 +84,6 @@ namespace contollerTypes {
 	struct StdKnob : ControllerTypeBase {
 		typedef sdc::Knob::Model Model;
 		void init( FrxParameter::Ptr obj ){
-			obj->setName("Knob");
 			sdc::Knob::Ptr knob(sdc::Knob::create());
 			knob->setMinimum(0.);
 			knob->setMaximum(1.);

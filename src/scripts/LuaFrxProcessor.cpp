@@ -14,6 +14,7 @@
 #include <exception>
 #include "LuaFrxParameter.hpp"
 #include <processing/IParameter.hpp>
+#include <processing/IPluginAdapter.hpp>
 
 namespace frx { namespace scripts {
 //=============================================================================
@@ -125,7 +126,7 @@ slua::IgnoreReturn LuaFrxProcessor::getParameters(lua_State *lua) const {
     return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
-slua::IgnoreReturn LuaFrxProcessor::addInput(lua_State *lua) {
+slua::IgnoreReturn LuaFrxProcessor::addInput(lua_State *lua, bool follow) {
     using namespace frx::gui;
     using namespace frx::gui::components;
     try {
@@ -137,7 +138,7 @@ slua::IgnoreReturn LuaFrxProcessor::addInput(lua_State *lua) {
             return slua::IgnoreReturn();
         }
         IFrxControl &frxctrl = getFrxControl(view);
-        FrxComponent::Ptr newIn = frxctrl.addProcessorInput(view, obj, false);
+        FrxComponent::Ptr newIn = frxctrl.addProcessorInput(view, obj, follow);
         if (!newIn) {
             lua_pushnil(lua);
             return slua::IgnoreReturn();
@@ -153,7 +154,7 @@ slua::IgnoreReturn LuaFrxProcessor::addInput(lua_State *lua) {
     return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
-slua::IgnoreReturn LuaFrxProcessor::addOutput(lua_State *lua) {
+slua::IgnoreReturn LuaFrxProcessor::addOutput(lua_State *lua, bool follow) {
     using namespace frx::gui;
     using namespace frx::gui::components;
     try {
@@ -165,7 +166,7 @@ slua::IgnoreReturn LuaFrxProcessor::addOutput(lua_State *lua) {
             return slua::IgnoreReturn();
         }
         IFrxControl &frxctrl = getFrxControl(view);
-        FrxComponent::Ptr newOut = frxctrl.addProcessorOutput(view, obj, false);
+        FrxComponent::Ptr newOut = frxctrl.addProcessorOutput(view, obj, follow);
         if (!newOut) {
             lua_pushnil(lua);
             return slua::IgnoreReturn();
@@ -181,6 +182,55 @@ slua::IgnoreReturn LuaFrxProcessor::addOutput(lua_State *lua) {
     return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
+int LuaFrxProcessor::getNumInputs(lua_State *lua) {
+    using namespace frx::gui;
+    using namespace frx::gui::components;
+    try {
+        FrxProcessorNode::Ptr obj =
+            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
+        return obj->getInputs().size();
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unkown error");
+    }
+    return 0;
+}
+//-----------------------------------------------------------------------------
+int LuaFrxProcessor::getNumOutputs(lua_State *lua) {
+    using namespace frx::gui;
+    using namespace frx::gui::components;
+    try {
+        FrxProcessorNode::Ptr obj =
+            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
+        return obj->getOutputs().size();
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unkown error");
+    }
+    return 0;
+}
+//-----------------------------------------------------------------------------
+std::string LuaFrxProcessor::getPluginLocation(lua_State *lua) {
+    using namespace frx::gui;
+    using namespace frx::gui::components;
+    using namespace frx::processing;
+    try {
+        IPluginAdapter::Ptr obj =
+            boost::dynamic_pointer_cast<IPluginAdapter>(getModelObject());
+        if (!obj) {
+            return "";
+        }
+        return obj->getLocation();
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unkown error");
+    }
+    return "";
+}
+//-----------------------------------------------------------------------------
 void LuaFrxProcessor::addLuaFields(lua_State *lua, int index) {
     Super::addLuaFields(lua, index);
     using boost::bind;
@@ -192,9 +242,12 @@ void LuaFrxProcessor::addLuaFields(lua_State *lua, int index) {
             bind(&LuaFrxProcessor::getInputs, this, lua),
             bind(&LuaFrxProcessor::getOutputs, this, lua),
             bind(&LuaFrxProcessor::getParameters, this, lua),
-            bind(&LuaFrxProcessor::addInput, this, lua),
-            bind(&LuaFrxProcessor::addOutput, this, lua),
-            bind(&LuaFrxProcessor::openCloseEditor, this, lua)
+            bind(&LuaFrxProcessor::addInput, this, lua, _1),
+            bind(&LuaFrxProcessor::addOutput, this, lua, _1),
+            bind(&LuaFrxProcessor::openCloseEditor, this, lua),
+            bind(&LuaFrxProcessor::getNumInputs, this, lua),
+            bind(&LuaFrxProcessor::getNumOutputs, this, lua),
+            bind(&LuaFrxProcessor::getPluginLocation, this, lua)
         ),
         index,
         getUId()

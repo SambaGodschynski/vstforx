@@ -34,24 +34,33 @@ protected:
     SAMBAG_LUA_FTAG(getInputs, slua::IgnoreReturn());
     SAMBAG_LUA_FTAG(getOutputs, slua::IgnoreReturn());
     SAMBAG_LUA_FTAG(getParameters, slua::IgnoreReturn());
-    SAMBAG_LUA_FTAG(addInput, slua::IgnoreReturn());
-    SAMBAG_LUA_FTAG(addOutput, slua::IgnoreReturn());
+    SAMBAG_LUA_FTAG(addInput, slua::IgnoreReturn(bool));
+    SAMBAG_LUA_FTAG(addOutput, slua::IgnoreReturn(bool));
     SAMBAG_LUA_FTAG(openCloseEditor, void());
-    typedef LOKI_TYPELIST_6(Frx_getInputs_Tag,
+    SAMBAG_LUA_FTAG(getNumInputs, int());
+    SAMBAG_LUA_FTAG(getNumOutputs, int());
+    SAMBAG_LUA_FTAG(getPluginLocation, std::string());
+    typedef LOKI_TYPELIST_9(Frx_getInputs_Tag,
         Frx_getOutputs_Tag,
         Frx_getParameters_Tag,
         Frx_addInput_Tag,
         Frx_addOutput_Tag,
-        Frx_openCloseEditor_Tag
+        Frx_openCloseEditor_Tag,
+        Frx_getNumInputs_Tag,
+        Frx_getNumOutputs_Tag,
+        Frx_getPluginLocation_Tag
     ) Functions;
     ///////////////////////////////////////////////////////////////////////////
     // lua2frx impl
     slua::IgnoreReturn getInputs(lua_State *lua) const;
     slua::IgnoreReturn getOutputs(lua_State *lua) const;
     slua::IgnoreReturn getParameters(lua_State *lua) const;
-    slua::IgnoreReturn addInput(lua_State *lua);
-    slua::IgnoreReturn addOutput(lua_State *lua);
+    slua::IgnoreReturn addInput(lua_State *lua, bool folow);
+    slua::IgnoreReturn addOutput(lua_State *lua, bool follow);
     void openCloseEditor(lua_State *lua);
+    int getNumInputs(lua_State *lua);
+    int getNumOutputs(lua_State *lua);
+    std::string getPluginLocation(lua_State *lua);
     //-------------------------------------------------------------------------
     virtual void __lua_gc(lua_State *lua);
 private:

@@ -129,7 +129,10 @@ void Plugin::installListener() {
 //-----------------------------------------------------------------------------
 Plugin::~Plugin() {
     impl->closePlugin();
-    delete impl;
+    try {
+        delete impl;
+    } catch(...) {
+    }
     delete[] inMatrix;
 	delete[] outMatrix;
 }

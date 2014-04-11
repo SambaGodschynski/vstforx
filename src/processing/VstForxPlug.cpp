@@ -482,11 +482,13 @@ void VstForxPlug::save(std::ostream &os) {
     // (for some reason Map::value_type produces compiler errors)
     typedef std::pair<std::string, std::string> Bodge;
     std::vector<Bodge> tmp;
-    const scripts::PluginScriptCtrl::PersistUserData &data =
-        scriptCtrl->getPersistUserData();
-    tmp.reserve(data.size());
-    BOOST_FOREACH(const Bodge &x, data) {
-        tmp.push_back(x);
+    if (scriptCtrl) {
+        const scripts::PluginScriptCtrl::PersistUserData &data =
+            scriptCtrl->getPersistUserData();
+        tmp.reserve(data.size());
+        BOOST_FOREACH(const Bodge &x, data) {
+            tmp.push_back(x);
+        }
     }
     ar<<tmp;
 }

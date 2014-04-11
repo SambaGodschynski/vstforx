@@ -122,12 +122,8 @@ public:
      */
     typedef std::pair<sambag::lua::LuaStateRef, LockPtr> LuaState;
     LuaState getLuaState();
-    /**
-     * @brief for some luacalls we need a mutex (timers e.g. have a async behaviour)
-     * so for registering controller lua function we need a state and
-     * a mutex
-     */
-    typedef std::pair<sambag::lua::LuaStateWRef, Mutex*> LuaProcessor;
+    typedef boost::function<void(std::string)> OnExecErrorF;
+    typedef boost::tuple<sambag::lua::LuaStateWRef, Mutex*, OnExecErrorF> LuaProcessor;
 	//-------------------------------------------------------------------------
 	void registerFunctions(const LuaProcessor &lp,
         bool publicOnly, bool includeView);

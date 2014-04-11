@@ -186,7 +186,7 @@ function addParameterConnectionMenu(obj)
    objMenu ={ {name=obj:getName()},
 	      {name="remove", action="onRemove()"},
 	      {name="show details...", 
-	       action=string.format("onOpenBrowser('Main Scene/Parameter/Parameter Connections/%s')", obj:getName())},
+	       action=string.format("onOpenBrowser('Main Scene/Parameter/Parameter Connections/%s')", obj:getViewId())},
 	      {name="add operator", addEntries}
 	    }
    if #removeEntries>0 then
@@ -197,12 +197,12 @@ end
 
 function addInput()
    o=frx.view:getContextObject()
-   o:addInput()
+   o:addInput(true)
 end
 
 function addOutput()
    o=frx.view:getContextObject()
-   o:addOutput()
+   o:addOutput(true)
 end
 
 function setObjectMenu(obj)
@@ -228,6 +228,7 @@ function setObjectMenu(obj)
       -- *.Plugin (e.g. vst2x.Plugin)
       table.insert(objMenu, {name="show details...", 
 			     action=string.format("onOpenBrowser('Main Scene/Plugins/%s')", obj:getViewId())})
+      table.insert(objMenu, {name="open/close editor...", action="onOpenCloseEditor()"})
    elseif string.match(objType, "parameter%..*")~=nil then
       -- parameter.* (e.g. parameter.StdKnob)
       table.insert(objMenu, {name="show details...", 
@@ -243,16 +244,52 @@ function setObjectMenu(obj)
       return
    end
    table.insert(objMenu, 1, {name=obj:getName()})
-   table.insert(objMenu, 10, {name="rename...", action="onRename()"})
-   table.insert(objMenu, 20, {name="remove", action="onRemove()"})
+   table.insert(objMenu, 2, {name="remove", action="onRemove()"})
+   table.insert(objMenu, 3, {name="rename...", action="onRename()"})
+   table.insert(objMenu, 3, {name="clone", action="onClone()"})
    obj:setMenu(objMenu)
+end
+
+
+
+
+function clone(o)
+   id = o:getTypeId()
+   if (string.match(id, ".*%.Plugin")) then
+      id=string.format("%s('%s')", id, o:getPluginLocation())
+   end
+   if (string.match(id, ".*Input.*")) then
+      id=string.format("%s(%i, 2)", id, o:getNumInputs()) 
+   end
+   if (string.match(id, ".*Output.*")) then
+      id=string.format("%s(2, %i)", id, o:getNumOutputs()) 
+   end
+   new=frx.view:add(id)
+   op = o:getParameters()
+   np = new:getParameters()
+   if #op ~= #np then
+      return
+   end
+   for i=1,#np,1 do
+      np[i]:setValue( op[i]:getValue() )
+   end
+end
+
+function onClone()
+   o=frx.view:getContextObject()
+   clone(o)
+end
+
+function onOpenCloseEditor()
+   o=frx.view:getContextObject()
+   o:openCloseEditor()
 end
 
 function onRename()
    o=frx.view:getContextObject()
    name=o:getName()
-   --name=frx.showInputTextDlg("rename "..name, name)
-   o:setName("HUBERT")
+   name=frx.showInputTextDlg("rename "..name, name)
+   o:setName(name)
    setObjectMenu(o) -- reset menu
 end
 

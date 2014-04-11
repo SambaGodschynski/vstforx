@@ -216,6 +216,7 @@ void onConsoleThread(bool *consoleRunning) {
 		std::cout<<">";
 		std::getline(std::cin, input);
 		if (input=="exit()" || input=="quit()" || input=="bye()") {
+            static_cast<frx::gui::components::VstForxEditor*>(plug->getEditor())->close();
 			sambag::disco::components::getWindowToolkit()->quit();
 			break;
 		}

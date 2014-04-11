@@ -67,6 +67,8 @@ public:
 	virtual std::string getPresetName(size_t i) const;
 	//-------------------------------------------------------------------------
 	virtual void setPreset(int i);
+	//-------------------------------------------------------------------------
+	virtual std::string getLocation() const;
     //-------------------------------------------------------------------------
     /**
      * @return WindowImpl if the plugin has its own. Can be NULL. 

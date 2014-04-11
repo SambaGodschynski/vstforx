@@ -43,6 +43,8 @@ public:
 	virtual bool isSynth() const = 0;
 	//-------------------------------------------------------------------------
 	virtual std::string getName() const = 0;
+	//-------------------------------------------------------------------------
+	virtual std::string getLocation() const = 0;
     //-------------------------------------------------------------------------
     /**
      * @return WindowImpl if the plugin has its own. Can be NULL. 
