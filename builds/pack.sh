@@ -12,19 +12,10 @@ function packVSTForx() {
     cp -r $bin/vstforx$post.$ext $target/$folder
     cp -r $bin/vstforxInstrument$post.$ext $target/$folder
     cp license.txt $target/$folder
-    if [ $target = "mac" ]
-    then
-	cp $src/vstforx-init.lua $target/$folder/vstforx$post.$ext/
-	cp $src/vstforx-helper.lua $target/$folder/vstforx$post.$ext/
-	cp $src/vstforx-menusetup.lua $target/$folder/vstforx$post.$ext/
-	cp $src/vstforx-init.lua $target/$folder/vstforxInstrument$post.$ext/
-	cp $src/vstforx-helper.lua $target/$folder/vstforxInstrument$post.$ext/
-	cp $src/vstforx-menusetup.lua $target/$folder/vstforxInstrument$post.$ext/
-    else 
-	cp $src/vstforx-init.lua $target/$folder
-	cp $src/vstforx-helper.lua $target/$folder
-	cp $src/vstforx-menusetup.lua $target/$folder
-    fi
+    cp vstforx.conf $target/$folder
+    mkdir -p $target/$folder/scripts/lua_plugins
+    cp $src/scripts/*.lua $target/$folder/scripts
+    cp $src/scripts/lua_plugins/*.lua $target/$folder/scripts/lua_plugins
     cp ../Documents/manual/vstforx.EN/main.pdf $target/$folder/manual.pdf
     cd $target
     zip -r $vstr.zip $folder

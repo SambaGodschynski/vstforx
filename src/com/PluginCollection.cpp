@@ -18,6 +18,8 @@
 #include <boost/date_time.hpp>
 #include <processing/pluginTypes/PluginFactory.hpp>
 #include <processing/ModelFactory.hpp>
+#include <boost/filesystem.hpp>
+
 
 #define DB_QUERY(x)											\
 	try {x}													\
@@ -200,7 +202,11 @@ void PluginCollection::scanDirectories ( const Settings::PathnameSet &pathSet ) 
 	removeUnusedFolders();
 }
 //------------------------------------------------------------------------------------------------------------
-void PluginCollection::scanDirectory ( const ScanVisitor::Path &path, ScanVisitor &vis ) {
+void PluginCollection::scanDirectory ( const ScanVisitor::Path &_path, ScanVisitor &vis ) {
+    boost::filesystem::path path = _path;
+    if (path.is_relative()) {
+        path = boost::filesystem::absolute(_path, com::getSettings().getHomeDirectory()).string();
+    }
 	vis.setStartFolder ( path );
 	abortScan = false;
 	sambag::com::dirWalker( path, vis, &abortScan );

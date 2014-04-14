@@ -52,7 +52,7 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 		return NULL;
 	}
 	// init settings
-	::com::initSettings(getHomeDirectory());
+	::com::initSettings(getHomeDirectory()+"/..");
 	sambag::disco::components::getWindowToolkit()->useWithoutMainloop();
 	
 	// load plugin

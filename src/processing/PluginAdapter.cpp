@@ -11,7 +11,8 @@
 #include <sambag/disco/components/Window.hpp>
 #include <sambag/disco/components/WindowToolkit.hpp>
 #include <processing/Plugin.h>
-
+#include <sambag/disco/components/WindowToolkit.hpp>
+#include <gui/HandyNamespaces.hpp>
 /**
  * get the apropriate handler from a window.
  * HWND, WindowRef or NSView
@@ -20,6 +21,7 @@ extern void * __getHandlerForVstPlugins_(void*);
 
 namespace frx { namespace processing {
 namespace {
+
 void editorSize(const sce::PropertyChanged &ev, sdc::WindowPtr win)
 {
     sd::Dimension dim;
@@ -28,24 +30,29 @@ void editorSize(const sce::PropertyChanged &ev, sdc::WindowPtr win)
         win->setWindowSize(dim);
     }
 }
+/*
+ * will be called when editor pos parameter changed
+ */
 void editorPosition(const sce::PropertyChanged &ev, sdc::WindowPtr win)
 {
     sd::Point2D p;
     ev.getNewValue(p);
+    sd::Dimension screen = sdc::getWindowToolkit()->getScreenSize();
+    p.x(p.x() * screen.width());
+    p.y(p.y() * screen.height());
+    
     if (p!=NULL_POINT2D) {
         win->setWindowLocation(p);
     }
 }
-void editorOpenState(const sce::PropertyChanged &ev, sdc::WindowPtr win)
+/*
+ * will be called when editor was moved
+ */
+void editorBoundsChanged(const sdc::OnBoundsChanged &ev)
 {
-    bool open = false;
-    ev.getNewValue(open);
-    if (open) {
-        win->open();
-    } else {
-        win->close();
-    }
+    std::cout<<ev.getNewBounds()<<std::endl;
 }
+
 void onPluginEditorChanged(const sce::PropertyChanged &ev, sdc::WindowWPtr _win)
 {
     sdc::WindowPtr win = _win.lock();
@@ -57,9 +64,6 @@ void onPluginEditorChanged(const sce::PropertyChanged &ev, sdc::WindowWPtr _win)
     }
     if (ev.getPropertyName() == Plugin::PROPERTY_PARAMETER_EDITOR_POSITION) {
         editorPosition(ev, win);
-    }
-    if (ev.getPropertyName() == Plugin::PROPERTY_PARAMETER_EDITOR_OPENSTATE) {
-        editorOpenState(ev, win);
     }
 }
 
@@ -87,6 +91,11 @@ void PluginAdapter::openEditor(sdc::WindowPtr win) {
     pr->sce::EventSender<sce::PropertyChanged>::addTrackedEventListener(
         boost::bind(&onPluginEditorChanged, _2, sdc::WindowWPtr(win)),
         win
+    );
+    
+    win->getWindowImpl()->sce::EventSender<sdc::OnBoundsChanged>::addTrackedEventListener(
+        boost::bind(&editorBoundsChanged, _2),
+        pr
     );
         
 	plug->openEditor(

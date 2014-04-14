@@ -182,7 +182,7 @@ void VstForxEditor::loadInitScript() {
 		}
 		std::stringstream ss;
 		boost::filesystem::path luaPath(com::getSettings().getHomeDirectory());
-		ss<<"package.path='"<<luaPath.generic_string()<<"/?.lua;' .. package.path";
+		ss<<"package.path='"<<luaPath.generic_string()<<"/scripts/?.lua;' .. package.path";
 		sctrl->execute(ss.str());
 		sctrl->executeFile(file);
     } catch(const sambag::lua::ExecutionFailed &ex) {
