@@ -52,10 +52,7 @@ function packStandalone() {
 #    cp $bin/unit_tests$ext $target/$folder
     cp -r $src/images $target/$folder 
     cp -r $src/testScripts $target/$folder
-    cp $src/vstforx-init.lua $target/$folder
-    cp $src/vstforx-helper.lua $target/$folder
-    cp $src/vstforx-menusetup.lua $target/$folder
-    cp $src/scripts/util.lua $target/$folder/scripts
+    cp -r $src/scripts $target/$folder
     cp license.txt $target/$folder
     cd $target
     zip -r $ver.zip $folder
