@@ -14,9 +14,12 @@
 #include "com/Events.h"
 #include <processing/PlugInfo.h>
 #include "processing/MidiEventProcessor.h"
-#include <processing/IPlugin.hpp>
 #include <sambag/com/events/PropertyChanged.hpp>
 #include <sambag/com/events/Events.hpp>
+
+namespace frx { namespace processing {
+    class APluginImpl;
+}}
 
 namespace processing {
 namespace sce = sambag::com::events;
@@ -25,9 +28,7 @@ namespace sce = sambag::com::events;
  * Klasse: Plugin.
  * Oberklasse fuer Plugin.
  */
-class Plugin:
-    public frx::processing::IPlugin,
-	public ::processing::ProcessAdapter,
+class Plugin : public ::processing::ProcessAdapter,
 	public ::processing::parameter::HasParameter,
 	public ::processing::MidiEventProcessor
 {

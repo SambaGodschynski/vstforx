@@ -19,7 +19,6 @@
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include "pluginTypes/PluginImpl.hpp"
 #include <processing/ModelFactory.hpp>
-#include <processing/IPlugin.hpp>
 #include <sambag/com/events/PropertyChanged.hpp>
 #include <sambag/com/events/Events.hpp>
 
@@ -33,7 +32,6 @@ namespace sce = sambag::com::events;
  * Oberklasse fuer Plugin.
  */
 class Plugin:
-    public IPlugin,
 	public oldPr::ProcessAdapter,
 	public oldPr::parameter::HasParameter,
 	public oldPr::MidiEventProcessor

@@ -11,7 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include "IPluginAdapter.hpp"
 #include "ProcessorAdapter.hpp"
-#include "IPlugin.hpp"
+#include "Plugin.h"
 #include "Forward.hpp"
 
 namespace frx { namespace processing {
@@ -25,7 +25,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<PluginAdapter> Ptr;
 	//-------------------------------------------------------------------------
-	typedef IPlugin Adaptee;
+	typedef Plugin Adaptee;
 private:
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
