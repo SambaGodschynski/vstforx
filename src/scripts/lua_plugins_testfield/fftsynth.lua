@@ -1,5 +1,5 @@
 --setup
-buffSize = 256
+buffSize = 2048
 sampleRate = 44100
 gpConfig = {
    type="frx_lua_plugin", 

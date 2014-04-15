@@ -59,11 +59,11 @@ void editorPosition(const sce::PropertyChanged &ev, sdc::WindowPtr win)
 {
 
     bool boundsChanged = false;
-    win->getClientProperty("editorBoundsChanged", boundsChanged);
+    win->getClientProperty("editorBoundsChanging", boundsChanged);
     if (boundsChanged) {
         return;
     }
-	win->putClientProperty("editorBoundsChanged", true);
+	win->putClientProperty("lockEditorBoundsChanging", true);
     sd::Point2D p;
     ev.getNewValue(p);
     sd::Dimension screen = sdc::getWindowToolkit()->getScreenSize();
@@ -72,7 +72,7 @@ void editorPosition(const sce::PropertyChanged &ev, sdc::WindowPtr win)
     if (p!=NULL_POINT2D) {
         win->setWindowLocation(p);
     }
-	win->putClientProperty("editorBoundsChanged", false);
+	win->putClientProperty("lockEditorBoundsChanging", false);
 }
 /*
  * will be called when editor was moved
@@ -84,18 +84,18 @@ void editorBoundsChanged(Plugin *plugin, sdc::WindowWPtr _win)
         return;
     }
     bool boundsChanged = false;
-    win->getClientProperty("editorBoundsChanged", boundsChanged);
+    win->getClientProperty("lockEditorBoundsChanging", boundsChanged);
     if (boundsChanged) {
         return;
     }
-    win->putClientProperty("editorBoundsChanged", true);
+    win->putClientProperty("lockEditorBoundsChanging", true);
     sd::Point2D p = win->getWindowLocation();
     sd::Dimension screen = sdc::getWindowToolkit()->getScreenSize();
     sd::Dimension winSize = win->getWindowSize();
     scrToPar(winSize, screen, p);
     plugin->getEditorPosX()->setValue(p.x());
     plugin->getEditorPosY()->setValue(p.y());
-    win->putClientProperty("editorBoundsChanged", false);
+    win->putClientProperty("lockEditorBoundsChanging", false);
 }
 
 void onPluginEditorChanged(const sce::PropertyChanged &ev, sdc::WindowWPtr _win)
@@ -117,9 +117,16 @@ void onPluginEditorChanged(const sce::PropertyChanged &ev, sdc::WindowWPtr _win)
 //  Class PluginAdapter
 //=============================================================================
 //-----------------------------------------------------------------------------
-void initPos(Plugin *plugin, std::pair<double, double> x) {
-    plugin->getEditorPosX()->setValue(x.first);
-    plugin->getEditorPosY()->setValue(x.second);
+void initPos(Plugin *plugin, std::pair<double, double> x, sdc::WindowWPtr _win) {
+    sdc::WindowPtr win = _win.lock();
+    if (!win) {
+        return;
+    }
+    if (plugin->getEditorPosX()->getValue()>0) {
+        plugin->getEditorPosX()->setValue(x.first);
+        plugin->getEditorPosY()->setValue(x.second);
+    }
+    win->putClientProperty("lockEditorBoundsChanging", false);
 }
 void PluginAdapter::openEditor(sdc::WindowPtr win) {
 	if (!win) {
@@ -137,13 +144,13 @@ void PluginAdapter::openEditor(sdc::WindowPtr win) {
     if (!pr) {
         return;
     }
-    sd::Dimension screen = sdc::getWindowToolkit()->getScreenSize();
-    sd::Dimension winSize = win->getWindowSize();
+    win->putClientProperty("lockEditorBoundsChanging", true);
     std::pair<double, double> p(plug->getEditorPosX()->getValue(),
         plug->getEditorPosY()->getValue());
     sdc::getWindowToolkit()->invokeLater(
-        boost::bind(&initPos, plug.get(), p), 100, plug
+        boost::bind(&initPos, plug.get(), p, sdc::WindowWPtr(win)), 100, plug
     );
+    // see: initPos -> win->putClientProperty("lockEditorBoundsChanging", false);
     pr->sce::EventSender<sce::PropertyChanged>::addTrackedEventListener(
         boost::bind(&onPluginEditorChanged, _2, sdc::WindowWPtr(win)),
         win

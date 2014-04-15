@@ -47,8 +47,9 @@ Plugin::Plugin ( frx::processing::IHostInfo::Ptr hostInfo,
 	editorPosX->setName("editor_X");
 	editorPosY->setName("editor_Y");
 	editorOpen->setName("editor_visibility");
-	*editorPosX = 0.72f; // 0.5 = 0 SCREEN_X
-	*editorPosY = 0.72f; // 0.5 = 0 SCREEN_Y
+    editorPosX->setMin(-2);
+	*editorPosX = -1; 
+	*editorPosY = -1;
 	*editorOpen = 0.0f;
 	
     installListener();

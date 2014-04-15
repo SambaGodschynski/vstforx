@@ -114,6 +114,19 @@ size_t ParameterConnection::getNumConnectionOps() {
     return operators.size();
 }
 //-----------------------------------------------------------------------------
+void ParameterConnection::removeOpParameter(::processing::parameter::Parameter::Ptr p) {
+    // inefficiency! but for only a couple of parameter
+    // its the easyiest way to perform
+    ParameterGroupMap::iterator it = parameters.begin();
+    for (; it!=parameters.end(); ++it) {
+        SAMBAG_ASSERT(it->second);
+        if (it->second->getAdaptee() == p) {
+            parameters.erase(it);
+            break;
+        }
+    }
+}
+//-----------------------------------------------------------------------------
 void ParameterConnection::removeConnectionOp(size_t index) {
     if (index>=operators.size()) {
         SAMBAG_LOG_WARN<<"ParameterConnection::removeConnectionOp() out of bounds";
@@ -122,6 +135,18 @@ void ParameterConnection::removeConnectionOp(size_t index) {
     ConnectionOperator::Ptr op = operators[index];
     cn->removeOperator(op);
     operators.erase(operators.begin()+index);
+    
+    // remove op parameter
+    using namespace ::processing::parameter;
+	HasParameter::Ptr hp = boost::dynamic_pointer_cast<HasParameter>(op);
+	if (!hp) {
+		return;
+	}
+	size_t num = hp->getNumParameter();
+	for (size_t i=0; i<num; ++i) {
+		removeOpParameter(hp->getParameter(i));
+		
+	}
 }
 //-----------------------------------------------------------------------------
 std::string ParameterConnection::getConnectionOpName(size_t index) {

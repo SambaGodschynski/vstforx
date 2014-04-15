@@ -129,30 +129,34 @@ void Settings::init(const std::string &homeDirectory) {
 	plugCollectionDumpFile = name + "_plugin_db_dump";
 }
 //------------------------------------------------------------------------------------------------------------
-bool Settings::addPluginFolder ( const std::string &path ) {
-	if (path.empty()) {
+bool Settings::addPluginFolder ( const std::string &_path ) {
+	if (_path.empty()) {
         return false;
+    }
+    boost::filesystem::path path(_path);
+    if (path.is_relative()) {
+        path = boost::filesystem::absolute(_path, com::getSettings().getHomeDirectory());
     }
 	// testen ob path == unterverz. von schon vorhandenen pfad
 	PathnameSet::iterator it = pluginDirectories.begin();
 	for ( ; it!=pluginDirectories.end(); ++it ) {
-		if ( isSubDirectory( sambag::com::Location(*it), sambag::com::Location(path) ) ) {
+		if ( isSubDirectory( sambag::com::Location(*it), path ) ) {
 			throw com::ppiError::SettingsException ( 
-				path + " is subfolder of " + *it,
+				path.string() + " is subfolder of " + *it,
 				__FILE__,
 				__LINE__
 			);
 		}
-		if ( isSubDirectory( sambag::com::Location(path), sambag::com::Location(*it) ) ) {
+		if ( isSubDirectory( path, sambag::com::Location(*it) ) ) {
 			throw com::ppiError::SettingsException ( 
-				path + " is parent folder of " + *it,
+				path.string() + " is parent folder of " + *it,
 				__FILE__,
 				__LINE__
 			);
 		}
 	}
     // no need to test for equality because we use a set
-	return pluginDirectories.insert(path).second;
+	return pluginDirectories.insert(path.string()).second;
 }
 //------------------------------------------------------------------------------------------------------------
 bool Settings::addVSTFolder ( const std::string &path ) {
@@ -189,7 +193,7 @@ void Settings::loadConfigFile() { // TODO: use boost::Program_options
 			if ( cont.length() > 0 ) {
 				try {
 					addVSTFolder(cont); // throws SettingsException if folder==already given subfolder
-				} catch ( com::ppiError::SettingsException &ex ) {continue;}
+				} catch (...) {continue;}
 			}
 		}
 		if ( token == WINDOW_WIDTH ) {
