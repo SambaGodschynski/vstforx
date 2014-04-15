@@ -63,15 +63,16 @@ void editorPosition(const sce::PropertyChanged &ev, sdc::WindowPtr win)
     if (boundsChanged) {
         return;
     }
+	win->putClientProperty("editorBoundsChanged", true);
     sd::Point2D p;
     ev.getNewValue(p);
     sd::Dimension screen = sdc::getWindowToolkit()->getScreenSize();
     sd::Dimension winSize = win->getWindowSize();
     parToSrc(winSize, screen, p);
-    
     if (p!=NULL_POINT2D) {
         win->setWindowLocation(p);
     }
+	win->putClientProperty("editorBoundsChanged", false);
 }
 /*
  * will be called when editor was moved
@@ -80,6 +81,11 @@ void editorBoundsChanged(Plugin *plugin, sdc::WindowWPtr _win)
 {
     sdc::WindowPtr win = _win.lock();
     if (!win) {
+        return;
+    }
+    bool boundsChanged = false;
+    win->getClientProperty("editorBoundsChanged", boundsChanged);
+    if (boundsChanged) {
         return;
     }
     win->putClientProperty("editorBoundsChanged", true);

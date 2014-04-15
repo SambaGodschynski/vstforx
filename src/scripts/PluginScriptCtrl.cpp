@@ -698,7 +698,7 @@ std::string FrxSelectFile::process(const std::string &startPath, Ctrl *ctrl, con
         if (win->getThreadId() != sambag::com::getThreadId()) {
             throw std::runtime_error("this function need to be called from main thread. Use runOnUIThread for this purpose.");
         }
-        return ::com::osSelectFile("select file", startPath, NULL);
+        return ::com::osSelectFile("select file", startPath, win->getWindowImpl()->getSystemHandle());
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua.get(), ex.what());
     } catch (...) {
@@ -727,7 +727,7 @@ std::string FrxSaveFile::process(const std::string &startPath, Ctrl *ctrl, const
         if (win->getThreadId() != sambag::com::getThreadId()) {
             throw std::runtime_error("this function need to be called from main thread. Use runOnUIThread for this purpose.");
         }
-        return ::com::osSaveFile("select file", startPath, NULL);
+        return ::com::osSaveFile("select file", startPath, win->getWindowImpl()->getSystemHandle());
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua.get(), ex.what());
     } catch (...) {
@@ -757,7 +757,7 @@ std::string FrxSelectDirectory::process(const std::string &startPath, Ctrl *ctrl
         if (win->getThreadId() != sambag::com::getThreadId()) {
             throw std::runtime_error("this function need to be called from main thread. Use runOnUIThread for this purpose.");
         }
-        return ::com::osSelectFile("select directory", startPath, NULL);
+        return ::com::osSelectFile("select directory", startPath, win->getWindowImpl()->getSystemHandle());
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua.get(), ex.what());
     } catch (...) {
