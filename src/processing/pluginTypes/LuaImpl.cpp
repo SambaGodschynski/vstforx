@@ -273,6 +273,10 @@ void LuaImpl::openPlugin() {
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::closePlugin() {
+    if (editor) {
+        editor.reset();
+    }
+    closeLua();
 }
 //-----------------------------------------------------------------------------
 size_t LuaImpl::getNumInputChannels() const {
@@ -287,7 +291,7 @@ bool LuaImpl::hasEditor() const {
     return true;
 }
 //-----------------------------------------------------------------------------
-void LuaImpl::openEditor(void *window) {
+void LuaImpl::openEditor(sambag::disco::components::WindowPtr window) {
 	// set size
     EditorSize _new(ScriptEditorWidth, ScriptEditorHeight);
     sce::EventSender<sce::PropertyChanged>::notifyListeners(this,
@@ -327,7 +331,7 @@ void LuaImpl::onReloadScript() {
     }
 }
 //-----------------------------------------------------------------------------
-void LuaImpl::closeEditor(void *window) {
+void LuaImpl::closeEditor(sambag::disco::components::WindowPtr) {
     editor.reset();
 }
 //-----------------------------------------------------------------------------
@@ -675,7 +679,6 @@ LuaImpl::FFTData LuaImpl::frxFFT() {
 }
 //-----------------------------------------------------------------------------
 LuaImpl::~LuaImpl() {
-    closeLua();
 }
 //-----------------------------------------------------------------------------
 std::pair<size_t, void*> LuaImpl::getStateData() const {
@@ -858,9 +861,13 @@ void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::closeLua() {
-    luaState.reset();
-    sambag::lua::unregisterClassFunctions<Functions1>(uuid);
-    sambag::lua::unregisterClassFunctions<Functions2>(uuid);
+    try {
+        SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+        sambag::lua::unregisterClassFunctions<Functions1>(uuid);
+        sambag::lua::unregisterClassFunctions<Functions2>(uuid);
+        luaState.reset();
+    } catch(...) {
+    }
 }
 //-----------------------------------------------------------------------------
 namespace {

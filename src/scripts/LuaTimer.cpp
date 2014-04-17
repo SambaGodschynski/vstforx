@@ -82,7 +82,7 @@ LuaTimer::Ptr LuaTimer::createAndPush(sambag::lua::LuaStateWRef _lua, Mutex &mut
     res->timer = Timer::create(ms);
     res->timer->sce::EventSender<Timer::Event>::addTrackedEventListener(
         boost::bind(&LuaTimer::__onTimer, res.get(), _lua, callback),
-        res
+        _lua
     );
     res->timer->setNumRepetitions(numRep);
     res->createLuaObject(lua.get(), "lua_timer");

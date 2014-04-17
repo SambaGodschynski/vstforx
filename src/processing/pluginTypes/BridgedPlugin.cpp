@@ -93,11 +93,11 @@ bool BridgedPlugin::hasEditor() const {
     return session->hasEditor();
 }
 //-----------------------------------------------------------------------------
-void BridgedPlugin::openEditor(void *window) {
+void BridgedPlugin::openEditor(sambag::disco::components::WindowPtr) {
     session->openEditor();
 }
 //-----------------------------------------------------------------------------
-void BridgedPlugin::closeEditor(void *window) {
+void BridgedPlugin::closeEditor(sambag::disco::components::WindowPtr) {
     session->closeEditor();
 }
 //-----------------------------------------------------------------------------

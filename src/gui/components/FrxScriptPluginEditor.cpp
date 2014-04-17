@@ -50,17 +50,31 @@ void FrxScriptPluginEditor::delayedLog(const std::string &msg) {
     console->getVerticalScrollBar()->setEnabled(true);
 }
 //-----------------------------------------------------------------------------
-FrxScriptPluginEditor::FrxScriptPluginEditor(void *ptr, const sd::Dimension &size)
+FrxScriptPluginEditor::FrxScriptPluginEditor(sdc::Window::Ptr parent, const sd::Dimension &size)
 {
-    createWindow(ptr, size);
+    createWindow(parent, size);
 }
 //-----------------------------------------------------------------------------
-void FrxScriptPluginEditor::createWindow(void *ptr, const sd::Dimension &size) {
+namespace {
+    void __onClose(sdc::Window::WPtr _win) {
+        sdc::Window::Ptr win = _win.lock();
+        if (!win) {
+            return;
+        }
+        win->close();
+    }
+}
+void FrxScriptPluginEditor::createWindow(sdc::Window::Ptr parent, const sd::Dimension &size) {
     using namespace sambag::com;
 	using namespace sambag::disco::components;
+    void *ptr = parent->getWindowImpl()->getSystemHandle();
 	ArbitraryType::Ptr pData = createObject(ptr);
 	window = getWindowToolkit()->createNestedWindow(pData, size);
-	SAMBAG_ASSERT(window);
+    parent->setName("HUBBA");
+    SAMBAG_ASSERT(window);
+    parent->addOnCloseEventListener(
+        boost::bind(&__onClose, sdc::Window::WPtr(window))
+    );
 	sdc::ui::UIManager::instance().installLookAndFeel(window->getRootPane(),
 		frx::gui::components::ui::FrxLookAndFeel::create()
 	);
@@ -87,9 +101,9 @@ sdc::AContainer::Ptr FrxScriptPluginEditor::createBtnPane() {
 }
 //-----------------------------------------------------------------------------
 FrxScriptPluginEditor::Ptr
-FrxScriptPluginEditor::create(void *ptr, const sd::Dimension &size)
+FrxScriptPluginEditor::create(sdc::WindowPtr win, const sd::Dimension &size)
 {
-    Ptr res(new FrxScriptPluginEditor(ptr, size));
+    Ptr res(new FrxScriptPluginEditor(win, size));
     return res;
 }
 //-----------------------------------------------------------------------------

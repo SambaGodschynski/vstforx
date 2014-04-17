@@ -278,9 +278,9 @@ public:
 	 */
 	bool hasEditor() const;
 	//-------------------------------------------------------------------------
-	void openEditor(void *window);
+	void openEditor(sambag::disco::components::WindowPtr);
 	//-------------------------------------------------------------------------
-	void closeEditor(void *window);
+	void closeEditor(sambag::disco::components::WindowPtr);
 	//-------------------------------------------------------------------------
 	void onEditorIdle();
 	//-------------------------------------------------------------------------

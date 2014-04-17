@@ -210,9 +210,9 @@ public:
 		turnOn();
 	}
 	//-------------------------------------------------------------------------
-	virtual void openEditor(void *window);
+	virtual void openEditor(sambag::disco::components::WindowPtr);
 	//-------------------------------------------------------------------------
-	virtual void closeEditor(void *window);
+	virtual void closeEditor(sambag::disco::components::WindowPtr);
 	//-------------------------------------------------------------------------
 	virtual void onEditorIdle();
 	//-------------------------------------------------------------------------

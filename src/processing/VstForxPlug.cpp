@@ -185,10 +185,13 @@ void VstForxPlug::close() {
 		return;
 	}
 	_open = false;
+    graph.reset();
+    map.reset();
+    hostInfoAdapter.reset();
+    unRegisterInstance();
 }
 //-----------------------------------------------------------------------------
 VstForxPlug::~VstForxPlug() {
-	unRegisterInstance();
 	if (chunkData) {
 		delete chunkData;
 		chunkData = NULL;
@@ -286,6 +289,10 @@ TimeInfo * VstForxPlug::getHostTimeInfo (int filter) {
     // But when getHostTimeInfo() is called from another thread than the
     // processing thread (eg. called from a timer) we assume that
     // accuracy isn't so important at all.
+    // If this thought appears as wrong, a solution could be to use a
+    // stopwatch (dspTools::Timer) to calculate the difference
+    // between getting lastTimeInfo and getHostTimeInfo() (for every
+    // TimeInfo value!).
     return &lastTimeInfo;
 }
 //-----------------------------------------------------------------------------

@@ -284,9 +284,9 @@ public:
 	 */
 	virtual bool hasEditor() const;
 	//-------------------------------------------------------------------------
-	virtual void openEditor(void *window);
+	virtual void openEditor(sambag::disco::components::WindowPtr win);
 	//-------------------------------------------------------------------------
-	virtual void closeEditor(void *window);
+	virtual void closeEditor(sambag::disco::components::WindowPtr win);
 	//-------------------------------------------------------------------------
 	virtual void onEditorIdle();
     //-------------------------------------------------------------------------

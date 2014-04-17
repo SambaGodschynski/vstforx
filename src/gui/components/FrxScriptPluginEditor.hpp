@@ -35,9 +35,9 @@ public:
 	typedef boost::weak_ptr<FrxScriptPluginEditor> WPtr;
 protected:
     //-------------------------------------------------------------------------
-    void createWindow(void *ptr, const sd::Dimension &size);
-	//-------------------------------------------------------------------------
-    FrxScriptPluginEditor(void *ptr, const sd::Dimension &size);
+    void createWindow(sdc::Window::Ptr parent, const sd::Dimension &size);
+	//------------------------------------------------------------------------
+    FrxScriptPluginEditor(sdc::Window::Ptr, const sd::Dimension &size);
     //-------------------------------------------------------------------------
     sdc::Window::Ptr window;
     //-------------------------------------------------------------------------
@@ -71,7 +71,7 @@ public:
      * @brief creates nested window using ptr as parent window
      * @see as in vstsdk2.4 VstPluginEditor::Open
      */
-    static Ptr create(void *ptr, const sd::Dimension &size);
+    static Ptr create(sdc::WindowPtr win, const sd::Dimension &size);
     
 }; // FrxScriptPluginEditor
 }}} // namespace(s)

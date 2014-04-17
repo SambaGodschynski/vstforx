@@ -60,4 +60,5 @@ end
 function updateParameter()
    updateSamplePos()
    updateBarPos()
+   frx.plug:log("hi")
 end

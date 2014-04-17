@@ -29,6 +29,9 @@ namespace sambag { namespace disco { namespace components {
     class AWindowImpl;
     typedef boost::shared_ptr<AWindowImpl> AWindowImplPtr;
     typedef boost::weak_ptr<AWindowImpl> AWindowImplWPtr;
+    class Window;
+    typedef boost::shared_ptr<Window> WindowPtr;
+    typedef boost::weak_ptr<Window> WindowWPtr;
 }}}
 
 namespace frx { namespace processing {
@@ -94,9 +97,9 @@ struct APluginImpl :
 	 */
 	virtual bool hasEditor() const = 0;
 	//-------------------------------------------------------------------------
-	virtual void openEditor(void *window) = 0;
+	virtual void openEditor(sambag::disco::components::WindowPtr win) = 0;
 	//-------------------------------------------------------------------------
-	virtual void closeEditor(void *window) = 0;
+	virtual void closeEditor(sambag::disco::components::WindowPtr win) = 0;
 	//-------------------------------------------------------------------------
 	virtual void onEditorIdle() = 0;
     //-------------------------------------------------------------------------

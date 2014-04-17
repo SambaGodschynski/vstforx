@@ -22,6 +22,7 @@
 #include <processing/pluginTypes/VST2xImpl.h>
 #include "PluginAdapter.hpp"
 #include <processing/ModelFactory.hpp>
+#include <processing/pluginTypes/VstShellPlugin.hpp>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -79,6 +80,8 @@ IProcessor::Ptr ModelController::createProcessor(const std::string &idStr,
         // register remove request excutor
         installListeners(ad);
         return ad;
+    } catch (const ::processing::ShellPluginException &ex) {
+        throw;
     } catch (const std::exception &ex) {
         throw std::runtime_error("creating " + idStr + " failed: " + ex.what());
     } catch (...) {

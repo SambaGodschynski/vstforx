@@ -13,11 +13,6 @@
 #include <processing/Plugin.h>
 #include <sambag/disco/components/WindowToolkit.hpp>
 #include <gui/HandyNamespaces.hpp>
-/**
- * get the apropriate handler from a window.
- * HWND, WindowRef or NSView
- */
-extern void * __getHandlerForVstPlugins_(void*);
 
 namespace frx { namespace processing {
 namespace {
@@ -174,9 +169,7 @@ void PluginAdapter::openEditor(sdc::WindowPtr win) {
         pr
     );
         
-	plug->openEditor(
-        ::__getHandlerForVstPlugins_(winImpl->getSystemHandle())
-    );
+	plug->openEditor(win);
 }
 //-----------------------------------------------------------------------------
 void PluginAdapter::closeEditor(sdc::WindowPtr win) {
@@ -188,7 +181,7 @@ void PluginAdapter::closeEditor(sdc::WindowPtr win) {
 	Adaptee::Ptr plug = getPlugin();
 	if (!plug)
 		return;
-	plug->closeEditor(winImpl->getSystemHandle());
+	plug->closeEditor(win);
 }
 //-----------------------------------------------------------------------------
 bool PluginAdapter::hasEditor() const {

@@ -17,6 +17,14 @@
 #include <sambag/com/Thread.hpp>
 #include <sambag/dsp/TimeInfoVst2xHelper.hpp>
 #include <sambag/dsp/VstMidiEventAdapter.hpp>
+#include <sambag/disco/components/Window.hpp>
+
+/**
+ * get the apropriate handler from a window.
+ * HWND, WindowRef or NSView
+ */
+extern void * __getHandlerForVstPlugins_(void*);
+
 
 #define MAX_BFF_STR 2048
 static const int FRX_VST2XPLUGIN_MAX_IDLE_MS = 20;
@@ -345,10 +353,14 @@ void VSTPluginImpl::onPlugRequestWindowResize (size_t w, size_t h) {
     oldEditorSize = _new;
 }
 //-----------------------------------------------------------------------------
-void VSTPluginImpl::openEditor(void *window) {
-    if (!window)
+void VSTPluginImpl::openEditor(sambag::disco::components::WindowPtr _window) {
+    if (!_window)
 		return;
-	ERect *size = NULL;
+    SAMBAG_ASSERT(_window->getWindowImpl());
+	void *hndl = ::__getHandlerForVstPlugins_(
+        _window->getWindowImpl()->getSystemHandle()
+    );
+    ERect *size = NULL;
 	// get editor size
 	aEff->dispatcher ( aEff, effEditGetRect, 0, 0, &size, 0);
 	// set size
@@ -356,13 +368,16 @@ void VSTPluginImpl::openEditor(void *window) {
         oldEditorSize = EditorSize(0,0); // reset old size
         onPlugRequestWindowResize(size->right - size->left, size->bottom - size->top);
 	}
-    aEff->dispatcher ( aEff, effEditOpen, 0, 0, window, 0);
+    aEff->dispatcher ( aEff, effEditOpen, 0, 0, hndl, 0);
 }
 //-----------------------------------------------------------------------------
-void VSTPluginImpl::closeEditor(void *window) {
-	if (!window)
+void VSTPluginImpl::closeEditor(sambag::disco::components::WindowPtr window) {
+    if (!window)
 		return;
-	aEff->dispatcher ( aEff, effEditClose, 0, 0, window, 0);
+    SAMBAG_ASSERT(window->getWindowImpl());
+	void *hndl = ::__getHandlerForVstPlugins_(
+        window->getWindowImpl()->getSystemHandle()
+    );	aEff->dispatcher ( aEff, effEditClose, 0, 0, hndl, 0);
 }
 //-----------------------------------------------------------------------------
 void VSTPluginImpl::onEditorIdle() { 

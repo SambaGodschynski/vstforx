@@ -229,6 +229,8 @@ private:
 	//-------------------------------------------------------------------------
 	BrowserImpl::Ptr browser;
 public:
+    //-------------------------------------------------------------------------
+    virtual ~FrxColumnBrowser();
 	//-------------------------------------------------------------------------
 	Ptr getPtr() {
 		return boost::dynamic_pointer_cast<FrxColumnBrowser>(AComponent::getPtr());

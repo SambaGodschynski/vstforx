@@ -132,8 +132,8 @@ void Plugin::installListener() {
 }
 //-----------------------------------------------------------------------------
 Plugin::~Plugin() {
-    impl->closePlugin();
     try {
+        impl->closePlugin();
         delete impl;
     } catch(...) {
     }
@@ -256,11 +256,11 @@ bool Plugin::hasEditor() const {
     return impl->hasEditor();
 }
 //-----------------------------------------------------------------------------
-void Plugin::openEditor(void *window) {
+void Plugin::openEditor(sambag::disco::components::WindowPtr window) {
     impl->openEditor(window);
 }
 //-----------------------------------------------------------------------------
-void Plugin::closeEditor(void *window) {
+void Plugin::closeEditor(sambag::disco::components::WindowPtr window) {
     impl->closeEditor(window);
 }
 //-----------------------------------------------------------------------------

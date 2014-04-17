@@ -335,9 +335,12 @@ void VstForxEditor::close() {
 		ss<<"closing main view failed: unkown error.";
 		errorMessage(ss.str());
 	}
-	getPlugin()->unRegisterView(circView);
+    
+    getPlugin()->unRegisterView(circView);
     nestedWindow->close();
 	nestedWindow.reset();
+
+    
 	circView.reset();
 	if (clientWindow) {
 		clientWindow->close();

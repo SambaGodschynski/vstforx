@@ -125,8 +125,7 @@ fgci::WindowSessionHostPtr BridgePluginDelegate::getWindowSession() {
 void BridgePluginDelegate::openEditor() {
     SAMBAG_LOG_TRACE<<"OPEN";
     sdc::Window::Ptr win = getWindowSession()->getWindow();
-    void *wndPtr = win->getWindowImpl()->getSystemHandle();
-    plugin->openEditor(wndPtr);
+    plugin->openEditor(win);
 
     sdc::Timer::Ptr idleTimer = getWindowSession()->getIdleTimer();
     idleTimer->sce::EventSender<sdc::TimerEvent>::addTrackedEventListener(
@@ -137,8 +136,7 @@ void BridgePluginDelegate::openEditor() {
 }
 //-----------------------------------------------------------------------------
 void BridgePluginDelegate::closeEditor() {
-    void *wndPtr = getWindowSession()->getWindow()->getWindowImpl()->getSystemHandle();
-    plugin->closeEditor(wndPtr);
+    plugin->closeEditor(getWindowSession()->getWindow());
 }
 //-----------------------------------------------------------------------------
 void BridgePluginDelegate::onIdleTimer() {

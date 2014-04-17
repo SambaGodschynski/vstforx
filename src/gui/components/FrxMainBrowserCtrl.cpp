@@ -121,9 +121,12 @@ void FrxMainBrowserCtrl::
 showShellSelection(const ::processing::PluginInfo &pI, 
 	const ::processing::ShellPluginInfos &infos) 
 {
+    FrxCircuidViewPtr view = wView.lock();
+    if (!view) {
+        return;
+    }
 	ShellPluginSelection::Ptr shlsl;
-	shlsl = ShellPluginSelection::create();
-	FrxCircuidViewPtr view = wView.lock();
+	shlsl = ShellPluginSelection::create(view->getFirstContainer<sdc::Window>());
 	getFrxControl(view).addWindow(shlsl);
 	BOOST_FOREACH(const ::processing::ShellPluginInfo &inf, infos) {
 		shlsl->addShellInfo(inf);
@@ -135,6 +138,7 @@ showShellSelection(const ::processing::PluginInfo &pI,
 	);
 	shlsl->setShellPlugin(pI);
 	shlsl->pack();
+    shlsl->positionWindow();
 	shlsl->open();
 }
 //-----------------------------------------------------------------------------

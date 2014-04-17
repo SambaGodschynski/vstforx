@@ -131,4 +131,8 @@ void FrxColumnBrowser::warnMessage(const std::string &str) {
 void FrxColumnBrowser::errorMessage(const std::string &str) {
 	statusBar->setStatusMessage(str, "warning");
 }
+//-----------------------------------------------------------------------------
+FrxColumnBrowser::~FrxColumnBrowser() {
+
+}
 }}} // namespace(s)
