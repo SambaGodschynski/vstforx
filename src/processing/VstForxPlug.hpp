@@ -22,6 +22,8 @@
 #include <sambag/com/Thread.hpp>
 #include <com/FrxConfig.h>
 #include <scripts/PluginScriptCtrl.hpp>
+#include <list>
+#include <processing/dspTools.h>
 
 extern const char * globGetProductName();
 
@@ -78,8 +80,17 @@ private:
 	//-------------------------------------------------------------------------
 	void loadEditor(::com::iArchive &ar, int version = FRX_ARCHIVE_VERSION);
 	//-------------------------------------------------------------------------
-	sambag::com::Mutex processingLoadLock;
+    /**
+     * some hosts(ableton live) give no timeInfo when the requesting thread is 
+     * another than the plugin thread.
+     */
+    sambag::dsp::HostTimeInfo lastTimeInfo;
+    sambag::com::ThreadId processingThread;
+    //-------------------------------------------------------------------------
+    sambag::com::Mutex processingLoadLock;
 protected:
+    //-------------------------------------------------------------------------
+    void processTasks();
     //-------------------------------------------------------------------------
     void onScriptExeFailed(const frx::scripts::ScriptExeFailedEvent &ev);
 	//-------------------------------------------------------------------------

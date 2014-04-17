@@ -168,6 +168,7 @@ void VstForxPlug::open() {
 	map = frx::gui::ViewModelMap::create();
 	updateGraphBaseConfiguration();
 	initHostParameter();
+    processingThread = sambag::com::getThreadId();
 }	
 //-----------------------------------------------------------------------------
 void VstForxPlug::initHostParameter() {
@@ -202,6 +203,7 @@ VstForxPlug::~VstForxPlug() {
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::process(float **in, float **out, int numSamples) {
+    lastTimeInfo = *(getHost()->getHostTimeInfoImpl(0xFFFF));
 	TRY_TO_LOCK_TIMED2 (processingLoadLock, 120);
 	if ( !graph ) 
 		return;
@@ -276,7 +278,10 @@ bool VstForxPlug::ioChanged() {
 }
 //-----------------------------------------------------------------------------
 TimeInfo * VstForxPlug::getHostTimeInfo (int filter) {
-	return getHost()->getHostTimeInfo(filter);
+    if (sambag::com::getThreadId()==processingThread) {
+        return getHost()->getHostTimeInfoImpl(filter);
+    }
+    return &lastTimeInfo;
 }
 //-----------------------------------------------------------------------------
 VstForxPlug::HostIOChangedConnection 

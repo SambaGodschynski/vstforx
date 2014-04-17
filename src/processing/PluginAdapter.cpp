@@ -55,11 +55,11 @@ void scrToPar(const sd::Dimension &win,
 /*
  * will be called when editor pos parameter changed
  */
-void editorPosition(const sce::PropertyChanged &ev, sdc::WindowPtr win)
+void editorPositionPar(const sce::PropertyChanged &ev, sdc::WindowPtr win)
 {
 
     bool boundsChanged = false;
-    win->getClientProperty("editorBoundsChanging", boundsChanged);
+    win->getClientProperty("lockEditorBoundsChanging", boundsChanged);
     if (boundsChanged) {
         return;
     }
@@ -108,7 +108,7 @@ void onPluginEditorChanged(const sce::PropertyChanged &ev, sdc::WindowWPtr _win)
         editorSize(ev, win);
     }
     if (ev.getPropertyName() == Plugin::PROPERTY_PARAMETER_EDITOR_POSITION) {
-        editorPosition(ev, win);
+        editorPositionPar(ev, win);
     }
 }
 
@@ -122,9 +122,21 @@ void initPos(Plugin *plugin, std::pair<double, double> x, sdc::WindowWPtr _win) 
     if (!win) {
         return;
     }
-    if (plugin->getEditorPosX()->getValue()>0) {
-        plugin->getEditorPosX()->setValue(x.first);
-        plugin->getEditorPosY()->setValue(x.second);
+    if (x.first>0) {
+        // move window to paramter location
+        sd::Point2D p(x.first, x.second);
+        sd::Dimension screen = sdc::getWindowToolkit()->getScreenSize();
+        sd::Dimension winSize = win->getWindowSize();
+        parToSrc(winSize, screen, p);
+        win->setWindowLocation(p);
+    } else {
+        // first location on screen
+        sd::Point2D p = win->getWindowLocation();
+        sd::Dimension screen = sdc::getWindowToolkit()->getScreenSize();
+        sd::Dimension winSize = win->getWindowSize();
+        scrToPar(winSize, screen, p);
+        plugin->getEditorPosX()->setValue(p.x());
+        plugin->getEditorPosY()->setValue(p.y());
     }
     win->putClientProperty("lockEditorBoundsChanging", false);
 }
@@ -144,9 +156,10 @@ void PluginAdapter::openEditor(sdc::WindowPtr win) {
     if (!pr) {
         return;
     }
-    win->putClientProperty("lockEditorBoundsChanging", true);
     std::pair<double, double> p(plug->getEditorPosX()->getValue(),
         plug->getEditorPosY()->getValue());
+    // lock parameter/window listener unitl init location was set
+    win->putClientProperty("lockEditorBoundsChanging", true);
     sdc::getWindowToolkit()->invokeLater(
         boost::bind(&initPos, plug.get(), p, sdc::WindowWPtr(win)), 100, plug
     );

@@ -19,7 +19,7 @@ maxSampleMinutes = 5
 
 
 function lcInit()
-   t = frx.addTimer("onTimer()", 50, -1)
+   t = frx.addTimer("updateParameter()", 50, -1)
    t:start()
 end
 
@@ -57,7 +57,7 @@ function updateBarPos()
    frx.plug:setParameterValue("barPosStep", step)
 end
 
-function onTimer()
+function updateParameter()
    updateSamplePos()
    updateBarPos()
 end

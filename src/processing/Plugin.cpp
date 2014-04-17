@@ -48,6 +48,9 @@ Plugin::Plugin ( frx::processing::IHostInfo::Ptr hostInfo,
 	editorPosY->setName("editor_Y");
 	editorOpen->setName("editor_visibility");
     editorPosX->setMin(-2);
+    editorPosY->setMin(-2);
+    editorPosX->setDisplay("not set");
+    editorPosY->setDisplay("not set");
 	*editorPosX = -1; 
 	*editorPosY = -1;
 	*editorOpen = 0.0f;
@@ -400,6 +403,9 @@ void Plugin::paramEditorPosXChanged ( void *src, const float &val ) {
     sce::EventSender<sce::PropertyChanged>::notifyListeners (this,
 			sce::PropertyChanged (PROPERTY_PARAMETER_EDITOR_POSITION, p, p)
 		);
+    if (val>0) {
+        editorPosX->setDisplay("");
+    }
 }
 //-----------------------------------------------------------------------------
 void Plugin::paramEditorPosYChanged ( void *src, const float &val ) {
@@ -408,6 +414,9 @@ void Plugin::paramEditorPosYChanged ( void *src, const float &val ) {
     sce::EventSender<sce::PropertyChanged>::notifyListeners (this,
 			sce::PropertyChanged (PROPERTY_PARAMETER_EDITOR_POSITION, p, p)
 		);
+    if (val>0) {
+        editorPosY->setDisplay("");
+    }
 }
 //-----------------------------------------------------------------------------
 void Plugin::paramEditorOpenChanged ( void *src, const float &val ) {

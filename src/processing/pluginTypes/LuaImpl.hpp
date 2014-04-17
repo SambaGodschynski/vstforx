@@ -196,6 +196,10 @@ private:
     }
 public:
     //-------------------------------------------------------------------------
+    sambag::com::RecursiveMutex * getMutex() {
+        return &mutex;
+    }
+    //-------------------------------------------------------------------------
     template <class LC>
     bool has() const {
         enum { Flag = Loki::TL::IndexOf<LuaCall::List, LC>::value };
