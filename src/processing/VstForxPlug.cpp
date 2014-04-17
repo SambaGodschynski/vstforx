@@ -281,6 +281,11 @@ TimeInfo * VstForxPlug::getHostTimeInfo (int filter) {
     if (sambag::com::getThreadId()==processingThread) {
         return getHost()->getHostTimeInfoImpl(filter);
     }
+    // this is a bit fuzzy becuase the lastTimeInfo could be at least
+    // 1/(sampleRate/maxBlockSize)ms (e.g. 90 ms for bs=4096) old.
+    // But when getHostTimeInfo() is called from another thread than the
+    // processing thread (eg. called from a timer) we assume that
+    // accuracy isn't so important at all.
     return &lastTimeInfo;
 }
 //-----------------------------------------------------------------------------
