@@ -63,11 +63,11 @@ void onBgUpdate(void*, const sdc::TimerEvent &ev, About::WPtr c) {
 	sdc::AComponent::Ptr view = about->getContentPane()->getComponent(0);
 	sd::IPattern::Ptr bg = view->getBackgroundPattern();
 	//sambag::math::Matrix m = bg->getMatrix();
-	double tmp = t * 0.01;
+	double tmp;
 	sambag::math::Matrix m = sambag::math::translate2D(t*0.01, t*0.01);
-	tmp = sin(t * 0.000001) * 3.;
+	tmp = sin(t * 0.000003);
 	m = prod(m , sambag::math::scale2D(tmp, tmp));
-	tmp = sin(t * 0.00001) * 45.;
+	tmp = sin(t * 0.000045);
 	m = prod(m , sambag::math::rotate2D(tmp));
 	bg->setMatrix(m);
 	view->redraw();
@@ -82,8 +82,9 @@ void About::postConstructor() {
 	sdc::ui::UIManager::instance().installLookAndFeel(getRootPane(),
 		ui::FrxLookAndFeel::create()
 	);
-	setWindowSize(sd::Dimension(320., 240.));
+	setWindowSize(sd::Dimension(330., 250.));
 	windowImpl->setFlag(sdc::WindowFlags::WND_ALWAYS_ON_TOP, true);
+    windowImpl->setFlag(sdc::WindowFlags::WND_FRAMED, false);
 	windowImpl->setFlag(sdc::WindowFlags::WND_RESIZEABLE, false);
 
 	initView();
@@ -134,7 +135,7 @@ void About::initView() {
 		Image::Ptr img = Image::create();
 		img->setMouseEventsEnabled(false);
 		img->getObject()->getOutline().x0().x().setType(sds::units::Unit::PERCENT);
-		img->getObject()->getOutline().x0().x().setValue(50);
+		img->getObject()->getOutline().x0().x().setValue(45);
 		img->getObject()->getOutline().x0().y().setType(sds::units::Unit::PERCENT);
 		img->getObject()->getOutline().x0().y().setValue(10);
 
@@ -144,7 +145,7 @@ void About::initView() {
 		img->getObject()->getOutline().size().height().setValue(130);
 		img->getObject()->setSurface(logo);
 		img->updateBounds();
-		img->setPreferredSize(sd::Dimension(200, 150));
+		img->setPreferredSize(sd::Dimension(230, 150));
 		//img->setAlignmentX(1);
 		//img->setAlignmentY(1);
 		view->add(img);

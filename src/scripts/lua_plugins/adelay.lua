@@ -4,8 +4,8 @@ gpConfig = {
    name="ADelay", 
    author="Samba Godschynski",
    license="GPL",
-   numInputs=2, 
-   numOutputs=2
+   numInChannels=2, 
+   numOutChannels=3
 }
 gpParameterSetup = { direct = 0.5, delay=0.5, feedback=0.4 }
 p = gpParameterSetup
@@ -42,8 +42,8 @@ function lcOnLoad()
 end
 
 function lcProcess(numSamples)
-   l = frx.plug:getInput(1)
-   r = frx.plug:getInput(2)
+   l = frx.plug:getChannel(1)
+   r = frx.plug:getChannel(2)
    for i=1, numSamples, 1 do
       x = l[i]
       y = buffer[cursor]
@@ -52,8 +52,8 @@ function lcProcess(numSamples)
       l[i] = y + p['direct'] * l[i]
       r[i] = y + p['direct'] * r[i]
    end
-   frx.plug:toOutput(1, l)
-   frx.plug:toOutput(2, r)
+   frx.plug:setChannel(1, l)
+   frx.plug:setChannel(2, r)
 end
 
 function lcOnParameterChanged(name,value)

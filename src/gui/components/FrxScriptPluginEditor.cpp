@@ -42,7 +42,7 @@ void FrxScriptPluginEditor::delayedLog(const std::string &msg) {
     BOOST_FOREACH(const std::string &x, res) {
         consoleList->addElement(x);
     }
-    int i = consoleList->ListModel::getSize() - 1;
+    int i = consoleList->ListModel::getSize()-1;
     consoleList->ensureIndexIsVisible(i);
     consoleList->revalidate();
     consoleList->redraw();

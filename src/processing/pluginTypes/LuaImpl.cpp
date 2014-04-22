@@ -156,6 +156,7 @@ void LuaImpl::loadScript() {
         initScript();
         loadIOs();
         loadParameters();
+        turnOn();
         log(scriptFile + " loaded:");
         log("numInChannels: " + sambag::com::toString(numInChannels));
         log("numOutChannels: " + sambag::com::toString(numOutChannels));
@@ -273,6 +274,7 @@ void LuaImpl::openPlugin() {
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::closePlugin() {
+    turnOff();
     if (editor) {
         editor.reset();
     }

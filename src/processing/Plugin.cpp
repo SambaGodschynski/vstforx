@@ -65,7 +65,7 @@ Plugin::Plugin ( frx::processing::IHostInfo::Ptr hostInfo,
 		createInputNode( getName() + " InputNode(" + sambag::com::toString(i) + ")" );
 	}
     tmp=impl->getNumOutputChannels();
-	c = ( tmp%2==0 ) ? tmp/2 : tmp + 1; // anzahl der ausgaenge
+	c = ( tmp%2==0 ) ? tmp/2 : tmp/2 + 1; // anzahl der ausgaenge
     
 	for ( size_t i=0; i<c; ++i ) {
 		createOutputNode( getName() + " OutputNode(" + sambag::com::toString(i) + ")" );

@@ -36,6 +36,7 @@
 #include <com/PluginCollection.h>
 #include <sambag/com/Common.hpp>
 #include "LuaTimer.hpp"
+#include <boost/regex.hpp>
 
 namespace frx {
 
@@ -665,12 +666,43 @@ bool FrxShowYesNoDlg::process(const std::string &msg, Ctrl *ctrl, const Ctrl::Lu
 }
 //-----------------------------------------------------------------------------
 void FrxOpenUrl::process(const std::string &url, Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
+    using namespace frx::gui;
+    using namespace frx::gui::components;
     sambag::lua::LuaStateRef lua = boost::get<0>(lp).lock();
     if(!lua) {
         return;
     }
     try {
-        ::com::osOpenLink(url);
+        FRX_START_SCRIPTCALL
+        FRX_GET_PLUG
+        FRX_GET_EDITOR
+        FrxCircuidViewPtr view = editor->getCircuidView();
+        sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
+        if (!win) {
+            return;
+        }
+        if (win->getThreadId() != sambag::com::getThreadId()) {
+            throw std::runtime_error("this function need to be called from main thread. Use runOnUIThread for this purpose.");
+        }
+        
+        // check whether url is trusted
+        boost::regex trusted("http://[a-zA-Z0-9]*\\.vstforx\\.de/.*$");
+        if (boost::regex_match(url, trusted)) {
+            ::com::osOpenLink(url);
+            return;
+        }
+        
+        std::stringstream msg;
+        msg<<"You are going to visit the UNKNOWN url '"<<url<<"'.";
+        msg<<" Do you want to proceed?";
+        
+		bool res = ::com::osMessageBox("VSTForx", msg.str(),
+			::com::MSG_QUESTION) == ::com::MSG_RET_YES;
+        if (res) {
+            ::com::osOpenLink(url);
+        }
+    
+    
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua.get(), ex.what());
     } catch (...) {

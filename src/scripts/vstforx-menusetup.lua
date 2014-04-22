@@ -20,9 +20,8 @@ menus = {
       {name="Open Setup Dialog", action="frx.openSetup()"},
       {name="Help", {
 	  {name="About VSTForx", action="frx.openAbout()"},
-	  {name="", action="frx.openUrl('http://vstforx.de/index.php/2014-01-12-14-49-45/report-a-bug')"},
-	  {name="Report A Bug", action="frx.openUrl('http://vstforx.de/index.php/2014-01-12-14-49-45/report-a-bug')"},
-	  {name="Known Issues", action="frx.openUrl('http://issues.vstforx.de/roadmap_page.php?version_id=27')"},
+	  {name="Report A Bug", action="frx.openUrl('http://www.vstforx.de/index.php/2014-01-12-14-49-45/report-a-bug')"},
+	  {name="Known Issues", action="frx.openUrl('http://issues.vstforx.de/roadmap_page.php?version_id=27')"}
       }},
       {name="Auxiliaries"},
       {name="Find Plugin...", action="onAddPlugin()"},
