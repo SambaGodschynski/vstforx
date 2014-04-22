@@ -55,9 +55,9 @@ public:
     //-------------------------------------------------------------------------
     typedef std::multimap<std::string, std::string> PersistUserData;
     //-------------------------------------------------------------------------
-    SAMBAG_LUA_FTAG(getInput,  LuaImpl::LuaFrames(int));
+    SAMBAG_LUA_FTAG(getChannel,  LuaImpl::LuaFrames(int));
     SAMBAG_LUA_FTAG(fft,  LuaImpl::FFTData());
-    SAMBAG_LUA_FTAG(toOutput, void());
+    SAMBAG_LUA_FTAG(setChannel, void());
     SAMBAG_LUA_FTAG(getSamplePos, double());
     SAMBAG_LUA_FTAG(getBarStartPos, double());
     SAMBAG_LUA_FTAG(getPpqPos, double());
@@ -73,9 +73,9 @@ public:
     SAMBAG_LUA_FTAG(logWarn, void(std::string));
     SAMBAG_LUA_FTAG(logErr, void(std::string));
     SAMBAG_LUA_FTAG(logTrace, void(std::string));
-    typedef LOKI_TYPELIST_10(Frx_getInput_Tag,
+    typedef LOKI_TYPELIST_10(Frx_getChannel_Tag,
         Frx_fft_Tag,
-        Frx_toOutput_Tag,
+        Frx_setChannel_Tag,
         Frx_getSamplePos_Tag,
         Frx_getBarStartPos_Tag,
         Frx_getPpqPos_Tag,
@@ -173,9 +173,9 @@ private:
     //-------------------------------------------------------------------------
     unsigned int flags;
     //-------------------------------------------------------------------------
-    size_t numInputs, numOutputs, currNumSamples;
+    size_t numInChannels, numOutChannels, currNumSamples;
     //-------------------------------------------------------------------------
-    oldPr::Frames::T **currInputs, **currOutputs;
+    oldPr::Frames::T **currInChannels, **currOutChannels;
     protected:
     //-------------------------------------------------------------------------
     inline std::string logName() const {
@@ -225,11 +225,11 @@ public:
     //-------------------------------------------------------------------------
     void onParameterChanged(void *src, float value, const std::string &id);
     //-------------------------------------------------------------------------
-    LuaFrames frxGetInput(int channel);
+    LuaFrames frxGetChannel(int channel);
     //-------------------------------------------------------------------------
     FFTData frxFFT();
     //-------------------------------------------------------------------------
-    void frxToOutput();
+    void frxSetChannel();
     //-------------------------------------------------------------------------
     double frxGetSamplePos();
     //-------------------------------------------------------------------------

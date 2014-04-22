@@ -135,8 +135,8 @@ void LuaImpl::initScript() {
 //-----------------------------------------------------------------------------
 void LuaImpl::loadScript() {
     setFlag(IsValid, true);
-    numInputs = 0;
-    numOutputs = 0;
+    numInChannels = 0;
+    numOutChannels = 0;
     try {
         luaState = sambag::lua::createLuaStateRef();
         initLuaEnv(luaState);
@@ -157,8 +157,8 @@ void LuaImpl::loadScript() {
         loadIOs();
         loadParameters();
         log(scriptFile + " loaded:");
-        log("numInputs: " + sambag::com::toString(numInputs));
-        log("numOutputs: " + sambag::com::toString(numOutputs));
+        log("numInChannels: " + sambag::com::toString(numInChannels));
+        log("numOutChannels: " + sambag::com::toString(numOutChannels));
         log("numParameter: " + sambag::com::toString(parameters->size()));
         log("valid: " + std::string(getFlag(IsValid) ? "yes" : "no") );
     } catch(const sambag::lua::ExecutionFailed &ex) {
@@ -169,24 +169,24 @@ void LuaImpl::loadScript() {
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::loadIOs() {
-    if (!config["numInputs"].empty()) {
+    if (!config["numInChannels"].empty()) {
         std::stringstream ss;
-        ss<<config["numInputs"];
-        ss>>numInputs;
+        ss<<config["numInChannels"];
+        ss>>numInChannels;
     } else {
-        log_warn("missing gpConfig.numInputs");
+        log_warn("missing gpConfig.numInChannels");
     }
-    if (!config["numOutputs"].empty()) {
+    if (!config["numOutChannels"].empty()) {
         std::stringstream ss;
-        ss<<config["numOutputs"];
-        ss>>numOutputs;
+        ss<<config["numOutChannels"];
+        ss>>numOutChannels;
     } else {
-        log_warn("missing gpConfig.numOutputs");
+        log_warn("missing gpConfig.numOutChannels");
     }
-    if (numInputs>MAX_IO) {
+    if (numInChannels>MAX_IO) {
         scriptFailed("num input > " + sambag::com::toString(MAX_IO));
     }
-    if (numOutputs>MAX_IO) {
+    if (numOutChannels>MAX_IO) {
         scriptFailed("num size > " + sambag::com::toString(MAX_IO));
     }
 }
@@ -280,11 +280,11 @@ void LuaImpl::closePlugin() {
 }
 //-----------------------------------------------------------------------------
 size_t LuaImpl::getNumInputChannels() const {
-    return numInputs;
+    return numInChannels;
 }
 //-----------------------------------------------------------------------------
 size_t LuaImpl::getNumOutputChannels() const {
-    return numOutputs;
+    return numOutChannels;
 }
 //-----------------------------------------------------------------------------
 bool LuaImpl::hasEditor() const {
@@ -550,12 +550,12 @@ void LuaImpl::processPlugin(oldPr::Frames::T ** ins,
 	try {
 		SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
 		// execute processFunction
-        currInputs = ins;
-        currOutputs = outs;
+        currInChannels = ins;
+        currOutChannels = outs;
         currNumSamples = numSamples;
 		callLuaFunc(luaState.get(), LC_NAME(lcProcess), boost::make_tuple(numSamples));
-        currInputs = NULL;
-        currOutputs = NULL;
+        currInChannels = NULL;
+        currOutChannels = NULL;
         currNumSamples = 0;
 	} catch( const sambag::lua::LuaException &ex ) {
 		scriptFailed(ex.errMsg);
@@ -564,31 +564,31 @@ void LuaImpl::processPlugin(oldPr::Frames::T ** ins,
     }
 }
 //-----------------------------------------------------------------------------
-LuaImpl::LuaFrames LuaImpl::frxGetInput(int channel) {
+LuaImpl::LuaFrames LuaImpl::frxGetChannel(int channel) {
 	using namespace sambag::lua;
-	if (!currInputs) {
+	if (!currInChannels) {
 		std::stringstream ss;
-		ss<<"inputs  not available. Call only within "<<LC_NAME(lcProcess)<<".";
+		ss<<"InChannels  not available. Call only within "<<LC_NAME(lcProcess)<<".";
 		lua_pushstring (luaState.get(), ss.str().c_str());
 		lua_error(luaState.get());
 	}
 	channel--; // lua starts with 1 instead of 0
-	if (channel < 0 || channel >= (int)numInputs ) {
+	if (channel < 0 || channel >= (int)numInChannels ) {
 		std::stringstream ss;
 		ss<<"input "<<channel+1<<" not available.";
 		lua_pushstring (luaState.get(), ss.str().c_str());
 		lua_error(luaState.get());
 	}
 	
-	return LuaFrames(LuaFloatSeqEx(currInputs[channel], currNumSamples));
+	return LuaFrames(LuaFloatSeqEx(currInChannels[channel], currNumSamples));
 }
 //-----------------------------------------------------------------------------
-void LuaImpl::frxToOutput() {
+void LuaImpl::frxSetChannel() {
     // to avoid redundant copying we maniupulate the lua stack directly
     using namespace sambag::lua;
-	if (!currOutputs) {
+	if (!currOutChannels) {
 		std::stringstream ss;
-		ss<<"outputs not available. Call only within "<<LC_NAME(lcProcess)<<".";
+		ss<<"OutChannels not available. Call only within "<<LC_NAME(lcProcess)<<".";
 		lua_pushstring (luaState.get(), ss.str().c_str());
 		lua_error(luaState.get());
 	}
@@ -596,7 +596,7 @@ void LuaImpl::frxToOutput() {
 	int channel = -1;
 	get(channel, luaState.get(), -2);
 	channel--; // lua starts with 1 instead of 0
-	if (channel < 0 || channel >= (int)numOutputs ) {
+	if (channel < 0 || channel >= (int)numOutChannels ) {
 		std::stringstream ss;
 		ss<<"input "<<channel+1<<" not available.";
 		lua_pushstring (luaState.get(), ss.str().c_str());
@@ -604,7 +604,7 @@ void LuaImpl::frxToOutput() {
 	}
     // pop all arguments from stack
 	boost::tuple<LuaFloatSeqEx,int> arg =
-        boost::make_tuple(LuaFloatSeqEx(currOutputs[channel], currNumSamples), 0);
+        boost::make_tuple(LuaFloatSeqEx(currOutChannels[channel], currNumSamples), 0);
     pop(luaState.get(), arg);
 }
 //-----------------------------------------------------------------------------
@@ -820,9 +820,9 @@ void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
         sambag::lua::TupleAccessor>
     (
         luaState.get(),
-        boost::make_tuple(boost::bind(&LuaImpl::frxGetInput, this, _1),
+        boost::make_tuple(boost::bind(&LuaImpl::frxGetChannel, this, _1),
             boost::bind(&LuaImpl::frxFFT, this),
-            boost::bind(&LuaImpl::frxToOutput, this),
+            boost::bind(&LuaImpl::frxSetChannel, this),
             boost::bind(&LuaImpl::frxGetSamplePos, this),
             boost::bind(&LuaImpl::frxGetBarStartPos, this),
             boost::bind(&LuaImpl::frxGetPpqPos, this),
