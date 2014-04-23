@@ -185,10 +185,6 @@ void VstForxPlug::close() {
 		return;
 	}
 	_open = false;
-    graph.reset();
-    map.reset();
-    hostInfoAdapter.reset();
-    unRegisterInstance();
 }
 //-----------------------------------------------------------------------------
 VstForxPlug::~VstForxPlug() {
@@ -202,6 +198,10 @@ VstForxPlug::~VstForxPlug() {
 		FrxAsyncDSPTimer::closeAllTimer();
 		_timerThreadHolder.reset();
 	}
+    graph.reset();
+    map.reset();
+    hostInfoAdapter.reset();
+    unRegisterInstance();
 
 }
 //-----------------------------------------------------------------------------

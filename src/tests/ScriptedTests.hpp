@@ -46,6 +46,7 @@ private:
 	CPPUNIT_TEST_KNOWN_ISSUE( issue265 );
 	CPPUNIT_TEST_KNOWN_ISSUE( issue269 );
 	CPPUNIT_TEST_KNOWN_ISSUE( testOpenClose );
+    CPPUNIT_TEST_KNOWN_ISSUE(legacySerialization);
 	CPPUNIT_TEST_KNOWN_ISSUE( testSerializing );
 	CPPUNIT_TEST_SUITE_END();
 	TestPlugin * plug;
@@ -69,7 +70,8 @@ public:
 	void issue320();
 	void issue322();
 	void issue324();
-        void frxLuaObjects();
+    void frxLuaObjects();
+    void legacySerialization();
 };
 
 } // namespace

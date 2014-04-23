@@ -142,7 +142,7 @@ fgc::FrxCircuidViewPtr FrxControl::deserializeView(Archive &ar)
 template <class Archive>
 void FrxControl::serializeViewComponents(Archive &ar, fgc::FrxCircuidViewPtr c) 
 {
-	c->serializeComponents(ar, ar.get_library_version());
+	c->serializeComponents(ar);
 }
 }} // namespace(s)
 

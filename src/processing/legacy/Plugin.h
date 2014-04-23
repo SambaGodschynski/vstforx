@@ -16,6 +16,7 @@
 #include "processing/MidiEventProcessor.h"
 #include <sambag/com/events/PropertyChanged.hpp>
 #include <sambag/com/events/Events.hpp>
+#include <processing/IPlugin.hpp>
 
 namespace frx { namespace processing {
     class APluginImpl;
@@ -30,7 +31,8 @@ namespace sce = sambag::com::events;
  */
 class Plugin : public ::processing::ProcessAdapter,
 	public ::processing::parameter::HasParameter,
-	public ::processing::MidiEventProcessor
+	public ::processing::MidiEventProcessor,
+    public frx::processing::IPlugin
 {
 //============================================================================================================
 friend class boost::serialization::access;
@@ -233,9 +235,9 @@ public:
 	 */
 	virtual bool hasEditor() const = 0;
 	//--------------------------------------------------------------------------------------------------------
-	virtual void openEditor(void *window) {}
+	virtual void openEditor(sambag::disco::components::WindowPtr win) {}
 	//--------------------------------------------------------------------------------------------------------
-	virtual void closeEditor(void *window) {}
+	virtual void closeEditor(sambag::disco::components::WindowPtr win) {}
 	//--------------------------------------------------------------------------------------------------------
 	virtual void onEditorIdle() {}
 	//--------------------------------------------------------------------------------------------------------

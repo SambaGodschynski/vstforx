@@ -667,7 +667,8 @@ template < typename Archiv >
 void Parameter::serialize( Archiv &ar, const unsigned int version) {
 	ar & boost::serialization::base_object<PObject>(*this);
     if (version<1) {
-        std::string name;
+        // scoped objects will break the archive
+        com::MyString name;
         ar & name;
         setName(name);
     }

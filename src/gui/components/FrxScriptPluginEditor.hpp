@@ -39,8 +39,6 @@ protected:
 	//------------------------------------------------------------------------
     FrxScriptPluginEditor(sdc::Window::Ptr, const sd::Dimension &size);
     //-------------------------------------------------------------------------
-    sdc::Window::Ptr window;
-    //-------------------------------------------------------------------------
     sdc::AContainer::Ptr createConsolePane();
     //-------------------------------------------------------------------------
     sdc::AContainer::Ptr createBtnPane();
@@ -62,10 +60,6 @@ public:
     virtual ~FrxScriptPluginEditor();
     //-------------------------------------------------------------------------
     void log(const std::string &msg);
-    //-------------------------------------------------------------------------
-    sdc::Window::Ptr getWindow() const {
-        return window;
-    }
     //-------------------------------------------------------------------------
     /**
      * @brief creates nested window using ptr as parent window

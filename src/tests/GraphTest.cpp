@@ -1325,13 +1325,14 @@ void GraphTest::testGraphComplex3() {
 //=============================================================================
 namespace {
     int countdown = 0;
+    bool busy=false;
     sambag::com::Mutex m1;
     template <typename T>
     void add( T a, T b, T *res) {
         using namespace sambag::disco::components;
         *res = a + b;
         if (--countdown<=0) {
-            getWindowToolkit()->quit();
+            busy=false;
         }
     }
     void sum(int start, int end, int *res) {
@@ -1356,7 +1357,7 @@ namespace {
         SAMBAG_TRY_TO_LOCK_TIMED(m1);
         if (--countdown<=0) {
             boost::this_thread::sleep( boost::posix_time::seconds(5) );
-            getWindowToolkit()->quit();
+            busy=false;
         }
     }
 }
@@ -1374,23 +1375,30 @@ void GraphTest::testGraphIdleHandler() {
     {   // simple test
         int res = 0;
         countdown = 1;
+        busy=true;
         graph->addIdleTask( boost::bind(&add<int>, 1, 100, &res) );
-        getWindowToolkit()->startMainLoop();
+        while (busy==true) {
+            boost::this_thread::sleep( boost::posix_time::milliseconds(100) );
+        }
         CPPUNIT_ASSERT_EQUAL((int)101, res);
     }
     {   // simple test 2
         int res = 0;
         float fres = 0.f;
         countdown = 2;
+        busy=true;
         graph->addIdleTask( boost::bind(&add<int>, 1, 100, &res) );
         graph->addIdleTask( boost::bind(&add<float>, 1.5, 0.2, &fres) );
-        getWindowToolkit()->startMainLoop();
+        while (busy==true) {
+            boost::this_thread::sleep( boost::posix_time::milliseconds(100) );
+        }
         CPPUNIT_ASSERT_EQUAL((int)101, res);
         CPPUNIT_ASSERT_EQUAL(1.7f, fres);
     }
     {   // parallel
         int res = 0;
         countdown = 4;
+        busy=true;
         boost::thread t1 = boost::thread(
             boost::bind(&sumTaskThread, graph, 1, 100, 10, 10, &res)
         );
@@ -1403,7 +1411,9 @@ void GraphTest::testGraphIdleHandler() {
         boost::thread t4 = boost::thread(
             boost::bind(&sumTaskThread, graph, 301, 400, 10, 20, &res)
         );
-        getWindowToolkit()->startMainLoop();
+        while (busy==true) {
+            boost::this_thread::sleep( boost::posix_time::milliseconds(100) );
+        }
         t1.join();
         t2.join();
         t3.join();

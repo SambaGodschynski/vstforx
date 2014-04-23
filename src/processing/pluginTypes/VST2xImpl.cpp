@@ -377,7 +377,8 @@ void VSTPluginImpl::closeEditor(sambag::disco::components::WindowPtr window) {
     SAMBAG_ASSERT(window->getWindowImpl());
 	void *hndl = ::__getHandlerForVstPlugins_(
         window->getWindowImpl()->getSystemHandle()
-    );	aEff->dispatcher ( aEff, effEditClose, 0, 0, hndl, 0);
+    );
+    aEff->dispatcher ( aEff, effEditClose, 0, 0, hndl, 0);
 }
 //-----------------------------------------------------------------------------
 void VSTPluginImpl::onEditorIdle() { 

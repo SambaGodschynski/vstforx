@@ -86,7 +86,7 @@ public:
     typedef boost::function<void()> Function;
 private:
     frx::processing::FrxAsyncDSPTimer::Ptr timer;
-    sambag::com::Mutex mutex;
+    sambag::com::RecursiveMutex mutex;
     typedef char Dummy;
     typedef boost::shared_ptr<Dummy> DummyPtr;
     typedef boost::weak_ptr<Dummy> DummyWPtr;
@@ -102,37 +102,39 @@ public:
 };
 //-----------------------------------------------------------------------------------------------------------
 void Graph::IdleHandler::doIdle(Function f, DummyWPtr wp) {
-    f();
-    SAMBAG_TRY_TO_LOCK_TIMED(mutex);
-    DummyPtr p = wp.lock();
-    SAMBAG_ASSERT(p);
-    holder.erase(p);
-    if (holder.empty()) {
-        // we are the last task
-        timer->stop();
-    }
+    SAMBAG_BEGIN_SYNCHRONIZED(mutex);
+        f();
+        DummyPtr p = wp.lock();
+        SAMBAG_ASSERT(p);
+        holder.erase(p);
+        if (holder.empty()) {
+            // we are the last task
+            timer->stop();
+        }
+    SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------------------------------------
 void Graph::IdleHandler::addTask(const Function &f) {
     using frx::processing::FrxAsyncDSPTimer;
     using sambag::com::events::EventSender;
     //lock
-    SAMBAG_TRY_TO_LOCK_TIMED(mutex);
-    DummyPtr dummy = DummyPtr( new Dummy() );
-    // insert dummy
-    if (!(holder.insert(dummy)).second) {
-        SAMBAG_LOG_WARN<<"Graph::IdleHandler::addTask failed.";
-        return;
+    SAMBAG_BEGIN_SYNCHRONIZED(mutex);
+        DummyPtr dummy = DummyPtr( new Dummy() );
+        // insert dummy
+        if (!(holder.insert(dummy)).second) {
+            SAMBAG_LOG_WARN<<"Graph::IdleHandler::addTask failed.";
+            return;
+        }
+        // add timer callback
+        timer->EventSender<FrxAsyncDSPTimer::Event>::addTrackedEventListener(
+            boost::bind(&IdleHandler::doIdle, this, f, DummyWPtr(dummy)),
+            dummy
+        );
+        if (holder.size() == 1) {
+            // we are the first task
+            timer->start();
     }
-    // add timer callback
-    timer->EventSender<FrxAsyncDSPTimer::Event>::addTrackedEventListener(
-        boost::bind(&IdleHandler::doIdle, this, f, DummyWPtr(dummy)),
-        dummy
-    );
-    if (holder.size() == 1) {
-        // we are the first task
-        timer->start();
-    }
+    SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------------------------------------
 Graph::IdleHandler::IdleHandler() {

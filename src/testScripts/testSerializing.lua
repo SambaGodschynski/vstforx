@@ -70,7 +70,7 @@ numElements = getNumElements()
 
 -- do some editor, plugin open/close sequences
 doSequenceAssertElements({CE, OE}, numElements)
-doSequenceAssertElements({CE, OE}, numElements)
+--[[doSequenceAssertElements({CE, OE}, numElements)
 doSequenceAssertElements({CP, CE, OP, OE}, numElements)
 doSequenceAssertElements({CP, CE, OP, OE}, numElements)
 
@@ -108,5 +108,5 @@ assert(getNumElements() == numElements)
 stream = frx.serializePlugin()
 doSequenceAssertElements({CE, CP, OE, OP}, numElements)
 doSequence({CV})
-
+]]--
 --end

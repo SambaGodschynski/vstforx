@@ -11,7 +11,8 @@
 #include <boost/shared_ptr.hpp>
 #include "IPluginAdapter.hpp"
 #include "ProcessorAdapter.hpp"
-#include "Plugin.h"
+#include "IPlugin.hpp" // the only reason for having an additinal plugin interface
+                       // is for supporting legacy plugin impl.
 #include "Forward.hpp"
 
 namespace frx { namespace processing {
@@ -25,7 +26,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<PluginAdapter> Ptr;
 	//-------------------------------------------------------------------------
-	typedef Plugin Adaptee;
+	typedef IPlugin Adaptee;
 private:
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:

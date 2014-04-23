@@ -176,7 +176,7 @@ public:
 	void close();
 	//-------------------------------------------------------------------------
 	template <typename Archive> 
-	void serializeComponents(Archive &ar, const unsigned int version) {
+	void serializeComponents(Archive &ar) {
 		SAMBAG_ASSERT(getPtr());
         putClientProperty("serializing", true);
 		std::list<FrxComponentInfo> l;
@@ -184,9 +184,6 @@ public:
 			collectFrxComponentInfo(l);
 		}
 		ar & l;
-        if (version>0) {
-            ar & nameMap;
-        }
 		IFrxControl &ctrl = getFrxControl(getPtr());
 		FrxCircuidViewPtr slf = getPtr();
 		if (Archive::is_loading::value) {

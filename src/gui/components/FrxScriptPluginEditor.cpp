@@ -27,7 +27,7 @@ namespace frx { namespace gui { namespace components {
 void FrxScriptPluginEditor::log(const std::string &msg) {
     sdc::getWindowToolkit()->invokeLater(
         boost::bind(&FrxScriptPluginEditor::delayedLog, this, msg),
-        50, window
+        50, shared_from_this()
     );
 }
 //-----------------------------------------------------------------------------
@@ -55,26 +55,12 @@ FrxScriptPluginEditor::FrxScriptPluginEditor(sdc::Window::Ptr parent, const sd::
     createWindow(parent, size);
 }
 //-----------------------------------------------------------------------------
-namespace {
-    void __onClose(sdc::Window::WPtr _win) {
-        sdc::Window::Ptr win = _win.lock();
-        if (!win) {
-            return;
-        }
-        win->close();
+void FrxScriptPluginEditor::createWindow(sdc::Window::Ptr window, const sd::Dimension &size) {
+    if (!window) {
+        return;
     }
-}
-void FrxScriptPluginEditor::createWindow(sdc::Window::Ptr parent, const sd::Dimension &size) {
     using namespace sambag::com;
 	using namespace sambag::disco::components;
-    void *ptr = parent->getWindowImpl()->getSystemHandle();
-	ArbitraryType::Ptr pData = createObject(ptr);
-	window = getWindowToolkit()->createNestedWindow(pData, size);
-    parent->setName("HUBBA");
-    SAMBAG_ASSERT(window);
-    parent->addOnCloseEventListener(
-        boost::bind(&__onClose, sdc::Window::WPtr(window))
-    );
 	sdc::ui::UIManager::instance().installLookAndFeel(window->getRootPane(),
 		frx::gui::components::ui::FrxLookAndFeel::create()
 	);
@@ -108,6 +94,5 @@ FrxScriptPluginEditor::create(sdc::WindowPtr win, const sd::Dimension &size)
 }
 //-----------------------------------------------------------------------------
 FrxScriptPluginEditor::~FrxScriptPluginEditor() {
-    window->close();
 }
 }}} // namespace(s)

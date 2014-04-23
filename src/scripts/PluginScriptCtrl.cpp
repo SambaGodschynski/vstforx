@@ -693,8 +693,8 @@ void FrxOpenUrl::process(const std::string &url, Ctrl *ctrl, const Ctrl::LuaProc
         }
         
         std::stringstream msg;
-        msg<<"You are going to visit the UNKNOWN url '"<<url<<"'.";
-        msg<<" Do you want to proceed?";
+        msg<<"You are going to visit the url '"<<url<<"'.";
+        msg<<" Which is not an official VSTForx site. Do you want to proceed?";
         
 		bool res = ::com::osMessageBox("VSTForx", msg.str(),
 			::com::MSG_QUESTION) == ::com::MSG_RET_YES;

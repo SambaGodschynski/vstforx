@@ -72,7 +72,7 @@ void editorPositionPar(const sce::PropertyChanged &ev, sdc::WindowPtr win)
 /*
  * will be called when editor was moved
  */
-void editorBoundsChanged(Plugin *plugin, sdc::WindowWPtr _win)
+void editorBoundsChanged(IPlugin *plugin, sdc::WindowWPtr _win)
 {
     sdc::WindowPtr win = _win.lock();
     if (!win) {
@@ -112,7 +112,7 @@ void onPluginEditorChanged(const sce::PropertyChanged &ev, sdc::WindowWPtr _win)
 //  Class PluginAdapter
 //=============================================================================
 //-----------------------------------------------------------------------------
-void initPos(Plugin *plugin, std::pair<double, double> x, sdc::WindowWPtr _win) {
+void initPos(IPlugin *plugin, std::pair<double, double> x, sdc::WindowWPtr _win) {
     sdc::WindowPtr win = _win.lock();
     if (!win) {
         return;

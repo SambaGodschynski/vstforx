@@ -18,6 +18,13 @@
 #include <processing/ModelFactory.hpp>
 #include <processing/Plugin.h>
 #include <sambag/disco/Geometry.hpp>
+#include <sambag/disco/components/Window.hpp>
+
+/**
+ * get the apropriate handler from a window.
+ * HWND, WindowRef or NSView
+ */
+extern void * __getHandlerForVstPlugins_(void*);
 
 #define MAX_BFF_STR 2048
 
@@ -480,23 +487,31 @@ void VSTPlugin::onPlugRequestWindowResize (size_t w, size_t h) {
     );
 }
 //------------------------------------------------------------------------------------------------------------
-void VSTPlugin::openEditor(void *window) {
-	if (!window)
+void VSTPlugin::openEditor(sambag::disco::components::WindowPtr _window) {
+    if (!_window)
 		return;
-	ERect *size = NULL;
+    SAMBAG_ASSERT(_window->getWindowImpl());
+	void *hndl = ::__getHandlerForVstPlugins_(
+        _window->getWindowImpl()->getSystemHandle()
+    );
+    ERect *size = NULL;
 	// get editor size
 	aEff->dispatcher ( aEff, effEditGetRect, 0, 0, &size, 0);
 	// set size
 	if ( size ) {
         onPlugRequestWindowResize(size->right - size->left, size->bottom - size->top);
 	}
-    aEff->dispatcher ( aEff, effEditOpen, 0, 0, window, 0);
+    aEff->dispatcher ( aEff, effEditOpen, 0, 0, hndl, 0);
 }
 //------------------------------------------------------------------------------------------------------------
-void VSTPlugin::closeEditor(void *window) {
-	if (!window)
+void VSTPlugin::closeEditor(sambag::disco::components::WindowPtr _window) {
+    if (!_window)
 		return;
-	aEff->dispatcher ( aEff, effEditClose, 0, 0, window, 0);
+    SAMBAG_ASSERT(_window->getWindowImpl());
+	void *hndl = ::__getHandlerForVstPlugins_(
+        _window->getWindowImpl()->getSystemHandle()
+    );
+	aEff->dispatcher ( aEff, effEditClose, 0, 0, hndl, 0);
 }
 //--------------------------------------------------------------------------------------------------------
 void VSTPlugin::onEditorIdle() {
