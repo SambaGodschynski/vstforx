@@ -1068,8 +1068,13 @@ void FrxControl::handleContextMenuPopup(const sdc::events::MouseEvent &ev) {
 			currPopup->hidePopup();
 		return;
 	}
-	sdc::PopupMenuPtr popup = ev.getSource()->getComponentPopupMenu();
-	FrxCircuidView::Ptr circ = ev.getSource()->getFirstContainer<FrxCircuidView>();
+    FrxCircuidView::Ptr circ = ev.getSource()->getFirstContainer<FrxCircuidView>();
+    if (!circ) {
+        return;
+    }
+    
+	sdc::PopupMenuPtr popup = circ->getContextMenu(ev.getSource());
+	
     if (popup) {
         // set context object to view
         FrxComponentPtr obj = ev.getSource()->getFirstContainer<FrxComponent>();

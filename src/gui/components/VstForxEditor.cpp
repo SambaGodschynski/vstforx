@@ -168,28 +168,30 @@ void VstForxEditor::setCircuidView(FrxCircuidViewPtr view) {
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::loadInitScript() {
-	std::string file = com::getSettings().getInitScriptFilename();
-	try {
-		scripts::PluginScriptCtrl::Ptr sctrl =
-			frx::processing::getScriptControl(circView);
-		if (!sctrl) {
-			SAMBAG_LOG_WARN<<"get script control failed.";
-			return;
-		}
-		if (!boost::filesystem::exists(file)) {
-			SAMBAG_LOG_INFO<<file<<" not found";
-			return;
-		}
-		std::stringstream ss;
-		boost::filesystem::path luaPath(com::getSettings().getHomeDirectory());
-		ss<<"package.path='"<<luaPath.generic_string()<<"/scripts/?.lua;' .. package.path";
-		sctrl->execute(ss.str());
-		sctrl->executeFile(file);
-    } catch(const sambag::lua::ExecutionFailed &ex) {
-        errorMessage("executing "+file+" failed: " + ex.errMsg);
-    } catch(...) {
-        errorMessage("executing "+file+" failed: unkown reason");
+    SAMBAG_BEGIN_SYNCHRONIZED(mutex)
+        std::string file = com::getSettings().getInitScriptFilename();
+        try {
+            scripts::PluginScriptCtrl::Ptr sctrl =
+                frx::processing::getScriptControl(circView);
+            if (!sctrl) {
+                SAMBAG_LOG_WARN<<"get script control failed.";
+                return;
+            }
+            if (!boost::filesystem::exists(file)) {
+                SAMBAG_LOG_INFO<<file<<" not found";
+                return;
+            }
+            std::stringstream ss;
+            boost::filesystem::path luaPath(com::getSettings().getHomeDirectory());
+            ss<<"package.path='"<<luaPath.generic_string()<<"/scripts/?.lua;' .. package.path";
+            sctrl->execute(ss.str());
+            sctrl->executeFile(file);
+        } catch(const sambag::lua::ExecutionFailed &ex) {
+            errorMessage("executing "+file+" failed: " + ex.errMsg);
+        } catch(...) {
+            errorMessage("executing "+file+" failed: unkown reason");
     }
+    SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::setEditorSize(int width, int height) {
@@ -201,32 +203,34 @@ void VstForxEditor::setEditorSize(int width, int height) {
 }
 //-----------------------------------------------------------------------------
 FrxCircuidViewPtr VstForxEditor::createView(sdc::Window::Ptr win) {
-	if (circView) { // happens when view is deserialized while editor closed
-		return circView;
-	}
+    SAMBAG_BEGIN_SYNCHRONIZED(mutex)
+        if (circView) { // happens when view is deserialized while editor closed
+            return circView;
+        }
 
-	FrxCircuidView::Ptr res;
-	if (hiChamber.first.length()!=0) { //deserialize view
-		std::stringstream ss;
-		ss<<hiChamber.first;
-		::com::iArchive ar(ss);
-		res = deserializeViewTemp(ar, hiChamber.second);
-		hiChamber.first = "";
-		if (res) {
-			return res;
-		}
-	} 
+        FrxCircuidView::Ptr res;
+        if (hiChamber.first.length()!=0) { //deserialize view
+            std::stringstream ss;
+            ss<<hiChamber.first;
+            ::com::iArchive ar(ss);
+            res = deserializeViewTemp(ar, hiChamber.second);
+            hiChamber.first = "";
+            if (res) {
+                return res;
+            }
+        } 
 
-	res = createEmptyView();
-	getPlugin()->registerView(res);
-	initEntryExit(res);
-	if (!res) {
-		SAMBAG_THROW(
-			sambag::com::exceptions::IllegalStateException,
-			"view creation failed."
-		);
-	}
-	return res;
+        res = createEmptyView();
+        getPlugin()->registerView(res);
+        initEntryExit(res);
+        if (!res) {
+            SAMBAG_THROW(
+                sambag::com::exceptions::IllegalStateException,
+                "view creation failed."
+            );
+        }
+        return res;
+    SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 void VstForxEditor::onHostWindowOpen(void *src, const sdc::OnOpenEvent &ev)

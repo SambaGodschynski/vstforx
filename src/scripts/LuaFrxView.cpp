@@ -725,6 +725,9 @@ void LuaFrxView::onViewEvent(lua_State *lua, const fgc::FrxCircuidViewEvent &ev)
     if (ev.type == fgc::FrxCircuidViewEvent::OnSerializing) {
         evtype = "on saving view state";
     }
+    if (ev.type == fgc::FrxCircuidViewEvent::OnComponentMenuRequest) {
+        evtype = "requesting context menu";
+    }
     if (ev.type == fgc::FrxCircuidViewEvent::OnDeserializing) {
         // we can't catch this event because while deserializing
         // the script isn't running.

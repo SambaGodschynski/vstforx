@@ -40,7 +40,8 @@ struct FrxCircuidViewEvent {
 		OnSerializing,
 		OnDeserializing,
 		OnOpening,
-		OnClosing
+		OnClosing,
+        OnComponentMenuRequest,
 	};
 	Type type;
 	FrxComponentPtr component;
@@ -163,6 +164,11 @@ private:
 	//-------------------------------------------------------------------------
     void serialize(com::oArchive &ar, const unsigned int version);
 public:
+    //-------------------------------------------------------------------------
+    /**
+     * @return component context menu
+     */
+    sdc::PopupMenuPtr getContextMenu(sdc::AComponentPtr component);
 	//-------------------------------------------------------------------------
 	void open();
 	//-------------------------------------------------------------------------
