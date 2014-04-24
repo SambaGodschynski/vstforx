@@ -287,6 +287,52 @@ std::string FrxCircuidView::uniqueName(const std::string &x) {
     
 }
 //-----------------------------------------------------------------------------
+void FrxCircuidView::serialize(::com::iArchive &ar, const unsigned int version)
+{
+    SAMBAG_BEGIN_SYNCHRONIZED(getTreeLock())
+        serializeSelfPtr(ar, version);
+        fireViewEvent(FrxCircuidViewEvent::OnDeserializing);
+    SAMBAG_END_SYNCHRONIZED
+}
+//-----------------------------------------------------------------------------
+void FrxCircuidView::serialize(::com::oArchive &ar, const unsigned int version)
+{
+    SAMBAG_BEGIN_SYNCHRONIZED(getTreeLock())
+        fireViewEvent(FrxCircuidViewEvent::OnSerializing);
+        serializeSelfPtr(ar, version);
+    SAMBAG_END_SYNCHRONIZED
+}
+//-----------------------------------------------------------------------------
+void FrxCircuidView::serializeComponents(::com::iArchive &ar) {
+    SAMBAG_ASSERT(getPtr());
+    SAMBAG_BEGIN_SYNCHRONIZED(getTreeLock())
+        putClientProperty("serializing", true);
+        std::list<FrxComponentInfo> l;
+        ar & l;
+        IFrxControl &ctrl = getFrxControl(getPtr());
+        FrxCircuidViewPtr slf = getPtr();
+        BOOST_FOREACH(const FrxComponentInfo &i, l) {
+            add(i.first, i.second, false);
+            ctrl.registerComponent(slf, i.first);
+        }
+        l.clear();
+        putClientProperty("serializing", false);
+    SAMBAG_END_SYNCHRONIZED
+}
+//-----------------------------------------------------------------------------
+void FrxCircuidView::serializeComponents(::com::oArchive &ar) {
+    SAMBAG_ASSERT(getPtr());
+        SAMBAG_BEGIN_SYNCHRONIZED(getTreeLock())
+        putClientProperty("serializing", true);
+        std::list<FrxComponentInfo> l;
+        collectFrxComponentInfo(l);
+        ar & l;
+        FrxCircuidViewPtr slf = getPtr();
+        l.clear();
+        putClientProperty("serializing", false);
+    SAMBAG_END_SYNCHRONIZED
+}
+//-----------------------------------------------------------------------------
 void FrxCircuidView::add(sdc::AComponentPtr comp, ZOrder zord, bool normalize) 
 {
     comp->setName( uniqueName(comp->getName()) );
@@ -390,7 +436,6 @@ void FrxCircuidView::postConstructor() {
 //-----------------------------------------------------------------------------
 int FrxCircuidView::getIndexOf(ZOrder order) const {
 	sdc::AContainer::Ptr cnt = getContentPane(); 
-	int startIndex = 0;
 	int endIndex = cnt->getComponentCount();
 	// TODO: impl. O(log(n))
 	for (int i=0; i<endIndex; ++i) {

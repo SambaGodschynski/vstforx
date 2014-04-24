@@ -159,42 +159,18 @@ private:
 		}
 	}
 	//-------------------------------------------------------------------------
-	template <typename Archive> 
-	void serialize(Archive &ar, const unsigned int version) {
-        if (Archive::is_saving::value) {
-            fireViewEvent(FrxCircuidViewEvent::OnSerializing);
-        }
-		serializeSelfPtr(ar, version);
-        if (Archive::is_loading::value) {
-            fireViewEvent(FrxCircuidViewEvent::OnDeserializing);
-        }
-	}
+    void serialize(com::iArchive &ar, const unsigned int version);
+	//-------------------------------------------------------------------------
+    void serialize(com::oArchive &ar, const unsigned int version);
 public:
 	//-------------------------------------------------------------------------
 	void open();
 	//-------------------------------------------------------------------------
 	void close();
 	//-------------------------------------------------------------------------
-	template <typename Archive> 
-	void serializeComponents(Archive &ar) {
-		SAMBAG_ASSERT(getPtr());
-        putClientProperty("serializing", true);
-		std::list<FrxComponentInfo> l;
-		if (Archive::is_saving::value) {
-			collectFrxComponentInfo(l);
-		}
-		ar & l;
-		IFrxControl &ctrl = getFrxControl(getPtr());
-		FrxCircuidViewPtr slf = getPtr();
-		if (Archive::is_loading::value) {
-			BOOST_FOREACH(const FrxComponentInfo &i, l) {
-				add(i.first, i.second, false);
-				ctrl.registerComponent(slf, i.first);
-			}
-		}
-		l.clear();
-        putClientProperty("serializing", false);
-	}
+	void serializeComponents(com::iArchive &ar);
+    //-------------------------------------------------------------------------
+    void serializeComponents(com::oArchive &ar);
 	//-------------------------------------------------------------------------
 	void setEditorResizeHandler(const EditorResizeHandler &f);
 	//-------------------------------------------------------------------------

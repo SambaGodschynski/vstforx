@@ -14,10 +14,12 @@ end
 
 function oc(x)
     for i = 0, x, 1 do
+	print("closing")
     	frx.closeEditor()
-        frx.wait(200)
+        frx.wait(1000)
+	print("opening")
 	frx.openEditor()
-        frx.wait(200)
+        frx.wait(1000)
     end
 end
 

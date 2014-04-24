@@ -27,7 +27,7 @@ function connectAllComponents()
       for j, y in pairs(b) do 
 	 if not (x == y) then
 	    if frx.view:connect(x,y) == true then
-	       --frx.wait(600)
+	       frx.wait(600)
 	    end	
 	 end		
       end	
@@ -66,11 +66,22 @@ end
 
 connectAllComponents()
 
+
+function save(fname)
+    f=io.open(fname,"w")
+    s=frx.serializePlugin()
+    f.write(f,s)
+    f.close(f)
+end
+
+
+--save("xxx")
+
 numElements = getNumElements()
 
 -- do some editor, plugin open/close sequences
 doSequenceAssertElements({CE, OE}, numElements)
---[[doSequenceAssertElements({CE, OE}, numElements)
+doSequenceAssertElements({CE, OE}, numElements)
 doSequenceAssertElements({CP, CE, OP, OE}, numElements)
 doSequenceAssertElements({CP, CE, OP, OE}, numElements)
 
@@ -108,5 +119,6 @@ assert(getNumElements() == numElements)
 stream = frx.serializePlugin()
 doSequenceAssertElements({CE, CP, OE, OP}, numElements)
 doSequence({CV})
-]]--
+
 --end
+
