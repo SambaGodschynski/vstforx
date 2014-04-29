@@ -1,0 +1,32 @@
+frx.scripts
+
+/**
+ * @brief 
+ * SAMBAG_LUA_FTAG\((\w*), (.*?)\((.*?)\)\);
+ */
+class LuaFrxViewBase extends sambag.lua.ALuaObject {
+    User< boost::tuple<float, float> > Point;
+    ManuallyReturn<1> add();
+    void remove();
+    ManuallyReturn<1> getObjects();
+    ManuallyReturn<1> connect();
+    ManuallyReturn<1> addKnob();
+    ManuallyReturn<1> addHostKnob(int index);
+    User<Point> getLocation();
+    void setLocation(float x, float y);
+    User<Point> getSize();
+    void setSize(float width, float height);
+    ManuallyReturn<1> getEntry();
+    ManuallyReturn<1> getExit();
+    ManuallyReturn<1> getByName(string name);
+    ManuallyReturn<1> getByType(string type);
+    ManuallyReturn<1> getSelectedObjects();
+    void addViewListener(string expr);
+    void removeViewListener(string expr);
+    void setMenu();
+    ManuallyReturn<1> getContextObject();
+}
+
+
+
+

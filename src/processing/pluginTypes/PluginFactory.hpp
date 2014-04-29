@@ -28,7 +28,7 @@ public:
     //-------------------------------------------------------------------------
     typedef APluginImpl::Parameters Parameters;
     //-------------------------------------------------------------------------
-    typedef Product* ProductPtr;
+    typedef Product::Ptr ProductPtr;
     //-------------------------------------------------------------------------
 	typedef ::processing::PluginInfo PluginInfo;
     typedef PluginInfo::PluginType Type;

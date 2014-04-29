@@ -15,6 +15,7 @@
 #include <sambag/disco/components/Forward.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 #include <boost/unordered_set.hpp>
+#include "LuaFrxViewBase.hpp"
 
 namespace frx {
 namespace gui { namespace components {
@@ -29,13 +30,13 @@ namespace scripts {
 /** 
   * @class LuaFrxView.
   */
-class LuaFrxView : public sambag::lua::ALuaObject {
+class LuaFrxView : public LuaFrxViewBase {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<LuaFrxView> Ptr;
     //-------------------------------------------------------------------------
-    typedef sambag::lua::ALuaObject Super;
+    typedef LuaFrxViewBase Super;
 protected:
     //-------------------------------------------------------------------------
     void initListenersIfNeccessary(lua_State *lua);
@@ -48,53 +49,10 @@ protected:
     template <class Container>
     void pushComponents(lua_State *lua, const Container &components);
     //-------------------------------------------------------------------------
-    virtual void addLuaFields(lua_State *lua, int index);
-    //-------------------------------------------------------------------------
     LuaFrxView();
     //-------------------------------------------------------------------------
     fgc::FrxCircuidViewPtr getView(lua_State *lua) const;
     //-------------------------------------------------------------------------
-    typedef boost::tuple<float,float> Point;
-    SAMBAG_LUA_FTAG(add, slua::IgnoreReturn());
-    SAMBAG_LUA_FTAG(remove, void());
-    SAMBAG_LUA_FTAG(getObjects, slua::IgnoreReturn());
-    SAMBAG_LUA_FTAG(connect, slua::IgnoreReturn());
-    SAMBAG_LUA_FTAG(addKnob, slua::IgnoreReturn());
-    SAMBAG_LUA_FTAG(addHostKnob, slua::IgnoreReturn(int));
-    SAMBAG_LUA_FTAG(getLocation, Point());
-    SAMBAG_LUA_FTAG(setLocation, void(float, float));
-    SAMBAG_LUA_FTAG(getSize, Point());
-    SAMBAG_LUA_FTAG(setSize, void(float, float));
-    SAMBAG_LUA_FTAG(getEntry, slua::IgnoreReturn());
-    SAMBAG_LUA_FTAG(getExit, slua::IgnoreReturn());
-    SAMBAG_LUA_FTAG(getByName, slua::IgnoreReturn(std::string));
-    SAMBAG_LUA_FTAG(getByType, slua::IgnoreReturn(std::string));
-    SAMBAG_LUA_FTAG(getSelectedObjects, slua::IgnoreReturn());
-    SAMBAG_LUA_FTAG(addViewListener, void(std::string));
-    SAMBAG_LUA_FTAG(removeViewListener, void(std::string));
-    SAMBAG_LUA_FTAG(setMenu, void());
-    SAMBAG_LUA_FTAG(getContextObject, slua::IgnoreReturn());
-    typedef LOKI_TYPELIST_10(Frx_add_Tag,
-        Frx_remove_Tag,
-        Frx_getObjects_Tag,
-        Frx_connect_Tag,
-        Frx_addKnob_Tag,
-        Frx_addHostKnob_Tag,
-        Frx_getLocation_Tag,
-        Frx_setLocation_Tag,
-        Frx_getSize_Tag,
-        Frx_setSize_Tag) Functions1;
-    
-    typedef LOKI_TYPELIST_9(Frx_getEntry_Tag,
-        Frx_getExit_Tag,
-        Frx_getByName_Tag,
-        Frx_getByType_Tag,
-        Frx_getSelectedObjects_Tag,
-        Frx_addViewListener_Tag,
-        Frx_removeViewListener_Tag,
-        Frx_setMenu_Tag,
-        Frx_getContextObject_Tag
-    ) Functions2;
     ///////////////////////////////////////////////////////////////////////////
     // Lua impl.
     slua::IgnoreReturn add(lua_State *lua);
@@ -117,12 +75,10 @@ protected:
     void setMenu(lua_State *lua);
     void addViewListener(lua_State *lua, const std::string &listener);
     void removeViewListener(lua_State *lua, const std::string &listener);
-    boost::tuple<float,float> getLocation(lua_State *lua) const;
+    boost::tuple<float,float> getLocation(lua_State *lua);
     void setLocation(lua_State *lua, float x, float y);
-    boost::tuple<float,float> getSize(lua_State *lua) const;
+    boost::tuple<float,float> getSize(lua_State *lua);
     void setSize(lua_State *lua, float x, float y);
-    //-------------------------------------------------------------------------
-    virtual void __lua_gc(lua_State *lua);
 private:
     //-------------------------------------------------------------------------
     fgc::VstForxEditor *editor;

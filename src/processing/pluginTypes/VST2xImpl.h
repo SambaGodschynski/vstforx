@@ -123,9 +123,14 @@ private:
         float opt
     );
 protected:
-public:
 	//-------------------------------------------------------------------------
 	VSTPluginImpl( frx::processing::IHostInfo::Ptr hostInfo,
+        Parameters *parameters,
+        const string &filename
+    );
+public:
+    //-------------------------------------------------------------------------
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo,
         Parameters *parameters,
         const string &filename
     );

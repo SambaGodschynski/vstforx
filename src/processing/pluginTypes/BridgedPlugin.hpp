@@ -29,7 +29,9 @@ class BridgedPlugin : public APluginImpl
 //=============================================================================
 public:
     //-------------------------------------------------------------------------
-    BridgedPlugin(IHostInfo::Ptr hI, const std::string &location,
+    typedef boost::shared_ptr<BridgedPlugin> Ptr;
+    //-------------------------------------------------------------------------
+    static Ptr create (IHostInfo::Ptr hI, const std::string &location,
         Parameters *parameters);
     //-------------------------------------------------------------------------
     virtual ~BridgedPlugin();
@@ -110,6 +112,9 @@ public:
     //-------------------------------------------------------------------------
     AWindowImplPtr getWindowImpl();
 protected:
+    //-------------------------------------------------------------------------
+    BridgedPlugin(IHostInfo::Ptr hI, const std::string &location,
+        Parameters *parameters);
     //-------------------------------------------------------------------------
     void parameterChanged(int index);
     //-------------------------------------------------------------------------

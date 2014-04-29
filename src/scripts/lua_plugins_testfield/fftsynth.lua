@@ -6,8 +6,8 @@ gpConfig = {
    name="FFT Synth", 
    author="Samba Godschynski",
    license="GPL",
-   numInputs=0, 
-   numOutputs=2
+   numInChannels=0, 
+   numOutChannels=2
 }
 gpParameterSetup = {}
 p = gpParameterSetup
@@ -27,7 +27,6 @@ end
 function lcSetAudioConfig(bs, sr)
    sampleRate = sr
    setBuffer()
-   frx.log("audioConfig set")
 end 
 
 function initParam()
@@ -90,8 +89,8 @@ function lcProcess(numSamples)
 	 phase = 1 + phase - buffSize
       end
    end 
-   frx.plug:toOutput(1, v)
-   frx.plug:toOutput(2, v)
+   frx.plug:setChannel(1, v)
+   frx.plug:setChannel(2, v)
 end
 
 function lcOnParameterChanged(name, value)

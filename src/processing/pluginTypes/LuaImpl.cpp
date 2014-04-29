@@ -47,15 +47,24 @@ namespace {
 }
 //=============================================================================
 //-----------------------------------------------------------------------------
-APluginImpl * createLuaImpl(IHostInfo::Ptr hI,
+APluginImpl::Ptr createLuaImpl(IHostInfo::Ptr hI,
     APluginImpl::Parameters *parameters,
     const std::string &location)
 {
-    return new LuaImpl(hI, location, parameters);
+    return LuaImpl::create(hI, location, parameters);
 }
 //=============================================================================
 //  Class LuaImpl
 //=============================================================================
+//-----------------------------------------------------------------------------
+LuaImpl::Ptr LuaImpl::create(IHostInfo::Ptr hI,
+        const std::string &location,
+        Parameters *parameters)
+{
+    Ptr res(new LuaImpl(hI, location, parameters));
+    res->loadScript();
+    return res;
+}
 //-----------------------------------------------------------------------------
 void LuaImpl::addToEditor(const std::string &msg) {
     SAMBAG_BEGIN_SYNCHRONIZED(logMutex)
@@ -82,7 +91,7 @@ void LuaImpl::addToEditor(const std::string &msg) {
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::onExecError(const std::string &msg) {
-    log_err(msg);
+    logErr(msg);
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::log(const std::string &msg) {
@@ -90,23 +99,23 @@ void LuaImpl::log(const std::string &msg) {
     addToEditor("[INFO] " + msg);
 }
 //-----------------------------------------------------------------------------
-void LuaImpl::log_err(const std::string &msg) {
+void LuaImpl::logErr(const std::string &msg) {
     SAMBAG_LOG_ERR<<logName()<<": "<<msg;
     addToEditor("[ERROR] " + msg);
 }
 //-----------------------------------------------------------------------------
-void LuaImpl::log_warn(const std::string &msg) {
+void LuaImpl::logWarn(const std::string &msg) {
     SAMBAG_LOG_WARN<<logName()<<": "<<msg;
     addToEditor("[WARNING] " + msg);
 }
 //-----------------------------------------------------------------------------
-void LuaImpl::log_trace(const std::string &msg) {
+void LuaImpl::logTrace(const std::string &msg) {
     SAMBAG_LOG_TRACE<<logName()<<": "<<msg;
     addToEditor("[TRACE] " + msg);
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::scriptFailed(const std::string &msg) {
-    log_err(msg);
+    logErr(msg);
     setFlag(IsValid, false);
 }
 //-----------------------------------------------------------------------------
@@ -117,7 +126,6 @@ LuaImpl::LuaImpl(IHostInfo::Ptr hI, const std::string &location,
     flags(0)
 {
     scriptFile = location;
-    loadScript();
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::initScript() {
@@ -142,10 +150,10 @@ void LuaImpl::loadScript() {
         initLuaEnv(luaState);
         sambag::lua::executeFile(luaState.get(), location);
         if(!sambag::lua::getGlobal(luaState.get(), config, GP_CONFIG)) {
-            log_err("missing " + GP_CONFIG);
+            logErr("missing " + GP_CONFIG);
         }
         if (config["type"]!="frx_lua_plugin") {
-            log_err("invalid gpConfig.type: " + config["type"]);
+            logErr("invalid gpConfig.type: " + config["type"]);
             setFlag(IsValid, false);
         }
         scriptName = config["name"];
@@ -163,9 +171,9 @@ void LuaImpl::loadScript() {
         log("numParameter: " + sambag::com::toString(parameters->size()));
         log("valid: " + std::string(getFlag(IsValid) ? "yes" : "no") );
     } catch(const sambag::lua::ExecutionFailed &ex) {
-       log_err("loading script failed: " + ex.errMsg);
+       logErr("loading script failed: " + ex.errMsg);
     } catch(const std::exception &ex) {
-       log_err(std::string("loading script failed: ") + ex.what());
+       logErr(std::string("loading script failed: ") + ex.what());
     }
 }
 //-----------------------------------------------------------------------------
@@ -175,14 +183,14 @@ void LuaImpl::loadIOs() {
         ss<<config["numInChannels"];
         ss>>numInChannels;
     } else {
-        log_warn("missing gpConfig.numInChannels");
+        logWarn("missing gpConfig.numInChannels");
     }
     if (!config["numOutChannels"].empty()) {
         std::stringstream ss;
         ss<<config["numOutChannels"];
         ss>>numOutChannels;
     } else {
-        log_warn("missing gpConfig.numOutChannels");
+        logWarn("missing gpConfig.numOutChannels");
     }
     if (numInChannels>MAX_IO) {
         scriptFailed("num input > " + sambag::com::toString(MAX_IO));
@@ -363,7 +371,8 @@ bool LuaImpl::canHandleMidiEvent() const {
     return true;
 }
 //-----------------------------------------------------------------------------
-void LuaImpl::frxSetParameterValue(const std::string &name, float value) {
+void LuaImpl::setParameterValue(lua_State *lua, const std::string &name, float value)
+{
     ParameterMap::iterator it = parameterMap.find(name);
     if (it==parameterMap.end()) {
         std::stringstream ss;
@@ -377,7 +386,7 @@ void LuaImpl::frxSetParameterValue(const std::string &name, float value) {
     it->second.first->setValue(value);
 }
 //-----------------------------------------------------------------------------
-void LuaImpl::frxSetParameterDisplay(const std::string &name,
+void LuaImpl::setParameterDisplay(lua_State *lua, const std::string &name,
     const std::string &value)
 {
     ParameterMap::iterator it = parameterMap.find(name);
@@ -406,33 +415,33 @@ void LuaImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
 	// what occurs some unhandy circumstances:
 	// - unable to use callLuaFunc
 	// - do all sequence init. manually
-	lua_State *L = luaState.get();
-	lua_getglobal(L, LC_NAME(lcProcessMidi));
-	lua_newtable(L);
-	int top = lua_gettop(L);
+    lua_State *lua = luaState.get();
+	lua_getglobal(lua, LC_NAME(lcProcessMidi));
+	lua_newtable(lua);
+	int top = lua_gettop(lua);
 	for (size_t i = 0; i<(size_t)events->getNumEvents(); ++i) {
         IMidiEvents::MidiEvent ev = events->getMidiEvent(i);
-		push(L, i+1); // index
+		push(lua, i+1); // index
 		//insert map: {'deltaFrames'=0, 'size'=0, 'data'={} }
 		{
-			lua_newtable(L);
-			int top = lua_gettop(L);
-			push(L, PROCESS_MIDI_DELTAFRAMES); // deltaFrames
-			push(L, boost::get<1>(ev));
-			lua_settable(L, top); //<- 
-            push(L, PROCESS_MIDI_DATA); // midi data
+			lua_newtable(lua);
+			int top = lua_gettop(lua);
+			push(lua, PROCESS_MIDI_DELTAFRAMES); // deltaFrames
+			push(lua, boost::get<1>(ev));
+			lua_settable(lua, top); //<- 
+            push(lua, PROCESS_MIDI_DATA); // midi data
             size_t byteSize = boost::get<0>(ev);
-			push(L, LuaSequenceEx<IMidiEvents::Data>(boost::get<2>(ev),byteSize) );
-			lua_settable(L, top); //<- 
+			push(lua, LuaSequenceEx<IMidiEvents::Data>(boost::get<2>(ev),byteSize) );
+			lua_settable(lua, top); //<- 
 		}
-		lua_settable(L, top);
+		lua_settable(lua, top);
 	}
 	// push numEvents argument
-	push(L, events->getNumEvents());
+	push(lua, events->getNumEvents());
 	// call function
 	try {
-		if (lua_pcall(L, 2, 0, 0)!=0)
-			throw ExecutionFailed(std::string(lua_tostring(L, -1)));
+		if (lua_pcall(lua, 2, 0, 0)!=0)
+			throw ExecutionFailed(std::string(lua_tostring(lua, -1)));
 	} catch (const LuaException &ex) {
 		scriptFailed(ex.errMsg);
 		return;
@@ -445,85 +454,84 @@ namespace {
     std::pair<
         sambag::dsp::DefaultMidiEvents::DataPtr,
         size_t>
-    __addMidiData(lua_State *L, sambag::dsp::DefaultMidiEvents &midiEvents)
+    __addMidiData(lua_State *lua, sambag::dsp::DefaultMidiEvents &midiEvents)
     {
         using sambag::dsp::DefaultMidiEvents;
-        if(!lua_istable(L, -1)) {
+        if(!lua_istable(lua, -1)) {
             throw std::runtime_error("invalid midi data");
         }
-        size_t size = sambag::lua::getLen(L, -1);
+        size_t size = sambag::lua::getLen(lua, -1);
         if (size==0) {
             return std::make_pair((DefaultMidiEvents::DataPtr)NULL, 0);
         }
         typedef DefaultMidiEvents::Data Data;
         DefaultMidiEvents::DataArray data(new Data[size]);
-        lua_pushnil(L); /* first key */
+        lua_pushnil(lua); /* first key */
         int i=0;
-        while (lua_next(L, -2) != 0) {
-            if(!lua_isnumber(L, -1)) {
+        while (lua_next(lua, -2) != 0) {
+            if(!lua_isnumber(lua, -1)) {
                 throw std::runtime_error("invalid midi data");
             }
-            data[i++] = lua_tointeger(L, -1);
-            lua_pop(L, 1);
+            data[i++] = lua_tointeger(lua, -1);
+            lua_pop(lua, 1);
         }
         midiEvents.dataContainer.push_back(data);
         return std::make_pair(data.get(), size);
 
     }
-    void __addMidiEvent(lua_State *L, sambag::dsp::DefaultMidiEvents &midiEvents)
+    void __addMidiEvent(lua_State *lua, sambag::dsp::DefaultMidiEvents &midiEvents)
     {
-        if(!lua_istable(L, -1)) {
+        if(!lua_istable(lua, -1)) {
             throw std::runtime_error("invalid midi event");
         }
-        lua_pushnil(L); /* first key */
+        lua_pushnil(lua); /* first key */
         int delta;
         size_t size;
         sambag::dsp::DefaultMidiEvents::DataPtr data;
-        while (lua_next(L, -2) != 0) {
-            if (!lua_isstring(L, -2)) {
+        while (lua_next(lua, -2) != 0) {
+            if (!lua_isstring(lua, -2)) {
                 SAMBAG_LOG_WARN<<"sendMidi: invalid key found";
                 return;
             }
-            std::string key(lua_tostring(L, -2));
+            std::string key(lua_tostring(lua, -2));
             if (key==PROCESS_MIDI_DELTAFRAMES) {
-                if (!lua_isnumber(L, -1)) {
+                if (!lua_isnumber(lua, -1)) {
                     throw std::runtime_error("invalid midimessage delta frames");
                 }
-                delta = lua_tointeger(L, -1);
+                delta = lua_tointeger(lua, -1);
             }
             if (key==PROCESS_MIDI_DATA) {
-                boost::tie(data, size) = __addMidiData(L, midiEvents);
+                boost::tie(data, size) = __addMidiData(lua, midiEvents);
             }
-            lua_pop(L, 1);
+            lua_pop(lua, 1);
         }
         midiEvents.events.push_back(
             sambag::dsp::IMidiEvents::MidiEvent(size, delta, data)
         );
     }
 }
-void LuaImpl::sendMidi() {
-    lua_State *L = luaState.get();
+void LuaImpl::sendMidi(lua_State *lua) {
     try {
-        if(!lua_istable(L, -1)) {
+        if(!lua_istable(lua, -1)) {
             throw std::runtime_error("missing midi data argument");
         }
-        size_t size = sambag::lua::getLen(L, -1);
+        size_t size = sambag::lua::getLen(lua, -1);
         if (size==0) {
             return;
         }
         sambag::dsp::DefaultMidiEvents midiEvents;
         midiEvents.reserve(size);
-        lua_pushnil(L); /* first key */
-        while (lua_next(L, -2) != 0) {
-            __addMidiEvent(L, midiEvents);
-            lua_pop(L, 1);
+        lua_pushnil(lua); /* first key */
+        while (lua_next(lua, -2) != 0) {
+            __addMidiEvent(lua, midiEvents);
+            lua_pop(lua, 1);
         }
         using ::processing::IMidiEventProcessor;
         IMidiEventProcessor::EventSender::notifyListeners(this, &midiEvents);
     } catch (const std::exception &ex) {
-        sambag::lua::pushLuaError(L, ex.what());
+        sambag::lua::pushLuaError(lua, ex.what());
     } catch (...) {
-        sambag::lua::pushLuaError(L, "unkown error");
+        sambag::lua::pushLuaError(lua, "unkown error");
     }
 }
 //-----------------------------------------------------------------------------
@@ -566,7 +574,7 @@ void LuaImpl::processPlugin(oldPr::Frames::T ** ins,
     }
 }
 //-----------------------------------------------------------------------------
-LuaImpl::LuaFrames LuaImpl::frxGetChannel(int channel) {
+LuaFrames LuaImpl::getChannel(lua_State *lua, int channel) {
 	using namespace sambag::lua;
 	if (!currInChannels) {
 		std::stringstream ss;
@@ -585,7 +593,7 @@ LuaImpl::LuaFrames LuaImpl::frxGetChannel(int channel) {
 	return LuaFrames(LuaFloatSeqEx(currInChannels[channel], currNumSamples));
 }
 //-----------------------------------------------------------------------------
-void LuaImpl::frxSetChannel() {
+void LuaImpl::setChannel(lua_State *lua) {
     // to avoid redundant copying we maniupulate the lua stack directly
     using namespace sambag::lua;
 	if (!currOutChannels) {
@@ -610,7 +618,7 @@ void LuaImpl::frxSetChannel() {
     pop(luaState.get(), arg);
 }
 //-----------------------------------------------------------------------------
-void LuaImpl::setPersistData() {
+void LuaImpl::setPersistUserData(lua_State *lua) {
     namespace slua=sambag::lua;
     try {
         if(!lua_isstring(luaState.get(),  -2)) {
@@ -640,7 +648,9 @@ void LuaImpl::setPersistData() {
     }
 }
 //-----------------------------------------------------------------------------
-sambag::lua::IgnoreReturn LuaImpl::getPersistData(const std::string &key) {
+sambag::lua::IgnoreReturn LuaImpl::getPersistUserData(lua_State *lua,
+    const std::string &key)
+{
     namespace slua=sambag::lua;
     PersistUserData::iterator it, end;
     boost::tie(it, end) = persistUserData.equal_range(key);
@@ -656,7 +666,7 @@ sambag::lua::IgnoreReturn LuaImpl::getPersistData(const std::string &key) {
 }
 
 //-----------------------------------------------------------------------------
-LuaImpl::FFTData LuaImpl::frxFFT() {
+FFTData LuaImpl::fft(lua_State *lua) {
     try {
         FFTData data;
         if(!sambag::lua::pop(luaState.get(), data)) {
@@ -721,7 +731,7 @@ void LuaImpl::setStateData(size_t size, void* data) {
     }
 }
 //-----------------------------------------------------------------------------
-double LuaImpl::frxGetSamplePos() {
+double LuaImpl::getSamplePos(lua_State *lua) {
     using sambag::dsp::HostTimeInfo;
     IHostInfo::Ptr hI = hostInfo.lock();
     if (!hI) {
@@ -734,7 +744,7 @@ double LuaImpl::frxGetSamplePos() {
     return inf->samplePos;
 }
 //-----------------------------------------------------------------------------
-double LuaImpl::frxGetBarStartPos() {
+double LuaImpl::getBarStartPos(lua_State *lua) {
     using sambag::dsp::HostTimeInfo;
     IHostInfo::Ptr hI = hostInfo.lock();
     if (!hI) {
@@ -747,7 +757,7 @@ double LuaImpl::frxGetBarStartPos() {
     return inf->barStartPos;
 }
 //-----------------------------------------------------------------------------
-double LuaImpl::frxGetPpqPos() {
+double LuaImpl::getPpqPos(lua_State *lua) {
     using sambag::dsp::HostTimeInfo;
     IHostInfo::Ptr hI = hostInfo.lock();
     if (!hI) {
@@ -760,7 +770,7 @@ double LuaImpl::frxGetPpqPos() {
     return inf->ppqPos;
 }
 //-----------------------------------------------------------------------------
-int LuaImpl::frxGetTimeSigNumerator() {
+int LuaImpl::getTimeSigNumerator(lua_State *lua) {
     using sambag::dsp::HostTimeInfo;
     IHostInfo::Ptr hI = hostInfo.lock();
     if (!hI) {
@@ -774,7 +784,7 @@ int LuaImpl::frxGetTimeSigNumerator() {
 
 }
 //-----------------------------------------------------------------------------
-int LuaImpl::frxGetTimeSigDenominator() {
+int LuaImpl::getTimeSigDenominator(lua_State *lua) {
     using sambag::dsp::HostTimeInfo;
     IHostInfo::Ptr hI = hostInfo.lock();
     if (!hI) {
@@ -787,7 +797,7 @@ int LuaImpl::frxGetTimeSigDenominator() {
     return inf->timeSigDenominator;
 }
 //-----------------------------------------------------------------------------
-double LuaImpl::frxGetTempo() {
+double LuaImpl::getTempo(lua_State *lua) {
     using sambag::dsp::HostTimeInfo;
     IHostInfo::Ptr hI = hostInfo.lock();
     if (!hI) {
@@ -818,56 +828,17 @@ void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
     
     lua_getglobal(luaState.get(), "frx");
     int frxTbl = lua_gettop(luaState.get());
-    int plugTbl = sambag::lua::createClass<Functions1,
-        sambag::lua::TupleAccessor>
-    (
-        luaState.get(),
-        boost::make_tuple(boost::bind(&LuaImpl::frxGetChannel, this, _1),
-            boost::bind(&LuaImpl::frxFFT, this),
-            boost::bind(&LuaImpl::frxSetChannel, this),
-            boost::bind(&LuaImpl::frxGetSamplePos, this),
-            boost::bind(&LuaImpl::frxGetBarStartPos, this),
-            boost::bind(&LuaImpl::frxGetPpqPos, this),
-            boost::bind(&LuaImpl::frxGetTimeSigNumerator, this),
-            boost::bind(&LuaImpl::frxGetTimeSigDenominator, this),
-            boost::bind(&LuaImpl::frxGetTempo, this),
-            boost::bind(&LuaImpl::frxSetParameterValue, this, _1, _2)
-        ),
-        "plugin"
-    );
     
-    boost::tuple<std::string> uid;
-    lua_getfield(luaState.get(), plugTbl, SLUA_FIELDNAME_UID);
-    sambag::lua::pop(luaState.get(), uid);
-    this->uuid = boost::get<0>(uid);
-    sambag::lua::registerClassFunctions<Functions2,
-        sambag::lua::TupleAccessor>
-    (
-        luaState.get(),
-        boost::make_tuple(
-            boost::bind(&LuaImpl::frxSetParameterDisplay, this, _1, _2),
-            boost::bind(&LuaImpl::sendMidi, this),
-            boost::bind(&LuaImpl::getPersistData, this, _1),
-            boost::bind(&LuaImpl::setPersistData, this),
-            boost::bind(&LuaImpl::log, this, _1),
-            boost::bind(&LuaImpl::log_warn, this, _1),
-            boost::bind(&LuaImpl::log_err, this, _1),
-            boost::bind(&LuaImpl::log_trace, this, _1)
-        ),
-        plugTbl,
-        boost::get<0>(uid)
-    );
-    
+    // createclass
+    createLuaObject(luaState.get(), "LuaImpl");
+  
+      
     lua_setfield(luaState.get(), frxTbl, "plug");
     lua_pop(luaState.get(), 2); // remove frxtbl
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::closeLua() {
     try {
-        SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
-        sambag::lua::unregisterClassFunctions<Functions1>(uuid);
-        sambag::lua::unregisterClassFunctions<Functions2>(uuid);
-        luaState.reset();
     } catch(...) {
     }
 }

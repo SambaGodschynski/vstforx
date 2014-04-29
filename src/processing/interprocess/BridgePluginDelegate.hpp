@@ -43,7 +43,7 @@ protected:
     void onPluginPropertyChanged(void*, const sce::PropertyChanged &ev);
 private:
     //-------------------------------------------------------------------------
-    APluginImpl *plugin;
+    APluginImpl::Ptr plugin;
     //-------------------------------------------------------------------------
     IHostInfo::Ptr hostInfo;
     //-------------------------------------------------------------------------
@@ -64,7 +64,7 @@ public:
      */
     static Ptr create(size_t blockSize, float sampleRate, const std::string &location);
     //-------------------------------------------------------------------------
-    APluginImpl * getPluginImpl() const {
+    APluginImpl::Ptr getPluginImpl() const {
         return plugin;
     }
     //-------------------------------------------------------------------------

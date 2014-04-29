@@ -1,0 +1,20 @@
+frx.scripts
+
+/**
+ * @brief 
+ */
+class LuaFrxObjectBase extends sambag.lua.ALuaObject {
+    User< boost::tuple<float, float> > Point;
+    User<Point> getLocation();
+    void setLocation(float x, float y);
+    User<Point> getSize();
+    void setSize(float x, float y);
+    void setName(string name);
+    string getName();
+    string getTypeId();
+    void setMenu();
+    string getViewId();
+}
+
+
+

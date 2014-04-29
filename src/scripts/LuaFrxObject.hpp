@@ -21,6 +21,7 @@
 #include <loki/Singleton.h>
 #include <sambag/disco/components/PopupMenu.hpp>
 #include <sambag/disco/components/Label.hpp>
+#include "LuaFrxObjectBase.hpp"
 
 namespace frx { namespace scripts {
 namespace slua = sambag::lua;
@@ -31,11 +32,11 @@ namespace slua = sambag::lua;
   * @because the view object is only available for one editor session
   * we save the model object and access the view object via the view2model map.
   */
-class LuaFrxObject : public slua::ALuaObject {
+class LuaFrxObject : public LuaFrxObjectBase {
 //=============================================================================
 public:
     //-------------------------------------------------------------------------
-    typedef slua::ALuaObject Super;
+    typedef LuaFrxObjectBase Super;
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<LuaFrxObject> Ptr;
 	//-------------------------------------------------------------------------
@@ -113,27 +114,6 @@ protected:
      * @brief called when lua object will be removed.
      */
     virtual void __lua_gc(lua_State *lua);
-    //-------------------------------------------------------------------------
-    typedef boost::tuple<float,float> Point;
-    SAMBAG_LUA_FTAG(getLocation, Point());
-    SAMBAG_LUA_FTAG(setLocation, void(float, float));
-    SAMBAG_LUA_FTAG(getSize, Point());
-    SAMBAG_LUA_FTAG(setSize, void(float, float));
-    SAMBAG_LUA_FTAG(setName, void(std::string));
-    SAMBAG_LUA_FTAG(getName, std::string());
-    SAMBAG_LUA_FTAG(getTypeId, std::string());
-    SAMBAG_LUA_FTAG(setMenu, void());
-    SAMBAG_LUA_FTAG(getViewId, std::string());
-    typedef LOKI_TYPELIST_9(Frx_getLocation_Tag,
-        Frx_setLocation_Tag,
-        Frx_getSize_Tag,
-        Frx_setSize_Tag,
-        Frx_setName_Tag,
-        Frx_getName_Tag,
-        Frx_getTypeId_Tag,
-        Frx_setMenu_Tag,
-        Frx_getViewId_Tag
-    ) Functions;
     //////////////////////////////////////////////////////////////////////////fr/
     // lua2frx impl
     virtual std::string toString(lua_State *lua) const;
@@ -143,8 +123,8 @@ protected:
     boost::tuple<float,float> getSize(lua_State *lua);
     void setSize(lua_State *lua, float x, float y);
     void setName(lua_State *lua, const std::string &name);
-    std::string getName(lua_State *lua) const;
-    std::string getTypeId(lua_State *lua) const;
+    std::string getName(lua_State *lua);
+    std::string getTypeId(lua_State *lua);
     void addMenuEntry(sambag::disco::components::PopupMenuPtr res, lua_State *lua, int index);
     void setMenu(lua_State *lua);
     std::string getViewId(lua_State *lua);

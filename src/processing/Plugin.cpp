@@ -28,7 +28,7 @@ const std::string Plugin::PROPERTY_PARAMETER_EDITOR_SIZE = "editor-size";
 //-----------------------------------------------------------------------------
 const std::string Plugin::PROPERTY_PARAMETER_EDITOR_OPENSTATE = "editor-openstate";
 //-----------------------------------------------------------------------------
-Plugin::Plugin() : impl(NULL), processing(true) {}
+Plugin::Plugin() : processing(true) {}
 //-----------------------------------------------------------------------------
 Plugin::Plugin ( frx::processing::IHostInfo::Ptr hostInfo,
     const std::string &location, oldPr::PluginInfo::PluginType type ) :
@@ -36,7 +36,6 @@ Plugin::Plugin ( frx::processing::IHostInfo::Ptr hostInfo,
         editorPosX ( oldPrPr::Parameter::create() ),
         editorPosY ( oldPrPr::Parameter::create() ),
         editorOpen ( oldPrPr::Parameter::create() ),
-        impl(NULL),
         processing(true)
 {
     
@@ -76,7 +75,7 @@ Plugin::Plugin ( frx::processing::IHostInfo::Ptr hostInfo,
 void Plugin::loadImpl() {
     if (impl) {
         impl->closePlugin();
-        delete impl;
+        impl.reset();
     }
     frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
     if (!hI) {
@@ -134,7 +133,7 @@ void Plugin::installListener() {
 Plugin::~Plugin() {
     try {
         impl->closePlugin();
-        delete impl;
+        impl.reset();
     } catch(...) {
     }
     delete[] inMatrix;

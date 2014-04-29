@@ -236,7 +236,7 @@ void PluginAdapter::setPreset(int i) {
 //-----------------------------------------------------------------------------
 sdc::AWindowImplPtr PluginAdapter::getWindowImpl() {
     Adaptee::Ptr plug = getPlugin();
-    APluginImpl *impl = plug->getPluginImpl();
+    APluginImpl::Ptr impl = plug->getPluginImpl();
     if (!impl) {
         return sdc::AWindowImplPtr();
     }
@@ -245,7 +245,7 @@ sdc::AWindowImplPtr PluginAdapter::getWindowImpl() {
 //-----------------------------------------------------------------------------
 bool PluginAdapter::isBridged() const {
     Adaptee::Ptr plug = getPlugin();
-    APluginImpl *impl = plug->getPluginImpl();
+    APluginImpl::Ptr impl = plug->getPluginImpl();
     if (!impl) {
         return false;
     }

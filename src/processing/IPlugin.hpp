@@ -81,7 +81,7 @@ public:
 	 */
 	virtual int getProgram() = 0;
     //-------------------------------------------------------------------------
-    virtual APluginImpl * getPluginImpl() const = 0;
+    virtual APluginImpl::Ptr getPluginImpl() const = 0;
     //-------------------------------------------------------------------------
     virtual std::string getPlugName() const = 0;
 }; // IPlugin

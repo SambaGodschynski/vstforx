@@ -37,12 +37,6 @@ namespace frx { namespace scripts {
 //  Class LuaFrxView
 //=============================================================================
 //-----------------------------------------------------------------------------
-void LuaFrxView::__lua_gc(lua_State *lua) {
-    slua::unregisterClassFunctions<Functions1>(getUId());
-    slua::unregisterClassFunctions<Functions2>(getUId());
-    Super::__lua_gc(lua);
-}
-//-----------------------------------------------------------------------------
 slua::IgnoreReturn LuaFrxView::add(lua_State *lua)
 {
     try {
@@ -288,7 +282,7 @@ slua::IgnoreReturn LuaFrxView::getSelectedObjects(lua_State *lua) {
     return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
-boost::tuple<float,float> LuaFrxView::getLocation(lua_State *lua) const {
+boost::tuple<float,float> LuaFrxView::getLocation(lua_State *lua) {
     using namespace frx::gui;
 	using namespace frx::gui::components;
     FrxCircuidViewPtr view = getView(lua);
@@ -320,7 +314,7 @@ void LuaFrxView::setLocation(lua_State *lua, float x, float y) {
     SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
-boost::tuple<float,float> LuaFrxView::getSize(lua_State *lua) const {
+boost::tuple<float,float> LuaFrxView::getSize(lua_State *lua) {
     using namespace frx::gui;
 	using namespace frx::gui::components;
     FrxCircuidViewPtr view = getView(lua);
@@ -594,53 +588,7 @@ slua::IgnoreReturn LuaFrxView::getByType(lua_State *lua, const std::string &sera
     }
     return slua::IgnoreReturn();
 }
-//-----------------------------------------------------------------------------
-void LuaFrxView::addLuaFields(lua_State *lua, int index) {
-    using boost::bind;
-    Super::addLuaFields(lua, index);
-    
-    // 1-10
-    sambag::lua::registerClassFunctions<Functions1,
-        sambag::lua::TupleAccessor>
-    (
-        lua,
-        boost::make_tuple(
-            bind(&LuaFrxView::add, this, lua),
-            bind(&LuaFrxView::remove, this, lua),
-            bind(&LuaFrxView::getObjects, this, lua),
-            bind(&LuaFrxView::connect, this, lua),
-            bind(&LuaFrxView::addKnob, this, lua),
-            bind(&LuaFrxView::addHostKnob, this, lua, _1),
-            bind(&LuaFrxView::getLocation, this, lua),
-            bind(&LuaFrxView::setLocation, this, lua, _1, _2),
-            bind(&LuaFrxView::getSize, this, lua),
-            bind(&LuaFrxView::setSize, this, lua, _1, _2)
-        ),
-        index,
-        getUId()
-    );
 
-    // 10-20
-    sambag::lua::registerClassFunctions<Functions2,
-        sambag::lua::TupleAccessor>
-    (
-        lua,
-        boost::make_tuple(
-            bind(&LuaFrxView::getEntry, this, lua),
-            bind(&LuaFrxView::getExit, this, lua),
-            bind(&LuaFrxView::getByName, this, lua, _1),
-            bind(&LuaFrxView::getByType, this, lua, _1),
-            bind(&LuaFrxView::getSelectedObjects, this, lua),
-            bind(&LuaFrxView::addViewListener, this, lua, _1),
-            bind(&LuaFrxView::removeViewListener, this, lua, _1),
-            bind(&LuaFrxView::setMenu, this, lua),
-            bind(&LuaFrxView::getContextObject, this, lua)
-        ),
-        index,
-        getUId()
-    );
-
-}
 //-----------------------------------------------------------------------------
 LuaFrxView::LuaFrxView() {
 }

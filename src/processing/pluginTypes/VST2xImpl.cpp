@@ -32,10 +32,19 @@ static const int FRX_VST2XPLUGIN_MAX_IDLE_MS = 20;
 typedef AEffect* (*PluginEntryProc) (audioMasterCallback audioMaster);
 
 namespace frx { namespace processing {
-APluginImpl * createVST2xPluginImpl(IHostInfo::Ptr hI,
+//-----------------------------------------------------------------------------
+APluginImpl::Ptr createVST2xPluginImpl(IHostInfo::Ptr hI,
     APluginImpl::Parameters *parameters, const std::string &location)
 {
-    return new VSTPluginImpl(hI, parameters, location);
+    return VSTPluginImpl::create(hI, parameters, location);
+}
+//-----------------------------------------------------------------------------
+VSTPluginImpl::Ptr VSTPluginImpl::create( frx::processing::IHostInfo::Ptr hostInfo,
+    Parameters *parameters,
+    const string &location)
+{
+    Ptr res(new VSTPluginImpl(hostInfo, parameters, location));
+    return res;
 }
 //-----------------------------------------------------------------------------
 boost::unordered_map < AEffect*, VSTPluginImpl* > VSTPluginImpl::relatedPlugNode;

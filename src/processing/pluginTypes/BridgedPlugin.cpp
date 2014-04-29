@@ -25,6 +25,13 @@ BridgedPlugin::BridgedPlugin(IHostInfo::Ptr hI, const std::string &location,
     );
 }
 //-----------------------------------------------------------------------------
+BridgedPlugin::Ptr BridgedPlugin::create(IHostInfo::Ptr hI, const std::string &location,
+        Parameters *parameters)
+{
+    Ptr res(new BridgedPlugin(hI, location, parameters));
+    return res;
+}
+//-----------------------------------------------------------------------------
 void BridgedPlugin::onPluginPropertyChanged(void*, const sce::PropertyChanged &ev)
 {
     sce::EventSender<sce::PropertyChanged>::notifyListeners(this, ev);
@@ -164,10 +171,10 @@ BridgedPlugin::AWindowImplPtr BridgedPlugin::getWindowImpl() {
     return res;
 }
 ///////////////////////////////////////////////////////////////////////////////
-APluginImpl * createBridgedPluginImpl(IHostInfo::Ptr hI,
+APluginImpl::Ptr createBridgedPluginImpl(IHostInfo::Ptr hI,
     APluginImpl::Parameters* par, const std::string& loc)
 {
-    return new BridgedPlugin(hI, loc, par);
+    return BridgedPlugin::create(hI, loc, par);
 }
 }} // namespace(s)
 

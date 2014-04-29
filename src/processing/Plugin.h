@@ -21,6 +21,7 @@
 #include <processing/ModelFactory.hpp>
 #include <sambag/com/events/PropertyChanged.hpp>
 #include <sambag/com/events/Events.hpp>
+#include <processing/IPlugin.hpp>
 
 namespace frx { namespace processing {
 namespace oldPr = ::processing;
@@ -34,7 +35,8 @@ namespace sce = sambag::com::events;
 class Plugin:
 	public oldPr::ProcessAdapter,
 	public oldPr::parameter::HasParameter,
-	public oldPr::MidiEventProcessor
+	public oldPr::MidiEventProcessor,
+    public IPlugin
 {
 //=============================================================================
 friend class boost::serialization::access;
@@ -106,7 +108,7 @@ private:
         }
     }
     //-------------------------------------------------------------------------
-    APluginImpl *impl;
+    APluginImpl::Ptr impl;
     //-------------------------------------------------------------------------
 	typedef std::vector<oldPr::Frames> Framebuffer;
 	//-------------------------------------------------------------------------
@@ -154,7 +156,7 @@ public:
      */
     void resumeProcessing();
     //-------------------------------------------------------------------------
-    APluginImpl * getPluginImpl() const {
+    APluginImpl::Ptr getPluginImpl() const {
         return impl;
     }
     //-------------------------------------------------------------------------

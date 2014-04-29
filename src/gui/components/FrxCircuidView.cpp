@@ -563,7 +563,7 @@ void FrxCircuidView::setEditorResizeHandler(const EditorResizeHandler &f) {
 //-----------------------------------------------------------------------------
 sdc::PopupMenuPtr FrxCircuidView::getContextMenu(sdc::AComponentPtr component)
 {
-    FrxComponentPtr fc = boost::dynamic_pointer_cast<FrxComponent>(component);
+    FrxComponentPtr fc = component->getFirstContainer<FrxComponent>();
     if (fc) {
         fireViewEvent(FrxCircuidViewEvent::OnComponentMenuRequest, fc);
     }

@@ -106,7 +106,6 @@ BridgePluginDelegate::BridgePluginDelegate() {
 }
 //-----------------------------------------------------------------------------
 BridgePluginDelegate::~BridgePluginDelegate() {
-    delete plugin;
 }
 //-----------------------------------------------------------------------------
 const ::processing::PluginInfo & BridgePluginDelegate::getPluginInfo() {

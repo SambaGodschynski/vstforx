@@ -63,13 +63,13 @@ PluginFactory::loadVST2x(IHostInfo::Ptr hI, Parameters*par, const std::string &l
 PluginFactory::ProductPtr
 PluginFactory::loadVST3x(IHostInfo::Ptr hI, Parameters*par, const std::string &loc)
 {
-    return NULL;
+    return ProductPtr();
 }
 //-----------------------------------------------------------------------------
 PluginFactory::ProductPtr
 PluginFactory::loadAU(IHostInfo::Ptr hI, Parameters*par, const std::string &loc)
 {
-    return NULL;
+    return ProductPtr();
 }
 //-----------------------------------------------------------------------------
 PluginFactory::ProductPtr
@@ -109,7 +109,7 @@ PluginFactory::load(IHostInfo::Ptr hI,
         switch (type) {
         case PluginInfo::VST2X : return loadVST2x(hI, par, loc);
         case PluginInfo::LUA : return loadLua(hI, par, loc);
-        default : return NULL;
+        default : return ProductPtr();
         
         }
     } catch (const PluginArchitectureMissmatch &ex) {
@@ -117,6 +117,6 @@ PluginFactory::load(IHostInfo::Ptr hI,
     }
     
     // no success
-    return NULL;
+    return ProductPtr();
 }
 }} // namespace(s)

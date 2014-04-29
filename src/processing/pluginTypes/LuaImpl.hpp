@@ -9,6 +9,7 @@
 #define SAMBAG_LUAIMPL_H
 
 #include "PluginImpl.hpp"
+#include "LuaImplBase.hpp"
 #include <sambag/lua/Lua.hpp>
 #include <sambag/lua/LuaMap.hpp>
 #include <sambag/lua/LuaHelper.hpp>
@@ -40,59 +41,17 @@ namespace oldPrPa = ::processing::parameter;
 /** 
   * @class PluginImpl.
   */
-class LuaImpl : public APluginImpl {
+class LuaImpl : public LuaImplBase,
+    public APluginImpl
+{
 //=============================================================================
 public:
-	//-------------------------------------------------------------------------
-    typedef sambag::lua::LuaSequenceEx<oldPr::Frames::T> LuaFloatSeqEx;
-	//-------------------------------------------------------------------------
-    typedef sambag::lua::LuaSequence<oldPr::Frames::T> LuaFloatSeq;
     //-------------------------------------------------------------------------
-	typedef boost::tuple< LuaFloatSeqEx > LuaFrames;
-	//-------------------------------------------------------------------------
-	// r,i
-	typedef boost::tuple< LuaFloatSeq, LuaFloatSeq > FFTData;
+    typedef boost::shared_ptr<LuaImpl> Ptr;
+    //-------------------------------------------------------------------------
+    typedef boost::weak_ptr<LuaImpl> WPtr;
     //-------------------------------------------------------------------------
     typedef std::multimap<std::string, std::string> PersistUserData;
-    //-------------------------------------------------------------------------
-    SAMBAG_LUA_FTAG(getChannel,  LuaImpl::LuaFrames(int));
-    SAMBAG_LUA_FTAG(fft,  LuaImpl::FFTData());
-    SAMBAG_LUA_FTAG(setChannel, void());
-    SAMBAG_LUA_FTAG(getSamplePos, double());
-    SAMBAG_LUA_FTAG(getBarStartPos, double());
-    SAMBAG_LUA_FTAG(getPpqPos, double());
-    SAMBAG_LUA_FTAG(getTempo, double());
-    SAMBAG_LUA_FTAG(getTimeSigNumerator, int());
-    SAMBAG_LUA_FTAG(getTimeSigDenominator, int());
-    SAMBAG_LUA_FTAG(setParameterValue, void(std::string, float));
-    SAMBAG_LUA_FTAG(setParameterDisplay, void(std::string, std::string));
-    SAMBAG_LUA_FTAG(sendMidi, void());
-    SAMBAG_LUA_FTAG(getPersistUserData, sambag::lua::IgnoreReturn(std::string));
-    SAMBAG_LUA_FTAG(setPersistUserData, void());
-    SAMBAG_LUA_FTAG(log, void(std::string));
-    SAMBAG_LUA_FTAG(logWarn, void(std::string));
-    SAMBAG_LUA_FTAG(logErr, void(std::string));
-    SAMBAG_LUA_FTAG(logTrace, void(std::string));
-    typedef LOKI_TYPELIST_10(Frx_getChannel_Tag,
-        Frx_fft_Tag,
-        Frx_setChannel_Tag,
-        Frx_getSamplePos_Tag,
-        Frx_getBarStartPos_Tag,
-        Frx_getPpqPos_Tag,
-        Frx_getTimeSigNumerator_Tag,
-        Frx_getTimeSigDenominator_Tag,
-        Frx_getTempo_Tag,
-        Frx_setParameterValue_Tag
-    ) Functions1;
-    typedef LOKI_TYPELIST_8(Frx_setParameterDisplay_Tag,
-        Frx_sendMidi_Tag,
-        Frx_getPersistUserData_Tag,
-        Frx_setPersistUserData_Tag,
-        Frx_log_Tag,
-        Frx_logWarn_Tag,
-        Frx_logErr_Tag,
-        Frx_logTrace_Tag
-    ) Functions2;
     //-------------------------------------------------------------------------
     struct LuaCall { // frxlLua
        	LUA_CALL(lcOnParameterChanged);
@@ -118,6 +77,18 @@ public:
         NeedsReload
     };
 protected:
+    ///////////////////////////////////////////////////////////////////////////
+    // AWindowImpl
+    //-------------------------------------------------------------------------
+    /**
+     * @param 
+     * @param the plugin location
+     * @param fills container with plugins parameter representations
+     */
+    LuaImpl(IHostInfo::Ptr hI,
+        const std::string &location,
+        Parameters *parameters
+    );
     //-------------------------------------------------------------------------
     void onReloadScript();
     //-------------------------------------------------------------------------
@@ -128,8 +99,6 @@ private:
     //-------------------------------------------------------------------------
     void closeLua();
     //-------------------------------------------------------------------------
-    std::string uuid;
-    //-------------------------------------------------------------------------
     typedef std::list<std::string> LogHistory;
     LogHistory logHistory;
     //-------------------------------------------------------------------------
@@ -139,14 +108,6 @@ private:
     mutable std::string stringBuffer;
     //-------------------------------------------------------------------------
     void addToEditor(const std::string &msg);
-    //-------------------------------------------------------------------------
-    void log(const std::string &msg);
-    //-------------------------------------------------------------------------
-    void log_err(const std::string &msg);
-    //-------------------------------------------------------------------------
-    void log_warn(const std::string &msg);
-    //-------------------------------------------------------------------------
-    void log_trace(const std::string &msg);
     //-------------------------------------------------------------------------
 	typedef std::pair<oldPrPa::Parameter::Ptr,
         oldPrPa::Parameter::Connection> ParameterContainer;
@@ -196,18 +157,10 @@ private:
     }
 public:
     //-------------------------------------------------------------------------
-    sambag::com::RecursiveMutex * getMutex() {
-        return &mutex;
-    }
-    //-------------------------------------------------------------------------
-    template <class LC>
-    bool has() const {
-        enum { Flag = Loki::TL::IndexOf<LuaCall::List, LC>::value };
-        unsigned int mask = (1 << Flag);
-        return ((lcFlags & mask) == mask);
-    }
-    ///////////////////////////////////////////////////////////////////////////
-    // lua2frx impl
+    static Ptr create(IHostInfo::Ptr hI,
+        const std::string &location,
+        Parameters *parameters
+    );
     //-------------------------------------------------------------------------
     void scriptFailed(const std::string &msg);
     //-------------------------------------------------------------------------
@@ -218,52 +171,79 @@ public:
     void loadIOs();
     //-------------------------------------------------------------------------
     void initScript();
+
     //-------------------------------------------------------------------------
-    void sendMidi();
+    sambag::com::RecursiveMutex * getMutex() {
+        return &mutex;
+    }
+    //-------------------------------------------------------------------------
+    template <class LC>
+    bool has() const {
+        enum { Flag = Loki::TL::IndexOf<LuaCall::List, LC>::value };
+        unsigned int mask = (1 << Flag);
+        return ((lcFlags & mask) == mask);
+    }
     //-------------------------------------------------------------------------
     void checkFunctions();
     //-------------------------------------------------------------------------
     void onParameterChanged(void *src, float value, const std::string &id);
     //-------------------------------------------------------------------------
-    LuaFrames frxGetChannel(int channel);
+    void log(const std::string &msg);
     //-------------------------------------------------------------------------
-    FFTData frxFFT();
+    void logErr(const std::string &msg);
     //-------------------------------------------------------------------------
-    void frxSetChannel();
+    void logWarn(const std::string &msg);
     //-------------------------------------------------------------------------
-    double frxGetSamplePos();
+    void logTrace(const std::string &msg);
+    ///////////////////////////////////////////////////////////////////////////
+    // lua2frx impl
     //-------------------------------------------------------------------------
-    double frxGetBarStartPos();
+    void log(lua_State *lua, const std::string &msg) {
+        log(msg);
+    }
     //-------------------------------------------------------------------------
-    double frxGetPpqPos();
+    void logErr(lua_State *lua, const std::string &msg) {
+        logErr(msg);
+    }
     //-------------------------------------------------------------------------
-    int frxGetTimeSigNumerator();
+    void logWarn(lua_State *lua, const std::string &msg) {
+        logWarn(msg);
+    }
     //-------------------------------------------------------------------------
-    int frxGetTimeSigDenominator();
+    void logTrace(lua_State *lua, const std::string &msg) {
+        logTrace(msg);
+    }
     //-------------------------------------------------------------------------
-    double frxGetTempo();
+    void sendMidi(lua_State *lua);
     //-------------------------------------------------------------------------
-    void frxSetParameterValue(const std::string &name, float value);
+    LuaFrames getChannel(lua_State *lua, int channel);
     //-------------------------------------------------------------------------
-    void frxSetParameterDisplay(const std::string &name,
+    FFTData fft(lua_State *lua);
+    //-------------------------------------------------------------------------
+    void setChannel(lua_State *lua);
+    //-------------------------------------------------------------------------
+    double getSamplePos(lua_State *lua);
+    //-------------------------------------------------------------------------
+    double getBarStartPos(lua_State *lua);
+    //-------------------------------------------------------------------------
+    double getPpqPos(lua_State *lua);
+    //-------------------------------------------------------------------------
+    int getTimeSigNumerator(lua_State *lua);
+    //-------------------------------------------------------------------------
+    int getTimeSigDenominator(lua_State *lua);
+    //-------------------------------------------------------------------------
+    double getTempo(lua_State *lua);
+    //-------------------------------------------------------------------------
+    void setParameterValue(lua_State *lua, const std::string &name, float value);
+    //-------------------------------------------------------------------------
+    void setParameterDisplay(lua_State *lua, const std::string &name,
         const std::string &value);
     //-------------------------------------------------------------------------
-    sambag::lua::IgnoreReturn getPersistData(const std::string &key);
+    sambag::lua::IgnoreReturn getPersistUserData(lua_State *lua,
+        const std::string &key);
     //-------------------------------------------------------------------------
-    void setPersistData();
+    void setPersistUserData(lua_State *lua);
 public:
-    ///////////////////////////////////////////////////////////////////////////
-    // AWindowImpl
-    //-------------------------------------------------------------------------
-    /**
-     * @param 
-     * @param the plugin location
-     * @param fills container with plugins parameter representations
-     */
-    LuaImpl(IHostInfo::Ptr hI,
-        const std::string &location,
-        Parameters *parameters
-    );
     //-------------------------------------------------------------------------
     virtual void baseConfigChanged();
     //-------------------------------------------------------------------------

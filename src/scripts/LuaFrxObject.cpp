@@ -272,7 +272,7 @@ void LuaFrxObject::setName(lua_State *lua, const std::string &name) {
 
 }
 //-----------------------------------------------------------------------------
-std::string LuaFrxObject::getName(lua_State *lua) const {
+std::string LuaFrxObject::getName(lua_State *lua) {
     fgc::FrxComponent::Ptr obj = getViewObject(lua);
     if (!obj) {
         return "";
@@ -280,7 +280,7 @@ std::string LuaFrxObject::getName(lua_State *lua) const {
     return obj->getName();
 }
 //-----------------------------------------------------------------------------
-std::string LuaFrxObject::getTypeId(lua_State *lua) const {
+std::string LuaFrxObject::getTypeId(lua_State *lua) {
    com::IdParser id(getTypeId());
    return id.type() + "." + id.name();
 }
@@ -290,25 +290,6 @@ void LuaFrxObject::addLuaFields(lua_State *lua, int index) {
     Super::addLuaFields(lua, index);
     uidMap[getUId()] = boost::dynamic_pointer_cast<LuaFrxObject>(shared_from_this());
 
-    using boost::bind;
-    sambag::lua::registerClassFunctions<Functions,
-        sambag::lua::TupleAccessor>
-    (
-        lua,
-        boost::make_tuple(
-            bind(&LuaFrxObject::getLocation, this, lua),
-            bind(&LuaFrxObject::setLocation, this, lua, _1, _2),
-            bind(&LuaFrxObject::getSize, this, lua),
-            bind(&LuaFrxObject::setSize, this, lua, _1, _2),
-            bind(&LuaFrxObject::setName, this, lua, _1),
-            bind(&LuaFrxObject::getName, this, lua),
-            bind(&LuaFrxObject::getTypeId, this, lua),
-            bind(&LuaFrxObject::setMenu, this, lua),
-            bind(&LuaFrxObject::getViewId, this, lua)
-        ),
-        index,
-        getUId()
-    );
     if (getTypeId().empty()) {
         SAMBAG_THROW(
             sambag::com::exceptions::IllegalStateException,
@@ -335,7 +316,6 @@ bool LuaFrxObject::isequal(lua_State *lua) const {
 //-----------------------------------------------------------------------------
 void LuaFrxObject::__lua_gc(lua_State *lua) {
     uidMap.erase(getUId());
-    slua::unregisterClassFunctions<Functions>(getUId());
     Super::__lua_gc(lua);
 }
 //-----------------------------------------------------------------------------

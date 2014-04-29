@@ -20,6 +20,7 @@
 
 namespace frx { namespace processing {
     class APluginImpl;
+    typedef boost::shared_ptr<APluginImpl> APluginImplPtr;
 }}
 
 namespace processing {
@@ -210,7 +211,7 @@ public:
 	 * @param isSynth
 	 */
 	virtual void setIsSynth ( bool isSynth ) { pluginInfo.isSynth = isSynth; }
-	//--------------------------------------------------------------------------------------------------------
+	//----------[A----------------------------------------------------------------------------------------------
 	/**
 	 * @return true, wenn Plugin Midi-Event verarbeiten kann.
 	 */
@@ -279,8 +280,8 @@ public:
 	 */
 	const ::processing::PluginInfo & getPluginInfo() const { return pluginInfo; }
     //--------------------------------------------------------------------------------------------------------
-    virtual frx::processing::APluginImpl * getPluginImpl() const {
-        return NULL;
+    virtual frx::processing::APluginImplPtr getPluginImpl() const {
+        return frx::processing::APluginImplPtr();
     }
 };
 }
