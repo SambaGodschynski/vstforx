@@ -3,14 +3,14 @@
  * EVERY CHANGES WILL BE OVERWRITTEN THE NEXT TIME 
  * THE THIS FILE IS GENERATED  
  *
- * LuaFrxObjectBase.hpp
+ * LuaFrxParameterConnectionBase.hpp
  *
  *  Created on: Tue Apr 29 22:18:01 2014
  *      Author: Samba Godschysnki
  */
 
-#ifndef SAMBAG_LuaFrxObjectBase_H
-#define SAMBAG_LuaFrxObjectBase_H
+#ifndef SAMBAG_LuaFrxParameterConnectionBase_H
+#define SAMBAG_LuaFrxParameterConnectionBase_H
 
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
@@ -18,84 +18,55 @@
 #include <loki/TypeList.h>
 #include <sambag/lua/ALuaObject.hpp>
 
-
+#include <scripts/LuaFrxConnection.hpp>
+#include <sambag/lua/LuaSequence.hpp>
 
 namespace frx { namespace scripts { 
 //=============================================================================
-class LuaFrxObjectBase : public sambag::lua::ALuaObject {
+class LuaFrxParameterConnectionBase : public LuaFrxConnection {
 //=============================================================================
 public:
     //-------------------------------------------------------------------------
-    typedef sambag::lua::ALuaObject Super;
+    typedef LuaFrxConnection Super;
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<LuaFrxObjectBase> Ptr;
+    typedef boost::shared_ptr<LuaFrxParameterConnectionBase> Ptr;
     //-------------------------------------------------------------------------
-    typedef boost::weak_ptr<LuaFrxObjectBase> WPtr;
+    typedef boost::weak_ptr<LuaFrxParameterConnectionBase> WPtr;
     //-------------------------------------------------------------------------
-    typedef  boost::tuple<float, float>  Point;
+    typedef  sambag::lua::LuaSequence<std::string>  OpNames;
 	
 private:
 protected:
     //-------------------------------------------------------------------------
-    LuaFrxObjectBase() {}
+    LuaFrxParameterConnectionBase() {}
     //-------------------------------------------------------------------------
-    SAMBAG_LUA_FTAG(getLocation, Point ());
-	SAMBAG_LUA_FTAG(setLocation, void (float, float));
-	SAMBAG_LUA_FTAG(getSize, Point ());
-	SAMBAG_LUA_FTAG(setSize, void (float, float));
-	SAMBAG_LUA_FTAG(setName, void (std::string));
-	SAMBAG_LUA_FTAG(getName, std::string ());
-	SAMBAG_LUA_FTAG(getTypeId, std::string ());
-	SAMBAG_LUA_FTAG(setMenu, void ());
-	SAMBAG_LUA_FTAG(getViewId, std::string ());
-    typedef LOKI_TYPELIST_9(Frx_getLocation_Tag, 
-	Frx_setLocation_Tag, 
-	Frx_getSize_Tag, 
-	Frx_setSize_Tag, 
-	Frx_setName_Tag, 
-	Frx_getName_Tag, 
-	Frx_getTypeId_Tag, 
-	Frx_setMenu_Tag, 
-	Frx_getViewId_Tag) Functions1;
+    SAMBAG_LUA_FTAG(getOperatorNames, OpNames ());
+	SAMBAG_LUA_FTAG(removeOperatorAt, void (int));
+	SAMBAG_LUA_FTAG(addOperator, void (std::string));
+	SAMBAG_LUA_FTAG(getParameters, sambag::lua::IgnoreReturn ());
+    typedef LOKI_TYPELIST_4(Frx_getOperatorNames_Tag, 
+	Frx_removeOperatorAt_Tag, 
+	Frx_addOperator_Tag, 
+	Frx_getParameters_Tag) Functions1;
 
 	
     ///////////////////////////////////////////////////////////////////////////
     /**
 	* @brief TODO
 	*/
-	virtual Point getLocation(lua_State *lua) = 0;
+	virtual OpNames getOperatorNames(lua_State *lua) = 0;
 	/**
 	* @brief TODO
 	*/
-	virtual void setLocation(lua_State *lua, float x, float y) = 0;
+	virtual void removeOperatorAt(lua_State *lua, int index) = 0;
 	/**
 	* @brief TODO
 	*/
-	virtual Point getSize(lua_State *lua) = 0;
+	virtual void addOperator(lua_State *lua, const std::string & id) = 0;
 	/**
 	* @brief TODO
 	*/
-	virtual void setSize(lua_State *lua, float x, float y) = 0;
-	/**
-	* @brief TODO
-	*/
-	virtual void setName(lua_State *lua, const std::string & name) = 0;
-	/**
-	* @brief TODO
-	*/
-	virtual std::string getName(lua_State *lua) = 0;
-	/**
-	* @brief TODO
-	*/
-	virtual std::string getTypeId(lua_State *lua) = 0;
-	/**
-	* @brief TODO
-	*/
-	virtual void setMenu(lua_State *lua) = 0;
-	/**
-	* @brief TODO
-	*/
-	virtual std::string getViewId(lua_State *lua) = 0;
+	virtual sambag::lua::IgnoreReturn getParameters(lua_State *lua) = 0;
     //-------------------------------------------------------------------------
     /**
      * @brief field getter and setter
@@ -114,11 +85,11 @@ public:
     virtual void __lua_gc(lua_State *lua);
 public:
     //-------------------------------------------------------------------------
-    virtual ~LuaFrxObjectBase() {}
+    virtual ~LuaFrxParameterConnectionBase() {}
 private:
 public:
-}; // LuaFrxObjectBase
+}; // LuaFrxParameterConnectionBase
 }}
 
-#endif /* SAMBAG_LuaFrxObjectBase_H */
+#endif /* SAMBAG_LuaFrxParameterConnectionBase_H */
 

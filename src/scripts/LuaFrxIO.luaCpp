@@ -1,0 +1,14 @@
+frx.scripts
+#include <scripts/LuaFrxObject.hpp>
+
+/**
+ * @brief 
+ * SAMBAG_LUA_FTAG\((\w*), (.*?)\((.*?)\)\);
+ */
+class LuaFrxIOBase extends LuaFrxObject {
+      
+}
+
+
+
+

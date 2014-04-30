@@ -1,0 +1,13 @@
+frx.scripts
+#include <scripts/LuaFrxObject.hpp>
+
+/**
+ * @brief
+ */
+class LuaFrxConnectionBase extends LuaFrxObject {
+      ManuallyReturn<2> getObjects();
+}
+
+
+
+

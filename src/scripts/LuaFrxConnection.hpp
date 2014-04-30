@@ -11,13 +11,14 @@
 #include "LuaFrxObject.hpp"
 #include <gui/ViewFactory.hpp>
 #include <com/one4All.h>
+#include "LuaFrxConnectionBase.hpp"
 
 namespace frx { namespace scripts {
 //=============================================================================
 /** 
   * @class LuaFrxConnection.
   */
-class LuaFrxConnection : public LuaFrxObject {
+class LuaFrxConnection : public LuaFrxConnectionBase {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
@@ -26,16 +27,9 @@ public:
     typedef LuaFrxObject Super;
 protected:
     //-------------------------------------------------------------------------
-    virtual void addLuaFields(lua_State * lua, int index);
-    //-------------------------------------------------------------------------
     LuaFrxConnection();
-    SAMBAG_LUA_FTAG(getObjects, slua::IgnoreReturn2());
     ///////////////////////////////////////////////////////////////////////////
-    typedef LOKI_TYPELIST_1(Frx_getObjects_Tag
-    ) Functions1;
-    slua::IgnoreReturn2 getObjects(lua_State *lua) const;
-    //-------------------------------------------------------------------------
-    virtual void __lua_gc(lua_State *lua);
+    slua::IgnoreReturn2 getObjects(lua_State *lua);
 private:
     //-------------------------------------------------------------------------
     void pushComponent(lua_State *lua, fgc::FrxComponentPtr c) const;

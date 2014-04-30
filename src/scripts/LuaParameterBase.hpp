@@ -3,14 +3,14 @@
  * EVERY CHANGES WILL BE OVERWRITTEN THE NEXT TIME 
  * THE THIS FILE IS GENERATED  
  *
- * LuaFrxObjectBase.hpp
+ * LuaParameterBase.hpp
  *
- *  Created on: Tue Apr 29 22:18:01 2014
+ *  Created on: Tue Apr 29 22:18:02 2014
  *      Author: Samba Godschysnki
  */
 
-#ifndef SAMBAG_LuaFrxObjectBase_H
-#define SAMBAG_LuaFrxObjectBase_H
+#ifndef SAMBAG_LuaParameterBase_H
+#define SAMBAG_LuaParameterBase_H
 
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
@@ -18,84 +18,47 @@
 #include <loki/TypeList.h>
 #include <sambag/lua/ALuaObject.hpp>
 
-
+#include <scripts/LuaModelObject.hpp>
 
 namespace frx { namespace scripts { 
 //=============================================================================
-class LuaFrxObjectBase : public sambag::lua::ALuaObject {
+class LuaParameterBase : public LuaModelObject {
 //=============================================================================
 public:
     //-------------------------------------------------------------------------
-    typedef sambag::lua::ALuaObject Super;
+    typedef LuaModelObject Super;
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<LuaFrxObjectBase> Ptr;
+    typedef boost::shared_ptr<LuaParameterBase> Ptr;
     //-------------------------------------------------------------------------
-    typedef boost::weak_ptr<LuaFrxObjectBase> WPtr;
+    typedef boost::weak_ptr<LuaParameterBase> WPtr;
     //-------------------------------------------------------------------------
-    typedef  boost::tuple<float, float>  Point;
-	
+    
 private:
 protected:
     //-------------------------------------------------------------------------
-    LuaFrxObjectBase() {}
+    LuaParameterBase() {}
     //-------------------------------------------------------------------------
-    SAMBAG_LUA_FTAG(getLocation, Point ());
-	SAMBAG_LUA_FTAG(setLocation, void (float, float));
-	SAMBAG_LUA_FTAG(getSize, Point ());
-	SAMBAG_LUA_FTAG(setSize, void (float, float));
-	SAMBAG_LUA_FTAG(setName, void (std::string));
+    SAMBAG_LUA_FTAG(setValue, void (float));
+	SAMBAG_LUA_FTAG(getValue, float ());
 	SAMBAG_LUA_FTAG(getName, std::string ());
-	SAMBAG_LUA_FTAG(getTypeId, std::string ());
-	SAMBAG_LUA_FTAG(setMenu, void ());
-	SAMBAG_LUA_FTAG(getViewId, std::string ());
-    typedef LOKI_TYPELIST_9(Frx_getLocation_Tag, 
-	Frx_setLocation_Tag, 
-	Frx_getSize_Tag, 
-	Frx_setSize_Tag, 
-	Frx_setName_Tag, 
-	Frx_getName_Tag, 
-	Frx_getTypeId_Tag, 
-	Frx_setMenu_Tag, 
-	Frx_getViewId_Tag) Functions1;
+    typedef LOKI_TYPELIST_3(Frx_setValue_Tag, 
+	Frx_getValue_Tag, 
+	Frx_getName_Tag) Functions1;
 
 	
     ///////////////////////////////////////////////////////////////////////////
     /**
 	* @brief TODO
 	*/
-	virtual Point getLocation(lua_State *lua) = 0;
+	virtual void setValue(lua_State *lua, float x) = 0;
 	/**
 	* @brief TODO
 	*/
-	virtual void setLocation(lua_State *lua, float x, float y) = 0;
-	/**
-	* @brief TODO
-	*/
-	virtual Point getSize(lua_State *lua) = 0;
-	/**
-	* @brief TODO
-	*/
-	virtual void setSize(lua_State *lua, float x, float y) = 0;
-	/**
-	* @brief TODO
-	*/
-	virtual void setName(lua_State *lua, const std::string & name) = 0;
+	virtual float getValue(lua_State *lua) = 0;
 	/**
 	* @brief TODO
 	*/
 	virtual std::string getName(lua_State *lua) = 0;
-	/**
-	* @brief TODO
-	*/
-	virtual std::string getTypeId(lua_State *lua) = 0;
-	/**
-	* @brief TODO
-	*/
-	virtual void setMenu(lua_State *lua) = 0;
-	/**
-	* @brief TODO
-	*/
-	virtual std::string getViewId(lua_State *lua) = 0;
     //-------------------------------------------------------------------------
     /**
      * @brief field getter and setter
@@ -114,11 +77,11 @@ public:
     virtual void __lua_gc(lua_State *lua);
 public:
     //-------------------------------------------------------------------------
-    virtual ~LuaFrxObjectBase() {}
+    virtual ~LuaParameterBase() {}
 private:
 public:
-}; // LuaFrxObjectBase
+}; // LuaParameterBase
 }}
 
-#endif /* SAMBAG_LuaFrxObjectBase_H */
+#endif /* SAMBAG_LuaParameterBase_H */
 

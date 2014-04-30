@@ -2,7 +2,6 @@ frx.scripts
 
 /**
  * @brief 
- * SAMBAG_LUA_FTAG\((\w*), (.*?)\((.*?)\)\);
  */
 class LuaFrxViewBase extends sambag.lua.ALuaObject {
     User< boost::tuple<float, float> > Point;

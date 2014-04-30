@@ -3,14 +3,14 @@
  * EVERY CHANGES WILL BE OVERWRITTEN THE NEXT TIME 
  * THE THIS FILE IS GENERATED  
  *
- * LuaFrxObjectBase.hpp
+ * LuaFrxProcessorBase.hpp
  *
  *  Created on: Tue Apr 29 22:18:01 2014
  *      Author: Samba Godschysnki
  */
 
-#ifndef SAMBAG_LuaFrxObjectBase_H
-#define SAMBAG_LuaFrxObjectBase_H
+#ifndef SAMBAG_LuaFrxProcessorBase_H
+#define SAMBAG_LuaFrxProcessorBase_H
 
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
@@ -18,84 +18,83 @@
 #include <loki/TypeList.h>
 #include <sambag/lua/ALuaObject.hpp>
 
-
+#include <scripts/LuaFrxObject.hpp>
 
 namespace frx { namespace scripts { 
 //=============================================================================
-class LuaFrxObjectBase : public sambag::lua::ALuaObject {
+class LuaFrxProcessorBase : public LuaFrxObject {
 //=============================================================================
 public:
     //-------------------------------------------------------------------------
-    typedef sambag::lua::ALuaObject Super;
+    typedef LuaFrxObject Super;
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<LuaFrxObjectBase> Ptr;
+    typedef boost::shared_ptr<LuaFrxProcessorBase> Ptr;
     //-------------------------------------------------------------------------
-    typedef boost::weak_ptr<LuaFrxObjectBase> WPtr;
+    typedef boost::weak_ptr<LuaFrxProcessorBase> WPtr;
     //-------------------------------------------------------------------------
-    typedef  boost::tuple<float, float>  Point;
-	
+    
 private:
 protected:
     //-------------------------------------------------------------------------
-    LuaFrxObjectBase() {}
+    LuaFrxProcessorBase() {}
     //-------------------------------------------------------------------------
-    SAMBAG_LUA_FTAG(getLocation, Point ());
-	SAMBAG_LUA_FTAG(setLocation, void (float, float));
-	SAMBAG_LUA_FTAG(getSize, Point ());
-	SAMBAG_LUA_FTAG(setSize, void (float, float));
-	SAMBAG_LUA_FTAG(setName, void (std::string));
-	SAMBAG_LUA_FTAG(getName, std::string ());
-	SAMBAG_LUA_FTAG(getTypeId, std::string ());
-	SAMBAG_LUA_FTAG(setMenu, void ());
-	SAMBAG_LUA_FTAG(getViewId, std::string ());
-    typedef LOKI_TYPELIST_9(Frx_getLocation_Tag, 
-	Frx_setLocation_Tag, 
-	Frx_getSize_Tag, 
-	Frx_setSize_Tag, 
-	Frx_setName_Tag, 
-	Frx_getName_Tag, 
-	Frx_getTypeId_Tag, 
-	Frx_setMenu_Tag, 
-	Frx_getViewId_Tag) Functions1;
+    SAMBAG_LUA_FTAG(getInputs, sambag::lua::IgnoreReturn ());
+	SAMBAG_LUA_FTAG(getOutputs, sambag::lua::IgnoreReturn ());
+	SAMBAG_LUA_FTAG(getParameters, sambag::lua::IgnoreReturn ());
+	SAMBAG_LUA_FTAG(addInput, sambag::lua::IgnoreReturn (bool));
+	SAMBAG_LUA_FTAG(addOutput, sambag::lua::IgnoreReturn (bool));
+	SAMBAG_LUA_FTAG(openCloseEditor, void ());
+	SAMBAG_LUA_FTAG(getNumInputs, int ());
+	SAMBAG_LUA_FTAG(getNumOutputs, int ());
+	SAMBAG_LUA_FTAG(getPluginLocation, std::string ());
+    typedef LOKI_TYPELIST_9(Frx_getInputs_Tag, 
+	Frx_getOutputs_Tag, 
+	Frx_getParameters_Tag, 
+	Frx_addInput_Tag, 
+	Frx_addOutput_Tag, 
+	Frx_openCloseEditor_Tag, 
+	Frx_getNumInputs_Tag, 
+	Frx_getNumOutputs_Tag, 
+	Frx_getPluginLocation_Tag) Functions1;
 
 	
     ///////////////////////////////////////////////////////////////////////////
     /**
 	* @brief TODO
 	*/
-	virtual Point getLocation(lua_State *lua) = 0;
+	virtual sambag::lua::IgnoreReturn getInputs(lua_State *lua) = 0;
 	/**
 	* @brief TODO
 	*/
-	virtual void setLocation(lua_State *lua, float x, float y) = 0;
+	virtual sambag::lua::IgnoreReturn getOutputs(lua_State *lua) = 0;
 	/**
 	* @brief TODO
 	*/
-	virtual Point getSize(lua_State *lua) = 0;
+	virtual sambag::lua::IgnoreReturn getParameters(lua_State *lua) = 0;
 	/**
 	* @brief TODO
 	*/
-	virtual void setSize(lua_State *lua, float x, float y) = 0;
+	virtual sambag::lua::IgnoreReturn addInput(lua_State *lua, bool followMouse) = 0;
 	/**
 	* @brief TODO
 	*/
-	virtual void setName(lua_State *lua, const std::string & name) = 0;
+	virtual sambag::lua::IgnoreReturn addOutput(lua_State *lua, bool followMouse) = 0;
 	/**
 	* @brief TODO
 	*/
-	virtual std::string getName(lua_State *lua) = 0;
+	virtual void openCloseEditor(lua_State *lua) = 0;
 	/**
 	* @brief TODO
 	*/
-	virtual std::string getTypeId(lua_State *lua) = 0;
+	virtual int getNumInputs(lua_State *lua) = 0;
 	/**
 	* @brief TODO
 	*/
-	virtual void setMenu(lua_State *lua) = 0;
+	virtual int getNumOutputs(lua_State *lua) = 0;
 	/**
 	* @brief TODO
 	*/
-	virtual std::string getViewId(lua_State *lua) = 0;
+	virtual std::string getPluginLocation(lua_State *lua) = 0;
     //-------------------------------------------------------------------------
     /**
      * @brief field getter and setter
@@ -114,11 +113,11 @@ public:
     virtual void __lua_gc(lua_State *lua);
 public:
     //-------------------------------------------------------------------------
-    virtual ~LuaFrxObjectBase() {}
+    virtual ~LuaFrxProcessorBase() {}
 private:
 public:
-}; // LuaFrxObjectBase
+}; // LuaFrxProcessorBase
 }}
 
-#endif /* SAMBAG_LuaFrxObjectBase_H */
+#endif /* SAMBAG_LuaFrxProcessorBase_H */
 

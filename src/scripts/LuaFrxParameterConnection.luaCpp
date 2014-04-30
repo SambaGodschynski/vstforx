@@ -1,0 +1,18 @@
+frx.scripts
+#include <scripts/LuaFrxConnection.hpp>
+#include <sambag/lua/LuaSequence.hpp>
+
+/**
+ * @brief 
+ */
+class LuaFrxParameterConnectionBase extends LuaFrxConnection {
+    User< sambag::lua::LuaSequence<std::string> > OpNames;
+    User<OpNames> getOperatorNames();
+    void removeOperatorAt(int index);
+    void addOperator(string id);
+    ManuallyReturn<1> getParameters();
+}
+
+
+
+

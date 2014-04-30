@@ -14,11 +14,6 @@ namespace frx { namespace scripts {
 //  Class LuaFrxConnection
 //=============================================================================
 //-----------------------------------------------------------------------------
-void LuaFrxConnection::__lua_gc(lua_State *lua) {
-    slua::unregisterClassFunctions<Functions>(getUId());
-    Super::__lua_gc(lua);
-}
-//-----------------------------------------------------------------------------
 void LuaFrxConnection::
 pushComponent(lua_State *lua, fgc::FrxComponentPtr vObj) const
 {
@@ -41,7 +36,7 @@ pushComponent(lua_State *lua, fgc::FrxComponentPtr vObj) const
 
 }
 //-----------------------------------------------------------------------------
-slua::IgnoreReturn2 LuaFrxConnection::getObjects(lua_State *lua) const {
+slua::IgnoreReturn2 LuaFrxConnection::getObjects(lua_State *lua) {
     using namespace frx::gui;
     using namespace frx::gui::components;
     try {
@@ -55,22 +50,6 @@ slua::IgnoreReturn2 LuaFrxConnection::getObjects(lua_State *lua) const {
         slua::pushLuaError(lua, "unknown error");
     }
     return slua::IgnoreReturn();
-}
-//-----------------------------------------------------------------------------
-void LuaFrxConnection::addLuaFields(lua_State *lua, int index) {
-    Super::addLuaFields(lua, index);
-    // 1-10
-    sambag::lua::registerClassFunctions<Functions1,
-        sambag::lua::TupleAccessor>
-    (
-        lua,
-        boost::make_tuple(
-            boost::bind(&LuaFrxConnection::getObjects, this, lua)
-        ),
-        index,
-        getUId()
-    );
-
 }
 //-----------------------------------------------------------------------------
 LuaFrxConnection::LuaFrxConnection() {

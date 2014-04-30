@@ -3,35 +3,35 @@
  * EVERY CHANGES WILL BE OVERWRITTEN THE NEXT TIME 
  * THE THIS FILE IS GENERATED  
  *
- * LuaFrxObjectBase.cpp
+ * LuaFrxProcessorBase.cpp
  *
  *  Created on: Tue Apr 29 22:18:01 2014
  *      Author: Samba Godschysnki
  */
 
-#include "LuaFrxObjectBase.hpp"
+#include "LuaFrxProcessorBase.hpp"
 
 namespace frx { namespace scripts { 
 //=============================================================================
-//  Class LuaFrxObjectBase
+//  Class LuaFrxProcessorBase
 //=============================================================================
 //-----------------------------------------------------------------------------
-void LuaFrxObjectBase::addLuaFields(lua_State *lua, int index) 
+void LuaFrxProcessorBase::addLuaFields(lua_State *lua, int index) 
 {
     using namespace sambag::lua;
     Super::addLuaFields(lua, index);
     // register functions
     registerClassFunctions<Functions1, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaFrxObjectBase::getLocation, this, lua),
-		boost::bind(&LuaFrxObjectBase::setLocation, this, lua, _1, _2),
-		boost::bind(&LuaFrxObjectBase::getSize, this, lua),
-		boost::bind(&LuaFrxObjectBase::setSize, this, lua, _1, _2),
-		boost::bind(&LuaFrxObjectBase::setName, this, lua, _1),
-		boost::bind(&LuaFrxObjectBase::getName, this, lua),
-		boost::bind(&LuaFrxObjectBase::getTypeId, this, lua),
-		boost::bind(&LuaFrxObjectBase::setMenu, this, lua),
-		boost::bind(&LuaFrxObjectBase::getViewId, this, lua)),
+	boost::make_tuple(boost::bind(&LuaFrxProcessorBase::getInputs, this, lua),
+		boost::bind(&LuaFrxProcessorBase::getOutputs, this, lua),
+		boost::bind(&LuaFrxProcessorBase::getParameters, this, lua),
+		boost::bind(&LuaFrxProcessorBase::addInput, this, lua, _1),
+		boost::bind(&LuaFrxProcessorBase::addOutput, this, lua, _1),
+		boost::bind(&LuaFrxProcessorBase::openCloseEditor, this, lua),
+		boost::bind(&LuaFrxProcessorBase::getNumInputs, this, lua),
+		boost::bind(&LuaFrxProcessorBase::getNumOutputs, this, lua),
+		boost::bind(&LuaFrxProcessorBase::getPluginLocation, this, lua)),
 	index, 
 	getUId() 
 	); 
@@ -40,7 +40,7 @@ void LuaFrxObjectBase::addLuaFields(lua_State *lua, int index)
     
 }
 //-----------------------------------------------------------------------------
-void LuaFrxObjectBase::__lua_gc(lua_State *lua) {
+void LuaFrxProcessorBase::__lua_gc(lua_State *lua) {
     using namespace sambag::lua;
     unregisterClassFunctions<Functions1>(getUId());
 	unregisterClassFunctions<MetaFunctions>(getUId());

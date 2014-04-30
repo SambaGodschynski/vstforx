@@ -15,14 +15,9 @@ namespace frx { namespace scripts {
 //  Class LuaFrxParameter
 //=============================================================================
 //-----------------------------------------------------------------------------
-void LuaFrxParameter::__lua_gc(lua_State *lua) {
-    slua::unregisterClassFunctions<Functions>(getUId());
-    Super::__lua_gc(lua);
-}
-//-----------------------------------------------------------------------------
 std::string LuaFrxParameter::toString(lua_State * lua) const {
     std::stringstream ss;
-    ss << Super::toString(lua) << " " << getValue(lua);
+    ss << Super::toString(lua) << " " << getValue();
     return ss.str();
 }
 //-----------------------------------------------------------------------------
@@ -42,38 +37,25 @@ void LuaFrxParameter::setValue(lua_State * lua, float v) {
     }
 }
 //-----------------------------------------------------------------------------
-float LuaFrxParameter::getValue(lua_State * lua) const {
+float LuaFrxParameter::getValue() const {
+    using frx::processing::IParameter;
+    IParameter::Ptr p =
+        boost::dynamic_pointer_cast<IParameter>(getModelObject());
+    if (!p) {
+        return 0.f;
+    }
+    return p->getValue();
+}
+//-----------------------------------------------------------------------------
+float LuaFrxParameter::getValue(lua_State * lua) {
     try {
-        using frx::processing::IParameter;
-        IParameter::Ptr p =
-            boost::dynamic_pointer_cast<IParameter>(getModelObject());
-        if (!p) {
-            return 0.f;
-        }
-        return p->getValue();
+        return getValue();
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua, ex.what());
     } catch(...) {
         slua::pushLuaError(lua, "unknown error");
     }
     return 0.f;
-}
-//-----------------------------------------------------------------------------
-void LuaFrxParameter::addLuaFields(lua_State *lua, int index) {
-    Super::addLuaFields(lua, index);
-    using boost::bind;
-    sambag::lua::registerClassFunctions<Functions,
-        sambag::lua::TupleAccessor>
-    (
-        lua,
-        boost::make_tuple(
-            bind(&LuaFrxParameter::setValue, this, lua, _1),
-            bind(&LuaFrxParameter::getValue, this, lua)
-        ),
-        index,
-        getUId()
-    );
-
 }
 //-----------------------------------------------------------------------------
 LuaFrxParameter::LuaFrxParameter() {

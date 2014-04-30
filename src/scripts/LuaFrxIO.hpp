@@ -11,13 +11,14 @@
 #include "LuaFrxObject.hpp"
 #include <gui/ViewFactory.hpp>
 #include <com/one4All.h>
+#include "LuaFrxIOBase.hpp"
 
 namespace frx { namespace scripts {
 //=============================================================================
 /** 
   * @class LuaFrxIO.
   */
-class LuaFrxIO : public LuaFrxObject {
+class LuaFrxIO : public LuaFrxIOBase {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
@@ -25,8 +26,6 @@ public:
     //-------------------------------------------------------------------------
     typedef LuaFrxObject Super;
 protected:
-    //-------------------------------------------------------------------------
-    virtual void addLuaFields(lua_State * lua, int index);
     //-------------------------------------------------------------------------
     LuaFrxIO();
 private:

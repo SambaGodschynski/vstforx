@@ -11,13 +11,14 @@
 #include "LuaFrxObject.hpp"
 #include <gui/ViewFactory.hpp>
 #include <com/one4All.h>
+#include "LuaFrxParameterBase.hpp"
 
 namespace frx { namespace scripts {
 //=============================================================================
 /** 
   * @class LuaFrxParameter.
   */
-class LuaFrxParameter : public LuaFrxObject {
+class LuaFrxParameter : public LuaFrxParameterBase {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
@@ -26,23 +27,15 @@ public:
     typedef LuaFrxObject Super;
 protected:
     //-------------------------------------------------------------------------
-    virtual void addLuaFields(lua_State * lua, int index);
-    //-------------------------------------------------------------------------
     LuaFrxParameter();
     //-------------------------------------------------------------------------
-    SAMBAG_LUA_FTAG(setValue, void(float));
-    SAMBAG_LUA_FTAG(getValue, float());
-    typedef LOKI_TYPELIST_2(Frx_setValue_Tag,
-        Frx_getValue_Tag
-    ) Functions;
     ///////////////////////////////////////////////////////////////////////////
     // Lua impl.
     //-------------------------------------------------------------------------
     virtual std::string toString(lua_State * lua) const;
     void setValue(lua_State * lua, float v);
-    float getValue(lua_State * lua) const;
-    //-------------------------------------------------------------------------
-    virtual void __lua_gc(lua_State *lua);
+    float getValue(lua_State * lua);
+    float getValue() const;
 private:
 public:
     //-------------------------------------------------------------------------

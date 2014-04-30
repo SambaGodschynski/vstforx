@@ -15,6 +15,7 @@
 #include <processing/FrxAsyncDSPTimer.hpp>
 #include <sambag/com/Thread.hpp>
 #include <sambag/com/events/Events.hpp>
+#include "LuaTimerBase.hpp"
 
 namespace frx { namespace scripts {
 namespace slua = sambag::lua;
@@ -26,7 +27,7 @@ struct TimerExecFailed {
 /** 
   * @class LuaTimer.
   */
-class LuaTimer : public slua::ALuaObject,
+class LuaTimer : public LuaTimerBase,
     public sambag::com::events::EventSender<TimerExecFailed>
 {
 //=============================================================================
@@ -51,21 +52,11 @@ private:
 protected:
     //-------------------------------------------------------------------------
     LuaTimer(Mutex &mutex);
-    //-------------------------------------------------------------------------
-    /**
-     * @brief called when lua object will be removed.
-     */
-    virtual void __lua_gc(lua_State *lua);
     ///////////////////////////////////////////////////////////////////////////
-    SAMBAG_LUA_FTAG(start, void());
-    SAMBAG_LUA_FTAG(stop, void());
-    typedef LOKI_TYPELIST_2(Frx_start_Tag, Frx_stop_Tag) Functions;
     // lua2frx impl
     void start(lua_State *lua);
     void stop(lua_State *lua);
 public:
-    //-------------------------------------------------------------------------
-    virtual void addLuaFields(lua_State *lua, int index);
     //-------------------------------------------------------------------------
     virtual ~LuaTimer() {}
     //-------------------------------------------------------------------------

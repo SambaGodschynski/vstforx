@@ -1,0 +1,13 @@
+frx.scripts
+
+/**
+ * @brief 
+ */
+class LuaTimerBase extends sambag.lua.ALuaObject {
+      void start();
+      void stop();
+}
+
+
+
+

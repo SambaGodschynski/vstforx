@@ -21,11 +21,6 @@ namespace frx { namespace scripts {
 //  Class LuaFrxProcessor
 //=============================================================================
 //-----------------------------------------------------------------------------
-void LuaFrxProcessor::__lua_gc(lua_State *lua) {
-    slua::unregisterClassFunctions<Functions>(getUId());
-    Super::__lua_gc(lua);
-}
-//-----------------------------------------------------------------------------
 void LuaFrxProcessor::openCloseEditor(lua_State *lua) {
     using namespace frx::gui;
     using namespace frx::gui::components;
@@ -42,7 +37,7 @@ void LuaFrxProcessor::openCloseEditor(lua_State *lua) {
     }
 }
 //-----------------------------------------------------------------------------
-slua::IgnoreReturn LuaFrxProcessor::getInputs(lua_State *lua) const {
+slua::IgnoreReturn LuaFrxProcessor::getInputs(lua_State *lua) {
     using namespace frx::gui;
     using namespace frx::gui::components;
     try {
@@ -69,7 +64,7 @@ slua::IgnoreReturn LuaFrxProcessor::getInputs(lua_State *lua) const {
     return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
-slua::IgnoreReturn LuaFrxProcessor::getOutputs(lua_State *lua) const {
+slua::IgnoreReturn LuaFrxProcessor::getOutputs(lua_State *lua) {
     using namespace frx::gui;
     using namespace frx::gui::components;
     try {
@@ -96,7 +91,7 @@ slua::IgnoreReturn LuaFrxProcessor::getOutputs(lua_State *lua) const {
     return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
-slua::IgnoreReturn LuaFrxProcessor::getParameters(lua_State *lua) const {
+slua::IgnoreReturn LuaFrxProcessor::getParameters(lua_State *lua) {
     using frx::processing::IParameter;
     using namespace frx::gui;
     using namespace frx::gui::components;
@@ -229,30 +224,6 @@ std::string LuaFrxProcessor::getPluginLocation(lua_State *lua) {
         slua::pushLuaError(lua, "unkown error");
     }
     return "";
-}
-//-----------------------------------------------------------------------------
-void LuaFrxProcessor::addLuaFields(lua_State *lua, int index) {
-    Super::addLuaFields(lua, index);
-    using boost::bind;
-    sambag::lua::registerClassFunctions<Functions,
-        sambag::lua::TupleAccessor>
-    (
-        lua,
-        boost::make_tuple(
-            bind(&LuaFrxProcessor::getInputs, this, lua),
-            bind(&LuaFrxProcessor::getOutputs, this, lua),
-            bind(&LuaFrxProcessor::getParameters, this, lua),
-            bind(&LuaFrxProcessor::addInput, this, lua, _1),
-            bind(&LuaFrxProcessor::addOutput, this, lua, _1),
-            bind(&LuaFrxProcessor::openCloseEditor, this, lua),
-            bind(&LuaFrxProcessor::getNumInputs, this, lua),
-            bind(&LuaFrxProcessor::getNumOutputs, this, lua),
-            bind(&LuaFrxProcessor::getPluginLocation, this, lua)
-        ),
-        index,
-        getUId()
-    );
-
 }
 //-----------------------------------------------------------------------------
 LuaFrxProcessor::LuaFrxProcessor() {

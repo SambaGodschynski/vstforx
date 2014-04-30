@@ -15,28 +15,6 @@ namespace frx { namespace scripts {
 //  Class LuaParameter
 //=============================================================================
 //-----------------------------------------------------------------------------
-void LuaParameter::__lua_gc(lua_State *lua) {
-    slua::unregisterClassFunctions<Functions1>(getUId());
-    Super::__lua_gc(lua);
-}
-//-----------------------------------------------------------------------------
-void LuaParameter::addLuaFields(lua_State * lua, int index) {
-    Super::addLuaFields(lua, index);
-    using boost::bind;
-    sambag::lua::registerClassFunctions<Functions1,
-        sambag::lua::TupleAccessor>
-    (
-        lua,
-        boost::make_tuple(
-            bind(&LuaParameter::setValue, this, lua, _1),
-            bind(&LuaParameter::getValue, this, lua),
-            bind(&LuaParameter::getName, this, lua)
-        ),
-        index,
-        getUId()
-    );
-}
-//-----------------------------------------------------------------------------
 LuaParameter::LuaParameter() {
 }
 //-----------------------------------------------------------------------------
@@ -62,12 +40,10 @@ void LuaParameter::setValue(lua_State * lua, float v) {
     }
 }
 //-----------------------------------------------------------------------------
-float LuaParameter::getValue(lua_State * lua) const {
+float LuaParameter::getValue(lua_State * lua) {
     using ::processing::parameter::Parameter;
     try {
-        Parameter::Ptr x =
-            boost::dynamic_pointer_cast<Parameter>(getModelObject());
-        return x->getValue();
+        return getValue();
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua, ex.what());
     } catch(...) {
@@ -76,7 +52,21 @@ float LuaParameter::getValue(lua_State * lua) const {
     return 0;
 }
 //-----------------------------------------------------------------------------
-std::string LuaParameter::getName(lua_State * lua) const {
+float LuaParameter::getValue() const {
+    using ::processing::parameter::Parameter;
+    Parameter::Ptr x =
+        boost::dynamic_pointer_cast<Parameter>(getModelObject());
+    return x->getValue();
+}
+//-----------------------------------------------------------------------------
+std::string LuaParameter::getName() const {
+    using ::processing::parameter::Parameter;
+    Parameter::Ptr x =
+        boost::dynamic_pointer_cast<Parameter>(getModelObject());
+    return x->getName();
+}
+//-----------------------------------------------------------------------------
+std::string LuaParameter::getName(lua_State * lua) {
     using ::processing::parameter::Parameter;
     try {
         Parameter::Ptr x =
@@ -92,7 +82,7 @@ std::string LuaParameter::getName(lua_State * lua) const {
 //-----------------------------------------------------------------------------
 std::string LuaParameter::toString(lua_State * lua) const {
     std::stringstream ss;
-    ss<<getName(lua)<<" "<<getValue(lua);
+    ss<<getName()<<" "<<getValue();
     return ss.str();
 }
 }} // namespace(s)

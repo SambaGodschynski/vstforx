@@ -12,12 +12,13 @@
 #include <gui/ViewFactory.hpp>
 #include <com/one4All.h>
 #include <sambag/lua/LuaSequence.hpp>
+#include "LuaFrxParameterConnectionBase.hpp"
 namespace frx { namespace scripts {
 //=============================================================================
 /** 
   * @class LuaFrxParameterConnection.
   */
-class LuaFrxParameterConnection : public LuaFrxConnection {
+class LuaFrxParameterConnection : public LuaFrxParameterConnectionBase {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
@@ -25,24 +26,11 @@ public:
     //-------------------------------------------------------------------------
     typedef LuaFrxConnection Super;
 protected:
-    //-------------------------------------------------------------------------
-    virtual void addLuaFields(lua_State * lua, int index);
-    SAMBAG_LUA_FTAG(getOperatorNames, slua::LuaSequence<std::string>());
-    SAMBAG_LUA_FTAG(removeOperatorAt, void(int));
-    SAMBAG_LUA_FTAG(addOperator, void(std::string));
-    SAMBAG_LUA_FTAG(getParameters, slua::IgnoreReturn());
     ///////////////////////////////////////////////////////////////////////////
-    typedef LOKI_TYPELIST_4(Frx_getOperatorNames_Tag,
-        Frx_removeOperatorAt_Tag,
-        Frx_addOperator_Tag,
-        Frx_getParameters_Tag
-    ) Functions1;
     slua::LuaSequence<std::string> getOperatorNames(lua_State *lua);
     void removeOperatorAt(lua_State *lua, int index);
     void addOperator(lua_State *lua, const std::string &opName);
     slua::IgnoreReturn getParameters(lua_State *lua);
-    //-------------------------------------------------------------------------
-    virtual void __lua_gc(lua_State *lua);
 private:
 public:
     //-------------------------------------------------------------------------

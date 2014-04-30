@@ -29,25 +29,15 @@ protected:
     //-------------------------------------------------------------------------
     void setValue(float v);
     //-------------------------------------------------------------------------
-    SAMBAG_LUA_FTAG(setValue, void(float));
-    SAMBAG_LUA_FTAG(getValue, float());
-    SAMBAG_LUA_FTAG(getName, std::string());
-    typedef LOKI_TYPELIST_3(Frx_setValue_Tag,
-        Frx_getValue_Tag,
-        Frx_getName_Tag
-    ) Functions1;
-    //-------------------------------------------------------------------------
-    virtual void addLuaFields(lua_State * lua, int index);
-    //-------------------------------------------------------------------------
     LuaParameter();
+    float getValue() const;
+    std::string getName() const;
     ///////////////////////////////////////////////////////////////////////////
     // lua impl.
     void setValue(lua_State * lua, float v);
-    float getValue(lua_State * lua) const;
-    std::string getName(lua_State * lua) const;
+    float getValue(lua_State * lua);
+    std::string getName(lua_State * lua);
     std::string toString(lua_State * lua) const;
-    //-------------------------------------------------------------------------
-    virtual void __lua_gc(lua_State *lua);
 private:
 public:
     //-------------------------------------------------------------------------

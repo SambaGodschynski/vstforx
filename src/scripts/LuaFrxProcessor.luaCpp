@@ -1,0 +1,21 @@
+frx.scripts
+#include <scripts/LuaFrxObject.hpp>
+
+/**
+ * @brief 
+ */
+class LuaFrxProcessorBase extends LuaFrxObject {
+      ManuallyReturn<1> getInputs();
+      ManuallyReturn<1> getOutputs();
+      ManuallyReturn<1> getParameters();
+      ManuallyReturn<1> addInput(bool followMouse);
+      ManuallyReturn<1> addOutput(bool followMouse);
+      void openCloseEditor();
+      int getNumInputs();
+      int getNumOutputs();
+      string getPluginLocation();
+}
+
+
+
+

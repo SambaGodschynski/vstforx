@@ -1,0 +1,14 @@
+frx.scripts
+#include <scripts/LuaFrxObject.hpp>
+
+/**
+ * @brief 
+ */
+class LuaFrxParameterBase extends LuaFrxObject {
+      void setValue(float value);
+      float getValue();
+}
+
+
+
+

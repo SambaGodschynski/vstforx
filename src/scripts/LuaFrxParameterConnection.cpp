@@ -16,11 +16,6 @@ namespace frx { namespace scripts {
 //  Class LuaFrxParameterConnection
 //=============================================================================
 //-----------------------------------------------------------------------------
-void LuaFrxParameterConnection::__lua_gc(lua_State *lua) {
-    slua::unregisterClassFunctions<Functions>(getUId());
-    Super::__lua_gc(lua);
-}
-//-----------------------------------------------------------------------------
 void LuaFrxParameterConnection::addOperator(lua_State *lua, const std::string &opName)
 {
     try {
@@ -105,25 +100,6 @@ void LuaFrxParameterConnection::removeOperatorAt(lua_State *lua, int index) {
     } catch(...) {
         slua::pushLuaError(lua, "unkown error");
     }
-}
-//-----------------------------------------------------------------------------
-void LuaFrxParameterConnection::addLuaFields(lua_State *lua, int index) {
-    Super::addLuaFields(lua, index);
-    // 1-10
-    sambag::lua::registerClassFunctions<Functions1,
-        sambag::lua::TupleAccessor>
-    (
-        lua,
-        boost::make_tuple(
-            boost::bind(&LuaFrxParameterConnection::getOperatorNames, this, lua),
-            boost::bind(&LuaFrxParameterConnection::removeOperatorAt, this, lua, _1),
-            boost::bind(&LuaFrxParameterConnection::addOperator, this, lua, _1),
-            boost::bind(&LuaFrxParameterConnection::getParameters, this, lua)
-        ),
-        index,
-        getUId()
-    );
-
 }
 //-----------------------------------------------------------------------------
 LuaFrxParameterConnection::Ptr

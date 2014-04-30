@@ -48,29 +48,6 @@ void LuaTimer::stop(lua_State *lua) {
     timer->stop();
 }
 //-----------------------------------------------------------------------------
-void LuaTimer::addLuaFields(lua_State *lua, int index) {
-    Super::addLuaFields(lua, index);
-    using boost::bind;
-    
-    sambag::lua::registerClassFunctions<Functions,
-        sambag::lua::TupleAccessor>
-    (
-        lua,
-        boost::make_tuple(
-            bind(&LuaTimer::start, this, lua),
-            bind(&LuaTimer::stop, this, lua)
-        ),
-        index,
-        getUId()
-    );
-} 
-//-----------------------------------------------------------------------------
-void LuaTimer::__lua_gc(lua_State *lua) {
-    timer->stop();
-    slua::unregisterClassFunctions<Functions>(getUId());
-    Super::__lua_gc(lua);
-}
-//-----------------------------------------------------------------------------
 LuaTimer::Ptr LuaTimer::createAndPush(sambag::lua::LuaStateWRef _lua, Mutex &mutex,
     const std::string &callback, int ms, int numRep)
 {
