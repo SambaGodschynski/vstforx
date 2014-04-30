@@ -1,0 +1,30 @@
+frx.processing
+
+#include <processing/pluginTypes/LuaDefs.hpp>
+
+/**
+ * @brief 
+ */
+class LuaImplBase extends sambag.lua.ALuaObject {
+      void log(string msg);	  
+      void logWarn(string msg);
+      void logErr(string msg);
+      void logTrace(string msg);
+      void sendMidi();
+      User<LuaFrames> getChannel(int nb);
+      User<FFTData> fft();
+      void setChannel();
+      double getSamplePos();
+      double getBarStartPos();
+      double getPpqPos();
+      int getTimeSigNumerator();
+      int getTimeSigDenominator();
+      double getTempo();
+      void setParameterValue(string id, float value);
+      void setParameterDisplay(string id, string txt);
+      ManuallyReturn<1> getPersistUserData(string data);
+      void setPersistUserData();
+}
+
+
+
