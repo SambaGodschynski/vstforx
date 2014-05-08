@@ -70,7 +70,7 @@ namespace {
         virtual MasterType getMasterType() const {
 			return hostInfo->getMasterType();
 		}
-        virtual scripts::PluginScriptCtrlPtr getScriptController() const {
+        virtual scripts::PluginScriptCtrlPtr getScriptController() {
             return hostInfo->getScriptController();
         }
         int archiveVersion;
@@ -545,7 +545,7 @@ void VstForxPlug::load(std::istream &is, int version) {
 	initHostParameter();
     // script ctrl user data
     if (version>0) {
-        getScriptCtrl()->getPersistUserData().clear();
+        getScriptController()->getPersistUserData().clear();
         // script ctrl user data
         // the boost::serialization multimap impl. gives a fuck about
         // map value order, so we have to do it manually
@@ -576,7 +576,7 @@ int VstForxPlug::getLatency() const {
 	return 0;
 }
 //-----------------------------------------------------------------------------
-VstForxPlug::ScriptCtrlPtr VstForxPlug::getScriptCtrl() {
+VstForxPlug::ScriptCtrlPtr VstForxPlug::getScriptController() {
     if (!scriptCtrl) {
         scriptCtrl = ScriptCtrlPtr(new frx::scripts::PluginScriptCtrl(true));
         scriptCtrl->setPlugin(this);
@@ -601,7 +601,7 @@ getScriptControl(frx::gui::components::FrxCircuidViewPtr view) {
     VstForxPlug *plug = getPlugin(view);
 	if (!plug)
 		return VstForxPlug::ScriptCtrlPtr();
-	return plug->getScriptCtrl();
+	return plug->getScriptController();
 }
 }} // namespace(s)
 

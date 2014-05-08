@@ -67,7 +67,7 @@ namespace {
         float sampleRate;
         int blockSize;
         BridgePluginDelegate *master;
-        scripts::PluginScriptCtrlPtr getScriptController() const {
+        scripts::PluginScriptCtrlPtr getScriptController() {
             return scripts::PluginScriptCtrlPtr();
         }
     };

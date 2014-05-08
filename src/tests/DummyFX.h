@@ -68,7 +68,7 @@ public:
 		ar & sampleRate;
 		ar & blockSize;
 	}
-    virtual frx::scripts::PluginScriptCtrlPtr getScriptController() const {
+    virtual frx::scripts::PluginScriptCtrlPtr getScriptController() {
         return frx::scripts::PluginScriptCtrlPtr();
     }
 };

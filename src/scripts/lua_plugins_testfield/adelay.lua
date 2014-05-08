@@ -30,6 +30,8 @@ function incCursor()
    end
 end
 
+frx.addTimer("frx.plug:log('ARSCH')", 50, -1):start()
+
 function lcOnSave()
    frx.plug:setPersistUserData("userkey", {"hallo", "du", "penner"})
 end

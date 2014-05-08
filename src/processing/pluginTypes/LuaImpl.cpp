@@ -282,6 +282,7 @@ void LuaImpl::openPlugin() {
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::closePlugin() {
+    SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex); // lock lua calls
     turnOff();
     if (editor) {
         editor.reset();
@@ -511,6 +512,7 @@ namespace {
     }
 }
 void LuaImpl::sendMidi(lua_State *lua) {
+    SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex); // lock lua calls
     try {
         if(!lua_istable(lua, -1)) {
             throw std::runtime_error("missing midi data argument");
@@ -694,6 +696,7 @@ LuaImpl::~LuaImpl() {
 }
 //-----------------------------------------------------------------------------
 std::pair<size_t, void*> LuaImpl::getStateData() const {
+    SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
     // call lua
     IF_HAS_LC(lcOnSave) {
         try {
@@ -713,6 +716,7 @@ std::pair<size_t, void*> LuaImpl::getStateData() const {
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::setStateData(size_t size, void* data) {
+    SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
     std::stringstream ss;
     ss.write((const char*)data, size);
     com::iArchive ar(ss);
@@ -811,7 +815,7 @@ double LuaImpl::getTempo(lua_State *lua) {
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
-  
+    SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
     IHostInfo::Ptr hI = hostInfo.lock();
     if (!hI) {
         SAMBAG_LOG_WARN<<"hostinfo == NULL";
@@ -839,6 +843,8 @@ void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
 //-----------------------------------------------------------------------------
 void LuaImpl::closeLua() {
     try {
+        SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+        //luaState.reset();
     } catch(...) {
     }
 }

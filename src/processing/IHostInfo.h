@@ -92,7 +92,7 @@ struct IHostInfo {
 	 */
 	virtual bool ioChanged() = 0;
     //-------------------------------------------------------------------------
-    virtual scripts::PluginScriptCtrlPtr getScriptController() const = 0;
+    virtual scripts::PluginScriptCtrlPtr getScriptController() = 0;
 	///////////////////////////////////////////////////////////////////////////
 	// Events
 	//-------------------------------------------------------------------------

@@ -128,7 +128,7 @@ private:
     mutable Config config;
     //-------------------------------------------------------------------------
 	// lock lua calls 
-	sambag::com::RecursiveMutex mutex;
+	mutable sambag::com::RecursiveMutex mutex;
     //-------------------------------------------------------------------------
     unsigned int lcFlags;
     //-------------------------------------------------------------------------

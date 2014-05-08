@@ -2,10 +2,10 @@ TVSTForx.mobile-server
 v5
 r1
 cCheck dependencies
-cCompileC src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/i386/MobileServer.o /Users/johannesunger/workspace/vstforx_next/src/mobile/server/MobileServer.cpp normal i386 c++ com.apple.compilers.llvmgcc42
-cCompileC src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/i386/main.o /Users/johannesunger/workspace/vstforx_next/src/mobile/server/main.cpp normal i386 c++ com.apple.compilers.llvmgcc42
-cLd /Users/johannesunger/workspace/vstforx_next/src/mobile/Debug/VSTForx.mobile-server normal i386
-cPhaseScriptExecution "CMake PostBuild Rules" /Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Script-9F211EFCF5744D2086F898A8.sh
+cCompileC src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/MobileServer.o /Users/johannesunger/workspace/vstforx_next/src/mobile/server/MobileServer.cpp normal x86_64 c++ com.apple.compilers.llvmgcc42
+cCompileC src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/main.o /Users/johannesunger/workspace/vstforx_next/src/mobile/server/main.cpp normal x86_64 c++ com.apple.compilers.llvmgcc42
+cLd /Users/johannesunger/workspace/vstforx_next/src/mobile/Debug/VSTForx.mobile-server normal x86_64
+cPhaseScriptExecution "CMake PostBuild Rules" /Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Script-E5DA29F9456740C9AA9E0D64.sh
 
 N/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk
 c000000005130312F00000000000000AA
@@ -246,8 +246,8 @@ i"math.h"
 i<sstream>
 
 N/Users/johannesunger/workspace/vstforx_next/src/mobile/Debug/VSTForx.mobile-server
-t1397655523
-s4479572
+t1399551909
+s3879528
 
 N/Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/i386/MobileServer.o
 t1397655509
@@ -263,8 +263,8 @@ t1397655511
 s617428
 
 N/Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/MobileServer.o
-t1393417451
-s8016556
+t1399551907
+s7805124
 
 N/Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/VSTForx.mobile-server.LinkFileList
 c00000000530DDCA8000000000000011A
@@ -272,7 +272,7 @@ t1393417384
 s282
 
 N/Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/main.o
-t1393417453
+t1399551909
 s674104
 
 N/Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Script-6F720950C46246F28609702B.sh
@@ -298,6 +298,11 @@ s204
 N/Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Script-9F211EFCF5744D2086F898A8.sh
 c00000000534E87C600000000000000CC
 t1397655494
+s204
+
+N/Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Script-E5DA29F9456740C9AA9E0D64.sh
+c00000000536B775B00000000000000CC
+t1399551835
 s204
 
 N/Users/johannesunger/workspace/vstforx_next/src/mobile/server/MobileServer.cpp
@@ -20089,7 +20094,7 @@ r0
 
 CCheck dependencies
 r0
-lSLF05#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection18"Check dependencies17117d01c0feb841^e0139301c0feb841^---0#1#0#--18"Check dependencies36"359CC8AA-5717-4718-B410-2F1C7F7257F9-
+lSLF05#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection18"Check dependenciesa54e3423b51bb941^910c4d23b51bb941^---0#1#0#--18"Check dependencies36"E8F6A3DF-876C-414F-84E5-9880DF204AD4-
 
 CCompileC src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/i386/MobileServer.o /Users/johannesunger/workspace/vstforx_next/src/mobile/server/MobileServer.cpp normal i386 c++ com.apple.compilers.llvmgcc42
 s419348294.044349
@@ -20118,8 +20123,8 @@ xcom.apple.compilers.llvmgcc42
 lSLF05#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection78"Compile /Users/johannesunger/workspace/vstforx_next/src/mobile/server/main.cpp562d7955bffeb841^13bae357bffeb841^---0#0#0#-19%DVTDocumentLocation2@86"file://localhost/Users/johannesunger/workspace/vstforx_next/src/mobile/server/main.cpp0000000000000000^1900"CompileC src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/i386/main.o src/mobile/server/main.cpp normal i386 c++ com.apple.compilers.llvmgcc42    cd /Users/johannesunger/workspace/vstforx_next    setenv LANG en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/usr/bin/llvm-gcc-4.2 -x c++ -arch i386 -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -O0 "-DCMAKE_INTDIR=\"Debug\"" -DFRX_FEATURE_REMOTE_CHANNEL -DBOOST_UBLAS_TYPE_CHECK=0 -DBOOST_FILESYSTEM_VERSION=3 -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DSAMBAG_USE_LOG -DFRX_OS_MAC -DDISCO_USE_COCOA -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -fasm-blocks -mmacosx-version-min=10.8 -gdwarf-2 -I/Users/johannesunger/workspace/vstforx_next/src/mobile/Debug/include -I/Users/johannesunger/workspace/vstforx_next/src -I/opt/local/include/cairo -I/opt/local/include/cppunit/.. -I/Users/johannesunger/clibs/tinyxml -I/opt/local/include -I/Users/johannesunger/clibs/loki/include -I/Users/johannesunger/clibs/lua/src -I/Users/johannesunger/clibs/vstsdk2.4 -I/Users/johannesunger/clibs/vstsdk2.4/PUBLIC.SDK/SOURCE/VST2.X -I/Users/johannesunger/clibs/vstsdk2.4/PLUGINTERFACES/VST2.X -I/Users/johannesunger/clibs/sambag/src -I/Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/DerivedSources/i386 -I/Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/DerivedSources -Wmost -Wno-four-char-constants -Wno-unknown-pragmas -F/Users/johannesunger/workspace/vstforx_next/src/mobile/Debug -DFRX_FEATURE_DC_TESTER -c /Users/johannesunger/workspace/vstforx_next/src/mobile/server/main.cpp -o /Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/i386/main.o36"E43275F1-9A14-4C49-A6A4-BD206931571E-
 
 CCompileC src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/MobileServer.o /Users/johannesunger/workspace/vstforx_next/src/mobile/server/MobileServer.cpp normal x86_64 c++ com.apple.compilers.llvmgcc42
-s417443896.053058
-e417443907.731797
+s421244698.053699
+e421244707.372641
 r1
 xCompileC
 xsrc/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/MobileServer.o
@@ -20128,11 +20133,11 @@ xnormal
 xx86_64
 xc++
 xcom.apple.compilers.llvmgcc42
-lSLF05#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection86"Compile /Users/johannesunger/workspace/vstforx_next/src/mobile/server/MobileServer.cpp1daa0d38b0e1b841^2156bb43b0e1b841^---0#0#0#-19%DVTDocumentLocation2@94"file://localhost/Users/johannesunger/workspace/vstforx_next/src/mobile/server/MobileServer.cpp0000000000000000^1942"CompileC src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/MobileServer.o src/mobile/server/MobileServer.cpp normal x86_64 c++ com.apple.compilers.llvmgcc42    cd /Users/johannesunger/workspace/vstforx_next    setenv LANG en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/usr/bin/llvm-gcc-4.2 -x c++ -arch x86_64 -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -O0 "-DCMAKE_INTDIR=\"Debug\"" -DFRX_FEATURE_REMOTE_CHANNEL -DBOOST_UBLAS_TYPE_CHECK=0 -DBOOST_FILESYSTEM_VERSION=3 -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DSAMBAG_USE_LOG -DFRX_OS_MAC -DDISCO_USE_COCOA -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -fasm-blocks -mmacosx-version-min=10.8 -gdwarf-2 -I/Users/johannesunger/workspace/vstforx_next/src/mobile/Debug/include -I/Users/johannesunger/workspace/vstforx_next/src -I/opt/local/include/cairo -I/opt/local/include/cppunit/.. -I/Users/johannesunger/clibs/tinyxml -I/opt/local/include -I/Users/johannesunger/clibs/loki/include -I/Users/johannesunger/clibs/lua/src -I/Users/johannesunger/clibs/vstsdk2.4 -I/Users/johannesunger/clibs/vstsdk2.4/PUBLIC.SDK/SOURCE/VST2.X -I/Users/johannesunger/clibs/vstsdk2.4/PLUGINTERFACES/VST2.X -I/Users/johannesunger/clibs/sambag/src -I/Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/DerivedSources/x86_64 -I/Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/DerivedSources -Wmost -Wno-four-char-constants -Wno-unknown-pragmas -F/Users/johannesunger/workspace/vstforx_next/src/mobile/Debug -DFRX_FEATURE_DC_TESTER -c /Users/johannesunger/workspace/vstforx_next/src/mobile/server/MobileServer.cpp -o /Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/MobileServer.o36"3FEF94A7-5873-45B3-A3B7-3A304F2392F5-
+lSLF05#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection86"Compile /Users/johannesunger/workspace/vstforx_next/src/mobile/server/MobileServer.cpp49da0d1aaf1bb941^e4675f23af1bb941^---0#0#0#-19%DVTDocumentLocation2@94"file://localhost/Users/johannesunger/workspace/vstforx_next/src/mobile/server/MobileServer.cpp0000000000000000^1925"CompileC src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/MobileServer.o src/mobile/server/MobileServer.cpp normal x86_64 c++ com.apple.compilers.llvmgcc42    cd /Users/johannesunger/workspace/vstforx_next    setenv LANG en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/usr/bin/llvm-gcc-4.2 -x c++ -arch x86_64 -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -O0 "-DCMAKE_INTDIR=\"Debug\"" -DFRX_FEATURE_REMOTE_CHANNEL -DBOOST_UBLAS_TYPE_CHECK=0 -DBOOST_FILESYSTEM_VERSION=3 -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DFRX_OS_MAC -DDISCO_USE_COCOA -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -fasm-blocks -mmacosx-version-min=10.8 -gdwarf-2 -I/Users/johannesunger/workspace/vstforx_next/src/mobile/Debug/include -I/Users/johannesunger/workspace/vstforx_next/src -I/opt/local/include/cairo -I/opt/local/include/cppunit/.. -I/Users/johannesunger/clibs/tinyxml -I/opt/local/include -I/Users/johannesunger/clibs/loki/include -I/Users/johannesunger/clibs/lua/src -I/Users/johannesunger/clibs/vstsdk2.4 -I/Users/johannesunger/clibs/vstsdk2.4/PUBLIC.SDK/SOURCE/VST2.X -I/Users/johannesunger/clibs/vstsdk2.4/PLUGINTERFACES/VST2.X -I/Users/johannesunger/clibs/sambag/src -I/Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/DerivedSources/x86_64 -I/Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/DerivedSources -Wmost -Wno-four-char-constants -Wno-unknown-pragmas -F/Users/johannesunger/workspace/vstforx_next/src/mobile/Debug -DFRX_FEATURE_DC_TESTER -c /Users/johannesunger/workspace/vstforx_next/src/mobile/server/MobileServer.cpp -o /Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/MobileServer.o36"D1684D06-05BC-4150-9855-A37EF89C6952-
 
 CCompileC src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/main.o /Users/johannesunger/workspace/vstforx_next/src/mobile/server/main.cpp normal x86_64 c++ com.apple.compilers.llvmgcc42
-s417443907.732030
-e417443910.160462
+s421244707.372858
+e421244709.244224
 r1
 xCompileC
 xsrc/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/main.o
@@ -20141,7 +20146,7 @@ xnormal
 xx86_64
 xc++
 xcom.apple.compilers.llvmgcc42
-lSLF05#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection78"Compile /Users/johannesunger/workspace/vstforx_next/src/mobile/server/main.cpp3c86bb43b0e1b841^73132946b0e1b841^---0#0#0#-19%DVTDocumentLocation2@86"file://localhost/Users/johannesunger/workspace/vstforx_next/src/mobile/server/main.cpp0000000000000000^1910"CompileC src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/main.o src/mobile/server/main.cpp normal x86_64 c++ com.apple.compilers.llvmgcc42    cd /Users/johannesunger/workspace/vstforx_next    setenv LANG en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/usr/bin/llvm-gcc-4.2 -x c++ -arch x86_64 -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -O0 "-DCMAKE_INTDIR=\"Debug\"" -DFRX_FEATURE_REMOTE_CHANNEL -DBOOST_UBLAS_TYPE_CHECK=0 -DBOOST_FILESYSTEM_VERSION=3 -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DSAMBAG_USE_LOG -DFRX_OS_MAC -DDISCO_USE_COCOA -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -fasm-blocks -mmacosx-version-min=10.8 -gdwarf-2 -I/Users/johannesunger/workspace/vstforx_next/src/mobile/Debug/include -I/Users/johannesunger/workspace/vstforx_next/src -I/opt/local/include/cairo -I/opt/local/include/cppunit/.. -I/Users/johannesunger/clibs/tinyxml -I/opt/local/include -I/Users/johannesunger/clibs/loki/include -I/Users/johannesunger/clibs/lua/src -I/Users/johannesunger/clibs/vstsdk2.4 -I/Users/johannesunger/clibs/vstsdk2.4/PUBLIC.SDK/SOURCE/VST2.X -I/Users/johannesunger/clibs/vstsdk2.4/PLUGINTERFACES/VST2.X -I/Users/johannesunger/clibs/sambag/src -I/Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/DerivedSources/x86_64 -I/Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/DerivedSources -Wmost -Wno-four-char-constants -Wno-unknown-pragmas -F/Users/johannesunger/workspace/vstforx_next/src/mobile/Debug -DFRX_FEATURE_DC_TESTER -c /Users/johannesunger/workspace/vstforx_next/src/mobile/server/main.cpp -o /Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/main.o36"9F6DDAA2-2C01-42CD-AC2D-0870AF52EAAD-
+lSLF05#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection78"Compile /Users/johannesunger/workspace/vstforx_next/src/mobile/server/main.cppab935f23af1bb941^34853e25af1bb941^---0#0#0#-19%DVTDocumentLocation2@86"file://localhost/Users/johannesunger/workspace/vstforx_next/src/mobile/server/main.cpp0000000000000000^1893"CompileC src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/main.o src/mobile/server/main.cpp normal x86_64 c++ com.apple.compilers.llvmgcc42    cd /Users/johannesunger/workspace/vstforx_next    setenv LANG en_US.US-ASCII    /Applications/Xcode.app/Contents/Developer/usr/bin/llvm-gcc-4.2 -x c++ -arch x86_64 -fmessage-length=0 -pipe -Wno-trigraphs -fpascal-strings -O0 "-DCMAKE_INTDIR=\"Debug\"" -DFRX_FEATURE_REMOTE_CHANNEL -DBOOST_UBLAS_TYPE_CHECK=0 -DBOOST_FILESYSTEM_VERSION=3 -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DFRX_OS_MAC -DDISCO_USE_COCOA -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -fasm-blocks -mmacosx-version-min=10.8 -gdwarf-2 -I/Users/johannesunger/workspace/vstforx_next/src/mobile/Debug/include -I/Users/johannesunger/workspace/vstforx_next/src -I/opt/local/include/cairo -I/opt/local/include/cppunit/.. -I/Users/johannesunger/clibs/tinyxml -I/opt/local/include -I/Users/johannesunger/clibs/loki/include -I/Users/johannesunger/clibs/lua/src -I/Users/johannesunger/clibs/vstsdk2.4 -I/Users/johannesunger/clibs/vstsdk2.4/PUBLIC.SDK/SOURCE/VST2.X -I/Users/johannesunger/clibs/vstsdk2.4/PLUGINTERFACES/VST2.X -I/Users/johannesunger/clibs/sambag/src -I/Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/DerivedSources/x86_64 -I/Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/DerivedSources -Wmost -Wno-four-char-constants -Wno-unknown-pragmas -F/Users/johannesunger/workspace/vstforx_next/src/mobile/Debug -DFRX_FEATURE_DC_TESTER -c /Users/johannesunger/workspace/vstforx_next/src/mobile/server/main.cpp -o /Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/main.o36"DFE20982-0440-4B09-AC2C-EDEEA02B271A-
 
 CLd /Users/johannesunger/workspace/vstforx_next/src/mobile/Debug/VSTForx.mobile-server normal i386
 s419348318.007799
@@ -20154,14 +20159,14 @@ xi386
 lSLF05#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection87"Link /Users/johannesunger/workspace/vstforx_next/src/mobile/Debug/VSTForx.mobile-server471c025ebffeb841^87db2d63bffeb841^---0#0#0#--1748"Ld src/mobile/Debug/VSTForx.mobile-server normal i386    cd /Users/johannesunger/workspace/vstforx_next    setenv MACOSX_DEPLOYMENT_TARGET 10.8    /Applications/Xcode.app/Contents/Developer/usr/bin/llvm-g++-4.2 -arch i386 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -L/Users/johannesunger/workspace/vstforx_next/src/mobile/Debug -F/Users/johannesunger/workspace/vstforx_next/src/mobile/Debug -filelist /Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/i386/VSTForx.mobile-server.LinkFileList -mmacosx-version-min=10.8 -Wl,-search_paths_first -Wl,-headerpad_max_install_names /Users/johannesunger/workspace/vstforx_next/src/Debug/libfrx_core.a /Users/johannesunger/clibs/sambag/src/Debug/libsambag.a /opt/local/lib/libboost_filesystem-mt.a /opt/local/lib/libboost_system-mt.a /opt/local/lib/libboost_thread-mt.a /opt/local/lib/libboost_regex-mt.a /opt/local/lib/libboost_signals-mt.a /opt/local/lib/libboost_serialization-mt.a /opt/local/lib/libboost_date_time-mt.a /opt/local/lib/libboost_timer-mt.a /opt/local/lib/libboost_chrono-mt.a /opt/local/lib/libboost_program_options-mt.a /opt/local/lib/libboost_log-mt.a /opt/local/lib/libboost_log_setup-mt.a /opt/local/lib/libcppunit.a /opt/local/lib/libexpat.a /opt/local/lib/libbz2.a /opt/local/lib/libfreetype.a /opt/local/lib/libfontconfig.a /opt/local/lib/libz.a /opt/local/lib/libpixman-1.a /opt/local/lib/libpng.a /opt/local/lib/libcairo.a /Users/johannesunger/clibs/tinyxml/lib/libticpp.a /Users/johannesunger/clibs/lua/src/liblua.a -framework Cocoa -framework Carbon -o /Users/johannesunger/workspace/vstforx_next/src/mobile/Debug/VSTForx.mobile-server36"B5419976-284F-406A-ABBC-567BB33058B4-
 
 CLd /Users/johannesunger/workspace/vstforx_next/src/mobile/Debug/VSTForx.mobile-server normal x86_64
-s417443910.225880
-e417443910.893539
+s421244709.316137
+e421244709.816301
 r1
 xLd
 x/Users/johannesunger/workspace/vstforx_next/src/mobile/Debug/VSTForx.mobile-server
 xnormal
 xx86_64
-lSLF05#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection87"Link /Users/johannesunger/workspace/vstforx_next/src/mobile/Debug/VSTForx.mobile-serverb8e73946b0e1b841^c6bee446b0e1b841^---0#0#0#--1754"Ld src/mobile/Debug/VSTForx.mobile-server normal x86_64    cd /Users/johannesunger/workspace/vstforx_next    setenv MACOSX_DEPLOYMENT_TARGET 10.8    /Applications/Xcode.app/Contents/Developer/usr/bin/llvm-g++-4.2 -arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -L/Users/johannesunger/workspace/vstforx_next/src/mobile/Debug -F/Users/johannesunger/workspace/vstforx_next/src/mobile/Debug -filelist /Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/VSTForx.mobile-server.LinkFileList -mmacosx-version-min=10.8 -Wl,-search_paths_first -Wl,-headerpad_max_install_names /Users/johannesunger/workspace/vstforx_next/src/Debug/libfrx_core.a /Users/johannesunger/clibs/sambag/src/Debug/libsambag.a /opt/local/lib/libboost_filesystem-mt.a /opt/local/lib/libboost_system-mt.a /opt/local/lib/libboost_thread-mt.a /opt/local/lib/libboost_regex-mt.a /opt/local/lib/libboost_signals-mt.a /opt/local/lib/libboost_serialization-mt.a /opt/local/lib/libboost_date_time-mt.a /opt/local/lib/libboost_timer-mt.a /opt/local/lib/libboost_chrono-mt.a /opt/local/lib/libboost_program_options-mt.a /opt/local/lib/libboost_log-mt.a /opt/local/lib/libboost_log_setup-mt.a /opt/local/lib/libcppunit.a /opt/local/lib/libexpat.a /opt/local/lib/libbz2.a /opt/local/lib/libfreetype.a /opt/local/lib/libfontconfig.a /opt/local/lib/libz.a /opt/local/lib/libpixman-1.a /opt/local/lib/libpng.a /opt/local/lib/libcairo.a /Users/johannesunger/clibs/tinyxml/lib/libticpp.a /Users/johannesunger/clibs/lua/src/liblua.a -framework Cocoa -framework Carbon -o /Users/johannesunger/workspace/vstforx_next/src/mobile/Debug/VSTForx.mobile-server36"2C7A6ECA-65DF-4245-B67F-6189747088D6-
+lSLF05#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection87"Link /Users/johannesunger/workspace/vstforx_next/src/mobile/Debug/VSTForx.mobile-server0c045125af1bb941^1af9d025af1bb941^---0#0#0#--1682"Ld src/mobile/Debug/VSTForx.mobile-server normal x86_64    cd /Users/johannesunger/workspace/vstforx_next    setenv MACOSX_DEPLOYMENT_TARGET 10.8    /Applications/Xcode.app/Contents/Developer/usr/bin/llvm-g++-4.2 -arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk -L/Users/johannesunger/workspace/vstforx_next/src/mobile/Debug -F/Users/johannesunger/workspace/vstforx_next/src/mobile/Debug -filelist /Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Objects-normal/x86_64/VSTForx.mobile-server.LinkFileList -mmacosx-version-min=10.8 -Wl,-search_paths_first -Wl,-headerpad_max_install_names /Users/johannesunger/workspace/vstforx_next/src/Debug/libfrx_core.a /Users/johannesunger/clibs/sambag/src/Debug/libsambag.a /opt/local/lib/libboost_filesystem-mt.a /opt/local/lib/libboost_system-mt.a /opt/local/lib/libboost_thread-mt.a /opt/local/lib/libboost_regex-mt.a /opt/local/lib/libboost_signals-mt.a /opt/local/lib/libboost_serialization-mt.a /opt/local/lib/libboost_date_time-mt.a /opt/local/lib/libboost_timer-mt.a /opt/local/lib/libboost_chrono-mt.a /opt/local/lib/libboost_program_options-mt.a /opt/local/lib/libcppunit.a /opt/local/lib/libexpat.a /opt/local/lib/libbz2.a /opt/local/lib/libfreetype.a /opt/local/lib/libfontconfig.a /opt/local/lib/libz.a /opt/local/lib/libpixman-1.a /opt/local/lib/libpng.a /opt/local/lib/libcairo.a /Users/johannesunger/clibs/tinyxml/lib/libticpp.a /Users/johannesunger/clibs/lua/src/liblua.a -framework Cocoa -framework Carbon -o /Users/johannesunger/workspace/vstforx_next/src/mobile/Debug/VSTForx.mobile-server36"D8D45264-3B0E-42B0-B9DA-837C73655E8D-
 
 CPhaseScriptExecution "CMake PostBuild Rules" /Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Script-6F720950C46246F28609702B.sh
 r0
@@ -20217,4 +20222,17 @@ oDepend check for xcode
 ocd /Users/johannesunger/workspace/vstforx_next && make -C /Users/johannesunger/workspace/vstforx_next -f /Users/johannesunger/workspace/vstforx_next/CMakeScripts/XCODE_DEPEND_HELPER.make PostBuild.VSTForx.mobile-server.Debug
 omake[1]: Nothing to be done for `PostBuild.VSTForx.mobile-server.Debug'.
 lSLF05#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection47"Run custom shell script 'CMake PostBuild Rules'2b4e29f7c0feb841^527e36f7c0feb841^-351"echo "Depend check for xcode"Depend check for xcodecd /Users/johannesunger/workspace/vstforx_next && make -C /Users/johannesunger/workspace/vstforx_next -f /Users/johannesunger/workspace/vstforx_next/CMakeScripts/XCODE_DEPEND_HELPER.make PostBuild.VSTForx.mobile-server.Debugmake[1]: Nothing to be done for `PostBuild.VSTForx.mobile-server.Debug'.4(21%IDEActivityLogMessage2@30"echo "Depend check for xcode"-419348727#0#30#-0#-----2@23"Depend check for xcode-419348727#30#23#-0#-----2@225"cd /Users/johannesunger/workspace/vstforx_next && make -C /Users/johannesunger/workspace/vstforx_next -f /Users/johannesunger/workspace/vstforx_next/CMakeScripts/XCODE_DEPEND_HELPER.make PostBuild.VSTForx.mobile-server.Debug-419348727#53#225#-0#-----2@73"make[1]: Nothing to be done for `PostBuild.VSTForx.mobile-server.Debug'.-419348727#278#73#-0#-----0#0#0#--353"PhaseScriptExecution "CMake PostBuild Rules" src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Script-9F211EFCF5744D2086F898A8.sh    cd /Users/johannesunger/workspace/vstforx_next    /bin/sh -c /Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Script-9F211EFCF5744D2086F898A8.sh36"3404D1B7-6A1C-4CA5-83FA-CD926E02252C-
+
+CPhaseScriptExecution "CMake PostBuild Rules" /Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Script-E5DA29F9456740C9AA9E0D64.sh
+s421246243.444755
+e421246243.513342
+r1
+xPhaseScriptExecution
+xCMake PostBuild Rules
+x/Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Script-E5DA29F9456740C9AA9E0D64.sh
+oecho "Depend check for xcode"
+oDepend check for xcode
+ocd /Users/johannesunger/workspace/vstforx_next && make -C /Users/johannesunger/workspace/vstforx_next -f /Users/johannesunger/workspace/vstforx_next/CMakeScripts/XCODE_DEPEND_HELPER.make PostBuild.VSTForx.mobile-server.Debug
+omake[1]: Nothing to be done for `PostBuild.VSTForx.mobile-server.Debug'.
+lSLF05#21%IDEActivityLogSection1@2#32"com.apple.dt.IDE.BuildLogSection47"Run custom shell script 'CMake PostBuild Rules'f3ae7223b51bb941^bb289a23b51bb941^-351"echo "Depend check for xcode"Depend check for xcodecd /Users/johannesunger/workspace/vstforx_next && make -C /Users/johannesunger/workspace/vstforx_next -f /Users/johannesunger/workspace/vstforx_next/CMakeScripts/XCODE_DEPEND_HELPER.make PostBuild.VSTForx.mobile-server.Debugmake[1]: Nothing to be done for `PostBuild.VSTForx.mobile-server.Debug'.4(21%IDEActivityLogMessage2@30"echo "Depend check for xcode"-421246243#0#30#-0#-----2@23"Depend check for xcode-421246243#30#23#-0#-----2@225"cd /Users/johannesunger/workspace/vstforx_next && make -C /Users/johannesunger/workspace/vstforx_next -f /Users/johannesunger/workspace/vstforx_next/CMakeScripts/XCODE_DEPEND_HELPER.make PostBuild.VSTForx.mobile-server.Debug-421246243#53#225#-0#-----2@73"make[1]: Nothing to be done for `PostBuild.VSTForx.mobile-server.Debug'.-421246243#278#73#-0#-----0#0#0#--353"PhaseScriptExecution "CMake PostBuild Rules" src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Script-E5DA29F9456740C9AA9E0D64.sh    cd /Users/johannesunger/workspace/vstforx_next    /bin/sh -c /Users/johannesunger/workspace/vstforx_next/src/mobile/VSTForx-NEXT.build/Debug/VSTForx.mobile-server.build/Script-E5DA29F9456740C9AA9E0D64.sh36"1E4B4F0E-6A85-4CBD-B382-07BD86F7D8B5-
 
