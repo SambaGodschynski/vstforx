@@ -3,26 +3,114 @@ frx.processing
 #include <processing/pluginTypes/LuaDefs.hpp>
 
 /**
- * @brief 
+ * @alias Plugin
+ * @brief The VSTForx lua plugin class. This class provides the basic functions
+ * you need for running a plugin.  
+ * @version 1.0.5
  */
 class LuaImplBase extends sambag.lua.ALuaObject {
-      void log(string msg);	  
+      /**
+       * @brief sends a log message to the plugin editor console
+       * @param the message string
+       */
+      void log(string msg);
+      /**
+       * @brief sends a log warning message to the plugin editor console
+       * @param the message string
+       */
       void logWarn(string msg);
+      /**
+       * @brief sends a log error message to the plugin editor console
+       * @param the message string
+       */
       void logErr(string msg);
+      /**
+       * @brief sends a log trace message to the plugin editor console
+       * @param the message string
+       */
       void logTrace(string msg);
+      /**
+       * @brief sends a midi message to VSTForx
+       * @hiddenParam sequence msg
+       * @param the midi byte message
+       */
       void sendMidi();
+      /**
+       * @return the input data of the channel
+       * @returnType sequence
+       * @param the channel number
+       * @note this function can only be called during the lcProcess callback 
+       */
       User<LuaFrames> getChannel(int nb);
+      /**
+       * @brief calculates fft data according to this algorithm: 
+       * <a href="http://fftguru.com/fftguru.com.tutorial.pdf">fftguru.com</a>
+       * @return the fft data output sequence
+       * @hiddenParam sequence r
+       * @hiddenParam sequence i     
+       * @param the r input sequence
+       * @param the i input sequence	
+       * @returnType sequence
+       */
       User<FFTData> fft();
+      /**
+       * @brief set the channel output data
+       * @hiddenParam int nb
+       * @hiddenParam sequence data
+       * @param the channel number
+       * @param the channel data sequence
+       * @note this function can only be called during the lcProcess callback 
+       */
       void setChannel();
+      /**
+       * @return the current position in audio samples
+       */
       double getSamplePos();
+      /**
+       * @return the last bar start position, in quarter note 
+       */
       double getBarStartPos();
+      /**
+       * @return musical position, in quarter note (1.0 equals 1 quarter note). 
+       */
       double getPpqPos();
+      /**
+       * @return time signature numerator (e.g. 3 for 3/4).
+       */
       int getTimeSigNumerator();
+      /**
+       * @return time signature denominator (e.g. 4 for 3/4).
+       */
       int getTimeSigDenominator();
+      /**
+       * @return the current tempo in BPM
+       *
       double getTempo();
+      /**
+       * @brief set the parameter value
+       * @param the parameter id
+       * @param the parameter value (0..1)
+       */
       void setParameterValue(string id, float value);
+      /**
+       * @brief set the parameter display text
+       * @param the parameter id
+       * @param the text 
+       */
       void setParameterDisplay(string id, string txt);
-      ManuallyReturn<1> getPersistUserData(string data);
+      /**
+       * @return the persist user data for a key
+       * @returnType sequence
+       * @param the key
+       */
+      ManuallyReturn<1> getPersistUserData(string key);
+      /**
+       * @brief Set persist user data.
+       * @hiddenParam string key
+       * @hiddenParam sequence data
+       * @param the key
+       * @param the data value sequence e.g {"first value","second value", 100}
+       */
       void setPersistUserData();
 }
 
