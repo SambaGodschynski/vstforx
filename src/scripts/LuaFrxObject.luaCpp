@@ -1,19 +1,64 @@
 frx.scripts
 
 /**
- * @brief 
+ * @brief This is the base class for all view objects.
+ * @alias frx.view.Object
+ * @version 1.0.5
  */
 class LuaFrxObjectBase extends sambag.lua.ALuaObject {
-    User< boost::tuple<float, float> > Point;
-    User<Point> getLocation();
-    void setLocation(float x, float y);
-    User<Point> getSize();
-    void setSize(float x, float y);
-    void setName(string name);
-    string getName();
-    string getTypeId();
-    void setMenu();
-    string getViewId();
+      User< boost::tuple<float, float> > Point;
+     /**
+      * @returnType Tuple
+      * @return (x, y) the objects view location
+      * @version 1.0.5
+      */
+      User<Point> getLocation();
+     /**
+      * @brief set the objects view location
+      * @version 1.0.5
+      */
+      void setLocation(float x, float y);
+     /**
+      * @returnType Tuple
+      * @return (witdh, height) the objects size
+      * @version 1.0.5
+      */
+      User<Point> getSize();
+     /**
+      * @brief set the objects size
+      * @note not yet implemented
+      * @version 1.0.5
+      */
+      void setSize(float x, float y);
+     /**
+      * @brief set the objects view name
+      * @param the name
+      * @version 1.0.5
+      */
+      void setName(string name);
+     /**
+      * @return the objects name
+      * @version 1.0.5
+      */
+      string getName();
+     /**
+      * @return the objects type id
+      * @version 1.0.5
+      */
+      string getTypeId();
+     /**
+      * @hiddenParam Table menu
+      * @param the menu structure table. For a menu structure example see:  @see View.setMenu()
+      * @version 1.0.5
+      */
+      void setMenu();
+     /**
+      * @return an id which was set by the view. 
+      * @note the id is only valid while the editor is open. After closing the editor
+      * the id is invalid and needs to be updated on the next time the view is accessable.
+      * @version 1.0.5
+      */
+      string getViewId();
 }
 
 

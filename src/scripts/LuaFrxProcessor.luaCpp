@@ -2,17 +2,73 @@ frx.scripts
 #include <scripts/LuaFrxObject.hpp>
 
 /**
- * @brief 
+ * @brief This class reprents a processor view object.
+ * @extends frx.view.@see ViewObject 
+ * @alias frx.view.Processor
+ * @version 1.0.5 
  */
 class LuaFrxProcessorBase extends LuaFrxObject {
+      /**
+       * @returnType Sequence
+       * @return a sequence of the processors @see IO input objects
+       * @version 1.0.5
+       */
       ManuallyReturn<1> getInputs();
+      /**
+       * @returnType Sequence
+       * @return a sequence of the processors @see IO output objects
+       * @version 1.0.5
+       */
       ManuallyReturn<1> getOutputs();
+      /**
+       * @returnType Sequence
+       * @return a sequence of the processors @see Parameter objects
+       * @version 1.0.5
+       */
       ManuallyReturn<1> getParameters();
+      /**
+       * @returnType IO
+       * @brief Adds a further input to the processor 
+       * (if the specific processor supports this)
+       * @param if true the newly created view object 
+       * will follow the mouse until a button was pressed
+       * @return a @see IO object or nil if the specific processor dosen't 
+       * support further inputs
+       * @version 1.0.5
+       */
       ManuallyReturn<1> addInput(bool followMouse);
+      /**
+       * @returnType IO
+       * @brief Adds a further output to the processor 
+       * (if the specific processor supports this)
+       * @param if true the newly created view object 
+       * will follow the mouse until a button was pressed
+       * @return a @see IO object or nil if the specific processor dosen't 
+       * support further outputs
+       * @version 1.0.5
+       */
       ManuallyReturn<1> addOutput(bool followMouse);
+      /**
+       * @brief Open the processors editor or close it if
+       * already open.
+       * @version 1.0.5
+       */
       void openCloseEditor();
+      /**
+       * @return the number of inputs
+       * @version 1.0.5
+       */
       int getNumInputs();
+      /**
+       * @return the number of outputs
+       * @version 1.0.5
+       */
       int getNumOutputs();
+      /**
+       * @return if the processor is an external plugin the plugin path
+       * will be returned.
+       * @version 1.0.5
+       */
       string getPluginLocation();
 }
 

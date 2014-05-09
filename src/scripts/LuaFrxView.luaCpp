@@ -1,28 +1,177 @@
 frx.scripts
 
 /**
- * @brief 
+ * @brief This class provides functions to manipulate
+ * VSTForx's view and its objects. This class is meant to be singleton, so you are not
+ * able to create an instance of this. You can find the only instance in the
+ * @see Frx table: frx.view (if the current lua context provides view access.)
+ * @alias frx.view.View
+ * @version 1.0.5
  */
 class LuaFrxViewBase extends sambag.lua.ALuaObject {
     User< boost::tuple<float, float> > Point;
+    /**
+     * @brief Creates a new view object and adds it to the view.
+     * @hiddenParam mixed whatToAdd
+     * @returnType ViewObject
+     * @return a @see ViewObject
+     * @param can be either an object type id or a view 
+     * object what isn't on the view already.
+     * <pre>
+     * frx.view:add("unknown-plugin.Plugin('/plugins/MyPlugin.vst')") --adding a plugin via location <br>
+     * adsr=frx.view:add("internal.ADSRTrigger") -- adding internal plugin via object type id <br>
+     * frx.view:add(adsr:getParameters()[1]) -- adding view object parameter <br>
+     * </pre>
+     * @version 1.0.5
+     */
     ManuallyReturn<1> add();
+    /**
+     * @brief Removes an object from view.
+     * @hiddenParam ViewObject obj
+     * @param the object to remove
+     * @version 1.0.5
+     */
     void remove();
+    /**
+     * @returnType Sequence
+     * @return all objects on view
+     * @version 1.0.5
+     */
     ManuallyReturn<1> getObjects();
+    /**
+     * @brief Connects two view objects.
+     * @hiddenParam ViewObject from
+     * @hiddenParam ViewObecjt to
+     * @param the "connect from" @see Viewobject
+     * @param the "connect to" @see ViewObject
+     * @returnType ViewObject
+     * @return a @see Connection object
+     * @version 1.0.5
+     */
     ManuallyReturn<1> connect();
+    /**
+     * @brief Adds a "free parameter" knob to view.
+     * @returnType Parameter
+     * @return a @see Parameter object or nil if objects are unconnectable.
+     * @version 1.0.5
+     */
     ManuallyReturn<1> addKnob();
+    /**
+     * @brief Adds a "host parameter" knob to view.
+     * @returnType Parameter
+     * @return a @see Parameter object
+     * @param the host parameter index
+     * @version 1.0.5
+     */
     ManuallyReturn<1> addHostKnob(int index);
+    /**
+     * @returnType Tuple
+     * @return (x,y) the current view position
+     * @version 1.0.5
+     */
     User<Point> getLocation();
+    /**
+     * @brief Set the view position
+     * @version 1.0.5
+     */
     void setLocation(float x, float y);
+    /**
+     * @returnType Tuple
+     * @return (width, height) the current view size
+     * @version 1.0.5
+     */
     User<Point> getSize();
+    /**
+     * @brief Set the view size
+     * @version 1.0.5
+     */
     void setSize(float width, float height);
+    /**
+     * @returnType ViewObject
+     * @return the "Entry" @see ViewObject 
+     * @version 1.0.5
+     */
     ManuallyReturn<1> getEntry();
+    /**
+     * @returnType ViewObject
+     * @return the "Exit" @see ViewObject 
+     * @version 1.0.5
+     */
     ManuallyReturn<1> getExit();
+    /**
+     * @returnType ViewObject
+     * @return a @see ViewObject by view name or nil.
+     * @version 1.0.5
+     */
     ManuallyReturn<1> getByName(string name);
+    /**
+     * @returnType Sequence
+     * @return a sequence of @see ViewObject 
+     * @param a object type id. Wildcards are supported.
+     * <pre>
+     * objs=frx.view:getByType("internal.Volume") --get all volumes <br>
+     * objs=frx.view:getByType("internal.*") --get all internal plugins <br>
+     * objs=frx.view:getByType("*.Plugin*") --get all (external) plugins <br>
+     * </pre>
+     * @version 1.0.5
+     */
     ManuallyReturn<1> getByType(string type);
+    /**
+     * @returnType Sequence
+     * @return all selected objects
+     * @version 1.0.5
+     */
     ManuallyReturn<1> getSelectedObjects();
-    void addViewListener(string expr);
-    void removeViewListener(string expr);
+    /**
+     * @brief Adds a view event listener.
+     * <pre>
+     * function onViewEvent(evName, evObj)		  <br>
+     * 		if evName=="requesting context menu" then <br>
+     *		   -- handle event     	       	     	  <br>
+     *		return					  <br>
+     * end						  <br>
+     * frx.view:addViewListener("onViewEvent") 		  
+     * </pre>
+     * @param a function name which will be called when
+     * 	      event appears.
+     * @version 1.0.5
+     * @note implemented events: <br>
+     * 	     &nbsp;&nbsp;<b>"requesting context menu"</b>, called when an objects context menu is opening <br>
+     *	     &nbsp;&nbsp;<b>"on saving view state"</b>, called when the view state is going to be saved (there is no "on load" event because
+     *	     	 	     	     the script dosen't run while loading) <br>
+     *	     &nbsp;&nbsp;<b>"object added"</b>, called when an object was added to view
+     */
+    void addViewListener(string callbackFuncName);
+    /**
+     * @brief Removes an view listener from view. @see addViewListener()
+     * @param the listener related to the callback function
+     * @version 1.0.5
+     */
+    void removeViewListener(string callbackFuncName);
+    /**
+     * @brief Set the view context menu.
+     * @hiddenParam Table menu
+     * @param a menu structure table. A previous installed menu will be overwritten.
+     * <pre>
+     * menuStructureExample = {	<br>
+     *				  {name="A Menu Label"}, <br>
+     * 			    	  {name="A Singe Entry", action="aValidLuaExpression()"}, <br>
+     * 			    	  {name="A SubMenu", {  <br>
+     *     		    	         	        {name="A Single Submenu Entry", action="aValidLuaExpression()"}, <br>
+     *     				        	{name="Another Single Submenu Entry", action="aValidLuaExpression()"},	<br>
+     *			   		              }	 <br> 
+     *			          } <br>
+     *                        }	       											
+     * </pre> 
+     * @version 1.0.5
+     */
     void setMenu();
+    /**
+     * @returnType ViewObject
+     * @return the @see ViewObject of that object 
+     * whose context menu is currently shown or nil
+     * @version 1.0.5
+     */
     ManuallyReturn<1> getContextObject();
 }
 

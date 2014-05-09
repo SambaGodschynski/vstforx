@@ -2,9 +2,17 @@ frx.scripts
 #include <scripts/LuaFrxObject.hpp>
 
 /**
- * @brief
+ * @brief This class represents a connection view object. 
+ * @extends frx.view.@see Object
+ * @alias frx.view.Connection
+ * @version 1.0.5
  */
 class LuaFrxConnectionBase extends LuaFrxObject {
+      /**
+       * @returnType Tuple
+       * @return (@see Object, @see Object) the 
+       * source and the destination object of the connection
+       */
       ManuallyReturn<2> getObjects();
 }
 

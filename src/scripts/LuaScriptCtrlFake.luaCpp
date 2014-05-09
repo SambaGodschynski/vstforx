@@ -20,7 +20,6 @@ class ScriptControlFake extends Nada{
       string serializePlugin();
       /**
        * @brief Restores the VSTForx plugin state.
-       * @seeFunc serializePlugin
        * @param the plugin state string
        * @version 1.0.5
        */
@@ -137,7 +136,7 @@ class ScriptControlFake extends Nada{
        */
       void setPersistData();
       /**
-       * @return the persist user data for a key. @seeFunc setPersistData
+       * @return the persist user data for a key.
        * @returnType sequence
        * @param the key
        * @version 1.0.5
@@ -159,7 +158,7 @@ class ScriptControlFake extends Nada{
        */
       bool showYesNoDlg(string message);
       /**
-       * @brief Some calls dosen't work when called from another thread
+       * @brief Some functions dosen't work when called from another thread
        * than the UI thread. E.g. open a dialog during a timer callback.
        * In that case this function will help.
        * Example:

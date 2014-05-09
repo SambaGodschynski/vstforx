@@ -1,10 +1,18 @@
 frx.scripts
 
 /**
- * @brief 
+ * @brief A timer class. To create an object of this class use @see frx.addTimer() 
+ * @alias frx.Timer
+ * @version 1.0.5
  */
 class LuaTimerBase extends sambag.lua.ALuaObject {
+     /**
+      * @brief starts the timer
+      */
       void start();
+      /**
+       * @brief stops the timer
+       */
       void stop();
 }
 
