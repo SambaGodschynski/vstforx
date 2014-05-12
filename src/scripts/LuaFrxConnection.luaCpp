@@ -3,7 +3,7 @@ frx.scripts
 
 /**
  * @brief This class represents a connection view object. 
- * @extends frx.view.@see Object
+ * @extends @see Object
  * @alias frx.view.Connection
  * @version 1.0.5
  */

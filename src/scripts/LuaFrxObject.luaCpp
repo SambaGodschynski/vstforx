@@ -48,7 +48,7 @@ class LuaFrxObjectBase extends sambag.lua.ALuaObject {
       string getTypeId();
      /**
       * @hiddenParam Table menu
-      * @param the menu structure table. For a menu structure example see:  @see View.setMenu()
+      * @param the menu structure table. (For a menu structure example see:  @see View:setMenu())
       * @version 1.0.5
       */
       void setMenu();

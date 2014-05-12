@@ -3,7 +3,7 @@ frx.scripts
 
 /**
  * @brief This class reprents a processor view object.
- * @extends frx.view.@see ViewObject 
+ * @extends @see frx.view.Object 
  * @alias frx.view.Processor
  * @version 1.0.5 
  */

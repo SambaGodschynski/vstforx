@@ -3,7 +3,7 @@
 /**
  * @brief This package provides some common functions.
  * @version 1.0.5
- * @alias frx
+ * @alias frx.Frx
  */
 class ScriptControlFake extends Nada{
       /**

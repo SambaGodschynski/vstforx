@@ -4,7 +4,7 @@ frx.scripts
 /**
  * @brief This class reprents a connection view object.
  * @version 1.0.5
- * @extends frx.view.@see Object
+ * @extends @see frx.view.Object
  * @alias frx.view.IO
  */
 class LuaFrxIOBase extends LuaFrxObject {

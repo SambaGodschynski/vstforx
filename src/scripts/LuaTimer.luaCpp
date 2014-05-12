@@ -1,7 +1,7 @@
 frx.scripts
 
 /**
- * @brief A timer class. To create an object of this class use @see frx.addTimer() 
+ * @brief A timer class. To create an object of this class use @see frx.Frx:addTimer() 
  * @alias frx.Timer
  * @version 1.0.5
  */
