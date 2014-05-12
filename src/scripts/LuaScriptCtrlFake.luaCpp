@@ -1,7 +1,8 @@
 
 
 /**
- * @brief This package provides some common functions.
+ * @brief This package <span class="muted">(actually a lua table)</span> provides functions for 
+ * common purpose.
  * @version 1.0.5
  * @alias frx.Frx
  */

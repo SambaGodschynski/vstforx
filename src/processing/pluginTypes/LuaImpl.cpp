@@ -844,7 +844,7 @@ void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
 void LuaImpl::closeLua() {
     try {
         SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
-        //luaState.reset();
+        luaState.reset();
     } catch(...) {
     }
 }
