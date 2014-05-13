@@ -68,8 +68,12 @@ public:
      * @param timer time in milliseconds
      * @param timer number of repetitions
      */
-    static Ptr createAndPush(sambag::lua::LuaStateWRef lua, Mutex &mutex,
-        const std::string &callback, int ms, int numRep);
+    typedef boost::weak_ptr<void> Tracker;
+    static Ptr createAndPush(sambag::lua::LuaStateWRef lua,
+        Tracker tracker,
+        Mutex &mutex,
+        const std::string &callback,
+        int ms, int numRep);
 }; // LuaTimer
 }} // namespace(s)
 

@@ -49,7 +49,7 @@ public:
 	//-------------------------------------------------------------------------
     ~FrxPluginEditorCtrl();
 	//-------------------------------------------------------------------------
-	void onIdleTimer(void *src, const sdc::TimerEvent &ev);
+	void onIdleTimer(sdc::WindowWPtr _win);
 	//-------------------------------------------------------------------------
 	static Ptr create() {
 		Ptr res(new FrxPluginEditorCtrl());

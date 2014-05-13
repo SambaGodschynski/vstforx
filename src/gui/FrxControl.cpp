@@ -447,7 +447,10 @@ FrxPluginEditor::Ptr createPluginEditor(fgc::FrxCircuidViewPtr view,
     if (winImpl) {
         ed=FrxPluginEditor::create(winImpl, view->getLastContainer<sdc::Window>());
     } else {
-        ed=FrxPluginEditor::create(view->getLastContainer<sdc::Window>());
+        ed=FrxPluginEditor::create(
+            view->getLastContainer<sdc::Window>(),
+            !plugin->isInternal()
+        );
 	}
     ed->setTitle(c->getName() + " editor");
 	return ed;

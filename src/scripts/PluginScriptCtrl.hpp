@@ -123,7 +123,12 @@ public:
     typedef std::pair<sambag::lua::LuaStateRef, LockPtr> LuaState;
     LuaState getLuaState();
     typedef boost::function<void(std::string)> OnExecErrorF;
-    typedef boost::tuple<sambag::lua::LuaStateWRef, Mutex*, OnExecErrorF> LuaProcessor;
+    typedef boost::weak_ptr<void> AnyWPtr;
+    typedef boost::tuple<sambag::lua::LuaStateWRef, // lua_state
+        Mutex*,                                     // mutex
+        OnExecErrorF,                               // executation fails callbk
+        AnyWPtr                                     // signals track
+    > LuaProcessor;
 	//-------------------------------------------------------------------------
 	void registerFunctions(const LuaProcessor &lp,
         bool publicOnly, bool includeView);

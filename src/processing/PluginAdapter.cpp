@@ -251,4 +251,13 @@ bool PluginAdapter::isBridged() const {
     }
     return impl->isBridged();
 }
+//-----------------------------------------------------------------------------
+bool PluginAdapter::isInternal() const {
+    Adaptee::Ptr plug = getPlugin();
+    APluginImpl::Ptr impl = plug->getPluginImpl();
+    if (!impl) {
+        return false;
+    }
+    return impl->isInternal();
+}
 }} // namespace(s)

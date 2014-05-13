@@ -162,6 +162,13 @@ struct APluginImpl :
     }
     //-------------------------------------------------------------------------
     /**
+     * @return true if plugin is an intenal impl.
+     */
+    virtual bool isInternal() const {
+        return false;
+    }
+    //-------------------------------------------------------------------------
+    /**
      * @return WindowImpl if the plugin has its own. Can be NULL. 
      * (Bridged plugins have its own impl.)
      */

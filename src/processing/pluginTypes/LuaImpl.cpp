@@ -825,8 +825,10 @@ void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
     if (ctrl) {
         typedef scripts::PluginScriptCtrl::LuaProcessor LP;
         ctrl->registerFunctions(
-            LP(luaState,&mutex,
-                boost::bind(&LuaImpl::onExecError, this, _1)
+            LP(luaState,
+                &mutex,
+                boost::bind(&LuaImpl::onExecError, this, _1),
+                shared_from_this() // inherits shared_from_this from LuaImplBase->ALuaObject 
             ), true, false);
     }
     

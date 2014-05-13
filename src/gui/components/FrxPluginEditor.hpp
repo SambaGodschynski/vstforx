@@ -42,9 +42,14 @@ protected:
 	}
 
 private:
+    //-------------------------------------------------------------------------
+    bool isRaw;
 public:
     //-------------------------------------------------------------------------
-	SAMBAG_STD_WINDOW_CREATOR(FrxPluginEditor)
+	static Ptr create(
+        sdc::Window::Ptr parentWindow=sdc::Window::Ptr(),
+        bool isRaw = true
+    );
     //-------------------------------------------------------------------------
 	static Ptr create(sdc::AWindowImpl::Ptr winImpl,
         sdc::Window::Ptr parentWindow=sdc::Window::Ptr());

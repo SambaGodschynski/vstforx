@@ -441,8 +441,15 @@ process(const std::string &luaCallback, int ms, int numRepetitions, Ctrl *ctrl, 
         return slua::IgnoreReturn();
     }
     LuaTimer::Ptr tm = LuaTimer::createAndPush(
-        boost::get<0>(lp), *(boost::get<1>(lp)), luaCallback, ms, numRepetitions);
-    tm->ExecFailedSender::addTrackedEventListener(boost::bind(&onTimerFailure, _2, boost::get<2>(lp)), lua);
+        boost::get<0>(lp), // luastateref
+        boost::get<3>(lp), // tracker
+        *(boost::get<1>(lp)), // mutex
+        luaCallback,
+        ms, numRepetitions);
+    Ctrl::OnExecErrorF execFHandler = boost::get<2>(lp);
+    if (execFHandler) {
+        tm->ExecFailedSender::addTrackedEventListener(boost::bind(&onTimerFailure, _2, execFHandler), lua);
+    }
     return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
@@ -1040,7 +1047,12 @@ void PluginScriptCtrl::setPlugin(frx::processing::VstForxPlug *plug) {
     
     using namespace sambag::lua;
 	__luaState = createLuaStateRef();
-	registerFunctions(LuaProcessor(__luaState, &__scriptCallMutex), isPublic, true);
+	registerFunctions(
+        LuaProcessor(__luaState,
+                     &__scriptCallMutex,
+                     OnExecErrorF(),
+                     __luaState
+        ), isPublic, true);
 }
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::appendJob(const std::string &str) {

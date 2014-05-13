@@ -325,6 +325,13 @@ public:
     }
     //-------------------------------------------------------------------------
     /**
+     * @return true if plugin is bridged.
+     */
+    virtual bool isInternal() const {
+        return true;
+    }
+    //-------------------------------------------------------------------------
+    /**
      * @return WindowImpl if the plugin has its own. Can be NULL. 
      * (Bridged plugins have its own impl.)
      */

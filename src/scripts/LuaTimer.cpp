@@ -48,8 +48,11 @@ void LuaTimer::stop(lua_State *lua) {
     timer->stop();
 }
 //-----------------------------------------------------------------------------
-LuaTimer::Ptr LuaTimer::createAndPush(sambag::lua::LuaStateWRef _lua, Mutex &mutex,
-    const std::string &callback, int ms, int numRep)
+LuaTimer::Ptr LuaTimer::createAndPush(sambag::lua::LuaStateWRef _lua,
+    Tracker tracker,
+    Mutex &mutex,
+    const std::string &callback,
+    int ms, int numRep)
 {
     sambag::lua::LuaStateRef lua = _lua.lock();
     if (!lua) {
@@ -59,7 +62,7 @@ LuaTimer::Ptr LuaTimer::createAndPush(sambag::lua::LuaStateWRef _lua, Mutex &mut
     res->timer = Timer::create(ms);
     res->timer->sce::EventSender<Timer::Event>::addTrackedEventListener(
         boost::bind(&LuaTimer::__onTimer, res.get(), _lua, callback),
-        _lua
+        tracker
     );
     res->timer->setNumRepetitions(numRep);
     res->createLuaObject(lua.get(), "lua_timer");

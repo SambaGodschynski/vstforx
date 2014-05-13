@@ -78,6 +78,8 @@ public:
     virtual sdc::AWindowImplPtr getWindowImpl();
     //-------------------------------------------------------------------------
     virtual bool isBridged() const;
+    //-------------------------------------------------------------------------
+    virtual bool isInternal() const;
 }; // PluginAdapter
 }} // namespace(s)
 
