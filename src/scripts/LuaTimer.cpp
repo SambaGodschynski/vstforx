@@ -24,7 +24,7 @@ void LuaTimer::__onTimer(sambag::lua::LuaStateWRef _lua, const std::string &luaC
         return;
     }
     try {
-        SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex)
+        SAMBAG_TRY_TO_LOCK_RECURSIVE(*(mutex.get()))
         slua::executeString(lua.get(), luaCallback.c_str());
     } catch(const std::exception &ex) {
         SAMBAG_LOG_ERR<<"timer callback failed: "<<ex.what();
@@ -37,7 +37,7 @@ void LuaTimer::__onTimer(sambag::lua::LuaStateWRef _lua, const std::string &luaC
     }
 }
 //-----------------------------------------------------------------------------
-LuaTimer::LuaTimer(Mutex &mutex) : mutex(mutex) {
+LuaTimer::LuaTimer(MutexPtr mutex) : mutex(mutex) {
 }
 //-----------------------------------------------------------------------------
 void LuaTimer::start(lua_State *lua) {
@@ -50,7 +50,7 @@ void LuaTimer::stop(lua_State *lua) {
 //-----------------------------------------------------------------------------
 LuaTimer::Ptr LuaTimer::createAndPush(sambag::lua::LuaStateWRef _lua,
     Tracker tracker,
-    Mutex &mutex,
+    MutexPtr mutex,
     const std::string &callback,
     int ms, int numRep)
 {

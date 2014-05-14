@@ -203,7 +203,7 @@ void LuaImpl::loadIOs() {
 void LuaImpl::onParameterChanged(void *src, float value, const std::string &id)
 {
     
-    SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+    SAMBAG_TRY_TO_LOCK_RECURSIVE(getMutexRef());
     lua_getglobal(luaState.get(), GP_PARAMETER_SETUP.c_str());
     int tbl = lua_gettop(luaState.get());
     if (lua_istable(luaState.get(), -1)) {
@@ -282,7 +282,7 @@ void LuaImpl::openPlugin() {
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::closePlugin() {
-    SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex); // lock lua calls
+    SAMBAG_TRY_TO_LOCK_RECURSIVE(getMutexRef()); // lock lua calls
     turnOff();
     if (editor) {
         editor.reset();
@@ -328,7 +328,7 @@ void LuaImpl::onReloadScript() {
     size_t oldo = getNumOutputChannels();
     size_t oldp = parameters->size();
     {
-        SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+        SAMBAG_TRY_TO_LOCK_RECURSIVE(getMutexRef());
         closeLua();
         loadScript();
     }
@@ -410,7 +410,7 @@ void LuaImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
     IF_LC_MISSING(lcProcessMidi) {
         return;
     }
-	SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex); // lock lua calls
+	SAMBAG_TRY_TO_LOCK_RECURSIVE(getMutexRef()); // lock lua calls
 	// prepare data
 	// we can't use LuaMap because we have different value types (LuaMap<std::string,?>)
 	// what occurs some unhandy circumstances:
@@ -512,7 +512,7 @@ namespace {
     }
 }
 void LuaImpl::sendMidi(lua_State *lua) {
-    SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex); // lock lua calls
+    SAMBAG_TRY_TO_LOCK_RECURSIVE(getMutexRef()); // lock lua calls
     try {
         if(!lua_istable(lua, -1)) {
             throw std::runtime_error("missing midi data argument");
@@ -560,7 +560,7 @@ void LuaImpl::processPlugin(oldPr::Frames::T ** ins,
 	// prepare input
 	using namespace sambag::lua;
 	try {
-		SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+		SAMBAG_TRY_TO_LOCK_RECURSIVE(getMutexRef());
 		// execute processFunction
         currInChannels = ins;
         currOutChannels = outs;
@@ -696,7 +696,7 @@ LuaImpl::~LuaImpl() {
 }
 //-----------------------------------------------------------------------------
 std::pair<size_t, void*> LuaImpl::getStateData() const {
-    SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+    SAMBAG_TRY_TO_LOCK_RECURSIVE(getMutexRef());
     // call lua
     IF_HAS_LC(lcOnSave) {
         try {
@@ -716,7 +716,7 @@ std::pair<size_t, void*> LuaImpl::getStateData() const {
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::setStateData(size_t size, void* data) {
-    SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+    SAMBAG_TRY_TO_LOCK_RECURSIVE(getMutexRef());
     std::stringstream ss;
     ss.write((const char*)data, size);
     com::iArchive ar(ss);
@@ -815,7 +815,7 @@ double LuaImpl::getTempo(lua_State *lua) {
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
-    SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+    SAMBAG_TRY_TO_LOCK_RECURSIVE(getMutexRef());
     IHostInfo::Ptr hI = hostInfo.lock();
     if (!hI) {
         SAMBAG_LOG_WARN<<"hostinfo == NULL";
@@ -826,7 +826,7 @@ void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
         typedef scripts::PluginScriptCtrl::LuaProcessor LP;
         ctrl->registerFunctions(
             LP(luaState,
-                &mutex,
+                getMutex(),
                 boost::bind(&LuaImpl::onExecError, this, _1),
                 shared_from_this() // inherits shared_from_this from LuaImplBase->ALuaObject 
             ), true, false);
@@ -843,9 +843,16 @@ void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
     lua_pop(luaState.get(), 2); // remove frxtbl
 }
 //-----------------------------------------------------------------------------
+LuaImpl::MutexPtr LuaImpl::getMutex() const {
+    if (!mutex) {
+        mutex = MutexPtr( new Mutex() );
+    }
+    return mutex;
+}
+//-----------------------------------------------------------------------------
 void LuaImpl::closeLua() {
     try {
-        SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+        SAMBAG_TRY_TO_LOCK_RECURSIVE(getMutexRef());
         luaState.reset();
     } catch(...) {
     }

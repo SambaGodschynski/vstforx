@@ -127,8 +127,10 @@ private:
     typedef sambag::lua::LuaMap<std::string, std::string> Config;
     mutable Config config;
     //-------------------------------------------------------------------------
-	// lock lua calls 
-	mutable sambag::com::RecursiveMutex mutex;
+	// lock lua calls
+    typedef sambag::com::RecursiveMutex Mutex;
+    typedef boost::shared_ptr<Mutex> MutexPtr;
+	mutable MutexPtr mutex;
     //-------------------------------------------------------------------------
     unsigned int lcFlags;
     //-------------------------------------------------------------------------
@@ -171,10 +173,11 @@ public:
     void loadIOs();
     //-------------------------------------------------------------------------
     void initScript();
-
     //-------------------------------------------------------------------------
-    sambag::com::RecursiveMutex * getMutex() {
-        return &mutex;
+    MutexPtr getMutex() const;
+    //-------------------------------------------------------------------------
+    Mutex & getMutexRef() const {
+        return *(getMutex().get());
     }
     //-------------------------------------------------------------------------
     template <class LC>

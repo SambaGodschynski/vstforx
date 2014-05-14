@@ -46,12 +46,13 @@ private:
     Timer::Ptr timer;
     //-------------------------------------------------------------------------
     typedef sambag::com::RecursiveMutex Mutex;
-    Mutex &mutex;
+    typedef boost::shared_ptr<Mutex> MutexPtr;
+    MutexPtr mutex;
     //-------------------------------------------------------------------------
     void __onTimer(sambag::lua::LuaStateWRef _lua, const std::string &luaCallback);
 protected:
     //-------------------------------------------------------------------------
-    LuaTimer(Mutex &mutex);
+    LuaTimer(MutexPtr mutex);
     ///////////////////////////////////////////////////////////////////////////
     // lua2frx impl
     void start(lua_State *lua);
@@ -71,7 +72,7 @@ public:
     typedef boost::weak_ptr<void> Tracker;
     static Ptr createAndPush(sambag::lua::LuaStateWRef lua,
         Tracker tracker,
-        Mutex &mutex,
+        MutexPtr mutex,
         const std::string &callback,
         int ms, int numRep);
 }; // LuaTimer

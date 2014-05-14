@@ -68,7 +68,7 @@ private:
 	typedef sambag::com::RecursiveMutex Mutex;
     typedef boost::shared_ptr<Mutex> MutexPtr;
     typedef boost::weak_ptr<Mutex> MutexWPtr;
-    Mutex __scriptCallMutex;
+    mutable MutexPtr __scriptCallMutex;
 	//-------------------------------------------------------------------------
 	std::string lastCall;
 	//-------------------------------------------------------------------------
@@ -103,10 +103,12 @@ public:
         return persistUserData;
     }
     //-------------------------------------------------------------------------
-    sambag::com::RecursiveMutex & getMutex() {
-        return __scriptCallMutex;
+    MutexPtr getMutex()  const;
+    //-------------------------------------------------------------------------
+    Mutex & getMutexRef() const {
+        return *(getMutex().get());
     }
-	//-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
 	/**
      * @param if is true functions are registered for public purpose
      */
@@ -125,7 +127,7 @@ public:
     typedef boost::function<void(std::string)> OnExecErrorF;
     typedef boost::weak_ptr<void> AnyWPtr;
     typedef boost::tuple<sambag::lua::LuaStateWRef, // lua_state
-        Mutex*,                                     // mutex
+        MutexPtr,                                   // mutex
         OnExecErrorF,                               // executation fails callbk
         AnyWPtr                                     // signals track
     > LuaProcessor;
