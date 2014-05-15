@@ -1071,18 +1071,21 @@ void FrxControl::handleContextMenuPopup(const sdc::events::MouseEvent &ev) {
 			currPopup->hidePopup();
 		return;
 	}
-    FrxCircuidView::Ptr circ = ev.getSource()->getFirstContainer<FrxCircuidView>();
+    sdc::AComponent::Ptr component = ev.getSource();
+    if (!component) {
+        return;
+    }
+    FrxCircuidView::Ptr circ = component->getFirstContainer<FrxCircuidView>();
     if (!circ) {
         return;
     }
-    
-	sdc::PopupMenuPtr popup = circ->getContextMenu(ev.getSource());
+    FrxComponentPtr frxObj = component->getFirstContainer<FrxComponent>();
+	sdc::PopupMenuPtr popup = circ->getContextMenu(component);
 	
     if (popup) {
-        // set context object to view
-        FrxComponentPtr obj = ev.getSource()->getFirstContainer<FrxComponent>();
-        if (obj && circ) {
-            circ->putClientProperty("popupcontext", FrxComponentWPtr(obj));
+        // set context frxObject to view
+        if (frxObj && circ) {
+            circ->putClientProperty("popupcontext", FrxComponentWPtr(frxObj));
         }
     } else { // no popup use mainview popup
         if (circ && !circ->getComponentPopupMenu()) { // lazy init of main menu

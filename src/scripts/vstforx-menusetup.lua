@@ -214,6 +214,7 @@ function setObjectMenu(obj)
       -- internal.* (e.g. internal.Volume)
       table.insert(objMenu, {name="show details...", 
 			     action=string.format("onOpenBrowser('Main Scene/Plugins/%s')", obj:getViewId())})
+      table.insert(objMenu, {name="clone", action="onClone()"})
       if string.match(objType, ".*Input.*") then
 	 -- Input Step/Switch
 	 table.insert(objMenu, {name="add input", 
@@ -227,6 +228,7 @@ function setObjectMenu(obj)
       -- *.Plugin (e.g. vst2x.Plugin)
       table.insert(objMenu, {name="show details...", 
 			     action=string.format("onOpenBrowser('Main Scene/Plugins/%s')", obj:getViewId())})
+      table.insert(objMenu, {name="clone", action="onClone()"})
       table.insert(objMenu, {name="open/close editor...", action="onOpenCloseEditor()"})
    elseif string.match(objType, "parameter%..*")~=nil then
       -- parameter.* (e.g. parameter.StdKnob)
@@ -245,7 +247,6 @@ function setObjectMenu(obj)
    table.insert(objMenu, 1, {name=obj:getName()})
    table.insert(objMenu, 2, {name="remove", action="onRemove()"})
    table.insert(objMenu, 3, {name="rename...", action="onRename()"})
-   table.insert(objMenu, 3, {name="clone", action="onClone()"})
    obj:setMenu(objMenu)
 end
 
