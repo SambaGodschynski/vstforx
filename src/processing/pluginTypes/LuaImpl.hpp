@@ -129,8 +129,11 @@ private:
     //-------------------------------------------------------------------------
 	// lock lua calls
     typedef sambag::com::RecursiveMutex Mutex;
-    typedef boost::shared_ptr<Mutex> MutexPtr;
-	mutable MutexPtr mutex;
+	mutable Mutex mutex;
+    typedef boost::unique_lock<sambag::com::RecursiveMutex> Lock;
+    typedef boost::shared_ptr<Lock> LockPtr;
+    //-------------------------------------------------------------------------
+    LockPtr getLock();
     //-------------------------------------------------------------------------
     unsigned int lcFlags;
     //-------------------------------------------------------------------------
@@ -173,12 +176,6 @@ public:
     void loadIOs();
     //-------------------------------------------------------------------------
     void initScript();
-    //-------------------------------------------------------------------------
-    MutexPtr getMutex() const;
-    //-------------------------------------------------------------------------
-    Mutex & getMutexRef() const {
-        return *(getMutex().get());
-    }
     //-------------------------------------------------------------------------
     template <class LC>
     bool has() const {

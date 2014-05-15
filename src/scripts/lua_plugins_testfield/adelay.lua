@@ -4,8 +4,8 @@ gpConfig = {
    name="ADelay", 
    author="Samba Godschynski",
    license="GPL",
-   numInputs=2, 
-   numOutputs=2
+   numInChannels=2, 
+   numOutChannels=2
 }
 gpParameterSetup = { direct = 0.5, delay=0.5, feedback=0.4 }
 p = gpParameterSetup
@@ -30,22 +30,12 @@ function incCursor()
    end
 end
 
-frx.addTimer("frx.plug:log('ARSCH')", 50, -1):start()
-
-function lcOnSave()
-   frx.plug:setPersistUserData("userkey", {"hallo", "du", "penner"})
-end
-
-function lcOnLoad()
-   data = frx.plug:getPersistUserData("userkey")
-   for k,v in pairs(data) do
-      print (k,v)
-   end
-end
+t=frx.addTimer("frx.plug:log('ARSCH')", 50, -1)
+t:start()
 
 function lcProcess(numSamples)
-   l = frx.plug:getInput(1)
-   r = frx.plug:getInput(2)
+   l = frx.plug:getChannel(1)
+   r = frx.plug:getChannel(2)
    for i=1, numSamples, 1 do
       x = l[i]
       y = buffer[cursor]
@@ -54,8 +44,8 @@ function lcProcess(numSamples)
       l[i] = y + p['direct'] * l[i]
       r[i] = y + p['direct'] * r[i]
    end
-   frx.plug:toOutput(1, l)
-   frx.plug:toOutput(2, r)
+   frx.plug:setChannel(1, l)
+   frx.plug:setChannel(2, r)
 end
 
 function lcOnParameterChanged(name,value)

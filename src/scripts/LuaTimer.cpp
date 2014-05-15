@@ -20,11 +20,11 @@ namespace frx { namespace scripts {
 //-----------------------------------------------------------------------------
 void LuaTimer::__onTimer(sambag::lua::LuaStateWRef _lua, const std::string &luaCallback) {
     sambag::lua::LuaStateRef lua = _lua.lock();
-    if (!lua) {
+    if (!lua || !getLockObject) {
         return;
     }
     try {
-        SAMBAG_TRY_TO_LOCK_RECURSIVE(*(mutex.get()))
+        AnyPtr lockObject = getLockObject();
         slua::executeString(lua.get(), luaCallback.c_str());
     } catch(const std::exception &ex) {
         SAMBAG_LOG_ERR<<"timer callback failed: "<<ex.what();
@@ -37,7 +37,7 @@ void LuaTimer::__onTimer(sambag::lua::LuaStateWRef _lua, const std::string &luaC
     }
 }
 //-----------------------------------------------------------------------------
-LuaTimer::LuaTimer(MutexPtr mutex) : mutex(mutex) {
+LuaTimer::LuaTimer() {
 }
 //-----------------------------------------------------------------------------
 void LuaTimer::start(lua_State *lua) {
@@ -48,9 +48,15 @@ void LuaTimer::stop(lua_State *lua) {
     timer->stop();
 }
 //-----------------------------------------------------------------------------
+void LuaTimer::__lua_gc(lua_State *lua) {
+}
+//-----------------------------------------------------------------------------
+LuaTimer::~LuaTimer() {
+}
+//-----------------------------------------------------------------------------
 LuaTimer::Ptr LuaTimer::createAndPush(sambag::lua::LuaStateWRef _lua,
     Tracker tracker,
-    MutexPtr mutex,
+    const GetLockObjectF &getLockObjectF,
     const std::string &callback,
     int ms, int numRep)
 {
@@ -58,11 +64,12 @@ LuaTimer::Ptr LuaTimer::createAndPush(sambag::lua::LuaStateWRef _lua,
     if (!lua) {
         throw std::runtime_error("luastate == NULL");
     }
-    Ptr res(new LuaTimer(mutex));
+    Ptr res(new LuaTimer());
+    res->getLockObject = getLockObjectF;
     res->timer = Timer::create(ms);
     res->timer->sce::EventSender<Timer::Event>::addTrackedEventListener(
         boost::bind(&LuaTimer::__onTimer, res.get(), _lua, callback),
-        tracker
+        res
     );
     res->timer->setNumRepetitions(numRep);
     res->createLuaObject(lua.get(), "lua_timer");

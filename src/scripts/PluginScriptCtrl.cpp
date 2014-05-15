@@ -320,7 +320,7 @@ namespace {
             return;
         }
         try {
-            SAMBAG_TRY_TO_LOCK_RECURSIVE(*boost::get<1>(lp))
+            Ctrl::AnyPtr lockObject = boost::get<1>(lp)();
             sambag::lua::executeString(lua.get(), cmd);
         } catch(const std::exception &ex) {
             SAMBAG_LOG_ERR<<ex.what();
@@ -443,7 +443,7 @@ process(const std::string &luaCallback, int ms, int numRepetitions, Ctrl *ctrl, 
     LuaTimer::Ptr tm = LuaTimer::createAndPush(
         boost::get<0>(lp), // luastateref
         boost::get<3>(lp), // tracker
-        boost::get<1>(lp), // mutex
+        boost::get<1>(lp), // getLockObject
         luaCallback,
         ms, numRepetitions);
     Ctrl::OnExecErrorF execFHandler = boost::get<2>(lp);
@@ -1030,13 +1030,6 @@ sambag::disco::components::WindowPtr PluginScriptCtrl::getEditorWindow() const {
 	return editor->getHostWindow();
 }
 //-----------------------------------------------------------------------------
-PluginScriptCtrl::MutexPtr PluginScriptCtrl::getMutex() const {
-    if (!__scriptCallMutex) {
-        __scriptCallMutex = MutexPtr( new Mutex() );
-    }
-    return __scriptCallMutex;
-}
-//-----------------------------------------------------------------------------
 void PluginScriptCtrl::setPlugin(frx::processing::VstForxPlug *plug) {
 	if (!plug) {
 		return;
@@ -1056,7 +1049,7 @@ void PluginScriptCtrl::setPlugin(frx::processing::VstForxPlug *plug) {
 	__luaState = createLuaStateRef();
 	registerFunctions(
         LuaProcessor(__luaState,
-                     getMutex(),
+                     boost::bind(&PluginScriptCtrl::getLock, this),
                      OnExecErrorF(),
                      __luaState
         ), isPublic, true);
@@ -1079,12 +1072,12 @@ void PluginScriptCtrl::join() {
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::execute(const std::string &str) {
 	using namespace sambag::lua;
-	SAMBAG_TRY_TO_LOCK_RECURSIVE(getMutexRef())
+	SAMBAG_TRY_TO_LOCK_RECURSIVE(__scriptCallMutex)
 	executeString(__luaState.get(), str);
 }
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::executeFile(const std::string &path) {
-	SAMBAG_TRY_TO_LOCK_RECURSIVE(getMutexRef())
+	SAMBAG_TRY_TO_LOCK_RECURSIVE(__scriptCallMutex)
 	sambag::lua::executeFile(__luaState.get(), path);
 }
 //-----------------------------------------------------------------------------
@@ -1092,7 +1085,7 @@ void PluginScriptCtrl::runThread() {
 	using namespace sambag::lua;
 	BOOST_FOREACH(const std::string &script, scripts) {
 		try {
-			SAMBAG_TRY_TO_LOCK_RECURSIVE(getMutexRef())
+			SAMBAG_TRY_TO_LOCK_RECURSIVE(__scriptCallMutex)
 			executeString(__luaState.get(), script);
 		} catch(const ExecutionFailed &ex) {
 			SAMBAG_LOG_ERR<<"executation failed: "<<ex.errMsg;
@@ -1128,7 +1121,11 @@ void PluginScriptCtrl::__endScriptCall() {
 
 //-----------------------------------------------------------------------------
 PluginScriptCtrl::LuaState PluginScriptCtrl::getLuaState()  {
-    LockPtr lock( new Lock(getMutexRef(), boost::try_to_lock));
+    return LuaState(__luaState, getLock());
+}
+//-----------------------------------------------------------------------------
+PluginScriptCtrl::LockPtr PluginScriptCtrl::getLock()  {
+    LockPtr lock( new Lock(__scriptCallMutex, boost::try_to_lock));
 	if (!lock->owns_lock()) {
         lock->timed_lock(boost::get_system_time() +
         boost::posix_time::seconds(SAMBAG_LOCK_TIMEOUT));
@@ -1136,7 +1133,7 @@ PluginScriptCtrl::LuaState PluginScriptCtrl::getLuaState()  {
 	if ( !lock->owns_lock() ) {
         SAMBAG_THROW(SAMBAG_DEADLOCK_EXCEPTION, "PluginScriptCtrl: deadlock exception");
     }
-    return LuaState(__luaState, lock);
+    return lock;
 }
 ///////////////////////////////////////////////////////////////////////////////
 // register function approach

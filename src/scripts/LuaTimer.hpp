@@ -40,27 +40,31 @@ public:
     typedef slua::ALuaObject Super;
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<LuaTimer> Ptr;
+    //-------------------------------------------------------------------------
+    typedef boost::shared_ptr<void> AnyPtr;
+    typedef boost::function< AnyPtr() > GetLockObjectF;
 private:
     //-------------------------------------------------------------------------
     typedef frx::processing::FrxAsyncDSPTimer Timer;
     Timer::Ptr timer;
     //-------------------------------------------------------------------------
-    typedef sambag::com::RecursiveMutex Mutex;
-    typedef boost::shared_ptr<Mutex> MutexPtr;
-    MutexPtr mutex;
+    GetLockObjectF getLockObject;
     //-------------------------------------------------------------------------
     void __onTimer(sambag::lua::LuaStateWRef _lua, const std::string &luaCallback);
 protected:
     //-------------------------------------------------------------------------
-    LuaTimer(MutexPtr mutex);
+    LuaTimer();
     ///////////////////////////////////////////////////////////////////////////
     // lua2frx impl
     void start(lua_State *lua);
     void stop(lua_State *lua);
+    void __lua_gc(lua_State *lua);
+
 public:
     //-------------------------------------------------------------------------
-    virtual ~LuaTimer() {}
+    virtual ~LuaTimer();
     //-------------------------------------------------------------------------
+    typedef boost::weak_ptr<void> Tracker;
     /**
      * @brief creates a lua timer
      * @param the lua state
@@ -69,10 +73,9 @@ public:
      * @param timer time in milliseconds
      * @param timer number of repetitions
      */
-    typedef boost::weak_ptr<void> Tracker;
     static Ptr createAndPush(sambag::lua::LuaStateWRef lua,
         Tracker tracker,
-        MutexPtr mutex,
+        const GetLockObjectF &getLockObject,
         const std::string &callback,
         int ms, int numRep);
 }; // LuaTimer
