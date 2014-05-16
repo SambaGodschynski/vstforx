@@ -1,0 +1,17 @@
+1392229960773	Rename field 'responseHandlers'
+1392234279787	Infer generic type arguments
+1392283430464	Move compilation unit
+1392284159555	Rename resource 'fragment_games.xml'
+1392284217417	Rename type 'GamesFragment'
+1392285883358	Copy compilation unit
+1392285991434	Rename type 'Handler'
+1392286089295	Rename type 'MainActivity'
+1392286110133	Rename type 'Handler'
+1392286189703	Move compilation unit
+1392287344137	Rename type 'HandlerImpl'
+1392291706157	Rename type 'DefaultFragment'
+1392291737433	Rename resource 'default_fragment.xml'
+1392294741056	Delete element
+1392295122995	Rename type 'ViewPOD'
+1392299458343	Rename local variable 'myLayout'
+1392300132643	Rename method 'getThumb'

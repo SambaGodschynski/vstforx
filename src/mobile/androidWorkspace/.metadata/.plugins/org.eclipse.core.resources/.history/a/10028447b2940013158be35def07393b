@@ -1,0 +1,54 @@
+package frx.com.vstforxmobile;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+public class SessionPOD {
+	public String name;
+	public class Slider {
+		public String name;
+		public double value;
+	}
+	public Slider sliders[];
+	/**
+	 * 
+	 * @param json
+	 * @return
+	 * @throws JSONException 
+	 */
+	static public SessionPOD[] createSessions(String json) throws JSONException {
+		return createSessions(new JSONObject(json));
+	} 
+	/**
+	 * 
+	 * @param json
+	 * @return
+	 * @throws JSONException 
+	 */
+	static public SessionPOD[] createSessions(JSONObject json) throws JSONException {
+		ArrayList<SessionPOD> res = new ArrayList<SessionPOD>(json.length());
+		Iterator<String> it = json.keys();
+		while(it.hasNext()) {
+			SessionPOD obj = new SessionPOD();
+			obj.name = it.next();
+			JSONObject jsliders = json.getJSONObject(obj.name); 
+			
+		}
+		return res.toArray(new SessionPOD[0]);
+	} 
+	
+	static public Slider[] createSliders(JSONObject json) {
+		ArrayList<Slider> res = new ArrayList<Slider>(json.length());
+		Iterator<String> it = json.keys();
+		while(it.hasNext()) {
+			Slider obj = new Slider();
+			obj.name = it.next();
+			obj.value = json.getDouble(obj.name);
+			res.add(obj);
+		}
+		return res.toArray(new Slider[0]);
+	}
+}

@@ -31,6 +31,11 @@ protected:
 		 Super(parent)
 	{
 	}
+    //-------------------------------------------------------------------------
+	FrxProcessorEditor(sdc::AWindowImpl::Ptr impl, sdc::Window::Ptr parent = sdc::Window::Ptr()) :
+		 Super(impl, parent)
+	{
+	}
  	//-------------------------------------------------------------------------
 	IFrxProcessorEditorCtrl::Ptr ctrl;
 	//-------------------------------------------------------------------------

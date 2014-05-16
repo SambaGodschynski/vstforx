@@ -82,6 +82,10 @@ void ScriptedTests::setUp() {
 	processingThread = boost::thread(
 		boost::bind(&processPlugin, plug)
 	);
+    
+    scriptCtrl->appendJob( "require\"scripts/vstforx-helper\"" );
+    scriptCtrl->appendJob( "require\"scripts/vstforx-helper\"" );
+    
 	failed = false;
 }
 //-----------------------------------------------------------------------------
@@ -218,6 +222,28 @@ void ScriptedTests::issue163() {
 		sambag::disco::getResourceManager();
 	
 	scriptCtrl->appendJob( rm.getString("testScripts/issue163.lua") );
+	scriptCtrl->start();
+	sambag::disco::components::Window::startMainLoop();
+	scriptCtrl->join();
+	CPPUNIT_ASSERT(!failed);
+}
+//-----------------------------------------------------------------------------
+void ScriptedTests::frxLuaObjects() {
+	sambag::disco::IResourceManager &rm =
+		sambag::disco::getResourceManager();
+	
+	scriptCtrl->appendJob( rm.getString("testScripts/frxLuaObjects.lua") );
+	scriptCtrl->start();
+	sambag::disco::components::Window::startMainLoop();
+	scriptCtrl->join();
+	CPPUNIT_ASSERT(!failed);
+}
+//-----------------------------------------------------------------------------
+void ScriptedTests::legacySerialization() {
+	sambag::disco::IResourceManager &rm =
+		sambag::disco::getResourceManager();
+	
+	scriptCtrl->appendJob( rm.getString("testScripts/legacySerialization.lua") );
 	scriptCtrl->start();
 	sambag::disco::components::Window::startMainLoop();
 	scriptCtrl->join();

@@ -11,8 +11,10 @@
 #include <sambag/com/Thread.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
 #include <sambag/com/BoostTimer2.hpp>
-
-
+#include <sambag/com/exceptions/IllegalStateException.hpp>
+#include "DummyFX.h"
+#include <processing/Graph.h>
+#include <processing/interprocess/Session.hpp>
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::TestBridgeSessionManager );
 
@@ -23,18 +25,28 @@ namespace tests {
 //-----------------------------------------------------------------------------
 void TestBridgeSessionManager::testStartupBridge() {
     using namespace frx::processing::interprocess;
-    
     typedef sambag::com::BoostTimer2 Timer;
     Timer::WorkerThreadHolder wth = Timer::startWorkerThread();
     
     BridgeSessionManager &bm = BridgeSessionManager::instance();
-    bm.setBridgePath("./bridge");
+    bm.setBridgePath("./VSTForx.bridge");
     
-    PluginSessionClientPtr plugin = bm.createPluginSession("plugin", 44100.f, 512);
- 
+    try {
+        bm.createPluginSession("this is never ever a usable plugin path",
+                                ::processing::DummyFX::create(NULL)
+        );
+    } catch(const Session::TimeOut &ex) {
+        throw;
+    } catch(sambag::com::exceptions::IllegalStateException &ex) {
+        // fine, go on
+    }
+    
+    std::cout<<"waiting for bridge"<<std::flush;
     while(bm.isBridgeSessionEstabished()) {
         boost::this_thread::sleep( boost::posix_time::seconds(1) );
+        std::cout<<"."<<std::flush;
     }
+    std::cout<<std::endl;
     
     Timer::closeAllTimer();
 }

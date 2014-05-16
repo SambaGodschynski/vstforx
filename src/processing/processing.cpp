@@ -17,6 +17,23 @@ namespace processing {
 // class ProcessorNode
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
+void ProcessorNode::save ( ::com::oArchive &ar, const unsigned int version ) const {
+	ar << boost::serialization::base_object<PObject>(*this);
+	// ar << parents;  wird in DFSVisitor bzw. ueber updateGraph ermittelt
+	// ar << activeChildren; wird in DFSVisitor bzw. ueber updateGraph ermittelt
+	size_t numChildFrames = frameContainer.size();
+	ar << numChildFrames;
+}
+//------------------------------------------------------------------------------------------------------------
+void ProcessorNode::load ( ::com::iArchive &ar, const unsigned int version ) {
+	ar >> boost::serialization::base_object<PObject>(*this);
+	// ar >> parents;
+	// ar >> activeChildren; wird in DFSVisitor bzw. ueber updateGraph ermittelt
+	size_t numChildFrames;
+	ar >> numChildFrames;
+	prepareFramesContainer( numChildFrames );
+}
+//------------------------------------------------------------------------------------------------------------
 ProcessorNode::ProcessorNode ( const string &name ) : PObject(name), bglVertex(Graph::nullVertex) {
 	active = false;
 	activeChildren = 0;

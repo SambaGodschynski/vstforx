@@ -21,6 +21,7 @@
 #include <loki/Typelist.h>
 #include <loki/LokiTypeinfo.h>
 #include <sambag/disco/components/PopupMenu.hpp>
+#include <sambag/disco/components/Label.hpp>
 #include <sambag/disco/components/MenuSelectionManager.hpp>
 #include <sambag/disco/components/Window.hpp>
 #include <sambag/com/Exception.hpp>
@@ -30,14 +31,10 @@
 #include <processing/IModelController.hpp>
 #include "IViewModelMap.hpp"
 #include <exception>
-#include "__ModelExecutors.hpp"
-#include <boost/archive/text_oarchive.hpp> 
-#include <boost/archive/text_iarchive.hpp>
 #include <boost/foreach.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <boost/assign.hpp>
 #include <boost/unordered_set.hpp>
-#include "components/FrxSerializationRegister.hpp"
 #include <gui/components/SetupWindow.hpp>
 #include <processing/IParameter.hpp>
 #include <processing/IProcessor.hpp>
@@ -61,17 +58,25 @@
 #include <sambag/disco/TimedUpdater.hpp>
 #include <gui/components/FrxFlag.hpp>
 #include <gui/components/About.hpp>
-
-
+#include <scripts/PluginScriptCtrl.hpp>
+#include <sambag/lua/LuaMap.hpp>
+#include <sambag/lua/LuaSequence.hpp>
 namespace {
     const long FRX_REFRESH_PARAMETER=30;
 }
 
-namespace frx { namespace gui {
+
+namespace frx {
+namespace processing {
+    extern scripts::PluginScriptCtrl::Ptr
+    getScriptControl(frx::gui::components::FrxCircuidViewPtr view);
+}
+namespace gui {
 SAMBAG_DERIVATED_EXCEPTION_CLASS(
         sambag::com::exceptions::IllegalStateException, __ControllerMapEx
 );
 using namespace components;
+std::string __lastBrowserSelection;
 //------------------------------------------------------------------------------
 boost::tuple<
 	frx::processing::IModelController::Ptr,
@@ -356,7 +361,42 @@ void registerOnView(FrxCircuidViewPtr view, FrxParameter::Ptr knob) {
 }
 //-----------------------------------------------------------------------------
 template <class ConnectionType>
-bool perfomConnect(FrxCircuidView::Ptr view, 
+fp::IConnection::Ptr 
+connectModelObjects(fp::IModelController::Ptr ctrl, 
+	fp::ModelObject::Ptr src,
+	fp::ModelObject::Ptr dst) 
+{
+	return fp::IConnection::Ptr();
+}
+//-----------------------------------------------------------------------------
+template <>
+fp::IConnection::Ptr 
+inline connectModelObjects<IOCn>(fp::IModelController::Ptr ctrl, 
+	fp::ModelObject::Ptr src,
+	fp::ModelObject::Ptr dst) 
+{
+	fp::INode::Ptr nsrc = boost::dynamic_pointer_cast<fp::INode>(src);
+	fp::INode::Ptr ndst = boost::dynamic_pointer_cast<fp::INode>(dst);
+	SAMBAG_ASSERT(nsrc && ndst);
+	return ctrl->connect(nsrc, ndst);
+}
+//-----------------------------------------------------------------------------
+template <>
+fp::IConnection::Ptr 
+inline connectModelObjects<ParameterCn>(fp::IModelController::Ptr ctrl, 
+	fp::ModelObject::Ptr src,
+	fp::ModelObject::Ptr dst) 
+{
+	fp::IParameter::Ptr nsrc = boost::dynamic_pointer_cast<fp::IParameter>(src);
+	fp::IParameter::Ptr ndst = boost::dynamic_pointer_cast<fp::IParameter>(dst);
+	SAMBAG_ASSERT(nsrc && ndst);
+	return ctrl->connect(nsrc, ndst);
+}
+
+//-----------------------------------------------------------------------------
+template <class ConnectionType>
+fgc::FrxConnection::Ptr
+perfomConnect(FrxCircuidView::Ptr view,
 				   FrxComponent::Ptr src, 
 				   FrxComponent::Ptr dst)
 {
@@ -374,14 +414,14 @@ bool perfomConnect(FrxCircuidView::Ptr view,
 	frx::processing::IConnection::Ptr mcnt = 
 		connectModelObjects<ConnectionType>(ctrl, msrc, mdst);
 	if (!mcnt)
-		return false;
+		return fgc::FrxConnection::Ptr();
 	// view stuff
 	typename ConnectionType::Ptr cn = ConnectionType::create();
 	cn->setSrcComponent(src);
 	cn->setDstComponent(dst);
     map->registerObjects(cn, mcnt);
 	view->add(cn, FrxCircuidView::Z_Wires);
-	return true;
+	return cn;
 }
 //-----------------------------------------------------------------------------
 template <class Browser>
@@ -398,11 +438,21 @@ typename Browser::Ptr openDetailsBrowser(fgc::FrxCircuidViewPtr view,
 }
 //-----------------------------------------------------------------------------
 FrxPluginEditor::Ptr createPluginEditor(fgc::FrxCircuidViewPtr view, 
-	fgc::FrxComponentPtr c)
+	fgc::FrxComponentPtr c, frx::processing::IPluginAdapter::Ptr plugin)
 {
 	FrxPluginEditor::Ptr ed;
-	ed = FrxPluginEditor::create( view->getLastContainer<sdc::Window>() );
-	ed->setTitle(c->getName() + " editor");
+    
+    // bridged plugins have an own window impl, default is NULL
+    sdc::AWindowImplPtr winImpl = plugin->getWindowImpl();
+    if (winImpl) {
+        ed=FrxPluginEditor::create(winImpl, view->getLastContainer<sdc::Window>());
+    } else {
+        ed=FrxPluginEditor::create(
+            view->getLastContainer<sdc::Window>(),
+            !plugin->isInternal()
+        );
+	}
+    ed->setTitle(c->getName() + " editor");
 	return ed;
 }
 //-----------------------------------------------------------------------------
@@ -442,7 +492,7 @@ void installBrowserListeners(sdc::WindowWPtr _browser, fgc::FrxCircuidViewPtr vi
 	);
 }
 //-----------------------------------------------------------------------------
-FrxColumnBrowser::Ptr openMainBrowser(fgc::FrxCircuidViewPtr view, 
+FrxColumnBrowser::Ptr __openMainBrowser(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr alwaysNull)
 {
 	FrxMainBrowser::Ptr browser;
@@ -465,7 +515,7 @@ FrxColumnBrowser::Ptr openMainBrowser(fgc::FrxCircuidViewPtr view,
 	return browser;
 }
 //-----------------------------------------------------------------------------
-void openSetup(fgc::FrxCircuidViewPtr view, 
+void __openSetup(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c)
 {
 	SetupWindow::Ptr setup;
@@ -491,7 +541,7 @@ void __onViewMouse(void *src, const sdce::MouseEvent &ev, About::WPtr _about) {
 		}
 	}
 }
-void openAbout(fgc::FrxCircuidViewPtr view, 
+void __openAbout(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c)
 {
 	About::Ptr about = About::create( view->getLastContainer<sdc::Window>() );
@@ -512,13 +562,15 @@ typedef std::pair<std::string, IFrxControl::CtrlCmd> Entry;
 //-----------------------------------------------------------------------------
 typedef std::list<Entry> Entries;
 //-----------------------------------------------------------------------------
-void createMainMenuEntries(Entries &out) {
+void createMainMenuEntries(FrxCircuidViewPtr view, Entries &out) {
+
 	out.push_back( Entry("Modify Scene...",
-		boost::bind(&openMainBrowser, _1, _2)));
+		boost::bind(&__openMainBrowser, _1, _2)));
 	out.push_back( Entry("Open Setup Dialog...",
-		boost::bind(&openSetup, _1, _2)));
+		boost::bind(&__openSetup, _1, _2)));
 	out.push_back( Entry("About...",
-		boost::bind(&openAbout, _1, _2)));
+		boost::bind(&__openAbout, _1, _2)));
+
 }
 //-----------------------------------------------------------------------------
 sdc::PopupMenuPtr createPopupMenu(FrxCircuidViewPtr view, 
@@ -526,6 +578,7 @@ sdc::PopupMenuPtr createPopupMenu(FrxCircuidViewPtr view,
 {
 	using namespace sambag::disco::components;
 	PopupMenuPtr res = PopupMenu::create();
+    
 	BOOST_FOREACH(const Entry &e, entries) {
 		MenuItem::Ptr item = MenuItem::create();
 		item->setText(e.first);
@@ -535,7 +588,7 @@ sdc::PopupMenuPtr createPopupMenu(FrxCircuidViewPtr view,
 		);
 		res->add(item);
 	}
-	return res;
+    return res;
 }
 //=============================================================================
 // class Connector
@@ -543,22 +596,26 @@ sdc::PopupMenuPtr createPopupMenu(FrxCircuidViewPtr view,
 struct Connector {
 	FrxCircuidView::Ptr view;
 	Connector(FrxCircuidView::Ptr view) : view(view) {}
-	bool OnError(FrxNode &a, FrxNode &b) {return false;}
-	bool Fire(FrxNode &a, FrxNode &b) {return false;}
+	fgc::FrxConnection::Ptr OnError(FrxNode &a, FrxNode &b) {
+        return fgc::FrxConnection::Ptr();
+    }
+	fgc::FrxConnection::Ptr Fire(FrxNode &a, FrxNode &b) {
+        return fgc::FrxConnection::Ptr();
+    }
 	// consider direction: out->in
-	bool Fire(FrxInputNode &a, FrxOutputNode &b) { 
+	fgc::FrxConnection::Ptr Fire(FrxInputNode &a, FrxOutputNode &b) { 
 		return perfomConnect<IOCn>(view, b.getPtr(), a.getPtr());
 	}
-	bool Fire(FrxInputNode &a, FrxEntryNode &b) {
+	fgc::FrxConnection::Ptr Fire(FrxInputNode &a, FrxEntryNode &b) {
 		return perfomConnect<IOCn>(view, b.getPtr(), a.getPtr());
 	}
-	bool Fire(FrxOutputNode &a, FrxExitNode &b) {
+	fgc::FrxConnection::Ptr Fire(FrxOutputNode &a, FrxExitNode &b) {
 		return perfomConnect<IOCn>(view, a.getPtr(), b.getPtr());
 	}
-	bool Fire(FrxEntryNode &a, FrxExitNode &b) {
+	fgc::FrxConnection::Ptr Fire(FrxEntryNode &a, FrxExitNode &b) {
 		return perfomConnect<IOCn>(view, a.getPtr(), b.getPtr());
 	}
-	bool Fire(FrxStdKnob &a, FrxStdKnob &b) {
+	fgc::FrxConnection::Ptr Fire(FrxStdKnob &a, FrxStdKnob &b) {
 		return perfomConnect<ParameterCn>(view, a.getPtr(), b.getPtr());
 	}
 };
@@ -591,6 +648,42 @@ namespace {
 	void _registerIfType<Loki::NullType>(fgc::FrxCircuidViewPtr view, FrxComponentPtr c) 
 	{	
 	}
+}
+//-----------------------------------------------------------------------------
+namespace {
+    void __setPath(FrxColumnBrowser::WPtr browser, const std::string &path) {
+        FrxColumnBrowser::Ptr b = browser.lock();
+        if (!b) {
+            return;
+        }
+        b->getBrowserImpl()->setSelectionPath(path);
+    }
+    void __onBrowserClose(FrxColumnBrowser::WPtr browser) {
+        FrxColumnBrowser::Ptr b = browser.lock();
+        if (!b) {
+            return;
+        }
+        __lastBrowserSelection = b->getBrowserImpl()->selectionPathToString();
+    }
+} // namespace
+void FrxControl::openSceneBrowser(fgc::FrxCircuidViewPtr view, const std::string &path)
+{
+    FrxColumnBrowser::Ptr b = __openMainBrowser(view, fgc::FrxComponentPtr());
+    b->addOnCloseEventListener(
+        boost::bind(&__onBrowserClose, FrxColumnBrowser::WPtr(b))
+    );
+    sdc::getWindowToolkit()->invokeLater(
+        boost::bind(&__setPath, FrxColumnBrowser::WPtr(b), path),
+        100
+    );
+}
+//-----------------------------------------------------------------------------
+void FrxControl::openSetup(fgc::FrxCircuidViewPtr view) {
+    __openSetup(view, fgc::FrxComponentPtr());
+}
+//-----------------------------------------------------------------------------
+void FrxControl::openAbout(fgc::FrxCircuidViewPtr view) {
+    __openAbout(view, fgc::FrxComponentPtr());
 }
 //-----------------------------------------------------------------------------
 void FrxControl::registerComponent(fgc::FrxCircuidViewPtr view, FrxComponentPtr c)
@@ -647,7 +740,7 @@ fgc::FrxComponentPtr FrxControl::addRelatedKnobToView(FrxCircuidViewPtr view,
 }
 //-----------------------------------------------------------------------------
 FrxComponentPtr FrxControl::addProcessorInput(fgc::FrxCircuidViewPtr view, 
-		fgc::FrxComponentPtr c)
+		fgc::FrxComponentPtr c, bool followMouse)
 {
 	FrxProcessorNode::Ptr proV = 
 		boost::dynamic_pointer_cast<FrxProcessorNode>(c);
@@ -676,16 +769,18 @@ FrxComponentPtr FrxControl::addProcessorInput(fgc::FrxCircuidViewPtr view,
 	io->addRemoveRequestExecuter(
 		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
 	);
-	// add hover
-	FrxHover::Ptr sel = FrxHover::create();
-	view->add(sel);
-	sel->addElement(viewIo);
-	sel->setVisible(true);
+    if (followMouse) {
+        // add hover
+        FrxHover::Ptr sel = FrxHover::create();
+        view->add(sel);
+        sel->addElement(viewIo);
+        sel->setVisible(true);
+    }
 	return viewIo;
 }
 //-----------------------------------------------------------------------------
 FrxComponentPtr FrxControl::addProcessorOutput(fgc::FrxCircuidViewPtr view, 
-		fgc::FrxComponentPtr c)
+		fgc::FrxComponentPtr c, bool followMouse)
 {
 	FrxProcessorNode::Ptr proV = 
 		boost::dynamic_pointer_cast<FrxProcessorNode>(c);
@@ -716,11 +811,13 @@ FrxComponentPtr FrxControl::addProcessorOutput(fgc::FrxCircuidViewPtr view,
 	io->addRemoveRequestExecuter(
 		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
 	);
-	// add hover
-	FrxHover::Ptr sel = FrxHover::create();
-	view->add(sel);
-	sel->addElement(viewIo);
-	sel->setVisible(true);
+    if (followMouse) {
+        // add hover
+        FrxHover::Ptr sel = FrxHover::create();
+        view->add(sel);
+        sel->addElement(viewIo);
+        sel->setVisible(true);
+    }
 	return viewIo;
 }
 //-----------------------------------------------------------------------------
@@ -937,11 +1034,12 @@ void FrxControl::removeComponent(FrxCircuidViewPtr _view, FrxComponentPtr _c)
 //-----------------------------------------------------------------------------
 sdc::PopupMenuPtr FrxControl::getCircuidViewPopup(FrxCircuidViewPtr c) {
 	Entries mainMenuEntries;
-	createMainMenuEntries(mainMenuEntries);
+	createMainMenuEntries(c, mainMenuEntries);
 	return createPopupMenu(c, mainMenuEntries);
 }
 //-----------------------------------------------------------------------------
-bool FrxControl::connect(FrxCircuidViewPtr view, FrxNodePtr from, FrxNodePtr to) 
+fgc::FrxConnection::Ptr
+FrxControl::connect(FrxCircuidViewPtr view, FrxNodePtr from, FrxNodePtr to)
 {
 	typedef LOKI_TYPELIST_5(
 		FrxInputNode,
@@ -957,12 +1055,12 @@ bool FrxControl::connect(FrxCircuidViewPtr view, FrxNodePtr from, FrxNodePtr to)
 		true,
         FrxNode,
         Types,
-        bool
+        fgc::FrxConnection::Ptr
     > Dispatcher;
 	try {
 		return Dispatcher::Go(*(from.get()), *(to.get()), Connector(view));
 	} catch (...) {
-		return false;
+		return fgc::FrxConnection::Ptr();
 	}
 }
 //-----------------------------------------------------------------------------
@@ -973,9 +1071,30 @@ void FrxControl::handleContextMenuPopup(const sdc::events::MouseEvent &ev) {
 			currPopup->hidePopup();
 		return;
 	}
-	sdc::PopupMenuPtr popup = ev.getSource()->getComponentPopupMenu();
-	if (!popup)
-		return;
+    sdc::AComponent::Ptr component = ev.getSource();
+    if (!component) {
+        return;
+    }
+    FrxCircuidView::Ptr circ = component->getFirstContainer<FrxCircuidView>();
+    if (!circ) {
+        return;
+    }
+    FrxComponentPtr frxObj = component->getFirstContainer<FrxComponent>();
+	sdc::PopupMenuPtr popup = circ->getContextMenu(component);
+	
+    if (popup) {
+        // set context frxObject to view
+        if (frxObj && circ) {
+            circ->putClientProperty("popupcontext", FrxComponentWPtr(frxObj));
+        }
+    } else { // no popup use mainview popup
+        if (circ && !circ->getComponentPopupMenu()) { // lazy init of main menu
+            popup = getCircuidViewPopup(circ);
+            circ->setComponentPopupMenu( popup );
+        } else {
+            return;
+        }
+    }
 	if (!popup->isPopupVisible()) {
 		MenuSelectionManager &m = MenuSelectionManager::defaultManager();
 		m.clearSelectedPath();
@@ -1103,7 +1222,7 @@ void FrxControl::openClosePluginEditor(fgc::FrxCircuidViewPtr view,
 		return;
 	}
 	// else: create editor
-    ed = createPluginEditor(view, c);
+    ed = createPluginEditor(view, c, plugin);
 	addWindow(ed);
 	c->putClientProperty("plugin.editor", FrxPluginEditor::WPtr(ed));
 	installBrowserListeners(ed, view, c);

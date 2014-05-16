@@ -11,7 +11,8 @@
 #include <boost/shared_ptr.hpp>
 #include "IPluginAdapter.hpp"
 #include "ProcessorAdapter.hpp"
-#include "Plugin.h"
+#include "IPlugin.hpp" // the only reason for having an additinal plugin interface
+                       // is for supporting legacy plugin impl.
 #include "Forward.hpp"
 
 namespace frx { namespace processing {
@@ -25,7 +26,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<PluginAdapter> Ptr;
 	//-------------------------------------------------------------------------
-	typedef ::processing::Plugin Adaptee;
+	typedef IPlugin Adaptee;
 private:
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
@@ -35,7 +36,7 @@ private:
 	template <typename Archive> 
 	void serialize(Archive &ar, const unsigned int version) {
 		ar & boost::serialization::base_object<ProcessorAdapter> ( *this );
-	}
+  	}
 protected:
 	//-------------------------------------------------------------------------
 	Adaptee::Ptr getPlugin() const {
@@ -44,9 +45,8 @@ protected:
 private:
 public:
 	//-------------------------------------------------------------------------
-	static Ptr create(Adaptee::Ptr a = Adaptee::Ptr()) {
+	static Ptr create() {
 		Ptr res(new PluginAdapter());
-		res->setAdaptee(a);
 		res->self = res;
 		return res;
 	}
@@ -68,7 +68,20 @@ public:
 	virtual std::string getPresetName(size_t i) const;
 	//-------------------------------------------------------------------------
 	virtual void setPreset(int i);
+	//-------------------------------------------------------------------------
+	virtual std::string getLocation() const;
+    //-------------------------------------------------------------------------
+    /**
+     * @return WindowImpl if the plugin has its own. Can be NULL. 
+     * (Bridged plugins have its own impl.)
+     */
+    virtual sdc::AWindowImplPtr getWindowImpl();
+    //-------------------------------------------------------------------------
+    virtual bool isBridged() const;
+    //-------------------------------------------------------------------------
+    virtual bool isInternal() const;
 }; // PluginAdapter
 }} // namespace(s)
+
 
 #endif /* SAMBAG_PLUGINADAPTER_H */

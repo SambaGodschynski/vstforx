@@ -167,8 +167,8 @@ private:
 	 * @param ar Archive-Objekt
 	 * @param version
 	 */
-	template < typename Archive >
-	void serialize ( Archive &ar, const unsigned int version );
+	void serialize ( com::oArchive &ar, const unsigned int version );
+	void serialize ( com::iArchive &ar, const unsigned int version );
 	//--------------------------------------------------------------------------------------------------------
 	Graph () : _hasCycle(false) { initBglGraph(); }
 	//--------------------------------------------------------------------------------------------------------
@@ -205,6 +205,8 @@ private:
     typedef boost::shared_ptr<IdleHandler> IdleHandlerPtr;
     IdleHandlerPtr __idle_;
 protected:
+    //--------------------------------------------------------------------------------------------------------
+    void onProcessorMidiEvent(void *src, sambag::dsp::IMidiEvents * events);
 	//--------------------------------------------------------------------------------------------------------
 	frx::processing::IHostInfo::WPtr hostInfo;
 	//--------------------------------------------------------------------------------------------------------
@@ -229,6 +231,10 @@ protected:
     //--------------------------------------------------------------------------------------------------------
     IdleHandlerPtr getIdleHandler();
 public:
+    //--------------------------------------------------------------------------------------------------------
+    const GraphObjectContainer & getGraphObjects() const {
+        return graphObjects;
+    }
     //--------------------------------------------------------------------------------------------------------
     typedef boost::function<void()> Function;
     void addIdleTask(const Function &f);
@@ -699,23 +705,6 @@ public:
 	}
 };
 ///////////////////////////////////////////////////////////////////////////////
-template < typename Archive >
-void Graph::serialize ( Archive &ar, const unsigned int version )
-{
-	ar & self;
-	ar & hostInfo;
-	ar & startNode;
-	ar & endNode;
-	ar & graphObjects;
-	ar & hostParameter;
-	ar & parameterConnections;
-	ar & g;
-	if ( Archive::is_loading::value ) {
-        installListeners();
-		Ptr graph = self.lock();
-		graph->getJanitor()->updateProcessorNodeVertexRelations();
-	}
-}
 } // namespace Processing
 
 #endif

@@ -10,7 +10,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/serialization/access.hpp>
-
+#include <com/Serialization.h>
 namespace frx { namespace gui {
 //=============================================================================
 /** 
@@ -28,9 +28,8 @@ private:
 	//-------------------------------------------------------------------------
 	friend class boost::serialization::access;
 	//-------------------------------------------------------------------------
-	template <typename Archive> 
-	void serialize(Archive &ar, const unsigned int version) {
-	}
+	void serialize(::com::iArchive &ar, const unsigned int version) {}
+	void serialize(::com::oArchive &ar, const unsigned int version) {}
 public:
 	//-------------------------------------------------------------------------
 	virtual std::string getObjectName() const = 0;

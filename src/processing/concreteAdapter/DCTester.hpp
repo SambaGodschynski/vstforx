@@ -12,6 +12,7 @@
 #include "com/Serialization.h"
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <processing/ModelFactory.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -111,6 +112,15 @@ public:
 	//-------------------------------------------------------------------------
 	virtual ~DCTester () {}
 };
+
+
+FRX_MODELFACTORY_REGISTER(private_int, DCTester);
+namespace { const bool DCTester_Registered =   
+    frx::processing::ModelFactory::instance().register_<DCTester>( 
+        "internal-private.DCTester", boost::bind(&DCTester::create, _1)
+    );
+}
+
 }// namespace processing
 
 #endif  // FORX_DC_TESTER_HPP

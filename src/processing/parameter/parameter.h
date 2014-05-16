@@ -4,8 +4,8 @@
  *      Author: Johannes Unger
  * ===========================================================================================================
  */
-#ifndef PPICORE_PPIAPP_H
-#define PPICORE_PPIAPP_H
+#ifndef FRX_PARAMETER_HPP
+#define FRX_PARAMETER_HPP
 
 #include <vector>
 #include <string>
@@ -19,7 +19,7 @@
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/foreach.hpp>
 #include <boost/unordered_map.hpp>
-
+#include <boost/functional/hash.hpp>
 namespace processing {
 namespace parameter {
 //============================================================================================================
@@ -326,8 +326,8 @@ struct ParameterConnectionSetHash : std::unary_function<std::string, std::size_t
 		// create hash by the two target parameters
 		std::size_t a = (std::size_t)x.first.get();
 		std::size_t b = (std::size_t)x.second.get();
-		boost::hash_combine(seed, std::max(a,b)); // always higher value first
-		boost::hash_combine(seed, std::min(a,b));
+		boost::hash_combine(seed, ::com::getMax(a,b)); // always higher value first
+		boost::hash_combine(seed, ::com::getMin(a,b));
         return seed;
     }
 };
@@ -483,13 +483,6 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * nach VST-SDK:
-	 * Stuff text with the name
-	 * ("Time", "Gain", "RoomType", etc...) of parameter index.
-	 */
-	com::MyString name;
-	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * nach VST-SDK:
 	 * Stuff text with a string representation
 	 * ("0.5", "-3", "PLATE", etc...) of the value of parameter index.
 	 */
@@ -561,15 +554,10 @@ public:
 	void setIndex( int i ) { index = i; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * @return Parametername
-	 */
-	const com::MyString & getName() const { return name; }
-	//--------------------------------------------------------------------------------------------------------
-	/**
 	 * setzt Parametername
 	 * @param name
 	 */
-	void setName(const com::MyString &name){ Parameter::name = name.trim(); }
+	void setName(const std::string &name);
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return ParameterGroupName
@@ -678,7 +666,12 @@ public:
 template < typename Archiv >
 void Parameter::serialize( Archiv &ar, const unsigned int version) {
 	ar & boost::serialization::base_object<PObject>(*this);
-	ar & name;
+    if (version<1) {
+        // scoped objects will break the archive
+        com::MyString name;
+        ar & name;
+        setName(name);
+    }
 	ar & groupname;
 	ar & label;
 	ar & display;
@@ -691,7 +684,10 @@ void Parameter::serialize( Archiv &ar, const unsigned int version) {
 }
 } // namespace parameter
 } // namespace processing
-#endif
+
+BOOST_CLASS_VERSION(processing::parameter::Parameter, 1);
+
+#endif // FRX_PARAMETER_HPP
 
 
 

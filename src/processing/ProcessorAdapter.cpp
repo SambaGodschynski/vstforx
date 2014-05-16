@@ -13,6 +13,7 @@
 #include "MidiEventProcessor.h"
 #include <algorithm>
 #include "IModelController.hpp"
+#include "Plugin.h"
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -202,7 +203,18 @@ void ProcessorAdapter::initParameter() {
 	if (mevp) {
 		Parameter::Ptr p = mevp->getMidiChannelParameter();
 		parameters.insert(ParameterGroupMap::value_type("midi config", getAdapter(p)));
+		p = mevp->getMidiSendParameter();
+		parameters.insert(ParameterGroupMap::value_type("midi config", getAdapter(p)));
 	}
+    // editor parameter
+    Plugin * plugin =
+		dynamic_cast<Plugin*>(processor.get());
+    if (plugin) {
+        Parameter::Ptr p = plugin->getEditorPosX();
+        parameters.insert(ParameterGroupMap::value_type("editor", getAdapter(p)));
+        p = plugin->getEditorPosY();
+        parameters.insert(ParameterGroupMap::value_type("editor", getAdapter(p)));
+    }
 }
 //-----------------------------------------------------------------------------
 void ProcessorAdapter::getParameterGroupKeys(ParameterGroupKeys &out) const {
@@ -294,9 +306,16 @@ addTrackedPropertyChangedListener(const PropertyChangedSender::EventFunction & f
 bool ProcessorAdapter::removeImpl(IModelControllerPtr ctrl) {
 	return ctrl->removeProcessor(getPtr());
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 std::string ProcessorAdapter::getStatusMessage() const {
     return getAdaptee()->getStatusMessage();
 }
-
+//-----------------------------------------------------------------------------
+void ProcessorAdapter::setName(const std::string &name) {
+    getAdaptee()->setName(name);
+}
+//-----------------------------------------------------------------------------
+std::string ProcessorAdapter::getName() const {
+    return getAdaptee()->getName();
+}
 }} // namespace(s)

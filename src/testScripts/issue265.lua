@@ -1,16 +1,16 @@
-frxOpenPlugin()
-frxOpenEditor()
+frx.openPlugin()
+frx.openEditor()
 
-pr = frxAddProcessor("FrxInStep")
-ins = frxGetProcessorInputs(pr)
-outs = frxGetProcessorOutputs(pr)
-entry, exit = frxGetEntryExit()
-frxConnectComponents(entry, ins[1])
-frxConnectComponents(exit, outs[1])
+pr = frx.view:add("internal.InputStep")
+ins = pr:getInputs()
+outs = pr:getOutputs()
+entry, exit = frx.view:getEntry(), frx.view:getExit()
+frx.view:connect(entry, ins[1])
+frx.view:connect(exit, outs[1])
 
 
-s=frxSerializePlugin()
+s=frx.serializePlugin()
 
-frxCloseEditor()
-frxDeserializePlugin(s)
-frxOpenEditor()
+frx.closeEditor()
+frx.deserializePlugin(s)
+frx.openEditor()

@@ -28,6 +28,8 @@
 #include <sambag/disco/svg/StyleParser.hpp>
 #include <sambag/math/Matrix.hpp>
 #include <com/Settings.h>
+#include <boost/xpressive/xpressive.hpp>
+#include <boost/xpressive/regex_primitives.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace {
@@ -254,8 +256,86 @@ const float FrxCircuidView::ZArea_BeginNodes = Z_Knobs;
 //-----------------------------------------------------------------------------
 const float FrxCircuidView::ZArea_EndNodes = Z_IO;
 //-----------------------------------------------------------------------------
+std::string FrxCircuidView::uniqueName(const std::string &x) {
+    bool serializing = false;
+    getClientProperty("serializing", serializing);
+    if (serializing) {
+        return x;
+    }
+    using namespace boost::xpressive;
+	mark_tag tName(1), tCounter(2);
+	cregex pat = (tName= -+_) >> "_" >> (tCounter= +_d) >> eol;
+	cmatch what;
+    std::string name;
+    int counter;
+	if(regex_search(x.c_str(), what, pat)) {
+		std::stringstream ss;
+		ss << what[tCounter];
+		ss >> counter;
+		name = what[tName];
+	}
+    if (name.length() == 0) {
+        name = x;
+    }
+    NameMap::iterator it = nameMap.find(name);
+    if (it==nameMap.end()) {
+        nameMap[name] = 0;
+        return name;
+    }
+    ++(it->second);
+    return name + "_" + sambag::com::toString(it->second);
+    
+}
+//-----------------------------------------------------------------------------
+void FrxCircuidView::serialize(::com::iArchive &ar, const unsigned int version)
+{
+    SAMBAG_BEGIN_SYNCHRONIZED(getTreeLock())
+        serializeSelfPtr(ar, version);
+        fireViewEvent(FrxCircuidViewEvent::OnDeserializing);
+    SAMBAG_END_SYNCHRONIZED
+}
+//-----------------------------------------------------------------------------
+void FrxCircuidView::serialize(::com::oArchive &ar, const unsigned int version)
+{
+    SAMBAG_BEGIN_SYNCHRONIZED(getTreeLock())
+        fireViewEvent(FrxCircuidViewEvent::OnSerializing);
+        serializeSelfPtr(ar, version);
+    SAMBAG_END_SYNCHRONIZED
+}
+//-----------------------------------------------------------------------------
+void FrxCircuidView::serializeComponents(::com::iArchive &ar) {
+    SAMBAG_ASSERT(getPtr());
+    SAMBAG_BEGIN_SYNCHRONIZED(getTreeLock())
+        putClientProperty("serializing", true);
+        std::list<FrxComponentInfo> l;
+        ar & l;
+        IFrxControl &ctrl = getFrxControl(getPtr());
+        FrxCircuidViewPtr slf = getPtr();
+        BOOST_FOREACH(const FrxComponentInfo &i, l) {
+            add(i.first, i.second, false);
+            ctrl.registerComponent(slf, i.first);
+        }
+        l.clear();
+        putClientProperty("serializing", false);
+    SAMBAG_END_SYNCHRONIZED
+}
+//-----------------------------------------------------------------------------
+void FrxCircuidView::serializeComponents(::com::oArchive &ar) {
+    SAMBAG_ASSERT(getPtr());
+        SAMBAG_BEGIN_SYNCHRONIZED(getTreeLock())
+        putClientProperty("serializing", true);
+        std::list<FrxComponentInfo> l;
+        collectFrxComponentInfo(l);
+        ar & l;
+        FrxCircuidViewPtr slf = getPtr();
+        l.clear();
+        putClientProperty("serializing", false);
+    SAMBAG_END_SYNCHRONIZED
+}
+//-----------------------------------------------------------------------------
 void FrxCircuidView::add(sdc::AComponentPtr comp, ZOrder zord, bool normalize) 
 {
+    comp->setName( uniqueName(comp->getName()) );
 	SAMBAG_BEGIN_SYNCHRONIZED(getTreeLock())
 	if (normalize) {
 		sd::Point2D loc = comp->getLocation();
@@ -297,6 +377,7 @@ FrxCircuidView::FrxCircuidView() {
 }
 //-----------------------------------------------------------------------------
 FrxCircuidView::~FrxCircuidView() {
+    
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidView::open() {
@@ -355,7 +436,6 @@ void FrxCircuidView::postConstructor() {
 //-----------------------------------------------------------------------------
 int FrxCircuidView::getIndexOf(ZOrder order) const {
 	sdc::AContainer::Ptr cnt = getContentPane(); 
-	int startIndex = 0;
 	int endIndex = cnt->getComponentCount();
 	// TODO: impl. O(log(n))
 	for (int i=0; i<endIndex; ++i) {
@@ -480,4 +560,16 @@ void FrxCircuidView::requestEditorResize(const sd::Dimension &size) {
 void FrxCircuidView::setEditorResizeHandler(const EditorResizeHandler &f) {
 	rszHandler = f;
 }
+//-----------------------------------------------------------------------------
+sdc::PopupMenuPtr FrxCircuidView::getContextMenu(sdc::AComponentPtr component)
+{
+    FrxComponentPtr fc = component->getFirstContainer<FrxComponent>();
+    if (fc) {
+        fireViewEvent(FrxCircuidViewEvent::OnComponentMenuRequest, fc);
+    }
+    return component->getComponentPopupMenu();
+}
 }}} // namespace(s)
+
+
+

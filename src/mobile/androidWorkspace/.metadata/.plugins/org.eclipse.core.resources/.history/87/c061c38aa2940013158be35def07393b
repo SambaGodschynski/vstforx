@@ -1,0 +1,7 @@
+package frx.com.vstforxmobile;
+
+public class SessionView extends DefaultFragment {
+	public SessionView() {
+		super();
+	}
+}

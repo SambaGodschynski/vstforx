@@ -25,13 +25,7 @@ public:
 protected:
 	//-------------------------------------------------------------------------
 	FrxComponentFactory();
-	//-------------------------------------------------------------------------
-	virtual void initMap();
 private:
-	//-------------------------------------------------------------------------
-	typedef std::map<std::string, ProcessorCreator> ProcessorMap;
-	//-------------------------------------------------------------------------
-	ProcessorMap processorMap;
 public:
 	//-------------------------------------------------------------------------
 	virtual PluginCreator getPluginCreator() const;
@@ -50,14 +44,12 @@ public:
 	virtual ProcessorCreator 
 	getRemoteChannelCreator(const std::string &rcId) const;
 	//-------------------------------------------------------------------------
-	/**
-	 * @return number of processor creators.
-	 */
-	virtual void getProcessorNames(std::list<std::string> &out) const;
-	//-------------------------------------------------------------------------
 	virtual FreeParameterCreator getFreeParameterCreator() const;
 	//-------------------------------------------------------------------------
 	virtual HostParameterCreator getHostParameterCreator() const;
+    //-------------------------------------------------------------------------
+    virtual void getComponentNames(std::list<std::string> &out,
+        const std::string &filter="") const;
 }; // FrxComponentFactory
 }}} // namespace(s)
 

@@ -1,0 +1,30 @@
+package frx.com.vstforxmobile;
+
+import java.util.ArrayList;
+
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+
+public class TabsPagerAdapter extends FragmentPagerAdapter {
+	
+	private ArrayList<Fragment> fragments = new ArrayList<Fragment>();
+	
+	public TabsPagerAdapter(FragmentManager fm) {
+		super(fm);
+	}
+
+	@Override
+	public Fragment getItem(int index) {
+		if (index>getCount()) {
+			return null;
+		}
+		return fragments.get(index);
+	}
+
+	@Override
+	public int getCount() {
+		return fragments.size();
+	}
+
+}

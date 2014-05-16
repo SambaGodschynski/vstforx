@@ -57,7 +57,7 @@ public:
 	virtual void registerComponent(fgc::FrxCircuidViewPtr view, fgc::FrxComponentPtr c) = 0;
 	//-------------------------------------------------------------------------
 	/**
-	 * holds window pointer until window is closed.
+	 * @brief holds window pointer until window is closed.
 	 * @param the window
 	 * @param the windowClassName, if setted only one ptr per class will be stored
 	 */
@@ -81,14 +81,17 @@ public:
 	virtual sdc::PopupMenuPtr 
 	getCircuidViewPopup(fgc::FrxCircuidViewPtr c) = 0;
 	//-------------------------------------------------------------------------
-	virtual bool 
+	/**
+     * @return FrxConnection pointer or NULL
+     */
+    virtual fgc::FrxConnection::Ptr
 	connect(fgc::FrxCircuidViewPtr, fgc::FrxNodePtr from, fgc::FrxNodePtr to) = 0;
 	//-------------------------------------------------------------------------
 	virtual void 
 	handleContextMenuPopup(const sdc::events::MouseEvent &ev) = 0;
 	//-------------------------------------------------------------------------
 	/**
-	 * creates and adds a knob which is related to another view object to view.
+	 * @brief creates and adds a knob which is related to another view object to view.
 	 * @return new created knob
 	 * @param the view
 	 * @param the related view object
@@ -99,15 +102,21 @@ public:
 	//-------------------------------------------------------------------------
 	/**
 	 * @return new created input node
+     * @param 
+     * @param
+     * @param if true new created view object follows mouse until clicked
 	 */
 	virtual fgc::FrxComponentPtr addProcessorInput(fgc::FrxCircuidViewPtr view, 
-		fgc::FrxComponentPtr c) = 0; 
+		fgc::FrxComponentPtr c, bool followMouse=true) = 0;
 	//-------------------------------------------------------------------------
 	/**
 	 * @return new created output node
+     * @param 
+     * @param
+     * @param if true new created view object follows mouse until clicked
 	 */
 	virtual fgc::FrxComponentPtr addProcessorOutput(fgc::FrxCircuidViewPtr view, 
-		fgc::FrxComponentPtr c) = 0; 
+		fgc::FrxComponentPtr c, bool followMouse=true) = 0; 
 	//-------------------------------------------------------------------------
 	/**
 	 * @return a function object which is able to be executed by
@@ -137,6 +146,22 @@ public:
     //-------------------------------------------------------------------------
     virtual void removeOperator(fgc::FrxCircuidViewPtr view,
         fgc::FrxConnection::Ptr con, OperatorId) = 0;
+    //-------------------------------------------------------------------------
+    /**
+     * @param the main view
+     * @param the selection path
+     */
+    virtual void openSceneBrowser(fgc::FrxCircuidViewPtr view, const std::string &path) = 0;
+    //-------------------------------------------------------------------------
+    /**
+     * @param the main view
+     */
+    virtual void openSetup(fgc::FrxCircuidViewPtr view) = 0;
+    //-------------------------------------------------------------------------
+    /**
+     * @param the main view
+     */
+    virtual void openAbout(fgc::FrxCircuidViewPtr view) = 0;
 	//-------------------------------------------------------------------------
 	///////////////////////////////////////////////////////////////////////////
 	// CtrlCmd's: use it with createCtrlCommandFunction() to create

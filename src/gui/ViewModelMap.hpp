@@ -21,6 +21,8 @@
 #include <boost/serialization/access.hpp>
 #include <boost/bimap/unordered_set_of.hpp>
 #include <com/Serialization.h>
+#include <sambag/com/Thread.hpp>
+
 namespace frx { namespace gui {
 //=============================================================================
 /** 
@@ -53,6 +55,8 @@ private:
 	typedef std::list<frx::processing::ModelObject::Ptr> ModelBedroom;
 	//-------------------------------------------------------------------------
 	ModelBedroom bedroom;
+    //-------------------------------------------------------------------------
+    mutable sambag::com::RecursiveMutex mutex;
 	//-------------------------------------------------------------------------
 	typedef std::list<ViewObject::Ptr> ViewObjects;
 	//-------------------------------------------------------------------------
@@ -118,7 +122,8 @@ public:
 	 */
 	void unlock(::com::iArchive &ar);
 	//-------------------------------------------------------------------------
-
+    typedef std::vector<frx::processing::ModelObject::Ptr> ModelObjects;
+    void getModelObjects(ModelObjects &out) const;
 }; // ModelMap
 }} // namespace(s)
 

@@ -10,6 +10,7 @@
 #include <processing/parameter/ConnectionOperators.h>
 #include <loki/Typelist.h>
 #include "IModelController.hpp"
+#include <sambag/com/exceptions/IllegalArgumentException.hpp>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -91,6 +92,9 @@ addParameterCnOp(const ParameterCnOpTypeId &opId)
 {
 	using namespace ::processing::parameter;
 	ConnectionOperator::Ptr op = createCOp<ConnectionOps>(opId);
+    if (!op) {
+        SAMBAG_THROW(sambag::com::exceptions::IllegalArgumentException,"invalid operator: "+opId);
+    }
 	cn->addOperator(op);
     operators.push_back(op);
 	HasParameter::Ptr hp = 
@@ -110,14 +114,39 @@ size_t ParameterConnection::getNumConnectionOps() {
     return operators.size();
 }
 //-----------------------------------------------------------------------------
+void ParameterConnection::removeOpParameter(::processing::parameter::Parameter::Ptr p) {
+    // inefficiency! but for only a couple of parameter
+    // its the easyiest way to perform
+    ParameterGroupMap::iterator it = parameters.begin();
+    for (; it!=parameters.end(); ++it) {
+        SAMBAG_ASSERT(it->second);
+        if (it->second->getAdaptee() == p) {
+            parameters.erase(it);
+            break;
+        }
+    }
+}
+//-----------------------------------------------------------------------------
 void ParameterConnection::removeConnectionOp(size_t index) {
-    if (index>operators.size()) {
+    if (index>=operators.size()) {
         SAMBAG_LOG_WARN<<"ParameterConnection::removeConnectionOp() out of bounds";
         return;
     }
     ConnectionOperator::Ptr op = operators[index];
     cn->removeOperator(op);
     operators.erase(operators.begin()+index);
+    
+    // remove op parameter
+    using namespace ::processing::parameter;
+	HasParameter::Ptr hp = boost::dynamic_pointer_cast<HasParameter>(op);
+	if (!hp) {
+		return;
+	}
+	size_t num = hp->getNumParameter();
+	for (size_t i=0; i<num; ++i) {
+		removeOpParameter(hp->getParameter(i));
+		
+	}
 }
 //-----------------------------------------------------------------------------
 std::string ParameterConnection::getConnectionOpName(size_t index) {

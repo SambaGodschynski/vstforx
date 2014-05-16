@@ -1,0 +1,7 @@
+package frx.com.vstforxmobile.events;
+
+import java.util.EventObject;
+
+public class MessageEvent extends EventObject {
+
+}

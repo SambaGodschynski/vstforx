@@ -9,7 +9,8 @@
 
 #include "OS_VSTPlugin2x.h" 
 #include "processing/pluginTypes/NullAEffect.h"
-
+#include <sambag/com/Config.h>
+#include <processing/pluginTypes/PluginImpl.hpp>
 
 // Callback Methode fuer VST-Plugin.
 extern VstIntPtr VSTCALLBACK pluginCallToPlugNode (
@@ -28,6 +29,35 @@ typedef processing::OS_VSTPlugNode2x::Module Module;
 //------------------------------------------------------------------------------------------------------------
 void unloadModule ( Module module ) ;
 //------------------------------------------------------------------------------------------------------------
+long getCurrentArch() {
+#ifdef SAMBAG_32
+    return kCFBundleExecutableArchitectureI386;
+#elif defined SAMBAG_64
+    return kCFBundleExecutableArchitectureX86_64;
+#else
+    #error "VSTForx: architecture missmatch"
+#endif
+}
+//------------------------------------------------------------------------------------------------------------
+bool checkArchitecture(Module module) {
+    CFArrayRef archs = CFBundleCopyExecutableArchitectures(module);
+    if (!archs) {
+        return false;
+    }
+    long current = getCurrentArch();
+    for (int i=0; i<CFArrayGetCount(archs); ++i) {
+        CFNumberRef archCode = (CFNumberRef)CFArrayGetValueAtIndex(archs, i);
+        long arch = 0;
+        CFNumberGetValue(archCode, kCFNumberLongType, &arch);
+        if (arch==current) {
+            CFRelease(archs);
+            return true;
+        }
+    }
+    CFRelease(archs);
+    return false;
+}
+//------------------------------------------------------------------------------------------------------------
 AEffect * getAEffect( Module module ) {
 	PluginEntryProc mainProc = NULL;
 	mainProc = (PluginEntryProc)CFBundleGetFunctionPointerForName ( module, CFSTR("VSTPluginMain"));
@@ -39,7 +69,7 @@ AEffect * getAEffect( Module module ) {
 	return aEff;
 }
 //------------------------------------------------------------------------------------------------------------
-static void loadModule ( const char *filename, Module *module, AEffect **aEff ) {
+void loadModule ( const char *filename, Module *module, AEffect **aEff ) {
 	*module = NULL;
 	*aEff = NULL;
 	// build carbon string
@@ -53,12 +83,12 @@ static void loadModule ( const char *filename, Module *module, AEffect **aEff ) 
 	*module = CFBundleCreate (NULL, url);
 	CFRelease (url);
 	if (*module) {
-		/*TOLOG ("CFBundleLoadExecutable");
-		if ( !CFBundleLoadExecutable (*module)  ) {
-			TOLOG ("CFBundleLoadExecutable FAILED!");
-			*module = NULL;
-			return;
-		}*/
+        if (!checkArchitecture(*module)) {
+            SAMBAG_THROW(
+                frx::processing::PluginArchitectureMissmatch,
+                "Plugin architecture missmatch."
+        );
+    }
 	} else {
 		TOLOG ("getBundleRef FAILED!");
 		return;

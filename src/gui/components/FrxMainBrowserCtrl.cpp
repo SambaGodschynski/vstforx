@@ -50,7 +50,7 @@ void onSelectionPathChanged(void *src,
 	const Tree::Path &path = tree->getSelectionPath();
 	if (path.empty())
 		return;
-	const BrowserNode &bNode = tree->getNodeData(path.back());
+	const BrowserNodeData &bNode = tree->getNodeData(path.back());
 
 	FrxMainBrowser::Ptr mbrowser = 
 		boost::dynamic_pointer_cast<FrxMainBrowser>(browser);
@@ -90,9 +90,9 @@ void FrxMainBrowserCtrl::onBrowserOk(void *src,
 	const Tree::Path &path = tree->getSelectionPath();
 	if (path.empty())
 		return;
-	const BrowserNode &bNode = tree->getNodeData(path.back());
+	const BrowserNodeData &bNode = tree->getNodeData(path.back());
 	try {
-		BrowserNode::ResultPtr res = bNode.accept();
+		BrowserNodeData::ResultPtr res = bNode.accept();
 		handleBrowserNodeResult(res);
 	} catch(const std::exception &ex) {
 		view->errorMessage(ex.what());
@@ -113,7 +113,7 @@ void FrxMainBrowserCtrl::onFrxViewChanged(void *, const FrxCircuidViewEvent &ev)
 	// So no further ComponentRemoved handling in here.
 }
 //-----------------------------------------------------------------------------
-void FrxMainBrowserCtrl::handleBrowserNodeResult(BrowserNode::ResultPtr res) {
+void FrxMainBrowserCtrl::handleBrowserNodeResult(BrowserNodeData::ResultPtr res) {
 
 }
 //-----------------------------------------------------------------------------
@@ -121,9 +121,12 @@ void FrxMainBrowserCtrl::
 showShellSelection(const ::processing::PluginInfo &pI, 
 	const ::processing::ShellPluginInfos &infos) 
 {
+    FrxCircuidViewPtr view = wView.lock();
+    if (!view) {
+        return;
+    }
 	ShellPluginSelection::Ptr shlsl;
-	shlsl = ShellPluginSelection::create();
-	FrxCircuidViewPtr view = wView.lock();
+	shlsl = ShellPluginSelection::create(view->getFirstContainer<sdc::Window>());
 	getFrxControl(view).addWindow(shlsl);
 	BOOST_FOREACH(const ::processing::ShellPluginInfo &inf, infos) {
 		shlsl->addShellInfo(inf);
@@ -135,6 +138,7 @@ showShellSelection(const ::processing::PluginInfo &pI,
 	);
 	shlsl->setShellPlugin(pI);
 	shlsl->pack();
+    shlsl->positionWindow();
 	shlsl->open();
 }
 //-----------------------------------------------------------------------------
@@ -150,11 +154,11 @@ onShellPluginSelected(void*, const sdc::events::ActionEvent &ev)
 	if (pI.location == "") {
 		return;
 	}
-	BrowserNode::ResultPtr res = addPlugin(pI);
+	BrowserNodeData::ResultPtr res = addPlugin(pI);
 	handleBrowserNodeResult(res);
 }
 //-----------------------------------------------------------------------------
-BrowserNode::ResultPtr 
+BrowserNodeData::ResultPtr 
 FrxMainBrowserCtrl::fillPluginFolder(TreeNode parent, DBFolderID dbFolderId)
 {
 
@@ -166,18 +170,18 @@ FrxMainBrowserCtrl::fillPluginFolder(TreeNode parent, DBFolderID dbFolderId)
 	SAMBAG_ASSERT(ctrl);
 	Tree::Ptr tree = brws->getBrowserImpl();
 	if (tree->getNumChildren(parent) > 0)
-		return BrowserNode::ResultPtr();
+		return BrowserNodeData::ResultPtr();
 	::com::PluginCollection::Ptr db;
 	try {
 		db = ::com::getPluginCollection();
 	} catch (...) {
-		return BrowserNode::ResultPtr();
+		return BrowserNodeData::ResultPtr();
 	}
 	::com::PluginCollection::Folders folders;
 	try {
 		db->getSubFolders(dbFolderId, folders);
 	} catch (...) {
-		return BrowserNode::ResultPtr();
+		return BrowserNodeData::ResultPtr();
 	}
 	// fill subfolder
 	BOOST_FOREACH(const DBFolderType &dbF, folders) { 
@@ -186,7 +190,7 @@ FrxMainBrowserCtrl::fillPluginFolder(TreeNode parent, DBFolderID dbFolderId)
 
 		const std::string &name = boost::get<0>(dbF);
 		DBFolderID dbID =  boost::get<1>(dbF);
-		BrowserNode node(name, true);
+		BrowserNodeData node(name, true);
 		node.f = 
 			boost::bind(&FrxMainBrowserCtrl::fillPluginFolder, 
 			this,						// browser	
@@ -200,7 +204,7 @@ FrxMainBrowserCtrl::fillPluginFolder(TreeNode parent, DBFolderID dbFolderId)
 	try {
 		db->getPlugInfoList(dbFolderId, plugs, true);
 	} catch (...) {
-		return BrowserNode::ResultPtr();
+		return BrowserNodeData::ResultPtr();
 	}
 	BOOST_FOREACH(const ::processing::PluginInfo &pI, plugs) { 
 		TreeNode plug = 
@@ -211,7 +215,7 @@ FrxMainBrowserCtrl::fillPluginFolder(TreeNode parent, DBFolderID dbFolderId)
 		if (pI.access == ::processing::PluginInfo::FAILED) {
 			name+="<FAILED>";
 		}
-		BrowserNode node;
+		BrowserNodeData node;
 		ctrl->createPluginNode(node, name);
 		node.f = 
 			boost::bind(&FrxMainBrowserCtrl::addPlugin, 
@@ -224,10 +228,10 @@ FrxMainBrowserCtrl::fillPluginFolder(TreeNode parent, DBFolderID dbFolderId)
 	}
 
 	tree->updateLists();
-	return BrowserNode::ResultPtr();
+	return BrowserNodeData::ResultPtr();
 }
 //-----------------------------------------------------------------------------
-BrowserNode::ResultPtr FrxMainBrowserCtrl::fillHistoryFolder(TreeNode parent,
+BrowserNodeData::ResultPtr FrxMainBrowserCtrl::fillHistoryFolder(TreeNode parent,
     HistoryType type)
 {
 	FrxColumnBrowserPtr brws = this->browser.lock();
@@ -248,7 +252,7 @@ BrowserNode::ResultPtr FrxMainBrowserCtrl::fillHistoryFolder(TreeNode parent,
             db->getFavouritePlugins(plugs, details);
         }
 	} catch (...) {
-		return BrowserNode::ResultPtr();
+		return BrowserNodeData::ResultPtr();
 	}
     int c=0;
  	BOOST_FOREACH(const ::processing::PluginInfo &pI, plugs) { 
@@ -261,7 +265,7 @@ BrowserNode::ResultPtr FrxMainBrowserCtrl::fillHistoryFolder(TreeNode parent,
 			name+="<FAILED>";
 		}
         name+=" "+details[c++];
-		BrowserNode node;
+		BrowserNodeData node;
 		ctrl->createPluginNode(node, name);
 		node.f = 
 			boost::bind(&FrxMainBrowserCtrl::addPlugin, 
@@ -274,10 +278,10 @@ BrowserNode::ResultPtr FrxMainBrowserCtrl::fillHistoryFolder(TreeNode parent,
 	}
 
 	tree->updateLists();
-	return BrowserNode::ResultPtr();
+	return BrowserNodeData::ResultPtr();
 }
 //-----------------------------------------------------------------------------
-BrowserNode::ResultPtr FrxMainBrowserCtrl::fillRemoteFolder() {
+BrowserNodeData::ResultPtr FrxMainBrowserCtrl::fillRemoteFolder() {
     updateRemoteFolder();
     
     if (!remotePoll) {
@@ -290,7 +294,7 @@ BrowserNode::ResultPtr FrxMainBrowserCtrl::fillRemoteFolder() {
         remotePoll->start();
     }
     
-    return BrowserNode::ResultPtr();
+    return BrowserNodeData::ResultPtr();
 }
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::onRemotePoll(void *, const sdc::TimerEvent &ev) {
@@ -316,7 +320,7 @@ void FrxMainBrowserCtrl::updateRemoteFolder() {
     rm.getChannels(channels);
     BOOST_FOREACH(const RemoteChannelManager::RCId &x, channels) {
         TreeNode n = tree->addNode(remotes);
-        BrowserNode data;
+        BrowserNodeData data;
         createRemoteNode(data, x);
         tree->setNodeData(n, data);
     }
@@ -324,7 +328,7 @@ void FrxMainBrowserCtrl::updateRemoteFolder() {
     tree->updateLists();
 }
 //-----------------------------------------------------------------------------
-BrowserNode::ResultPtr FrxMainBrowserCtrl::addPlugin(::processing::PluginInfo pI) 
+BrowserNodeData::ResultPtr FrxMainBrowserCtrl::addPlugin(::processing::PluginInfo pI) 
 {
 	FrxCircuidViewPtr view = wView.lock();
 	if (!view) {
@@ -338,10 +342,10 @@ BrowserNode::ResultPtr FrxMainBrowserCtrl::addPlugin(::processing::PluginInfo pI
 	} catch(const ::processing::ShellPluginException &ex) {
         // select plugin and calls addPlugin again
 		showShellSelection(pI, ex.content);
-		return BrowserNode::ResultPtr();
+		return BrowserNodeData::ResultPtr();
 	}
 	if (!pr)
-		return BrowserNode::ResultPtr();
+		return BrowserNodeData::ResultPtr();
 	getFrxControl(view).addProcessorToView(view, pr);
 	
     addPluginToHistory(pI);
@@ -350,7 +354,7 @@ BrowserNode::ResultPtr FrxMainBrowserCtrl::addPlugin(::processing::PluginInfo pI
 	if (browser) {
 		browser->message(pr->getName() + ADDED_TO_SCENE);
 	}
-	return BrowserNode::ResultPtr();
+	return BrowserNodeData::ResultPtr();
 }
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::addPluginToHistory(::processing::PluginInfo pI) {
@@ -364,7 +368,7 @@ void FrxMainBrowserCtrl::addPluginToHistory(::processing::PluginInfo pI) {
     db->addToHistory(pI);
 }
 //-----------------------------------------------------------------------------
-BrowserNode::ResultPtr FrxMainBrowserCtrl::
+BrowserNodeData::ResultPtr FrxMainBrowserCtrl::
 addProcessor(IFrxComponentFactory::ProcessorCreator f) 
 {
 	FrxCircuidViewPtr view = wView.lock();
@@ -374,16 +378,16 @@ addProcessor(IFrxComponentFactory::ProcessorCreator f)
 	}
 	FrxProcessorNodePtr pr = f(view);
 	if (!pr)
-		return BrowserNode::ResultPtr();
+		return BrowserNodeData::ResultPtr();
 	getFrxControl(view).addProcessorToView(view, pr);
 	FrxColumnBrowser::Ptr browser = this->browser.lock();
 	if (browser) {
 		browser->message(pr->getName() + ADDED_TO_SCENE);
 	}
-	return BrowserNode::ResultPtr();
+	return BrowserNodeData::ResultPtr();
 }
 //-----------------------------------------------------------------------------
-BrowserNode::ResultPtr FrxMainBrowserCtrl::
+BrowserNodeData::ResultPtr FrxMainBrowserCtrl::
 addFreeKnob(IFrxComponentFactory::FreeParameterCreator f) 
 {
 	FrxCircuidViewPtr view = wView.lock();
@@ -393,16 +397,16 @@ addFreeKnob(IFrxComponentFactory::FreeParameterCreator f)
 	}
 	FrxParameterPtr pr = f(view);
 	if (!pr)
-		return BrowserNode::ResultPtr();
+		return BrowserNodeData::ResultPtr();
 	getFrxControl(view).addParameterToView(view, pr);
 	FrxColumnBrowser::Ptr browser = this->browser.lock();
 	if (browser) {
 		browser->message(pr->getName() + ADDED_TO_SCENE);
 	}
-	return BrowserNode::ResultPtr();
+	return BrowserNodeData::ResultPtr();
 }
 //-----------------------------------------------------------------------------
-BrowserNode::ResultPtr FrxMainBrowserCtrl::
+BrowserNodeData::ResultPtr FrxMainBrowserCtrl::
 addHostKnob( IFrxComponentFactory::HostParameterCreator f, int id) 
 {
 	FrxCircuidViewPtr view = wView.lock();
@@ -412,30 +416,30 @@ addHostKnob( IFrxComponentFactory::HostParameterCreator f, int id)
 	}
 	FrxParameterPtr pr = f(view, id);
 	if (!pr)
-		return BrowserNode::ResultPtr();
+		return BrowserNodeData::ResultPtr();
 	getFrxControl(view).addParameterToView(view, pr);
 	FrxColumnBrowser::Ptr browser = this->browser.lock();
 	if (browser) {
 		browser->message(pr->getName() + ADDED_TO_SCENE);
 	}
-	return BrowserNode::ResultPtr();
+	return BrowserNodeData::ResultPtr();
 }
 //-----------------------------------------------------------------------------
-BrowserNode::ResultPtr FrxMainBrowserCtrl::
+BrowserNodeData::ResultPtr FrxMainBrowserCtrl::
 addRelatedKnobToView(FrxComponentWPtr _c, processing::IParameter::WPtr _par)
 {
 	fgc::FrxCircuidViewPtr view = wView.lock();
 	fgc::FrxComponentPtr c = _c.lock();
 	frx::processing::IParameter::Ptr par = _par.lock();
 	if (!view || !c || !par)
-		return BrowserNode::ResultPtr();
+		return BrowserNodeData::ResultPtr();
 	FrxComponentPtr knob = 
 		getFrxControl(view).addRelatedKnobToView(view, c, par);
 	FrxColumnBrowser::Ptr browser = this->browser.lock();
 	if (browser) {
 		browser->message(par->getName() + ADDED_TO_SCENE);
 	}
-	return BrowserNode::ResultPtr();
+	return BrowserNodeData::ResultPtr();
 }
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::initListeners(FrxColumnBrowserPtr brws) {
@@ -467,10 +471,14 @@ void FrxMainBrowserCtrl::addMainProcessors()
 	Tree::Ptr tree = brws->getBrowserImpl();
 	IFrxComponentFactory &fac = getComponentFactory(view);
 	std::list<std::string> processorNames;
-	fac.getProcessorNames(processorNames);
-	BOOST_FOREACH(const std::string &name, processorNames) {
+	fac.getComponentNames(processorNames, "internal\\..*");
+	BOOST_FOREACH(std::string name, processorNames) {
 		IFrxComponentFactory::ProcessorCreator f = fac.getProcessorCreator(name);
-		BrowserNode node;
+		BrowserNodeData node;
+        size_t p = name.find('.') + 1;
+        if (p<name.length()) {
+            name = name.substr(p);
+        }
 		createProcessorNode(node, getProcessorBeautyName(name));
 		node.f = boost::bind(&FrxMainBrowserCtrl::addProcessor, 
 			this, f);
@@ -493,7 +501,7 @@ namespace {
 	};
 }
 void FrxMainBrowserCtrl::parameterChanged(void *src, 
-		float value, const BrowserNode &node)
+		float value, const BrowserNodeData &node)
 {
 	typedef sd::TimedUpdater<FrxColumnBrowserWPtr, RefreshBrowser, 100> Updater;
 	Updater::instance().update(browser);
@@ -512,7 +520,7 @@ void FrxMainBrowserCtrl::parameterLabelChanged(float value,
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::parameterLabelRedraw( sdc::AComponentPtr c,
 	processing::IParameter::WPtr _p,
-	const BrowserNode &node)
+	const BrowserNodeData &node)
 {
 	processing::IParameter::Ptr p = _p.lock();
 	FrxParameterLabel::Ptr label = 
@@ -524,7 +532,7 @@ void FrxMainBrowserCtrl::parameterLabelRedraw( sdc::AComponentPtr c,
 }
 //-----------------------------------------------------------------------------
 void 
-FrxMainBrowserCtrl::createParameterNode(BrowserNode &out,
+FrxMainBrowserCtrl::createParameterNode(BrowserNodeData &out,
 	const std::string &name,
 	processing::IParameter::Ptr obj)
 {
@@ -546,7 +554,7 @@ FrxMainBrowserCtrl::createParameterNode(BrowserNode &out,
 		boost::bind(&FrxMainBrowserCtrl::parameterLabelChanged, this, _1, wObj);
 }
 //-----------------------------------------------------------------------------
-void FrxMainBrowserCtrl::createRemoteNode(BrowserNode &out,
+void FrxMainBrowserCtrl::createRemoteNode(BrowserNodeData &out,
 		const std::string &rcId)
 {
     using namespace frx::processing::interprocess;
@@ -559,24 +567,24 @@ void FrxMainBrowserCtrl::createRemoteNode(BrowserNode &out,
 }
 //-----------------------------------------------------------------------------
 namespace {
-BrowserNode::ResultPtr _setPreset(
+BrowserNodeData::ResultPtr _setPreset(
 	FrxColumnBrowser::WPtr brws,
 	processing::IProcessor::WPtr obj, 
 	int presetIndex) 
 {
 	processing::IProcessor::Ptr pr = obj.lock();
 	if (!pr) {
-		return BrowserNode::ResultPtr();
+		return BrowserNodeData::ResultPtr();
 	}
 	pr->setPreset(presetIndex);
 	FrxColumnBrowser::Ptr browser = brws.lock();
 	if (browser) {
 		browser->message("set " + pr->getPresetName(presetIndex) + ".");
 	}
-	return BrowserNode::ResultPtr();
+	return BrowserNodeData::ResultPtr();
 }
 } // namespace(s)
-void FrxMainBrowserCtrl::createPresetNode(BrowserNode &out,
+void FrxMainBrowserCtrl::createPresetNode(BrowserNodeData &out,
 	const std::string &name,
 	processing::IProcessor::Ptr obj,
 	int presetIndex)
@@ -589,7 +597,7 @@ void FrxMainBrowserCtrl::createPresetNode(BrowserNode &out,
 }
 //-----------------------------------------------------------------------------
 void 
-FrxMainBrowserCtrl::createProcessorNode(BrowserNode &out, 
+FrxMainBrowserCtrl::createProcessorNode(BrowserNodeData &out, 
 	const std::string &name,
 	processing::IProcessor::Ptr obj)
 {
@@ -598,7 +606,7 @@ FrxMainBrowserCtrl::createProcessorNode(BrowserNode &out,
 }
 //-----------------------------------------------------------------------------
 void 
-FrxMainBrowserCtrl::createPluginNode(BrowserNode &out, 
+FrxMainBrowserCtrl::createPluginNode(BrowserNodeData &out, 
 	const std::string &name,
 	processing::IProcessor::Ptr obj)
 {
@@ -613,7 +621,7 @@ void FrxMainBrowserCtrl::addMainKnobs()
 
 	Tree::Ptr tree = brws->getBrowserImpl();
 	IFrxComponentFactory &fac = getComponentFactory(view);
-	BrowserNode node;
+	BrowserNodeData node;
 	createParameterNode(node, "Free Parameter");
 	IFrxComponentFactory::FreeParameterCreator f = fac.getFreeParameterCreator();
 	node.type = BrowserConstants::FRX_BROWSER_PARAMETER;
@@ -623,11 +631,11 @@ void FrxMainBrowserCtrl::addMainKnobs()
 	// host add_knobs:
 	frx::processing::IModelController::Ptr ctrl
 		= frx::processing::getModelController(view);
-	Tree::Node hostKnobs = tree->addNode(add_knobs, BrowserNode ("Host Parameter", true));
+	Tree::Node hostKnobs = tree->addNode(add_knobs, BrowserNodeData ("Host Parameter", true));
 	int nbKnobs = ctrl->getNumHostParameter();
 	IFrxComponentFactory::HostParameterCreator hPcreator = fac.getHostParameterCreator();
 	for (int i=0; i<nbKnobs; ++i) {
-		BrowserNode node;
+		BrowserNodeData node;
 		processing::IParameter::Ptr par = 
 			ctrl->getHostParameter(i);
 		createParameterNode(node, "Host Parameter: " + sambag::com::toString(i), par);
@@ -646,25 +654,24 @@ void FrxMainBrowserCtrl::initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr br
 	scene = 
 		tree->addNode(tree->getRootNode());
 		
-	BrowserNode node("Main Scene", true);
+	BrowserNodeData node("Main Scene", true);
 	node.f = 
 		boost::bind(&FrxMainBrowserCtrl::createSceneTree, this, scene);
 	tree->setNodeData(scene, node);
 	
-	scene_plugins = tree->addNode(scene, BrowserNode("Plugins", true));
-	scene_processors = tree->addNode(scene, BrowserNode("Processors", true));
-	scene_parameter = tree->addNode(scene, BrowserNode("Parameter", true));
+	scene_plugins = tree->addNode(scene, BrowserNodeData("Plugins", true));
+	scene_parameter = tree->addNode(scene, BrowserNodeData("Parameter", true));
 	// add_knobs
 	add_knobs = 
-		tree->addNode(scene_parameter, BrowserNode("Add Parameter", 
+		tree->addNode(scene_parameter, BrowserNodeData("Add Parameter", 
 			BrowserConstants::FRX_BROWSER_ADD_CONTENT_FOLDER));
 	addMainKnobs();
-	scene_connections = tree->addNode(scene_parameter, BrowserNode("Parameter Connections", true));
+	scene_connections = tree->addNode(scene_parameter, BrowserNodeData("Parameter Connections", true));
 
 	// add_plugins
 	add_plugins = tree->addNode(scene_plugins);
 	
-	node = BrowserNode("Add Plugin", 
+	node = BrowserNodeData("Add Plugin", 
 		BrowserConstants::FRX_BROWSER_ADD_CONTENT_FOLDER);
 	node.f = 
 		boost::bind(&FrxMainBrowserCtrl::fillPluginFolder, 
@@ -674,30 +681,30 @@ void FrxMainBrowserCtrl::initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr br
 	);
 	tree->setNodeData(add_plugins, node);
     
+    // add_processors
+	add_processors = 
+		tree->addNode(scene_plugins, BrowserNodeData("Internal",
+			BrowserConstants::FRX_BROWSER_ADD_CONTENT_FOLDER));
+	addMainProcessors();
+    
     // history
     his_recent = tree->addNode(scene_plugins);
-    node = BrowserNode("History", BrowserConstants::FRX_BROWSER_HISTORY_FOLDER);
+    node = BrowserNodeData("History", BrowserConstants::FRX_BROWSER_HISTORY_FOLDER);
 	node.f = 
 		boost::bind(&FrxMainBrowserCtrl::fillHistoryFolder, this, his_recent, Recent);
 	tree->setNodeData(his_recent, node);
 
     his_favourite = tree->addNode(his_recent);
-    node = BrowserNode("Favourites", BrowserConstants::FRX_BROWSER_FOLDER);
+    node = BrowserNodeData("Favourites", BrowserConstants::FRX_BROWSER_FOLDER);
 	node.f = 
 		boost::bind(&FrxMainBrowserCtrl::fillHistoryFolder, this, his_favourite, Favourite);
 	tree->setNodeData(his_favourite, node);
 
-
-	// add_processors
-	add_processors = 
-		tree->addNode(scene_processors, BrowserNode("Add Processor", 
-			BrowserConstants::FRX_BROWSER_ADD_CONTENT_FOLDER));
-	addMainProcessors();
     
     // remote channels
 #ifdef FRX_FEATURE_REMOTE_CHANNEL
     remotes = tree->addNode(scene);
-    node = BrowserNode("Remote Channel Receivers", BrowserConstants::FRX_BROWSER_FOLDER);
+    node = BrowserNodeData("Remote Channel Receivers", BrowserConstants::FRX_BROWSER_FOLDER);
     node.f = boost::bind(
             &FrxMainBrowserCtrl::fillRemoteFolder, this);
     tree->setNodeData(remotes, node);
@@ -756,7 +763,9 @@ addPluginToSceneTree(FrxComponentPtr c, Reason reason)
 	Tree::Ptr tree = browser->getBrowserImpl();
 	Tree::Node plugin = tree->addNode(scene_plugins);
 
-	BrowserNode browserNode(c->getName(), true);
+	BrowserNodeData browserNode(c->getName(), true);
+    browserNode.id = sambag::com::toString(c.get());
+    browserNode.component = c;
 	browserNode.f = // dynamic parameter insert
 		boost::bind(&FrxMainBrowserCtrl::_addModelObjectParameter,
 		this,
@@ -779,9 +788,11 @@ Tree::Node FrxMainBrowserCtrl::addProcessorToSceneTree(FrxComponentPtr c, Reason
 		return Tree::NULL_NODE;
 	}
 	Tree::Ptr tree = browser->getBrowserImpl();
-	Tree::Node newNode = tree->addNode(scene_processors);
+	Tree::Node newNode = tree->addNode(scene_plugins);
 
-	BrowserNode browserNode(c->getName(), true);
+	BrowserNodeData browserNode(c->getName(), true);
+    browserNode.id = sambag::com::toString(c.get());
+    browserNode.component = c;
 	addModelObjectParameter(pr, newNode);
 	tree->setNodeData(newNode, browserNode);
 	// install io changed event sender
@@ -819,8 +830,10 @@ Tree::Node FrxMainBrowserCtrl::addParameterToSceneTree(FrxComponentPtr c, Reason
 	if (!prPar)
 		return Tree::NULL_NODE;
 
-	BrowserNode nodeData;
+	BrowserNodeData nodeData;
 	createParameterNode(nodeData, prPar->getName(), prPar);
+    nodeData.id = sambag::com::toString(c.get());
+    nodeData.component = c;
 	Tree::Ptr tree = browser->getBrowserImpl();
 	Tree::Node newNode = tree->addNode(scene_parameter, nodeData);
 	tree->updateLists();
@@ -869,7 +882,9 @@ Tree::Node FrxMainBrowserCtrl::addConnectionToSceneTree(FrxComponentPtr c, Reaso
 	Tree::Ptr tree = browser->getBrowserImpl();
 	Tree::Node newNode = tree->addNode(scene_connections);
 	nodeMap[getId(c)] = newNode;
-	BrowserNode browserNode(c->getName(), true);
+	BrowserNodeData browserNode(c->getName(), true);
+    browserNode.id = sambag::com::toString(c.get());
+    browserNode.component = c;
 	addModelObjectParameter(pr, newNode);
 	tree->setNodeData(newNode, browserNode);
 	tree->updateLists();
@@ -923,10 +938,10 @@ void FrxMainBrowserCtrl::addToSceneTree(FrxComponentPtr c, Reason reason) {
 	tree->updateLists();
 }
 //-----------------------------------------------------------------------------
-BrowserNode::ResultPtr FrxMainBrowserCtrl::createSceneTree(const Tree::Node &parent)
+BrowserNodeData::ResultPtr FrxMainBrowserCtrl::createSceneTree(const Tree::Node &parent)
 {
 	if (sceneTreeInit) {
-		return BrowserNode::ResultPtr();
+		return BrowserNodeData::ResultPtr();
 	}
 	
 	sceneTreeInit = true;
@@ -934,7 +949,7 @@ BrowserNode::ResultPtr FrxMainBrowserCtrl::createSceneTree(const Tree::Node &par
 	FrxCircuidViewPtr view = wView.lock();
 	FrxColumnBrowserPtr browser = this->browser.lock();
 	if (!view || !browser)
-		return BrowserNode::ResultPtr();
+		return BrowserNodeData::ResultPtr();
 	Tree::Ptr tree = browser->getBrowserImpl();
 
 	std::list<sdc::AComponentPtr> components;
@@ -952,8 +967,8 @@ BrowserNode::ResultPtr FrxMainBrowserCtrl::createSceneTree(const Tree::Node &par
 		addToSceneTree(fc, Add);
 	}
 	tree->updateLists();
-	BrowserNode::ResultPtr();
-	return BrowserNode::ResultPtr();
+	BrowserNodeData::ResultPtr();
+	return BrowserNodeData::ResultPtr();
 }
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::initTree(FrxCircuidViewPtr view, 
@@ -973,17 +988,17 @@ void FrxMainBrowserCtrl::initTree(FrxCircuidViewPtr view,
 	tree->updateLists();
 }
 //-----------------------------------------------------------------------------
-BrowserNode::ResultPtr FrxMainBrowserCtrl::
+BrowserNodeData::ResultPtr FrxMainBrowserCtrl::
 _addModelObjectParameter(FrxComponentWPtr c, Tree::Node parent)
 {
 	typedef FrxColumnBrowser::BrowserImpl Tree;
 	Tree::Ptr tree = browser.lock()->getBrowserImpl();
 	if (tree->getNumChildren(parent) > 0)
-		return BrowserNode::ResultPtr();
+		return BrowserNodeData::ResultPtr();
 	
 	addModelObjectParameter(c.lock(), parent);
 	tree->updateLists();
-	return BrowserNode::ResultPtr();
+	return BrowserNodeData::ResultPtr();
 }
 //-----------------------------------------------------------------------------
 void FrxMainBrowserCtrl::addPresets(FrxComponentPtr c, const Tree::Node &parent)
@@ -1006,9 +1021,9 @@ void FrxMainBrowserCtrl::addPresets(FrxComponentPtr c, const Tree::Node &parent)
 	typedef FrxColumnBrowser::BrowserImpl Tree;
 	FrxColumnBrowserPtr browser = this->browser.lock();
 	Tree::Ptr tree = browser->getBrowserImpl();
-	Tree::Node presets = tree->addNode(parent, BrowserNode("presets", true));
+	Tree::Node presets = tree->addNode(parent, BrowserNodeData("presets", true));
 	for (size_t i=0; i<numPresets; ++i) {
-		BrowserNode node;
+		BrowserNodeData node;
 		createPresetNode(node, pr->getPresetName(i), pr, i);
 		tree->addNode(
 			presets, 
@@ -1049,19 +1064,19 @@ addModelObjectParameter(FrxComponentPtr c,
 		if (key==".") {
 			parameterParent = parent;
 		} else {
-			parameterParent = tree->addNode(parent, BrowserNode(key, true));
+			parameterParent = tree->addNode(parent, BrowserNodeData(key, true));
 		}
 
 		IProcessor::Parameters parameters;
 		pr->getParameters(key, parameters);
 		BOOST_FOREACH(IParameter::Ptr p, parameters) {
-			BrowserNode::AcceptedFunction f = 
+			BrowserNodeData::AcceptedFunction f = 
 				boost::bind(&FrxMainBrowserCtrl::addRelatedKnobToView,
 				this,
 				fgc::FrxComponentWPtr(c),
 				frx::processing::IParameter::WPtr(p)
 			);
-			BrowserNode node;
+			BrowserNodeData node;
 			createParameterNode(node, p->getName(), p);
 			node.f = f;
 			tree->addNode(

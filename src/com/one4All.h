@@ -158,9 +158,17 @@ namespace com {
 		*u = ( *t==o1 ) ? dynamic_cast<U*>( o2 ) : dynamic_cast<U*>( o1 );
 	}
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @brief exists only because std::max fucks up sometimes on msvc with compile
+	 * errors and I have no clue why.
+	 */
 	template < typename T >
 	T getMax( const T& a, const T &b) { return (a > b) ? a : b; }
 	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @brief exists only because std::max fucks up sometimes on msvc with compile
+	 * errors and I have no clue why.
+	 */
 	template < typename T >
 	T getMin( const T& a, const T &b) { return (a < b) ? a : b; }
 	//--------------------------------------------------------------------------------------------------------
@@ -175,6 +183,13 @@ namespace com {
 	typedef std::list<std::string> StringList;
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::function< void ( const Filename& ) > FileFoundFuncPtr;
+    //--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param fileName
+	 * @return file name e.g:
+	 * C:/VSTPlugin.dll => VSTPlugin
+	 */
+	std::string getFileNameFromPath (const std::string &fileName);
 	//========================================================================================================
 	bool isSubDirectory ( const sambag::com::Location &parent, const sambag::com::Location &sub );
 	//========================================================================================================
@@ -192,27 +207,67 @@ namespace com {
 	};
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * If Plugin is shellplugtype specific shell id comes with filename(eg): "plugin.dll@172832".
+	 * @note If Plugin is shellplugtype specific shell id comes with filename(eg): "plugin.dll@172832".
 	 * @return pair<filename, shellid>
 	 */
 	std::pair<std::string, int> extractVSTPluginFilename(const std::string &filename);
 	//--------------------------------------------------------------------------------------------------------
-    typedef boost::tuple<std::string, // type
+    typedef boost::tuple<std::string, // namespace
+                         std::string, // type
                          std::string, // name
-                         int,      // numInputs , -1 for undefined
-                         int       // numOutputs, -1 for undefined
-            > ProcessorDescriptor;
-    /**
-	 * @note: eg. frx.processing.vst2x.__FRX__Testplugin(2,2) -> tuple(vst2x, __FRX__Testplugin, 2, 2)
-     *            frx.processing.vst2x.DelayX -> tuple(vst2x, DelayX, -1, -1)
-     *            frx.processing.internal.FrxADSR -> tuple(internal, FrxADSR, -1, -1)
+                         int,         // numInputs , -1 for undefined
+                         int,         // numOutputs, -1 for undefined
+                         std::string  // details
+            > IdData;
+   /**
+     * @brief parses creator ids. A creator id is composed of frx.$namespace.$type.$name[$detail][($numInputs, $numInputs)]
+     * @note the descriptor "type" is a bit missleading its more thought as subnamespace 
+	 * @note: eg. frx.processing.vst2x.FrxTestplugin(2,2) -> tuple(processing, vst2x, FrxTestplugin, 2, 2)
+     *            frx.processing.vst2x.DelayX -> tuple(processing, vst2x, DelayX, -1, -1)
+     *            frx.processing.internal.FrxADSR -> tuple(processing, internal, FrxADSR, -1, -1)
+     *            frx.processing.vst2x.location('/home/plugins/plugin.vst') -> tuple(processing, vst2x, location, -1, -1, /home/plugins/plugin.vst)
 	 */
-	ProcessorDescriptor extractProcessorDescriptor(const std::string &str);
-    //--------------------------------------------------------------------------------------------------------
-    extern const ProcessorDescriptor FRX_NULL_PROCESSOR;
-	//--------------------------------------------------------------------------------------------------------
+    struct IdParser : public IdData
+    {
+        typedef IdData Data;
+        IdParser(const std::string &str = "");
+        IdParser(const Data &data) : Data(data) {}
+        IdParser(const std::string &ns,
+                            const std::string &tp,
+                            const std::string &name,
+                            int ni = -1,
+                            int no = -1,
+                            const std::string &dt = "") : Data(ns, tp, name, ni, no, dt)
+        {
+        }
+        
+        const Data & data() const { return *this; }
+        void data(const Data &data) { *this = data; }
+        
+        const std::string & namespace_() const { return boost::get<0>(*this); }
+        const std::string &       type() const { return boost::get<1>(*this); }
+        const std::string &       name() const { return boost::get<2>(*this); }
+        int                  numInputs() const { return boost::get<3>(*this); }
+        int                 numOutputs() const { return boost::get<4>(*this); }
+        const std::string &    details() const { return boost::get<5>(*this); }
+        
+        IdParser & namespace_(const std::string &val) { boost::get<0>(*this) = val; return *this; }
+        IdParser &       type(const std::string &val) { boost::get<1>(*this) = val; return *this; }
+        IdParser &       name(const std::string &val) { boost::get<2>(*this) = val; return *this; }
+        IdParser &                 numInputs(int val) { boost::get<3>(*this) = val; return *this; }
+        IdParser &                numOutputs(int val) { boost::get<4>(*this) = val; return *this; }
+        IdParser &    details(const std::string &val) { boost::get<5>(*this) = val; return *this; }
+        std::string toString() const;
+        bool operator==(const IdParser &descr) const;
+        bool operator!=(const IdParser &descr) const;
+    };
+    //------------------------------------------------------------------------------------------------------
+    extern const IdParser FRX_NULL_ID;
+    //------------------------------------------------------------------------------------------------------
+    std::ostream & operator << (std::ostream &os, const IdParser &pd);
+	//------------------------------------------------------------------------------------------------------
 	std::string createVSTPluginFilename(const std::string &filename, int shellId);
-	/*//========================================================================================================
+	/*//====================================================================================================
 	//	Funktion: typeDetector.
 	//  Gebeben werden TypeList und zeiger zu objekt .
 	//  Geliefert wird der index zum typ aus der typelist vom Objekt.

@@ -1,0 +1,15 @@
+frx.scripts
+#include <scripts/LuaModelObject.hpp>
+
+/**
+ * @brief 
+ */
+class LuaParameterBase extends LuaModelObject {
+      void setValue(float x);
+      float getValue();
+      string getName();
+}
+
+
+
+

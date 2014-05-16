@@ -11,6 +11,7 @@
 #include "processing/parameter/parameter.h"
 #include "com/Serialization.h"
 #include "processing/dspTools.h"
+#include <processing/ModelFactory.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -36,12 +37,8 @@ private:
 	 * @param ar boost::Archive-
 	 * @param version
 	 */
-	template < typename Archive >
-	void serialize ( Archive &ar, const unsigned int version ){
-		ar & boost::serialization::base_object < ProcessAdapter > ( *this );
-		ar & out;
-		ar & adsr;
-	}
+	void serialize ( ::com::iArchive &ar, const unsigned int version );
+	void serialize ( ::com::oArchive &ar, const unsigned int version );
 	//--------------------------------------------------------------------------------------------------------
 	ADSRTrigger (){}
 	//--------------------------------------------------------------------------------------------------------
@@ -102,6 +99,9 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~ADSRTrigger ();
 };
+
+FRX_MODELFACTORY_REGISTER(internal, ADSRTrigger);
+
 }// namespace processing
 
 #endif  // FORX_ADSRTRIGGER_H

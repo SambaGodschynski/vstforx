@@ -4,13 +4,22 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{CLIBS}/sambag)
 
 SET(FRX_VERSION_MAJOR 1)
 SET(FRX_VERSION_MINOR 0)
-SET(FRX_VERSION_MICRO 42)
+SET(FRX_VERSION_MICRO 5)
 SET(FRX_VERSION_STR "${FRX_VERSION_MAJOR}.${FRX_VERSION_MINOR}.${FRX_VERSION_MICRO}")
+
 execute_process(COMMAND git --work-tree=${PROJECT_SOURCE_DIR} log --pretty=format:%h -n 1
-                OUTPUT_VARIABLE FRX_VERSION_BUILD)
+              OUTPUT_VARIABLE FRX_GITHASH)
+
+
+IF($ENV{BUILD_NUMBER})
+  SET(FRX_VERSION_BUILD $ENV{BUILD_NUMBER})
+ELSE($ENV{BUILD_NUMBER})
+  SET(FRX_VERSION_BUILD ${FRX_GITHASH})
+ENDIF($ENV{BUILD_NUMBER})
+
+
 
 execute_process(COMMAND sh getbranch.sh OUTPUT_VARIABLE FRX_VERSION_BRANCH)
-
 project(VSTForx-${FRX_VERSION_BRANCH})
 
 
@@ -23,7 +32,12 @@ add_definitions(-DBOOST_UBLAS_TYPE_CHECK=0)
 add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
 add_definitions(-D_SCL_SECURE_NO_WARNINGS) #disable warning C4996: 'std::uninitialized_copy' caused by boost::ublas
 add_definitions(-D_CRT_SECURE_NO_WARNINGS) #disable strcpy warning in audioeffect.h
-#add_definitions(-DSAMBAG_USE_LOG) #BOOST_LOG FAILS WHEN CALLING FROM VST(.dll) SEE #332
+
+IF($ENV{SAMBA_USELOG})
+  add_definitions(-DSAMBAG_USE_LOG) #BOOST_LOG FAILS WHEN CALLING FROM VST(.dll) SEE #332
+ENDIF($ENV{SAMBA_USELOG})
+
+
 #add_definitions(-DSAMBA_WARN_MISSING_IMPL) #show xy not impl. warning
 
 #to avoid name conflicts with existing FindSomeLib.cmake scripts
@@ -60,14 +74,6 @@ ELSEIF(WIN32)
 	SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
 	SET(FRX_ASYNC_DSP_TIMER "FRX_BOOST_TIMER")
 	SET(FRX_USE_FONTCACHE "1")
-        IF (MSVC)
- 	   IF (CMAKE_CL_64)
-    	     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
-             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4267")
-	   ENDIF(CMAKE_CL_64)
-	ENDIF(MSVC)
-
-
 
 ENDIF(APPLE)
 

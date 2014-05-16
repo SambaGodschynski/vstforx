@@ -385,7 +385,7 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	sambag::cpsqlite::DataBase::Ptr database;
 	//--------------------------------------------------------------------------------------------------------
-	com::Mutex mutex;
+	mutable com::Mutex mutex;
 	//--------------------------------------------------------------------------------------------------------
 	//PathNameList ;
 	//--------------------------------------------------------------------------------------------------------
@@ -435,22 +435,13 @@ private:
 public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * @param hostInfo
-	 * @param location
-	 * @return Plugin-Objekt zu location
-	 * @throw sambag::cpsqlite::DataBaseQueryFailed
-	 * TODO: plugin lade Vorgang ueberdenken. (PluginFactory)
-	 */
-	processing::Plugin::Ptr getPlugNode ( frx::processing::IHostInfo::Ptr hostInfo, const PluginIdType &location );
-	//--------------------------------------------------------------------------------------------------------
-	/**
 	 *
 	 * @param hostInfo
 	 * @param pI
 	 * @return Plugin-Objekt zu PluginInfo-Objekt
 	 * @throw sambag::cpsqlite::DataBaseQueryFailed
 	 */
-	processing::Plugin::Ptr restorePlugNode ( frx::processing::IHostInfo::Ptr hostInfo, processing::PluginInfo &pI );
+	frx::processing::Plugin::Ptr restorePlugNode ( frx::processing::IHostInfo::Ptr hostInfo, processing::PluginInfo &pI );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * aktualisiert Pluginfo-Objekt
@@ -459,7 +450,7 @@ public:
 	 * @return neues aktualisertes Pluginfo-Objekt
 	 * @throw sambag::cpsqlite::DataBaseQueryFailed
 	 */
-	processing::PluginInfo restorePluginInfo ( frx::processing::IHostInfo::Ptr hostInfo, processing::PluginInfo &pI );
+	processing::PluginInfo restorePluginInfo ( processing::PluginInfo &pI );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * bricht scan ab.
@@ -469,13 +460,13 @@ public:
 	/**
 	 * @return true, wenn Scanvorgang aktiv.
 	 */
-	bool isScanning();
+	bool isScanning() const;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * sambag::cpsqlite::DataBase-Objekt
 	 * @return
 	 */
-	sambag::cpsqlite::DataBase::Ptr & getDataBase() { return database; }
+	sambag::cpsqlite::DataBase::Ptr getDataBase() const { return database; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Initiiert Scanvorgang

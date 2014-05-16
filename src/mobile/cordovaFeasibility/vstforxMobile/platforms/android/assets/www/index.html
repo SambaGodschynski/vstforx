@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+	<link rel="stylesheet" href="css/themes/default/jquery.mobile-1.4.0.min.css" />
+	<script src="js/jQueryMobile/jquery.js"></script>
+	<script src="js/jQueryMobile/jquery.mobile-1.4.0.min.js"></script>
+        <title>VSTForx Mobile Remote</title>
+	<script type="text/javascript" charset="utf-8">
+	  // Wait for device API libraries to load
+	  //
+	  function onLoad() {
+              document.addEventListener("deviceready", onDeviceReady, false);
+	      //jQuery("#mainApp").hide();
+	  }
+	  function onDeviceReady() {
+	      jQuery("#initScreen").hide();
+	      jQuery("#mainApp").show();
+	  }
+	</script>
+    </head>
+    <body onLoad="onLoad()">
+      <div id="bg"></div>
+      <div class="app">
+	<div id="initScreen">
+          <h1>VSTForx Mobile Remote</h1>
+          <div class="blink">
+            <p>LOADING ...</p>
+          </div>
+	</div> <!-- Init Screen -->
+	<div id="mainApp">
+	  <div data-role="header">
+	    <h1>VSTForx Mobile</h1>
+	  </div>
+	  <form class="sliders">
+	    <input type="range" name="slider-1" id="slider-1" data-highlight="true" min="0" max="1" step="0.01" value="0">
+	    <br/>
+	    <input type="range" name="slider-2" id="slider-2" data-highlight="true" min="0" max="1" step="0.01" value="0">
+	    <br/>
+	    <input type="range" name="slider-3" id="slider-3" data-highlight="true" min="0" max="1" step="0.01" value="0">
+	    <br/>
+	    <input type="range" name="slider-4" id="slider=4" data-highlight="true" min="0" max="1" step="0.01" value="0">
+	    <br/>
+	    <input type="range" name="slider-5" id="slider-5" data-highlight="true" min="0" max="1" step="0.01" value="0">
+	    <br/>
+	    <input type="range" name="slider-6" id="slider-6" data-highlight="true" min="0" max="1" step="0.01" value="0">
+	  </form>
+	</div>
+      </div>
+      <script type="text/javascript" src="cordova.js"></script>
+      <script type="text/javascript" src="js/index.js"></script>
+    </body>
+</html>

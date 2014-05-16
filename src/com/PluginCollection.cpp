@@ -12,11 +12,14 @@
 #include "PluginCollectionSQL.h"
 #include <boost/filesystem.hpp>
 #include "OS_Specific/OS_com.h"
-#include "processing/pluginTypes/VSTPlugin2x.h"
 #include "processing/pluginTypes/VstShellPlugin.hpp"
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <sambag/com/Thread.hpp>
 #include <boost/date_time.hpp>
+#include <processing/pluginTypes/PluginFactory.hpp>
+#include <processing/ModelFactory.hpp>
+#include <boost/filesystem.hpp>
+
 
 #define DB_QUERY(x)											\
 	try {x}													\
@@ -152,7 +155,7 @@ PluginCollection::PluginCollection() :
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-bool PluginCollection::isScanning() {
+bool PluginCollection::isScanning() const {
 	boost::unique_lock<boost::timed_mutex> lock( mutex, boost::try_to_lock);
 	if (!lock.owns_lock()) return true;
 	return false;
@@ -199,7 +202,11 @@ void PluginCollection::scanDirectories ( const Settings::PathnameSet &pathSet ) 
 	removeUnusedFolders();
 }
 //------------------------------------------------------------------------------------------------------------
-void PluginCollection::scanDirectory ( const ScanVisitor::Path &path, ScanVisitor &vis ) {
+void PluginCollection::scanDirectory ( const ScanVisitor::Path &_path, ScanVisitor &vis ) {
+    boost::filesystem::path path = _path;
+    if (path.is_relative()) {
+        path = boost::filesystem::absolute(_path, com::getSettings().getHomeDirectory()).string();
+    }
 	vis.setStartFolder ( path );
 	abortScan = false;
 	sambag::com::dirWalker( path, vis, &abortScan );
@@ -250,11 +257,11 @@ void PluginCollection::update(  frx::processing::IHostInfo::Ptr hostInfo ) {
 	com::events::EventSender<ScanComplete>::notifyEventListeners ( this, ScanComplete() );
 }
 //------------------------------------------------------------------------------------------------------------
-void PluginCollection::appendLog ( const string &log_msg ) {
-	ofstream f;
+void PluginCollection::appendLog ( const std::string &log_msg ) {
+	std::ofstream f;
 	try {
-		f.open ( SETTINGS.getPlugInitLogFilename().c_str(), ios::app );
-		f<<log_msg<<endl;
+		f.open ( SETTINGS.getPlugInitLogFilename().c_str(), std::ios::app );
+		f<<log_msg<<std::endl;
 	}
 	catch ( ... ) {
 		f.close();
@@ -263,9 +270,9 @@ void PluginCollection::appendLog ( const string &log_msg ) {
 	f.close();
 }
 //------------------------------------------------------------------------------------------------------------
-string PluginCollection::analyzeLog() {
-	ifstream f;
-	string str;
+std::string PluginCollection::analyzeLog() {
+	std::ifstream f;
+	std::string str;
 	try {
 		f.open ( SETTINGS.getPlugInitLogFilename().c_str() );
 		while ( !f.eof() ) {
@@ -284,18 +291,7 @@ string PluginCollection::analyzeLog() {
 	return str;
 }
 //------------------------------------------------------------------------------------------------------------
-processing::Plugin::Ptr PluginCollection::getPlugNode ( frx::processing::IHostInfo::Ptr hostInfo, 
-														  const PluginCollection::PluginIdType &location ) 
-{
-	using namespace processing;
-	PluginInfo pI = getPlugInfo ( location );
-	// plugin not in db => return NULL
-	if ( !pI.isValid() ) return processing::Plugin::Ptr();
-	return PluginFactory::createPlugNode ( hostInfo, pI.location ); 
-}
-//------------------------------------------------------------------------------------------------------------
-processing::PluginInfo PluginCollection::restorePluginInfo ( frx::processing::IHostInfo::Ptr hostInfo, 
-															 processing::PluginInfo &info ) 
+processing::PluginInfo PluginCollection::restorePluginInfo ( processing::PluginInfo &info ) 
 {
 	using namespace processing;
 	int shellId;
@@ -303,9 +299,7 @@ processing::PluginInfo PluginCollection::restorePluginInfo ( frx::processing::IH
 	PluginInfo pI = getPlugInfo ( info.location );
 	// plugin not in db => search in db
 	if ( !pI.isValid() ) {
-		tmpHostInfo = hostInfo;
 		bool b = searchPlugin( info );
-		tmpHostInfo = frx::processing::IHostInfo::Ptr(); // NULL
 		if ( !b ) // plugin not found
 			return processing::PluginInfo(); // NULL
 	}
@@ -313,13 +307,15 @@ processing::PluginInfo PluginCollection::restorePluginInfo ( frx::processing::IH
 	return info;
 }
 //------------------------------------------------------------------------------------------------------------
-processing::Plugin::Ptr PluginCollection::restorePlugNode ( frx::processing::IHostInfo::Ptr hostInfo, 
+frx::processing::Plugin::Ptr PluginCollection::restorePlugNode ( frx::processing::IHostInfo::Ptr hostInfo,
 															 processing::PluginInfo &info ) 
 {
 	using namespace processing;
-	PluginInfo pI = restorePluginInfo ( hostInfo, info );
-	if ( !pI.isValid() ) return processing::Plugin::Ptr(); // NULL
-	return PluginFactory::createPlugNode ( hostInfo, info.location ); 
+	PluginInfo pI = restorePluginInfo (info);
+	if ( !pI.isValid() ) {
+        return frx::processing::Plugin::Ptr(); // NULL
+    }
+	return frx::processing::ModelFactory::instance().create<frx::processing::Plugin> ( info.getFactoryId(), hostInfo );
 }
 //------------------------------------------------------------------------------------------------------------
 void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::processing::IHostInfo::Ptr hostinfo )
@@ -336,17 +332,17 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 	}
 	TOLOG ("peek " + out_info.location );
 	appendLog ( out_info.location );		   // eintrag ins scan log	
-	Plugin::Ptr n;
+	frx::processing::Plugin::Ptr n;
 	try {
-		n = PluginFactory::createPlugNode ( hostinfo, out_info.location );
+		n = frx::processing::Plugin::create(hostinfo, out_info.location);
 	} catch(const ShellPluginException &ex) {
 		// TODO: insert as folder with concrete shell ids as content
 		out_info.access = PluginInfo::SUCCEED;
-		out_info.name = VSTPlugin::extractNameFromFilename(out_info.location);
+		out_info.name = com::getFileNameFromPath(out_info.location);
 		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
 		return;
 	} catch(...) {
-		n = Plugin::Ptr();
+		n = frx::processing::Plugin::Ptr();
 	}
 	if ( !n ) { // loading failed
 		appendLog ( "?" + out_info.location );
@@ -355,14 +351,14 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 		out_info.access = PluginInfo::FAILED;
 		// set timestamp and name
 		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
-		out_info.name = VSTPlugin::extractNameFromFilename(out_info.location);
+		out_info.name = com::getFileNameFromPath(out_info.location);
 		return;
 	}
 	if ( ! n->isAccessable() ) {
 		out_info.access = PluginInfo::FAILED;
 		// set timestamp and name
 		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
-		out_info.name = VSTPlugin::extractNameFromFilename(out_info.location);
+		out_info.name = com::getFileNameFromPath(out_info.location);
 		return;
 	}
 	// fill out

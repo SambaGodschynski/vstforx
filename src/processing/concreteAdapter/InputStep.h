@@ -16,6 +16,7 @@
 #include "SyncTranslator.h"
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <processing/ModelFactory.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -118,9 +119,11 @@ public:
 	/**
 	 * @param hostInfo
 	 * @param initSteps
+     * @param not used, needed to fit ModelFactory's create function signature
 	 * @return neues InputStep-Objekt
 	 */
-	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo, int initSteps = 2 ) {
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo, int initSteps = 2, int notUsed = 0)
+    {
 		Ptr neu( new InputStep(hostInfo, initSteps) );
 		neu->self = neu;
 		return neu;
@@ -173,6 +176,16 @@ public:
 	 */
 	ProcessorNode::Ptr addInputNode();
 };
+namespace {
+    const bool INTERNAL_INSTEP_IO_Registered =
+        frx::processing::ModelFactory::instance().
+            registerWithIO<InputStep>("internal.InputStep", &InputStep::create);
+    
+    const bool INTERNAL_INSTEP_Registered =
+        frx::processing::ModelFactory::instance().
+		register_<InputStep>("internal.InputStep", boost::bind(&InputStep::create, _1, 2, 0));
+}
+
 }// namespace processing
 
 #endif  // FORX_INPUTSTEP_H

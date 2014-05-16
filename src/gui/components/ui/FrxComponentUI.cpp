@@ -8,11 +8,9 @@
 #include <map>
 #include "TooltipTexts.hpp"
 #include <sambag/disco/components/ui/UIManager.hpp>
+#include <gui/components/FrxMenuLabel.hpp>
 namespace frx { namespace gui {
 namespace components { namespace ui {
-namespace {
-
-}
 //=============================================================================
 // class FrxComponentUI
 //=============================================================================
@@ -68,29 +66,12 @@ void FrxComponentUI::createPopupmenuEntries(sdc::PopupMenuPtr menu,
 	);
 	menu->add(item);
 }
-namespace {
-	struct MenuLabel : public sdc::Label {
-		typedef boost::shared_ptr<MenuLabel> Ptr;
-		typedef sdc::Label Super;
-		MenuLabel(){ setOpaque(false); }
-		SAMBAG_STD_STATIC_COMPONENT_CREATOR(MenuLabel)
-		virtual sd::Dimension getPreferredSize() {
-			sd::Dimension sz = Super::getMinimumSize();
-			sz.height( sz.height() + 10. );
-			return sz; 
-		} 
-	};
-}
 //-----------------------------------------------------------------------------
 sdc::PopupMenuPtr FrxComponentUI::createPopupmenu(FrxComponentPtr c, 
 		FrxCircuidViewPtr view)
 {
 	sdc::PopupMenuPtr menu = sdc::PopupMenu::create();
-	MenuLabel::Ptr label = MenuLabel::create();
-	label->setForeground( menuLabelStyle.strokePattern() );
-	label->setBackground( menuLabelStyle.fillPattern() );
-	label->setFont( menuLabelStyle.font() );
-	label->setPreferredSize( label->getMinimumSize() );
+	FrxMenuLabel::Ptr label = FrxMenuLabel::create();
 	label->setText(c->getName());
 	menu->add(label);
 	createPopupmenuEntries(menu, view, c);
@@ -104,8 +85,6 @@ void FrxComponentUI::installDefaults(sdc::AComponentPtr c) {
 	FrxComponent::Ptr frxC = boost::dynamic_pointer_cast<FrxComponent>(c);
 	FrxCircuidView::Ptr view = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(frxC && view);
-	menuLabelStyle = sdsg::Style::DEFAULT_STYLE;
-	sdcu::getUIManager().getProperty("FrxComponent.menu.label.style", menuLabelStyle);
 	// add popupmenu
 	sdc::PopupMenuPtr menu = createPopupmenu(frxC, view);
 	if (menu) {

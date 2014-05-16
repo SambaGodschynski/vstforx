@@ -38,6 +38,10 @@ void FrxComponent::postConstructor() {
 	}
 }
 //-----------------------------------------------------------------------------
+void FrxComponent::__setTypeId_(const std::string &id) {
+    typeId = id;
+}
+//-----------------------------------------------------------------------------
 FrxComponent::FrxComponent() {
 	setName("");
 }
@@ -58,5 +62,56 @@ sd::Point2D FrxComponent::getPivot() const {
 //-----------------------------------------------------------------------------
 void FrxComponent::setBounds(const sd::Rectangle &b) {
 	Super::setBounds(b);
+}
+//-----------------------------------------------------------------------------
+void FrxComponent::serializeSelfPtr(::com::iArchive &ar, const unsigned int version) {
+	ar >> boost::serialization::base_object<ViewObject>(*this); 
+	ar >> tmpSelf;
+	ar >> uFlagTxt;
+	ar >> lFlagTxt;
+	std::string name = getName();
+	ar >> name;
+	if (version>0) {
+		ar >> typeId;
+	}
+	self = tmpSelf;
+	setName(name);
+	postConstructor();
+}
+void FrxComponent::serializeSelfPtr(::com::oArchive &ar, const unsigned int version) {
+	tmpSelf = boost::dynamic_pointer_cast<FrxComponent>(self.lock());
+	ar << boost::serialization::base_object<ViewObject>(*this); 
+	ar << tmpSelf;
+	ar << uFlagTxt;
+	ar << lFlagTxt;
+	std::string name = getName();
+	ar << name;
+	ar << typeId;
+}
+//-----------------------------------------------------------------------------
+void FrxComponent::save(::com::oArchive &ar, const unsigned int version) const {
+	const sd::Rectangle &bounds = getBounds();
+	ar << bounds;
+}
+//----------------------------------------------------------------------------- 
+void FrxComponent::load(::com::iArchive &ar, const unsigned int version) {
+	sd::Rectangle bounds;
+	ar >> bounds;
+	setBounds(bounds);
+}
+//------------------------------------------------------------------------------
+void FrxComponent::serialize(::com::oArchive &ar, const unsigned int version) {
+	serializeSelfPtr(ar, version);
+	boost::serialization::split_member(ar, *this, version);
+}
+//------------------------------------------------------------------------------
+void FrxComponent::serialize(::com::iArchive &ar, const unsigned int version) {
+	serializeSelfPtr(ar, version);
+	boost::serialization::split_member(ar, *this, version);
+}
+//------------------------------------------------------------------------------
+void FrxComponent::setName (const std::string &name) {
+    Super::setName(name);
+    setUpperFlagText(name);
 }
 }}} // namespace(s)

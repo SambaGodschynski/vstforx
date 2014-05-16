@@ -63,13 +63,13 @@ protected:
 	void parameterLabelChanged(float value, processing::IParameter::WPtr _p);
 	//-------------------------------------------------------------------------
 	void parameterChanged(void *src, 
-		float value, const BrowserNode &node);
+		float value, const BrowserNodeData &node);
 	//-------------------------------------------------------------------------
 	void onFrxViewChanged(void *, const FrxCircuidViewEvent &ev);
 	//-------------------------------------------------------------------------
 	void parameterLabelRedraw(sdc::AComponentPtr c, 
 		processing::IParameter::WPtr _p,
-		const BrowserNode &node);
+		const BrowserNodeData &node);
 	//-------------------------------------------------------------------------
 	FrxColumnBrowserWPtr browser;
 	//-------------------------------------------------------------------------
@@ -83,7 +83,7 @@ protected:
 	//-------------------------------------------------------------------------
 	void initRoot(FrxCircuidViewPtr view, FrxColumnBrowserPtr brws);
 	//-------------------------------------------------------------------------
-	Tree::Node add, add_plugins, add_processors, add_knobs, scene, scene_processors,
+	Tree::Node add, add_plugins, add_processors, add_knobs, scene,
 		scene_plugins, scene_parameter, scene_connections, his_recent, his_favourite,
         remotes;
 	//-------------------------------------------------------------------------
@@ -92,17 +92,17 @@ protected:
 	//-------------------------------------------------------------------------
 	void addPresets(FrxComponentPtr c, const Tree::Node &parent);
 	//-------------------------------------------------------------------------
-	// wrapper for BrowserNode Accepted function
-	BrowserNode::ResultPtr _addModelObjectParameter(FrxComponentWPtr c,
+	// wrapper for BrowserNodeData Accepted function
+	BrowserNodeData::ResultPtr _addModelObjectParameter(FrxComponentWPtr c,
 		Tree::Node parent);
 	//-------------------------------------------------------------------------
 	void addMainProcessors();
 	//-------------------------------------------------------------------------
 	void addMainKnobs();
 	//-------------------------------------------------------------------------
-	BrowserNode::ResultPtr createSceneTree(const Tree::Node &parent);
+	BrowserNodeData::ResultPtr createSceneTree(const Tree::Node &parent);
 	//-------------------------------------------------------------------------
-	BrowserNode::ResultPtr addPlugin(::processing::PluginInfo pI);
+	BrowserNodeData::ResultPtr addPlugin(::processing::PluginInfo pI);
     //-------------------------------------------------------------------------
 	void addPluginToHistory(::processing::PluginInfo pI);
 	//-------------------------------------------------------------------------
@@ -110,35 +110,35 @@ protected:
      * Browser entry callback:
      * add processor to view 
      */
-    BrowserNode::ResultPtr
+    BrowserNodeData::ResultPtr
 	addProcessor(IFrxComponentFactory::ProcessorCreator f);
 	//-------------------------------------------------------------------------
 	/**
      * Browser entry callback:
      * add free knob to view 
      */
-	BrowserNode::ResultPtr 
+	BrowserNodeData::ResultPtr 
 	addFreeKnob(IFrxComponentFactory::FreeParameterCreator f);
 	//-------------------------------------------------------------------------
     /**
      * Browser entry callback:
      * add hostknob to view 
      */
-	BrowserNode::ResultPtr 
+	BrowserNodeData::ResultPtr 
 	addHostKnob(IFrxComponentFactory::HostParameterCreator f, int id);
 	//-------------------------------------------------------------------------
 	/**
      * Browser entry callback:
      * add processor related knob to view 
      */
-	BrowserNode::ResultPtr 
+	BrowserNodeData::ResultPtr 
 	addRelatedKnobToView(FrxComponentWPtr _c, frx::processing::IParameter::WPtr _par);
 	//-------------------------------------------------------------------------
 	/**
      * Browser entry callback:
      * when clicked on plugin folder: fill folder
      */
-	BrowserNode::ResultPtr 
+	BrowserNodeData::ResultPtr 
 	fillPluginFolder(TreeNode parent, DBFolderID dbFolderId);
 	//-------------------------------------------------------------------------
 	/**
@@ -146,7 +146,7 @@ protected:
      * when clicked on plugin history folder: fill folder
      */
 	enum HistoryType{ Recent, Favourite };
-    BrowserNode::ResultPtr
+    BrowserNodeData::ResultPtr
 	fillHistoryFolder(TreeNode parent, HistoryType type);
 	//-------------------------------------------------------------------------
 	void showShellSelection(const ::processing::PluginInfo &plugin, 
@@ -159,7 +159,7 @@ protected:
      * when clicked on remote folder: fill folder
      */
     sambag::com::ArithmeticWrapper<int, -1> remotesChangedTimestamp;
-	BrowserNode::ResultPtr fillRemoteFolder();
+	BrowserNodeData::ResultPtr fillRemoteFolder();
     //-------------------------------------------------------------------------
     /**
      * updates remote folders content
@@ -200,29 +200,29 @@ private:
 	//-------------------------------------------------------------------------
 	Tree::Node addConnectionToSceneTree(FrxComponentPtr c, Reason reason);
 	//-------------------------------------------------------------------------
-	void handleBrowserNodeResult(BrowserNode::ResultPtr res);
+	void handleBrowserNodeResult(BrowserNodeData::ResultPtr res);
 	//-------------------------------------------------------------------------
 protected:
 	//-------------------------------------------------------------------------
 	void addToSceneTree(FrxComponentPtr c, Reason reason);
 public:
 	//-------------------------------------------------------------------------
-	void createParameterNode(BrowserNode &out, 
+	void createParameterNode(BrowserNodeData &out, 
 		const std::string &name,
 		processing::IParameter::Ptr obj = processing::IParameter::Ptr());
 	//-------------------------------------------------------------------------
-	void createProcessorNode(BrowserNode &out, 
+	void createProcessorNode(BrowserNodeData &out, 
 		const std::string &name,
 		processing::IProcessor::Ptr obj = processing::IProcessor::Ptr());
 	//-------------------------------------------------------------------------
-	void createPluginNode(BrowserNode &out,
+	void createPluginNode(BrowserNodeData &out,
 		const std::string &name,
 		processing::IProcessor::Ptr obj = processing::IProcessor::Ptr());
 	//-------------------------------------------------------------------------
-	void createRemoteNode(BrowserNode &out,
+	void createRemoteNode(BrowserNodeData &out,
 		const std::string &rcId);
 	//-------------------------------------------------------------------------
-	void createPresetNode(BrowserNode &out,
+	void createPresetNode(BrowserNodeData &out,
 		const std::string &name,
 		processing::IProcessor::Ptr obj = processing::IProcessor::Ptr(),
 		int presetIndex = 0);

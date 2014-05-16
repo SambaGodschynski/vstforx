@@ -7,6 +7,8 @@
 
 #include "Session.hpp"
 #include "ShmCom.hpp"
+#include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <sambag/com/exceptions/IllegalArgumentException.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 //=============================================================================
@@ -19,21 +21,39 @@ struct Session::IPChannel {
     Mutex mutex;
     VoidPtr argmem;
     VoidPtr retmem;
+    struct TransferDataPurpose { // see @Session::transferData()
+        Integer bytesToCopy;
+        Integer opc;
+        Mutex mutex;
+        char data[FRX_SHMSESS_MAX_DATA_LENGTH];
+    };
+    TransferDataPurpose trData;
 };
 //=============================================================================
 //  Class Session
 //=============================================================================
 //-----------------------------------------------------------------------------
+struct Session::TransferSenderGuard {
+    Mutex *mutex;
+    typedef boost::shared_ptr<TransferSenderGuard> Ptr;
+};
+struct Session::TransferReceiverGuard {
+    TransferReceiverGuard(Mutex *mutex) : mutex(mutex) {}
+    Mutex *mutex;
+    TransferReceiverGuard() { mutex->unlock(); }
+    typedef boost::shared_ptr<TransferReceiverGuard> Ptr;
+};
+//-----------------------------------------------------------------------------
 Session::Session(const std::string &id, ChannelSize a, ChannelSize b) : id(id)
 {
     createBuffer(a, b);
-    setMaxSleeping(DEFAULT_SLEEPING_TIME);
+    setPriority(DEFAULT_PRIORITY);
 }
 //-----------------------------------------------------------------------------
-void Session::setMaxSleeping (Integer ms) {
-    SAMBAG_ASSERT(sleepingTime);
-    if (sleepingTime) {
-        *sleepingTime = ms;
+void Session::setPriority (Priority val) {
+    SAMBAG_ASSERT(priority);
+    if (priority) {
+        *priority = (Integer)val;
     }
 }
 //-----------------------------------------------------------------------------
@@ -44,9 +64,11 @@ Session::Session(const std::string &id) : id(id) {
 Session::~Session() {
     channelA = NULL;
     channelB = NULL;
-    sleepingTime = NULL;
-    processThread->join();
-    processThread.reset();
+    priority = NULL;
+    if (processThread) {
+        processThread->join();
+        processThread.reset();
+    }
 
     if (num_references && --(*num_references)==0) {
        destroyShm();
@@ -55,18 +77,28 @@ Session::~Session() {
 }
 //-----------------------------------------------------------------------------
 void Session::destroyShm() {
-    SAMBAG_LOG_INFO<<"destroying: " << id;
+    SAMBAG_LOG_INFO<<"destroying: " << name();
     mapped_region.reset();
     shm.reset();
     ipFree(id.c_str());
-    SAMBAG_LOG_INFO<<"destroyed: " << id;
+    SAMBAG_LOG_INFO<<"destroyed: " << name();
 }
 //-----------------------------------------------------------------------------
 void Session::process() {
-    SAMBAG_LOG_INFO<<"session process thread started";
+    SAMBAG_LOG_INFO<<"session "<<name()<<" process thread started";
     while (channelA && channelB)
     {
         if ( processChannel->opc != IDLE ) {
+            if (processChannel->opc == TRANSFER_DATA) {
+                _transferData();
+                processChannel->opc = IDLE;
+                continue;
+            }
+            if (processChannel->opc == CLEAR_DATA) {
+                trData.second.clear();
+                processChannel->opc = IDLE;
+                continue;
+            }
             try {
                 processImpl(
                     processChannel->opc,
@@ -82,10 +114,9 @@ void Session::process() {
             processChannel->opc = IDLE;
 
         }
-        SAMBAG_ASSERT(sleepingTime);
-        boost::this_thread::sleep(boost::posix_time::millisec(*sleepingTime));
+        sleep();
     }
-    SAMBAG_LOG_INFO<<"session process thread closed";
+    SAMBAG_LOG_INFO<<"session "<<name()<<" process thread closed";
 }
 //-----------------------------------------------------------------------------
 void Session::startProcessThread() {
@@ -95,12 +126,12 @@ void Session::startProcessThread() {
 }
 //-----------------------------------------------------------------------------
 void Session::openBuffer() {
-    SAMBAG_LOG_INFO<<"try to establish session: '"<<id<<"'";
+    SAMBAG_LOG_INFO<<"try to establish session: '"<<name()<<"'";
     using namespace ::sambag::com::interprocess;
     try {
         shm = findSharedMemoryObject(id.c_str());
     } catch (const boost::interprocess::interprocess_exception &ex) {
-        SAMBAG_THROW(Exception, "create session '" + id + "' failed: " + ex.what());
+        SAMBAG_THROW(Exception, "create session '" + name() + "' failed: " + ex.what());
     }
 
     void *raw;
@@ -117,8 +148,7 @@ void Session::openBuffer() {
 
     processChannel = channelB;
     requestChannel = channelA;
-    startProcessThread();
-    SAMBAG_LOG_INFO<<"session established: '"<<id<<"'";
+    SAMBAG_LOG_INFO<<"session established: '"<<name()<<"'";
 }
 //-----------------------------------------------------------------------------
 Integer Session::getNeededSize(ChannelSize a, ChannelSize b) {
@@ -132,14 +162,14 @@ Integer Session::getNeededSize(ChannelSize a, ChannelSize b) {
 }
 //-----------------------------------------------------------------------------
 void Session::createBuffer(ChannelSize a, ChannelSize b) {
-    SAMBAG_LOG_INFO<<"try to create session: '"<<id<<"'";
+    SAMBAG_LOG_INFO<<"try to create session: '"<<name()<<"'";
 	UInteger byteSize = getNeededSize(a, b);
 
     using namespace ::sambag::com::interprocess;
     try {
         shm = createSharedMemoryObject(id.c_str(), byteSize);
     } catch (const boost::interprocess::interprocess_exception &ex) {
-        SAMBAG_THROW(Exception, "create session '" + id + "' failed: " + ex.what());
+        SAMBAG_THROW(Exception, "create session '" + name() + "' failed: " + ex.what());
     }
     void *raw;
     boost::tie(raw, memorySize, mapped_region) = ipMalloc( shm, byteSize );
@@ -156,13 +186,13 @@ void Session::createBuffer(ChannelSize a, ChannelSize b) {
     
     processChannel = channelA;
     requestChannel = channelB;
-    startProcessThread();
-    SAMBAG_LOG_INFO<<"session created: '"<<id<<"'";
+    SAMBAG_LOG_INFO<<"session created: '"<<name()<<"'";
 }
 //-----------------------------------------------------------------------------
 void Session::assignMemory(sambag::com::interprocess::PointerIterator &pIt,
         boost::optional<ChannelSizes> channelSizes)
 {
+    SAMBAG_LOG_TRACE<<sizeof(IPChannel);
     using namespace ::sambag::com::interprocess;
     typedef PlacementAlloc<Integer> Allocator;
     Allocator alloc(pIt);
@@ -174,7 +204,7 @@ void Session::assignMemory(sambag::com::interprocess::PointerIterator &pIt,
     
     channelA = Allocator::rebind<IPChannel>::other(alloc).allocate(1);
     channelB = Allocator::rebind<IPChannel>::other(alloc).allocate(1);
-    sleepingTime = Allocator::rebind<Integer>::other(alloc).allocate(1);
+    priority = Allocator::rebind<Integer>::other(alloc).allocate(1);
 
     if (channelSizes) { // creatememory
         // init values
@@ -193,40 +223,152 @@ void Session::assignMemory(sambag::com::interprocess::PointerIterator &pIt,
     channelB->retmem = Allocator::rebind<char>::other(alloc).allocate(channelB->retsize);
 }
 //-----------------------------------------------------------------------------
-void * Session::waitForResultImpl(Opc opc, Integer timeout) {
+std::string Session::name() const {
+    if (!requestChannel) {
+        return "session-? " + getId();
+    }
+    bool host = requestChannel == channelB;
+    std::stringstream ss;
+    ss<<"session-"<<(host?"host":"client")<<" "<<getId();
+    return ss.str();
+}
+//-----------------------------------------------------------------------------
+void Session::waitForResultImpl(Opc opc, MemoryGuard::Ptr g, Integer timeout) const
+{
+
     using namespace boost::interprocess;
-    SAMBAG_ASSERT(sleepingTime);
-    if (timeout<=*sleepingTime) {
-        SAMBAG_LOG_WARN<<"Session: "<<id<<" sleeping time is longer than timeout.";
-    }
+    timeout*=1000; // millisec to microsec
     boost::posix_time::ptime ptout = boost::posix_time::from_time_t(std::time(NULL));
-    ptout += boost::posix_time::milliseconds(timeout);
+    ptout += boost::posix_time::microsec(timeout);
     
-    scoped_lock<Mutex> lock(requestChannel->mutex, ptout);
-    if (!lock) {
-        std::stringstream ss;
-        ss<<"Session "<<id<<" OPC("<<opc<<") timed out";
-        SAMBAG_THROW(TimeOut, ss.str());
-    }
     requestChannel->opc = opc;
     int waited = 0;
     while (requestChannel->opc!=IDLE) {
-        boost::this_thread::sleep(boost::posix_time::millisec(*sleepingTime));
-        waited+=*sleepingTime;
+        waited+=sleep();
         if (waited>=timeout) {
             std::stringstream ss;
-            ss<<"Session "<<id<<" OPC("<<opc<<") timed out";
+            ss<<name()<<" OPC("<<opc<<") timed out";
             SAMBAG_THROW(TimeOut, ss.str());
         }
     }
-    return getRetmem();
 }
 //-----------------------------------------------------------------------------
 void * Session::getArgmem() const {
-   return requestChannel->argmem.get();
+    return requestChannel->argmem.get();
 }
 //-----------------------------------------------------------------------------
 void * Session::getRetmem() const {
     return requestChannel->retmem.get();
+}
+//-----------------------------------------------------------------------------
+void * Session::getArgmem() {
+    return requestChannel->argmem.get();
+}
+//-----------------------------------------------------------------------------
+void * Session::getRetmem() {
+    return requestChannel->retmem.get();
+}
+
+//-----------------------------------------------------------------------------
+size_t Session::getRequestArgmemSize() const {
+    return requestChannel->argsize;
+}
+//-----------------------------------------------------------------------------
+size_t Session::getRequestRetmemSize() const {
+    return requestChannel->retsize;
+}
+//-----------------------------------------------------------------------------
+size_t Session::getProcessArgmemSize() const {
+    return processChannel->argsize;
+}
+//-----------------------------------------------------------------------------
+size_t Session::getProcessRetmemSize() const {
+    return processChannel->retsize;
+}
+//-----------------------------------------------------------------------------
+void Session::_transferData() {
+    if (processChannel->trData.bytesToCopy == 0) {
+        return;
+    }
+    IPChannel::TransferDataPurpose &td = processChannel->trData;
+    trData.first = td.opc;
+    RawData &vec = trData.second;
+    vec.insert(vec.end(), td.data, td.data + td.bytesToCopy);
+}
+//-----------------------------------------------------------------------------
+void Session::transferData(Opc opc, void *data, int size, TransferSenderGuardPtr guard)
+{
+    if (!guard) {
+        SAMBAG_THROW(sambag::com::exceptions::IllegalArgumentException,
+        "Session::transferData no guard");
+    }
+    waitForProcess(CLEAR_DATA, getMemoryGuard());
+    requestChannel->trData.opc=opc;
+    static const int maxBytes = FRX_SHMSESS_MAX_DATA_LENGTH;
+    while (size>0) {
+        int bytesToCopy = size<maxBytes ? size:maxBytes;
+        requestChannel->trData.bytesToCopy = bytesToCopy;
+        memcpy(requestChannel->trData.data, data, bytesToCopy);
+        waitForProcess(TRANSFER_DATA, getMemoryGuard());
+        //iterate
+        data=(char*)data+bytesToCopy;
+        size-=bytesToCopy;
+    }
+}
+//-----------------------------------------------------------------------------
+std::pair<void *, Session::TransferReceiverGuard::Ptr>
+Session::getTransferedData(Opc opc)
+{
+    if (trData.first != opc) {
+        SAMBAG_LOG_WARN<<"Session::getTransferedDataPointer OPCs dosen't match";
+        return std::make_pair((void*)NULL, TransferReceiverGuard::Ptr());
+    }
+    if (trData.second.empty()) {
+        return std::make_pair((void*)NULL, TransferReceiverGuard::Ptr());
+    }
+    
+    TransferReceiverGuard::Ptr guard(
+        new TransferReceiverGuard(&processChannel->trData.mutex)
+    );
+    
+    return std::make_pair(&(trData.second[0]), guard);
+}
+//-----------------------------------------------------------------------------
+size_t Session::getTransferedDataSize(Opc opc) const {
+    if (trData.first != opc) {
+        return 0;
+    }
+    return trData.second.size();
+}
+//-----------------------------------------------------------------------------
+Session::TransferSenderGuard::Ptr Session::getTransferSenderGuard(Integer timeout)
+{
+    using namespace boost::interprocess;
+    TransferSenderGuard::Ptr res( new TransferSenderGuard() );
+    res->mutex = &requestChannel->trData.mutex;
+    
+    boost::posix_time::ptime ptout = boost::posix_time::from_time_t(std::time(NULL));
+    ptout += boost::posix_time::millisec(timeout);
+    bool locked = res->mutex->timed_lock(ptout);
+    if (!locked) {
+        std::stringstream ss;
+        ss<<name()<<"Session::beginDataTransfer() timed out";
+        SAMBAG_THROW(TimeOut, ss.str());
+    }
+    return res;
+}
+//-----------------------------------------------------------------------------
+Session::MemoryGuard::Ptr Session::getMemoryGuard(Integer timeout) const {
+    using namespace boost::interprocess;
+    MemoryGuard::Ptr res(new MemoryGuard(getArgmem(), getRetmem()));
+    boost::posix_time::ptime ptout = boost::posix_time::from_time_t(std::time(NULL));
+    ptout += boost::posix_time::millisec(timeout);
+    res->lock = scoped_lock<Mutex>(requestChannel->mutex, ptout);
+    if (!(res->lock)) {
+        std::stringstream ss;
+        ss<<name()<<"Session::getRequestMemory() timed out";
+        SAMBAG_THROW(TimeOut, ss.str());
+    }
+    return res;
 }
 }}} // namespace(s)

@@ -16,21 +16,30 @@
 
 
 namespace com {
+const char * FRX_VST_EXT = ".vst";
+const char * FRX_LUA_EXT = ".lua";
+const char * FRX_APP_EXT = ".app";
 //-----------------------------------------------------------------------------
 bool isPlugFilename ( const std::string &filename ) {
-	return Filename(filename).extension() == ".vst"; 
+    std::string ext = Filename(filename).extension().string();
+	return ext == std::string(FRX_VST_EXT) ||
+           ext == std::string(FRX_LUA_EXT);
 } 
 //-----------------------------------------------------------------------------
 bool isDirectory ( const std::string &filename ) {
 	sambag::com::Location p(filename);
 	boost::filesystem::file_status s = boost::filesystem::status(p); 
-	// unter OSX sind plugs und apps verzeichnisse
-	return is_directory (s) &&  p.extension() != ".vst" &&  p.extension() != ".app";
+	// in osx (vst) bundles are directories
+    // but we want to treat them as file
+    std::string ext = Filename(filename).extension().string();
+	return is_directory (s) &&
+           ext != std::string(FRX_VST_EXT) &&
+           ext != std::string(FRX_APP_EXT);
 } 	
 //-----------------------------------------------------------------------------
 MessageBoxReturn osMessageBox ( const std::string &title, const std::string &text, const MessageBoxType &type ) {
-    CFStringRef header_ref = CFStringCreateWithCString( NULL, title.c_str(), title.length() );
-    CFStringRef message_ref = CFStringCreateWithCString( NULL, text.c_str(), text.length() );
+    CFStringRef header_ref = CFStringCreateWithCString( NULL, title.c_str(), kCFStringEncodingUTF8 );
+    CFStringRef message_ref = CFStringCreateWithCString( NULL, text.c_str(), kCFStringEncodingUTF8 );
     CFStringRef btn01 = NULL;
 	CFStringRef btn02 = NULL;
 	CFOptionFlags result;  //result code from the message box
@@ -84,8 +93,28 @@ std::string osSelectDirectory ( const std::string &wndTitle, const std::string &
 	return frx::com::CocoaImpl::selectDirectory(wndTitle, startPath);
 }
 //-----------------------------------------------------------------------------
+std::string osSelectFile ( const std::string &wndTitle, const std::string &startPath, void *parentWindow)
+{
+	return frx::com::CocoaImpl::selectFile(wndTitle, startPath);
+}
+//-----------------------------------------------------------------------------
+std::string osSaveFile ( const std::string &wndTitle, const std::string &startPath, void *parentWindow)
+{
+	return frx::com::CocoaImpl::saveFile(wndTitle, startPath);
+}
+//-----------------------------------------------------------------------------
 void startProcess(const char *path, int argc, const char **argv) {
     frx::com::CocoaImpl::startProcess(path, argc, argv);
+}
+//-----------------------------------------------------------------------------
+void osOpenLink (const std::string &url) {
+    frx::com::CocoaImpl::openLink(url);
+}
+//-----------------------------------------------------------------------------
+void osShowInputTextDlg(const std::string &title,
+    std::string &inOutTxt, void *parentWnd)
+{
+    frx::com::CocoaImpl::showInputTextDlg(title, inOutTxt);
 }
 } // namespace com
 

@@ -14,6 +14,7 @@
 #include "Switch.h"
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <processing/ModelFactory.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -96,9 +97,10 @@ public:
 	/**
 	 * @param hostInfo
 	 * @param initStates
+     * @param not used, needed to fit ModelFactory's create function signature
 	 * @return neues InputSwitch-Objekt
 	 */
-	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo, int initStates = 2 ) {
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo, int initStates=2, int notUsed=0 ) {
 		Ptr neu( new InputSwitch(hostInfo, initStates) );
 		neu->self = neu;
 		return neu;
@@ -155,6 +157,17 @@ public:
 	 */
 	virtual ProcessorNode::Ptr addInputNode();
 };
+
+namespace {
+    const bool INTERNAL_INSWITCH_IO_Registered =
+        frx::processing::ModelFactory::instance().
+            registerWithIO<InputSwitch>("internal.InputSwitch", &InputSwitch::create);
+    
+    const bool INTERNAL_INSWITCH_Registered =
+        frx::processing::ModelFactory::instance().
+		register_<InputSwitch>("internal.InputSwitch", boost::bind(&InputSwitch::create,_1,2,0));
+}
+
 }// namespace processing
 
 #endif  // FORX_INPUTSWITCH_H

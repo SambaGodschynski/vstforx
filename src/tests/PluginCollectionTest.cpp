@@ -439,7 +439,9 @@ void PluginCollectionTest::testFolderIntegrity2(){
 // Database have to refind a plugin when location changed.
 void PluginCollectionTest::testPortability() {
 //=============================================================================
-	using namespace std;
+    throw std::runtime_error("need to be reimplemented.");
+	/*
+    using namespace std;
 	using namespace com;
 	using namespace processing;
 	static const string PLUGIN_LOACTION_1 = string("/mda Overdrive") + VSTPLUG_EXT; 
@@ -457,9 +459,9 @@ void PluginCollectionTest::testPortability() {
 	pC->com::events::EventSender<com::ScanComplete>::addEventListener( this );
 	pC->update( graph->getHostInfo() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>getPlugin_1 has to be found
-	Plugin::Ptr plug = pC->getPlugNode ( graph->getHostInfo(), plugLocation.string() );
-	CPPUNIT_ASSERT ( plug );
-	PluginInfo pluginInfo = plug->getPluginInfo();
+    PluginInfo pluginInfo;
+    pluginInfo.location = plugLocation.string();
+    pC->restorePluginInfo ( graph->getHostInfo(), pluginInfo );
 	plugLocation = path.string() + PLUGIN_LOACTION_1;
 	CPPUNIT_ASSERT_EQUAL ( plugLocation.string(), plug->getLocation() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>clear folders
@@ -468,9 +470,6 @@ void PluginCollectionTest::testPortability() {
 	pC->com::events::EventSender<com::OnLoadFile>::addEventListener( this );
 	pC->com::events::EventSender<com::ScanComplete>::addEventListener( this );
 	pC->update( graph->getHostInfo() );
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>getPlugin_1 cannot found
-	plug = pC->restorePlugNode ( graph->getHostInfo(), pluginInfo );
-	CPPUNIT_ASSERT ( !plug );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>re-set folders
 	settings->clearVSTFolders();
 	path =  boost::filesystem::absolute("testVstFolder/B");
@@ -490,11 +489,9 @@ void PluginCollectionTest::testPortability() {
 	pC->com::events::EventSender<com::OnLoadFile>::addEventListener( this );
 	pC->com::events::EventSender<com::ScanComplete>::addEventListener( this );
 	pC->update( graph->getHostInfo() );
-	//>>>>>>>>>>>>>>>>>>>>>>getPlugin_1 has to be found as PLUGIN_LOACTION_2 
-	plug = pC->restorePlugNode ( graph->getHostInfo(), pluginInfo );
-	CPPUNIT_ASSERT ( plug );
+	//>>>>>>>>>>>>>>>>>>>>>>getPlugin_1 has to be found as PLUGIN_LOACTION_2
 	plugLocation = path.string() + PLUGIN_LOACTION_2;
-	CPPUNIT_ASSERT_EQUAL ( plugLocation.string(), plug->getLocation() );
+	CPPUNIT_ASSERT_EQUAL ( plugLocation.string(), plug->getLocation() );*/
 }
 //=============================================================================
 void PluginCollectionTest::testMultipleDirectories() {

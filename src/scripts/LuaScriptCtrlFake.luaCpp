@@ -1,0 +1,182 @@
+
+
+/**
+ * @brief This package <span class="muted">(actually a lua table)</span> provides functions for 
+ * common purpose.
+ * @version 1.0.5
+ * @alias frx.Frx
+ */
+class ScriptControlFake extends Nada{
+      /**
+       * @brief Waits for given milliseconds.
+       * @param milliseconds to wait
+       * @version 1.0.5
+       */
+      void wait(int milliseconds);
+      /**
+       * @brief Serializes the VSTForx plugin state.
+       * @return the plugin state as string
+       * @version 1.0.5
+       */
+      string serializePlugin();
+      /**
+       * @brief Restores the VSTForx plugin state.
+       * @param the plugin state string
+       * @version 1.0.5
+       */
+      void deserializePlugin(string data);
+      /**
+       * @brief When the processing graph contains
+       * one or more plugins with an initial delay>0 we need 
+       * to compensate these delays to keep all signals in sync.
+       * The graph delay is the resulting total delay aka the
+       * eventually initial delay of VSTForx.
+       * @return the graph delay in samples
+       * @version 1.0.5
+       */
+      int getGraphDelay();
+      /**
+       * @brief Shows a message box.
+       * @param the message string
+       * @version 1.0.5
+       */
+      void messageBox(string message);
+      /**
+       * @brief Shows a "select file" dialog.
+       * @param the start path
+       * @return the path of the selected file
+       * @version 1.0.5
+       */
+      string showSelectFileDlg(string startPath);
+      /**
+       * @brief Shows a "select file" dialog.
+       * @param the start path
+       * @return the path of the selected file
+       * @version 1.0.5
+       */
+      string showSelectDirectory(string startPath);
+      /**
+       * @brief Shows a "save file" dialog.
+       * @param the start path
+       * @return the path of the selected file
+       * @version 1.0.5
+       */
+      string showSaveFileDlg(string startPath);
+      /**
+       * @brief opens the "Scene Browser"
+       * @version 1.0.5
+       */
+      void openSceneBrowser();
+      /**
+       * @brief Opens the default browser and navigates to the given url.
+       * @param a url
+       * @version 1.0.5
+       */
+      void openUrl(string url);
+      /**
+       * @brief Opens the setup dialog.
+       * @version 1.0.5
+       */
+      void openSetup();
+      /**
+       * @brief Opens the about splash screen.
+       * @version 1.0.5
+       */
+      void openAbout();
+      /**
+       * @return the selection path which was set before
+       * the browser was closed 
+       * 
+       * @version 1.0.5
+       */
+      string getLastSceneBrowserSelection();
+      /**
+       * @return the VSTForx version number as int e.g 105 for 1.0.5
+       * @version 1.0.5
+       */
+      int getVersionInteger();
+      /**
+       * @return the VSTForx version number as string
+       * @version 1.0.5
+       */
+      string getVersionString();
+      /**
+       * @brief Performs a sqlite query on VSTForx's database.
+       * @param the query string
+       * @return a result table -> { {"column": value}, ... }  
+       * @returnType table
+       * @version 1.0.5
+       */
+      ManuallyReturn<1> queryDB(string query);
+      /**
+       * @brief Creates a @see Timer object.
+       * @return the timer
+       * @returnType Timer
+       * @param a lua expression which will be executed when the timer expires
+       * @param the timer time in milliseconds
+       * @param the number of repetitions. If this value is -1 then the timer dosen't stop to repeat. 
+       * @version 1.0.5
+       */
+      ManuallyReturn<1> addTimer(string callbackExpr, int milliseconds, int numRepetitions);
+      /**
+       * @brief Set persist user data for a given key.
+       * Example:
+       * <pre>
+       * function onViewEvent(evName, evObj) <br>
+       * 	  if evName=="on saving view state" then <br>
+       *    	     frx.setPersistData("magicKey", {"some crazy value", 24}) <br>
+       * 	  end <br>
+       * end <br>
+       * frx.view:addViewListener("onViewEvent") 	
+       * </pre>
+       * @hiddenParam string key
+       * @hiddenParam sequence data
+       * @param the key
+       * @param the data value sequence e.g {"first value","second value", 100}
+       * @version 1.0.5
+       */
+      void setPersistData();
+      /**
+       * @return the persist user data for a key.
+       * @returnType sequence
+       * @param the key
+       * @version 1.0.5
+       */
+      ManuallyReturn<1> getPersistData(string key);
+      /**
+       * @brief Shows a "input text" dialog.
+       * @param a message
+       * @param the default input text
+       * @return the input text
+       * @version 1.0.5
+       */
+      string showInputTextDlg(string message, string text);
+      /**
+       * @brief Shows a "yes or no" question dialog.
+       * @param the question message
+       * @return true if yes was selected
+       * @version 1.0.5
+       */
+      bool showYesNoDlg(string message);
+      /**
+       * @brief Some functions dosen't work when called from another thread
+       * than the UI thread. E.g. open a dialog during a timer callback.
+       * In that case this function will help.
+       * Example:
+       * <pre>
+       * function onTimer()<br/>
+       * 	  runOnUIThread("messageBox('HI')")<br/>
+       * end
+       * </pre>
+       * @param a command string. This has to be a valid lua expression.
+       * 
+       * @version 1.0.5
+       */
+      void runOnUIThread(string expr);
+      /**
+       * @brief Executes a lua expression.
+       * @param the lua expression
+       * @version 1.0.5
+       */
+      void exec(string expr);
+}

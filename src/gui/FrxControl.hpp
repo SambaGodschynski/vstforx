@@ -64,7 +64,8 @@ public:
 	//-------------------------------------------------------------------------
 	sdc::PopupMenuPtr getCircuidViewPopup(fgc::FrxCircuidViewPtr c);
 	//-------------------------------------------------------------------------
-	bool connect(fgc::FrxCircuidViewPtr, fgc::FrxNodePtr from, fgc::FrxNodePtr to);
+	fgc::FrxConnection::Ptr
+    connect(fgc::FrxCircuidViewPtr, fgc::FrxNodePtr from, fgc::FrxNodePtr to);
 	//-------------------------------------------------------------------------
 	void handleContextMenuPopup(const sdc::events::MouseEvent &ev);
 	//-------------------------------------------------------------------------
@@ -99,10 +100,10 @@ public:
 	virtual void addWindow(sdc::WindowPtr win, const std::string &wndClass="");
 	//-------------------------------------------------------------------------
 	virtual fgc::FrxComponentPtr addProcessorInput(fgc::FrxCircuidViewPtr view, 
-		fgc::FrxComponentPtr c); 
+		fgc::FrxComponentPtr c, bool followMouse=true);
 	//-------------------------------------------------------------------------
 	virtual fgc::FrxComponentPtr addProcessorOutput(fgc::FrxCircuidViewPtr view, 
-		fgc::FrxComponentPtr c); 
+		fgc::FrxComponentPtr c, bool followMouse=true);
 	//-------------------------------------------------------------------------
 	virtual void addParamterCnOp(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxComponentPtr c, const ParameterCnOpTypeId &id);
@@ -115,6 +116,12 @@ public:
     //-------------------------------------------------------------------------
     virtual void removeOperator(fgc::FrxCircuidViewPtr view,
         fgc::FrxConnection::Ptr con,OperatorId);
+    //-------------------------------------------------------------------------
+    virtual void openSceneBrowser(fgc::FrxCircuidViewPtr view, const std::string &path);
+    //-------------------------------------------------------------------------
+    virtual void openSetup(fgc::FrxCircuidViewPtr view);
+    //-------------------------------------------------------------------------
+    virtual void openAbout(fgc::FrxCircuidViewPtr view);
 }; // FrxControl
 ///////////////////////////////////////////////////////////////////////////////	
 //-----------------------------------------------------------------------------
@@ -135,7 +142,7 @@ fgc::FrxCircuidViewPtr FrxControl::deserializeView(Archive &ar)
 template <class Archive>
 void FrxControl::serializeViewComponents(Archive &ar, fgc::FrxCircuidViewPtr c) 
 {
-	c->serializeComponents(ar, ar.get_library_version());
+	c->serializeComponents(ar);
 }
 }} // namespace(s)
 

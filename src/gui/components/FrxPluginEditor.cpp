@@ -14,8 +14,34 @@ namespace frx { namespace gui { namespace components {
 //-----------------------------------------------------------------------------
 void FrxPluginEditor::postConstructor() {
 	Super::postConstructor();
-	getContentPane()->setOpaque(false);
-	getWindowImpl()->setFlag(sdc::WindowFlags::WND_RAW, true);
+    if (isRaw) {
+        getContentPane()->setOpaque(false);
+        getWindowImpl()->setFlag(sdc::WindowFlags::WND_RAW, true);
+    }
 }
-
+//-----------------------------------------------------------------------------
+FrxPluginEditor::Ptr
+FrxPluginEditor::create(sdc::Window::Ptr parentWindow, bool isRaw)
+{
+    Ptr res(new FrxPluginEditor(parentWindow));
+    res->self = res;
+    res->isRaw = isRaw;
+    res->postConstructor();
+    res->initWindow();
+    return res;
+}
+//-----------------------------------------------------------------------------
+FrxPluginEditor::Ptr
+FrxPluginEditor::create(sdc::AWindowImpl::Ptr winImpl, sdc::Window::Ptr parentWindow)
+{
+    Ptr res(new FrxPluginEditor(winImpl, parentWindow));
+    res->self = res;
+    res->isRaw = true;
+    res->postConstructor();
+    res->initWindow();
+    return res;
+}
+//-----------------------------------------------------------------------------
+FrxPluginEditor::~FrxPluginEditor() {
+}
 }}} // namespace(s)

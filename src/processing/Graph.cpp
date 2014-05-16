@@ -86,7 +86,7 @@ public:
     typedef boost::function<void()> Function;
 private:
     frx::processing::FrxAsyncDSPTimer::Ptr timer;
-    sambag::com::Mutex mutex;
+    sambag::com::RecursiveMutex mutex;
     typedef char Dummy;
     typedef boost::shared_ptr<Dummy> DummyPtr;
     typedef boost::weak_ptr<Dummy> DummyWPtr;
@@ -102,37 +102,39 @@ public:
 };
 //-----------------------------------------------------------------------------------------------------------
 void Graph::IdleHandler::doIdle(Function f, DummyWPtr wp) {
-    f();
-    SAMBAG_TRY_TO_LOCK_TIMED(mutex);
-    DummyPtr p = wp.lock();
-    SAMBAG_ASSERT(p);
-    holder.erase(p);
-    if (holder.empty()) {
-        // we are the last task
-        timer->stop();
-    }
+    SAMBAG_BEGIN_SYNCHRONIZED(mutex);
+        f();
+        DummyPtr p = wp.lock();
+        SAMBAG_ASSERT(p);
+        holder.erase(p);
+        if (holder.empty()) {
+            // we are the last task
+            timer->stop();
+        }
+    SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------------------------------------
 void Graph::IdleHandler::addTask(const Function &f) {
     using frx::processing::FrxAsyncDSPTimer;
     using sambag::com::events::EventSender;
     //lock
-    SAMBAG_TRY_TO_LOCK_TIMED(mutex);
-    DummyPtr dummy = DummyPtr( new Dummy() );
-    // insert dummy
-    if (!(holder.insert(dummy)).second) {
-        SAMBAG_LOG_WARN<<"Graph::IdleHandler::addTask failed.";
-        return;
+    SAMBAG_BEGIN_SYNCHRONIZED(mutex);
+        DummyPtr dummy = DummyPtr( new Dummy() );
+        // insert dummy
+        if (!(holder.insert(dummy)).second) {
+            SAMBAG_LOG_WARN<<"Graph::IdleHandler::addTask failed.";
+            return;
+        }
+        // add timer callback
+        timer->EventSender<FrxAsyncDSPTimer::Event>::addTrackedEventListener(
+            boost::bind(&IdleHandler::doIdle, this, f, DummyWPtr(dummy)),
+            dummy
+        );
+        if (holder.size() == 1) {
+            // we are the first task
+            timer->start();
     }
-    // add timer callback
-    timer->EventSender<FrxAsyncDSPTimer::Event>::addTrackedEventListener(
-        boost::bind(&IdleHandler::doIdle, this, f, DummyWPtr(dummy)),
-        dummy
-    );
-    if (holder.size() == 1) {
-        // we are the first task
-        timer->start();
-    }
+    SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------------------------------------
 Graph::IdleHandler::IdleHandler() {
@@ -251,6 +253,20 @@ void Graph::onPropertyChanged(void*,
     }
 }
 //------------------------------------------------------------------------------------------------------------
+void Graph::onProcessorMidiEvent(void *src, sambag::dsp::IMidiEvents * events) {
+  	GraphObjectContainer::iterator it = graphObjects.begin();
+	for ( ; it!=graphObjects.end(); ++it ){
+		IMidiEventProcessor *pr = 
+			dynamic_cast<IMidiEventProcessor*> ( it->get() );
+		if ((void*)pr==src) { // don't produce feedbacks
+            continue;
+        }
+        if ( pr ) {
+			pr->processEvents(events);
+        }
+    }
+}
+//------------------------------------------------------------------------------------------------------------
 void Graph::installListener( ProcessAdapter::Ptr obj ) {
     if (!obj) {
         return;
@@ -258,6 +274,14 @@ void Graph::installListener( ProcessAdapter::Ptr obj ) {
     namespace sce = sambag::com::events;
     obj->sce::EventSender<sce::PropertyChanged>::addTrackedEventListener(
         boost::bind(&Graph::onPropertyChanged, this, _1, _2, ProcessAdapter::WPtr(obj), self),
+        self
+    );
+    IMidiEventProcessor *midi = dynamic_cast<IMidiEventProcessor*>(obj.get());
+    if (!midi) {
+        return;
+    }
+    midi->addTrackedListener(
+        boost::bind(&Graph::onProcessorMidiEvent, this, _1, _2),
         self
     );
 }
@@ -390,6 +414,40 @@ bgl::Edge Graph::findEdge( ProcessorNode::Ptr source, ProcessorNode::Ptr target 
 }
 //------------------------------------------------------------------------------------------------------------
 void Graph::onHostIOChanged(void *src, const frx::processing::HostIOChanged &ev) {
+}
+//------------------------------------------------------------------------------------------------------------
+void Graph::serialize ( com::iArchive &ar, const unsigned int version )
+{
+	ar & self;
+	ar & hostInfo;
+	ar & startNode;
+	ar & endNode;
+	ar & graphObjects;
+	ar & hostParameter;
+	ar & parameterConnections;
+	ar & g;
+	if ( com::iArchive::is_loading::value ) {
+        installListeners();
+		Ptr graph = self.lock();
+		graph->getJanitor()->updateProcessorNodeVertexRelations();
+	}
+}
+//------------------------------------------------------------------------------------------------------------
+void Graph::serialize ( com::oArchive &ar, const unsigned int version )
+{
+	ar & self;
+	ar & hostInfo;
+	ar & startNode;
+	ar & endNode;
+	ar & graphObjects;
+	ar & hostParameter;
+	ar & parameterConnections;
+	ar & g;
+	if ( com::oArchive::is_loading::value ) {
+        installListeners();
+		Ptr graph = self.lock();
+		graph->getJanitor()->updateProcessorNodeVertexRelations();
+	}
 }
 //============================================================================================================
 // Klasse Janitor

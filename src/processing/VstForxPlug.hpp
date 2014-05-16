@@ -21,6 +21,9 @@
 #include <com/Serialization.h>
 #include <sambag/com/Thread.hpp>
 #include <com/FrxConfig.h>
+#include <scripts/PluginScriptCtrl.hpp>
+#include <list>
+#include <processing/dspTools.h>
 
 extern const char * globGetProductName();
 
@@ -29,7 +32,8 @@ namespace sce=sambag::com::events;
 namespace fg = frx::gui;
 namespace fgc = fg::components;
 //=============================================================================
-class VstForxPlug : public sambag::dsp::PluginProcessorBase,
+class VstForxPlug :
+    public sambag::dsp::PluginProcessorBase,
 	public IHostInfo,
 	public sce::EventSender<HostIOChanged>
 {
@@ -37,7 +41,12 @@ class VstForxPlug : public sambag::dsp::PluginProcessorBase,
 public:
 	//-------------------------------------------------------------------------
 	typedef sambag::dsp::PluginProcessorBase Super;
+	//-------------------------------------------------------------------------
+	typedef ::frx::scripts::PluginScriptCtrl ScriptCtrl;
+    typedef boost::shared_ptr<ScriptCtrl> ScriptCtrlPtr;
 private:
+    //-------------------------------------------------------------------------
+    ScriptCtrlPtr scriptCtrl;
 	//-------------------------------------------------------------------------
 	void *effectPtr;
 	//-------------------------------------------------------------------------
@@ -65,14 +74,25 @@ private:
 	//-------------------------------------------------------------------------
 	void save(std::ostream &os);
 	//-------------------------------------------------------------------------
-	void load(std::istream &is);
+	void load(std::istream &is, int version = FRX_ARCHIVE_VERSION);
 	//-------------------------------------------------------------------------
 	void saveEditor(::com::oArchive &ar);
 	//-------------------------------------------------------------------------
-	void loadEditor(::com::iArchive &ar);
+	void loadEditor(::com::iArchive &ar, int version = FRX_ARCHIVE_VERSION);
 	//-------------------------------------------------------------------------
-	sambag::com::Mutex processingLoadLock;
+    /**
+     * some hosts(ableton live) give no timeInfo when the requesting thread is 
+     * another than the plugin thread.
+     */
+    sambag::dsp::HostTimeInfo lastTimeInfo;
+    sambag::com::ThreadId processingThread;
+    //-------------------------------------------------------------------------
+    sambag::com::Mutex processingLoadLock;
 protected:
+    //-------------------------------------------------------------------------
+    void processTasks();
+    //-------------------------------------------------------------------------
+    void onScriptExeFailed(const frx::scripts::ScriptExeFailedEvent &ev);
 	//-------------------------------------------------------------------------
 	void installGraphListener();
 	//-------------------------------------------------------------------------
@@ -96,6 +116,9 @@ protected:
 	void unRegisterInstance();
 	//-------------------------------------------------------------------------
 	void initHostParameter();
+    //-------------------------------------------------------------------------
+    void updateLegacy(::processing::ProcessAdapterPtr old,
+        ::processing::ProcessAdapterPtr _new);
 public:
 	//-------------------------------------------------------------------------
 	bool isOpen() const { return _open; }
@@ -127,7 +150,9 @@ public:
 	frx::gui::ViewModelMap::Ptr getViewModelMap() const {
 		return map;
 	}
-	//-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
+    ScriptCtrlPtr getScriptController();
+    //-------------------------------------------------------------------------
 	void setEffectPtr(void *effPtr);
 	//-------------------------------------------------------------------------
 	void setMasterCallback(void *mCallbk);
@@ -167,7 +192,7 @@ public:
 	//-------------------------------------------------------------------------
 	int getChunk(void **data);
 	//-------------------------------------------------------------------------
-	int setChunk(void *data, int byteSize);
+	int setChunk(void *data, int byteSize, int version = FRX_ARCHIVE_VERSION);
 	//-------------------------------------------------------------------------
 	int getLatency() const;
 	//-------------------------------------------------------------------------
@@ -184,6 +209,10 @@ public:
 	int getProductVersion() const { 
 		return FRX_VERSION_MAJOR*1000 + FRX_VERSION_MINOR*100 + FRX_VERSION_MICRO;
 	}
+    //-------------------------------------------------------------------------
+    virtual MasterType getMasterType() const {
+        return VST2X;
+    }
 };
 }} // namespace
 

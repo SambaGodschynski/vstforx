@@ -9,11 +9,20 @@
 #define SAMBAG_PLUGINSESSION_H
 
 #include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
 #include "Session.hpp"
 #include "ShmCom.hpp"
+#include "BridgePluginDelegate.hpp"
+#include <processing/pluginTypes/PluginImpl.hpp>
+#include <processing/parameter/Parameter.h>
+#include <sambag/dsp/HostTimeInfo.hpp>
+#include <sambag/dsp/IMidiEvents.hpp>
 
 namespace frx { namespace processing { namespace interprocess {
 class BridgeSession;
+class PluginSessionClient;
+namespace sci = sambag::com::interprocess;
+namespace sdsp = sambag::dsp;
 //=============================================================================
 /** 
   * @class PluginSession.
@@ -24,36 +33,92 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<PluginSessionHost> Ptr;
     //-------------------------------------------------------------------------
-    struct Operations {
-        struct Close {
-            typedef struct Arg {} *ArgPtr;
-            typedef struct Ret {} *RetPtr;
-        };
-        struct SetPluginLocation {
-            typedef struct Arg { char *path; } *ArgPtr;
-            typedef struct Ret {} *RetPtr;
-        };
-        struct GetPluginLocation {
-            typedef struct Arg {} *ArgPtr;
-            typedef struct Ret { char *path; } *RetPtr;
-        };
-        typedef LOKI_TYPELIST_3(
+    typedef PluginSessionClient SessionHost; // host for session calls
+    //-------------------------------------------------------------------------
+    typedef ::processing::Frames::T Float;
+    //-------------------------------------------------------------------------
+    FRX_OP_BEGIN_OPERATIONS
+        FRX_OP_OPERATION(Open, FRX_OP_ARG(), FRX_OP_RET());
+        FRX_OP_OPERATION(Close, FRX_OP_ARG(), FRX_OP_RET());
+        FRX_OP_OPERATION(TurnOn, FRX_OP_ARG(), FRX_OP_RET());
+        FRX_OP_OPERATION(TurnOff, FRX_OP_ARG(), FRX_OP_RET());
+        FRX_OP_OPERATION(GetPluginInfo,
+            FRX_OP_ARG(),
+            FRX_OP_RET_6(
+                char location[FRX_SHMSESS_MAX_PATH_LENGTH],
+                char name[FRX_SHMSESS_MAX_STR_LENGTH],
+                char vendor[FRX_SHMSESS_MAX_STR_LENGTH],
+                bool isSynth,
+                int uid,
+                ::processing::PluginInfo::PluginType type
+            ));
+        FRX_OP_OPERATION(GetNumInputChannels, FRX_OP_ARG(), FRX_OP_RET_1(int num));
+        FRX_OP_OPERATION(GetNumOutputChannels, FRX_OP_ARG(), FRX_OP_RET_1(int num));
+        FRX_OP_OPERATION(GetNumParameter, FRX_OP_ARG(), FRX_OP_RET_1(int num));
+        FRX_OP_OPERATION(GetParameterValues,
+            FRX_OP_ARG_1(int index),
+            FRX_OP_RET_4(char name[FRX_SHMSESS_MAX_STR_LENGTH],
+                         char display[FRX_SHMSESS_MAX_STR_LENGTH],
+                         char label[FRX_SHMSESS_MAX_STR_LENGTH],
+                         float value)
+        );
+        FRX_OP_OPERATION(SetParameterValue,
+            FRX_OP_ARG_2(int index, float value),
+            FRX_OP_RET_1(char display[FRX_SHMSESS_MAX_STR_LENGTH])
+        );
+        FRX_OP_OPERATION(Process,
+            FRX_OP_ARG_1(int numSamples), // sample memory is beyond of this struct
+            FRX_OP_RET()
+        );
+        FRX_OP_OPERATION(GetEditorSessionId, FRX_OP_ARG(),
+            FRX_OP_RET_1(char id[FRX_SHMSESS_MAX_STR_LENGTH])
+        );
+        FRX_OP_OPERATION(HasEditor, FRX_OP_ARG(), FRX_OP_RET_1(bool value));
+        FRX_OP_OPERATION(OpenEditor, FRX_OP_ARG(), FRX_OP_RET());
+        FRX_OP_OPERATION(CloseEditor, FRX_OP_ARG(), FRX_OP_RET());
+        FRX_OP_OPERATION(GetStateData, FRX_OP_ARG(), FRX_OP_RET()); // uses Session::trasferData()
+        FRX_OP_OPERATION(SetStateData, FRX_OP_ARG(), FRX_OP_RET()); // uses Session::trasferData()
+        FRX_OP_OPERATION(CanHandleMidi, FRX_OP_ARG(), FRX_OP_RET_1(bool value));
+        FRX_OP_OPERATION(ProcessMidiEvents, FRX_OP_ARG(), FRX_OP_RET()); // uses Session::trasferData()
+        //---------------------------------------------------------------------
+        typedef LOKI_TYPELIST_19(Open,
             Close,
-            SetPluginLocation,
-            GetPluginLocation
+            GetPluginInfo,
+            TurnOn,
+            TurnOff,
+            GetNumInputChannels,
+            GetNumOutputChannels,
+            GetNumParameter,
+            GetParameterValues,
+            SetParameterValue,                      // 10
+            Process,
+            GetEditorSessionId,
+            HasEditor,
+            OpenEditor,
+            CloseEditor,
+            GetStateData,
+            SetStateData,
+            CanHandleMidi,
+            ProcessMidiEvents
         ) OPs;
-        typedef helper::AutoOPC<OPs> OpcManager;
-    };
-    typedef Operations::OpcManager OpcM;
+    FRX_OP_END_OPERATIONS_AND_IMPL_PROCESS(OPs)
     //-------------------------------------------------------------------------
-    PluginSessionHost(const std::string &id, float sampleRate,
-        Integer blockSize, Integer numChannels);
-    //-------------------------------------------------------------------------
-    void processImpl(Opc opc, void *argmen, void *retmem);
+    PluginSessionHost(BridgePluginDelegate::Ptr delegate);
 private:
     //-------------------------------------------------------------------------
+    typedef boost::shared_ptr<sambag::dsp::IMidiEvents> MidiEventsPtr;
+    mutable MidiEventsPtr tmpMidiEvents;
+    //-------------------------------------------------------------------------
     BridgeSession *host;
+    //-------------------------------------------------------------------------
+    BridgePluginDelegate::Ptr delegate;
 public:
+    //-------------------------------------------------------------------------
+    void onPluginPropertyChanged(void*, const sce::PropertyChanged &ev);
+    //-------------------------------------------------------------------------
+    void onPluginEditorResized(const APluginImpl::EditorSize &val);
+    //-------------------------------------------------------------------------
+    sdsp::HostTimeInfo getHostTimeInfo(int filter);
     //-------------------------------------------------------------------------
     BridgeSession * getBridgeSession() const {
         return host;
@@ -62,48 +127,132 @@ public:
     /**
      * creates new session
      */
-    static Ptr create(BridgeSession *host, const std::string &id, float sampleRate,
-        Integer blockSize, Integer numChannels);
-    //--------------------------------------------------------------------------
+    static Ptr create(BridgePluginDelegate::Ptr delegate, BridgeSession *host);
+    //-------------------------------------------------------------------------
     ///////////////////////////////////////////////////////////////////////////
     //-------------------------------------------------------------------------
-    void auto_opc_callback(Operations::Close::ArgPtr,
-        Operations::Close::RetPtr);
-    //-------------------------------------------------------------------------
-    void auto_opc_callback(Operations::SetPluginLocation::ArgPtr,
-        Operations::SetPluginLocation::RetPtr);
-    //-------------------------------------------------------------------------
-    void auto_opc_callback(Operations::GetPluginLocation::ArgPtr,
-        Operations::GetPluginLocation::RetPtr);
+    FRX_OP_CALLBACK_METHOD(Open);
+    FRX_OP_CALLBACK_METHOD(Close);
+    FRX_OP_CALLBACK_METHOD(TurnOn);
+    FRX_OP_CALLBACK_METHOD(TurnOff);
+    FRX_OP_CALLBACK_METHOD(GetPluginInfo);
+    FRX_OP_CALLBACK_METHOD(GetNumInputChannels);
+    FRX_OP_CALLBACK_METHOD(GetNumOutputChannels);
+    FRX_OP_CALLBACK_METHOD(GetNumParameter);
+    FRX_OP_CALLBACK_METHOD(GetParameterValues);
+    FRX_OP_CALLBACK_METHOD(SetParameterValue);
+    FRX_OP_CALLBACK_METHOD(Process);
+    FRX_OP_CALLBACK_METHOD(GetEditorSessionId);
+    FRX_OP_CALLBACK_METHOD(HasEditor);
+    FRX_OP_CALLBACK_METHOD(OpenEditor);
+    FRX_OP_CALLBACK_METHOD(CloseEditor);
+    FRX_OP_CALLBACK_METHOD(GetStateData);
+    FRX_OP_CALLBACK_METHOD(SetStateData);
+    FRX_OP_CALLBACK_METHOD(CanHandleMidi);
+    FRX_OP_CALLBACK_METHOD(ProcessMidiEvents);
+
 }; // PluginSession
 //=============================================================================
 /** 
   * @class PluginSessionClient.
   */
-class PluginSessionClient : public Session {
+class PluginSessionClient : public Session,
+    public sce::EventSender<sce::PropertyChanged>
+{
 //=============================================================================
 public:
-	//-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
 	typedef boost::shared_ptr<PluginSessionClient> Ptr;
     //-------------------------------------------------------------------------
-    struct Operations {
-        typedef Loki::NullType OPs;
-        typedef helper::AutoOPC<OPs> OpcManager;
-    };
-    typedef Operations::OpcManager OpcM;
+	typedef boost::weak_ptr<PluginSessionClient> WPtr;
+    //-------------------------------------------------------------------------
+    typedef PluginSessionHost SessionHost; // host for session calls
+    //-------------------------------------------------------------------------
+    FRX_OP_BEGIN_OPERATIONS
+        FRX_OP_OPERATION(OnEditorResized,
+            FRX_OP_ARG_1(APluginImpl::EditorSize val),
+            FRX_OP_RET()
+        );
+        FRX_OP_OPERATION(GetTimeInfo,
+            FRX_OP_ARG_1(Integer filter),
+            FRX_OP_RET_1(sambag::dsp::HostTimeInfo info)
+        );
+        typedef LOKI_TYPELIST_2(OnEditorResized,
+            GetTimeInfo
+        ) OPs;
+    FRX_OP_END_OPERATIONS_AND_IMPL_PROCESS(OPs)
+    //-------------------------------------------------------------------------
+    FRX_OP_CALLBACK_METHOD(OnEditorResized);
+    FRX_OP_CALLBACK_METHOD(GetTimeInfo);
+private:
+    //-------------------------------------------------------------------------
+    // will be updated with every getNumXXXChannels call
+    // needed for shared memory alloc in process
+    mutable int tmpNumInputs, tmpNumOutputs;
+    //-------------------------------------------------------------------------
+    IHostInfo::Ptr hostInfo;
+protected:
     //-------------------------------------------------------------------------
     PluginSessionClient(const std::string &id);
     //-------------------------------------------------------------------------
-    void processImpl(Opc opc, void *argmen, void *retmem);
-private:
+    /**
+     * @brief since Session channel communication can be blocked when
+     * both channels are in use we notify events delayed to prevent running
+     * into mutual blocking. 
+     */
+    template <class Event>
+    void doSendEvent(Event &ev) {
+        sce::EventSender<Event>::notifyListeners(this, ev);
+    }
+    //-------------------------------------------------------------------------
+    WPtr self;
 public:
     //-------------------------------------------------------------------------
+    void setHostInfo(IHostInfo::Ptr hI);
+    //-------------------------------------------------------------------------
+    IHostInfo::Ptr getHostInfo() const {
+        return hostInfo;
+    }
+    //-------------------------------------------------------------------------
     /**
-     * creates new session
+     * @brief creates new session
      */
     static Ptr create(const std::string &id);
-    //--------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
+    /**
+     * @brief transmit plugin parameter values on index i into p
+     */
+    void getParameterValues(::processing::parameter::Parameter::Ptr p, size_t index);
+    //-------------------------------------------------------------------------
+    /**
+     * @brief transmit parameter values from p into plugin parameter on index i
+     */
+    void setParameterValues(::processing::parameter::Parameter::Ptr p, size_t index);
+    //-------------------------------------------------------------------------
+    int getNumParameter();
+    //-------------------------------------------------------------------------
     ///////////////////////////////////////////////////////////////////////////
+    // APluginImpl
+    //-------------------------------------------------------------------------
+    void updatePluginInfo (::processing::PluginInfo &inf);
+    void turnOff();
+    void turnOn();
+    void openPlugin();
+    void closePlugin();
+    size_t getNumInputChannels();
+    size_t getNumOutputChannels();
+    void process(SessionHost::Float **ins, SessionHost::Float **outs, int numSamples);
+    /**
+     * @return id of WindowSessionHost if exists 
+     */
+    std::string getEditorSessionId();
+    bool hasEditor();
+    void openEditor();
+    void closeEditor();
+    std::pair<size_t, void*> getStateData();
+    void setStateData(size_t size, void* data);
+    bool canHandleMidiEvent();
+    void processMidiEvents(sambag::dsp::IMidiEvents *ev);
 }; // PluginSession
 }}} // namespace(s)
 

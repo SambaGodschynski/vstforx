@@ -14,7 +14,6 @@
 #include "FrxCircuidView.hpp"
 #include "FrxConcreteProcessor.hpp"
 #include "FrxConcreteParameter.hpp"
-#include <gui/__ModelExecutors.hpp>
 #include <boost/foreach.hpp>
 #include <boost/assign/list_of.hpp>
 #include <gui/components/FrxFlag.hpp>
@@ -26,13 +25,22 @@
 #include <processing/IModelController.hpp>
 #include <com/Settings.h>
 #include <processing/interprocess/RemoteChannelManager.hpp>
+#include <processing/ModelFactory.hpp>
+#include <gui/ViewFactory.hpp>
+#include <com/one4All.h>
+#include <algorithm>
+#include <boost/algorithm/string.hpp>
+#include <processing/pluginTypes/PluginFactory.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace {
 typedef boost::weak_ptr<void> AnyWPtr;
 typedef boost::shared_ptr<void> AnyPtr;
 //-----------------------------------------------------------------------------
-void registerProcessor(IViewModelMap::Ptr map,
+/**
+ * register components in ModelMap
+ */
+void registerComponent(IViewModelMap::Ptr map,
 					   FrxProcessorNode::Ptr v,
 					   frx::processing::IProcessor::Ptr m) 
 {
@@ -51,37 +59,72 @@ void registerProcessor(IViewModelMap::Ptr map,
 	}
 }
 //-----------------------------------------------------------------------------
-template <class ConcreteProcessor>
-FrxProcessorNodePtr createProcessor(FrxCircuidViewPtr circ, int numInputs, int numOutputs) 
+FrxProcessorNodePtr createProcessor(FrxCircuidViewPtr circ, std::string id)
 {
 	if (!circ) {
 		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
 			"tried to create processor with FrxCircuidViewPtr == NULL");
 	}
+    
+    ViewFactory &vfac = ViewFactory::instance();
+    
+    com::IdParser pid = "frx.gui."+id;
+    
 	// create view obj
-	typename ConcreteProcessor::Ptr viewObj = ConcreteProcessor::create();
+	FrxProcessorNode::Ptr viewObj = vfac.create(pid.toString());
 	globAddProcessor(viewObj);
 	if (!viewObj) {
 		return FrxProcessorNodePtr();
 	}
-	viewObj->configIO(numInputs, numOutputs);
+    
 	// create model obj.
 	frx::processing::IModelController::Ptr ctrl;
 	IViewModelMap::Ptr map;
 	boost::tie(ctrl, map) = getControllerAndMap(circ);
-
-	frx::processing::IProcessor::Ptr mObj = 
-		createProcessorOnModel<ConcreteProcessor>(ctrl, numInputs, numOutputs);
+    
+    bool invisibleOuts = pid.name() == "ADSRTrigger" ||
+                       pid.name() == "PeakTracker";
+    
+	frx::processing::IProcessor::Ptr mObj = ctrl->createProcessor(
+        pid.namespace_("processing").toString(),
+        invisibleOuts
+    );
 	if (!mObj) {
 		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
 			"could'nt create processor object.");
 	}
 	// flag
-	/*FrxFlag::Ptr flag = FrxFlag::create();
-	flag->setTarget(viewObj);
-	circ->add(flag, FrxCircuidView::Z_Flags, true);*/
+	//FrxFlag::Ptr flag = FrxFlag::create();
+	//flag->setTarget(viewObj);
+	//circ->add(flag, FrxCircuidView::Z_Flags, true);
 	// register
-	registerProcessor(map, viewObj, mObj);
+	
+    viewObj->configIO(mObj->getNumInputs(),
+        invisibleOuts ? 0 : mObj->getNumOutputs()
+    );
+    registerComponent(map, viewObj, mObj);
+    viewObj->__setTypeId_(
+        pid.namespace_("gui").details("").numInputs(-1).numOutputs(-1).toString()
+    );
+    
+    
+    // add flag if processor == plugin
+    // flag
+	frx::processing::IPluginAdapter::Ptr plAd = 
+		boost::dynamic_pointer_cast<frx::processing::IPluginAdapter>(mObj);
+	if (plAd) {
+        FrxFlag::Ptr flag = FrxFlag::create();
+        flag->setTarget(viewObj);
+        circ->add(flag, FrxCircuidView::Z_Flags, true);
+        FrxPluginNode::Ptr plObj =
+            boost::dynamic_pointer_cast<FrxPluginNode>(viewObj);
+        if(plObj) {
+            plObj->setName(plAd->getName());
+            plObj->setUpperFlagText(plAd->getName());
+            plObj->setLowerFlagText(mObj->getStatusMessage());
+            plObj->isSynth( plAd->isSynth() );
+        }
+	}
 	return viewObj;
 }
 //-----------------------------------------------------------------------------
@@ -91,37 +134,12 @@ FrxProcessorNodePtr createPlugin(FrxCircuidViewPtr circ, ::processing::PluginInf
 		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
 			"tried to create processor with FrxCircuidViewPtr == NULL");
 	}
-	// create model obj.
-	frx::processing::IModelController::Ptr ctrl;
-	IViewModelMap::Ptr map;
-	boost::tie(ctrl, map) = getControllerAndMap(circ);
-
-	frx::processing::IProcessor::Ptr mObj = ctrl->createPlugin(pI);
-	if (!mObj) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"could'nt create processor object.");
-	}
-	// create view obj.
-	FrxPluginNode::Ptr viewObj = FrxPluginNode::create();
-	globAddPlugin(viewObj);
-	if (!viewObj) {
-		return FrxProcessorNodePtr();
-	}
-	// flag
-	FrxFlag::Ptr flag = FrxFlag::create();
-	flag->setTarget(viewObj);
-	circ->add(flag, FrxCircuidView::Z_Flags, true);
-	frx::processing::IPluginAdapter::Ptr plAd = 
-		boost::dynamic_pointer_cast<frx::processing::IPluginAdapter>(mObj);
-	if (plAd) {
-		viewObj->setName(plAd->getName());
-		viewObj->setUpperFlagText(plAd->getName());
-		viewObj->setLowerFlagText(mObj->getStatusMessage());
-		viewObj->isSynth( plAd->isSynth() );
-	}
-	viewObj->configIO(mObj->getNumInputs(), mObj->getNumOutputs());
-	registerProcessor(map, viewObj, mObj);
-	return viewObj;
+    
+    std::string id = pI.getFactoryId();
+    // remove frx.processing
+    boost::algorithm::erase_first(id, "frx.processing.");
+    
+    return createProcessor(circ, id);
 }
 //-----------------------------------------------------------------------------
 FrxParameterPtr createFreeParameter(FrxCircuidViewPtr circ) {
@@ -192,93 +210,59 @@ FrxProcessorNodePtr createRemoteChannel(FrxCircuidViewPtr circ, std::string &rcI
 {
 	if (!circ) {
 		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"tried to create a remote channel with FrxCircuidViewPtr == NULL");
-	}
-    // create model obj.
-	frx::processing::IModelController::Ptr ctrl;
-	IViewModelMap::Ptr map;
-	boost::tie(ctrl, map) = getControllerAndMap(circ);
-
-	frx::processing::IProcessor::Ptr mObj =
-        ctrl->createRemoteChannelReceiver(rcId);
-	if (!mObj) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"could'nt access remote channel: " + rcId);
-	}
-	// create view obj.
-	FrxProcessorNodePtr viewObj = FrxRemoteChReceiver::create();
-	globAddProcessor(viewObj);
-	if (!viewObj) {
-		return FrxProcessorNodePtr();
+			"tried to create processor with FrxCircuidViewPtr == NULL");
 	}
     
-	// flag
+    std::string id = "internal.RemoteChReceiver";
+    id+="('" + rcId + "')";
+    
+    FrxProcessorNode::Ptr viewObj = boost::dynamic_pointer_cast<FrxPluginNode>(
+        createProcessor(circ, id)
+    );
+    
+	// create model obj.
+	frx::processing::IProcessor::Ptr mObj =
+        boost::dynamic_pointer_cast<frx::processing::IProcessor>(
+            getViewModelMap(circ)->getModelObject(viewObj)
+        );
+
+    if (!mObj) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+			"modelObject == NULL");
+	}
+
+    // flag
 	FrxFlag::Ptr flag = FrxFlag::create();
 	flag->setTarget(viewObj);
 	circ->add(flag, FrxCircuidView::Z_Flags, true);
-    namespace fpi = frx::processing::interprocess;
-    std::string name = fpi::RemoteChannelManager::instance().getName(rcId);
-    viewObj->setName(name);
-    viewObj->setUpperFlagText(name);
-    viewObj->setLowerFlagText(mObj->getStatusMessage());
-	viewObj->configIO(mObj->getNumInputs(), mObj->getNumOutputs());
-	registerProcessor(map, viewObj, mObj);
-	return viewObj;
+	frx::processing::IPluginAdapter::Ptr plAd = 
+		boost::dynamic_pointer_cast<frx::processing::IPluginAdapter>(mObj);
+	if (plAd) {
+		viewObj->setName(plAd->getName());
+		viewObj->setUpperFlagText(rcId);
+		viewObj->setLowerFlagText(mObj->getStatusMessage());
+	}
+	
+    return viewObj;
     
-}
-//-----------------------------------------------------------------------------
-template <class ConcreteProcessor>
-FrxComponentFactory::ProcessorCreator getCreator(int numIns, int numOuts) 
-{
-	return 
-		boost::bind(&createProcessor<ConcreteProcessor>, _1, numIns, numOuts);
 }
 } // namespace(s)
 //=============================================================================
 //  Class FrxComponentFactory
 //=============================================================================
 //-----------------------------------------------------------------------------
-void FrxComponentFactory::initMap() {
-	processorMap = boost::assign::map_list_of
-	(getProcessorName<FrxVolumeNode>(),           getCreator<FrxVolumeNode>(1, 1))
-	(getProcessorName<FrxPanNode>(),                 getCreator<FrxPanNode>(1, 1))
-	(getProcessorName<FrxInStepNode>(),           getCreator<FrxInStepNode>(2, 1))
-	(getProcessorName<FrxOutStepNode>(),         getCreator<FrxOutStepNode>(1, 2))
-	(getProcessorName<FrxInSwitchNode>(),       getCreator<FrxInSwitchNode>(2, 1))
-	(getProcessorName<FrxOutSwitchNode>(),     getCreator<FrxOutSwitchNode>(1, 2))
-	(getProcessorName<FrxADSRNode>(),               getCreator<FrxADSRNode>(1, 0))
-	(getProcessorName<FrxPeakTrackerNode>(), getCreator<FrxPeakTrackerNode>(1, 0))
-	(getProcessorName<FrxMIDIReceiver>(), getCreator<FrxMIDIReceiver>(0, 0))
-#ifdef FRX_FEATURE_DC_TESTER
-    (getProcessorName<FrxDCTester>(), getCreator<FrxDCTester>(1, 1))
-#endif
-    ;
-}//-----------------------------------------------------------------------------
 FrxComponentFactory::FrxComponentFactory() {
-	initMap();
 }
 //-----------------------------------------------------------------------------
 FrxComponentFactory::ProcessorCreator 
 FrxComponentFactory::getProcessorCreator(const std::string &name) const
 {
-	ProcessorMap::const_iterator it = processorMap.find(name);
-	if (it==processorMap.end()) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
-			"tried get an unkown processor creator.");
-	}
-	return it->second;
+    return boost::bind(&createProcessor, _1, name);
 }
 //-----------------------------------------------------------------------------
 FrxComponentFactory::PluginCreator FrxComponentFactory::getPluginCreator() const 
 {
 	return PluginCreator(&createPlugin);
-}
-//-----------------------------------------------------------------------------
-void FrxComponentFactory::getProcessorNames(std::list<std::string> &out) const
-{
-	BOOST_FOREACH(const ProcessorMap::value_type &v, processorMap) {
-		out.push_back(v.first);
-	}
 }	
 //-----------------------------------------------------------------------------
 FrxComponentFactory::FreeParameterCreator 
@@ -299,6 +283,28 @@ FrxComponentFactory::getRemoteChannelCreator(const std::string &rcId) const
     return ProcessorCreator(
         boost::bind(&createRemoteChannel, _1, std::string(rcId))
     );
+}
+//-----------------------------------------------------------------------------
+void FrxComponentFactory::getComponentNames(std::list<std::string> &out,
+    const std::string &filter) const
+{
+    typedef std::vector<std::string> Vector;
+    // determine the intersection of registered model and view components
+    // get data:
+    Vector ms;
+    processing::ModelFactory::instance().getRegisteredIds(ms, filter);
+    Vector vs;
+    ViewFactory::instance().getRegisteredIds(vs);
+    // presort
+    std::sort(ms.begin(), ms.end());
+    std::sort(vs.begin(), vs.end());
+    // intersect
+    Vector tmp( std::max(ms.size(), vs.size()) );
+    Vector::iterator end = std::set_intersection(ms.begin(), ms.end(),
+        vs.begin(), vs.end(), tmp.begin());
+    for ( Vector::const_iterator it = tmp.begin(); it!=end; ++it ) {
+        out.push_back(*it);
+    }
 }
 ///////////////////////////////////////////////////////////////////////////////
 IFrxComponentFactory & getComponentFactory(FrxCircuidViewPtr view) {

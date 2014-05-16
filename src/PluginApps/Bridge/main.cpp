@@ -8,20 +8,37 @@
 #include <processing/interprocess/BridgeSession.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
 #include <sambag/com/BoostTimer2.hpp>
+#include <sambag/com/Thread.hpp>
+
+void* hInstance=NULL;
 
 enum {
-    FRX_BRIDGE_AUTOCLOSE_CHECK_INTERVAL = 5000
+    FRX_BRIDGE_AUTOCLOSE_CHECK_INTERVAL = 1000,
+    FRX_BRIDGE_AUTOCLOSE_WAIT_FOR_SURE_SEC = 60
 };
-  
-void checkIsNeeded(frx::processing::interprocess::BridgeSession *session_ptr) {
-    if ( session_ptr->getNumPluginSessions() == 0 ) {
-        session_ptr->stopMainLoop();
-    }
+void checkForClosing(frx::processing::interprocess::BridgeSession *session_ptr)
+{
+    static sambag::com::Mutex mutex;
+    SAMBAG_WHEN_UNLOCKED(mutex)
+        if ( session_ptr->getNumPluginSessions() > 0 ) {
+            return;
+        }
+        boost::this_thread::sleep(boost::posix_time::seconds( // we wait
+            FRX_BRIDGE_AUTOCLOSE_WAIT_FOR_SURE_SEC
+        )); 
+        if ( session_ptr->getNumPluginSessions() == 0 ) { // still unused
+            // now go to hell
+            session_ptr->stopMainLoop();
+        }
+    SAMBAG_END_WHEN_UNLOCKED
 }
 
 int main(int argc, char **argv) {
     using namespace frx::processing;
     using namespace frx::processing::interprocess;
+    // set app is bridge
+    BridgeSessionManager::instance().__BridgeSessionManager_private_isBridge =
+        true;
     if (argc<2) {
         SAMBAG_LOG_ERR<<"VSTForx.Bridge missing path.";
         return 1;
@@ -37,7 +54,7 @@ int main(int argc, char **argv) {
         AutoCloseTimer::Ptr autoclosetimer = AutoCloseTimer::create(FRX_BRIDGE_AUTOCLOSE_CHECK_INTERVAL);
         autoclosetimer->setNumRepetitions(-1);
         autoclosetimer->addEventListener(
-            boost::bind(&checkIsNeeded, &session)
+            boost::bind(&checkForClosing, &session)
         );
         autoclosetimer->start();
         // start main session
@@ -48,7 +65,6 @@ int main(int argc, char **argv) {
     } catch (...) {
         SAMBAG_LOG_ERR<<id<<": failed, unknown error";
     }
-    
     AutoCloseTimer::closeAllTimer();
     return 0;
 }

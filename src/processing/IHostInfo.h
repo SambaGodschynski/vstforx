@@ -13,7 +13,15 @@
 #include <sambag/com/events/Events.hpp>
 #include <sambag/dsp/HostTimeInfo.hpp>
 
-namespace frx { namespace processing {
+namespace frx {
+
+namespace scripts {
+    class PluginScriptCtrl;
+    typedef boost::shared_ptr<PluginScriptCtrl> PluginScriptCtrlPtr;
+    typedef boost::weak_ptr<PluginScriptCtrl> PluginScriptCtrlWPtr;
+}
+
+namespace processing {
 namespace sce = sambag::com::events;
 //=============================================================================
 // Event HostChanged
@@ -43,7 +51,7 @@ struct IHostInfo {
 	//-------------------------------------------------------------------------
 	template< typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ) {} 
-	//-------------------------------------------------------------------------
+    //-------------------------------------------------------------------------
 	/**
 	 * @return current sample rate
 	 */
@@ -54,7 +62,7 @@ struct IHostInfo {
 	 */
 	virtual int getBlockSize() const = 0;
 	//-------------------------------------------------------------------------
-	virtual TimeInfo * getHostTimeInfo (int filter) = 0;
+	virtual TimeInfo * getHostTimeInfo (int filter=0) = 0;
 	//-------------------------------------------------------------------------
 	/**
 	 * @return target dependent audio effect ptr. 
@@ -71,6 +79,9 @@ struct IHostInfo {
 	 * @note: avoid using this function.
 	 */
 	virtual void * getMasterCallback() = 0;
+    //-------------------------------------------------------------------------
+    enum MasterType { VST2X, VST3X, AU, BRIDGE };
+    virtual MasterType getMasterType() const = 0;
 	//-------------------------------------------------------------------------
 	virtual ~IHostInfo(){}
 	//-------------------------------------------------------------------------
@@ -80,6 +91,8 @@ struct IHostInfo {
 	 *         the return value means.
 	 */
 	virtual bool ioChanged() = 0;
+    //-------------------------------------------------------------------------
+    virtual scripts::PluginScriptCtrlPtr getScriptController() = 0;
 	///////////////////////////////////////////////////////////////////////////
 	// Events
 	//-------------------------------------------------------------------------

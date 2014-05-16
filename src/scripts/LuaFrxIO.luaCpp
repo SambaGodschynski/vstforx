@@ -1,0 +1,16 @@
+frx.scripts
+#include <scripts/LuaFrxObject.hpp>
+
+/**
+ * @brief This class reprents a connection view object.
+ * @version 1.0.5
+ * @extends @see frx.view.Object
+ * @alias frx.view.IO
+ */
+class LuaFrxIOBase extends LuaFrxObject {
+      
+}
+
+
+
+

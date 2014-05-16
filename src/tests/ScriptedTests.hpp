@@ -37,6 +37,7 @@ class ScriptedTests : public CPPUNIT_NS::TestFixture {
 //=============================================================================
 private:
 	CPPUNIT_TEST_SUITE( ScriptedTests );
+    CPPUNIT_TEST_KNOWN_ISSUE( frxLuaObjects );
     CPPUNIT_TEST_KNOWN_ISSUE( issue163 );
 	CPPUNIT_TEST_KNOWN_ISSUE( issue320 );
 	CPPUNIT_TEST_KNOWN_ISSUE( issue322 );
@@ -45,6 +46,7 @@ private:
 	CPPUNIT_TEST_KNOWN_ISSUE( issue265 );
 	CPPUNIT_TEST_KNOWN_ISSUE( issue269 );
 	CPPUNIT_TEST_KNOWN_ISSUE( testOpenClose );
+    CPPUNIT_TEST_KNOWN_ISSUE(legacySerialization);
 	CPPUNIT_TEST_KNOWN_ISSUE( testSerializing );
 	CPPUNIT_TEST_SUITE_END();
 	TestPlugin * plug;
@@ -68,6 +70,8 @@ public:
 	void issue320();
 	void issue322();
 	void issue324();
+    void frxLuaObjects();
+    void legacySerialization();
 };
 
 } // namespace

@@ -21,6 +21,7 @@
 #include <sambag/disco/GeometrySerialization.hpp>
 #include <gui/HandyNamespaces.hpp>
 #include <sambag/disco/components/Forward.hpp>
+#include <com/Serialization.h>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -61,7 +62,7 @@ protected:
 	FrxComponent();
 private:
 	//-------------------------------------------------------------------------
-	std::string uFlagTxt, lFlagTxt;
+	std::string uFlagTxt, lFlagTxt, typeId;
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:
 	//-------------------------------------------------------------------------
@@ -73,43 +74,28 @@ private:
      * we can't serialize "self" directly because it is a AComponent member,
 	 * so we need this "trick".
 	 */
-	template <typename Archive> 
-	void serializeSelfPtr(Archive &ar, const unsigned int version) {
-		if (Archive::is_saving::value) {
-			tmpSelf = boost::dynamic_pointer_cast<FrxComponent>(self.lock());
-		}
-		ar & boost::serialization::base_object<ViewObject>(*this); 
-		ar & tmpSelf;
-		ar & uFlagTxt;
-		ar & lFlagTxt;
-		std::string name = getName();
-		ar & name;
-		if (Archive::is_loading::value) {
-			self = tmpSelf;
-			setName(name);
-			postConstructor();
-		}
-	}
+	void serializeSelfPtr(::com::iArchive &ar, const unsigned int version);
+	void serializeSelfPtr(::com::oArchive &ar, const unsigned int version);
 	//-------------------------------------------------------------------------
-	template <typename Archive> 
-	void save(Archive &ar, const unsigned int version) const {
-		const sd::Rectangle &bounds = getBounds();
-		ar << bounds;
-	}
+	void save(::com::oArchive &ar, const unsigned int version) const;
 	//-------------------------------------------------------------------------
-	template <typename Archive> 
-	void load(Archive &ar, const unsigned int version) {
-		sd::Rectangle bounds;
-		ar >> bounds;
-		setBounds(bounds);
-	}
+	void load(::com::iArchive &ar, const unsigned int version);
 	//-------------------------------------------------------------------------
-	template <typename Archive> 
-	void serialize(Archive &ar, const unsigned int version) {
-		serializeSelfPtr(ar, version);
-		boost::serialization::split_member(ar, *this, version);
-	}
+	void serialize(::com::iArchive &ar, const unsigned int version);
+	void serialize(::com::oArchive &ar, const unsigned int version);
 public:
+    //-------------------------------------------------------------------------
+    /**
+     * @brief set type id. no to call by client
+     */
+    void __setTypeId_(const std::string &id);
+    //-------------------------------------------------------------------------
+    /**
+     * @return type id, such as frx.gui.internal.XY
+     */
+    const std::string & getTypeId() const {
+        return typeId;
+    }
     //-------------------------------------------------------------------------
     Ptr getPtr() const {
         return boost::dynamic_pointer_cast<FrxComponent>(self.lock());
@@ -181,6 +167,12 @@ public:
 	virtual std::string getObjectName() const {
 		return AComponent::getName();
 	}
+    //-------------------------------------------------------------------------
+    virtual void setName (const std::string &name);
+    
 }; // FrxComponent
 }}} // namespace(s)
+
+BOOST_CLASS_VERSION(frx::gui::components::FrxComponent, 1);
+
 #endif /* SAMBAG_FRXCOMPONENT_H */

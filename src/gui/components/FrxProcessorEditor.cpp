@@ -49,6 +49,7 @@ void FrxProcessorEditor::onClosingWindow(void *src, const sdc::OnCloseEvent &ev)
     }
     try {
         ctrl->close(getPtr());
+        ctrl.reset();
     } catch(const std::exception &ex) {
         ::com::osMessageBox("Error:", "closing editor failed: " +
                             std::string(ex.what()), ::com::MSG_ALERT);

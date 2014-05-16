@@ -25,7 +25,24 @@ public:
     static std::string selectDirectory(const std::string &wndTitle,
                                        const std::string &startPath="");
     //-------------------------------------------------------------------------
+    /**
+     * @return directory string
+     */
+    static std::string selectFile(const std::string &wndTitle,
+                                       const std::string &startPath="");
+    //-------------------------------------------------------------------------
+    /**
+     * @return directory string
+     */
+    static std::string saveFile(const std::string &wndTitle,
+                                       const std::string &startPath="");
+    //-------------------------------------------------------------------------
     static void startProcess(const char *path, int argc, const char **argv);
+    //-------------------------------------------------------------------------
+    static void openLink(const std::string &url);
+    //-------------------------------------------------------------------------
+    static void showInputTextDlg(const std::string &title, std::string &inOutTxt);
+
 }; // CocoaHelper
 }} // namespace(s)
 

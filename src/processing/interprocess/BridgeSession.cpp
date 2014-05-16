@@ -7,51 +7,41 @@
 
 #include "BridgeSession.hpp"
 #include <sambag/com/exceptions/IllegalArgumentException.hpp>
+#include <sambag/com/exceptions/IllegalStateException.hpp>
 #include "SessionManager.hpp"
 #include "PluginSession.hpp"
 #include <com/FrxConfig.h>
+#include <sambag/disco/components/WindowToolkit.hpp>
+
+namespace {
+    enum { FRX_CREATE_PLUGINSESSION_TIME_OUT = 10000 };
+}
 
 namespace frx { namespace processing { namespace interprocess {
 //=============================================================================
 //  Class BridgeSession
 //=============================================================================
 //-----------------------------------------------------------------------------
-BridgeSession::BridgeSession(const std::string &id) : Session(id,
-    ChannelSize(OpcM::MaxArgmemSize, OpcM::MaxRetmemSize),
-    ChannelSize(BridgeSessionClient::OpcM::MaxArgmemSize, BridgeSessionClient::OpcM::MaxRetmemSize)),
-    isRunning(false)
+BridgeSession::BridgeSession(const std::string &id) : Session(id)
 {
 }
 //-----------------------------------------------------------------------------
-void BridgeSession::processImpl(Opc opc, void *argmem, void *retmem) {
-    bool res;
-    try {
-        res = Operations::OpcManager::process(opc, this, argmem, retmem);
-    } catch(...) {}
-    if (!res) {
-        using sambag::com::exceptions::IllegalArgumentException;
-        SAMBAG_THROW(IllegalArgumentException,
-        "BridgeSession::processImpl opc: " + sambag::com::toString(opc) + " not supported");
-    }
-}
-//-----------------------------------------------------------------------------
 void BridgeSession::startMainLoop() {
-    isRunning=true;
+    startProcessThread();
     SAMBAG_LOG_INFO<<getId()<<" main thread started";
-    while(isRunning) {
-        boost::this_thread::sleep(boost::posix_time::millisec(100));
-    }
+    sambag::disco::components::getWindowToolkit()->startMainLoop();
     SAMBAG_LOG_INFO<<getId()<<" main thread ended";
 }
 //-----------------------------------------------------------------------------
 void BridgeSession::stopMainLoop() {
     SAMBAG_LOG_INFO<<getId()<<": closing main thread";
     typedef BridgeSessionClient::Operations::OnBridgeClosing Op;
+    MemoryGuard::Ptr g = getMemoryGuard();
     try {
-        waitForResult( BridgeSessionClient::OpcM::getOPC<Op>() );
+        waitForProcess( BridgeSessionClient::OpcM::getOPC<Op>(), g );
     } catch(...) {}
     
-    isRunning = false;
+    sambag::disco::components::getWindowToolkit()->quit();
 }
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
@@ -61,86 +51,75 @@ size_t BridgeSession::getNumPluginSessions() const {
     SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
-void BridgeSession::auto_opc_callback(Operations::CreatePluginSession::ArgPtr arg,
-    Operations::CreatePluginSession::RetPtr ret)
-{
+FRX_OP_CALLBACK_METHOD_IMPL(BridgeSession, CreatePluginSession) {
     SAMBAG_BEGIN_SYNCHRONIZED(mutex)
         SAMBAG_LOG_INFO<<"creating a plugin session for: "<<arg->path;
-        std::string id = SessionManager::createUniqueName();
-        PluginSessionHost::Ptr ps;
-        /*try {
-                PluginSessionHost::Ptr ps = PluginSessionHost::create(this, id,
-                arg->sampleRate,
-                arg->blockSize,
-                2 // TODO: determine before opening
-            );
+        // because I did the misstake before:
+        // do not use the location as id, because by doing so
+        // only one pluginstance would be possible
+        std::string result_str;
+        try {
+            ret->succeed = false;
+            BridgePluginDelegate::Ptr delegate =
+                BridgePluginDelegate::create(arg->blockSize, arg->sampleRate, arg->path);
+            PluginSessionHost::Ptr ps = PluginSessionHost::create(delegate, this);
+            delegate->setPluginSession(ps);
+            result_str = ps->getId();
+            plugHostMap[result_str] = ps;
+            ret->succeed = true;
         } catch (const std::exception &ex) {
-            SAMBAG_LOG_ERR<<"creating PluginSession failed: "<<ex.what();
+            result_str = ex.what();
+        } catch (...) {
+            result_str = "uknown error.";
         }
-        catch (...) {
-            SAMBAG_LOG_ERR<<"creating PluginSession failed: unkown error";
-        }*/
-        if (!ps) {
-            strcpy(ret->id, "");
-            return;
-        }
-        plugHostMap[id] = ps;
-        strcpy(ret->id, id.c_str());
+        shm_cpystr(ret->result, result_str);
         SAMBAG_LOG_INFO<<"plugin created: "<<arg->path;
     SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
-void BridgeSession::auto_opc_callback(Operations::ClosePluginSession::ArgPtr arg,
-    Operations::ClosePluginSession::RetPtr ret)
-{
-    SAMBAG_BEGIN_SYNCHRONIZED(mutex)
-    
-    SAMBAG_END_SYNCHRONIZED
+FRX_OP_CALLBACK_METHOD_IMPL(BridgeSession, ClosePluginSession) {
+    std::string id(arg->id);
+    plugHostMap.erase(id);
 }
 //=============================================================================
 //  Class BridgeSessionClient
 //=============================================================================
 //-----------------------------------------------------------------------------
-BridgeSessionClient::BridgeSessionClient(const SessionId &id) :
-    Session(id)
+BridgeSessionClient::BridgeSessionClient(const SessionId &id) : Session(id,
+    ChannelSize(OpcM::MaxArgmemSize, OpcM::MaxRetmemSize),
+    ChannelSize(SessionHost::OpcM::MaxArgmemSize, SessionHost::OpcM::MaxRetmemSize))
 {
 }
 //-----------------------------------------------------------------------------
 BridgeSessionClient::Ptr BridgeSessionClient::create(const SessionId &id) {
     Ptr res( new BridgeSessionClient(id) );
     res->self = res;
+    res->startProcessThread();
     return res;
 }
 //-----------------------------------------------------------------------------
-void BridgeSessionClient::processImpl(Opc opc, void *argmem, void *retmem) {
-    if ( !Operations::OpcManager::process(opc, this, argmem, retmem)) {
-        using sambag::com::exceptions::IllegalArgumentException;
-        SAMBAG_THROW(IllegalArgumentException,
-        "BridgeSession::processImpl opc: " + sambag::com::toString(opc) + " not supported");
-    }
-}
-//-----------------------------------------------------------------------------
-PluginSessionClientPtr BridgeSessionClient::createPluginSession(
-        const std::string &path,
-        float sampleRate,
-        Integer blockSize)
+PluginSessionClientPtr BridgeSessionClient::createPluginSession(const std::string &path, IHostInfo::Ptr hI)
 {
     SAMBAG_LOG_INFO<<"try to establish a plugin session for: "<<path;
-    if (path.length() > FRX_SHMSESS_MAX_PATH_LENGTH) {
-        using sambag::com::exceptions::IllegalArgumentException;
-        SAMBAG_THROW(IllegalArgumentException, "pathlength out of bounds");
-    }
     typedef BridgeSession::Operations::CreatePluginSession Op;
-    Op::ArgPtr args = static_cast<Op::ArgPtr>(getArgmem());
-    strcpy(args->path, path.c_str());
-    args->sampleRate = sampleRate;
-    args->blockSize = blockSize;
-    Op::RetPtr rets = NULL;
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::ArgPtr args = g->getArg<Op::Arg>();
+    Op::RetPtr rets = g->getRet<Op::Ret>();
+    shm_cpypath(args->path, path);
+    args->sampleRate = hI->getSampleRate();
+    args->blockSize = hI->getBlockSize();
     try {
-        rets = waitForResult<Op::RetPtr>(
+        waitForResult(
             BridgeSession::OpcM::getOPC<Op>(),
-            FRX_BRIDGE_CREATE_PL_SESSION_TIMEOUT
+            g,
+            FRX_CREATE_PLUGINSESSION_TIME_OUT
         );
+        if (!rets->succeed) {
+            SAMBAG_THROW(
+                sambag::com::exceptions::IllegalStateException,
+                "establishing bridge session failed: " + std::string( rets->result )
+            );
+        }
     } catch (const std::exception &ex) {
         SAMBAG_LOG_ERR<<"establishing plugin session failed: "<<ex.what()<<", "<<path;
         throw;
@@ -148,16 +127,23 @@ PluginSessionClientPtr BridgeSessionClient::createPluginSession(
         SAMBAG_LOG_ERR<<"establishing plugin session failed: unknown error, "<<path;
         throw;
     }
-    //std::string id(rets->id);
-    //PluginSessionClient::Ptr res = PluginSessionClient::create(id);
+    std::string id(rets->result);
+    PluginSessionClient::Ptr res = PluginSessionClient::create(id);
+    res->setHostInfo(hI);
     SAMBAG_LOG_INFO<<"plugin session estabished: "<<path;
-    return PluginSessionClient::Ptr();
+    return res;
+}
+//-----------------------------------------------------------------------------
+void BridgeSessionClient::closePluginSession(PluginSessionClientPtr session) {
+    typedef SessionHost::Operations::ClosePluginSession Op;
+    MemoryGuard::Ptr g = getMemoryGuard();
+    Op::ArgPtr args = g->getArg<Op::Arg>();
+    shm_cpystr(args->id, session->getId());
+    waitForProcess(BridgeSession::OpcM::getOPC<Op>(), g, FRX_CREATE_PLUGINSESSION_TIME_OUT);
 }
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
-void BridgeSessionClient::auto_opc_callback(Operations::OnBridgeClosing::ArgPtr,
-        Operations::OnBridgeClosing::RetPtr)
-{
+FRX_OP_CALLBACK_METHOD_IMPL(BridgeSessionClient, OnBridgeClosing) {
     Ptr holder = self.lock();
     using namespace sambag::com::events;
     EventSender<ClosingEvent>::notifyListeners(

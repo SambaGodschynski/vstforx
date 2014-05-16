@@ -1,0 +1,11 @@
+frx.scripts
+
+/**
+ * @brief 
+ */
+class LuaModelObjectBase extends sambag.lua.ALuaObject {
+}
+
+
+
+

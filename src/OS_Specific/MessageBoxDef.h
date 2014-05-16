@@ -28,10 +28,17 @@ enum MessageBoxReturn {
 // MessageBox
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
-MessageBoxReturn osMessageBox ( const std::string &title, const std::string &text, const MessageBoxType &type );
+MessageBoxReturn osMessageBox (const std::string &title, const std::string &text, const MessageBoxType &type );
 //------------------------------------------------------------------------------------------------------------
-std::string osSelectDirectory ( const std::string &wndTitle, 
-						    const std::string &startPath);
+std::string osSelectDirectory (const std::string &wndTitle, const std::string &startPath, void *parent);
+//------------------------------------------------------------------------------------------------------------
+std::string osSelectFile (const std::string &wndTitle, const std::string &startPath, void *parent);
+//------------------------------------------------------------------------------------------------------------
+std::string osSaveFile (const std::string &wndTitle, const std::string &startPath, void *parent);
+//------------------------------------------------------------------------------------------------------------
+void osOpenLink (const std::string &url);
+//------------------------------------------------------------------------------------------------------------
+ void osShowInputTextDlg(const std::string &title, std::string &inOutTxt, void *parentWnd);
 // Message Box
 } //namespace com
 

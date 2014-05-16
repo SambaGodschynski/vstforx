@@ -4,14 +4,13 @@
  *      Author: Johannes Unger
  * ============================================================================
  */
-#include "DCTester.hpp"
 
+#include "DCTester.hpp"
 namespace {
 
     const size_t DCTesterMaxDelayFrames = 32768;
 
 }
-
 namespace processing{
 //=============================================================================
 // class DCTester
@@ -50,3 +49,4 @@ size_t DCTester::getProcessDelay() const {
     return (size_t)(*delay * (float)DCTesterMaxDelayFrames);
 }
 }// namespace processing
+

@@ -10,7 +10,7 @@
 #include "processing/processing.h"
 #include "processing/parameter/parameter.h"
 #include "com/Serialization.h"
-
+#include <processing/ModelFactory.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -75,8 +75,10 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Pan() {
 	}
-
 };
+
+FRX_MODELFACTORY_REGISTER(internal, Pan);
+
 }// namespace processing
 
 #endif  // FORX_PAN_H

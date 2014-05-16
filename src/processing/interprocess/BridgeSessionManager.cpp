@@ -7,7 +7,6 @@
 
 #include "BridgeSessionManager.hpp"
 #include <sambag/com/Config.h>
-#include <boost/regex.hpp>
 #include "BridgeSession.hpp"
 #include <boost/filesystem.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
@@ -18,6 +17,8 @@
 namespace com {
     extern void startProcess(const char *path, int argc, const char **argv);
 }
+
+const char * FRX_BRIDGE_EXEC_NAME = "VSTForx.bridge";
 
 namespace frx { namespace processing { namespace interprocess {
 #ifdef SAMBAG_64
@@ -31,7 +32,8 @@ typedef Loki::SingletonHolder<BridgeSessionManager> BridgeSessionManagerHolder;
 //  Class BridgeSessionManager
 //=============================================================================
 //-----------------------------------------------------------------------------
-BridgeSessionManager::BridgeSessionManager() : path("./bridge") {
+BridgeSessionManager::BridgeSessionManager() : path(std::string("./") + FRX_BRIDGE_EXEC_NAME)
+{
 }
 //-----------------------------------------------------------------------------
 BridgeSessionManager & BridgeSessionManager::instance() {
@@ -39,10 +41,7 @@ BridgeSessionManager & BridgeSessionManager::instance() {
 }
 //-----------------------------------------------------------------------------
 std::string BridgeSessionManager::getBridgeSessionId() const {
-    // macosx fails to ceate shm when '/' in name
-    //std::string pathId = boost::regex_replace(getBridgePath(), boost::regex("[^\\w]"), "");
-    //return pathId+"."+"VSTForx.Bridge.Mainsession." + FRX_BRIDGE_ARCH_STR;
-    return SessionManager::createUniqueName();
+    return "bs-"+SessionManager::createUniqueName();
 }
 //-----------------------------------------------------------------------------
 void BridgeSessionManager::setBridgePath(const std::string &path) {
@@ -66,17 +65,25 @@ void BridgeSessionManager::startBridge() {
     namespace bs=boost::filesystem;
     using sambag::com::exceptions::IllegalStateException;
     using sambag::com::events::EventSender;
+    
+    if (isBridge()) {
+        SAMBAG_THROW(IllegalStateException, "bridge recursion error.");
+    }
+    
     if (!bs::exists(bs::path( getBridgePath()))) {
         SAMBAG_THROW(IllegalStateException, getBridgePath() + " not found.");
     }
     std::string id = getBridgeSessionId();
+    
+    // note: to make startup syncronization easier,
+    //       the client creates the session memory
+    ___bridge_ = BridgeSessionClient::create(id);
+    
+    // start process now
     const char *args[] = { id.c_str() };
     com::startProcess(getBridgePath().c_str(), 1, &args[0]);
-    boost::this_thread::sleep(boost::posix_time::millisec(
-        Session::DEFAULT_SLEEPING_TIME * 2
-    ));
-    ___bridge_ = BridgeSessionClient::create(id);
     SAMBAG_ASSERT(___bridge_);
+    
     ___bridge_->EventSender<BridgeSessionClient::ClosingEvent>::addEventListener(
         boost::bind(&BridgeSessionManager::onHostClosing, this)
     );
@@ -93,17 +100,20 @@ BridgeSessionClientPtr BridgeSessionManager::getBridgeClient() {
 PluginSessionClientPtr BridgeSessionManager::
 createPluginSession(IHostInfo::Ptr hI, const ::processing::PluginInfo &pI)
 {
-   return createPluginSession(pI.location, hI->getSampleRate(), hI->getBlockSize());
+   return createPluginSession(pI.location, hI);
 }
 //-----------------------------------------------------------------------------
 PluginSessionClientPtr BridgeSessionManager::createPluginSession(
-    const std::string &path, float sampleRate, int blockSize)
+    const std::string &path, IHostInfo::Ptr hI)
 {
     BridgeSessionClient::Ptr session = getBridgeClient();
-    PluginSessionClientPtr res = session->createPluginSession(
-        path, sampleRate, blockSize
-    );
+    PluginSessionClientPtr res = session->createPluginSession(path, hI);
     return res;
+}
+//-----------------------------------------------------------------------------
+void BridgeSessionManager::closePluginSession(PluginSessionClientPtr plSession) {
+    BridgeSessionClient::Ptr session = getBridgeClient();
+    session->closePluginSession(plSession);
 }
 //-----------------------------------------------------------------------------
 bool BridgeSessionManager::isBridgeSessionEstabished() const {

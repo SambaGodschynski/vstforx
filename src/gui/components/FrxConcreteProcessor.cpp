@@ -16,7 +16,7 @@ namespace processorTypes {
 void Plugin::init( FrxProcessorNode::Ptr obj ) {
 	sdc::Button::Ptr btn(sdc::Button::create());
 	btn->setIcon(
-		sd::getResourceManager().getImage("FrxPlugin.e.image")
+		sd::getResourceManager().getImage("Plugin.e.image")
 	);
 	btn->setSize(sd::Dimension(30., 30.));
 	btn->setFont( btn->getFont().setSize(25.) );
@@ -26,78 +26,66 @@ void Plugin::init( FrxProcessorNode::Ptr obj ) {
 	btn->setInheritsPopupMenu(true);
 	obj->add(btn);
 }
-} // processorTypes
-
-
-namespace __private {
-
 ///////////////////////////////////////////////////////////////////////////////
-// Processor Names
-const char *ProcessorNames[] = {"FrxPlugin",
-                                "FrxVolume",
-                                "FrxPan",
-                                "FrxInStep",
-                                "FrxOutStep",
-                                "FrxInSwitch",
-                                "FrxOutSwitch",
-                                "FrxADSR",
-                                "FrxPeakTracker",
-                                "FrxMidiReceiver",
-                                "FrxRemoteChReceiver",
-                                "FrxDCTester"};
+// Processor Details
+const char * Plugin::Details::name           = "Plugin";
+const char * Volume::Details::name           = "Volume";
+const char * Pan::Details::name              = "Pan";
+const char * InStep::Details::name           = "InputStep";
+const char * OutStep::Details::name          = "OutputStep";
+const char * InSwitch::Details::name         = "InputSwitch";
+const char * OutSwitch::Details::name        = "OutputSwitch";
+const char * ADSR::Details::name             = "ADSRTrigger";
+const char * PeakTracker::Details::name      = "PeakTracker";
+const char * MIDIReceiver::Details::name     = "MidiProcessor";
+const char * RemoteChReceiver::Details::name = "RemoteChReceiver";
+const char * DCTester::Details::name         = "DCTester";
 
-const size_t NumProcessorNames = sizeof(ProcessorNames) / sizeof(ProcessorNames[0]);
-BOOST_STATIC_ASSERT( NumProcessorNames == Loki::TL::Length<FrxProcessorList>::value );
 
-const char * _getProcessorNameImpl(size_t index) {
-    return ProcessorNames[index];
-}
-///////////////////////////////////////////////////////////////////////////////
-// Beauty Names
-const char *ProcessorBNames[] = { "Plugin",
-                                  "Volume",
-                                  "Pan",
-                                  "Input Step",
-                                  "Output Step",
-                                  "Input Switch",
-                                   "Output Switch",
-                                  "ADSR Trigger",
-                                  "Peak Tracker",
-                                  "Midi Receiver",
-                                  "Remote Channel Receiver",
-                                  "DC Tester"};
+const char * Plugin::Details::beautyName           = "Plugin";
+const char * Volume::Details::beautyName           = "Volume";
+const char * Pan::Details::beautyName              = "Pan";
+const char * InStep::Details::beautyName           = "Input Step";
+const char * OutStep::Details::beautyName          = "Output Step";
+const char * InSwitch::Details::beautyName         = "Input Switch";
+const char * OutSwitch::Details::beautyName        = "Output Switch";
+const char * ADSR::Details::beautyName             = "ADSR Trigger";
+const char * PeakTracker::Details::beautyName      = "Peak Tracker";
+const char * MIDIReceiver::Details::beautyName     = "Midi Receiver";
+const char * RemoteChReceiver::Details::beautyName = "Remote Channel Receiver";
+const char * DCTester::Details::beautyName         = "DC Tester";
 
-const size_t NumProcessorBNames = sizeof(ProcessorBNames) / sizeof(ProcessorBNames[0]);
-BOOST_STATIC_ASSERT( NumProcessorBNames == Loki::TL::Length<FrxProcessorList>::value );
+const char * Plugin::Details::toolTip           = "click the (e) to open/close plug's editor.";
+const char * Volume::Details::toolTip           = "changes volume";
+const char * Pan::Details::toolTip              = "changes panning";
+const char * InStep::Details::toolTip           = "steps through several inputs";
+const char * OutStep::Details::toolTip          = "steps through several outputs";
+const char * InSwitch::Details::toolTip         = "switchs several inputs";
+const char * OutSwitch::Details::toolTip        = "switchs several outputs";
+const char * ADSR::Details::toolTip             = "creates an ASDR sequence triggered by an input audio event";
+const char * PeakTracker::Details::toolTip      = "transforms audio peaks into parameter values";
+const char * MIDIReceiver::Details::toolTip     = "transform midi events into parameter values";
+const char * RemoteChReceiver::Details::toolTip = "receives remote channel data";
+const char * DCTester::Details::toolTip         = "adds delay between input and output";
 
-const char * _getProcessorBeautyNameImpl(size_t index) {
-    return ProcessorBNames[index];
-}
-///////////////////////////////////////////////////////////////////////////////
-// Tooltips
-const char *ProcessorTips[] = { "click the (e) to open/close plug's editor.",
-                                "sets volume", "sets panning",
-                                "steps through several inputs",
-                                "steps through several outputs",
-                                "switchs several inputs",
-                                "switchs several outputs",
-                                "creates an ASDR sequence triggered by an input audio event",
-                                "transforms audio peaks into parameter values",
-                                "transform midi events into parameter values",
-                                "receives remote channel data",
-                                "adds delay between input and output"};
-    
-const size_t NumProcessorTips = sizeof(ProcessorTips) / sizeof(ProcessorTips[0]);
-BOOST_STATIC_ASSERT( NumProcessorTips == Loki::TL::Length<FrxProcessorList>::value );
-    
-const char * _getProcessorTooltipImpl(size_t index) {
-    return ProcessorTips[index];
-}
+const char * Plugin::Details::ns           = "?";
+const char * Volume::Details::ns           = "internal";
+const char * Pan::Details::ns              = "internal";
+const char * InStep::Details::ns           = "internal";
+const char * OutStep::Details::ns          = "internal";
+const char * InSwitch::Details::ns         = "internal";
+const char * OutSwitch::Details::ns        = "internal";
+const char * ADSR::Details::ns             = "internal";
+const char * PeakTracker::Details::ns      = "internal";
+const char * MIDIReceiver::Details::ns     = "internal";
+const char * RemoteChReceiver::Details::ns = "interprocess";
+const char * DCTester::Details::ns         = "internal-private";
 
-} // namespace(s)
+
+} // namespace processorTypes
 //-----------------------------------------------------------------------------
 namespace {
-	typedef boost::function <std::string()> GetStrF;
+	typedef boost::function <const char *()> GetStrF;
 	typedef boost::tuple<GetStrF, GetStrF> NameFs;
 	typedef boost::unordered_map<std::string, NameFs> ProcessorNameMap;
 	ProcessorNameMap processorNameMap;

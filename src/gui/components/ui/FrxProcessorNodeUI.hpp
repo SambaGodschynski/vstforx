@@ -148,6 +148,26 @@ void FrxProcessorNodeUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c
 }
 //-----------------------------------------------------------------------------
 namespace {
+struct ChildComponentMouseHandler {
+    void mouseClicked(const sdc::events::MouseEvent &ev) {
+        sdc::AComponent::Ptr c = ev.getSource();
+        FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
+        if(!circ) {
+            return;
+        }
+        getFrxControl(circ).handleContextMenuPopup(ev);
+    }
+};
+
+void __onChildComponentMouse(const sdc::events::MouseEvent &ev) {
+	static ChildComponentMouseHandler childComponentMouseHandler;
+	enum  {
+		Filter = sdc::events::MouseEvent::DISCO_MOUSE_CLICKED
+	};
+	sdc::events::MouseEventSwitch<Filter>::
+		delegate(ev, childComponentMouseHandler);
+}
+
 template <class CT>
 void installSpecificDefs(sdc::AComponentPtr c)
 {
@@ -167,6 +187,11 @@ inline void installSpecificDefs<FrxPluginNode>(sdc::AComponentPtr _c)
 	if (!edctrl || !view) {
 		return;
 	}
+    // add (e) context listner
+    edctrl->sce::EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
+        boost::bind(&__onChildComponentMouse, _2),
+        c
+    );
 	typedef sce::EventSender<sdc::events::ActionEvent> AcSender;
 	AcSender *sender = dynamic_cast<AcSender*>( edctrl.get() );
 	if (!sender) {
@@ -225,8 +250,7 @@ void FrxProcessorNodeUI<CT>::addHasMultipleInputEntry(sdc::PopupMenuPtr menu,
 	m->setText("add input");
 	IFrxControl &ctrl = getFrxControl(view); 
 	m->sdc::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
-		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
-		&IFrxControl::addProcessorInput),
+		boost::bind(&IFrxControl::addProcessorInput, &ctrl, view, c, true),
 		c
 	);
 	menu->add(m);
@@ -240,8 +264,7 @@ void FrxProcessorNodeUI<CT>::addHasMultipleOutputEntry(sdc::PopupMenuPtr menu,
 	m->setText("add output");
 	IFrxControl &ctrl = getFrxControl(view); 
 	m->sdc::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
-		SAMBAG_CREATE_FRXCONTROL_CMD(ctrl, view, c, 
-		&IFrxControl::addProcessorOutput),
+		boost::bind(&IFrxControl::addProcessorOutput, &ctrl, view, c, true),
 		c
 	);
 	menu->add(m); 

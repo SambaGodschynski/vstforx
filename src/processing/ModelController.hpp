@@ -58,66 +58,8 @@ public:
 	///////////////////////////////////////////////////////////////////////////
 	// IModelControllerImpl.
 	//-------------------------------------------------------------------------
-	/**
-	 * @return ModelObject pointer which points on a VolumeProcessor object
-	 */
-	virtual IProcessor::Ptr createVolumeProcessor();
-	//-------------------------------------------------------------------------
-	/**
-	 * @return ModelObject pointer which points on a PanProcessor object
-	 */
-	virtual IProcessor::Ptr createPanProcessor();
-	//-------------------------------------------------------------------------
-	/**
-	 * @param number of inputs
-	 * @param out-container with i/o objects
-	 * @return ModelObject pointer which points on a InStepProcessor object
-	 */
-	virtual IProcessor::Ptr 
-	createInStepProcessor(size_t numInputs);
-	//-------------------------------------------------------------------------
-	/**
-	 * @param number of outputs
-	 * @param out-container with i/o objects
-	 * @return ModelObject pointer which points on a InStepProcessor object
-	 */
-	virtual IProcessor::Ptr 
-	createOutStepProcessor(size_t numOutputs);
-	//-------------------------------------------------------------------------
-	/**
-	 * @param number of inputs
-	 * @param out-container with i/o objects
-	 * @return ModelObject pointer which points on a InStepProcessor object
-	 */
-	virtual IProcessor::Ptr 
-	createInSwitchProcessor(size_t numInputs);
-	//-------------------------------------------------------------------------
-	/**
-	 * @param number of outputs
-	 * @param out-container with i/o objects
-	 * @return ModelObject pointer which points on a InStepProcessor object
-	 */
-	virtual IProcessor::Ptr 
-	createOutSwitchProcessor(size_t numOutputs);
-	//-------------------------------------------------------------------------
-	/**
-	 * @return ModelObject pointer which points on a PeakTracker object
-	 */
-	virtual IProcessor::Ptr createPeakTracker();
-	//-------------------------------------------------------------------------
-	/**
-	 * @return ModelObject pointer which points on a PeakTracker object
-	 */
-	virtual IProcessor::Ptr createADSRTransformer();
-	//-------------------------------------------------------------------------
-	/**
-	 * @return ModelObject pointer which points on a MIDIReceiver object
-	 */
-	virtual IProcessor::Ptr createMIDIReceiver();
-	//-------------------------------------------------------------------------
-	virtual IProcessor::Ptr createRemoteChannelReceiver(const std::string &rcid);
-	//-------------------------------------------------------------------------
-	virtual IProcessor::Ptr createDCTester();
+    virtual IProcessor::Ptr createProcessor(const std::string &id,
+        bool autoConnectOutput = false );
 	//-------------------------------------------------------------------------
 	virtual IConnection::Ptr connect(INode::Ptr out, INode::Ptr in);
 	//-------------------------------------------------------------------------
@@ -131,7 +73,7 @@ public:
 	//-------------------------------------------------------------------------
 	virtual INode::Ptr getExit();
 	//-------------------------------------------------------------------------
-	virtual IProcessor::Ptr createPlugin(const ::processing::PluginInfo &pI);
+	virtual IProcessor::Ptr createPlugin(const std::string &id);
 	//-------------------------------------------------------------------------
 	virtual IParameter::Ptr createFreeParameter();
 	//-------------------------------------------------------------------------

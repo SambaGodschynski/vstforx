@@ -9,7 +9,7 @@
 #define SAMBAG_PLUGINSCRIPTCTRL_H
 
 #include <boost/shared_ptr.hpp>
-#include <processing/VstForxPlug.hpp>
+#include <boost/weak_ptr.hpp>
 #include <gui/components/VstForxEditor.hpp>
 #include <sambag/disco/components/Forward.hpp>
 #include <gui/components/Forward.hpp>
@@ -22,8 +22,15 @@
 #include <boost/unordered_map.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include <processing/ModelObject.hpp>
+#include <map>
+#include <com/Serialization.h>
+namespace frx {
 
-namespace frx { namespace scripts {
+namespace processing {
+    class VstForxPlug;
+}
+
+namespace scripts {
 struct ScriptExeFailedEvent{
     std::string errMsg;
     ScriptExeFailedEvent(const std::string &msg="unknown error") : errMsg(msg) {}
@@ -39,16 +46,27 @@ class PluginScriptCtrl :
 {
 //=============================================================================
 public:
+    //-------------------------------------------------------------------------
+    typedef boost::shared_ptr<PluginScriptCtrl> Ptr;
+    //-------------------------------------------------------------------------
+    typedef boost::weak_ptr<PluginScriptCtrl> WPtr;
 	//-------------------------------------------------------------------------
 	typedef std::string LuaPtr;
+    //-------------------------------------------------------------------------
+    typedef std::multimap<std::string, std::string> PersistUserData;
 protected:
 	//-------------------------------------------------------------------------
 	void runThread();
 private:
+    //-------------------------------------------------------------------------
+    PersistUserData persistUserData;
 	//-------------------------------------------------------------------------
 	sambag::com::ArithmeticWrapper<bool> verbose;
 	//-------------------------------------------------------------------------
-	sambag::com::Mutex scriptCallMutex;
+	sambag::com::ArithmeticWrapper<bool> isPublic;
+	//-------------------------------------------------------------------------
+	typedef sambag::com::RecursiveMutex Mutex;
+    mutable Mutex __scriptCallMutex;
 	//-------------------------------------------------------------------------
 	std::string lastCall;
 	//-------------------------------------------------------------------------
@@ -62,9 +80,7 @@ private:
 	//-------------------------------------------------------------------------
 	boost::thread thread;
 	//-------------------------------------------------------------------------
-	sambag::lua::LuaStateRef luaState;
-	//-------------------------------------------------------------------------
-	void registerFunctions(sambag::lua::LuaStateRef luaState);
+	sambag::lua::LuaStateRef __luaState;
 	//-------------------------------------------------------------------------
 	typedef frx::gui::components::FrxComponentPtr FrxComponentPtr;
 	//-------------------------------------------------------------------------
@@ -76,6 +92,47 @@ private:
 	typedef boost::unordered_map<LuaPtr, ModelObjectPtr> ModelObjectMap;
 	ModelObjectMap modelObjectMap;
 public:
+    //-------------------------------------------------------------------------
+    const PersistUserData & getPersistUserData() const {
+        return persistUserData;
+    }
+    //-------------------------------------------------------------------------
+    PersistUserData & getPersistUserData() {
+        return persistUserData;
+    }
+    //-------------------------------------------------------------------------
+	/**
+     * @param if is true functions are registered for public purpose
+     */
+    PluginScriptCtrl(bool isPublic = false);
+    //-------------------------------------------------------------------------
+	void setPlugin(frx::processing::VstForxPlug *plug);
+    //-------------------------------------------------------------------------
+    typedef boost::unique_lock<sambag::com::RecursiveMutex> Lock;
+    typedef boost::shared_ptr<Lock> LockPtr;
+    /**
+     * @brief a lua state with lock guard, to ensure
+     * no async access while external use @see getLuaState()
+     */
+    typedef std::pair<sambag::lua::LuaStateRef, LockPtr> LuaState;
+    LockPtr getLock();
+    LuaState getLuaState();
+    typedef boost::function<void(std::string)> OnExecErrorF;
+    typedef boost::shared_ptr<void> AnyPtr;
+    typedef boost::weak_ptr<void> AnyWPtr;
+    typedef boost::function<AnyPtr()> GetLockObjectF;
+    typedef boost::tuple<sambag::lua::LuaStateWRef, // lua_state
+        GetLockObjectF,                             // getLockObject
+        OnExecErrorF,                               // executation fails callbk
+        AnyWPtr                                     // signals track
+    > LuaProcessor;
+	//-------------------------------------------------------------------------
+	void registerFunctions(const LuaProcessor &lp,
+        bool publicOnly, bool includeView);
+    //-------------------------------------------------------------------------
+	void __startScriptCall(const std::string &fname="");
+	//-------------------------------------------------------------------------
+	void __endScriptCall();
 	//-------------------------------------------------------------------------
 	void setVerbose(bool val) { verbose = val; }
 	//-------------------------------------------------------------------------
@@ -96,10 +153,6 @@ public:
 	 */
 	const std::string & getLastCall() { return lastCall; }
 	//-------------------------------------------------------------------------
-	void startScriptCall(const std::string &fname="");
-	//-------------------------------------------------------------------------
-	void endScriptCall();
-	//-------------------------------------------------------------------------
 	sambag::disco::components::WindowPtr getEditorWindow() const;
 	//-------------------------------------------------------------------------
 	void start();
@@ -119,13 +172,14 @@ public:
 	 */
 	void execute(const std::string &str);
 	//-------------------------------------------------------------------------
-	void setPlugin(frx::processing::VstForxPlug *plug);
+	/**
+	 * executes scriptfile in callers thread.
+	 */
+	void executeFile(const std::string &path);
 	//-------------------------------------------------------------------------
 	frx::processing::VstForxPlug * getPlugin() const { return plug; }
 	//-------------------------------------------------------------------------
 	frx::gui::components::VstForxEditor * getEditor() const { return editor; }
-	//-------------------------------------------------------------------------
-	PluginScriptCtrl();
 }; // PluginScriptCtrl
 }} // namespace(s)
 

@@ -69,40 +69,77 @@ void TestOne4All::testMapNumChannels2Xput() {
 void TestOne4All::testProcessorId() {
     using namespace com;
     CPPUNIT_ASSERT_EQUAL(
-        FRX_NULL_PROCESSOR,
-        extractProcessorDescriptor("")
+        FRX_NULL_ID,
+        IdParser()
     );
     CPPUNIT_ASSERT_EQUAL(
-        FRX_NULL_PROCESSOR,
-        extractProcessorDescriptor("no.none")
+        FRX_NULL_ID,
+        IdParser("")
     );
     CPPUNIT_ASSERT_EQUAL(
-        ProcessorDescriptor("vst2x", "DelayX", -1, -1),
-        extractProcessorDescriptor("frx.processing.vst2x.DelayX")
+        FRX_NULL_ID,
+        IdParser("no.none")
     );
     CPPUNIT_ASSERT_EQUAL(
-        ProcessorDescriptor("vst2x", "FrxTestplugin", 2, 3),
-        extractProcessorDescriptor("frx.processing.vst2x.FrxTestplugin(2,3)")
+        IdParser("processing", "vst2x", "location", -1, -1, "/home/plugins/myplugin.vst"),
+        IdParser("frx.processing.vst2x.location('/home/plugins/myplugin.vst')")
     );
     CPPUNIT_ASSERT_EQUAL(
-        ProcessorDescriptor("internal", "FrxADSR", -1, -1),
-        extractProcessorDescriptor("frx.processing.internal.FrxADSR")
+        IdParser("processing", "vst2x", "location", -1, -1, "/home/plugins/myplugin.vst"),
+        IdParser("frx.processing.vst2x.location(   '/home/plugins/myplugin.vst'   )")
+    );
+    CPPUNIT_ASSERT_EQUAL(
+        IdParser("processing", "vst2x", "location", -1, -1, "c:\\home\\plugins\\myplugin.dll"),
+        IdParser("frx.processing.vst2x.location('c:\\home\\plugins\\myplugin.dll')")
+    );
+    CPPUNIT_ASSERT_EQUAL(
+        IdParser("processing", "vst2x", "FrxTestplugin", 2, 3, ""),
+        IdParser("frx.processing.vst2x.FrxTestplugin(2,3)")
+    );
+    CPPUNIT_ASSERT_EQUAL(
+        IdParser("processing", "internal", "FrxADSR", -1, -1, ""),
+        IdParser("frx.processing.internal.FrxADSR")
     );
    CPPUNIT_ASSERT_EQUAL(
-        FRX_NULL_PROCESSOR,
-        extractProcessorDescriptor("frx.processing.vst2x.FrxTestplugin(2)")
+        FRX_NULL_ID,
+        IdParser("frx.processing.vst2x.FrxTestplugin(2)")
     );
    CPPUNIT_ASSERT_EQUAL(
-        FRX_NULL_PROCESSOR,
-        extractProcessorDescriptor("frx.processing.vst2x(2)")
+        FRX_NULL_ID,
+        IdParser("frx.processing.vst2x(2)")
     );
    CPPUNIT_ASSERT_EQUAL(
-        FRX_NULL_PROCESSOR,
-        extractProcessorDescriptor("vst2x(2)")
+        FRX_NULL_ID,
+        IdParser("vst2x(2)")
     );
     CPPUNIT_ASSERT_EQUAL(
-        ProcessorDescriptor("vst2x", "FrxTestplugin", 2, 3),
-        extractProcessorDescriptor("frx.processing.vst2x.FrxTestplugin( 2 , 3 )")
+        IdParser("processing", "vst2x", "FrxTestplugin", 2, 3, ""),
+        IdParser("frx.processing.vst2x.FrxTestplugin( 2 , 3 )")
+    );
+    CPPUNIT_ASSERT_EQUAL(
+        std::string("frx.processing.unknown-plugin.location('/home/plugins/myplugin.vst')"),
+        IdParser("frx.processing.unknown-plugin.location('/home/plugins/myplugin.vst')").toString()
+    );
+    IdParser pd("frx.processing.internal.FrxADSR");
+    CPPUNIT_ASSERT_EQUAL(
+        std::string("frx.processing.internal.FrxADSR"),
+        pd.toString()
+    );
+    CPPUNIT_ASSERT_EQUAL(
+        std::string("frx.processing.internal.FrxADSR(1, 2)"),
+        pd.numInputs(1).numOutputs(2).toString()
+    );
+    CPPUNIT_ASSERT_EQUAL(
+        std::string("frx.unknown.example.test(1, 2)"),
+        pd.namespace_("unknown").type("example").name("test").toString()
+    );
+    CPPUNIT_ASSERT_EQUAL(
+        std::string("frx.unknown.example.test('blabla')"),
+        pd.details("blabla").toString()
+    );
+    CPPUNIT_ASSERT_EQUAL(
+        std::string(""),
+        IdParser("nothing").toString()
     );
 }
 } // namespace tests

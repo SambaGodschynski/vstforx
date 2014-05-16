@@ -1,0 +1,43 @@
+frx.scripts
+#include <scripts/LuaFrxConnection.hpp>
+#include <sambag/lua/LuaSequence.hpp>
+
+/**
+ * @brief This class represents a parameter connection object.
+ * @alias frx.view.ParameterConnection
+ * @extends @see frx.view.Connection
+ * @version 1.0.5
+ */
+class LuaFrxParameterConnectionBase extends LuaFrxConnection {
+    User< sambag::lua::LuaSequence<std::string> > OpNames;
+    /**
+     * @returnType Sequence
+     * @return a sequence of operator names which are able
+     * to add (see @see addOperator()).
+     * @version 1.0.5
+     */
+    User<OpNames> getOperatorNames();
+    /**
+     * @brief Removes the operator at the given index.
+     * @param the operator index
+     * @version 1.0.5
+     */
+    void removeOperatorAt(int index);
+    /**
+     * @brief Adds an operator to the parameter connection.
+     * @param the operator name (see: @see getOperatorNames())
+     * @version 1.0.5
+     */
+    void addOperator(string name);
+    /**
+     * @returnType Sequence
+     * @return a sequence of parameters which are related to
+     * the connection operators
+     * @version 1.0.5
+     */
+    ManuallyReturn<1> getParameters();
+}
+
+
+
+

@@ -14,16 +14,18 @@
 #include <gui/HandyNamespaces.hpp>
 #include <sambag/disco/components/Button.hpp>
 #include <loki/Typelist.h>
+#include <gui/ViewFactory.hpp>
+#include <string>
 
 namespace frx { namespace gui { namespace components {
 //-----------------------------------------------------------------------------
-template <class _ProcessorType>
+template <class Processor>
 const char * getProcessorName();
 //-----------------------------------------------------------------------------
-template <class _ProcessorType>
+template <class Processor>
 const char * getProcessorBeautyName();
 //-----------------------------------------------------------------------------
-template <class _ProcessorType>
+template <class Processor>
 const char * getProcessorTooltip();
 //-----------------------------------------------------------------------------
 std::string getProcessorBeautyName(const std::string &processorName);
@@ -69,7 +71,7 @@ protected:
 		ProcessorType::init( getPtr() );
 		if (getName() == "") {
 			setName(getProcessorBeautyName<ConcreteProcessor>());
-			setName(getName()+"_"+sambag::com::toString(instances));
+			setName(getName());
 		}
 		setUpperFlagText(getName());
 		setTooltipText( getProcessorTooltip<ConcreteProcessor>() );
@@ -111,26 +113,111 @@ int FrxConcreteProcessor<_ProcessorType>::instances = 0;
 // Types
 //=============================================================================
 namespace processorTypes {
-	struct ProcessorTypeBase{ void init( FrxProcessorNode::Ptr ){} };
+	struct ProcessorTypeBase{
+        void init( FrxProcessorNode::Ptr ){}
+    };
 	struct Plugin : ProcessorTypeBase{ 
 		bool _isSynth;
 		void init( FrxProcessorNode::Ptr obj );
 		Plugin() : _isSynth(false) {}
 		void isSynth(bool val) { _isSynth = val; }
 		bool isSynth() const { return _isSynth; }
+        struct Details {
+            static const char * ns;
+            static const char * name;
+            static const char * beautyName;
+            static const char * toolTip;
+        };
 	};
-	struct Volume : ProcessorTypeBase{};
-	struct Pan : ProcessorTypeBase{};
-	struct InStep : ProcessorTypeBase{};
-	struct OutStep : ProcessorTypeBase{};
-	struct InSwitch : ProcessorTypeBase{};
-	struct OutSwitch : ProcessorTypeBase{};
-	struct ADSR : ProcessorTypeBase{};
-	struct PeakTracker : ProcessorTypeBase{};
-	struct MIDIReceiver : ProcessorTypeBase{};
-    struct RemoteChReceiver : ProcessorTypeBase{};
-    struct DCTester : ProcessorTypeBase{};
-}
+	struct Volume : ProcessorTypeBase {
+        struct Details {
+            static const char * ns;
+            static const char * name;
+            static const char * beautyName;
+            static const char * toolTip;
+        };
+    };
+	struct Pan : ProcessorTypeBase {
+        struct Details {
+            static const char * ns;
+            static const char * name;
+            static const char * beautyName;
+            static const char * toolTip;
+        };
+    };
+	struct InStep : ProcessorTypeBase {
+        struct Details {
+            static const char * ns;
+            static const char * name;
+            static const char * beautyName;
+            static const char * toolTip;
+        };
+    };
+	struct OutStep : ProcessorTypeBase {
+        struct Details {
+            static const char * ns;
+            static const char * name;
+            static const char * beautyName;
+            static const char * toolTip;
+        };
+    };
+	struct InSwitch : ProcessorTypeBase {
+        struct Details {
+            static const char * ns;
+            static const char * name;
+            static const char * beautyName;
+            static const char * toolTip;
+        };
+    };
+	struct OutSwitch : ProcessorTypeBase {
+        struct Details {
+            static const char * ns;
+            static const char * name;
+            static const char * beautyName;
+            static const char * toolTip;
+        };
+    };
+	struct ADSR : ProcessorTypeBase {
+        struct Details {
+            static const char * ns;
+            static const char * name;
+            static const char * beautyName;
+            static const char * toolTip;
+        };
+    };
+	struct PeakTracker : ProcessorTypeBase {
+        struct Details {
+            static const char * ns;
+            static const char * name;
+            static const char * beautyName;
+            static const char * toolTip;
+        };
+    };
+	struct MIDIReceiver : ProcessorTypeBase {
+        struct Details {
+            static const char * ns;
+            static const char * name;
+            static const char * beautyName;
+            static const char * toolTip;
+        };
+    };
+    struct RemoteChReceiver : ProcessorTypeBase {
+        struct Details {
+            static const char * ns;
+            static const char * name;
+            static const char * beautyName;
+            static const char * toolTip;
+        };
+    };
+    struct DCTester : ProcessorTypeBase {
+        struct Details {
+            static const char * ns;
+            static const char * name;
+            static const char * beautyName;
+            static const char * toolTip;
+        };
+    };
+} // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
 typedef FrxConcreteProcessor<processorTypes::Plugin> FrxPluginNode;
@@ -160,59 +247,72 @@ typedef LOKI_TYPELIST_12(FrxPluginNode,
                  FrxDCTester
         ) FrxProcessorList;
 //-----------------------------------------------------------------------------
-namespace __private {
-    const char * _getProcessorNameImpl(size_t index);
-    template <int TypeIndex>
-    inline const char * _getProcessorName() {
-        BOOST_STATIC_ASSERT( TypeIndex < Loki::TL::Length<FrxProcessorList>::value );
-        return _getProcessorNameImpl(TypeIndex);
-    }
-    template <>
-    inline const char * _getProcessorName<-1>() {
-        return "unkonwn processortype";
-    }
-}
 template <class _ProcessorType>
 const char * getProcessorName() {
-    enum { Index = ::Loki::TL::IndexOf<FrxProcessorList, _ProcessorType>::value };
-    return __private::_getProcessorName<Index>();
+    return _ProcessorType::Details::name;
 }
 //-----------------------------------------------------------------------------
-namespace __private {
-    const char * _getProcessorBeautyNameImpl(size_t index);
-    template <int TypeIndex>
-    inline const char * _getProcessorBeautyName() {
-        BOOST_STATIC_ASSERT( TypeIndex < Loki::TL::Length<FrxProcessorList>::value );
-        return _getProcessorBeautyNameImpl(TypeIndex);
-    }
-    template <>
-    inline const char * _getProcessorBeautyName<-1>() {
-        return "unkonwn processortype";
-    }
-}
 template <class _ProcessorType>
 const char * getProcessorBeautyName() {
-    enum { Index = ::Loki::TL::IndexOf<FrxProcessorList, _ProcessorType>::value };
-    return __private::_getProcessorBeautyName<Index>();
+    return _ProcessorType::Details::beautyName;
 }
 //-----------------------------------------------------------------------------
-namespace __private {
-    const char * _getProcessorTooltipImpl(size_t index);
-    template <int TypeIndex>
-    inline const char * _getProcessorTooltip() {
-        BOOST_STATIC_ASSERT( TypeIndex < Loki::TL::Length<FrxProcessorList>::value );
-        return _getProcessorTooltipImpl(TypeIndex);
-    }
-    template <>
-    inline const char * _getProcessorTooltip<-1>() {
-        return "?";
-    }
-}
 template <class _ProcessorType>
 const char * getProcessorTooltip() {
-    enum { Index = ::Loki::TL::IndexOf<FrxProcessorList, _ProcessorType>::value };
-    return __private::_getProcessorTooltip<Index>();
+    return _ProcessorType::Details::toolTip;
 }
+//-----------------------------------------------------------------------------
+template <class _ProcessorType>
+const char * getProcessorNamespace() {
+    return _ProcessorType::Details::ns;
+}
+///////////////////////////////////////////////////////////////////////////////
+// Register in Factory
+// Walk through ProcessorList and register themselve
+///////////////////////////////////////////////////////////////////////////////
+namespace {
+    template <class T>
+    inline bool _doRegister() {
+        return ViewFactory::instance().register_<T>(
+            std::string(getProcessorNamespace<T>()) + "." + getProcessorName<T>(),
+            &T::create
+        );
+    }
+    template <>
+    inline bool _doRegister<FrxPluginNode>() {
+        typedef FrxPluginNode T;
+        // register FrxPluginNode for all plugin types
+        return ViewFactory::instance().register_<T>(
+            std::string("vst2x.Plugin"),
+            &T::create
+        ) && ViewFactory::instance().register_<T>(
+            std::string("vst3x.Plugin"),
+            &T::create
+        ) && ViewFactory::instance().register_<T>(
+            std::string("au.Plugin"),
+            &T::create
+        ) && ViewFactory::instance().register_<T>(
+            std::string("dx.Plugin"),
+            &T::create
+        ) && ViewFactory::instance().register_<T>(
+            std::string("unknown-plugin.Plugin"),
+            &T::create
+        ) && ViewFactory::instance().register_<T>(
+            std::string("bridged-plugin.Plugin"),
+            &T::create
+        );
+    }
+    template <class ProcessorList>
+    inline bool registerInFactory() {
+        typedef typename ProcessorList::Head T;
+        return _doRegister<T>() && registerInFactory<typename ProcessorList::Tail>();
+    }
+    template <>
+    inline bool registerInFactory<Loki::NullType>() { return true; }
+    
+    bool FrxProcessors_Registered = registerInFactory<FrxProcessorList>();
+
+} // namespace(s)
 }}} // namespace(s)
 
 #endif /* SAMBAG_FRXPLUGINNODE_H */

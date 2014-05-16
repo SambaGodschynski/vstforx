@@ -1,31 +1,31 @@
 function openClose(num)
   for x = 0, num, 1 do
-    frxOpenEditor() 
-    frxCloseEditor()
+    frx.openEditor()
+    frx.closeEditor()
   end
 end
 
-frxOpenPlugin()
+frx.openPlugin()
 openClose(3)
 
-frxClosePlugin()
-frxOpenPlugin()
-frxOpenEditor()
+frx.closePlugin()
+frx.openPlugin()
+frx.openEditor()
 
 
-frxOpenPlugin()
-frxOpenPlugin()
-frxOpenEditor()
-frxOpenEditor()
-frxCloseEditor()
-frxCloseEditor()
-frxClosePlugin()
-frxClosePlugin()
+frx.openPlugin()
+frx.openPlugin()
+frx.openEditor()
+frx.openEditor()
+frx.closeEditor()
+frx.closeEditor()
+frx.closePlugin()
+frx.closePlugin()
 
 
 -- first close plugin then editor
-frxClosePlugin()
-frxCloseEditor()
+frx.closePlugin()
+frx.closeEditor()
 
 
 

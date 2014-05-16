@@ -18,6 +18,7 @@
 #include <boost/shared_ptr.hpp>
 #include <com/Serialization.h>
 
+
 namespace processing {
 
 struct DummyFX : public AudioEffectX, public frx::processing::IHostInfo {
@@ -41,6 +42,9 @@ public:
 	virtual void * getEffectPtr() {
 		return this;
 	}
+    MasterType getMasterType() const {
+        return VST2X;
+    }
 	virtual void * getMasterCallback() {
 		return (void*)audioMaster;
 	}
@@ -63,7 +67,10 @@ public:
 		ar & boost::serialization::base_object<frx::processing::IHostInfo> ( *this );
 		ar & sampleRate;
 		ar & blockSize;
-	} 
+	}
+    virtual frx::scripts::PluginScriptCtrlPtr getScriptController() {
+        return frx::scripts::PluginScriptCtrlPtr();
+    }
 };
 
 } // namespace

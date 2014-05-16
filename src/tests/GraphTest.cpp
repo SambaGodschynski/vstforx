@@ -12,7 +12,6 @@
 #include "processing/IHostInfo.h"
 #include "processing/parameter/parameter.h"
 #include "processing/parameter/ConnectionOperators.h"
-#include "processing/ConcreteProcessAdapter.h"
 #include "com/one4All.h"
 #include "GraphBuilder.hpp"
 #include "processing/BglGraph.h"
@@ -28,7 +27,10 @@
 #include <sambag/disco/components/WindowToolkit.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
 #include <processing/Plugin.h>
-#include <processing/pluginTypes/VSTPlugin2x.h>
+#include <processing/ModelFactory.hpp>
+#include <processing/concreteAdapter/DCTester.hpp>
+#include <processing/concreteAdapter/Volume.h>
+#include <processing/SerializationRegister.hpp>
 
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::GraphTest );
@@ -829,7 +831,7 @@ void GraphTest::testDelayCompensationComplex1() {
 	Graph::Ptr graph = createGraph( BLOCKSIZE, 44100.0f );
 	typedef CreateAdapter< DelayAdapter<D1> > AdapterD1;
 	typedef CreateAdapter< DelayAdapter<D2> > AdapterD2;
-	Volume::Ptr nd = Volume::create( graph->getHostInfo(), 1.0f );
+	Volume::Ptr nd = Volume::create( graph->getHostInfo() );
 	Graph::Janitor::Ptr jan = graph->getJanitor();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add Adapter
 	jan->add(nd);
@@ -1321,179 +1323,16 @@ void GraphTest::testGraphComplex3() {
 	performComplex3<7,1,3>(createGraph( 512, 44100.0f ), 104.0);
 }	
 //=============================================================================
-template < typename A >
-void register_types( A &ar ){
-	using namespace processing;
-	namespace pp = processing::parameter;
-	//graph
-	ar.template register_type<Parameter>();
-	ar.template register_type<pp::InverseConnection>();
-	ar.template register_type<pp::ExpConnection>();
-	ar.template register_type<pp::LogConnection>();
-	ar.template register_type<NOPNode>();
-	ar.template register_type<ProcessAdapter::OutputNode>();
-	ar.template register_type<ProcessAdapter::InputNode>();
-	ar.template register_type<StartNode>();
-	ar.template register_type<EndNode>();
-	ar.template register_type<ProcessAdapterNode>();
-	ar.template register_type<Volume>();
-	//ar.template register_type<VSTPlugin>();
-	ar.template register_type<Pan>();
-	ar.template register_type<OutputStep>();
-	ar.template register_type<InputStep>();
-	ar.template register_type<OutputSwitch>();
-	ar.template register_type<InputSwitch>();
-	ar.template register_type<PeakTracker>();
-	ar.template register_type<ADSRTrigger>();
-	ar.template register_type <FadeValue>();
-	ar.template register_type <DummyFX>();
-	//                 * 
-	// test klassen
-	ar.template register_type <HelperNode>();
-}
-
-//=============================================================================
-void GraphTest::testSerialization() { 
-//=============================================================================
-	using namespace std;
-	using namespace com;
-	using namespace processing;
-	int blockSize = 512;
-	enum { GRAPH_DEPTH=1 };
-	Graph::Ptr graph = createGraph( blockSize, 44100.0f );
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>create GRAPH_DEPTH VolumeAdapters series:
-	// 
-	CreateSeries< CreateAdapter<Volume>, GRAPH_DEPTH > 
-		series( graph, graph->getStartNode(), graph->getEndNode() );
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> check creation
-	//                              4 = input + adapter + output + helper ( created by CreateSeries )
-	//                              |
-	CPPUNIT_ASSERT_EQUAL ( (size_t)(4 * GRAPH_DEPTH + 2), graph->getNumNodes() );
-	CPPUNIT_ASSERT ( graph->isActive() );
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> process
-	Frames inFrame( blockSize );
-	Frames outFrame( blockSize );
-	fillFrame ( &inFrame, 0.5f, -0.5f );
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph. 
-	graph->pushAndCopy ( &inFrame, blockSize );
-	graph->processGraph( outFrame.getData(), blockSize  );
-	CPPUNIT_ASSERT_EQUAL ( (float) 0.5f, isFilledWith<float>( outFrame[0], outFrame.getSize(), 0.5  ) );
-	CPPUNIT_ASSERT_EQUAL ( (float)-0.5f, isFilledWith<float>( outFrame[1], outFrame.getSize(), -0.5 ) );
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> serialize
-	{
-		stringstream ss;
-		oArchive oar(ss);
-		register_types<oArchive>( oar );
-		oar<<dummyFX;
-		oar<<graph;
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> clear graph
-		dummyFX.reset();
-		graph.reset();
-		outFrame.setZero( blockSize );
-		CPPUNIT_ASSERT ( graph.get() == NULL );
-		CPPUNIT_ASSERT ( dummyFX.get() == NULL );
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> de-serialize
-		iArchive iar(ss);
-		register_types<iArchive>( iar );
-		iar >> dummyFX;
-		iar >> graph;
-		CPPUNIT_ASSERT ( graph );
-		CPPUNIT_ASSERT_EQUAL ( (size_t)(4 * GRAPH_DEPTH + 2), graph->getNumNodes() );
-		CPPUNIT_ASSERT ( graph->isActive() );
-	}
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>reset graph. 
-	blockSize = 255;
-	float sampleRate = 44800.0f;
-	inFrame.setSize ( blockSize );
-	outFrame.setSize ( blockSize );
-	outFrame.setZero ( blockSize );
-	fillFrame ( &inFrame, 0.5f, -0.5f );
-	Graph::Janitor::Ptr jan = graph->getJanitor();
-	dummyFX->setBlockSize(blockSize);
-	dummyFX->setSampleRate(sampleRate);
-	jan->hostBaseConfigChanged();
-	jan.reset();
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>process graph. 
-	// volumeAdapter has fadein after de-serialize, so the first out-values grow up from zero 
-	for ( int i=0; i<10; ++i ) { 
-		fillFrame ( &inFrame, 0.5f, -0.5f );
-		graph->pushAndCopy ( &inFrame, blockSize );
-		graph->processGraph( outFrame.getData(), blockSize  );
-	}
-	CPPUNIT_ASSERT_EQUAL ( (float) 0.5f, isFilledWith<float>( outFrame[0], outFrame.getSize(), 0.5  ) );
-	CPPUNIT_ASSERT_EQUAL ( (float)-0.5f, isFilledWith<float>( outFrame[1], outFrame.getSize(), -0.5 ) );
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add delayAdapter parallel
-	jan = graph->getJanitor();
-	enum { DELAY = 105 };
-	DelayAdapter<DELAY>::Ptr delay = DelayAdapter<DELAY>::create( graph->getHostInfo() );
-	jan->add( delay );
-	jan->connectNodes ( graph->getStartNode(), delay->getInputNode(0) );
-	jan->connectNodes ( delay->getOutputNode(0), graph->getEndNode() );
-	jan.reset();
-	size_t newNumNodes = graph->getNumNodes();
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>test new graph
-	CPPUNIT_ASSERT_EQUAL ( (size_t)DELAY, graph->getGraphDelay() );
-	// set DCStreams zero
-	for ( int i=0; i<100; ++i ) { 
-		fillFrame ( &inFrame, 0.0f, 0.0f );
-		graph->pushAndCopy ( &inFrame, blockSize );
-		graph->processGraph( outFrame.getData(), blockSize  );
-	}
-	fillFrame ( &inFrame, 0.5f, 0.5f );
-	graph->pushAndCopy ( &inFrame, blockSize );
-	graph->processGraph( outFrame.getData(), blockSize  );
-	TEST_PEAK ( outFrame, 1.0f, DELAY, blockSize );
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> serialize
-	{
-		stringstream ss;
-		oArchive oar(ss);
-		register_types<oArchive>( oar );
-		oar.register_type< DelayAdapter<DELAY> >();
-		oar << dummyFX;
-		oar << graph;
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> clear graph
-		dummyFX.reset();
-		graph.reset();
-		outFrame.setZero( blockSize );
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> de-serialize
-		iArchive iar(ss);
-		register_types<iArchive>( iar );
-		iar.register_type< DelayAdapter<DELAY> >();
-		iar >> dummyFX;
-		iar >> graph;
-		CPPUNIT_ASSERT ( graph );
-		CPPUNIT_ASSERT_EQUAL ( (size_t)newNumNodes, graph->getNumNodes() );
-		CPPUNIT_ASSERT ( graph->isActive() );
-	}
-	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> test new graph
-	jan = graph->getJanitor();
-	dummyFX->setBlockSize(blockSize);
-	dummyFX->setSampleRate(sampleRate);
-	jan->hostBaseConfigChanged();
-	jan.reset();
-
-	// volumeAdapter has fadein after de-serialize, so the first out-values grow up from zero 
-	for ( int i=0; i<10; ++i ) { 
-		fillFrame ( &inFrame, 0.0f, 0.0f );
-		graph->pushAndCopy ( &inFrame, blockSize );
-		graph->processGraph( outFrame.getData(), blockSize  );
-	}
-
-	fillFrame ( &inFrame, 0.5f, 0.5f );
-	graph->pushAndCopy ( &inFrame, blockSize );
-	graph->processGraph( outFrame.getData(), blockSize  );
-	TEST_PEAK ( outFrame, 1.0f, DELAY, blockSize );
-}
-//=============================================================================
 namespace {
     int countdown = 0;
+    bool busy=false;
     sambag::com::Mutex m1;
     template <typename T>
     void add( T a, T b, T *res) {
         using namespace sambag::disco::components;
         *res = a + b;
         if (--countdown<=0) {
-            getWindowToolkit()->quit();
+            busy=false;
         }
     }
     void sum(int start, int end, int *res) {
@@ -1518,7 +1357,7 @@ namespace {
         SAMBAG_TRY_TO_LOCK_TIMED(m1);
         if (--countdown<=0) {
             boost::this_thread::sleep( boost::posix_time::seconds(5) );
-            getWindowToolkit()->quit();
+            busy=false;
         }
     }
 }
@@ -1536,23 +1375,30 @@ void GraphTest::testGraphIdleHandler() {
     {   // simple test
         int res = 0;
         countdown = 1;
+        busy=true;
         graph->addIdleTask( boost::bind(&add<int>, 1, 100, &res) );
-        getWindowToolkit()->startMainLoop();
+        while (busy==true) {
+            boost::this_thread::sleep( boost::posix_time::milliseconds(100) );
+        }
         CPPUNIT_ASSERT_EQUAL((int)101, res);
     }
     {   // simple test 2
         int res = 0;
         float fres = 0.f;
         countdown = 2;
+        busy=true;
         graph->addIdleTask( boost::bind(&add<int>, 1, 100, &res) );
         graph->addIdleTask( boost::bind(&add<float>, 1.5, 0.2, &fres) );
-        getWindowToolkit()->startMainLoop();
+        while (busy==true) {
+            boost::this_thread::sleep( boost::posix_time::milliseconds(100) );
+        }
         CPPUNIT_ASSERT_EQUAL((int)101, res);
         CPPUNIT_ASSERT_EQUAL(1.7f, fres);
     }
     {   // parallel
         int res = 0;
         countdown = 4;
+        busy=true;
         boost::thread t1 = boost::thread(
             boost::bind(&sumTaskThread, graph, 1, 100, 10, 10, &res)
         );
@@ -1565,7 +1411,9 @@ void GraphTest::testGraphIdleHandler() {
         boost::thread t4 = boost::thread(
             boost::bind(&sumTaskThread, graph, 301, 400, 10, 20, &res)
         );
-        getWindowToolkit()->startMainLoop();
+        while (busy==true) {
+            boost::this_thread::sleep( boost::posix_time::milliseconds(100) );
+        }
         t1.join();
         t2.join();
         t3.join();
@@ -1598,14 +1446,15 @@ namespace {
         using namespace processing;
         using namespace sambag::disco::components;
         using namespace frx::processing;
+        frx::processing::ModelFactory &fac =
+            frx::processing::ModelFactory::instance();
         int blockSize = graph->getHostInfo()->getBlockSize();
-        std::stringstream ss;
+            std::stringstream ss;
         ss<<"frx.processing.vst2x.FrxTestPlugin("<<Ins<<","<<Outs<<")";
-        VSTPlugin::Ptr pl = boost::dynamic_pointer_cast<VSTPlugin>(
-            PluginFactory::createPlugNode(graph->getHostInfo(),
-            ss.str())
+        Plugin::Ptr pl = boost::dynamic_pointer_cast<Plugin>(
+            fac.create(ss.str(), graph->getHostInfo())
         );
-        pl->getAEffect()->processReplacing = &_process;
+        //pl->getAEffect()->processReplacing = &_process;
         CPPUNIT_ASSERT(pl);
         CPPUNIT_ASSERT_EQUAL((size_t)Ins, pl->getNumInputNodes());
         CPPUNIT_ASSERT_EQUAL((size_t)Outs, pl->getNumOutputNodes());

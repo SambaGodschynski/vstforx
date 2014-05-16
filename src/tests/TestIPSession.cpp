@@ -9,7 +9,7 @@
 #include <cppunit/config/SourcePrefix.h>
 #include <processing/interprocess/Session.hpp>
 #include <sambag/com/Thread.hpp>
-
+#include <processing/interprocess/SessionManager.hpp>
 // Registers the fixture into the 'registry'
 CPPUNIT_TEST_SUITE_REGISTRATION( tests::TestIPSession );
 
@@ -32,13 +32,19 @@ struct OpClose {
 
 struct OpWhoAreYou {
     enum {OPC = 2};
-    typedef struct Ret { char * value; } *RetPtr;
+    typedef struct Ret { char value[20]; } *RetPtr;
     typedef struct Arg {} *ArgPtr;
 };
 
 struct OpHello {
     enum {OPC = 3};
-    typedef struct Ret { char * value; } *RetPtr;
+    typedef struct Ret { char value[20]; } *RetPtr;
+    typedef struct Arg {} *ArgPtr;
+};
+
+struct OpCpyLongString {
+    enum {OPC = 4};
+    typedef struct Ret {} *RetPtr;
     typedef struct Arg {} *ArgPtr;
 };
 
@@ -56,6 +62,7 @@ struct HostSession : Session {
         Session(id, ChannelSize(100,100), ChannelSize(100,100) ),
         isRunning(true)
     {
+        startProcessThread();
     }
     void processImpl(Opc opc, void *argmen, void *retmem) {
         if (opc == OpAdd::OPC) {
@@ -66,20 +73,41 @@ struct HostSession : Session {
         }
         if (opc == OpHello::OPC) {
             // ask for callers name
-            char * name = waitForResult<char*>(OpWhoAreYou::OPC);
-            char * ret = static_cast<char*>(retmem);
+            MemoryGuard::Ptr g = getMemoryGuard();
+            OpHello::RetPtr rets = g->getRet<OpHello::Ret>();
+            waitForResult(OpWhoAreYou::OPC, g, 1000);
             std::string rstr("Hello ");
-            rstr+=name;
-            strcpy(ret, rstr.c_str());
+            rstr+=rets->value;
+            strcpy((char*)retmem, rstr.c_str());
+        }
+        if (opc == OpCpyLongString::OPC) {
+            std::string ret("no luck, try again");
+            void * data;
+            TransferReceiverGuardPtr guard;
+            boost::tie(data, guard) = getTransferedData(OpCpyLongString::OPC);
+            if (data) {
+                int byteSize = getTransferedDataSize(OpCpyLongString::OPC);
+                char *toString = new char[byteSize+1];
+                memcpy(toString, data, byteSize);
+                toString[byteSize] = '\0';
+                ret=std::string(toString) + " received.";
+                delete[] toString;
+            } else {
+                SAMBAG_LOG_TRACE<<"nothing received";
+            }
+            transferData(OpCpyLongString::OPC, (void*)ret.c_str(), ret.length(), getTransferSenderGuard());
         }
     }
+
 };
     
 struct ClientSession : Session {
     ClientSession(const std::string &id) : Session(id),
         causeChannelOverload(false),
         timeout_catched(false)
-    {}
+    {
+        startProcessThread();
+    }
     void processImpl(Opc opc, void *argmen, void *retmem) {
         if (opc == OpWhoAreYou::OPC) {
             // ask for callers name
@@ -88,27 +116,53 @@ struct ClientSession : Session {
             
             if (causeChannelOverload) {
                 try {
-                    waitForResult<char*>(OpHello::OPC);
+                    waitForProcess(OpHello::OPC, getMemoryGuard(), 1000);
                 } catch (const Session::TimeOut &ex) {
                    timeout_catched = true;
                 }
             }
+            if (opc = OpCpyLongString::OPC) {}
         }
 
     }
+    
+    std::string transferString(const std::string &str) {
+        transferData(OpCpyLongString::OPC, (void*)str.c_str(), str.length(), getTransferSenderGuard());
+        waitForProcess(OpCpyLongString::OPC, getMemoryGuard(), 5*1000);
+        void * data;
+        TransferReceiverGuardPtr guard;
+        boost::tie(data, guard) = getTransferedData(OpCpyLongString::OPC);
+        std::string res;
+        if (!data) {
+            return "";
+        } else {
+            int byteSize = getTransferedDataSize(OpCpyLongString::OPC);
+            char *toString = new char[byteSize+1];
+            memcpy(toString, data, byteSize);
+            toString[byteSize] = '\0';
+            res = std::string(toString);
+            delete[] toString;
+        }
+        return res;
+    }
+    
     int add(int a, int b) {
-        OpAdd::ArgPtr args = static_cast<OpAdd::ArgPtr>(getArgmem());
+        MemoryGuard::Ptr g = getMemoryGuard();
+        OpAdd::ArgPtr args = g->getArg<OpAdd::Arg>();
+        OpAdd::RetPtr rets = g->getRet<OpAdd::Ret>();
         args->a = a;
         args->b = b;
-        OpAdd::RetPtr ret = waitForResult<OpAdd::RetPtr>(OpAdd::OPC);
-        return ret->value;
+        waitForResult(OpAdd::OPC, g, 1000);
+        return rets->value;
     }
     void closeHost() {
-        waitForResult(OpClose::OPC);
+        waitForProcess(OpClose::OPC, getMemoryGuard(), 1000);
     }
     std::string greetHost() {
-        char * res = waitForResult<char*>(OpHello::OPC);
-        return std::string(res);
+        MemoryGuard::Ptr g = getMemoryGuard();
+        OpHello::RetPtr rets = g->getRet<OpHello::Ret>();
+        waitForResult(OpHello::OPC, g, 1000);
+        return std::string(rets->value);
     }
     bool causeChannelOverload; // Cl requests Ho requests> Cl requests Ho
     bool timeout_catched;
@@ -123,18 +177,16 @@ void th_host(std::string sId) {
 } // namespace
 
 
-
-
-
 namespace tests {
 //=============================================================================
 //  Class TestIPSession
 //=============================================================================
 //-----------------------------------------------------------------------------
 void TestIPSession::testSession() {
-    std::string sId("testSession");
+    using frx::processing::interprocess::SessionManager;
+    std::string sId("testSession-"+SessionManager::createUniqueName());
     boost::thread host( boost::bind( &th_host, sId ));
-    boost::this_thread::sleep(boost::posix_time::millisec(Session::DEFAULT_SLEEPING_TIME + 100));
+    boost::this_thread::sleep(boost::posix_time::millisec(1000));
     ClientSession session(sId);
     CPPUNIT_ASSERT_EQUAL( (int)2, session.add(1, 1) );
     CPPUNIT_ASSERT_EQUAL( (int)20, session.add(10, 10) );
@@ -145,14 +197,16 @@ void TestIPSession::testSession() {
 }
 //-----------------------------------------------------------------------------
 void TestIPSession::testNoHost() {
-    std::string sId("testNoHost");
+    using frx::processing::interprocess::SessionManager;
+    std::string sId("testNoHost-"+SessionManager::createUniqueName());
     CPPUNIT_ASSERT_THROW(ClientSession session(sId), Session::Exception);
 }
 //-----------------------------------------------------------------------------
 void TestIPSession::testHostLost() {
-    std::string sId("testHostLost");
+    using frx::processing::interprocess::SessionManager;
+    std::string sId("testHostLost-"+SessionManager::createUniqueName());
     boost::thread host( boost::bind( &th_host, sId ));
-    boost::this_thread::sleep(boost::posix_time::millisec(Session::DEFAULT_SLEEPING_TIME + 100));
+    boost::this_thread::sleep(boost::posix_time::millisec(1000));
     ClientSession session(sId);
     CPPUNIT_ASSERT_EQUAL( (int)2, session.add(1, 1) );
     session.closeHost();
@@ -161,17 +215,18 @@ void TestIPSession::testHostLost() {
 }
 //-----------------------------------------------------------------------------
 void TestIPSession::testFailures() {
+    using frx::processing::interprocess::SessionManager;
     {
-        std::string sId("testFailures3");
+        std::string sId("testFailures3-"+SessionManager::createUniqueName());
         HostSession host_session(sId);
         CPPUNIT_ASSERT_THROW(HostSession second(sId), Session::Exception);
         ClientSession session(sId);
         CPPUNIT_ASSERT_EQUAL( (int)2, session.add(1, 1) );
     }
     { // cause overload
-        std::string sId("testFailures3");
+        std::string sId("testFailures3-"+SessionManager::createUniqueName());
         boost::thread host( boost::bind( &th_host, sId ));
-        boost::this_thread::sleep(boost::posix_time::millisec(Session::DEFAULT_SLEEPING_TIME + 100));
+        boost::this_thread::sleep(boost::posix_time::millisec(1000));
         ClientSession session(sId);
         
         session.causeChannelOverload = true;
@@ -181,7 +236,29 @@ void TestIPSession::testFailures() {
         host.join();
     }
 }
-
+//-----------------------------------------------------------------------------
+/*void TestIPSession::testTransferData() {
+    using frx::processing::interprocess::SessionManager;
+    std::string sId("testTransferData."+SessionManager::createUniqueName());
+    boost::thread host( boost::bind( &th_host, sId ));
+    boost::this_thread::sleep(boost::posix_time::millisec(1000));
+    ClientSession session(sId);
+    
+    CPPUNIT_ASSERT_EQUAL(std::string("hallo received."), session.transferString("hallo"));
+    
+    // create big string
+    std::stringstream ss;
+    for (int i=0; i<1024; ++i) {
+        ss<<i<<", ";
+    }
+    std::string bigString = ss.str();
+    std::string exp = bigString + " received.";
+    
+    CPPUNIT_ASSERT_EQUAL(exp, session.transferString(bigString));
+    
+    session.closeHost();
+    host.join();
+}*/
 //-----------------------------------------------------------------------------
 namespace {
     struct OP0 {

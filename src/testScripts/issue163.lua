@@ -1,49 +1,47 @@
 require "scripts/util"
 
 function assertGraphDelay(d)
-	frxWait(1000) -- graph update happens async 
-	assert( frxGetGraphDelay() == d, 
-	 	 "graph delay. expected: " .. d .. " actual: " .. frxGetGraphDelay() ) 
+	frx.wait(1000) -- graph update happens async 
+	assert( frx.getGraphDelay() == d, 
+	 	 "graph delay. expected: " .. d .. " actual: " .. frx.getGraphDelay() ) 
 end
 
-frxOpenPlugin()
-frxOpenEditor()
+frx.openPlugin()
+frx.openEditor()
 
 assertGraphDelay(0)
 
-p = frxAddProcessor("FrxDCTester")
-assert(#p>0, "adding FrxDCTester failed. Is FRX_FEATURE_DC_TESTER enabled?");
-delay = frxGetComponentParameter(p)[1]
+p = frx.view:add("internal-private.DCTester")
+delay = p:getParameters()[1]
 
-entry, exit = frxGetEntryExit()
+entry, exit = frx.view:getEntry(), frx.view:getExit()
 
 -- change delay BEFORE DCTester is hooked in
-frxSetParameterValue(delay, 1)
-frxConnectComponents( frxGetProcessorInputs(p)[1], entry )
-frxConnectComponents( frxGetProcessorOutputs(p)[1], exit )
+delay:setValue(1)
+frx.view:connect( p:getInputs()[1], entry )
+frx.view:connect( p:getOutputs()[1], exit )
 assertGraphDelay(32768)
 
 -- change delay AFTER DCTester is hooked in
-frxSetParameterValue(delay, 0)
+delay:setValue(0)
 assertGraphDelay(0)
 
-frxSetParameterValue(delay, 1)
+delay:setValue(1)
 assertGraphDelay(32768)
-save = frxSerializePlugin()
-frxClearView()
+save = frx.serializePlugin()
+viewHelper.removeAll()
 
-frxClosePlugin()
-frxCloseEditor()
+frx.closePlugin()
+frx.closeEditor()
 -- !! object pointer are invalid now
 
-frxOpenPlugin()
-frxOpenEditor()
+frx.openPlugin()
+frx.openEditor()
 assertGraphDelay(0)
-frxDeserializePlugin(save)
+frx.deserializePlugin(save)
 assertGraphDelay(32768)
 
-p = findByName("DC Tester_1")
-assert(#p>0)
-delay = frxGetComponentParameter(p)[1]
-frxSetParameterValue(delay, 0)
+p = findByName("DC Tester")
+delay = p:getParameters()[1]
+delay:setValue(0)
 assertGraphDelay(0)

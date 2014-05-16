@@ -1,34 +1,49 @@
 /**
  * resources.rc
  *
- *  Created on: Tue Dec 10 13:51:05 2013
+ *  Created on: Mon Apr 14 18:10:57 2014
  *      Author: createResources.py
  */
+#include <windows.h>
 
-100	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/cmlogo.png"
-110	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/entry.png"
-120	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/logo.png"
-130	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/plugin.png"
-140	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/e.png"
-150	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/disco-floor.png"
-160	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/midiReceiver.png"
-170	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/volume_node.png"
-180	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/folder.png"
-190	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/adsr_trigger.png"
-200	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/processor.png"
-210	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/step_adapter.png"
-220	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/channel_split.png"
-230	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/exit.png"
-240	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/knob.png"
-250	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/bkgrey.png"
-260	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/peak_tracker.png"
-270	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/sand.png"
-280	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/warning_icon.png"
-290	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/plus.png"
-300	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/hfolder.png"
-310	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/iplug.png"
-320	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/oSwitch.png"
-330	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/vstPlugNode.png"
-340	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/inf_icon.png"
-350	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/remoteChReceiver.png"
+200	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/cmlogo.png"
+210	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/entry.png"
+220	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/logo.png"
+230	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/plugin.png"
+240	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/e.png"
+250	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/disco-floor.png"
+260	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/midiReceiver.png"
+270	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/volume_node.png"
+280	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/folder.png"
+290	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/adsr_trigger.png"
+300	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/processor.png"
+310	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/step_adapter.png"
+320	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/channel_split.png"
+330	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/exit.png"
+340	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/knob.png"
+350	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/bkgrey.png"
+360	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/peak_tracker.png"
+370	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/warning_icon.png"
+380	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/plus.png"
+390	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/hfolder.png"
+400	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/iplug.png"
+410	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/oSwitch.png"
+420	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/vstPlugNode.png"
+430	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/inf_icon.png"
+440	SAMBAG_CUSTOM	"C:/workspace/VST/Apps/vstforx/src/images/remoteChReceiver.png"
 
+
+
+// inputtext dlg
+#define IDD_INPUTTEXT                   100
+#define IDC_EDIT1                       101
+
+IDD_INPUTTEXT DIALOGEX 0, 0, 313, 69
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,101,48,50,14
+    PUSHBUTTON      "Abbrechen",IDCANCEL,163,48,50,14
+    EDITTEXT        IDC_EDIT1,7,7,299,14,ES_AUTOHSCROLL
+END

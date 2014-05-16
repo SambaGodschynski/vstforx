@@ -35,8 +35,6 @@ public:
 	typedef boost::weak_ptr<FrxComponentUI> WPtr;
 protected:
 	//-------------------------------------------------------------------------
-	sdsg::Style menuLabelStyle;
-	//-------------------------------------------------------------------------
 	void postConstructor(Ptr self);
 	//-------------------------------------------------------------------------
 	FrxComponentUI();

@@ -13,6 +13,7 @@
 #include "processing/dspTools.h"
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
+#include <processing/ModelFactory.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -95,8 +96,8 @@ public:
 	 * @param initValue
 	 * @return neues Volume-Objekt
 	 */
-	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo, float initValue = 1.0f ) {
-		Ptr neu( new Volume(hostInfo, initValue ) );
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo ) {
+		Ptr neu( new Volume(hostInfo, 1.0f ) );
 		neu->self = neu;
 		neu->initListener();
 		return neu;
@@ -144,6 +145,9 @@ public:
 	virtual ~Volume () {
 	}
 };
+
+FRX_MODELFACTORY_REGISTER(internal, Volume);
+
 }// namespace processing
 
 #endif  // FORX_VOLUME_H

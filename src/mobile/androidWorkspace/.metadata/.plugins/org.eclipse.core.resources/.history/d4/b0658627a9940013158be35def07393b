@@ -1,0 +1,47 @@
+package frx.com.vstforxmobile;
+
+import com.example.vstforxmobile.R;
+
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+public class SessionView extends BaseFragment {
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) 
+	{
+		View v = super.onCreateView(inflater, container, savedInstanceState);
+		
+		ViewGroup myLayout = (ViewGroup) v.findViewById(R.id.sliders);
+
+		for (int i=0; i<15; ++i) {
+			SeekBar obj = new SeekBar(this);
+			obj.setLayoutParams(new LinearLayout.LayoutParams(
+										 LinearLayout.LayoutParams.MATCH_PARENT,
+		                                 LinearLayout.LayoutParams.WRAP_CONTENT));
+			ShapeDrawable thumb = new ShapeDrawable();
+			thumb.setIntrinsicWidth(90);
+			thumb.setIntrinsicHeight(90);
+		  	thumb.setColorFilter(Color.GRAY, Mode.ADD);
+		  	thumb.setAlpha(128);
+			obj.setThumb(thumb);
+			myLayout.addView(obj);
+			Space space = new Space(this);
+			
+		   	space.setLayoutParams(new LinearLayout.LayoutParams(
+					 LinearLayout.LayoutParams.MATCH_PARENT,
+		             30));
+		   	myLayout.addView(space);
+		}
+		
+		
+		
+		return v;
+	}
+
+	protected View getRootView(LayoutInflater inflater, ViewGroup container) {
+		return inflater.inflate(R.layout.session_view, container, false);
+	}
+}

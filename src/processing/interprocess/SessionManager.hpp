@@ -32,6 +32,10 @@ using ::sambag::com::interprocess::UInteger;
   * @note since of interarchitecutre problems in the boost interprocess library
   * we can't use managed_shared_memory, 
   * so we are forced to impl. a more raw c style approach.
+  * @note Although its named SessionManager we are currently using this approach
+  * only for RemoteChannel managment and its impl. has nothing to do with
+  * the Session base class. The Session objects however
+  * dosen't currently use this manager, so the name is a bit confusing.
   */
 class SessionManager {
 //=============================================================================

@@ -1,0 +1,88 @@
+package frx.com.vstforxmobile;
+
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
+import android.os.AsyncTask;
+import android.util.Log;
+import frx.com.vstforxmobile.events.MessageEvent;
+import frx.com.vstforxmobile.events.MessageEventListener;
+
+public class TCPClient {
+	final private Socket socket;
+	final private List<MessageEventListener> mEvListeners = new LinkedList<MessageEventListener>();
+	private String ip;
+	private int port;
+	final class Executer extends AsyncTask<String, Void, Void> {
+		@Override
+		protected Void doInBackground(String... params) {
+			try {
+				if (socket == null) {
+					socket = new Socket(ip, port);
+				}
+				for (int i = 0; i < params.length; ++i) {
+					String res = request(params[i]);
+					notifyMessageListeners(params[i], res);
+				}
+			} catch (Exception e) {
+				Log.e("TCPClient", e.getMessage());
+			}
+			return null;
+		}
+	}
+
+	/**
+	 * @return the ip
+	 */
+	public String getIp() {
+		return ip;
+	}
+
+	/**
+	 * @return the port
+	 */
+	public int getPort() {
+		return port;
+	}
+
+	public TCPClient(String ip, int port) {
+		if (ip.length() == 0 || port == 0) {
+			throw new IllegalArgumentException("illegal socket configuration");
+		}
+		this.ip = ip;
+		this.port = port;
+	}
+
+	public void addMessageEventListener(MessageEventListener ev) {
+		mEvListeners.add(ev);
+	}
+
+	protected void send(String msg) throws IOException {
+		PrintWriter writer = new PrintWriter(new OutputStreamWriter(
+				socket.getOutputStream()));
+		writer.print(msg);
+		writer.flush();
+	}
+
+	protected String receive() throws IOException {
+		Scanner scanner = new Scanner(socket.getInputStream());
+		String res = scanner.nextLine();
+		scanner.close();
+		return res;
+	}
+
+	protected String request(String res) throws IOException {
+		send("GET /" + res + " HTTP/1.1");
+		return receive();
+	}
+
+	protected void notifyMessageListeners(String request, String message) {
+		for (MessageEventListener x : mEvListeners) {
+			x.onMessage(new MessageEvent(this, request, message));
+		}
+	}
+}

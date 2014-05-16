@@ -34,7 +34,6 @@ void FrxCircuidViewUI::installUI(sdc::AComponentPtr c) {
 		boost::bind(&FrxCircuidMouseListener::onMouse, &mouseListener, _1, _2),
 		getPtr()
 	);
-	circ->setComponentPopupMenu(getFrxControl(circ).getCircuidViewPopup(circ));
 	circ->getContentPane()->setTooltipText(
 		TooltipTexts::getText(*(c.get()))
 	);

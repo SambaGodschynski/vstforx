@@ -19,16 +19,26 @@
 #include <gui/components/FrxSerializationRegister.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
 #include <sambag/com/Common.hpp>
-
+#include <com/Legacy.hpp>
+#include <processing/ProcessorAdapter.hpp>
 namespace frx { namespace processing {
 namespace {
+    /**
+     * @brief will be thrown if archve has old format
+     */
+    struct LegacyArchive {
+        int version;
+        LegacyArchive(int version) : version(version){}
+    };
 	struct HostInfoAdapter : public IHostInfo {
 		template< typename Archive >
 		void serialize ( Archive &ar, const unsigned int version ) {
 			ar & boost::serialization::base_object<IHostInfo> ( *this );
+            archiveVersion = version;
 		} 
 		IHostInfo *hostInfo;
-		HostInfoAdapter(IHostInfo *hostInfo=NULL) : hostInfo(hostInfo) {}
+		HostInfoAdapter(IHostInfo *hostInfo=NULL) :
+            hostInfo(hostInfo), archiveVersion(0) {}
 		virtual float getSampleRate() const {
 			return hostInfo->getSampleRate();
 		}
@@ -57,6 +67,13 @@ namespace {
 		virtual void * getMasterCallback() {
 			return hostInfo->getMasterCallback();
 		}
+        virtual MasterType getMasterType() const {
+			return hostInfo->getMasterType();
+		}
+        virtual scripts::PluginScriptCtrlPtr getScriptController() {
+            return hostInfo->getScriptController();
+        }
+        int archiveVersion;
 	};
 	//-------------------------------------------------------------------------
 	typedef boost::bimap<fgc::FrxCircuidViewPtr, VstForxPlug*>
@@ -69,12 +86,16 @@ namespace {
 			return NULL;
 		return it->second;
 	}
-
-
 	int _instances = 0;
 	FrxAsyncDSPTimer::WorkerThreadHolder _timerThreadHolder;
 
 } // namespace
+    typedef HostInfoAdapter __HostInfoAdapter__;
+}}
+
+BOOST_CLASS_VERSION(frx::processing::__HostInfoAdapter__, FRX_ARCHIVE_VERSION)
+
+namespace frx { namespace processing {
 //=============================================================================
 // class VstForxPlug 
 //=============================================================================
@@ -147,6 +168,7 @@ void VstForxPlug::open() {
 	map = frx::gui::ViewModelMap::create();
 	updateGraphBaseConfiguration();
 	initHostParameter();
+    processingThread = sambag::com::getThreadId();
 }	
 //-----------------------------------------------------------------------------
 void VstForxPlug::initHostParameter() {
@@ -166,7 +188,6 @@ void VstForxPlug::close() {
 }
 //-----------------------------------------------------------------------------
 VstForxPlug::~VstForxPlug() {
-	unRegisterInstance();
 	if (chunkData) {
 		delete chunkData;
 		chunkData = NULL;
@@ -177,10 +198,15 @@ VstForxPlug::~VstForxPlug() {
 		FrxAsyncDSPTimer::closeAllTimer();
 		_timerThreadHolder.reset();
 	}
+    graph.reset();
+    map.reset();
+    hostInfoAdapter.reset();
+    unRegisterInstance();
 
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::process(float **in, float **out, int numSamples) {
+    lastTimeInfo = *(getHost()->getHostTimeInfoImpl(0xFFFF));
 	TRY_TO_LOCK_TIMED2 (processingLoadLock, 120);
 	if ( !graph ) 
 		return;
@@ -236,7 +262,6 @@ void VstForxPlug::getParameterName (int index, std::string &outStr) const
 //-----------------------------------------------------------------------------
 void VstForxPlug::hostParameterChanged(void *src, float value, int index) {
 	using ::processing::parameter::Parameter;
-	Parameter *p = (Parameter*) src;
 	onHostParameterUpdate = true;
 	getHost()->parameterChanged(index);
 	onHostParameterUpdate = false;
@@ -256,7 +281,19 @@ bool VstForxPlug::ioChanged() {
 }
 //-----------------------------------------------------------------------------
 TimeInfo * VstForxPlug::getHostTimeInfo (int filter) {
-	return getHost()->getHostTimeInfo(filter);
+    if (sambag::com::getThreadId()==processingThread) {
+        return getHost()->getHostTimeInfoImpl(filter);
+    }
+    // this is a bit fuzzy becuase the lastTimeInfo could be at least
+    // 1/(sampleRate/maxBlockSize)ms (e.g. 90 ms for bs=4096) old.
+    // But when getHostTimeInfo() is called from another thread than the
+    // processing thread (eg. called from a timer) we assume that
+    // accuracy isn't so important at all.
+    // If this thought appears as wrong, a solution could be to use a
+    // stopwatch (dspTools::Timer) to calculate the difference
+    // between getting lastTimeInfo and getHostTimeInfo() (for every
+    // TimeInfo value!).
+    return &lastTimeInfo;
 }
 //-----------------------------------------------------------------------------
 VstForxPlug::HostIOChangedConnection 
@@ -342,7 +379,7 @@ int VstForxPlug::getChunk(void **data) {
 	}
 }
 //-----------------------------------------------------------------------------
-int VstForxPlug::setChunk(void *data, int byteSize) {
+int VstForxPlug::setChunk(void *data, int byteSize, int version) {
 	if (!_open) {
 		open();
 	}
@@ -354,11 +391,17 @@ int VstForxPlug::setChunk(void *data, int byteSize) {
 		std::stringstream ss;
 		std::string dataStr((char*)data, byteSize);
 		ss<<dataStr;
-		load(ss);
+		load(ss, version);
 		//std::cout<<byteSize<<" bytes loaded."<<std::endl;
         SAMBAG_LOG_INFO<<"deserialize vstforx: SUCCEED";
 		return byteSize;
-	} catch(const std::exception &ex) {
+	} catch(const LegacyArchive &ex) {
+        if (version==ex.version) {
+            ::com::osMessageBox("Error", "unhandled version exception", ::com::MSG_ALERT);
+            return 0;
+        }
+        setChunk(data, byteSize, ex.version);
+    } catch(const std::exception &ex) {
         SAMBAG_LOG_ERR<<"deserialize vstforx: FAILED, "<<ex.what();
 		std::stringstream ss;
 		ss<<"serialization failed: "<<ex.what();
@@ -371,6 +414,7 @@ int VstForxPlug::setChunk(void *data, int byteSize) {
 		::com::osMessageBox("Error", ss.str(), ::com::MSG_ALERT);
 		return 0;
 	}
+    return 0;
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::saveEditor(::com::oArchive &ar) {
@@ -398,7 +442,7 @@ void VstForxPlug::saveEditor(::com::oArchive &ar) {
 		editor->serializeViewTemp(tmp, editor->getCircuidView());
 		serializedViewStream = tmpss.str();
 	} else {
-		serializedViewStream = editor->hiChamber;
+		serializedViewStream = editor->hiChamber.first;
 	}
 	frx::gui::components::register_types(ar);
 	ar.register_type<frx::gui::ViewModelMap>();
@@ -410,7 +454,7 @@ void VstForxPlug::saveEditor(::com::oArchive &ar) {
 	}
 }
 //-----------------------------------------------------------------------------
-void VstForxPlug::loadEditor(::com::iArchive &ar) {
+void VstForxPlug::loadEditor(::com::iArchive &ar, int version) {
 	using frx::gui::components::VstForxEditor;
 	VstForxEditor * editor = static_cast<VstForxEditor*>(
 		host->getEditor()
@@ -421,7 +465,9 @@ void VstForxPlug::loadEditor(::com::iArchive &ar) {
 			"editor == NULL"
 		);
 	}
-	frx::gui::components::register_types(ar);
+    
+    frx::gui::components::register_types(ar, version);
+	
 	ar.register_type<frx::gui::ViewModelMap>();
 	std::string serializedViewStream;
 	ar & serializedViewStream; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<1.
@@ -430,13 +476,14 @@ void VstForxPlug::loadEditor(::com::iArchive &ar) {
 		std::stringstream tmpss;
 		tmpss<<serializedViewStream;
 		::com::iArchive tmp(tmpss);
-		frx::gui::components::register_types(tmp);
+		frx::gui::components::register_types(tmp, version);
 		frx::gui::components::FrxCircuidViewPtr view =
 			editor->deserializeViewTemp(tmp);
 		editor->setCircuidView(view);
 		return;
 	}
-	editor->hiChamber = serializedViewStream;
+	editor->hiChamber.first  = serializedViewStream;
+    editor->hiChamber.second = version;
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::save(std::ostream &os) {
@@ -446,29 +493,76 @@ void VstForxPlug::save(std::ostream &os) {
 	ar & hostInfoAdapter;
 	ar & graph;
 	saveEditor(ar);
+    // script ctrl user data
+    // the boost::serialization multimap impl. gives a fuck about
+    // map value order, so we have to do it manually
+    // (for some reason Map::value_type produces compiler errors)
+    typedef std::pair<std::string, std::string> Bodge;
+    std::vector<Bodge> tmp;
+    if (scriptCtrl) {
+        const scripts::PluginScriptCtrl::PersistUserData &data =
+            scriptCtrl->getPersistUserData();
+        tmp.reserve(data.size());
+        BOOST_FOREACH(const Bodge &x, data) {
+            tmp.push_back(x);
+        }
+    }
+    ar<<tmp;
 }
 //-----------------------------------------------------------------------------
-void VstForxPlug::load(std::istream &is) {
+void VstForxPlug::load(std::istream &is, int version) {
 	TRY_TO_LOCK_TIMED2 ( processingLoadLock, 10 );
 	::processing::Graph::Ptr alt = graph; // hold old until loosing scope
 	IHostInfo::Ptr altHostInfoAdapter = hostInfoAdapter;
 
 	::com::iArchive ar(is);
-	ar.register_type<HostInfoAdapter>();
-	register_types(ar);
-	ar & hostInfoAdapter;
-	dynamic_cast<HostInfoAdapter*>
-		(hostInfoAdapter.get())->hostInfo = this;
+    ar.register_type<HostInfoAdapter>();
+   
+    register_types(ar, version);
+	
+    ar & hostInfoAdapter;
+    if (!hostInfoAdapter) {
+        SAMBAG_THROW(
+			sambag::com::exceptions::IllegalStateException,
+			"VstForxPlug: serialization failed."
+		);
+    }
+	HostInfoAdapter *hiAdapter = dynamic_cast<HostInfoAdapter*>
+		(hostInfoAdapter.get());
+    if (hiAdapter->archiveVersion!=version) {
+        throw LegacyArchive(hiAdapter->archiveVersion);
+    }
+    hiAdapter->hostInfo = this;
 	ar & graph;
 	installGraphListener();
 	ctrl->setGraph(graph);
-	loadEditor(ar);
+	loadEditor(ar, version);
 	// reinit graph
 	::processing::Graph::Janitor::Ptr janitor = graph->getJanitor();
 	if ( sampleRate != 0.0 && blockSize != 0 ) {
 		janitor->hostBaseConfigChanged();
 	}
 	initHostParameter();
+    // script ctrl user data
+    if (version>0) {
+        getScriptController()->getPersistUserData().clear();
+        // script ctrl user data
+        // the boost::serialization multimap impl. gives a fuck about
+        // map value order, so we have to do it manually
+        // (for some reason Map::value_type produces compiler errors)
+        typedef std::pair<std::string, std::string> Bodge;
+        std::vector<Bodge> tmp;
+        scripts::PluginScriptCtrl::PersistUserData &data =
+            scriptCtrl->getPersistUserData();
+        ar >> tmp;
+        BOOST_FOREACH(const Bodge &x, tmp) {
+            data.insert(x);
+        }
+    }
+}
+//-----------------------------------------------------------------------------
+void VstForxPlug::onScriptExeFailed(const frx::scripts::ScriptExeFailedEvent &ev)
+{
 }
 //-----------------------------------------------------------------------------
 void * VstForxPlug::getEditor() {
@@ -481,6 +575,17 @@ int VstForxPlug::getLatency() const {
 	}
 	return 0;
 }
+//-----------------------------------------------------------------------------
+VstForxPlug::ScriptCtrlPtr VstForxPlug::getScriptController() {
+    if (!scriptCtrl) {
+        scriptCtrl = ScriptCtrlPtr(new frx::scripts::PluginScriptCtrl(true));
+        scriptCtrl->setPlugin(this);
+        scriptCtrl->sce::EventSender<frx::scripts::ScriptExeFailedEvent>::addEventListener(
+            boost::bind(&VstForxPlug::onScriptExeFailed, this, _2)
+        );
+    }
+    return scriptCtrl;
+}
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 IModelController::Ptr
@@ -490,6 +595,13 @@ getModelController(frx::gui::components::FrxCircuidViewPtr view)
 	if (!plug)
 		return IModelController::Ptr();
 	return plug->getModelController();
+}
+VstForxPlug::ScriptCtrlPtr
+getScriptControl(frx::gui::components::FrxCircuidViewPtr view) {
+    VstForxPlug *plug = getPlugin(view);
+	if (!plug)
+		return VstForxPlug::ScriptCtrlPtr();
+	return plug->getScriptController();
 }
 }} // namespace(s)
 

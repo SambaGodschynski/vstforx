@@ -17,10 +17,12 @@
 #include <processing/ProcessorAdapter.hpp>
 #include <processing/ParameterAdapter.hpp>
 #include <processing/NodeAdapter.hpp>
-#include <com/PluginCollection.h>
+#include <com/one4All.h>
 #include <processing/Plugin.h>
-#include <processing/pluginTypes/VSTPlugin2x.h>
+#include <processing/pluginTypes/VST2xImpl.h>
 #include "PluginAdapter.hpp"
+#include <processing/ModelFactory.hpp>
+#include <processing/pluginTypes/VstShellPlugin.hpp>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -51,189 +53,54 @@ void ModelController::installListeners(IProcessor::Ptr pr) {
 void ModelController::installListeners(IParameter::Ptr pr)  {
 }
 //-----------------------------------------------------------------------------
-IProcessor::Ptr ModelController::createVolumeProcessor() {
-	namespace pr = ::processing;
-	if (!graph)
-		return IProcessor::Ptr();
-	pr::Volume::Ptr res =  
-		pr::Volume::create(graph->getHostInfo());
-	if ( graph->getJanitor()->add(res) != pr::Graph::Janitor::SUCCEED )
-		return IProcessor::Ptr();
-	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
-	// register remove request excutor
-	installListeners(ad);
-	return ad;
-}
-//-----------------------------------------------------------------------------
-IProcessor::Ptr ModelController::createPanProcessor() {
-	namespace pr = ::processing;
-	if (!graph)
-		return IProcessor::Ptr();
-	pr::Pan::Ptr res =  
-		pr::Pan::create(graph->getHostInfo());
-	if ( graph->getJanitor()->add(res) != pr::Graph::Janitor::SUCCEED )
-		return IProcessor::Ptr();
-	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
-	// register remove request excutor
-	installListeners(ad);
-	return ad;
-}
-//-----------------------------------------------------------------------------
-IProcessor::Ptr 
-ModelController::createInStepProcessor(size_t numInputs) {
-	namespace pr = ::processing;
-	if (!graph)
-		return IProcessor::Ptr();
-	pr::InputStep::Ptr res =  
-		pr::InputStep::create(graph->getHostInfo(), numInputs);
-	if ( graph->getJanitor()->add(res) != pr::Graph::Janitor::SUCCEED )
-		return IProcessor::Ptr();
-	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
-	// register remove request excutor
-	installListeners(ad);
-	return ad;
-}
-//-----------------------------------------------------------------------------
-IProcessor::Ptr 
-ModelController::createOutStepProcessor(size_t numOutputs) {
-	namespace pr = ::processing;
-	if (!graph)
-		return IProcessor::Ptr();
-	pr::OutputStep::Ptr res =  
-		pr::OutputStep::create(graph->getHostInfo(), numOutputs);
-	if ( graph->getJanitor()->add(res) != pr::Graph::Janitor::SUCCEED )
-		return IProcessor::Ptr();
-	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
-	// register remove request excutor
-	installListeners(ad);
-	return ad;
-}
-//-----------------------------------------------------------------------------
-IProcessor::Ptr 
-ModelController::createInSwitchProcessor(size_t numInputs) {
-	namespace pr = ::processing;
-	if (!graph)
-		return IProcessor::Ptr();
-	pr::InputSwitch::Ptr res =  
-		pr::InputSwitch::create(graph->getHostInfo(), numInputs);
-	if ( graph->getJanitor()->add(res) != pr::Graph::Janitor::SUCCEED )
-		return IProcessor::Ptr();
-	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
-	// register remove request excutor
-	installListeners(ad);
-	return ad;
-}
-//-----------------------------------------------------------------------------
-IProcessor::Ptr 
-ModelController::createOutSwitchProcessor(size_t numOutputs) {
-	namespace pr = ::processing;
-	if (!graph)
-		return IProcessor::Ptr();
-	pr::OutputSwitch::Ptr res =  
-		pr::OutputSwitch::create(graph->getHostInfo(), numOutputs);
-	if ( graph->getJanitor()->add(res) != pr::Graph::Janitor::SUCCEED )
-		return IProcessor::Ptr();
-	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
-	// register remove request excutor
-	installListeners(ad);
-	return ad;
-}
-//-----------------------------------------------------------------------------
-IProcessor::Ptr ModelController::createPeakTracker() {
-	namespace pr = ::processing;
-	if (!graph)
-		return IProcessor::Ptr();
-	pr::PeakTracker::Ptr res =  
-		pr::PeakTracker::create(graph->getHostInfo());
-	pr::Graph::Janitor::Ptr jan = graph->getJanitor();
-	// add processor to graph
-	if ( jan->add(res) != pr::Graph::Janitor::SUCCEED ) {
-		return IProcessor::Ptr();
-	}
-	// create invisible connection
-	if ( jan->connectNodes( res->getOutputNode(0), graph->getEndNode() )
-		!= pr::Graph::Janitor::SUCCEED )
-	{
-		return IProcessor::Ptr(); 
-	}
-	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
-	// register remove request excutor
-	installListeners(ad);
-	return ad;
-}
-//-----------------------------------------------------------------------------
-IProcessor::Ptr ModelController::createADSRTransformer() {
-	namespace pr = ::processing;
-	if (!graph)
-		return IProcessor::Ptr();
-	pr::Graph::Janitor::Ptr jan = graph->getJanitor();
-	pr::ADSRTrigger::Ptr res =  
-		pr::ADSRTrigger::create(graph->getHostInfo());
-	if ( jan->add(res) != pr::Graph::Janitor::SUCCEED ) {
-		return IProcessor::Ptr();
-	}
-	// create invisible connection
-	if ( jan->connectNodes( res->getOutputNode(0), graph->getEndNode() )
-		!= pr::Graph::Janitor::SUCCEED )
-	{
-		return IProcessor::Ptr(); 
-	}
-	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
-	// register remove request excutor
-	installListeners(ad);
-	return ad;
-}
-//-----------------------------------------------------------------------------
-IProcessor::Ptr ModelController::createMIDIReceiver() {
-	namespace pr = ::processing;
-	if (!graph)
-		return IProcessor::Ptr();
-	pr::Graph::Janitor::Ptr jan = graph->getJanitor();
-	pr::MidiProcessor::Ptr res =  
-		pr::MidiProcessor::create(graph->getHostInfo());
-	if ( jan->add(res) != pr::Graph::Janitor::SUCCEED ) {
-		return IProcessor::Ptr();
-	}
-	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
-	// register remove request excutor
-	installListeners(ad);
-	return ad;
-}
-//-----------------------------------------------------------------------------
-IProcessor::Ptr
-ModelController::createRemoteChannelReceiver(const std::string &rcId)
+IProcessor::Ptr ModelController::createProcessor(const std::string &idStr,
+    bool autoConnectOutput)
 {
-    namespace pr = ::processing;
-    namespace fpi = frx::processing::interprocess;
-	if (!graph)
-		return IProcessor::Ptr();
-	pr::Graph::Janitor::Ptr jan = graph->getJanitor();
-	fpi::RemoteChReceiver::Ptr res =
-		fpi::RemoteChReceiver::create(graph->getHostInfo(), rcId);
-	if ( jan->add(res) != pr::Graph::Janitor::SUCCEED ) {
-		return IProcessor::Ptr();
-	}
-	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
-	// register remove request excutor
-	installListeners(ad);
-	return ad;
+    
+    try {
+        namespace pr = ::processing;
+        if (!graph) {
+            return IProcessor::Ptr();
+        }
+        ::com::IdParser id(idStr);
+        if (id.name() == "Plugin") {
+            return createPlugin(idStr);
+        }
+    
+        pr::Graph::Janitor::Ptr jan = graph->getJanitor();
+	
+        pr::ProcessAdapter::Ptr res =
+            ModelFactory::instance().create(idStr, graph->getHostInfo());
+        jan->add(res);
+        if (autoConnectOutput) {
+            // create invisible connection
+            jan->connectNodes(res->getOutputNode(0), graph->getEndNode());
+        }
+        ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
+        // register remove request excutor
+        installListeners(ad);
+        return ad;
+    } catch (const ::processing::ShellPluginException &ex) {
+        throw;
+    } catch (const std::exception &ex) {
+        throw std::runtime_error("creating " + idStr + " failed: " + ex.what());
+    } catch (...) {
+        throw std::runtime_error("creating " + idStr + " failed: unknown error.");
+    }
 }
 //-----------------------------------------------------------------------------
-IProcessor::Ptr ModelController::createDCTester() {
-    namespace pr = ::processing;
-	if (!graph)
+IProcessor::Ptr ModelController::createPlugin(const std::string &id)
+{
+    Plugin::Ptr plugin;
+    plugin = ModelFactory::instance().create<Plugin>(id, graph->getHostInfo());
+		
+	if ( graph->getJanitor()->add(plugin) != ::processing::Graph::Janitor::SUCCEED )
 		return IProcessor::Ptr();
-	pr::Graph::Janitor::Ptr jan = graph->getJanitor();
-	pr::DCTester::Ptr res =  
-		pr::DCTester::create(graph->getHostInfo());
-	if ( jan->add(res) != pr::Graph::Janitor::SUCCEED ) {
-		return IProcessor::Ptr();
-	}
-	ProcessorAdapter::Ptr ad = ProcessorAdapter::create(res);
+	PluginAdapter::Ptr adapter = PluginAdapter::create();
+	adapter->setAdaptee(plugin);
 	// register remove request excutor
-	installListeners(ad);
-	return ad;
-
+	installListeners(adapter);
+	return adapter;
 }
 //-----------------------------------------------------------------------------
 IConnection::Ptr ModelController::connect(INode::Ptr out, INode::Ptr in) {
@@ -316,34 +183,6 @@ INode::Ptr ModelController::getExit() {
 //-----------------------------------------------------------------------------
 IHostInfo::Ptr ModelController::getHostInfo() const {
 	return graph->getHostInfo();
-}
-//-----------------------------------------------------------------------------
-IProcessor::Ptr ModelController::createPlugin(const ::processing::PluginInfo &pI)
-{
-	
-	::processing::Plugin::Ptr plugin;
-	::com::PluginCollection::Ptr pC;
-	try {
-		pC = ::com::getPluginCollection();
-	} catch (...) {
-		return IProcessor::Ptr();
-	}
-	::processing::PluginInfo pluginInfo = pI;
-	try {
-		plugin = pC->restorePlugNode( getHostInfo(), pluginInfo ); 
-	} catch(const ::processing::ShellPluginException) {
-		throw;
-	} catch(...) {
-		return IProcessor::Ptr(); 
-	}
-		
-	if ( graph->getJanitor()->add(plugin) != ::processing::Graph::Janitor::SUCCEED )
-		return IProcessor::Ptr();
-	PluginAdapter::Ptr adapter = PluginAdapter::create();
-	adapter->setAdaptee(plugin);
-	// register remove request excutor
-	installListeners(adapter);
-	return adapter;
 }
 //-----------------------------------------------------------------------------
 IParameter::Ptr ModelController::createFreeParameter() {

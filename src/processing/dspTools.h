@@ -17,6 +17,8 @@
 #include <boost/timer/timer.hpp>
 #include <map>
 #include <limits>
+#include <exception>
+#include <sambag/com/Common.hpp>
 
 namespace processing {
 	//====================================================================================================
@@ -485,6 +487,13 @@ public:
  */
 template <typename T>
 void fft(T *r, T *i, size_t numSamples) {
+  if (numSamples==0) {
+    return;
+  }
+  if ((numSamples & (numSamples-1))!=0 || numSamples==1) {
+    // numSamples is not power of 2
+    throw std::runtime_error("fft numsamples("+sambag::com::toString(numSamples)+") != power of 2");
+  }
   long M = numSamples/2, lo = 0, hi, k, m, delta; 
   long J = 0, K, L, N2 = numSamples/2;
   T t, t1, x, y, twcos, twsin, pi = (T)3.1415926535897932;

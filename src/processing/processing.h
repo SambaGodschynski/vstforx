@@ -139,29 +139,14 @@ protected:
 	 * @param ar
 	 * @param version
 	 */
-	template < typename Archive >
-	void save ( Archive &ar, const unsigned int version ) const {
-		ar << boost::serialization::base_object<PObject>(*this);
-		// ar << parents;  wird in DFSVisitor bzw. ueber updateGraph ermittelt
-		// ar << activeChildren; wird in DFSVisitor bzw. ueber updateGraph ermittelt
-		size_t numChildFrames = frameContainer.size();
-		ar << numChildFrames;
-	}
+	void save ( ::com::oArchive &ar, const unsigned int version ) const;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	* Deserialisiert ProcessorNode-Objekt
 	 * @param ar
 	 * @param version
 	 */
-	template < typename Archive >
-	void load ( Archive &ar, const unsigned int version ) {
-		ar >> boost::serialization::base_object<PObject>(*this);
-		// ar >> parents;
-		// ar >> activeChildren; wird in DFSVisitor bzw. ueber updateGraph ermittelt
-		size_t numChildFrames;
-		ar >> numChildFrames;
-		prepareFramesContainer( numChildFrames );
-	}
+	void load ( ::com::iArchive &ar, const unsigned int version );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * bestimmt ob ProcessorNode-Objekt aktiv/nicht aktiv. Wird von DFSVisitor aufgerufen.

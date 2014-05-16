@@ -1,0 +1,18 @@
+package frx.com.vstforxmobile;
+
+import org.json.JSONObject;
+
+public class SessionPOD {
+	public String viewName;
+	public class Slider {
+		public String name;
+		public double value;
+	}
+	public Slider sliders[];
+	static public SessionPOD createWithJSON(String json) {
+		return createWithJSON(new JSOMObject(json));
+	} 
+	static public SessionPOD createWithJSON(JSONObject json) {
+		return null;
+	} 
+}

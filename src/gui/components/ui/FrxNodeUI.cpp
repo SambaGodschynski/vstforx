@@ -61,12 +61,12 @@ void FrxNodeUI::installListeners(sdc::AComponent::Ptr c) {
 	if (!cont) {
 		return;
 	}
-	BOOST_FOREACH(sdc::AComponentPtr cc, cont->getComponents()) {
+	/*BOOST_FOREACH(sdc::AComponentPtr cc, cont->getComponents()) {
 		cc->sdc::EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
 			boost::bind(&FrxNodeUI::onChildComponentMouse, this, _1, _2),
 			getPtr()
 		);
-	}
+	}*/
 }
 //------------------------------------------------------------------------------
 void FrxNodeUI::installDefaults(sdc::AComponent::Ptr c) {
@@ -360,7 +360,7 @@ void FrxNodeUI::mouseExited(const sdc::events::MouseEvent &ev) {
 	   immediately. The best solution (for now) is to ignore it.*/
 	//if (fadeAnimation->isRunning()) {
 	//	fadeAnimation->stop();
-	//}
+	//Users/johannesunger/workspace/vstforx_next/VSTForx-NEXT.xcodeproj/}
 	fadeAnimation->setStartValue(getCoronaAlpha());
 	fadeAnimation->setEndValue(0.);
 	fadeAnimation->start();
@@ -394,24 +394,5 @@ void FrxNodeUI::mouseWheelMoved(const sdc::events::MouseEvent &ev) {
 void FrxNodeUI::onMouse(void *src, const sdc::events::MouseEvent &ev) {
 	enum {F=sdce::MouseEvent::ALL_EVENTS & ~sdce::MouseEvent::DISCO_MOUSE_WHEEL};
 	sdc::events::MouseEventSwitch<F>::delegate(ev, *this);
-}
-//-----------------------------------------------------------------------------
-namespace {
-	struct ChildComponentMouseHandler {
-		void mouseClicked(const sdc::events::MouseEvent &ev) {
-			sdc::AComponent::Ptr c = ev.getSource();
-			FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
-			SAMBAG_ASSERT(circ);
-			getFrxControl(circ).handleContextMenuPopup(ev);
-		}
-	};
-}
-void FrxNodeUI::onChildComponentMouse(void *src, const sdc::events::MouseEvent &ev) {
-	static ChildComponentMouseHandler childComponentMouseHandler;
-	enum  {
-		Filter = sdc::events::MouseEvent::DISCO_MOUSE_CLICKED
-	};
-	sdc::events::MouseEventSwitch<Filter>::
-		delegate(ev, childComponentMouseHandler);
 }
 }}}} // namespace(s)

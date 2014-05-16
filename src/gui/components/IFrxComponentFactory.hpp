@@ -43,7 +43,7 @@ public:
 	virtual PluginCreator getPluginCreator() const = 0;
 	//-------------------------------------------------------------------------
 	/**
-	 * @return a creator for the processors name.
+	 * @return a creator for the component name.
 	 * @see FrxComponent::getName()
 	 */
 	virtual ProcessorCreator 
@@ -57,9 +57,11 @@ public:
 	getRemoteChannelCreator(const std::string &rcId) const = 0;
 	//-------------------------------------------------------------------------
 	/**
-	 * @return number of processor creators.
+	 * @return component names which can be created by factory
+     * @param regex filter e.g.: internal\..*?Step
 	 */
-	virtual void getProcessorNames(std::list<std::string> &out) const = 0;
+	virtual void getComponentNames(std::list<std::string> &out,
+        const std::string &filter="") const = 0;
 	//-------------------------------------------------------------------------
 	virtual FreeParameterCreator getFreeParameterCreator() const = 0;
 	//-------------------------------------------------------------------------

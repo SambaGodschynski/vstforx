@@ -73,49 +73,59 @@ void ViewModelMap::checkState() {
 processing::ModelObject::Ptr 
 ViewModelMap::getModelObject(ViewObject::Ptr obj) 
 {
-	checkState();
-	Map::left_map::iterator it = map.left.find(obj);
-	if (it==map.left.end())
-		return processing::ModelObject::Ptr();
-	return it->second;
+    SAMBAG_BEGIN_SYNCHRONIZED(mutex)
+        checkState();
+        Map::left_map::iterator it = map.left.find(obj);
+        if (it==map.left.end()) {
+            return processing::ModelObject::Ptr();
+        }
+        return it->second;
+    SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 ViewObject::Ptr 
 ViewModelMap::getViewObject(frx::processing::ModelObject::Ptr obj)
 {
-	checkState();
-	Map::right_map::iterator it = map.right.find(obj);
-	if (it==map.right.end())
-		return ViewObject::Ptr();
-	return it->second;
+    SAMBAG_BEGIN_SYNCHRONIZED(mutex)
+        checkState();
+        Map::right_map::iterator it = map.right.find(obj);
+        if (it==map.right.end()) {
+            return ViewObject::Ptr();
+        }
+        return it->second;
+    SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 bool ViewModelMap::registerObjects(ViewObject::Ptr vobj,
 	frx::processing::ModelObject::Ptr mobj)
 {
-	checkState();
-	if (!vobj || !mobj) {
-		SAMBAG_THROW(
-			sambag::com::exceptions::IllegalStateException,
-			"tried to register NULL in ViewModelMap."
-		);
-	}
-	Map::const_iterator it;
-	bool inserted;
-	boost::tie(it, inserted) = map.insert(Map::value_type(vobj, mobj));
-	return inserted;
+    SAMBAG_BEGIN_SYNCHRONIZED(mutex)
+        checkState();
+        if (!vobj || !mobj) {
+            SAMBAG_THROW(
+                sambag::com::exceptions::IllegalStateException,
+                "tried to register NULL in ViewModelMap."
+            );
+        }
+        Map::const_iterator it;
+        bool inserted;
+        boost::tie(it, inserted) = map.insert(Map::value_type(vobj, mobj));
+        return inserted;
+    SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 void ViewModelMap::remove(ViewObject::Ptr vobj,
 	frx::processing::ModelObject::Ptr mobj)
 {
-	checkState();
-	Map::left_map::iterator it = map.left.find(vobj);
-	if (it==map.left.end())
-		return;
-	if (it->second == mobj) {
-		map.left.erase(it);
-	}
+    SAMBAG_BEGIN_SYNCHRONIZED(mutex)
+        checkState();
+        Map::left_map::iterator it = map.left.find(vobj);
+        if (it==map.left.end())
+            return;
+        if (it->second == mobj) {
+            map.left.erase(it);
+        }
+    SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 bool ViewModelMap::isLocked() const {
@@ -128,40 +138,58 @@ size_t ViewModelMap::getSize() const {
 	return map.size();
 }
 //-----------------------------------------------------------------------------
+void ViewModelMap::getModelObjects(ModelObjects &out) const {
+    SAMBAG_BEGIN_SYNCHRONIZED(mutex)
+        if (isLocked()) {
+            BOOST_FOREACH(frx::processing::ModelObject::Ptr x, bedroom) {
+                out.push_back(x);
+            }
+            return;
+        }
+        BOOST_FOREACH(const Map::left_map::value_type &x, map.left) {
+            out.push_back(x.second);
+        }
+    SAMBAG_END_SYNCHRONIZED
+}
+//-----------------------------------------------------------------------------
 void ViewModelMap::lock(::com::oArchive &ar) {
-	ViewObjects l;
-	BOOST_FOREACH(const Map::left_map::value_type &v, map.left) {
-		l.push_back(v.first);
-		bedroom.push_back(v.second);
-	}
-	ar & l;
-	map.clear();
-	closed = true;
+    SAMBAG_BEGIN_SYNCHRONIZED(mutex)
+        ViewObjects l;
+        BOOST_FOREACH(const Map::left_map::value_type &v, map.left) {
+            l.push_back(v.first);
+            bedroom.push_back(v.second);
+        }
+        ar & l;
+        map.clear();
+        closed = true;
+    SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 void ViewModelMap::unlock(::com::iArchive &ar) {
-	if (!isLocked()) {
-		SAMBAG_THROW(
-			sambag::com::exceptions::IllegalStateException,
-			"map not locked."
-		);
-	}
-	ViewObjects l;
-	ar>>l;
-	if (l.size() != bedroom.size()) {
-		SAMBAG_THROW(
-			sambag::com::exceptions::IllegalStateException,
-			"map unlock failed."
-		);
-	}
-	ViewObjects::const_iterator vit = l.begin();
-	ModelBedroom::const_iterator mit = bedroom.begin();
-	while(vit!=l.end()) {
-		map.insert(Map::value_type(*vit, *mit));
-		++vit;
-		++mit;
-	}
-	closed = false;
+    SAMBAG_BEGIN_SYNCHRONIZED(mutex)
+        if (!isLocked()) {
+            SAMBAG_THROW(
+                sambag::com::exceptions::IllegalStateException,
+                "map not locked."
+            );
+        }
+        ViewObjects l;
+        ar>>l;
+        if (l.size() != bedroom.size()) {
+            SAMBAG_THROW(
+                sambag::com::exceptions::IllegalStateException,
+                "map unlock failed."
+            );
+        }
+        ViewObjects::const_iterator vit = l.begin();
+        ModelBedroom::const_iterator mit = bedroom.begin();
+        while(vit!=l.end()) {
+            map.insert(Map::value_type(*vit, *mit));
+            ++vit;
+            ++mit;
+        }
+        closed = false;
 		bedroom.clear();
+    SAMBAG_END_SYNCHRONIZED
 }
 }} // namespace(s)
