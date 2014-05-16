@@ -7,4 +7,4 @@ all: \
 
 VSTForx.mobile-server_buildpart_0: 
 	echo "Depend check for xcode"
-	cd /Users/johannesunger/workspace/vstforx_next && make -C /Users/johannesunger/workspace/vstforx_next -f /Users/johannesunger/workspace/vstforx_next/CMakeScripts/XCODE_DEPEND_HELPER.make PostBuild.VSTForx.mobile-server.$(CONFIGURATION)
+	cd /Users/johannesunger/workspace/vstforx && make -C /Users/johannesunger/workspace/vstforx -f /Users/johannesunger/workspace/vstforx/CMakeScripts/XCODE_DEPEND_HELPER.make PostBuild.VSTForx.mobile-server.$(CONFIGURATION)

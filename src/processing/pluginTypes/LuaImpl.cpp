@@ -90,6 +90,20 @@ void LuaImpl::addToEditor(const std::string &msg) {
     SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
+std::string LuaImpl::argsToString(lua_State *lua) {
+    std::stringstream ss;
+    int top = lua_gettop(lua);
+    for (int i = 1; i <= top; i++) {  /* repeat for each level */
+        const char *str = lua_tostring(lua, i);
+        if (!str) {
+            continue;
+        }
+        ss<<str<<" ";
+        
+    }
+    return ss.str();
+}
+//-----------------------------------------------------------------------------
 void LuaImpl::onExecError(const std::string &msg) {
     logErr(msg);
 }

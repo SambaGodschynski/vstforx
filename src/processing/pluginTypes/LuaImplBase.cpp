@@ -5,7 +5,7 @@
  *
  * LuaImplBase.cpp
  *
- *  Created on: Tue Apr 29 11:39:53 2014
+ *  Created on: Fri May 16 11:50:40 2014
  *      Author: Samba Godschysnki
  */
 
@@ -23,10 +23,10 @@ void LuaImplBase::addLuaFields(lua_State *lua, int index)
     // register functions
     registerClassFunctions<Functions1, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaImplBase::log, this, lua, _1),
-		boost::bind(&LuaImplBase::logWarn, this, lua, _1),
-		boost::bind(&LuaImplBase::logErr, this, lua, _1),
-		boost::bind(&LuaImplBase::logTrace, this, lua, _1),
+	boost::make_tuple(boost::bind(&LuaImplBase::log, this, lua),
+		boost::bind(&LuaImplBase::logWarn, this, lua),
+		boost::bind(&LuaImplBase::logErr, this, lua),
+		boost::bind(&LuaImplBase::logTrace, this, lua),
 		boost::bind(&LuaImplBase::sendMidi, this, lua),
 		boost::bind(&LuaImplBase::getChannel, this, lua, _1),
 		boost::bind(&LuaImplBase::fft, this, lua),
@@ -42,7 +42,6 @@ void LuaImplBase::addLuaFields(lua_State *lua, int index)
 	boost::make_tuple(boost::bind(&LuaImplBase::getPpqPos, this, lua),
 		boost::bind(&LuaImplBase::getTimeSigNumerator, this, lua),
 		boost::bind(&LuaImplBase::getTimeSigDenominator, this, lua),
-		boost::bind(&LuaImplBase::getTempo, this, lua),
 		boost::bind(&LuaImplBase::setParameterValue, this, lua, _1, _2),
 		boost::bind(&LuaImplBase::setParameterDisplay, this, lua, _1, _2),
 		boost::bind(&LuaImplBase::getPersistUserData, this, lua, _1),

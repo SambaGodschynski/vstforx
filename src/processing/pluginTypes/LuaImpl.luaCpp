@@ -11,28 +11,28 @@ frx.processing
 class LuaImplBase extends sambag.lua.ALuaObject {
       /**
        * @brief Sends a log message to the plugin editor console.
-       * @param the message string
+       * @hiddenParam mixed_values ... 
        * @version 1.0.5
        */
-      void log(string msg);
+      void log();
       /**
        * @brief Sends a log warning message to the plugin editor console.
-       * @param the message string
+       * @hiddenParam mixed_values ...
        * @version 1.0.5
        */
-      void logWarn(string msg);
+      void logWarn();
       /**
        * @brief Sends a log error message to the plugin editor console.
-       * @param the message string
+       * @hiddenParam mixed_values ...
        * @version 1.0.5
        */
-      void logErr(string msg);
+      void logErr();
       /**
        * @brief Sends a log trace message to the plugin editor console.
-       * @param the message string
+       * @hiddenParam mixed_values ...
        * @version 1.0.5
        */
-      void logTrace(string msg);
+      void logTrace();
       /**
        * @brief Sends a midi message to VSTForx.
        * @hiddenParam sequence msg

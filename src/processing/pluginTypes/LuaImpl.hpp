@@ -95,6 +95,8 @@ protected:
     void onExecError(const std::string &msg);
 private:
     //-------------------------------------------------------------------------
+    std::string argsToString(lua_State *lua);
+    //-------------------------------------------------------------------------
     sambag::com::RecursiveMutex logMutex;
     //-------------------------------------------------------------------------
     void closeLua();
@@ -198,20 +200,20 @@ public:
     ///////////////////////////////////////////////////////////////////////////
     // lua2frx impl
     //-------------------------------------------------------------------------
-    void log(lua_State *lua, const std::string &msg) {
-        log(msg);
+    void log(lua_State *lua) {
+        log(argsToString(lua));
     }
     //-------------------------------------------------------------------------
-    void logErr(lua_State *lua, const std::string &msg) {
-        logErr(msg);
+    void logErr(lua_State *lua) {
+        logErr(argsToString(lua));
     }
     //-------------------------------------------------------------------------
-    void logWarn(lua_State *lua, const std::string &msg) {
-        logWarn(msg);
+    void logWarn(lua_State *lua) {
+        logWarn(argsToString(lua));
     }
     //-------------------------------------------------------------------------
-    void logTrace(lua_State *lua, const std::string &msg) {
-        logTrace(msg);
+    void logTrace(lua_State *lua) {
+        logTrace(argsToString(lua));
     }
     //-------------------------------------------------------------------------
     void sendMidi(lua_State *lua);
