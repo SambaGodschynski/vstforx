@@ -1230,8 +1230,6 @@ void FrxControl::openClosePluginEditor(fgc::FrxCircuidViewPtr view,
 	pluginCtrl->setPlugin(plugin);
 	ed->setControl(pluginCtrl);
 	ed->positionWindow();
-	ed->validate();
-	ed->pack();
     ed->open();
 }
 //-----------------------------------------------------------------------------

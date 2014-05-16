@@ -67,6 +67,7 @@ void FrxScriptPluginEditor::createWindow(sdc::Window::Ptr window, const sd::Dime
     sdc::AContainer::Ptr cnt = window->getContentPane();
     cnt->add(createConsolePane(), sdc::BorderLayout::CENTER, sdc::AContainer::APPEND);
 	cnt->add(createBtnPane(), sdc::BorderLayout::SOUTH, sdc::AContainer::APPEND);
+    cnt->setSize(size);
     cnt->revalidate();
 }
 //-----------------------------------------------------------------------------
