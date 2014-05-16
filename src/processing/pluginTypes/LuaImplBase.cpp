@@ -5,7 +5,7 @@
  *
  * LuaImplBase.cpp
  *
- *  Created on: Fri May 16 11:50:40 2014
+ *  Created on: Fri May 16 14:14:33 2014
  *      Author: Samba Godschysnki
  */
 
@@ -44,6 +44,8 @@ void LuaImplBase::addLuaFields(lua_State *lua, int index)
 		boost::bind(&LuaImplBase::getTimeSigDenominator, this, lua),
 		boost::bind(&LuaImplBase::setParameterValue, this, lua, _1, _2),
 		boost::bind(&LuaImplBase::setParameterDisplay, this, lua, _1, _2),
+		boost::bind(&LuaImplBase::getParameterValue, this, lua, _1),
+		boost::bind(&LuaImplBase::getParameterDisplay, this, lua, _1),
 		boost::bind(&LuaImplBase::getPersistUserData, this, lua, _1),
 		boost::bind(&LuaImplBase::setPersistUserData, this, lua)),
 	index, 

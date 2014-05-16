@@ -101,7 +101,7 @@ class LuaImplBase extends sambag.lua.ALuaObject {
        *
       double getTempo();
       /**
-       * @brief set the parameter value
+       * @brief Set the parameter value
        * @param the parameter id
        * @param the parameter value (0..1)
        * @version 1.0.5
@@ -115,7 +115,19 @@ class LuaImplBase extends sambag.lua.ALuaObject {
        */
       void setParameterDisplay(string id, string txt);
       /**
-       * @return Tte persist user data for a key.
+       * @return the parameter value
+       * @param the parameter id
+       * @version 1.0.5
+       */
+      float getParameterValue(string id);
+      /**
+       * @return the parameter display text.
+       * @param the parameter id
+       * @version 1.0.5
+       */
+      string getParameterDisplay(string id);
+      /**
+       * @return the persist user data for a key.
        * @returnType sequence
        * @param the key
        * @version 1.0.5

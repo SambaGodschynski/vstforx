@@ -74,7 +74,8 @@ public:
     //-------------------------------------------------------------------------
     enum Flag {
         IsValid,
-        NeedsReload
+        NeedsReload,
+        OnParameterChanged
     };
 protected:
     ///////////////////////////////////////////////////////////////////////////
@@ -240,6 +241,10 @@ public:
     //-------------------------------------------------------------------------
     void setParameterDisplay(lua_State *lua, const std::string &name,
         const std::string &value);
+    //-------------------------------------------------------------------------
+    float getParameterValue(lua_State *lua, const std::string &name);
+    //-------------------------------------------------------------------------
+    std::string getParameterDisplay(lua_State *lua, const std::string &name);
     //-------------------------------------------------------------------------
     sambag::lua::IgnoreReturn getPersistUserData(lua_State *lua,
         const std::string &key);

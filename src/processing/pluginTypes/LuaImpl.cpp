@@ -93,13 +93,22 @@ void LuaImpl::addToEditor(const std::string &msg) {
 std::string LuaImpl::argsToString(lua_State *lua) {
     std::stringstream ss;
     int top = lua_gettop(lua);
-    for (int i = 1; i <= top; i++) {  /* repeat for each level */
-        const char *str = lua_tostring(lua, i);
-        if (!str) {
+    for (int i = 2; i <= top; i++) {  /* repeat for each level */
+        if (!lua_isstring(lua, i)) {
+            if (lua_istable(lua, i)) {
+                ss<<"table"<<" ";
+            } else if (lua_isfunction(lua, i)) {
+                ss<<"fucntion"<<" ";
+            } else if (lua_iscfunction(lua, i)) {
+                ss<<"cfucntion"<<" ";
+            } else if (lua_isnil(lua, i)) {
+                ss<<"nil"<<" ";
+            } else {
+                ss<<"?"<<" ";
+            }            
             continue;
         }
-        ss<<str<<" ";
-        
+        ss<<lua_tostring(lua, i)<<" ";
     }
     return ss.str();
 }
@@ -227,9 +236,11 @@ void LuaImpl::onParameterChanged(void *src, float value, const std::string &id)
     lua_pop(luaState.get(), 1); // remove tbl
     IF_HAS_LC(lcOnParameterChanged) {
         try {
+            setFlag(OnParameterChanged, true);
             sambag::lua::callLuaFunc(luaState.get(), LC_NAME(lcOnParameterChanged),
                 boost::make_tuple(id, value)
             );
+            setFlag(OnParameterChanged, false);
         } catch(const sambag::lua::ExecutionFailed &ex) {
             scriptFailed("calling " + LC_STR(lcOnParameterChanged) + " failed: " + ex.errMsg);
         } catch(...) {
@@ -392,6 +403,7 @@ bool LuaImpl::canHandleMidiEvent() const {
 //-----------------------------------------------------------------------------
 void LuaImpl::setParameterValue(lua_State *lua, const std::string &name, float value)
 {
+    // update parameter
     ParameterMap::iterator it = parameterMap.find(name);
     if (it==parameterMap.end()) {
         std::stringstream ss;
@@ -400,7 +412,46 @@ void LuaImpl::setParameterValue(lua_State *lua, const std::string &name, float v
 		lua_error(luaState.get());
         return;
     }
+    if (getFlag(OnParameterChanged)) {
+        // block signal (would otherwise occur dead lock)
+        boost::signals2::shared_connection_block block(it->second.second);
+        it->second.first->setValue(value);
+        // update parameter table
+        SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+        lua_getglobal(luaState.get(), GP_PARAMETER_SETUP.c_str());
+        int tbl = lua_gettop(luaState.get());
+        if (lua_istable(luaState.get(), -1)) {
+            lua_pushnumber(luaState.get(), value);
+            lua_setfield(luaState.get(), tbl, name.c_str());
+        }
+        lua_pop(luaState.get(), 1); // remove tbl
+        return;
+    }
     it->second.first->setValue(value);
+}
+//-----------------------------------------------------------------------------
+float LuaImpl::getParameterValue(lua_State *lua, const std::string &name) {
+    ParameterMap::iterator it = parameterMap.find(name);
+    if (it==parameterMap.end()) {
+        std::stringstream ss;
+		ss<<"parameter "<<name<<" not found.";
+		lua_pushstring (luaState.get(), ss.str().c_str());
+		lua_error(luaState.get());
+        return 0;
+    }
+    return it->second.first->getValue();
+}
+//-----------------------------------------------------------------------------
+std::string LuaImpl::getParameterDisplay(lua_State *lua, const std::string &name) {
+    ParameterMap::iterator it = parameterMap.find(name);
+    if (it==parameterMap.end()) {
+        std::stringstream ss;
+		ss<<"parameter "<<name<<" not found.";
+		lua_pushstring (luaState.get(), ss.str().c_str());
+		lua_error(luaState.get());
+        return "";
+    }
+    return it->second.first->getDisplay();
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::setParameterDisplay(lua_State *lua, const std::string &name,

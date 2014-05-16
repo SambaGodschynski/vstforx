@@ -5,7 +5,7 @@
  *
  * LuaImplBase.hpp
  *
- *  Created on: Fri May 16 11:50:31 2014
+ *  Created on: Fri May 16 14:14:26 2014
  *      Author: Samba Godschysnki
  */
 
@@ -53,6 +53,8 @@ protected:
 	SAMBAG_LUA_FTAG(getTimeSigDenominator, int ());
 	SAMBAG_LUA_FTAG(setParameterValue, void (std::string, float));
 	SAMBAG_LUA_FTAG(setParameterDisplay, void (std::string, std::string));
+	SAMBAG_LUA_FTAG(getParameterValue, float (std::string));
+	SAMBAG_LUA_FTAG(getParameterDisplay, std::string (std::string));
 	SAMBAG_LUA_FTAG(getPersistUserData, sambag::lua::IgnoreReturn (std::string));
 	SAMBAG_LUA_FTAG(setPersistUserData, void ());
     typedef LOKI_TYPELIST_10(Frx_log_Tag, 
@@ -66,11 +68,13 @@ protected:
 	Frx_getSamplePos_Tag, 
 	Frx_getBarStartPos_Tag) Functions1;
 
-	typedef LOKI_TYPELIST_7(Frx_getPpqPos_Tag, 
+	typedef LOKI_TYPELIST_9(Frx_getPpqPos_Tag, 
 	Frx_getTimeSigNumerator_Tag, 
 	Frx_getTimeSigDenominator_Tag, 
 	Frx_setParameterValue_Tag, 
 	Frx_setParameterDisplay_Tag, 
+	Frx_getParameterValue_Tag, 
+	Frx_getParameterDisplay_Tag, 
 	Frx_getPersistUserData_Tag, 
 	Frx_setPersistUserData_Tag) Functions2;
 
@@ -168,7 +172,7 @@ protected:
 	*
 	double getTempo();
 	/**
-	* @brief set the parameter value
+	* @brief Set the parameter value
 	* @param the parameter id
 	* @param the parameter value (0..1)
 	* @version 1.0.5
@@ -182,7 +186,19 @@ protected:
 	*/
 	virtual void setParameterDisplay(lua_State *lua, const std::string & id, const std::string & txt) = 0;
 	/**
-	* @return Tte persist user data for a key.
+	* @return the parameter value
+	* @param the parameter id
+	* @version 1.0.5
+	*/
+	virtual float getParameterValue(lua_State *lua, const std::string & id) = 0;
+	/**
+	* @return the parameter display text.
+	* @param the parameter id
+	* @version 1.0.5
+	*/
+	virtual std::string getParameterDisplay(lua_State *lua, const std::string & id) = 0;
+	/**
+	* @return the persist user data for a key.
 	* @returnType sequence
 	* @param the key
 	* @version 1.0.5
