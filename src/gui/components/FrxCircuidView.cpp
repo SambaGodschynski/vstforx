@@ -30,6 +30,7 @@
 #include <com/Settings.h>
 #include <boost/xpressive/xpressive.hpp>
 #include <boost/xpressive/regex_primitives.hpp>
+#include <sambag/disco/components/SvgComponent.hpp>
 
 namespace frx { namespace gui { namespace components {
 namespace {
@@ -136,36 +137,10 @@ void drawLogo(sd::IDrawContext::Ptr cn, sd::ISurface::Ptr logo, const sd::Rectan
     cn->restore();
 }
 void BgPane::drawComponent(sd::IDrawContext::Ptr cn) {
-	if (!pat) {
-		Super::drawComponent(cn);
-		return;
-	}
 	sd::Rectangle r;
 	_getViewportRect(getPtr(), r);
-    
-    
-    if (parallaxEffect>0.) {
-        sdc::Viewport::Ptr vp = parent.lock();
-        if (!vp) {
-            parent = vp = getFirstContainer<sdc::Viewport>();
-            if (!vp) {
-                SAMBAG_LOG_ERR<<"BgPane::drawComponent() Viewport==NULL";
-                return;
-            }
-        }
-        sd::Point2D p = vp->getViewPosition();
-        pat->setMatrix(
-            boost::numeric::ublas::prod(bgTrans,
-            sd::translate2D(-p.x()*parallaxEffect, -p.y()*parallaxEffect))
-        );
-    }
-    
-	cn->setFillPattern(pat);
-	cn->rect(sd::Rectangle(0, 0, getWidth(), getHeight()));
-	cn->fill();
 	drawDemoNotifictaion(cn, r);
     drawLogo(cn, logo, r);
-	drawShadingLayer(cn, r);
 }
 //-----------------------------------------------------------------------------
 void BgPane::postConstructor() {
@@ -419,19 +394,31 @@ void FrxCircuidView::postConstructor() {
 	Super::setLayout(sdc::BorderLayout::create());
 	// init mainview
 	viewPort = sdc::Viewport::create();
+    // load SVG component
+    sdc::SvgComponent::Ptr svg = sdc::SvgComponent::create();
+    svg->setSvgFilename("style/frx.svg");
+    sdc::SvgComponent::Dummy::Ptr svgMain = svg->getDummyById("#main");
+    if (!svgMain) {
+        throw std::runtime_error("missing svg main component");
+    }
+    Super::add(svg);
+	svgMain->setLayout(sdc::FlowLayout::create());
+    svgMain->add(viewPort);
 	// init contentpane
 	content = BgPane::create();
 	content->setSize(sd::Dimension(FRX_MAX_VIEW, FRX_MAX_VIEW));
-	viewPort->add(content);
-	Super::add(viewPort);
+    viewPort->add(content);
 	content->setLayout(sdc::ALayoutManagerPtr());
+    // set opaque
+    svgMain->setOpaque(false);
+    viewPort->setOpaque(false);
+    content->setOpaque(false);
 	// init selection
 	selection = FrxSelection::create();
 	add(selection, Z_InteractiveStuff);
 	selection->setVisible(false);
 	viewPort->setViewPosition(sd::Point2D(FRX_MAX_VIEW/2., FRX_MAX_VIEW/2.));
 	statusBar = FrxStatusBar::create();
-	Super::add(statusBar, sdc::BorderLayout::SOUTH, -1);
 }
 //-----------------------------------------------------------------------------
 int FrxCircuidView::getIndexOf(ZOrder order) const {

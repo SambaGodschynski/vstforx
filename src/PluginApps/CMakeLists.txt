@@ -166,7 +166,7 @@ ELSEIF(APPLE)
   add_executable(standalone MACOSX_BUNDLE ${FRX_STANDALONE})
   target_link_libraries (standalone frx_core ${FRX_CLIBS})
   SET_TARGET_PROPERTIES(standalone PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/standalone.plist")
-  SET_TARGET_PROPERTIES(standalone PROPERTIES LINK_FLAGS "-bundle")
+  #SET_TARGET_PROPERTIES(standalone PROPERTIES LINK_FLAGS "-bundle")
   target_compile_definitions(standalone PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.Standalone\"")
 
 
