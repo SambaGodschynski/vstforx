@@ -17,6 +17,7 @@
 #include <sambag/lua/ALuaObject.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include <boost/unordered_map.hpp>
+#include <boost/unordered_set.hpp>
 #include <processing/parameter/parameter.h>
 #include <loki/Typelist.h>
 #include <sambag/com/Thread.hpp>
@@ -54,7 +55,6 @@ public:
     typedef std::multimap<std::string, std::string> PersistUserData;
     //-------------------------------------------------------------------------
     struct LuaCall { // frxlLua
-       	LUA_CALL(lcOnParameterChanged);
         LUA_CALL(lcProcess);
         LUA_CALL(lcProcessMidi);
         LUA_CALL(lcSetAudioConfig);
@@ -63,7 +63,7 @@ public:
         LUA_CALL(lcOnLoad);
         // num > 32 can violate flags integer bounds @see lcFlags
         // use boost::dynamic_bitset in that case
-        typedef LOKI_TYPELIST_7(lcOnParameterChanged,
+        typedef LOKI_TYPELIST_6(
             lcProcess,
             lcProcessMidi,
             lcSetAudioConfig,
@@ -74,8 +74,7 @@ public:
     //-------------------------------------------------------------------------
     enum Flag {
         IsValid,
-        NeedsReload,
-        OnParameterChanged
+        NeedsReload
     };
 protected:
     ///////////////////////////////////////////////////////////////////////////
@@ -96,6 +95,8 @@ protected:
     void onExecError(const std::string &msg);
 private:
     //-------------------------------------------------------------------------
+    void updateLuaParameterMap(float value, const std::string &id);
+    //-------------------------------------------------------------------------
     std::string argsToString(lua_State *lua);
     //-------------------------------------------------------------------------
     sambag::com::RecursiveMutex logMutex;
@@ -112,8 +113,10 @@ private:
     //-------------------------------------------------------------------------
     void addToEditor(const std::string &msg);
     //-------------------------------------------------------------------------
-	typedef std::pair<oldPrPa::Parameter::Ptr,
-        oldPrPa::Parameter::Connection> ParameterContainer;
+    typedef boost::unordered_set<std::string> Callbacks;
+	typedef boost::tuple<oldPrPa::Parameter::Ptr,
+        oldPrPa::Parameter::Connection,
+        Callbacks> ParameterContainer;
 	//-------------------------------------------------------------------------
 	typedef boost::unordered_map<std::string, ParameterContainer> ParameterMap;
 	//-------------------------------------------------------------------------
@@ -250,6 +253,12 @@ public:
         const std::string &key);
     //-------------------------------------------------------------------------
     void setPersistUserData(lua_State *lua);
+    //-------------------------------------------------------------------------
+    void addParameterListener(lua_State *lua, const std::string &id,
+        const std::string &callBack);
+    //-------------------------------------------------------------------------
+    void removeParameterListener(lua_State *lua, const std::string &id,
+        const std::string &callBack);
 public:
     //-------------------------------------------------------------------------
     virtual void baseConfigChanged();

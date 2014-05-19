@@ -876,8 +876,36 @@ void _addParametersImpl(fgc::FrxCircuidViewPtr view,
     ModelObject::Parameters pars;
 	obj->getParameters("*", pars);
 	for (int i=0; i<num; ++i) {
+        if ((size_t)ids[i]>=pars.size()) {
+            continue;
+        }
         FrxComponentPtr knob = dynamic_cast<FrxControl*>(&getFrxControl(view))->
             _addRelatedKnobToView(view, pr, pars.at( ids[i] ));
+        sc::Number x = pr->getX() + pr->getWidth()/2. + 55.;
+        sc::Number y = pr->getY() - 15. + i*35;
+        knob->setLocation(x,y);
+        out.push_back(knob);
+    }
+}
+
+void addNFirstParam(fgc::FrxCircuidViewPtr view,
+	Components &out, FrxProcessorNodePtr pr, int n)
+{
+    using namespace frx::processing;
+	IViewModelMap::Ptr map = getViewModelMap(view);
+	frx::processing::ModelObject::Ptr obj = 
+		map->getModelObject(pr);
+	if (!obj) {
+		return;
+	}
+    ModelObject::Parameters pars;
+	obj->getParameters(".", pars);
+	for (size_t i=0; i<n; ++i) {
+        if (i>=pars.size()) {
+            break;
+        }
+        FrxComponentPtr knob = dynamic_cast<FrxControl*>(&getFrxControl(view))->
+            _addRelatedKnobToView(view, pr, pars.at(i));
         sc::Number x = pr->getX() + pr->getWidth()/2. + 55.;
         sc::Number y = pr->getY() - 15. + i*35;
         knob->setLocation(x,y);
@@ -921,6 +949,7 @@ void _initExtraMap()
     extraMap.insert(std::make_pair( Loki::TypeInfo(typeid(FrxInStepNode)), boost::bind( &addParameters, _1, _2, _3, 0, 1, 6)));
     extraMap.insert(std::make_pair( Loki::TypeInfo(typeid(FrxOutStepNode)), boost::bind( &addParameters, _1, _2, _3, 0, 1, 6)));
     extraMap.insert(std::make_pair( Loki::TypeInfo(typeid(FrxMIDIReceiver)), boost::bind( &addParameters, _1, _2, _3, 0, 2, 8)));
+    extraMap.insert(std::make_pair( Loki::TypeInfo(typeid(FrxPluginNode)), boost::bind( &addNFirstParam, _1, _2, _3, 3)));
 }
     
 /**

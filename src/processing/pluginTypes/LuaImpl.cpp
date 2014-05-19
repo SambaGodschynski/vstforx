@@ -193,6 +193,7 @@ void LuaImpl::loadScript() {
         log("numOutChannels: " + sambag::com::toString(numOutChannels));
         log("numParameter: " + sambag::com::toString(parameters->size()));
         log("valid: " + std::string(getFlag(IsValid) ? "yes" : "no") );
+        log(config["info"]);
     } catch(const sambag::lua::ExecutionFailed &ex) {
        logErr("loading script failed: " + ex.errMsg);
     } catch(const std::exception &ex) {
@@ -223,10 +224,9 @@ void LuaImpl::loadIOs() {
     }
 }
 //-----------------------------------------------------------------------------
-void LuaImpl::onParameterChanged(void *src, float value, const std::string &id)
-{
-    
+void LuaImpl::updateLuaParameterMap(float value, const std::string &id) {
     SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+    // update global parameter map
     lua_getglobal(luaState.get(), GP_PARAMETER_SETUP.c_str());
     int tbl = lua_gettop(luaState.get());
     if (lua_istable(luaState.get(), -1)) {
@@ -234,30 +234,92 @@ void LuaImpl::onParameterChanged(void *src, float value, const std::string &id)
         lua_setfield(luaState.get(), tbl, id.c_str());
     }
     lua_pop(luaState.get(), 1); // remove tbl
-    IF_HAS_LC(lcOnParameterChanged) {
+}
+//-----------------------------------------------------------------------------
+void LuaImpl::onParameterChanged(void *src, float value, const std::string &id)
+{
+    
+    SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+    updateLuaParameterMap(value, id);
+
+    ParameterMap::iterator it = parameterMap.find(id);
+    if (it==parameterMap.end()) {
+        return;
+    }
+    const Callbacks &callbacks = boost::get<2>(it->second);
+    oldPrPa::Parameter::Connection &cn = boost::get<1>(it->second);
+    
+    // block signal to prevent stack overflow
+    boost::signals2::shared_connection_block block(cn);
+    
+    // perform callbacks
+    BOOST_FOREACH(const std::string &cbk, callbacks) {
+        if (!sambag::lua::hasFunction(luaState.get(), cbk)) {
+            continue;
+        }
         try {
-            setFlag(OnParameterChanged, true);
-            sambag::lua::callLuaFunc(luaState.get(), LC_NAME(lcOnParameterChanged),
+            sambag::lua::callLuaFunc(luaState.get(), cbk,
                 boost::make_tuple(id, value)
             );
-            setFlag(OnParameterChanged, false);
         } catch(const sambag::lua::ExecutionFailed &ex) {
-            scriptFailed("calling " + LC_STR(lcOnParameterChanged) + " failed: " + ex.errMsg);
+            scriptFailed("calling " + cbk + " failed: " + ex.errMsg);
         } catch(...) {
-            scriptFailed("calling " + LC_STR(lcOnParameterChanged) + " failed");
+            scriptFailed("calling " + cbk + " failed");
         }
-    }}
+        return;
+    }
+}
+//-----------------------------------------------------------------------------
+void LuaImpl::addParameterListener(lua_State *lua,
+    const std::string &id, const std::string &callBack)
+{
+    namespace slua = sambag::lua;
+    try {
+        ParameterMap::iterator it = parameterMap.find(id);
+        if (it==parameterMap.end()) {
+            it=parameterMap.insert(
+                std::make_pair(id, ParameterContainer())
+            ).first;
+        }
+        Callbacks &cbks = boost::get<2>(it->second);
+        cbks.insert(callBack);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(luaState.get(),  ex.what());
+    } catch (...) {
+        slua::pushLuaError(luaState.get(),  "unkown error");
+    }
+}
+//-----------------------------------------------------------------------------
+void LuaImpl::removeParameterListener(lua_State *lua,
+    const std::string &id, const std::string &callBack)
+{
+    namespace slua = sambag::lua;
+    try {
+        ParameterMap::iterator it = parameterMap.find(id);
+        if (it==parameterMap.end()) {
+            throw std::runtime_error("parameter not found");
+        }
+        Callbacks &cbks = boost::get<2>(it->second);
+        if (cbks.erase(callBack)==0) {
+            throw std::runtime_error("callback not found");
+        }
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(luaState.get(),  ex.what());
+    } catch (...) {
+        slua::pushLuaError(luaState.get(),  "unkown error");
+    }
+}
 //-----------------------------------------------------------------------------
 void LuaImpl::loadParameters() {
     using namespace ::processing::parameter;
-    typedef sambag::lua::LuaMap<std::string, float> ParameterMap;
-    ParameterMap pm;
+    typedef sambag::lua::LuaMap<std::string, float> ParameterInitMap;
+    ParameterInitMap pm;
     if(!sambag::lua::getGlobal(luaState.get(), pm, GP_PARAMETER_SETUP)) {
         return;
     }
     parameters->resize(pm.size());
     size_t i=0;
-    BOOST_FOREACH(const ParameterMap::value_type &v, pm) {
+    BOOST_FOREACH(const ParameterInitMap::value_type &v, pm) {
         Parameter::Ptr p = parameters->at(i);
         if (!p) {
             (*parameters)[i] = p = Parameter::create(i);
@@ -266,17 +328,20 @@ void LuaImpl::loadParameters() {
             // hole Parameter wert
             p->setName (v.first);
         }
-        if (parameterMap.find(v.first)!=parameterMap.end()) {
-            // already handled
-            continue;
+        ParameterMap::iterator it = parameterMap.find(v.first);
+        if (it==parameterMap.end()) {
+            it = parameterMap.insert(
+                    std::make_pair(v.first, ParameterContainer())
+                ).first;
         }
-        ParameterContainer pc;
-        pc.first = p;
-        // add listener
-		pc.second = p->addValueChangedListener (
-			boost::bind(&LuaImpl::onParameterChanged, this, _1, _2, v.first)
-		);
-        parameterMap[v.first] = pc;
+        ParameterContainer &pc = it->second;
+        if (!boost::get<0>(pc)) {
+            boost::get<0>(pc) = p;
+            // add listener
+            boost::get<1>(pc) = p->addValueChangedListener (
+                boost::bind(&LuaImpl::onParameterChanged, this, _1, _2, v.first)
+            );
+        }
         p->setValue(v.second);
         ++i;
 	}
@@ -412,22 +477,10 @@ void LuaImpl::setParameterValue(lua_State *lua, const std::string &name, float v
 		lua_error(luaState.get());
         return;
     }
-    if (getFlag(OnParameterChanged)) {
-        // block signal (would otherwise occur dead lock)
-        boost::signals2::shared_connection_block block(it->second.second);
-        it->second.first->setValue(value);
-        // update parameter table
-        SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
-        lua_getglobal(luaState.get(), GP_PARAMETER_SETUP.c_str());
-        int tbl = lua_gettop(luaState.get());
-        if (lua_istable(luaState.get(), -1)) {
-            lua_pushnumber(luaState.get(), value);
-            lua_setfield(luaState.get(), tbl, name.c_str());
-        }
-        lua_pop(luaState.get(), 1); // remove tbl
-        return;
+    oldPrPa::Parameter::Ptr p = boost::get<0>(it->second);
+    if (p) {
+        p->setValue(value);
     }
-    it->second.first->setValue(value);
 }
 //-----------------------------------------------------------------------------
 float LuaImpl::getParameterValue(lua_State *lua, const std::string &name) {
@@ -439,7 +492,11 @@ float LuaImpl::getParameterValue(lua_State *lua, const std::string &name) {
 		lua_error(luaState.get());
         return 0;
     }
-    return it->second.first->getValue();
+    oldPrPa::Parameter::Ptr p = boost::get<0>(it->second);
+    if (p) {
+        return p->getValue();
+    }
+    return 0;
 }
 //-----------------------------------------------------------------------------
 std::string LuaImpl::getParameterDisplay(lua_State *lua, const std::string &name) {
@@ -451,7 +508,11 @@ std::string LuaImpl::getParameterDisplay(lua_State *lua, const std::string &name
 		lua_error(luaState.get());
         return "";
     }
-    return it->second.first->getDisplay();
+    oldPrPa::Parameter::Ptr p = boost::get<0>(it->second);
+    if (p) {
+        return p->getDisplay();
+    }
+    return "";
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::setParameterDisplay(lua_State *lua, const std::string &name,
@@ -465,7 +526,10 @@ void LuaImpl::setParameterDisplay(lua_State *lua, const std::string &name,
 		lua_error(luaState.get());
         return;
     }
-    it->second.first->setDisplay(value);
+    oldPrPa::Parameter::Ptr p = boost::get<0>(it->second);
+    if (p) {
+        p->setDisplay(value);
+    }
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) {

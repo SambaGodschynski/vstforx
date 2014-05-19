@@ -127,6 +127,25 @@ class LuaImplBase extends sambag.lua.ALuaObject {
        */
       string getParameterDisplay(string id);
       /**
+       * @brief Adds a listener to a parameter.
+       * @param the parameter id
+       * @param a callback function which accepts a string (the id) and a float (the value) argument
+       * <pre>
+       * function onParameterChanged(id, value) <br>
+       *   frx.plug:log(id, value) <br>
+       * end <br>
+       * frx.plug:addParameterListener("param1", "onParameterChanged")
+       * </pre>
+       *
+       */
+      void addParameterListener(string id, string function); 
+      /**
+       * @brief Removes a parameter listener. (@see addParameterListener())
+       * @param the parameter id
+       * @param the registered callback function
+       */
+      void removeParameterListener(string id, string function); 
+      /**
        * @return the persist user data for a key.
        * @returnType sequence
        * @param the key
