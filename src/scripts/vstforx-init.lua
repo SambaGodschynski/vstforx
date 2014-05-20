@@ -2,7 +2,7 @@
 -- main VSTForx init script                                    --
 -- will be (re)loaded after every "open editor" event          --
 -- a VSTForx.Lua documantation can be found under:             --
---      xxx.xxx.xx                                             --
+--      api.vstforx.de                                         --
 -- author: Samba Godschynski                                   --
 -----------------------------------------------------------------
 require "vstforx-helper"

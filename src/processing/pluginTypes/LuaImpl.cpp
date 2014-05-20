@@ -348,12 +348,6 @@ void LuaImpl::loadParameters() {
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::baseConfigChanged() {
-}
-//-----------------------------------------------------------------------------
-void LuaImpl::turnOff() {
-}
-//-----------------------------------------------------------------------------
-void LuaImpl::turnOn() {
     IF_LC_MISSING(lcSetAudioConfig) {
         return;
     }
@@ -370,6 +364,13 @@ void LuaImpl::turnOn() {
     } catch(...) {
         scriptFailed("calling " + LC_STR(lcSetAudioConfig) + " failed");
     }
+}
+//-----------------------------------------------------------------------------
+void LuaImpl::turnOff() {
+}
+//-----------------------------------------------------------------------------
+void LuaImpl::turnOn() {
+    baseConfigChanged();
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::openPlugin() {

@@ -3,7 +3,7 @@
 -- While the init script will be executed when the editor      --
 -- is opening, this module will be executed on startup only    --
 -- a VSTForx.Lua documantation can be found under:             --
---      xxx.xxx.xx                                             --
+--      api.vstforx.de                                         --
 -- author: Samba Godschynski                                   --
 -----------------------------------------------------------------
 require "vstforx-helper"
@@ -168,7 +168,7 @@ end
 
 function addParameterConnectionMenu(obj)
    --get operators which can be added
-   ops=viewHelper.getConnectionOpNames()
+   ops=helper.getConnectionOpNames()
    addEntries={}
    -- create submenu table
    for i=1,#ops,1 do
@@ -224,6 +224,10 @@ function setObjectMenu(obj)
 	 table.insert(objMenu, {name="add output", 
 				action="addOutput()"})
       end
+   elseif string.match(objType, ".*%.RemoteChReceiver")~=nil then     
+      -- interprocess.* (e.g. interprocess.RemoteChReceiver)
+      table.insert(objMenu, {name="show details...", 
+			     action=string.format("onOpenBrowser('Main Scene/Plugins/%s')", obj:getViewId())})
    elseif string.match(objType, ".*%.Plugin")~=nil then
       -- *.Plugin (e.g. vst2x.Plugin)
       table.insert(objMenu, {name="show details...", 
@@ -250,34 +254,9 @@ function setObjectMenu(obj)
    obj:setMenu(objMenu)
 end
 
-
-
-
-function clone(o)
-   id = o:getTypeId()
-   if (string.match(id, ".*%.Plugin")) then
-      id=string.format("%s('%s')", id, o:getPluginLocation())
-   end
-   if (string.match(id, ".*Input.*")) then
-      id=string.format("%s(%i, 2)", id, o:getNumInputs()) 
-   end
-   if (string.match(id, ".*Output.*")) then
-      id=string.format("%s(2, %i)", id, o:getNumOutputs()) 
-   end
-   new=frx.view:add(id)
-   op = o:getParameters()
-   np = new:getParameters()
-   if #op ~= #np then
-      return
-   end
-   for i=1,#np,1 do
-      np[i]:setValue( op[i]:getValue() )
-   end
-end
-
 function onClone()
    o=frx.view:getContextObject()
-   clone(o)
+   helper.clone(o)
 end
 
 function onOpenCloseEditor()

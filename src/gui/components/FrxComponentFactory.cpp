@@ -209,16 +209,14 @@ FrxParameterPtr createHostParameter(FrxCircuidViewPtr circ, int id) {
 FrxProcessorNodePtr createRemoteChannel(FrxCircuidViewPtr circ, std::string &rcId)
 {
 	if (!circ) {
-		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,  
 			"tried to create processor with FrxCircuidViewPtr == NULL");
 	}
     
-    std::string id = "internal.RemoteChReceiver";
+    std::string id = "interprocess.RemoteChReceiver";
     id+="('" + rcId + "')";
     
-    FrxProcessorNode::Ptr viewObj = boost::dynamic_pointer_cast<FrxPluginNode>(
-        createProcessor(circ, id)
-    );
+    FrxProcessorNode::Ptr viewObj = createProcessor(circ, id);
     
 	// create model obj.
 	frx::processing::IProcessor::Ptr mObj =
