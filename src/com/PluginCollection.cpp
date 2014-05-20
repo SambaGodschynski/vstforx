@@ -331,10 +331,9 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 		return;
 	}
 	TOLOG ("peek " + out_info.location );
-	appendLog ( out_info.location );		   // eintrag ins scan log	
-	frx::processing::Plugin::Ptr n;
+	appendLog ( out_info.location );		   // eintrag ins scan log
 	try {
-		n = frx::processing::Plugin::create(hostinfo, out_info.location);
+        frx::processing::Plugin::peek(hostinfo, out_info);
 	} catch(const ShellPluginException &ex) {
 		// TODO: insert as folder with concrete shell ids as content
 		out_info.access = PluginInfo::SUCCEED;
@@ -342,9 +341,7 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
 		return;
 	} catch(...) {
-		n = frx::processing::Plugin::Ptr();
-	}
-	if ( !n ) { // loading failed
+        // loading failed
 		appendLog ( "?" + out_info.location );
 		                                   // nochmal ins log damit nach einem evntl. absturz
 										   // im scan diese datei nicht nochmal versucht wird zu laden. 
@@ -354,16 +351,13 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 		out_info.name = com::getFileNameFromPath(out_info.location);
 		return;
 	}
-	if ( ! n->isAccessable() ) {
-		out_info.access = PluginInfo::FAILED;
+	if ( out_info.access==PluginInfo::FAILED ) {
+		// loading succeed but plugin isn't accessable
 		// set timestamp and name
 		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
 		out_info.name = com::getFileNameFromPath(out_info.location);
 		return;
 	}
-	// fill out
-	out_info = n->getPluginInfo();
-	out_info.access = PluginInfo::SUCCEED;
 	// set timestamp
 	out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
 	return;

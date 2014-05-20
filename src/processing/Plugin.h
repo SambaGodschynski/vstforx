@@ -169,6 +169,11 @@ public:
     static Ptr createAU(IHostInfo::Ptr, const std::string &location);
     //-------------------------------------------------------------------------
     /**
+     * @brief peek plugin informations
+     */
+    static void peek(IHostInfo::Ptr, oldPr::PluginInfo &info);
+    //-------------------------------------------------------------------------
+    /**
      * @override
      */
     virtual std::string getStatusMessage() const;

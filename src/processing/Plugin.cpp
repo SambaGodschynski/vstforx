@@ -91,7 +91,6 @@ void Plugin::loadImpl() {
         SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
                      "try to creating plugin without impl.");
     }
-    
     namespace se = sambag::com::events;
     impl->se::EventSender<se::PropertyChanged>::addEventListener(
         boost::bind(&Plugin::onImplPropertyChanged, this, _1, _2)
@@ -358,6 +357,27 @@ Processing is stopped. Please remove and load new.";
     if (dataSize) {
         delete[] data;
     }
+}
+//-----------------------------------------------------------------------------
+void Plugin::peek(IHostInfo::Ptr hI, oldPr::PluginInfo &info) {
+    if (!hI) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+			"Hostinfo == NULL"
+		);
+	}
+    using frx::processing::PluginFactory;
+    APluginImpl::Parameters parameters;
+    APluginImpl::Ptr impl = PluginFactory::instance().load(hI, &parameters,
+        info.location, oldPr::PluginInfo::UNKNOWN);
+    
+    if (!impl) {
+        SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+                     "failed to open "+info.location);
+    }
+    impl->updatePluginInfo(info);
+    info.access = impl->isAccessable() ? oldPr::PluginInfo::SUCCEED : oldPr::PluginInfo::FAILED;
+    // delete impl
+    impl.reset();
 }
 //-----------------------------------------------------------------------------
 Plugin::Ptr Plugin::create(frx::processing::IHostInfo::Ptr hI, const std::string &location)
