@@ -445,7 +445,7 @@ void LuaImpl::onEditorIdle() {
 }
 //-----------------------------------------------------------------------------
 bool LuaImpl::isAccessable() const {
-    return true;
+    return config["type"]=="frx_lua_plugin";
 }
 //-----------------------------------------------------------------------------
 size_t LuaImpl::getNumPrograms() {

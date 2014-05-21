@@ -900,14 +900,14 @@ void addNFirstParam(fgc::FrxCircuidViewPtr view,
 	}
     ModelObject::Parameters pars;
 	obj->getParameters(".", pars);
-	for (size_t i=0; i<n; ++i) {
-        if (i>=pars.size()) {
+	for (int i=0; i<n; ++i) {
+        if (i>=(int)pars.size()) {
             break;
         }
         FrxComponentPtr knob = dynamic_cast<FrxControl*>(&getFrxControl(view))->
             _addRelatedKnobToView(view, pr, pars.at(i));
-        sc::Number x = pr->getX() + pr->getWidth()/2. + 55.;
-        sc::Number y = pr->getY() - 15. + i*35;
+        sc::Number x = pr->getX() + pr->getWidth()/2. + 35.;
+        sc::Number y = pr->getY() + 40. + i*35;
         knob->setLocation(x,y);
         out.push_back(knob);
     }

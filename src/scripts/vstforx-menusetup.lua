@@ -268,6 +268,9 @@ function onRename()
    o=frx.view:getContextObject()
    name=o:getName()
    name=frx.showInputTextDlg("rename "..name, name)
+   if #name==0 then
+      return
+   end
    o:setName(name)
    setObjectMenu(o) -- reset menu
 end
