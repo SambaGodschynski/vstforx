@@ -107,6 +107,10 @@ chunkData(NULL),
 blockSize(0),
 sampleRate(0.f)
 {
+	if (_instances++ == 0) {
+		_timerThreadHolder = 
+			FrxAsyncDSPTimer::startWorkerThread();
+	}
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::onGraphDelayChanged(void *src, const ::processing::GraphDelayChanged &ev)
@@ -151,10 +155,6 @@ void VstForxPlug::open() {
 	if (isOpen()) {
 		return;
 	}
-	if (_instances++ == 0) {
-		_timerThreadHolder = 
-			FrxAsyncDSPTimer::startWorkerThread();
-	}
 	_open = true;
 	if (graph) {
 		updateGraphBaseConfiguration();
@@ -185,7 +185,9 @@ void VstForxPlug::close() {
 		return;
 	}
 	_open = false;
-    
+}
+//-----------------------------------------------------------------------------
+VstForxPlug::~VstForxPlug() {
 	if (chunkData) {
 		delete chunkData;
 		chunkData = NULL;
@@ -196,10 +198,11 @@ void VstForxPlug::close() {
 		FrxAsyncDSPTimer::closeAllTimer();
 		_timerThreadHolder.reset();
 	}
-}
-//-----------------------------------------------------------------------------
-VstForxPlug::~VstForxPlug() {
+    graph.reset();
+    map.reset();
+    hostInfoAdapter.reset();
     unRegisterInstance();
+
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::process(float **in, float **out, int numSamples) {

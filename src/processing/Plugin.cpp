@@ -374,9 +374,11 @@ void Plugin::peek(IHostInfo::Ptr hI, oldPr::PluginInfo &info) {
         SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
                      "failed to open "+info.location);
     }
+	impl->openPlugin();
     impl->updatePluginInfo(info);
     info.access = impl->isAccessable() ? oldPr::PluginInfo::SUCCEED : oldPr::PluginInfo::FAILED;
     // delete impl
+	impl->closePlugin();
     impl.reset();
 }
 //-----------------------------------------------------------------------------
