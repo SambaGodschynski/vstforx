@@ -42,7 +42,8 @@ using namespace interprocess;
 //-----------------------------------------------------------------------------
 Plugin::Plugin() : 
 blockSize(0),
-sampleRate(0.f)
+sampleRate(0.f),
+trackingDummyPtr(new TrackingDummy())
 {
 	using namespace frx::processing;
 	if (_instances++ == 0) {
@@ -64,6 +65,8 @@ void Plugin::open() {
 //-----------------------------------------------------------------------------
 void Plugin::close() {
     destroyStream();
+    ioChangedTimer->stop();
+    trackingDummyPtr.reset();
 	ioChangedTimer.reset();
 }
 //-----------------------------------------------------------------------------
@@ -109,7 +112,8 @@ void Plugin::setBlockSize(int blockSize) {
 		ioChangedTimer = FrxAsyncDSPTimer::create(500);
 		ioChangedTimer->EventSender<FrxAsyncDSPTimer::Event>::
 		addTrackedEventListener(
-			boost::bind( &__onIOChanged, getHost(),  blockSize), ioChangedTimer
+			boost::bind( &__onIOChanged, getHost(),  blockSize),
+            trackingDummyPtr
 		);
 	}
 	ioChangedTimer->stop();
