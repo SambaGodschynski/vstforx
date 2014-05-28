@@ -948,6 +948,12 @@ double LuaImpl::getTempo(lua_State *lua) {
 //-----------------------------------------------------------------------------
 void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
     SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+    std::stringstream ss;
+    boost::filesystem::path path = location;
+    path=path.parent_path();
+    ss<<"package.path='"<<path.generic_string()<<"/?.lua;' .. package.path";
+    sambag::lua::executeString(luaState.get(), ss.str());
+    
     IHostInfo::Ptr hI = hostInfo.lock();
     if (!hI) {
         SAMBAG_LOG_WARN<<"hostinfo == NULL";

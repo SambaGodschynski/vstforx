@@ -495,7 +495,18 @@ namespace {
 			if (!brws)
 				return true;
 			// TODO: update specific list or better specific entry
-			brws->getBrowserImpl()->redraw();
+            sdc::AContainerPtr con = brws->getBrowserImpl();
+            if (!con) {
+                return  true;
+            }
+            sdc::WindowPtr win =
+                con->getFirstContainer<sdc::Window>();
+            if (!win) {
+                return true;
+            }
+            SAMBAG_BEGIN_SYNCHRONIZED(brws->getBrowserImpl()->getTreeLock())
+                brws->getBrowserImpl()->redraw();
+            SAMBAG_END_SYNCHRONIZED
             return true;
 		}
 	};

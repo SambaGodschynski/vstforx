@@ -65,7 +65,9 @@ void Plugin::open() {
 //-----------------------------------------------------------------------------
 void Plugin::close() {
     destroyStream();
-    ioChangedTimer->stop();
+    if (ioChangedTimer) {
+        ioChangedTimer->stop();
+    }
     trackingDummyPtr.reset();
 	ioChangedTimer.reset();
 }
