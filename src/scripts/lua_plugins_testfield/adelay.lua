@@ -3,12 +3,10 @@ gpConfig = {
    type="frx_lua_plugin", 
    name="ADelay", 
    author="Samba Godschynski",
-   license="GPL",
    numInChannels=2, 
    numOutChannels=2
 }
 gpParameterSetup = { direct = 0.5, delay=0.5, feedback=0.4 }
-p = gpParameterSetup
 maxbuff = 44100
 
 
@@ -25,13 +23,11 @@ cursor = 1
 
 function incCursor()
    cursor = cursor + 1
-   if cursor > p['delay'] then
+   delay = p['delay'] * maxbuff
+   if cursor > delay then
       cursor = 1
    end
 end
-
-t=frx.addTimer("frx.plug:log('ARSCH')", 50, -1)
-t:start()
 
 function lcProcess(numSamples)
    l = frx.plug:getChannel(1)
@@ -48,9 +44,3 @@ function lcProcess(numSamples)
    frx.plug:setChannel(2, r)
 end
 
-function lcOnParameterChanged(name,value)
-   if name=='delay' then
-      value = value * maxbuff
-   end
-   p[name]=value
-end

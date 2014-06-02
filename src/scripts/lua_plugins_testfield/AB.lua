@@ -3,9 +3,10 @@ gpConfig = {
    type="frx_lua_plugin", 
    name="", 
    author="Samba Godschynski",
-   license="GPL",
    numInChannels=0, 
-   numOutChannels=0
+   numOutChannels=0,
+   info="The AB plugin manages parameter transitions between \
+two states: A and B."
 }
 
 numOut = 10 
@@ -23,7 +24,9 @@ function lcInit()
       _ENV.gpParameterSetup[name]=0
       aValues[name]=0
       bValues[name]=1
+      frx.plug:addParameterListener(name, "onParameterChanged")
    end
+   frx.plug:addParameterListener("A/B", "onABChanged")
 end
 
 function resetAB()
@@ -49,18 +52,25 @@ function updateParams()
    end
 end
 
-function lcOnParameterChanged(name, value)
-   if name~="A/B" then
-      ref=resetAB()
-      if ref=="A" then
-	 aValues[name]=value
-      else
-	 bValues[name]=value
-      end
-      frx.plug:setParameterDisplay(name, string.format("Set %s %f", ref, value))
-   else
-      updateParams()
+blockParams=false
+
+function onABChanged()
+   blockParams=true
+   updateParams()
+   blockParams=false
+end
+
+function onParameterChanged(name, value)
+   if blockParams==true then
+      return
    end
+   currState=resetAB()
+   if currState=="A" then
+      aValues[name]=value
+   else
+      bValues[name]=value
+   end
+   frx.plug:setParameterDisplay(name, string.format("Set %s %f", currState, value))
 end
 
 

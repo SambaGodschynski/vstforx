@@ -1,3 +1,6 @@
+
+require "midiHelper"
+
 --setup
 buffSize = 2048
 sampleRate = 44100
@@ -15,6 +18,9 @@ bff = {}
 phase = 0
 numBand = 15
 maxFrq=990
+amp=0
+note=0
+vel=0
 
 function key(i)
    return string.format("%02d", i)
@@ -31,30 +37,30 @@ end
 
 function initParam()
    p["frq"]=440/maxFrq
+   frx.plug:addParameterListener("frq", "onFrqChanged")
    n = numBand
    for i=1,n,1 do
-      p[key(i)] = 0
+      name=key(i)
+      p[name] = 0
       if i==3 then
-	 p[key(i)]=0.7
+	 p[name]=0.7
       end
+      frx.plug:addParameterListener(name, "onBandChanged")
    end
 end
 
 function lcProcessMidi(messages) 
    for k,v in pairs(messages) do
-      print(#v.data)
-      _status, v1, v2 = unpack(v.data)
-      print(_status, v1, v2)
-      if (_status~=nil) then 
-	 status=bit32.band(0xF0, _status)
-	 channel=bit32.band(0x0F, _status)
-	 if status==0x80 then
-	    --noteoff
-	    frx.plug:log(channel, "note off")
-	 end
-	 if status==0x90 then
-	    --noteon
-	    frx.plug:log(channel, "note on")
+      events=midiHelper:getMidiEvents(v.data)
+      for ek, ev in pairs(events) do
+	 if ev[1]==midiHelper.NOTE_ON then
+	    note=ev[3][1]
+	    vel=ev[3][2]
+	    amp=1 --vel/127
+	 elseif ev[1]==midiHelper.NOTE_OFF then
+	    if note==ev[3][1] then
+	       amp=0
+	    end
 	 end
       end
    end
@@ -83,8 +89,10 @@ end
 function lcProcess(numSamples)
    v={}
    for i=1, numSamples, 1 do
-      v[i] = bff[math.floor(phase)]
-      phase = phase + p['frq'] * (buffSize/sampleRate)
+      v[i] = bff[math.floor(phase)+1]
+      v[i] = v[i] * amp
+      f=frq*(note/127)
+      phase = phase + f * (buffSize/sampleRate)
       if phase > buffSize then
 	 phase = 1 + phase - buffSize
       end
@@ -93,11 +101,12 @@ function lcProcess(numSamples)
    frx.plug:setChannel(2, v)
 end
 
-function lcOnParameterChanged(name, value)
-   if name=='frq' then
-      value = value * maxFrq
-      frx.plug:setParameterDisplay(name, string.format("%0.2f", value).."hz")
-   end
-   p[name] = value
+function onFrqChanged(name, value)
+   value = value * maxFrq
+   frx.plug:setParameterDisplay(name, string.format("%0.2f", value).."hz")
+   _ENV.frq=value
+end
+
+function onBandChanged(name, value)
    setBuffer()
 end

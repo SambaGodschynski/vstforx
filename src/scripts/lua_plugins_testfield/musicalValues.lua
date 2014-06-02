@@ -17,10 +17,17 @@ p = gpParameterSetup
 sampleRate = 44100
 maxSampleMinutes = 5
 
+c=0
+function debug()
+   frx.plug:log(tostring(c))
+   c=c+1
+end
 
 function lcInit()
-   t = frx.addTimer("onTimer()", 50, -1)
-   t:start()
+   _ENV.t = frx.addTimer("onTimer()", 50, -1)
+   _ENV.t:start()
+   t2=frx.addTimer("debug()", 1000, -1)
+   t2:start()
 end
 
 function lcSetAudioConfig(bs, sr)

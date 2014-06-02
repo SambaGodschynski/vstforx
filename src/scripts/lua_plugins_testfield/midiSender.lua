@@ -10,19 +10,22 @@ gpConfig = {
    numOutputs=0
 }
 
+note=0
+
 function sendMidi() 
-   if _ENV.on==0x91 then
-      _ENV.on=0x81
+   if _ENV.on==0x90 then
+      _ENV.on=0x80
    else
-      _ENV.on=0x91
+      _ENV.on=0x90
+      note=math.random(100)
    end
    msg={
-      {deltaFrames=1,   data={_ENV.on, 61, 120}},
+      {deltaFrames=0,   data={0,0,0,0,0,0,0,0,_ENV.on, note, 100}},
    }
    frx.plug:sendMidi(msg)
 end
 
 function lcInit()
-   t=frx.addTimer("sendMidi()", 2000, -1)
+   t=frx.addTimer("sendMidi()", 30, -1)
    t:start()
 end
