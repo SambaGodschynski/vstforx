@@ -259,6 +259,7 @@ function onSetKnobValue()
    o=frx.view:getContextObject()
    x=o:getValue()
    nx=frx.showInputTextDlg("Set Value for "..o:getName(), x)
+   nx=tonumber(nx)
    if nx==nil or x==nx then
       return
    end

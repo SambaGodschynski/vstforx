@@ -5,10 +5,10 @@
 // following values will be set automatically.
 #define FRX_VERSION_MAJOR 1
 #define FRX_VERSION_MINOR 0
-#define FRX_VERSION_MICRO 5
-#define FRX_VERSION_BUILD "985b6a4" 
+#define FRX_VERSION_MICRO 51
+#define FRX_VERSION_BUILD "d6218a1" 
 #define FRX_VERSION_BRANCH "DISCO"
-#define FRX_GITHASH "985b6a4"
+#define FRX_GITHASH "d6218a1"
 
 #define FRX_USE_FONTCACHE 0
 
