@@ -231,7 +231,7 @@ void VSTPluginImpl::valueChanged(void *src, const float &v) {
 	param->setDisplay( com::MyString(&bff[0]) );
 }
 //-----------------------------------------------------------------------------
-void VSTPluginImpl::initParameter(){
+void VSTPluginImpl::initParameter() {
 	char bff[255] = {0};
 	parameters->resize( aEff->numParams );
 	// initalisiere parameter

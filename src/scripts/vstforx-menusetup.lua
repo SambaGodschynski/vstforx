@@ -236,6 +236,7 @@ function setObjectMenu(obj)
       table.insert(objMenu, {name="open/close editor...", action="onOpenCloseEditor()"})
    elseif string.match(objType, "parameter%..*")~=nil then
       -- parameter.* (e.g. parameter.StdKnob)
+      table.insert(objMenu, {name="set value...", action="onSetKnobValue()"})
       table.insert(objMenu, {name="show details...", 
 			     action=string.format("onOpenBrowser('Main Scene/Parameter/%s')", obj:getViewId())})
    elseif string.match(objType, "connection%..*")~=nil then
@@ -252,6 +253,18 @@ function setObjectMenu(obj)
    table.insert(objMenu, 2, {name="remove", action="onRemove()"})
    table.insert(objMenu, 3, {name="rename...", action="onRename()"})
    obj:setMenu(objMenu)
+end
+
+function onSetKnobValue()
+   o=frx.view:getContextObject()
+   x=o:getValue()
+   nx=frx.showInputTextDlg("Set Value for "..o:getName(), x)
+   if nx==nil or x==nx then
+      return
+   end
+   nx=math.min(nx, 1)
+   nx=math.max(nx, 0)
+   o:setValue(nx)
 end
 
 function onClone()

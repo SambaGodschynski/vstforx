@@ -7,6 +7,7 @@
 -----------------------------------------------------------------
 require "vstforx-helper"
 require "vstforx-menusetup"
+require "vstforx-dbsetup"
 
 function onViewEvent(evName, evObj)
    if evName=="requesting context menu" then 

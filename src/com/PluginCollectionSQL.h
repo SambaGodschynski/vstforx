@@ -14,7 +14,7 @@
 #include <list>
 #include "com/one4All.h" 
 #include <time.h>
-
+#include <loki/TypeManip.h>
 namespace com {
 namespace sqlcommands {
 typedef sambag::cpsqlite::DataBase::Int Int;
@@ -79,8 +79,20 @@ struct TblFolder {
 		"location TEXT NOT NULL, " +
 		"scanstamp INTEGER UNSIGNED NULL, " +
 		"visible BOOLEAN NOT NULL DEFAULT 1, " + // 0=invisible 1=visible
+        "doNotDelete BOOLEAN NOT NULL DEFAULT 0," +
 		"FOREIGN KEY(parentFolderID) REFERENCES folders(id) ON UPDATE CASCADE  ON DELETE CASCADE, " +
 		"UNIQUE ( location ) );";
+	}
+	//--------------------------------------------------------------------------------------------------------
+	static string update (const Loki::Int2Type<1> &) {
+		return "ALTER TABLE folders ADD COLUMN doNotDelete BOOLEAN NOT NULL DEFAULT 0;";
+	}
+	//--------------------------------------------------------------------------------------------------------
+	/**
+     * check_update query has to fail to detect that table has to be updated.
+     */
+    static string check_update(const Loki::Int2Type<1> &) {
+		return "SELECT doNotDelete FROM folders;";
 	}
 	//--------------------------------------------------------------------------------------------------------
 	// Use this instead path.string(). Because the db makes differences between folder and folder/. 
@@ -231,7 +243,7 @@ struct TblFolder {
 	static string removeUnusedFolders ( time_t scanStamp ) {
 		using namespace sambag::cpsqlite;
 		stringstream ss; 
-		ss<<"DELETE FROM folders WHERE id!=1 AND scanstamp!="<<scanStamp<<";";
+		ss<<"DELETE FROM folders WHERE id!=1 AND scanstamp!="<<scanStamp<<" AND doNotDelete=0;";
 		return ss.str();
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -291,9 +303,18 @@ struct TblPlugins {
 		"name VARCHAR(50) NOT NULL, " + 
 		"access INTEGER DEFAULT 0, " + // 0=NOT_CHECKED; 1=SUCCEED; 2=FAILED
 		"timestamp INTEGER NOT NULL DEFAULT 0, " + 
-		"scanstamp INTEGER NOT NULL DEFAULT 0, " + 
+		"scanstamp INTEGER NOT NULL DEFAULT 0, " +
+        "doNotDelete BOOLEAN NOT NULL DEFAULT 0," +
 		"FOREIGN KEY(folderID) REFERENCES folders(id) ON UPDATE CASCADE  ON DELETE CASCADE," +
 		"UNIQUE ( location ) );";
+	}
+	//--------------------------------------------------------------------------------------------------------
+	static string update (const Loki::Int2Type<1> &) {
+		return "ALTER TABLE plugins ADD COLUMN doNotDelete BOOLEAN NOT NULL DEFAULT 0;";
+	}
+	//--------------------------------------------------------------------------------------------------------
+	static string check_update (const Loki::Int2Type<1> &) {
+		return "SELECT doNotDelete FROM plugins;";
 	}
 	//--------------------------------------------------------------------------------------------------------
 	static string insertPlugin ( const string &location, 
@@ -426,7 +447,7 @@ struct TblPlugins {
 	static string removeUnusedPlugins ( time_t scanstamp ) {
 		// removes all plugins plugin::scanstamp!=scanstamp 
 		stringstream ss;
-		ss<<"DELETE FROM plugins WHERE scanstamp!="<<scanstamp;
+		ss<<"DELETE FROM plugins WHERE scanstamp!="<<scanstamp<<" AND doNotDelete=0";
 		return ss.str();
 	}
 };

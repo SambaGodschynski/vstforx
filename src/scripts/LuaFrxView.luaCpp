@@ -6,8 +6,8 @@ frx.scripts
  * able to create an instance of this. You can find the only instance in the
  * @see frx.Frx table (if the current lua context provides view access): 
  * <pre>
- * --example: get all view objects  
- * objs=frx.view:getObjects()
+ * --example: get all view objects  <br>
+ * objs=frx.view:getObjects() <br>
  * </pre>
  * @alias frx.view.View
  * @version 1.0.5

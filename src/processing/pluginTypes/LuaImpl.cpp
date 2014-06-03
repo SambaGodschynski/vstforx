@@ -62,6 +62,9 @@ LuaImpl::Ptr LuaImpl::create(IHostInfo::Ptr hI,
         Parameters *parameters)
 {
     Ptr res(new LuaImpl(hI, location, parameters));
+    if (!boost::filesystem::exists(location)) {
+        res->statusMsg=location + " not found";
+    }
     res->loadScript();
     return res;
 }
@@ -115,6 +118,11 @@ std::string LuaImpl::argsToString(lua_State *lua) {
 //-----------------------------------------------------------------------------
 void LuaImpl::onExecError(const std::string &msg) {
     logErr(msg);
+}
+//-----------------------------------------------------------------------------
+void LuaImpl::log(const std::string &scope, const std::string &msg) {
+    SAMBAG_LOG_INFO<<logName()<<": "<<msg;
+    addToEditor("["+scope+"] " + msg);
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::log(const std::string &msg) {
@@ -193,7 +201,7 @@ void LuaImpl::loadScript() {
         log("numOutChannels: " + sambag::com::toString(numOutChannels));
         log("numParameter: " + sambag::com::toString(parameters->size()));
         log("valid: " + std::string(getFlag(IsValid) ? "yes" : "no") );
-        log(config["info"]);
+        log(std::string("DESCRIPTION"), config["info"]);
     } catch(const sambag::lua::ExecutionFailed &ex) {
        logErr("loading script failed: " + ex.errMsg);
     } catch(const std::exception &ex) {
@@ -530,6 +538,7 @@ void LuaImpl::setParameterDisplay(lua_State *lua, const std::string &name,
     oldPrPa::Parameter::Ptr p = boost::get<0>(it->second);
     if (p) {
         p->setDisplay(value);
+        p->setValue(p->getValue());
     }
 }
 //-----------------------------------------------------------------------------

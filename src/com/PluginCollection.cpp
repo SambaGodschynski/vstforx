@@ -19,7 +19,7 @@
 #include <processing/pluginTypes/PluginFactory.hpp>
 #include <processing/ModelFactory.hpp>
 #include <boost/filesystem.hpp>
-
+#include <loki/TypeManip.h>
 
 #define DB_QUERY(x)											\
 	try {x}													\
@@ -499,6 +499,25 @@ void PluginCollection::removeUnusedPlugins() {
 	)
 }
 //------------------------------------------------------------------------------------------------------------
+namespace {
+    template <int Version, class Tbl>
+    struct _NUpdates {
+        static void _do(sambag::cpsqlite::DataBase::Executer::Ptr exec) {
+            try {
+                exec->execute( Tbl::check_update(Loki::Int2Type<Version>()) );
+            } catch (const DataBaseQueryFailed &) {
+                SAMBAG_LOG_INFO<<"update "<<Tbl::tblName()<<" to version "<<Version;
+                exec->execute( Tbl::update(Loki::Int2Type<Version>()) );
+                exec->execute( Tbl::check_update(Loki::Int2Type<Version>()) );
+            }
+            _NUpdates<Version-1, Tbl>::_do(exec);
+        }
+    };
+    template <class Tbl>
+    struct _NUpdates<0, Tbl> {
+        static void _do(sambag::cpsqlite::DataBase::Executer::Ptr exec) {}
+    };
+}
 void PluginCollection::initDB() {
 	using namespace sambag;
 	using namespace cpsqlite;
@@ -519,7 +538,11 @@ void PluginCollection::initDB() {
 			exec->execute( TblFolder::insertRoot() );
 			LOG_ASSERT ( exec->lastInsertRowId() == ROOT_FOLDER_ID );
 		}
+        
 	)
+    // check for updates
+    _NUpdates<1, TblFolder>::_do(exec);
+    _NUpdates<1, TblPlugins>::_do(exec);
 }
 //------------------------------------------------------------------------------------------------------------
 void PluginCollection::updateScanStamp() {

@@ -166,6 +166,8 @@ public:
     //-------------------------------------------------------------------------
     static Ptr createVST3x(IHostInfo::Ptr, const std::string &location);
     //-------------------------------------------------------------------------
+    static Ptr createLua(IHostInfo::Ptr, const std::string &location);
+    //-------------------------------------------------------------------------
     static Ptr createAU(IHostInfo::Ptr, const std::string &location);
     //-------------------------------------------------------------------------
     /**
@@ -399,6 +401,10 @@ namespace {
     const bool AUPluginReg =
         ::frx::processing::ModelFactory::instance().registerWithDetail(
                 "au.Plugin", &Plugin::createAU
+    );
+    const bool LuaPluginReg =
+        ::frx::processing::ModelFactory::instance().registerWithDetail(
+                "lua.Plugin", &Plugin::createLua
     );
 }
 }}// namespace processing

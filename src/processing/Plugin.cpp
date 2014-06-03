@@ -409,6 +409,15 @@ Plugin::Ptr Plugin::createVST3x(frx::processing::IHostInfo::Ptr hI, const std::s
     return res;
 }
 //-----------------------------------------------------------------------------
+Plugin::Ptr Plugin::createLua(frx::processing::IHostInfo::Ptr hI, const std::string &location)
+{
+    using frx::processing::PluginFactory;
+    using frx::processing::APluginImpl;
+    Ptr res( new Plugin(hI, location, oldPr::PluginInfo::LUA) );
+    res->self = res;
+    return res;
+}
+//-----------------------------------------------------------------------------
 Plugin::Ptr Plugin::createAU(frx::processing::IHostInfo::Ptr hI, const std::string &location)
 {
     using frx::processing::PluginFactory;

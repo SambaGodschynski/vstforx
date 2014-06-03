@@ -101,16 +101,20 @@ void onLoadFile(void *src, const ::com::OnLoadFile &ev, const FileEvF &f)
 }
 void onFileLoaded(void *src, const ::com::OnFileLoaded &ev, const FileEvF &f) 
 {
-	std::cout<<(ev.info.access == ::processing::PluginInfo::SUCCEED
-		? "suceed" : "failed") <<std::endl;
 	SetupCtrl::FileStatus s;
 	switch (ev.info.access) {
 		case ::processing::PluginInfo::SUCCEED:
-			s = SetupCtrl::Succeed; break;
+			s = SetupCtrl::Succeed;
+            std::cout<<"SUCCEED";
+            break;
 		case ::processing::PluginInfo::FAILED:
-			s = SetupCtrl::Failed; break;
+			s = SetupCtrl::Failed;
+            std::cout<<"FAILED";
+            break;
 		case ::processing::PluginInfo::NOT_CHECKED:
-			s = SetupCtrl::Skipped; break;
+			s = SetupCtrl::Skipped;
+            std::cout<<"SKIPPED";
+            break;
 	}
 	f(ev.filename, s);
 }
