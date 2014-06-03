@@ -12,9 +12,6 @@ SET (PlugSources ${PlugSources}
 #remote channel common sources
 SET (RemoteSrc ${RemoteSrc} RemoteChannel/Plugin.cpp)
 
-#standalone
-add_executable(standalone ${FRX_STANDALONE})
-target_link_libraries (standalone frx_core ${FRX_CLIBS})
 
 #bridge
 add_executable(VSTForx.bridge Bridge/main.cpp
@@ -23,6 +20,10 @@ add_executable(VSTForx.bridge Bridge/main.cpp
 target_link_libraries (VSTForx.bridge frx_core ${FRX_CLIBS})
 
 IF(WIN32)
+  #standalone
+  add_executable(standalone ${FRX_STANDALONE})
+  target_link_libraries (standalone frx_core ${FRX_CLIBS})
+
   #vstforx
   SET (PlugSources ${PlugSources}
       VSTForx/win/VstForxResourceManager.cpp
@@ -101,6 +102,14 @@ IF (WIN32)
 
 #process plistfiles
 ELSEIF(APPLE)
+	#standalone
+	SET(PLIST_VERSION "${FRX_VERSION_MAJOR}.${FRX_VERSION_MINOR}.${FRX_VERSION_MICRO}")
+	SET(PLIST_PROD Standalone)
+	SET(PLIST_EXEC standalone)
+	CONFIGURE_FILE(
+  	  "tmpl.plist.in"
+  	  "VSTForx/mac/standalone.plist"
+	)	
 	#vstforx
 	SET(PLIST_VERSION "${FRX_VERSION_MAJOR}.${FRX_VERSION_MINOR}.${FRX_VERSION_MICRO}")
 	SET(PLIST_PROD VSTForx)
@@ -153,6 +162,14 @@ ELSEIF(APPLE)
   	  "RemoteChannel/mac/remoteChannel_DEMO.plist"
 	)		
   #set executables
+  #standalone
+  add_executable(standalone MACOSX_BUNDLE ${FRX_STANDALONE})
+  target_link_libraries (standalone frx_core ${FRX_CLIBS})
+  SET_TARGET_PROPERTIES(standalone PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/standalone.plist")
+  #SET_TARGET_PROPERTIES(standalone PROPERTIES LINK_FLAGS "-bundle")
+  target_compile_definitions(standalone PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.Standalone\"")
+
+
   #vstforx
   ADD_EXECUTABLE(vstforx MACOSX_BUNDLE ${PlugSources})
   target_link_libraries (vstforx frx_core ${FRX_CLIBS})
