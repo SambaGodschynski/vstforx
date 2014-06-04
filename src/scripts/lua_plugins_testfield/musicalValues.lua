@@ -16,18 +16,11 @@ gpParameterSetup = {
 p = gpParameterSetup
 sampleRate = 44100
 maxSampleMinutes = 5
-
-c=0
-function debug()
-   frx.plug:log(tostring(c))
-   c=c+1
-end
+frx.plug:addParameterListener("totalSamples", "onParameterChanged")
 
 function lcInit()
    _ENV.t = frx.addTimer("onTimer()", 50, -1)
    _ENV.t:start()
-   t2=frx.addTimer("debug()", 1000, -1)
-   t2:start()
 end
 
 function lcSetAudioConfig(bs, sr)
@@ -37,7 +30,7 @@ function lcSetAudioConfig(bs, sr)
    sampleRate = sr
 end
 
-function lcOnParameterChanged(name, value)
+function onParameterChanged(name, value)
    if name == "totalSamples" then
       value = value * maxSampleMinutes
       frx.plug:setParameterDisplay(name, string.format("%.02f minutes",value))
@@ -58,7 +51,7 @@ function updateBarPos()
    denom = frx.plug:getTimeSigDenominator()
    num = frx.plug:getTimeSigNumerator()
    x = (ppq/4) / (1/denom)
-   step = (math.floor(x) % num) / num
+   step = (math.floor(x) % num) / (num-1)
    _float = (x / num) % 1
    frx.plug:setParameterValue("barPosFloat", _float)
    frx.plug:setParameterValue("barPosStep", step)
