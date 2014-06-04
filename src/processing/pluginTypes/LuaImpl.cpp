@@ -912,7 +912,7 @@ bool LuaImpl::transportIsPlaying(lua_State *lua) {
     if(!inf) {
         return false;
     }
-    return inf->transportIsPlaying;
+    return inf->transportIsPlaying();
 }
 //-----------------------------------------------------------------------------
 double LuaImpl::getPpqPos(lua_State *lua) {
