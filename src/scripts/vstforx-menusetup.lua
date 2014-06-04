@@ -3,7 +3,7 @@
 -- While the init script will be executed when the editor      --
 -- is opening, this module will be executed on startup only    --
 -- a VSTForx.Lua documantation can be found under:             --
---      api.vstforx.de                                         --
+--      http://api.vstforx.de                                  --
 -- author: Samba Godschynski                                   --
 -----------------------------------------------------------------
 require "vstforx-helper"

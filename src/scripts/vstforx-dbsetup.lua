@@ -2,8 +2,8 @@
 -- VSTForx database init script                                --
 -- While the init script will be executed when the editor      --
 -- is opening, this module will be executed on startup only    --
--- a VSTForx.Lua documantation can be found under:             --
---      api.vstforx.de                                         --
+-- a VSTForx.Lua documentation can be found under:             --
+--      http://api.vstforx.de                                  --
 -- author: Samba Godschynski                                   --
 -----------------------------------------------------------------
 
@@ -28,7 +28,7 @@ VALUES ('%s', '%s', %s, 1, %s, 5, 1)"
    frx.queryDB(q)
 end
 
---add internal lua plugins (if not exist)
-PATH="../../vstforx_next/src/".."./scripts/lua_plugins".."_testfield"
+--add internal lua plugins manually (override scanning)
+PATH="scripts/lua_plugins"
 addFolder("Lua Plugins", PATH)
-addLuaPlugin("Volume", PATH.."/volume.lua", PATH)
+addLuaPlugin("LFO", PATH.."/LFO.lua", PATH)
