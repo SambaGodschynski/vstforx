@@ -32,6 +32,7 @@ gpParameterSetup = {
 
 sync=false
 frq=1
+maxFrq=20
 --adding parameter listeners 
 frx.plug:addParameterListener("2_SYNC", "onSyncChanged");
 frx.plug:addParameterListener("1_FRQ", "onFrqChanged");
@@ -41,7 +42,7 @@ function lcInit()
    --add a timer which updates the out parameters
    _ENV.TIMER = frx.addTimer(
       "onTimer()", -- the callback expression 
-      50,          -- the timer time in milliseconds
+      1,          -- the timer time in milliseconds
       -1           -- reputation, -1 means infinite
    )
    _ENV.TIMER:start() -- now start the timer
@@ -50,7 +51,7 @@ end
 --FRQ parameter changed
 function onFrqChanged(name, value)
    if sync==false then
-      frq=100*value
+      frq=maxFrq*value
       frx.plug:setParameterDisplay("1_FRQ", string.format("%0.2fhz", frq))
       return
    end

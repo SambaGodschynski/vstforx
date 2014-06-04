@@ -114,7 +114,7 @@ PluginFactory::load(IHostInfo::Ptr hI,
     }
     
     std::string path = complete(loc);
-    SAMBAG_LOG_TRACE<<path;
+    std::cout<<path<<std::endl;
     try {
         switch (type) {
         case PluginInfo::VST2X : return loadVST2x(hI, par, path);

@@ -241,6 +241,8 @@ public:
     int getTimeSigDenominator(lua_State *lua);
     //-------------------------------------------------------------------------
     double getTempo(lua_State *lua);
+	//-------------------------------------------------------------------------
+    bool transportIsPlaying(lua_State *lua);
     //-------------------------------------------------------------------------
     void setParameterValue(lua_State *lua, const std::string &name, float value);
     //-------------------------------------------------------------------------

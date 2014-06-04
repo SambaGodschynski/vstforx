@@ -5,7 +5,7 @@
  *
  * LuaImplBase.hpp
  *
- *  Created on: Mon May 19 10:19:54 2014
+ *  Created on: Wed Jun  4 14:35:15 2014
  *      Author: Samba Godschysnki
  */
 
@@ -51,6 +51,8 @@ protected:
 	SAMBAG_LUA_FTAG(getPpqPos, double ());
 	SAMBAG_LUA_FTAG(getTimeSigNumerator, int ());
 	SAMBAG_LUA_FTAG(getTimeSigDenominator, int ());
+	SAMBAG_LUA_FTAG(getTempo, double ());
+	SAMBAG_LUA_FTAG(transportIsPlaying, bool ());
 	SAMBAG_LUA_FTAG(setParameterValue, void (std::string, float));
 	SAMBAG_LUA_FTAG(setParameterDisplay, void (std::string, std::string));
 	SAMBAG_LUA_FTAG(getParameterValue, float (std::string));
@@ -73,15 +75,17 @@ protected:
 	typedef LOKI_TYPELIST_10(Frx_getPpqPos_Tag, 
 	Frx_getTimeSigNumerator_Tag, 
 	Frx_getTimeSigDenominator_Tag, 
+	Frx_getTempo_Tag, 
+	Frx_transportIsPlaying_Tag, 
 	Frx_setParameterValue_Tag, 
 	Frx_setParameterDisplay_Tag, 
 	Frx_getParameterValue_Tag, 
 	Frx_getParameterDisplay_Tag, 
-	Frx_addParameterListener_Tag, 
-	Frx_removeParameterListener_Tag, 
-	Frx_getPersistUserData_Tag) Functions2;
+	Frx_addParameterListener_Tag) Functions2;
 
-	typedef LOKI_TYPELIST_1(Frx_setPersistUserData_Tag) Functions3;
+	typedef LOKI_TYPELIST_3(Frx_removeParameterListener_Tag, 
+	Frx_getPersistUserData_Tag, 
+	Frx_setPersistUserData_Tag) Functions3;
 
 	
     ///////////////////////////////////////////////////////////////////////////
@@ -174,8 +178,13 @@ protected:
 	/**
 	* @return the current tempo in BPM
 	* @version 1.0.5
-	*
-	double getTempo();
+	*/
+	virtual double getTempo(lua_State *lua) = 0;
+	/**
+	* @return true if the transport of the main DAW is playing
+	* @version 1.0.51
+	*/
+	virtual bool transportIsPlaying(lua_State *lua) = 0;
 	/**
 	* @brief Set the parameter value
 	* @param the parameter id

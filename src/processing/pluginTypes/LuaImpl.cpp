@@ -902,6 +902,19 @@ double LuaImpl::getBarStartPos(lua_State *lua) {
     return inf->barStartPos;
 }
 //-----------------------------------------------------------------------------
+bool LuaImpl::transportIsPlaying(lua_State *lua) {
+    using sambag::dsp::HostTimeInfo;
+    IHostInfo::Ptr hI = hostInfo.lock();
+    if (!hI) {
+        return false;
+    }
+    HostTimeInfo *inf = hI->getHostTimeInfo(HostTimeInfo::FrxBarsValid);
+    if(!inf) {
+        return false;
+    }
+    return inf->transportIsPlaying;
+}
+//-----------------------------------------------------------------------------
 double LuaImpl::getPpqPos(lua_State *lua) {
     using sambag::dsp::HostTimeInfo;
     IHostInfo::Ptr hI = hostInfo.lock();

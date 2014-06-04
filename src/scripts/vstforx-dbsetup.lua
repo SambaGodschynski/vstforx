@@ -32,3 +32,5 @@ end
 PATH="scripts/lua_plugins"
 addFolder("Lua Plugins", PATH)
 addLuaPlugin("LFO", PATH.."/LFO.lua", PATH)
+addLuaPlugin("SimpleDelay", PATH.."/SimpleDelay.lua", PATH)
+addLuaPlugin("SimpleGain", PATH.."/SimpleGain.lua", PATH)

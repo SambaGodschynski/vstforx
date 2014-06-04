@@ -98,8 +98,13 @@ class LuaImplBase extends sambag.lua.ALuaObject {
       /**
        * @return the current tempo in BPM
        * @version 1.0.5
-       *
+       */
       double getTempo();
+      /**
+       * @return true if the transport of the main DAW is playing
+       * @version 1.0.51
+       */
+       bool transportIsPlaying();
       /**
        * @brief Set the parameter value
        * @param the parameter id
