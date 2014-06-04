@@ -75,12 +75,7 @@ end
 
 --determine whether DAW is playing 
 function isPlaying()
-   s = frx.plug:getSamplePos()
-   if s==_ENV.LASTSAMPLEPOS then
-      return false
-   end
-   _ENV.LASTSAMPLEPOS = s
-   return true
+   return frx.plug:transportIsPlaying()
 end
 
 --update SIN parameter
