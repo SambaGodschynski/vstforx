@@ -32,7 +32,7 @@ gpParameterSetup = {
 
 sync=false
 frq=1
-maxFrq=20
+maxFrq=5
 --adding parameter listeners 
 frx.plug:addParameterListener("2_SYNC", "onSyncChanged");
 frx.plug:addParameterListener("1_FRQ", "onFrqChanged");
@@ -55,7 +55,7 @@ function onFrqChanged(name, value)
       frx.plug:setParameterDisplay("1_FRQ", string.format("%0.2fhz", frq))
       return
    end
-   value=math.floor(value*7-2)
+   value=math.floor(value*5-2)
    frq=math.pow(2, value)
    frx.plug:setParameterDisplay("1_FRQ", string.format("x%0.2f", frq))
 end
