@@ -21,6 +21,57 @@ std::string LuaFrxParameter::toString(lua_State * lua) const {
     return ss.str();
 }
 //-----------------------------------------------------------------------------
+std::string LuaFrxParameter::getName(lua_State *lua) {
+    try {
+        ViewObject::Ptr v = getViewObject();
+    } catch(...) {
+        // accessing viewobject fails, so try model object
+        try {
+            ModelObject::Ptr m = getModelObject();
+            return m->getName();
+        }  catch(const std::exception &ex) {
+            slua::pushLuaError(lua, ex.what());
+            return "";
+        } catch(...) {
+            slua::pushLuaError(lua, "unknown error");
+            return "";
+        }
+    }
+    return Super::getName(lua);
+}
+//-----------------------------------------------------------------------------
+void LuaFrxParameter::onParameterChanged(lua_State * lua, const std::string &expr)
+{
+    SAMBAG_BEGIN_SYNCHRONIZED(getLock(lua))
+    try {
+        sambag::lua::executeString(lua, expr);
+    } catch(const sambag::lua::ExecutionFailed &ex) {
+       SAMBAG_LOG_ERR << expr << " failed: " << ex.errMsg;
+    } catch(...) {
+        SAMBAG_LOG_ERR << expr << " failed: unkown reason";
+    }
+    SAMBAG_END_SYNCHRONIZED
+}
+//-----------------------------------------------------------------------------
+void LuaFrxParameter::addListener(lua_State * lua, const std::string &callbk) {
+    try {
+        using frx::processing::IParameter;
+        IParameter::Ptr p =
+            boost::dynamic_pointer_cast<IParameter>(getModelObject());
+        if (!p) {
+            return;
+        }
+        p->getEventSender().addTrackedValueChangedListener(
+            boost::bind(&LuaFrxParameter::onParameterChanged, this, lua, callbk),
+            shared_from_this()
+        );
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unknown error");
+    }
+}
+//-----------------------------------------------------------------------------
 void LuaFrxParameter::setValue(lua_State * lua, float v) {
     try {
         using frx::processing::IParameter;

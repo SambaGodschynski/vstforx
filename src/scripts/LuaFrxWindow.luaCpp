@@ -1,0 +1,31 @@
+frx.scripts
+
+/**
+ * @brief This class represents a window.
+ * @alias frx.view.Window
+ * @version 1.0.52
+ */
+class LuaFrxWindowBase extends sambag.lua.ALuaObject {
+      /**
+       * @brief Opens the window
+       * @param the window width, if < 0 size will be calculated
+       * @param the window height, if < 0 size will be calculated
+       * @version 1.0.52
+       */
+      void open(float width, float height);
+      /**
+       * @brief Closes the window.
+       * @version 1.0.52
+       */
+      void close();
+      /**
+       * @brief Adds a listener which will be called when window is closing
+       * @param a valid lua expression
+       * @version 1.0.52
+       */
+      void addCloseListener(string expr);
+}
+
+
+
+

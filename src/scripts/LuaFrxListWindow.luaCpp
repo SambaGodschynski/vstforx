@@ -1,0 +1,64 @@
+frx.scripts
+#include <scripts/LuaFrxWindow.hpp>
+
+/**
+ * @brief This class provides a window which contains a list. To create an object
+ * of this class call:
+ * <pre>
+ *   listWnd=frx.view:createListWindow()
+ * <pre>
+ * @alias frx.view.ListWindow
+ * @extends @see frx.view.Window
+ * @version 1.0.52
+ */
+class LuaFrxListWindowBase extends frx.scripts.LuaFrxWindow {
+      /**
+       * @brief Adds a string to the list.
+       * @param the string
+       * @version 1.0.52
+       */
+      void add(string x);
+      /**
+       * @brief Removes a string from the list.
+       * @param the string
+       * @version 1.0.52
+       */
+       void remove(string x);
+      /**
+       * @return the selected string
+       * @version 1.0.52
+       */
+       string getSelection();
+      /**
+       * @return the number of elements in the list
+       * @version 1.0.52
+       */
+       int getNumElements();
+      /**
+       * @return the element at i
+       * @note according to lua the first entry is at index 1
+       * @param the index
+       * @version 1.0.52
+       */
+       string getElementAt(int i);
+      /**
+       * @brief adds a button to window
+       * @param the button text
+       * @param the lua expression which will be executed when 
+       * 	button was pressed
+       * @version 1.0.52
+       */
+      void addButton(string text, string luaExpr);
+      /**
+       * @brief Adds a listener which is called
+       *        when selection was changed
+       * @param a valid lua expression
+       * @version 1.0.52
+       */
+      void addSelectionListener(string expr);
+
+}
+
+
+
+

@@ -36,7 +36,12 @@ protected:
     void setValue(lua_State * lua, float v);
     float getValue(lua_State * lua);
     float getValue() const;
+    void addListener(lua_State * lua, const std::string &callbk);
+    //-------------------------------------------------------------------------
+    virtual std::string getName(lua_State *lua);
 private:
+    //-------------------------------------------------------------------------
+    void onParameterChanged(lua_State * lua, const std::string &callbk);
 public:
     //-------------------------------------------------------------------------
     static Ptr createAndPush(lua_State * lua,

@@ -31,6 +31,7 @@
 #include <sambag/disco/components/PopupMenu.hpp>
 #include <sambag/disco/components/Label.hpp>
 #include <gui/components/FrxMenuLabel.hpp>
+#include "LuaFrxListWindow.hpp"
 
 namespace frx { namespace scripts {
 //=============================================================================
@@ -465,13 +466,15 @@ namespace {
 //-----------------------------------------------------------------------------
 void LuaFrxView::onMenu(lua_State *lua, const std::string &cmd) {
     fgc::FrxCircuidView::Ptr view = getView();
-    try {
-        slua::executeString(lua, cmd);
-    } catch(const sambag::lua::ExecutionFailed &ex) {
-        view->errorMessage(cmd + " failed: " + ex.errMsg);
-    } catch(...) {
-        view->errorMessage(cmd + " failed: unkown reason");
-    }
+    SAMBAG_BEGIN_SYNCHRONIZED(getLock(lua))
+        try {
+            slua::executeString(lua, cmd);
+        } catch(const sambag::lua::ExecutionFailed &ex) {
+            view->errorMessage(cmd + " failed: " + ex.errMsg);
+        } catch(...) {
+            view->errorMessage(cmd + " failed: unkown reason");
+        }
+    SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 void LuaFrxView::addMenuEntry(sdc::PopupMenuPtr res, lua_State *lua, int index)
@@ -683,41 +686,43 @@ void LuaFrxView::onViewEvent(lua_State *lua, const fgc::FrxCircuidViewEvent &ev)
     if (evtype.empty()) {
         return;
     }
-    try {
-        std::string id;
-        FrxCircuidViewPtr view;
-        IViewModelMap::Ptr map;
-        if (ev.component) {
-            // prepare lua object
-            view = getView();
-            map = getViewModelMap(view);
-            std::string type = ev.component->getTypeId();
-            id = com::IdParser(type).namespace_("lua").toString();
-        }
-        // determine event type
-        // notify
-        LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
-        BOOST_FOREACH(const std::string &x, luaViewListener) {
-            lua_getglobal(lua, x.c_str());
-            // push event type
-            lua_pushstring(lua, evtype.c_str());
-            if (fac.isRegistered(id)) {
-                // push lua object
-                LuaFrxObject::Ptr lobj = fac.createAndPush(
-                    id,
-                    lua,
-                    map->getModelObject(ev.component),
-                    map
-                );
-            } else {
-                lua_pushnil(lua);
+    SAMBAG_BEGIN_SYNCHRONIZED(getLock(lua))
+        try {
+            std::string id;
+            FrxCircuidViewPtr view;
+            IViewModelMap::Ptr map;
+            if (ev.component) {
+                // prepare lua object
+                view = getView();
+                map = getViewModelMap(view);
+                std::string type = ev.component->getTypeId();
+                id = com::IdParser(type).namespace_("lua").toString();
             }
-            if (lua_pcall(lua, 2, 0, 0)!=0) {
-                SAMBAG_LOG_ERR<<lua_tostring(lua, -1);
+            // determine event type
+            // notify
+            LuaFrxObject::Factory &fac = LuaFrxObject::Factory::instance();
+            BOOST_FOREACH(const std::string &x, luaViewListener) {
+                lua_getglobal(lua, x.c_str());
+                // push event type
+                lua_pushstring(lua, evtype.c_str());
+                if (fac.isRegistered(id)) {
+                    // push lua object
+                    LuaFrxObject::Ptr lobj = fac.createAndPush(
+                        id,
+                        lua,
+                        map->getModelObject(ev.component),
+                        map
+                    );
+                } else {
+                    lua_pushnil(lua);
+                }
+                if (lua_pcall(lua, 2, 0, 0)!=0) {
+                    SAMBAG_LOG_ERR<<lua_tostring(lua, -1);
+                }
             }
+        } catch(...) {
         }
-    } catch(...) {
-    }
+    SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 void LuaFrxView::initListenersIfNeccessary(lua_State *lua) {
@@ -733,6 +738,13 @@ void LuaFrxView::initListenersIfNeccessary(lua_State *lua) {
         boost::bind(&LuaFrxView::onViewEvent, this, lua, _2),
         shared_from_this()
     );
+}
+//-----------------------------------------------------------------------------
+slua::IgnoreReturn LuaFrxView::createListWindow(lua_State *lua) {
+    fgc::FrxCircuidViewPtr view = getView();
+    sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
+    LuaFrxListWindow::Ptr res = LuaFrxListWindow::createAndPush(lua, win);
+    return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
 LuaFrxView::Ptr

@@ -4,8 +4,83 @@ frx.processing
 
 /**
  * @alias Plugin
- * @brief The VSTForx lua plugin class. This class provides the basic functions
- * you need for running a plugin.  
+ * @brief 
+ * <h4>Setting up a Plugin</h4>
+ * A Lua Plugin is a Lua script file which (if is valid) is treated as any other plugin by VSTForx. That means
+ * it will be recognized by the plugin scanner. So the first step to create a Lua plugin sould be to create 
+ * a *.lua textfile in your VST plugin folder. 
+ * Furthermore your script needs some initial informations:
+ * <h5>Setup Table: "gpConfig"</h5>
+ * Here you can config your plugin. 
+ * <pre>
+ * --setup table example <br>
+ * gpConfig = { <br>
+ * type="frx_lua_plugin",          -- this field is required<br>
+ * name="Simple Delay"             -- the plugin name, <br>
+ * author="Samba Godschynski",     -- optional information<br>
+ * numInChannels=2                 -- the number of input channels (two channels are applied to one node in vstforx), <br>
+ * numOutChannels=2,               -- the number of output channels<br>
+ * info="A simple example script." -- optional <br>
+ * } <br>
+ * </pre>
+ * <div class="alert">Note: Since VSTForx couldn't handle changing the I/O configuration at runtime you have to re-add your plugin after
+ * changing numInChannels or numOutChannels.</div>
+ * <h5>Parameter Setup: "gpParameterSetup"</h5>
+ * The parameter setup table has two functions:
+ * <ul>
+ *   <li>configure the plugin parameter setup by using its (name, value) pairs</li>
+ *   <li>update its values after a parameter changed</li>
+ * </ul>
+ * Note that the parameter value access is read only, for changing a parameter value use @see setParameterValue().
+ * <pre>
+ * --parameter setup example
+ * gpParameterSetup = { <br>
+ * parameter1 = 0.1, <br>
+ * parameter2 = 0.2, <br>
+ * parameter3 = 0.3  <br>
+ * } <br>
+ * </pre>
+ * Now your plugin is ready to go.
+ * <h4>Messages</h4> 
+ * <h5>Script -> VSTForx</h5>
+ * Requests to VSTForx are handled by an object of this @see frx.Plugin class which can be found in the global @see frx.Frx table:
+ * <pre>
+ * -- accessing the plugin object example <br>
+ * frx.plug:log("Hello")
+ * </pre>
+ * <h5>VSTForx -> Script</h5>
+ * Information between VSTForx and your script are exchanged by so called callback functions. To distinguish them from
+ * regular lua functions, all callback functions have a "lc" (<strong>l</strong>ua <strong>c</strong>allback) prefix.
+ * <h6>Callback Functions</h6>
+ * <dl>
+ * <dt>lcInit()</dt>
+ * <dd>called when loading the plugin</dd>
+ * <dt>lcOnSave()</dt>
+ *   <dd>called when VSTForx is about to save the plugin state. 
+ *       Now it's a good time to call @see setPersistUserData()
+ *   </dd>
+ * <dt>lcOnLoad()</dt>
+ *   <dd>called when VSTForx is about to load the plugin state. 
+ *       You can restore your previous saved data using @see getPersistUserData()
+ *   </dd>
+ * <dt>lcProcess(numSamples)</dt>
+ * <dd>
+ *	This is the heart of the plugin. All input and output processing happens now.
+ * 	see @getChannel() and @setChannel()
+ * </dd>
+ * <dt>lcProcessMidi(messages)</dt>
+ *   <dd>
+ *     Will be called when a midi message receives. The messages have following format:
+ *     <pre>
+ *       { {deltaFrames=0, size=0, data={}}, ... }
+ *     </pre>
+ *   </dd>
+ * <dt>lcSetAudioConfig(blockSize, sampleRate)</dt>
+ *   <dd>
+ *     Whenever your DAW changes its configuration this function will be called. Use this
+ *     to configure buffers etc.
+ *   </dd>
+ * </ul>
  * @version 1.0.5
  */
 class LuaImplBase extends sambag.lua.ALuaObject {

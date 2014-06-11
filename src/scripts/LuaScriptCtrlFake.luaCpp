@@ -1,8 +1,25 @@
 
 
 /**
- * @brief This package <span class="muted">(actually a lua table)</span> provides functions for 
- * common purpose.
+ * @brief <p>This package <span class="muted">(actually a lua table)</span> is the connection
+ * between your script and VSTForx. An object of this table is globally embedded in the current lua context.
+ * <pre>
+ * --access example <br>
+ * frx.wait(50)
+ * </pre>
+ * </p>
+ * <p>Dependent on its lua context the package content (see fields) is slightly different.
+ * There are currently two possible context types:
+ * <dl>
+ *   <dt>View context<dt> 
+ *     <dd>this context is active while loading the "vstforx-init.lua"
+ * script. Here you have access to the @see frx.view.View and its objects.
+ *     </dd>
+ *   <dt>Lua Plugin context</dt> 
+ *     <dd>
+ * Within a Lua Plugin you have access to a related @see frx.Plugin object.
+ *     </dd>
+ * </p>
  * @version 1.0.5
  * @alias frx.Frx
  */
@@ -179,4 +196,17 @@ class ScriptControlFake extends Nada{
        * @version 1.0.5
        */
       void exec(string expr);
+
+      /**
+       * @brief a @see frx.view.View object
+       * @note available for View context only
+       * @version 1.0.5
+       */
+      User<View> view=0;
+      /**
+       * @brief a @see frx.Plugin object
+       * @note available for Lua Plugin context only
+       * @version 1.0.5
+       */
+      User<Plugin> plug=0;
 }

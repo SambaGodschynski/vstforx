@@ -5,7 +5,7 @@
  *
  * LuaFrxViewBase.cpp
  *
- *  Created on: Tue Apr 29 22:18:02 2014
+ *  Created on: Wed Jun 11 12:45:31 2014
  *      Author: Samba Godschysnki
  */
 
@@ -47,7 +47,8 @@ void LuaFrxViewBase::addLuaFields(lua_State *lua, int index)
 		boost::bind(&LuaFrxViewBase::addViewListener, this, lua, _1),
 		boost::bind(&LuaFrxViewBase::removeViewListener, this, lua, _1),
 		boost::bind(&LuaFrxViewBase::setMenu, this, lua),
-		boost::bind(&LuaFrxViewBase::getContextObject, this, lua)),
+		boost::bind(&LuaFrxViewBase::getContextObject, this, lua),
+		boost::bind(&LuaFrxViewBase::createListWindow, this, lua)),
 	index, 
 	getUId() 
 	); 

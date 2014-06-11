@@ -3,14 +3,14 @@
  * EVERY CHANGES WILL BE OVERWRITTEN THE NEXT TIME 
  * THE THIS FILE IS GENERATED  
  *
- * LuaFrxParameterBase.hpp
+ * LuaFrxWindowBase.hpp
  *
- *  Created on: Wed Jun 11 22:41:27 2014
+ *  Created on: Wed Jun 11 17:08:28 2014
  *      Author: Samba Godschysnki
  */
 
-#ifndef SAMBAG_LuaFrxParameterBase_H
-#define SAMBAG_LuaFrxParameterBase_H
+#ifndef SAMBAG_LuaFrxWindowBase_H
+#define SAMBAG_LuaFrxWindowBase_H
 
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
@@ -18,53 +18,53 @@
 #include <loki/Typelist.h>
 #include <sambag/lua/ALuaObject.hpp>
 
-#include <scripts/LuaFrxObject.hpp>
+
 
 namespace frx { namespace scripts { 
 //=============================================================================
-class LuaFrxParameterBase : public LuaFrxObject {
+class LuaFrxWindowBase : public sambag::lua::ALuaObject {
 //=============================================================================
 public:
     //-------------------------------------------------------------------------
-    typedef LuaFrxObject Super;
+    typedef sambag::lua::ALuaObject Super;
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<LuaFrxParameterBase> Ptr;
+    typedef boost::shared_ptr<LuaFrxWindowBase> Ptr;
     //-------------------------------------------------------------------------
-    typedef boost::weak_ptr<LuaFrxParameterBase> WPtr;
+    typedef boost::weak_ptr<LuaFrxWindowBase> WPtr;
     //-------------------------------------------------------------------------
     
 private:
 protected:
     //-------------------------------------------------------------------------
-    LuaFrxParameterBase() {}
+    LuaFrxWindowBase() {}
     //-------------------------------------------------------------------------
-    SAMBAG_LUA_FTAG(setValue, void (float));
-	SAMBAG_LUA_FTAG(getValue, float ());
-	SAMBAG_LUA_FTAG(addListener, void (std::string));
-    typedef LOKI_TYPELIST_3(Frx_setValue_Tag, 
-	Frx_getValue_Tag, 
-	Frx_addListener_Tag) Functions1;
+    SAMBAG_LUA_FTAG(open, void (float, float));
+	SAMBAG_LUA_FTAG(close, void ());
+	SAMBAG_LUA_FTAG(addCloseListener, void (std::string));
+    typedef LOKI_TYPELIST_3(Frx_open_Tag, 
+	Frx_close_Tag, 
+	Frx_addCloseListener_Tag) Functions1;
 
 	
     ///////////////////////////////////////////////////////////////////////////
     /**
-	* @brief Set the parameter value.
-	* @param the value (0..1)
-	* @version 1.0.5
+	* @brief Opens the window
+	* @param the window width, if < 0 size will be calculated
+	* @param the window height, if < 0 size will be calculated
+	* @version 1.0.52
 	*/
-	virtual void setValue(lua_State *lua, float value) = 0;
+	virtual void open(lua_State *lua, float width, float height) = 0;
 	/**
-	* @return the parameter value.
-	* @version 1.0.5
+	* @brief Closes the window.
+	* @version 1.0.52
 	*/
-	virtual float getValue(lua_State *lua) = 0;
+	virtual void close(lua_State *lua) = 0;
 	/**
-	* @brief Adds a listener which will be called when 
-	*        the parameter value was changed.
+	* @brief Adds a listener which will be called when window is closing
 	* @param a valid lua expression
 	* @version 1.0.52
 	*/
-	virtual void addListener(lua_State *lua, const std::string & expr) = 0;
+	virtual void addCloseListener(lua_State *lua, const std::string & expr) = 0;
     //-------------------------------------------------------------------------
     /**
      * @brief field getter and setter
@@ -83,11 +83,11 @@ public:
     virtual void __lua_gc(lua_State *lua);
 public:
     //-------------------------------------------------------------------------
-    virtual ~LuaFrxParameterBase() {}
+    virtual ~LuaFrxWindowBase() {}
 private:
 public:
-}; // LuaFrxParameterBase
+}; // LuaFrxWindowBase
 }}
 
-#endif /* SAMBAG_LuaFrxParameterBase_H */
+#endif /* SAMBAG_LuaFrxWindowBase_H */
 

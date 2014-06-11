@@ -55,9 +55,14 @@ function onFrqChanged(name, value)
       frx.plug:setParameterDisplay("1_FRQ", string.format("%0.2fhz", frq))
       return
    end
-   value=math.floor(value*5-2)
+   value=math.floor(value*7-4)
    frq=math.pow(2, value)
-   frx.plug:setParameterDisplay("1_FRQ", string.format("x%0.2f", frq))
+   if frq<0.5 then
+      display=string.format("%i/1", math.abs(value+1))
+   else
+      display=string.format("1/%i", 4*frq)
+   end
+   frx.plug:setParameterDisplay("1_FRQ", frq)
 end
 
 --SYNC parameter changed

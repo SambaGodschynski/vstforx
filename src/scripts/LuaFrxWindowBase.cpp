@@ -3,29 +3,29 @@
  * EVERY CHANGES WILL BE OVERWRITTEN THE NEXT TIME 
  * THE THIS FILE IS GENERATED  
  *
- * LuaFrxParameterBase.cpp
+ * LuaFrxWindowBase.cpp
  *
- *  Created on: Wed Jun 11 22:41:27 2014
+ *  Created on: Wed Jun 11 17:08:28 2014
  *      Author: Samba Godschysnki
  */
 
-#include "LuaFrxParameterBase.hpp"
+#include "LuaFrxWindowBase.hpp"
 
 namespace frx { namespace scripts { 
 //=============================================================================
-//  Class LuaFrxParameterBase
+//  Class LuaFrxWindowBase
 //=============================================================================
 //-----------------------------------------------------------------------------
-void LuaFrxParameterBase::addLuaFields(lua_State *lua, int index) 
+void LuaFrxWindowBase::addLuaFields(lua_State *lua, int index) 
 {
     using namespace sambag::lua;
     Super::addLuaFields(lua, index);
     // register functions
     registerClassFunctions<Functions1, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaFrxParameterBase::setValue, this, lua, _1),
-		boost::bind(&LuaFrxParameterBase::getValue, this, lua),
-		boost::bind(&LuaFrxParameterBase::addListener, this, lua, _1)),
+	boost::make_tuple(boost::bind(&LuaFrxWindowBase::open, this, lua, _1, _2),
+		boost::bind(&LuaFrxWindowBase::close, this, lua),
+		boost::bind(&LuaFrxWindowBase::addCloseListener, this, lua, _1)),
 	index, 
 	getUId() 
 	); 
@@ -34,7 +34,7 @@ void LuaFrxParameterBase::addLuaFields(lua_State *lua, int index)
     
 }
 //-----------------------------------------------------------------------------
-void LuaFrxParameterBase::__lua_gc(lua_State *lua) {
+void LuaFrxWindowBase::__lua_gc(lua_State *lua) {
     using namespace sambag::lua;
     unregisterClassFunctions<Functions1>(getUId());
 	unregisterClassFunctions<MetaFunctions>(getUId());

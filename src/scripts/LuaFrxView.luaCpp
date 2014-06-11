@@ -177,6 +177,13 @@ class LuaFrxViewBase extends sambag.lua.ALuaObject {
      * @version 1.0.5
      */
     ManuallyReturn<1> getContextObject();
+    /**
+     * @brief Creates a @see frx.view.ListWindow object.
+     * @returnType ListWindow
+     * @return the created @see frx.view.ListWindow object or nil when creation failed.
+     * @version 1.0.52
+     */
+    ManuallyReturn<1> createListWindow();
 }
 
 
