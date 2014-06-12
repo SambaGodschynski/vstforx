@@ -2,7 +2,7 @@
 -- VSTForx menu setup script                                   --
 -- While the init script will be executed when the editor      --
 -- is opening, this module will be executed on startup only    --
--- a VSTForx.Lua documantation can be found under:             --
+-- a VSTForx.Lua documentation can be found under:             --
 --      http://api.vstforx.de                                  --
 -- author: Samba Godschynski                                   --
 -----------------------------------------------------------------
@@ -35,6 +35,8 @@ menus = {
    },   
 }
 
+-- Select Plugins dlg, to be considered as singleton->creating a new one will close
+-- the previous instance
 SelectPluginsDlg = {
    wnd = nil
    ,
@@ -71,7 +73,8 @@ SelectPluginsDlg = {
    end
    ,
    onClose = function(self)
-      wnd=nil
+      self.wnd=nil
+      collectgarbage() -- force immediate object destroying
    end
 }
 
@@ -80,7 +83,8 @@ function onAddPlugin()
    if #name==0 then
       return
    end
-   r = frx.queryDB("SELECT location FROM plugins WHERE name LIKE '%" .. name .. "%';")
+   r = frx.queryDB("SELECT location FROM plugins WHERE name LIKE '%" .. name .. "%'\
+ OR location LIKE '%" .. name .. "%';")
    if #r == 0 then
       frx.messageBox("no plugin "..name.." found")
       return 
@@ -271,6 +275,7 @@ function setObjectMenu(obj)
       table.insert(objMenu, {name="show details...", 
 			     action=string.format("onOpenBrowser('Main Scene/Plugins/%s')", obj:getViewId())})
       table.insert(objMenu, {name="clone", action="onClone()"})
+      table.insert(objMenu, {name="parameter assistant...", action="onCollectParameter()"})
       table.insert(objMenu, {name="open/close editor...", action="onOpenCloseEditor()"})
    elseif string.match(objType, "parameter%..*")~=nil then
       -- parameter.* (e.g. parameter.StdKnob)
@@ -350,3 +355,103 @@ function onOpenBrowser(x)
    frx.openSceneBrowser(x)
 end
 
+-- Collect parameter dlg, waiting for plugins parameter 
+-- changed and adding them to a list
+CollectParameterDlg = {
+   wnd = nil,
+   nbInstances = 0,
+   plug = nil,
+   param = nil,
+   res = nil,
+   show = function(self)
+      if self.plug==nil then
+	 return
+      end
+      self.param = self.plug:getParameters()
+      for k,v in pairs(self.param) do
+	 v:addListener(string.format("CollectParameterDlg.callback('%s', 'onParamChanged', %i)", self.__id, k))
+      end
+      self.wnd:setSize(400, 550)
+      self.wnd:setTitle(string.format("Change parameter in %s's editor", self.plug:getName()))
+      self.wnd:open()
+   end
+   ,
+   new = function(self, plug)
+      local o = {}
+      setmetatable(o, self)
+      self.__index = self
+      o.wnd = frx.view:createListWindow()
+      self.nbInstances=self.nbInstances+1
+      o.__id = string.format("__parDlg%i", self.nbInstances) 
+      o.plug = plug
+      o.res = {}
+      _ENV[o.__id] = o --we cannot use instances for callbacks, so we use this
+                       -- global table for accessing
+      o.wnd:addButton("OK", string.format("CollectParameterDlg.callback('%s', 'onOk')", o.__id))
+      o.wnd:addButton("Remove", string.format("CollectParameterDlg.callback('%s', 'onRemove')", o.__id))
+      o.wnd:addButton("Abbort", string.format("CollectParameterDlg.callback('%s', 'onAbbort')", o.__id))
+      o.wnd:addCloseListener(string.format("CollectParameterDlg.callback('%s', 'onClose')", o.__id))
+      return o
+   end
+   ,
+   callback = function(id, f, arg1)
+      --delegate callback
+      if _ENV[id] == nil then --check if exists
+	 return
+      end
+      if arg1==nil then
+	 _ENV[id][f](_ENV[id]);
+      else
+	 _ENV[id][f](_ENV[id], arg1);
+      end
+   end
+   ,
+   onAbbort = function(self)
+      self.wnd:close()
+   end
+   ,
+   onOk = function(self, x)
+      for k,v in ipairs(self.res) do
+	 frx.view:add(v)
+      end
+      self.wnd:close()
+   end
+   ,
+   onRemove = function(self)
+      i=self.wnd:getSelectedIndex()
+      self.wnd:removeElementAt(i)
+      table.remove(self.res, i)
+   end
+   ,
+   onClose = function(self)
+      -- delete global holder
+      if self.__id==nil then
+	 return
+      end
+      _ENV[self.__id].res = nil
+      _ENV[self.__id].wnd = nil
+      _ENV[self.__id].param = nil
+      _ENV[self.__id].plug = nil
+      _ENV[self.__id] = nil
+      collectgarbage() -- force immediate object destroying
+   end
+   ,
+   onParamChanged = function (self, pid) 
+      if self.res[tostring(pid)] ~= nil then
+	 return
+      end
+      local p = self.param[pid]
+      self.res[tostring(pid)]=1 -- insert pid as string for checking if already added
+      table.insert(self.res, p)
+      self.wnd:add(p:getName())
+   end
+}
+
+function onCollectParameter()
+   local p = frx.view:getContextObject()
+   if p==nil then
+      return
+   end
+   dlg = CollectParameterDlg:new(p)
+   dlg:show()
+end

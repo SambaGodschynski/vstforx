@@ -53,6 +53,10 @@ protected:
         const std::string &txt, const std::string &xpr);
     //-------------------------------------------------------------------------
     void addSelectionListener(lua_State *lua, const std::string &expr);
+    //-------------------------------------------------------------------------
+    int getSelectedIndex(lua_State *lua);
+    //-------------------------------------------------------------------------
+    void removeElementAt(lua_State *lua, int i);
 private:
     //-------------------------------------------------------------------------
     sdc::ScrollPane::Ptr scrollPane;

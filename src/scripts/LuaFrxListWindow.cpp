@@ -126,6 +126,7 @@ void LuaFrxListWindow::remove(lua_State *lua, const std::string &x) {
             throw std::runtime_error("list not accessable");
         }
         list->ListModel::removeElement(x);
+        list->redraw();
     } catch(const std::exception &ex) {
         sambag::lua::pushLuaError(lua, std::string("failed: ") + ex.what());
     } catch(...) {
@@ -150,6 +151,38 @@ std::string LuaFrxListWindow::getSelection(lua_State *lua) {
         sambag::lua::pushLuaError(lua, "failed: unkown error");
     }
     return "";
+}
+//-----------------------------------------------------------------------------
+int LuaFrxListWindow::getSelectedIndex(lua_State *lua) {
+    try {
+        if (!list) {
+            throw std::runtime_error("list not accessable");
+        }
+        return list->getSelectedIndex()+1;
+      } catch(const std::exception &ex) {
+        sambag::lua::pushLuaError(lua, std::string("failed: ") + ex.what());
+    } catch(...) {
+        sambag::lua::pushLuaError(lua, "failed: unkown error");
+    }
+    return 0;
+}
+//-----------------------------------------------------------------------------
+void LuaFrxListWindow::removeElementAt(lua_State *lua, int i) {
+    try {
+        if (!list) {
+            throw std::runtime_error("list not accessable");
+        }
+        i-=1;
+        if (i<0 || i>=(int)list->ListModel::getSize()) {
+            return;
+        }
+        list->ListModel::removeElementAt(i);
+        list->redraw();
+      } catch(const std::exception &ex) {
+        sambag::lua::pushLuaError(lua, std::string("failed: ") + ex.what());
+    } catch(...) {
+        sambag::lua::pushLuaError(lua, "failed: unkown error");
+    }
 }
 //-----------------------------------------------------------------------------
 void LuaFrxListWindow::onButton(lua_State *lua, const std::string &expr) {

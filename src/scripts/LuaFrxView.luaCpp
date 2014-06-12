@@ -143,7 +143,8 @@ class LuaFrxViewBase extends sambag.lua.ALuaObject {
      * 	     &nbsp;&nbsp;<b>"requesting context menu"</b>, called when an objects context menu is opening <br>
      *	     &nbsp;&nbsp;<b>"on saving view state"</b>, called when the view state is going to be saved (there is no "on load" event because
      *	     	 	     	     the script dosen't run while loading) <br>
-     *	     &nbsp;&nbsp;<b>"object added"</b>, called when an object was added to view
+     *	     &nbsp;&nbsp;<b>"object added"</b>, called when an object was added to view (an "object removing" event is unfortunately missing because it is
+     *	     to late at this point to create a lua representation before destroying the actual object)
      */
     void addViewListener(string callbackFuncName);
     /**

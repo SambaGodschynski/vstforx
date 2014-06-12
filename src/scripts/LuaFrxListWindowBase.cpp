@@ -5,7 +5,7 @@
  *
  * LuaFrxListWindowBase.cpp
  *
- *  Created on: Wed Jun 11 17:26:55 2014
+ *  Created on: Thu Jun 12 16:38:43 2014
  *      Author: Samba Godschysnki
  */
 
@@ -29,7 +29,9 @@ void LuaFrxListWindowBase::addLuaFields(lua_State *lua, int index)
 		boost::bind(&LuaFrxListWindowBase::getNumElements, this, lua),
 		boost::bind(&LuaFrxListWindowBase::getElementAt, this, lua, _1),
 		boost::bind(&LuaFrxListWindowBase::addButton, this, lua, _1, _2),
-		boost::bind(&LuaFrxListWindowBase::addSelectionListener, this, lua, _1)),
+		boost::bind(&LuaFrxListWindowBase::addSelectionListener, this, lua, _1),
+		boost::bind(&LuaFrxListWindowBase::getSelectedIndex, this, lua),
+		boost::bind(&LuaFrxListWindowBase::removeElementAt, this, lua, _1)),
 	index, 
 	getUId() 
 	); 

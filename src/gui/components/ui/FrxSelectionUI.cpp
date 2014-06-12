@@ -12,6 +12,8 @@
 #include <gui/IFrxControl.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/components/FrxComponent.hpp>
+#include <gui/components/VerticalFormatter.hpp>
+#include <gui/components/HorizontalFormatter.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -30,6 +32,10 @@ void FrxSelectionUI::installListeners(sdc::AComponentPtr c) {
 void FrxSelectionUI::installDefaults(sdc::AComponentPtr c) {
 	sdc::ui::UIManager &m = sdc::ui::getUIManager();
 	m.getProperty("FrxSelection.selectedStyle", selectedStyle);
+    vFormatter = VerticalFormatter::create();
+    hFormatter = HorizontalFormatter::create();
+    FrxSelection::Ptr sel = boost::dynamic_pointer_cast<FrxSelection> (c);
+    sel->setFormatter(vFormatter);
 }
 //-----------------------------------------------------------------------------
 void FrxSelectionUI::installUI(sdc::AComponentPtr c) {
@@ -72,15 +78,41 @@ namespace {
 	}
 } // namespace(s)
 //-----------------------------------------------------------------------------
+void FrxSelectionUI::rotate(const sdce::ActionEvent &ev, sdc::AComponentWPtr c)
+{
+    FrxSelection::Ptr sel = boost::dynamic_pointer_cast<FrxSelection> (c.lock());
+    if (!sel) {
+        return;
+    }
+    typedef FrxSelection::ContentContainer C;
+    C components = sel->getContent();
+    sd::Point2D p = sel->getLocation();
+    sel->clearContent();
+    sel->setFormatter(
+        sel->getFormatter()==vFormatter ? hFormatter : vFormatter
+    );
+    BOOST_FOREACH(C::value_type v, components) {
+        sel->addElement(v.lock(), p);
+    }
+}
+//-----------------------------------------------------------------------------
 void FrxSelectionUI::installContextMenu(sdc::AComponentPtr c) {
 	sdc::PopupMenuPtr menu = sdc::PopupMenu::create();
 
 	sdc::MenuItem::Ptr item = sdc::MenuItem::create();
-	item->setText("remove selected items");
+	item->setText("flip formation");
+	item->sdc::EventSender<sdce::ActionEvent>::addEventListener (
+		boost::bind(&FrxSelectionUI::rotate, this, _2, sdc::AComponentWPtr(c))
+	);
+	menu->add(item);
+    
+    item = sdc::MenuItem::create();
+	item->setText("remove items");
 	item->sdc::EventSender<sdce::ActionEvent>::addEventListener (
 		boost::bind(&clearSelection, _1, _2, sdc::AComponentWPtr(c))
 	);
 	menu->add(item);
+    
 	c->setComponentPopupMenu(menu);
 }
 

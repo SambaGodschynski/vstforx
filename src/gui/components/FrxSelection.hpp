@@ -84,7 +84,8 @@ public:
 	/**
 	 * add append element using formatter.
 	 */
-	virtual void addElement(sdc::AComponent::Ptr c);
+	virtual void addElement(sdc::AComponent::Ptr c,
+        const sd::Point2D &startPos=NULL_POINT2D);
 	//-------------------------------------------------------------------------
 	/**
 	 * add bunch of elements using formatter.

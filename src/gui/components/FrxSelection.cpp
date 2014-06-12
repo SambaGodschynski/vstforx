@@ -31,11 +31,11 @@ void FrxSelection::setContent(const FrxSelection::ContentContainer &container)
 	updateBounds();
 }
 //-----------------------------------------------------------------------------
-void FrxSelection::setFormatter(IFormatter::Ptr fomatter) {
-	this->formatter = formatter;
+void FrxSelection::setFormatter(IFormatter::Ptr _formatter) {
+	formatter = _formatter;
 }
 //-----------------------------------------------------------------------------
-void FrxSelection::addElement(sdc::AComponent::Ptr c) {
+void FrxSelection::addElement(sdc::AComponent::Ptr c, const sd::Point2D &startPos) {
 	if (contentViaSelection) { // clear previous selected content
 		clearContent();
 		contentViaSelection = false;
@@ -47,7 +47,8 @@ void FrxSelection::addElement(sdc::AComponent::Ptr c) {
 			FrxCircuidView::Ptr view = getFirstContainer<FrxCircuidView>();
 			SAMBAG_ASSERT(view);
 			// place view
-			sd::Point2D loc = view->getViewport()->getViewPosition(); 
+			sd::Point2D loc = startPos==NULL_POINT2D ?
+                view->getViewport()->getViewPosition() : startPos;
 			formatter->setCursor(loc);
 		}
 		formatter->addElement(c);

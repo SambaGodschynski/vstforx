@@ -56,7 +56,17 @@ class LuaFrxListWindowBase extends frx.scripts.LuaFrxWindow {
        * @version 1.0.52
        */
       void addSelectionListener(string expr);
-
+      /**
+       * @return the selected index starting with 1. Returns 0 when nothing selected.
+       * @version 1.0.52
+       */
+      int getSelectedIndex();
+      /**
+       * @brief Removes the element at index i.
+       * @param the index
+       * @version 1.0.52
+       */
+      void removeElementAt(int i);
 }
 
 

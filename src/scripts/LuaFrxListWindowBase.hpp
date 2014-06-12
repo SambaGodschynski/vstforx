@@ -5,7 +5,7 @@
  *
  * LuaFrxListWindowBase.hpp
  *
- *  Created on: Wed Jun 11 17:26:55 2014
+ *  Created on: Thu Jun 12 16:38:43 2014
  *      Author: Samba Godschysnki
  */
 
@@ -45,13 +45,17 @@ protected:
 	SAMBAG_LUA_FTAG(getElementAt, std::string (int));
 	SAMBAG_LUA_FTAG(addButton, void (std::string, std::string));
 	SAMBAG_LUA_FTAG(addSelectionListener, void (std::string));
-    typedef LOKI_TYPELIST_7(Frx_add_Tag, 
+	SAMBAG_LUA_FTAG(getSelectedIndex, int ());
+	SAMBAG_LUA_FTAG(removeElementAt, void (int));
+    typedef LOKI_TYPELIST_9(Frx_add_Tag, 
 	Frx_remove_Tag, 
 	Frx_getSelection_Tag, 
 	Frx_getNumElements_Tag, 
 	Frx_getElementAt_Tag, 
 	Frx_addButton_Tag, 
-	Frx_addSelectionListener_Tag) Functions1;
+	Frx_addSelectionListener_Tag, 
+	Frx_getSelectedIndex_Tag, 
+	Frx_removeElementAt_Tag) Functions1;
 
 	
     ///////////////////////////////////////////////////////////////////////////
@@ -99,6 +103,17 @@ protected:
 	* @version 1.0.52
 	*/
 	virtual void addSelectionListener(lua_State *lua, const std::string & expr) = 0;
+	/**
+	* @return the selected index starting with 1. Returns 0 when nothing selected.
+	* @version 1.0.52
+	*/
+	virtual int getSelectedIndex(lua_State *lua) = 0;
+	/**
+	* @brief Removes the element at index i.
+	* @param the index
+	* @version 1.0.52
+	*/
+	virtual void removeElementAt(lua_State *lua, int i) = 0;
     //-------------------------------------------------------------------------
     /**
      * @brief field getter and setter
