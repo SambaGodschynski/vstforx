@@ -5,7 +5,7 @@
  *
  * LuaFrxWindowBase.cpp
  *
- *  Created on: Wed Jun 11 17:08:28 2014
+ *  Created on: Thu Jun 12 11:21:31 2014
  *      Author: Samba Godschysnki
  */
 
@@ -23,7 +23,13 @@ void LuaFrxWindowBase::addLuaFields(lua_State *lua, int index)
     // register functions
     registerClassFunctions<Functions1, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaFrxWindowBase::open, this, lua, _1, _2),
+	boost::make_tuple(boost::bind(&LuaFrxWindowBase::open, this, lua),
+		boost::bind(&LuaFrxWindowBase::setSize, this, lua, _1, _2),
+		boost::bind(&LuaFrxWindowBase::setLocation, this, lua, _1, _2),
+		boost::bind(&LuaFrxWindowBase::getSize, this, lua),
+		boost::bind(&LuaFrxWindowBase::getLocation, this, lua),
+		boost::bind(&LuaFrxWindowBase::setTitle, this, lua, _1),
+		boost::bind(&LuaFrxWindowBase::getTitle, this, lua),
 		boost::bind(&LuaFrxWindowBase::close, this, lua),
 		boost::bind(&LuaFrxWindowBase::addCloseListener, this, lua, _1)),
 	index, 

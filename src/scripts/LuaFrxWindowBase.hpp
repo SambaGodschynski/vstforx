@@ -5,7 +5,7 @@
  *
  * LuaFrxWindowBase.hpp
  *
- *  Created on: Wed Jun 11 17:08:28 2014
+ *  Created on: Thu Jun 12 11:21:31 2014
  *      Author: Samba Godschysnki
  */
 
@@ -32,16 +32,29 @@ public:
     //-------------------------------------------------------------------------
     typedef boost::weak_ptr<LuaFrxWindowBase> WPtr;
     //-------------------------------------------------------------------------
-    
+    typedef  boost::tuple<float, float>  Point;
+	
 private:
 protected:
     //-------------------------------------------------------------------------
     LuaFrxWindowBase() {}
     //-------------------------------------------------------------------------
-    SAMBAG_LUA_FTAG(open, void (float, float));
+    SAMBAG_LUA_FTAG(open, void ());
+	SAMBAG_LUA_FTAG(setSize, void (int, int));
+	SAMBAG_LUA_FTAG(setLocation, void (int, int));
+	SAMBAG_LUA_FTAG(getSize,  Point  ());
+	SAMBAG_LUA_FTAG(getLocation,  Point  ());
+	SAMBAG_LUA_FTAG(setTitle, void (std::string));
+	SAMBAG_LUA_FTAG(getTitle, std::string ());
 	SAMBAG_LUA_FTAG(close, void ());
 	SAMBAG_LUA_FTAG(addCloseListener, void (std::string));
-    typedef LOKI_TYPELIST_3(Frx_open_Tag, 
+    typedef LOKI_TYPELIST_9(Frx_open_Tag, 
+	Frx_setSize_Tag, 
+	Frx_setLocation_Tag, 
+	Frx_getSize_Tag, 
+	Frx_getLocation_Tag, 
+	Frx_setTitle_Tag, 
+	Frx_getTitle_Tag, 
 	Frx_close_Tag, 
 	Frx_addCloseListener_Tag) Functions1;
 
@@ -49,11 +62,46 @@ protected:
     ///////////////////////////////////////////////////////////////////////////
     /**
 	* @brief Opens the window
-	* @param the window width, if < 0 size will be calculated
-	* @param the window height, if < 0 size will be calculated
 	* @version 1.0.52
 	*/
-	virtual void open(lua_State *lua, float width, float height) = 0;
+	virtual void open(lua_State *lua) = 0;
+	/**
+	* @brief set the window size
+	* @param the window witdh
+	* @param the window height
+	* @version 1.0.52
+	*/
+	virtual void setSize(lua_State *lua, int width, int height) = 0;
+	/**
+	* @brief set the window location
+	* @param the window's x coordinate
+	* @param the window's y coordinate
+	* @version 1.0.52
+	*/
+	virtual void setLocation(lua_State *lua, int x, int y) = 0;
+	/**
+	* @returnType Tuple
+	* @return the window size (width, height)
+	* @version 1.0.52
+	*/
+	virtual  Point  getSize(lua_State *lua) = 0;
+	/**
+	* @returnType Tuple
+	* @return the window location (x, y)
+	* @version 1.0.52
+	*/
+	virtual  Point  getLocation(lua_State *lua) = 0;
+	/**
+	* @brief Set the window title.
+	* @param the title
+	* @version 1.0.52
+	*/
+	virtual void setTitle(lua_State *lua, const std::string & title) = 0;
+	/**
+	* @return the window title
+	* @version 1.0.52
+	*/
+	virtual std::string getTitle(lua_State *lua) = 0;
 	/**
 	* @brief Closes the window.
 	* @version 1.0.52

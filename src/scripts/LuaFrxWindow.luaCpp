@@ -6,13 +6,49 @@ frx.scripts
  * @version 1.0.52
  */
 class LuaFrxWindowBase extends sambag.lua.ALuaObject {
+      User< boost::tuple<float, float> > Point;
       /**
        * @brief Opens the window
-       * @param the window width, if < 0 size will be calculated
-       * @param the window height, if < 0 size will be calculated
        * @version 1.0.52
        */
-      void open(float width, float height);
+      void open();   
+      /**
+       * @brief set the window size
+       * @param the window witdh
+       * @param the window height
+       * @version 1.0.52
+       */      
+      void setSize(int width, int height);
+      /**
+       * @brief set the window location
+       * @param the window's x coordinate
+       * @param the window's y coordinate
+       * @version 1.0.52
+       */      
+      void setLocation(int x, int y);
+      /**
+       * @returnType Tuple
+       * @return the window size (width, height)
+       * @version 1.0.52
+       */
+       User< Point > getSize();
+      /**
+       * @returnType Tuple
+       * @return the window location (x, y)
+       * @version 1.0.52
+       */
+       User< Point > getLocation();
+      /**
+       * @brief Set the window title.
+       * @param the title
+       * @version 1.0.52
+       */
+      void setTitle(string title);
+      /**
+       * @return the window title
+       * @version 1.0.52
+       */
+      string getTitle();
       /**
        * @brief Closes the window.
        * @version 1.0.52

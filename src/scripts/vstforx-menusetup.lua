@@ -24,7 +24,7 @@ menus = {
 	  {name="Known Issues", action="frx.openUrl('http://issues.vstforx.de/roadmap_page.php?version_id=27')"}
       }},
       {name="Auxiliaries"},
-      {name="Find Plugin...", action="onAddPlugin()"},
+      {name="Find Plugins...", action="onAddPlugin()"},
       {name="Viewports", viewportMenu},
       {name="State"},
       {name="Load...", action="load()"},
@@ -33,6 +33,46 @@ menus = {
       --{name="Execute Command...", action="onExecute()"}
       
    },   
+}
+
+SelectPluginsDlg = {
+   wnd = nil
+   ,
+   show = function(self, plugins)
+      self:create()
+      for k,v in ipairs(plugins) do
+	 self.wnd:add(tostring(v['location']))
+      end
+      self.wnd:setSize(640,400)
+      self.wnd:setTitle(string.format("Found %i plugins for '%s', please select:", #plugins, plugins['name']))
+      self.wnd:open()
+   end
+   ,
+   create = function(self)
+      if self.wnd~=nil then
+	 self.wnd:close()
+      end
+      self.wnd = frx.view:createListWindow()
+      self.wnd:addButton("Add", "SelectPluginsDlg:onAdd()")
+      self.wnd:addButton("Abbort", "SelectPluginsDlg:onAbbort()")
+      self.wnd:addCloseListener("SelectPluginsDlg:onClose()")
+   end
+   ,
+   onAbbort = function(self)
+      self.wnd:close()
+   end
+   ,
+   onAdd = function(self)
+      loc=self.wnd:getSelection()
+      x="unknown-plugin.Plugin('" .. loc .. "')"
+      if not pcall( frx.view.add, frx.view, x) then
+	 frx.messageBox("adding "..loc.." failed")
+      end
+   end
+   ,
+   onClose = function(self)
+      wnd=nil
+   end
 }
 
 function onAddPlugin()
@@ -45,15 +85,13 @@ function onAddPlugin()
       frx.messageBox("no plugin "..name.." found")
       return 
    end
-   if #r > 1 then
-      if not frx.showYesNoDlg("found " .. #r .. " plugins '".. name .. "'. Add them all?") then
-	 return
-      end
-   end
-   for i=1,#r,1 do
-      loc = r[i]['location']
+   if #r == 1 then
+      loc = r[1]['location']
       frx.view:add("unknown-plugin.Plugin('" .. loc .. "')")
+      return
    end
+   r['name'] = name
+   SelectPluginsDlg:show(r)
 end
 
 function getViewportName(index, active)

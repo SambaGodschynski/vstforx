@@ -96,9 +96,9 @@ int LuaFrxListWindow::getNumElements(lua_State *lua) {
         }
         return list->ListModel::getSize();
     } catch(const std::exception &ex) {
-        sambag::lua::pushLuaError(lua, std::string("connecting failed: ") + ex.what());
+        sambag::lua::pushLuaError(lua, std::string("failed: ") + ex.what());
     } catch(...) {
-        sambag::lua::pushLuaError(lua, "connecting failed: unkown error");
+        sambag::lua::pushLuaError(lua, "failed: unkown error");
     }
     return 0;
 }
@@ -113,9 +113,9 @@ std::string LuaFrxListWindow::getElementAt(lua_State *lua, int i) {
         }
         return list->ListModel::get(i-1);
     } catch(const std::exception &ex) {
-        sambag::lua::pushLuaError(lua, std::string("connecting failed: ") + ex.what());
+        sambag::lua::pushLuaError(lua, std::string("failed: ") + ex.what());
     } catch(...) {
-        sambag::lua::pushLuaError(lua, "connecting failed: unkown error");
+        sambag::lua::pushLuaError(lua, "failed: unkown error");
     }
     return "";
 }
@@ -127,9 +127,9 @@ void LuaFrxListWindow::remove(lua_State *lua, const std::string &x) {
         }
         list->ListModel::removeElement(x);
     } catch(const std::exception &ex) {
-        sambag::lua::pushLuaError(lua, std::string("connecting failed: ") + ex.what());
+        sambag::lua::pushLuaError(lua, std::string("failed: ") + ex.what());
     } catch(...) {
-        sambag::lua::pushLuaError(lua, "connecting failed: unkown error");
+        sambag::lua::pushLuaError(lua, "failed: unkown error");
     }
 
 }
@@ -145,9 +145,9 @@ std::string LuaFrxListWindow::getSelection(lua_State *lua) {
         }
         return *res;
     } catch(const std::exception &ex) {
-        sambag::lua::pushLuaError(lua, std::string("connecting failed: ") + ex.what());
+        sambag::lua::pushLuaError(lua, std::string("failed: ") + ex.what());
     } catch(...) {
-        sambag::lua::pushLuaError(lua, "connecting failed: unkown error");
+        sambag::lua::pushLuaError(lua, "failed: unkown error");
     }
     return "";
 }
@@ -180,9 +180,9 @@ void LuaFrxListWindow::addButton(lua_State *lua,
         buttons->add(btn);
         getWindow()->getContentPane()->revalidate();
     } catch(const std::exception &ex) {
-        sambag::lua::pushLuaError(lua, std::string("connecting failed: ") + ex.what());
+        sambag::lua::pushLuaError(lua, std::string("failed: ") + ex.what());
     } catch(...) {
-        sambag::lua::pushLuaError(lua, "connecting failed: unkown error");
+        sambag::lua::pushLuaError(lua, "failed: unkown error");
     }
 
 }
@@ -209,9 +209,9 @@ void LuaFrxListWindow::addSelectionListener(lua_State *lua, const std::string &e
             shared_from_this()
         );
     } catch(const std::exception &ex) {
-        sambag::lua::pushLuaError(lua, std::string("connecting failed: ") + ex.what());
+        sambag::lua::pushLuaError(lua, std::string("failed: ") + ex.what());
     } catch(...) {
-        sambag::lua::pushLuaError(lua, "connecting failed: unkown error");
+        sambag::lua::pushLuaError(lua, "failed: unkown error");
     }
 }
 }} // namespace(s)

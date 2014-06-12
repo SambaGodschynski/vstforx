@@ -49,14 +49,14 @@ class LuaFrxViewBase extends sambag.lua.ALuaObject {
      * @param the "connect from" @see Object
      * @param the "connect to" @see Object
      * @returnType Object
-     * @return a @see Connection object
+     * @return a @see Connection object or nil if objects are unconnectable.
      * @version 1.0.5
      */
     ManuallyReturn<1> connect();
     /**
      * @brief Adds a "free parameter" knob to view.
      * @returnType Parameter
-     * @return a @see Parameter object or nil if objects are unconnectable.
+     * @return a @see Parameter object.
      * @version 1.0.5
      */
     ManuallyReturn<1> addKnob();
