@@ -14,10 +14,10 @@ SET (RemoteSrc ${RemoteSrc} RemoteChannel/Plugin.cpp)
 
 
 #bridge
-add_executable(VSTForx.bridge Bridge/main.cpp
-		      com/FrxPlugSettings.cpp	
-)
-target_link_libraries (VSTForx.bridge frx_core ${FRX_CLIBS})
+# add_executable(VSTForx.bridge Bridge/main.cpp
+# 		      com/FrxPlugSettings.cpp	
+# )
+# target_link_libraries (VSTForx.bridge frx_core ${FRX_CLIBS})
 
 IF(WIN32)
   #standalone
@@ -37,6 +37,7 @@ IF(WIN32)
   SET (RemoteSrc ${RemoteSrc}
   	RemoteChannel/win/RemoteChannelMain.cpp
    	${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp
+
      	RemoteChannel/win/vstplug.def
    )
 
