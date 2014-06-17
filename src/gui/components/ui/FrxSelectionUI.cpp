@@ -100,7 +100,7 @@ void FrxSelectionUI::installContextMenu(sdc::AComponentPtr c) {
 	sdc::PopupMenuPtr menu = sdc::PopupMenu::create();
 
 	sdc::MenuItem::Ptr item = sdc::MenuItem::create();
-	item->setText("flip formation");
+	item->setText("flip orientation");
 	item->sdc::EventSender<sdce::ActionEvent>::addEventListener (
 		boost::bind(&FrxSelectionUI::rotate, this, _2, sdc::AComponentWPtr(c))
 	);
