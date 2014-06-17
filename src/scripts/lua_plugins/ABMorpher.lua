@@ -1,4 +1,10 @@
---setup
+-----------------------------------------------------------------
+-- VSTForx.lua ABMorpher plugin                                --
+-- a VSTForx.Lua documentation can be found under:             --
+--  1. Overview............http://api.vstforx.de               --
+--  2. Lua Plugin Doc......http://api.vstforx.de/LuaPlugin     --
+-----------------------------------------------------------------
+--setup table, will be loaded when initalizing plugin
 gpConfig = {
    type="frx_lua_plugin", 
    name="", 
@@ -9,7 +15,13 @@ gpConfig = {
 two states: A and B."
 }
 
-numOut = 100 -- change this to have more or less parameter
+numOut = 10 -- change this to have more or less parameter
+
+--Parameter setup table, will be loaded when initalizing plugin.
+--When a parameter is changed this map will be updated, so you can
+--use 'gpParameterSetup[name]' for reading a parameter value.
+--This map is READ only, writing values will have no affect.
+--Use frx.plug:setParameterValue(name, value) instead.
 gpParameterSetup={
    ['A/B']=0
 }
@@ -27,6 +39,7 @@ function lcInit()
    end
    frx.plug:addParameterListener("A/B", "onABChanged")
 end
+
 
 function resetAB()
    -- set AB either to A or B
@@ -75,5 +88,36 @@ function onParameterChanged(name, value)
    frx.plug:setParameterDisplay(name, string.format("Set %s %f", currState, value))
 end
 
+function lcOnSave()
+   -- save AB data
+   for k, v in pairs(values) do
+      local data={v[1], v[2]}
+      if data[2]==nil then -- #2 can be nil which will not stored
+	 data[2]=-1
+      end
+      print(k, data[1], data[2])
+      -- cause of http://issues.vstforx.de/view.php?id=488 we 
+      -- save every value separately 
+      frx.plug:setPersistUserData(k.."a", {data[1]})
+      frx.plug:setPersistUserData(k.."b", {data[2]})
+   end
+   frx.plug:log("saved")
+end
+
+function lcOnLoad()
+   -- load and set AB data
+   for k, v in pairs(_ENV.values) do
+      local dataA = frx.plug:getPersistUserData(k.."a")
+      local dataB = frx.plug:getPersistUserData(k.."b")
+      if #dataA==1 and #dataB==1 then
+	 dataA=tonumber(dataA[1])
+	 dataB=tonumber(dataB[1])
+	 _ENV.values[k][1]=dataA
+	 _ENV.values[k][2] = (dataB>=0) and dataB or nil 
+      else
+	 frx.plug:logErr(string.format("loading failed: no data for %s", k))
+      end
+   end
+end
 
 
