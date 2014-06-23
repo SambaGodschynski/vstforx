@@ -459,7 +459,9 @@ function onCollectParameter()
 end
 
 function onAssignAB()
+   frx.view:clearSelection()
    local p = frx.view:getContextObject()
+   frx.view:addToSelection(p)
    local x,y = p:getLocation()
    local params = p:getParameters()
    if #params==0 then
@@ -467,6 +469,7 @@ function onAssignAB()
    end
    local url=string.format("lua.Plugin('scripts/lua_plugins/ABMorpher.lua////numParams=%i')", #params)
    local ab = frx.view:add(url)
+   frx.view:addToSelection(ab)
    ab:setLocation(x-400, y)
    local p2 = ab:getParameters()
    local i=2
@@ -475,6 +478,8 @@ function onAssignAB()
       local b = v
       frx.view:add(a)
       frx.view:add(b)
+      frx.view:addToSelection(a)
+      frx.view:addToSelection(b)
       frx.view:connect(a, b)
       --set knob location
       a:setLocation(x-300, y-250+(i*50))
