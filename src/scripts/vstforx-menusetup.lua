@@ -473,26 +473,30 @@ function onAssignAB()
    local x,y = p:getLocation()
    local params = p:getParameters()
    local ab = frx.view:add(url)
-   local marginPrPa=50 --margin processor<->parameter
-   local marginPrPr=100
+   local marginPrPa=120 --margin processor<->parameter
+   local marginPrPr=230 --margin parameter<->parameter
+   local offsetY = y-num/2*50
    --frx.view:addToSelection(ab)
    ab:setLocation(x-marginPrPa*2-marginPrPr, y)
    local p2 = ab:getParameters()
    local i=2
    local tmp={}
    for k,v in pairs(params) do
-      local a= p2[i]
-      local b = v
-      frx.view:add(a)
-      frx.view:add(b)
-      frx.view:connect(a, b)
-      table.insert(tmp, a)
-      table.insert(tmp, b)
-      --set knob location
-      a:setLocation(x-marginPrPa-marginPrPr, y-250+(i*50))
-      b:setLocation(x-marginPrPa, y-250+(i*50))
-      --increment i
-      i=i+1
+      if v:getName()~="editor_X" and
+         v:getName()~="editor_Y" then
+	 local a= p2[i]
+	 local b = v
+	 frx.view:add(a)
+	 frx.view:add(b)
+	 frx.view:connect(a, b)
+	 table.insert(tmp, a)
+	 table.insert(tmp, b)
+	 --set knob location
+	 a:setLocation(x-marginPrPa-marginPrPr, offsetY+(i*50))
+	 b:setLocation(x-marginPrPa, offsetY+(i*50))
+	 --increment i
+	 i=i+1
+      end
    end
    frx.view:clearSelection()
    for k,v in pairs(tmp) do
