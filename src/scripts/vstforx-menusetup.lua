@@ -473,8 +473,10 @@ function onAssignAB()
    local x,y = p:getLocation()
    local params = p:getParameters()
    local ab = frx.view:add(url)
+   local marginPrPa=50 --margin processor<->parameter
+   local marginPrPr=100
    --frx.view:addToSelection(ab)
-   ab:setLocation(x-400, y)
+   ab:setLocation(x-marginPrPa*2-marginPrPr, y)
    local p2 = ab:getParameters()
    local i=2
    local tmp={}
@@ -487,8 +489,8 @@ function onAssignAB()
       table.insert(tmp, a)
       table.insert(tmp, b)
       --set knob location
-      a:setLocation(x-300, y-250+(i*50))
-      b:setLocation(x-50, y-250+(i*50))
+      a:setLocation(x-marginPrPa-marginPrPr, y-250+(i*50))
+      b:setLocation(x-marginPrPa, y-250+(i*50))
       --increment i
       i=i+1
    end
