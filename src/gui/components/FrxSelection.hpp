@@ -82,7 +82,7 @@ public:
 	virtual void setContent(const ContentContainer &container);
 	//-------------------------------------------------------------------------
 	/**
-	 * add append element using formatter.
+	 * @brief add element using formatter.
 	 */
 	virtual void addElement(sdc::AComponent::Ptr c,
         const sd::Point2D &startPos=NULL_POINT2D);
@@ -94,6 +94,8 @@ public:
 	void addElements(const Container &c);
 	//-------------------------------------------------------------------------
 	const ContentContainer & getContent() const { return content; }
+	//-------------------------------------------------------------------------
+	ContentContainer & getContent() { return content; }
 	//-------------------------------------------------------------------------
 	sdcu::AComponentUIPtr createComponentUI(sdcu::ALookAndFeelPtr laf) const {
 		return laf->getUI<FrxSelection>();

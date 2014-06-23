@@ -35,7 +35,9 @@ void FrxSelection::setFormatter(IFormatter::Ptr _formatter) {
 	formatter = _formatter;
 }
 //-----------------------------------------------------------------------------
-void FrxSelection::addElement(sdc::AComponent::Ptr c, const sd::Point2D &startPos) {
+void FrxSelection::addElement(sdc::AComponent::Ptr c,
+    const sd::Point2D &startPos)
+{
 	if (contentViaSelection) { // clear previous selected content
 		clearContent();
 		contentViaSelection = false;

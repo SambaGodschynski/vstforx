@@ -5,7 +5,7 @@
  *
  * LuaFrxProcessorBase.cpp
  *
- *  Created on: Mon Jun 23 09:46:39 2014
+ *  Created on: Mon Jun 23 21:46:38 2014
  *      Author: Samba Godschysnki
  */
 
@@ -26,13 +26,20 @@ void LuaFrxProcessorBase::addLuaFields(lua_State *lua, int index)
 	boost::make_tuple(boost::bind(&LuaFrxProcessorBase::getInputs, this, lua),
 		boost::bind(&LuaFrxProcessorBase::getOutputs, this, lua),
 		boost::bind(&LuaFrxProcessorBase::getParameters, this, lua),
+		boost::bind(&LuaFrxProcessorBase::getNumParameters, this, lua),
 		boost::bind(&LuaFrxProcessorBase::addInput, this, lua, _1),
 		boost::bind(&LuaFrxProcessorBase::addOutput, this, lua, _1),
 		boost::bind(&LuaFrxProcessorBase::openCloseEditor, this, lua),
 		boost::bind(&LuaFrxProcessorBase::getNumInputs, this, lua),
 		boost::bind(&LuaFrxProcessorBase::getNumOutputs, this, lua),
-		boost::bind(&LuaFrxProcessorBase::getPluginLocation, this, lua),
-		boost::bind(&LuaFrxProcessorBase::sendMessage, this, lua, _1)),
+		boost::bind(&LuaFrxProcessorBase::getPluginLocation, this, lua)),
+	index, 
+	getUId() 
+	); 
+
+	registerClassFunctions<Functions2, TupleAccessor>(
+	lua,
+	boost::make_tuple(boost::bind(&LuaFrxProcessorBase::sendMessage, this, lua, _1)),
 	index, 
 	getUId() 
 	); 
@@ -44,6 +51,7 @@ void LuaFrxProcessorBase::addLuaFields(lua_State *lua, int index)
 void LuaFrxProcessorBase::__lua_gc(lua_State *lua) {
     using namespace sambag::lua;
     unregisterClassFunctions<Functions1>(getUId());
+	unregisterClassFunctions<Functions2>(getUId());
 	unregisterClassFunctions<MetaFunctions>(getUId());
 	
     Super::__lua_gc(lua);

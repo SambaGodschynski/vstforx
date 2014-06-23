@@ -26,6 +26,11 @@ class LuaFrxProcessorBase extends LuaFrxObject {
        * @version 1.0.5
        */
       ManuallyReturn<1> getParameters();
+     /**
+       * @return number of parameters
+       * @version 1.0.53
+       */
+      int getNumParameters(); 
       /**
        * @returnType IO
        * @brief Adds a further input to the processor 

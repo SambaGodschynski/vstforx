@@ -762,10 +762,10 @@ void LuaFrxView::addToSelection(lua_State *lua) {
         }
         fgc::FrxCircuidViewPtr view = getView();
         fgc::FrxSelection::Ptr sel = view->getSelection();
-        fgc::FrxSelection::ContentContainer c;
-        c = sel->getContent();
+        fgc::FrxSelection::ContentContainer &c = sel->getContent();
         c.push_back(obj->getViewObject());
-        sel->setContent(c);
+        sel->updateBounds();
+        sel->setVisible(true);
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua, ex.what());
     } catch(...) {

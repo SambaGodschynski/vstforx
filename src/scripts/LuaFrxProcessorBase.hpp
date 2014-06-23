@@ -5,7 +5,7 @@
  *
  * LuaFrxProcessorBase.hpp
  *
- *  Created on: Mon Jun 23 09:46:30 2014
+ *  Created on: Mon Jun 23 21:46:28 2014
  *      Author: Samba Godschysnki
  */
 
@@ -41,6 +41,7 @@ protected:
     SAMBAG_LUA_FTAG(getInputs, sambag::lua::IgnoreReturn ());
 	SAMBAG_LUA_FTAG(getOutputs, sambag::lua::IgnoreReturn ());
 	SAMBAG_LUA_FTAG(getParameters, sambag::lua::IgnoreReturn ());
+	SAMBAG_LUA_FTAG(getNumParameters, int ());
 	SAMBAG_LUA_FTAG(addInput, sambag::lua::IgnoreReturn (bool));
 	SAMBAG_LUA_FTAG(addOutput, sambag::lua::IgnoreReturn (bool));
 	SAMBAG_LUA_FTAG(openCloseEditor, void ());
@@ -51,13 +52,15 @@ protected:
     typedef LOKI_TYPELIST_10(Frx_getInputs_Tag, 
 	Frx_getOutputs_Tag, 
 	Frx_getParameters_Tag, 
+	Frx_getNumParameters_Tag, 
 	Frx_addInput_Tag, 
 	Frx_addOutput_Tag, 
 	Frx_openCloseEditor_Tag, 
 	Frx_getNumInputs_Tag, 
 	Frx_getNumOutputs_Tag, 
-	Frx_getPluginLocation_Tag, 
-	Frx_sendMessage_Tag) Functions1;
+	Frx_getPluginLocation_Tag) Functions1;
+
+	typedef LOKI_TYPELIST_1(Frx_sendMessage_Tag) Functions2;
 
 	
     ///////////////////////////////////////////////////////////////////////////
@@ -79,6 +82,11 @@ protected:
 	* @version 1.0.5
 	*/
 	virtual sambag::lua::IgnoreReturn getParameters(lua_State *lua) = 0;
+	/**
+	* @return number of parameters
+	* @version 1.0.53
+	*/
+	virtual int getNumParameters(lua_State *lua) = 0;
 	/**
 	* @returnType IO
 	* @brief Adds a further input to the processor 

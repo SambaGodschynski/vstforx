@@ -207,6 +207,25 @@ int LuaFrxProcessor::getNumOutputs(lua_State *lua) {
     return 0;
 }
 //-----------------------------------------------------------------------------
+int LuaFrxProcessor::getNumParameters(lua_State *lua) {
+    using frx::processing::IParameter;
+    using namespace frx::gui;
+    using namespace frx::gui::components;
+    try {
+        ModelObject::Ptr obj = getModelObject();
+        IViewModelMap::Ptr map;
+        map = getViewModelMap();
+        ModelObject::Parameters parameters;
+        obj->getParameters("*", parameters);
+        return (int)parameters.size();
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unkown error");
+    }
+    return -1;
+}
+//-----------------------------------------------------------------------------
 std::string LuaFrxProcessor::getPluginLocation(lua_State *lua) {
     using namespace frx::gui;
     using namespace frx::gui::components;

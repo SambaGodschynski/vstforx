@@ -459,32 +459,41 @@ function onCollectParameter()
 end
 
 function onAssignAB()
-   frx.view:clearSelection()
    local p = frx.view:getContextObject()
-   frx.view:addToSelection(p)
-   local x,y = p:getLocation()
-   local params = p:getParameters()
-   if #params==0 then
+   local num = p:getNumParameters()
+   print (num)
+   if num==0 then
       return
    end
-   local url=string.format("lua.Plugin('scripts/lua_plugins/ABMorpher.lua////numParams=%i')", #params)
+   if num>50 then
+      frx.messageBox(string.format("this plugin has %i parameter, for performace reasons its not recommended to use all parameter for A/B.", num))
+      return
+   end
+   local url=string.format("lua.Plugin('scripts/lua_plugins/ABMorpher.lua////numParams=%i')", num)
+   local x,y = p:getLocation()
+   local params = p:getParameters()
    local ab = frx.view:add(url)
-   frx.view:addToSelection(ab)
+   --frx.view:addToSelection(ab)
    ab:setLocation(x-400, y)
    local p2 = ab:getParameters()
    local i=2
+   local tmp={}
    for k,v in pairs(params) do
       local a= p2[i]
       local b = v
       frx.view:add(a)
       frx.view:add(b)
-      frx.view:addToSelection(a)
-      frx.view:addToSelection(b)
       frx.view:connect(a, b)
+      table.insert(tmp, a)
+      table.insert(tmp, b)
       --set knob location
       a:setLocation(x-300, y-250+(i*50))
       b:setLocation(x-50, y-250+(i*50))
       --increment i
       i=i+1
+   end
+   frx.view:clearSelection()
+   for k,v in pairs(tmp) do
+      frx.view:addToSelection(v)
    end
 end
