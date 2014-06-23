@@ -95,6 +95,16 @@ protected:
     void onExecError(const std::string &msg);
 private:
     //-------------------------------------------------------------------------
+    // the filename can have arguments: /file.lua////arg1=100&arg2=200
+    // you can find them in the table _ENV.__args
+    typedef std::map<std::string, std::string> Args;
+    Args args;
+    static std::string extractFilenameAndArgs(const std::string &filename, Args &out);
+    //-------------------------------------------------------------------------
+    void setArgs(const Args &out);
+    //-------------------------------------------------------------------------
+    void createArgTable(lua_State *lua);
+    //-------------------------------------------------------------------------
     void updateLuaParameterMap(float value, const std::string &id);
     //-------------------------------------------------------------------------
     std::string argsToString(lua_State *lua);
@@ -358,6 +368,8 @@ public:
     virtual AWindowImplPtr getWindowImpl() {
         return AWindowImplPtr();
     }
+    //-------------------------------------------------------------------------
+    virtual std::string sendMessage (const std::string &msg);
 }; // PluginImpl
 }} // namespace(s)
 

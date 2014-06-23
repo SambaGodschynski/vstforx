@@ -257,6 +257,7 @@ function setObjectMenu(obj)
       table.insert(objMenu, {name="show details...", 
 			     action=string.format("onOpenBrowser('Main Scene/Plugins/%s')", obj:getViewId())})
       table.insert(objMenu, {name="clone", action="onClone()"})
+      table.insert(objMenu, {name="assign A/B morpher...", action="onAssignAB()"})
       if string.match(objType, ".*Input.*") then
 	 -- Input Step/Switch
 	 table.insert(objMenu, {name="add input", 
@@ -277,6 +278,7 @@ function setObjectMenu(obj)
       table.insert(objMenu, {name="clone", action="onClone()"})
       table.insert(objMenu, {name="parameter assistant...", action="onCollectParameter()"})
       table.insert(objMenu, {name="open/close editor...", action="onOpenCloseEditor()"})
+      table.insert(objMenu, {name="assign A/B morpher...", action="onAssignAB()"})
    elseif string.match(objType, "parameter%..*")~=nil then
       -- parameter.* (e.g. parameter.StdKnob)
       table.insert(objMenu, {name="set value...", action="onSetKnobValue()"})
@@ -454,4 +456,24 @@ function onCollectParameter()
    end
    dlg = CollectParameterDlg:new(p)
    dlg:show()
+end
+
+function onAssignAB()
+   local p = frx.view:getContextObject()
+   local params = p:getParameters()
+   if #params==0 then
+      return
+   end
+   local url=string.format("lua.Plugin('scripts/lua_plugins/ABMorpher.lua////numParams=%i')", #params)
+   local ab = frx.view:add(url)
+   local p2 = ab:getParameters()
+   local i=2
+   for k,v in pairs(params) do
+      local a= p2[i]
+      local b = v
+      frx.view:add(a)
+      frx.view:add(b)
+      frx.view:connect(a, b)
+      i=i+1
+   end
 end

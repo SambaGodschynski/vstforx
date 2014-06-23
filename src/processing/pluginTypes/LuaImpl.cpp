@@ -21,6 +21,10 @@
 #include <com/Serialization.h>
 #include <sstream>
 #include <gui/components/FrxScriptPluginEditor.hpp>
+#include <boost/xpressive/xpressive.hpp>
+#include <boost/xpressive/regex_primitives.hpp>
+#include <boost/xpressive/regex_actions.hpp>
+#include <boost/algorithm/string.hpp>
 
 #define LC_NAME(_name) LuaCall::_name::name()
 #define LC_STR(_name) std::string(LuaCall::_name::name())
@@ -58,15 +62,69 @@ APluginImpl::Ptr createLuaImpl(IHostInfo::Ptr hI,
 //=============================================================================
 //-----------------------------------------------------------------------------
 LuaImpl::Ptr LuaImpl::create(IHostInfo::Ptr hI,
-        const std::string &location,
+        const std::string &_location,
         Parameters *parameters)
 {
+    LuaImpl::Args args;
+    std::string location = LuaImpl::extractFilenameAndArgs(_location, args);
     Ptr res(new LuaImpl(hI, location, parameters));
     if (!boost::filesystem::exists(location)) {
         res->statusMsg=location + " not found";
     }
+    res->setArgs(args);
     res->loadScript();
     return res;
+}
+//-----------------------------------------------------------------------------
+std::string LuaImpl::extractFilenameAndArgs(const std::string &str, Args &out)
+{
+    if (str.length()==0) {
+        return "";
+    }
+    
+    // xpressive's non-greedy seems not to work properly
+    // ( -+_w [which means one or more word characters non-greedy] matches
+    // a for abc only)
+    // so we use std::string find at first step to split
+    // between filename and arguments.(We use '////' as seperator
+    // because its invalid for filenames
+    size_t p = str.find("////");
+    if (p==std::string::npos) {
+        return str;
+    }
+    std::string filename(str.begin(), str.begin()+p),
+                args(str.begin()+p+4, str.end());
+    
+    // get args
+    // see: http://www.boost.org/doc/libs/1_55_0/doc/html/xpressive/user_s_guide.htm Semantic Action
+    using namespace boost::xpressive;
+    sregex pair = ( (s1= +alnum) >> "=" >> (s2= +~_s ) )
+        [ ref(out)[s1] = as<std::string>(s2) ];
+
+    sregex rx = pair >> *(+_s >> pair);
+
+    regex_match(args, rx);
+    
+    return filename;
+}
+//-----------------------------------------------------------------------------
+void LuaImpl::setArgs(const Args &x) {
+    args = x;
+}
+//-----------------------------------------------------------------------------
+void LuaImpl::createArgTable(lua_State *lua) {
+    if (args.empty()) {
+        return;
+    }
+    
+    lua_newtable(lua);
+    int top = lua_gettop(lua);
+    BOOST_FOREACH(const Args::value_type &x, args) {
+        sambag::lua::push(lua, x.first);
+        sambag::lua::push(lua, x.second);
+        lua_settable(lua, top);
+	}
+    lua_setglobal(lua, "__args");
 }
 //-----------------------------------------------------------------------------
 void LuaImpl::addToEditor(const std::string &msg) {
@@ -177,8 +235,10 @@ void LuaImpl::loadScript() {
     numInChannels = 0;
     numOutChannels = 0;
     try {
+        SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
         luaState = sambag::lua::createLuaStateRef();
         initLuaEnv(luaState);
+        createArgTable(luaState.get());
         sambag::lua::executeFile(luaState.get(), location);
         if(!sambag::lua::getGlobal(luaState.get(), config, GP_CONFIG)) {
             logErr("missing " + GP_CONFIG);
@@ -1021,6 +1081,12 @@ void LuaImpl::closeLua() {
         luaState.reset();
     } catch(...) {
     }
+}
+//-----------------------------------------------------------------------------
+std::string LuaImpl::sendMessage (const std::string &msg) {
+    SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
+    sambag::lua::executeString(luaState.get(), msg);
+    return "";
 }
 //-----------------------------------------------------------------------------
 namespace {

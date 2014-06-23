@@ -80,6 +80,8 @@ public:
     virtual bool isBridged() const;
     //-------------------------------------------------------------------------
     virtual bool isInternal() const;
+    //-------------------------------------------------------------------------
+    virtual std::string sendMessage(const std::string &msg);
 }; // PluginAdapter
 }} // namespace(s)
 

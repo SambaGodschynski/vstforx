@@ -240,4 +240,24 @@ LuaFrxProcessor::createAndPush(lua_State *lua,
     res->createLuaObject(lua, "lua_processor");
     return res;
 }
+//-----------------------------------------------------------------------------
+std::string LuaFrxProcessor::sendMessage(lua_State *lua, const std::string &msg)
+{
+    using namespace frx::gui;
+    using namespace frx::gui::components;
+    using namespace frx::processing;
+    try {
+        IPluginAdapter::Ptr obj =
+            boost::dynamic_pointer_cast<IPluginAdapter>(getModelObject());
+        if (!obj) {
+            return "";
+        }
+        return obj->sendMessage(msg);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unkown error");
+    }
+    return "";
+}
 }} // namespace(s)

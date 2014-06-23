@@ -260,4 +260,13 @@ bool PluginAdapter::isInternal() const {
     }
     return impl->isInternal();
 }
+//-----------------------------------------------------------------------------
+std::string PluginAdapter::sendMessage(const std::string &msg) {
+    Adaptee::Ptr plug = getPlugin();
+    APluginImpl::Ptr impl = plug->getPluginImpl();
+    if (!impl) {
+        return "";
+    }
+    return impl->sendMessage(msg);
+}
 }} // namespace(s)

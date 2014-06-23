@@ -55,6 +55,12 @@ public:
     virtual bool isBridged() const = 0;
     //-------------------------------------------------------------------------
     virtual bool isInternal() const = 0;
+    //-------------------------------------------------------------------------
+    /**
+     * @brief sends a message to the plugin.
+     *        The behaviour depends on the specific plugin implementatiob.
+     */
+    virtual std::string sendMessage(const std::string &msg) = 0;
 
 }; // IPluginAdapter
 }} // namespace(s)

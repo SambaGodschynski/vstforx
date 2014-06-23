@@ -5,7 +5,7 @@
  *
  * LuaFrxProcessorBase.cpp
  *
- *  Created on: Tue Apr 29 22:18:01 2014
+ *  Created on: Mon Jun 23 09:46:39 2014
  *      Author: Samba Godschysnki
  */
 
@@ -31,7 +31,8 @@ void LuaFrxProcessorBase::addLuaFields(lua_State *lua, int index)
 		boost::bind(&LuaFrxProcessorBase::openCloseEditor, this, lua),
 		boost::bind(&LuaFrxProcessorBase::getNumInputs, this, lua),
 		boost::bind(&LuaFrxProcessorBase::getNumOutputs, this, lua),
-		boost::bind(&LuaFrxProcessorBase::getPluginLocation, this, lua)),
+		boost::bind(&LuaFrxProcessorBase::getPluginLocation, this, lua),
+		boost::bind(&LuaFrxProcessorBase::sendMessage, this, lua, _1)),
 	index, 
 	getUId() 
 	); 

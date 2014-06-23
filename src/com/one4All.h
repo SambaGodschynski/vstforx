@@ -250,7 +250,6 @@ namespace com {
         int                  numInputs() const { return boost::get<3>(*this); }
         int                 numOutputs() const { return boost::get<4>(*this); }
         const std::string &    details() const { return boost::get<5>(*this); }
-        
         IdParser & namespace_(const std::string &val) { boost::get<0>(*this) = val; return *this; }
         IdParser &       type(const std::string &val) { boost::get<1>(*this) = val; return *this; }
         IdParser &       name(const std::string &val) { boost::get<2>(*this) = val; return *this; }

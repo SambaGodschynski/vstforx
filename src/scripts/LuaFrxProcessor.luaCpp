@@ -70,6 +70,15 @@ class LuaFrxProcessorBase extends LuaFrxObject {
        * @version 1.0.5
        */
       string getPluginLocation();
+      /**
+       * @brief Sends a internal message to the processor.
+       *        The behaviour depends on its specific 
+       *        processor implementation.
+       * @return a result string
+       * @param a message string
+       * @version 1.0.53
+       */
+       string sendMessage(string msg);
 }
 
 

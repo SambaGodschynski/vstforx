@@ -6,7 +6,7 @@ frx.scripts
  * of this class call:
  * <pre>
  *   listWnd=frx.view:createListWindow()
- * <pre>
+ * </pre>
  * @alias frx.view.ListWindow
  * @extends @see frx.view.Window
  * @version 1.0.52

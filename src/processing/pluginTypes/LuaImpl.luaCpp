@@ -229,6 +229,8 @@ class LuaImplBase extends sambag.lua.ALuaObject {
        * @return the persist user data for a key.
        * @returnType sequence
        * @param the key
+       * @note there is currently an issue here: it's not guaranteed that the data table
+       * entries are in the same order as saved. (see <a href="http://issues.vstforx.de/view.php?id=488">#488</a>)
        * @version 1.0.5
        */
       ManuallyReturn<1> getPersistUserData(string key);

@@ -31,6 +31,13 @@ values={}
 p=gpParameterSetup
 
 function lcInit()
+   --when loaded with arguments
+   if _ENV.__args ~= nil then
+      if _ENV.__args['numParams'] ~= nil then
+	 numOut = _ENV.__args['numParams']
+      end
+   end
+   --init parameter
    for i=1, numOut, 1 do
       name=string.format('param%03i', i)
       _ENV.gpParameterSetup[name]=0
@@ -38,6 +45,9 @@ function lcInit()
       frx.plug:addParameterListener(name, "onParameterChanged")
    end
    frx.plug:addParameterListener("A/B", "onABChanged")
+   for k,v in pairs(_ENV.__args) do
+      print(k,v)
+   end
 end
 
 
