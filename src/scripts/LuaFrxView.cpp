@@ -741,10 +741,48 @@ void LuaFrxView::initListenersIfNeccessary(lua_State *lua) {
 }
 //-----------------------------------------------------------------------------
 slua::IgnoreReturn LuaFrxView::createListWindow(lua_State *lua) {
-    fgc::FrxCircuidViewPtr view = getView();
-    sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
-    LuaFrxListWindow::Ptr res = LuaFrxListWindow::createAndPush(lua, win);
+    try {
+        fgc::FrxCircuidViewPtr view = getView();
+        sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
+        LuaFrxListWindow::Ptr res = LuaFrxListWindow::createAndPush(lua, win);
+        return slua::IgnoreReturn();
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, std::string("view is not available: ") + ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "view is not available");
+    }
     return slua::IgnoreReturn();
+}
+//-----------------------------------------------------------------------------
+void LuaFrxView::addToSelection(lua_State *lua) {
+    try {
+        LuaFrxObject::Ptr obj = LuaFrxObject::getFromLuaStack(lua, -1);
+        if (!obj) {
+            throw std::runtime_error("no valid object");
+        }
+        fgc::FrxCircuidViewPtr view = getView();
+        fgc::FrxSelection::Ptr sel = view->getSelection();
+        fgc::FrxSelection::ContentContainer c;
+        c = sel->getContent();
+        c.push_back(obj->getViewObject());
+        sel->setContent(c);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unknown error");
+    }
+}
+//-----------------------------------------------------------------------------
+void LuaFrxView::clearSelection(lua_State *lua) {
+    try {
+        fgc::FrxCircuidViewPtr view = getView();
+        fgc::FrxSelection::Ptr sel = view->getSelection();
+        sel->clearContent();
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, std::string("view is not available: ") + ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "view is not available");
+    }
 }
 //-----------------------------------------------------------------------------
 LuaFrxView::Ptr

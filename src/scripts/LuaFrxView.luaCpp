@@ -185,6 +185,18 @@ class LuaFrxViewBase extends sambag.lua.ALuaObject {
      * @version 1.0.52
      */
     ManuallyReturn<1> createListWindow();
+    /**
+     * @brief Add given object to selection
+     * @hiddenParam Object obj
+     * @param the @see Object to add 
+     * @version 1.0.53
+     */
+     void addToSelection();
+    /**
+     * @brief Remove all objects from selection.
+     * @version 1.0.53
+     */
+     void clearSelection();
 }
 
 

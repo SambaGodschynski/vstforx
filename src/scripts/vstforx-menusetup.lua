@@ -460,12 +460,14 @@ end
 
 function onAssignAB()
    local p = frx.view:getContextObject()
+   local x,y = p:getLocation()
    local params = p:getParameters()
    if #params==0 then
       return
    end
    local url=string.format("lua.Plugin('scripts/lua_plugins/ABMorpher.lua////numParams=%i')", #params)
    local ab = frx.view:add(url)
+   ab:setLocation(x-400, y)
    local p2 = ab:getParameters()
    local i=2
    for k,v in pairs(params) do
@@ -474,6 +476,10 @@ function onAssignAB()
       frx.view:add(a)
       frx.view:add(b)
       frx.view:connect(a, b)
+      --set knob location
+      a:setLocation(x-300, y-250+(i*50))
+      b:setLocation(x-50, y-250+(i*50))
+      --increment i
       i=i+1
    end
 end

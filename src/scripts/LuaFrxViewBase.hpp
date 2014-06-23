@@ -5,7 +5,7 @@
  *
  * LuaFrxViewBase.hpp
  *
- *  Created on: Wed Jun 11 12:29:09 2014
+ *  Created on: Mon Jun 23 19:18:51 2014
  *      Author: Samba Godschysnki
  */
 
@@ -59,6 +59,8 @@ protected:
 	SAMBAG_LUA_FTAG(setMenu, void ());
 	SAMBAG_LUA_FTAG(getContextObject, sambag::lua::IgnoreReturn ());
 	SAMBAG_LUA_FTAG(createListWindow, sambag::lua::IgnoreReturn ());
+	SAMBAG_LUA_FTAG(addToSelection, void ());
+	SAMBAG_LUA_FTAG(clearSelection, void ());
     typedef LOKI_TYPELIST_10(Frx_add_Tag, 
 	Frx_remove_Tag, 
 	Frx_getObjects_Tag, 
@@ -80,6 +82,9 @@ protected:
 	Frx_setMenu_Tag, 
 	Frx_getContextObject_Tag, 
 	Frx_createListWindow_Tag) Functions2;
+
+	typedef LOKI_TYPELIST_2(Frx_addToSelection_Tag, 
+	Frx_clearSelection_Tag) Functions3;
 
 	
     ///////////////////////////////////////////////////////////////////////////
@@ -118,14 +123,14 @@ protected:
 	* @param the "connect from" @see Object
 	* @param the "connect to" @see Object
 	* @returnType Object
-	* @return a @see Connection object
+	* @return a @see Connection object or nil if objects are unconnectable.
 	* @version 1.0.5
 	*/
 	virtual sambag::lua::IgnoreReturn connect(lua_State *lua) = 0;
 	/**
 	* @brief Adds a "free parameter" knob to view.
 	* @returnType Parameter
-	* @return a @see Parameter object or nil if objects are unconnectable.
+	* @return a @see Parameter object.
 	* @version 1.0.5
 	*/
 	virtual sambag::lua::IgnoreReturn addKnob(lua_State *lua) = 0;
@@ -212,7 +217,8 @@ protected:
 	* 	     &nbsp;&nbsp;<b>"requesting context menu"</b>, called when an objects context menu is opening <br>
 	*	     &nbsp;&nbsp;<b>"on saving view state"</b>, called when the view state is going to be saved (there is no "on load" event because
 	*	     	 	     	     the script dosen't run while loading) <br>
-	*	     &nbsp;&nbsp;<b>"object added"</b>, called when an object was added to view
+	*	     &nbsp;&nbsp;<b>"object added"</b>, called when an object was added to view (an "object removing" event is unfortunately missing because it is
+	*	     to late at this point to create a lua representation before destroying the actual object)
 	*/
 	virtual void addViewListener(lua_State *lua, const std::string & callbackFuncName) = 0;
 	/**
@@ -253,6 +259,18 @@ protected:
 	* @version 1.0.52
 	*/
 	virtual sambag::lua::IgnoreReturn createListWindow(lua_State *lua) = 0;
+	/**
+	* @brief Add given object to selection
+	* @hiddenParam Object obj
+	* @param the @see Object to add 
+	* @version 1.0.53
+	*/
+	virtual void addToSelection(lua_State *lua) = 0;
+	/**
+	* @brief Remove all objects from selection.
+	* @version 1.0.53
+	*/
+	virtual void clearSelection(lua_State *lua) = 0;
     //-------------------------------------------------------------------------
     /**
      * @brief field getter and setter

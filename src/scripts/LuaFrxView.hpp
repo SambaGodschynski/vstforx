@@ -80,6 +80,8 @@ protected:
     boost::tuple<float,float> getSize(lua_State *lua);
     void setSize(lua_State *lua, float x, float y);
     slua::IgnoreReturn createListWindow(lua_State *lua);
+	virtual void addToSelection(lua_State *lua);
+	virtual void clearSelection(lua_State *lua);
 private:
     //-------------------------------------------------------------------------
     fgc::VstForxEditor *editor;

@@ -5,7 +5,7 @@
  *
  * LuaFrxViewBase.cpp
  *
- *  Created on: Wed Jun 11 12:45:31 2014
+ *  Created on: Mon Jun 23 19:18:52 2014
  *      Author: Samba Godschysnki
  */
 
@@ -53,6 +53,14 @@ void LuaFrxViewBase::addLuaFields(lua_State *lua, int index)
 	getUId() 
 	); 
 
+	registerClassFunctions<Functions3, TupleAccessor>(
+	lua,
+	boost::make_tuple(boost::bind(&LuaFrxViewBase::addToSelection, this, lua),
+		boost::bind(&LuaFrxViewBase::clearSelection, this, lua)),
+	index, 
+	getUId() 
+	); 
+
 	
     
 }
@@ -61,6 +69,7 @@ void LuaFrxViewBase::__lua_gc(lua_State *lua) {
     using namespace sambag::lua;
     unregisterClassFunctions<Functions1>(getUId());
 	unregisterClassFunctions<Functions2>(getUId());
+	unregisterClassFunctions<Functions3>(getUId());
 	unregisterClassFunctions<MetaFunctions>(getUId());
 	
     Super::__lua_gc(lua);
