@@ -388,6 +388,10 @@ void FrxConnectionUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	SAMBAG_ASSERT(ccn);
 	
 	std::pair<sd::Point2D, sd::Point2D> points = getConnectionPoints(ccn);
+    if (points.first==points.second) {
+        // no line here
+        return;
+    }
 	boost::geometry::subtract_point(points.first, ccn->getLocation());
 	boost::geometry::subtract_point(points.second, ccn->getLocation());
 

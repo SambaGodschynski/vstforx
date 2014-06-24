@@ -78,13 +78,6 @@ void FrxConnection::onComponentsPropertyChanged(void*,
 	if (ev.getPropertyName() == sdc::AComponent::PROPERTY_BOUNDS) {
 		resetBounds();
     }
-    if (ev.getPropertyName() == sdc::AComponent::PROPERTY_VISIBILITY) {
-        if (!src->isVisible() && !dst->isVisible()) {
-            setVisible(false);
-        } else {
-            setVisible(true);
-        }
-    }
 }
 //-----------------------------------------------------------------------------
 void FrxConnection::setBounds(const sd::Rectangle &r) {
