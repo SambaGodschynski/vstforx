@@ -14,6 +14,7 @@
 #include <gui/components/FrxComponent.hpp>
 #include <gui/components/VerticalFormatter.hpp>
 #include <gui/components/HorizontalFormatter.hpp>
+#include <gui/components/FrxPacket.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -54,7 +55,7 @@ void FrxSelectionUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 }
 //-----------------------------------------------------------------------------
 namespace {
-	void clearSelection(void *src, const sdce::ActionEvent &ev, sdc::AComponentWPtr c) 
+	void clearSelection(void *src, const sdce::ActionEvent &ev, sdc::AComponentWPtr c)
 	{
 		FrxSelection::Ptr sel = boost::dynamic_pointer_cast<FrxSelection> (c.lock());
 		if (!sel) {
@@ -75,6 +76,32 @@ namespace {
 		}
 		sel->clearContent();
 
+	}
+    //-------------------------------------------------------------------------
+	void packItems(const sdce::ActionEvent &ev, sdc::AComponentWPtr c)
+	{
+		FrxSelection::Ptr sel = boost::dynamic_pointer_cast<FrxSelection> (c.lock());
+		if (!sel) {
+			return;
+		}
+		FrxCircuidViewPtr view = sel->getFirstContainer<FrxCircuidView>();
+		if (!view) {
+			return;
+		}
+        FrxPacket::Ptr packet = FrxPacket::create();
+        packet->setLocation(sel->getLocation());
+        // add elements to packet
+        typedef FrxSelection::ContentContainer SelContainer;
+        BOOST_FOREACH(SelContainer::value_type x, sel->getContent()) {
+            FrxComponent::Ptr comp =
+                boost::dynamic_pointer_cast<FrxComponent>(x.lock());
+            if (!comp) {
+                continue;
+            }
+            packet->add(comp);
+        }
+        // add packet to view
+        view->add(packet);
 	}
 } // namespace(s)
 //-----------------------------------------------------------------------------
@@ -103,6 +130,13 @@ void FrxSelectionUI::installContextMenu(sdc::AComponentPtr c) {
 	item->setText("flip orientation");
 	item->sdc::EventSender<sdce::ActionEvent>::addEventListener (
 		boost::bind(&FrxSelectionUI::rotate, this, _2, sdc::AComponentWPtr(c))
+	);
+	menu->add(item);
+    
+    item = sdc::MenuItem::create();
+	item->setText("pack items");
+	item->sdc::EventSender<sdce::ActionEvent>::addEventListener (
+		boost::bind(&packItems, _2, sdc::AComponentWPtr(c))
 	);
 	menu->add(item);
     

@@ -13,6 +13,7 @@
 #include "FrxSelection.hpp"
 #include "FrxHover.hpp"
 #include "FrxFlag.hpp"
+#include "FrxPacket.hpp"
 #include <gui/ViewFactory.hpp>
 #include <exception>
 
@@ -25,7 +26,7 @@ namespace legacy { namespace v0 {
 //=============================================================================
 //-----------------------------------------------------------------------------
 template <class Archive>
-void register_types_impl( Archive &ar ) {
+void register_types_impl( Archive &ar, int version ) {
 	ar.template register_type<IOCn>();
 	ar.template register_type<ProcessorInputCn>();
 	ar.template register_type<ProcessorOutputCn>();
@@ -40,6 +41,9 @@ void register_types_impl( Archive &ar ) {
 	ar.template register_type<FrxSelection>();
 	ar.template register_type<FrxHover>();
 	ar.template register_type<FrxFlag>();
+    if (version>0) {
+        ar.template register_type<FrxPacket>();
+    }
 }
 //-----------------------------------------------------------------------------
 void register_types( ::com::iArchive &ar, int version ) {
@@ -48,14 +52,14 @@ void register_types( ::com::iArchive &ar, int version ) {
         legacy::v0::register_types(ar);
         return;
     }
-	register_types_impl(ar);
+	register_types_impl(ar, version);
     ViewFactory::instance().registerToArchive(ar);
 }
 void register_types( ::com::oArchive &ar, int version ) {
     if (version != FRX_ARCHIVE_VERSION) {
         throw std::runtime_error("registering an invalid archive version");
     }
-	register_types_impl(ar);
+	register_types_impl(ar, version);
     ViewFactory::instance().registerToArchive(ar);
 }
 }}} // namespace(s)

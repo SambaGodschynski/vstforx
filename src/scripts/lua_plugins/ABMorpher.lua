@@ -45,9 +45,6 @@ function lcInit()
       frx.plug:addParameterListener(name, "onParameterChanged")
    end
    frx.plug:addParameterListener("A/B", "onABChanged")
-   for k,v in pairs(_ENV.__args) do
-      print(k,v)
-   end
 end
 
 

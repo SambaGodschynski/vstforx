@@ -34,10 +34,14 @@ protected:
 	FrxFlag(){}
 	//-------------------------------------------------------------------------
 	void onComponentRemoving(void *src, const OnRemoving &ev);
+	//-------------------------------------------------------------------------
+	void onTargetProperty(const sce::PropertyChanged &ev);
 private:
 	//-------------------------------------------------------------------------
 	typedef sce::EventSender<OnRemoving>::Connection RemovingConnection;
 	RemovingConnection rmvConnection;
+	typedef sce::EventSender<sce::PropertyChanged>::Connection PropertyEvConnection;
+	PropertyEvConnection propertyConnection;
 	//-------------------------------------------------------------------------
 	FrxComponent::Ptr target;
 	//-------------------------------------------------------------------------

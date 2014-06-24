@@ -128,7 +128,6 @@ void FrxFlagUI::onTargetPropertyChanged(void *, const sce::PropertyChanged &ev)
 
 	if (ev.getPropertyName() == sdc::AComponent::PROPERTY_BOUNDS) {
 		updateBounds(flag);
-		return;
 	}
 	if (ev.getPropertyName() == FrxComponent::PROPERTY_UPFLAG_TXT ||
 		ev.getPropertyName() == FrxComponent::PROPERTY_LOFLAG_TXT) 
@@ -140,7 +139,6 @@ void FrxFlagUI::onTargetPropertyChanged(void *, const sce::PropertyChanged &ev)
 			updateText();
 		}
 	}
-
 }
 //-----------------------------------------------------------------------------
 void FrxFlagUI::installTargetListeners(FrxComponent::Ptr c) {
