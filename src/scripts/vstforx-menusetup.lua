@@ -481,6 +481,8 @@ function onAssignAB()
    local p2 = ab:getParameters()
    local i=2
    local tmp={}
+   local abx, aby = ab:getLocation()
+   p2[1]:setLocation(abx-50, aby) -- A/B knob
    for k,v in pairs(params) do
       if v:getName()~="editor_X" and
          v:getName()~="editor_Y" then

@@ -101,7 +101,7 @@ namespace {
             packet->add(comp);
         }
         // add packet to view
-        view->add(packet);
+        view->add(packet, FrxCircuidView::Z_ProcessorNodes);
 	}
 } // namespace(s)
 //-----------------------------------------------------------------------------

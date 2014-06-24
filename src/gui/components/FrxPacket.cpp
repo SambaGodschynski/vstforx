@@ -6,6 +6,8 @@
  */
 
 #include "FrxPacket.hpp"
+#include "FrxFlag.hpp"
+#include "FrxCircuidView.hpp"
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -17,6 +19,14 @@ void FrxPacket::postConstructor() {
         boost::bind(&FrxPacket::onPropertyChanged, this, _2)
     );
     setName("Packet");
+    FrxCircuidView::Ptr view = getFirstContainer<FrxCircuidView>();
+    if (!view) {
+        return;
+    }
+    FrxFlag::Ptr flag = FrxFlag::create();
+    flag->setTarget(getPtr());
+    flag->setUpperFlagText(getName());
+    view->add(flag, FrxCircuidView::Z_Flags, true);
 }
 //-----------------------------------------------------------------------------
 void FrxPacket::onPropertyChanged(const sce::PropertyChanged &ev) {

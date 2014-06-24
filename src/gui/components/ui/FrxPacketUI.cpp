@@ -6,6 +6,9 @@
  */
 
 #include "FrxPacketUI.hpp"
+#include <sambag/disco/components/PopupMenu.hpp>
+#include <OS_Specific/OS_com.h>
+#include <sambag/disco/components/Window.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui {
@@ -16,9 +19,30 @@ namespace components { namespace ui {
 FrxPacketUI::FrxPacketUI() {
 }
 //-----------------------------------------------------------------------------
+namespace {
+    void onRename(sdc::AComponentWPtr _c) {
+        sdc::AComponentPtr c = _c.lock();
+        if (!c) {
+            return;
+        }
+        sdc::Window::Ptr win = c->getFirstContainer<sdc::Window>();
+        if (!win) {
+            return;
+        }
+        std::string name = c->getName();
+        ::com::osShowInputTextDlg("Name", name, win->getWindowImpl()->getSystemHandle());
+        c->setName(name);
+    }
+} // namespace
 void FrxPacketUI::createPopupmenuEntries(sdc::PopupMenuPtr menu,
     FrxCircuidViewPtr view, FrxComponentPtr c)
 {
+    sdc::MenuItem::Ptr item = sdc::MenuItem::create();
+	item->setText("rename...");
+	item->sdc::EventSender<sdce::ActionEvent>::addEventListener (
+		boost::bind(&onRename, sdc::AComponentWPtr(c))
+	);
+	menu->add(item);
     Super::createPopupmenuEntries(menu, view, c);
 }
 //-----------------------------------------------------------------------------
