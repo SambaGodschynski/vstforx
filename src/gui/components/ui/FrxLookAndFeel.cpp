@@ -276,7 +276,7 @@ void FrxLookAndFeel::installDefaults() {
 	rManager->registerImage("FrxBrowser.addContent.image", "images/plus.png");
 	rManager->registerImage("About.logo", "images/logo.png");
 	rManager->registerImage("About.bg", "images/disco-floor.png");
-    rManager->registerImage("FrxPacket.image", "images/step_adapter.png");
+    rManager->registerImage("FrxPacket.image", "images/packet.png");
     
     std::string logoPath( globGetLogoPath() );
     if (!logoPath.empty()) {
