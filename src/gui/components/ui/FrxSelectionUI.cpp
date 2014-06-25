@@ -88,20 +88,12 @@ namespace {
 		if (!view) {
 			return;
 		}
-        FrxPacket::Ptr packet = FrxPacket::create();
-        packet->setLocation(sel->getLocation());
-        // add elements to packet
-        typedef FrxSelection::ContentContainer SelContainer;
-        BOOST_FOREACH(SelContainer::value_type x, sel->getContent()) {
-            FrxComponent::Ptr comp =
-                boost::dynamic_pointer_cast<FrxComponent>(x.lock());
-            if (!comp) {
-                continue;
-            }
-            packet->add(comp);
-        }
-        // add packet to view
-        view->add(packet, FrxCircuidView::Z_ProcessorNodes);
+        FrxPacket::Ptr packet = FrxPacket::create(view, sel->getContent());
+        sd::Point2D p = sel->getLocation();
+        p.x( p.x() + sel->getWidth()/2. - packet->getWidth()/2.  );
+        p.y( p.y() + sel->getHeight()/2. - packet->getHeight()/2. );
+        packet->setLocation(p);
+        sel->clearContent();
 	}
 } // namespace(s)
 //-----------------------------------------------------------------------------

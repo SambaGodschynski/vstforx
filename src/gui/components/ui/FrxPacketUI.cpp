@@ -9,6 +9,8 @@
 #include <sambag/disco/components/PopupMenu.hpp>
 #include <OS_Specific/OS_com.h>
 #include <sambag/disco/components/Window.hpp>
+#include <gui/IFrxControl.hpp>
+#include <gui/components/FrxPacket.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui {
@@ -20,7 +22,9 @@ FrxPacketUI::FrxPacketUI() {
 }
 //-----------------------------------------------------------------------------
 namespace {
-    void onRename(sdc::AComponentWPtr _c) {
+    //-------------------------------------------------------------------------
+    void onRename(sdc::AComponentWPtr _c)
+    {
         sdc::AComponentPtr c = _c.lock();
         if (!c) {
             return;
@@ -33,6 +37,22 @@ namespace {
         ::com::osShowInputTextDlg("Name", name, win->getWindowImpl()->getSystemHandle());
         c->setName(name);
     }
+    //-------------------------------------------------------------------------
+    void onUnpack(FrxCircuidView::WPtr _view, sdc::AComponentWPtr _c)
+    {
+        FrxCircuidView::Ptr view = _view.lock();
+        sdc::AComponentPtr c = _c.lock();
+        if (!view || !c) {
+            return;
+        }
+        IFrxControl &ctrl = getFrxControl(view);
+        FrxPacket::Ptr packet = boost::dynamic_pointer_cast<FrxPacket>(c);
+        if (!packet) {
+            return;
+        }
+        packet->unpack();
+        ctrl.removeComponent(view, packet);
+    }
 } // namespace
 void FrxPacketUI::createPopupmenuEntries(sdc::PopupMenuPtr menu,
     FrxCircuidViewPtr view, FrxComponentPtr c)
@@ -43,7 +63,14 @@ void FrxPacketUI::createPopupmenuEntries(sdc::PopupMenuPtr menu,
 		boost::bind(&onRename, sdc::AComponentWPtr(c))
 	);
 	menu->add(item);
-    Super::createPopupmenuEntries(menu, view, c);
+	item = sdc::MenuItem::create();
+	item->setText("unpack");
+	item->sdc::EventSender<sdc::events::ActionEvent>::addTrackedEventListener
+    (
+		boost::bind(&onUnpack, FrxCircuidView::WPtr(view), sdc::AComponentWPtr(c)),
+		c
+	);
+	menu->add(item);
 }
 //-----------------------------------------------------------------------------
 void FrxPacketUI::installDefaults(sdc::AComponentPtr c) {

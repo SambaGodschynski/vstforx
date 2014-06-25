@@ -45,16 +45,13 @@ void FrxFlag::onTargetProperty(const sce::PropertyChanged &ev) {
     }
 }
 //-----------------------------------------------------------------------------
-void FrxFlag::setTarget(FrxComponent::Ptr target) {
-	FrxComponent::Ptr old = this->target;
-	if (rmvConnection.connected()) {
+void FrxFlag::installListeners() {
+    if (rmvConnection.connected()) {
 		rmvConnection.disconnect();
 	}
 	if (propertyConnection.connected()) {
 		propertyConnection.disconnect();
 	}
-	this->target = target;
-	firePropertyChanged(PROPERTY_TARGET, old, target);
 	rmvConnection = target->sce::EventSender<OnRemoving>::addTrackedEventListener(
 		boost::bind(&FrxFlag::onComponentRemoving, this, _1, _2),
 		getPtr()
@@ -63,7 +60,14 @@ void FrxFlag::setTarget(FrxComponent::Ptr target) {
         target->sce::EventSender<sce::PropertyChanged>::addTrackedEventListener(
             boost::bind(&FrxFlag::onTargetProperty, this, _2),
             getPtr()
-        );
+    );
+}
+//-----------------------------------------------------------------------------
+void FrxFlag::setTarget(FrxComponent::Ptr target) {
+	FrxComponent::Ptr old = this->target;
+	this->target = target;
+	firePropertyChanged(PROPERTY_TARGET, old, target);
+    installListeners();
 }
 //-----------------------------------------------------------------------------
 FrxFlag::~FrxFlag() {
