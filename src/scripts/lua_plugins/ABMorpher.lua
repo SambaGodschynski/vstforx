@@ -102,7 +102,6 @@ function lcOnSave()
       if data[2]==nil then -- #2 can be nil which will not stored
 	 data[2]=-1
       end
-      print(k, data[1], data[2])
       -- cause of http://issues.vstforx.de/view.php?id=488 we 
       -- save every value separately 
       frx.plug:setPersistUserData(k.."a", {data[1]})
