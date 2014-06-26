@@ -1292,9 +1292,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="4"
-     inkscape:cx="140.9324"
-     inkscape:cy="320.27537"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="393.3074"
+     inkscape:cy="538.27537"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
      showgrid="false"
@@ -3526,7 +3526,8 @@
        id="g4555"
        inkscape:export-filename="C:\Eigene Dateien\Eigene Progs\VST\Apps\PPI\src\images\step_adapter.png"
        inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90">
+       inkscape:export-ydpi="90"
+       transform="translate(5,9)">
       <use
          height="744.09448"
          width="1052.3622"
@@ -4353,7 +4354,7 @@
          sodipodi:cy="749.45532"
          sodipodi:rx="1.016466"
          sodipodi:ry="0.9722718"
-         d="m 197.01763,749.45532 a 1.016466,0.9722718 0 1 1 -2.03294,0 1.016466,0.9722718 0 1 1 2.03294,0 z"
+         d="m 197.01763,749.45532 c 0,0.53697 -0.45509,0.97227 -1.01647,0.97227 -0.56138,0 -1.01647,-0.4353 -1.01647,-0.97227 0,-0.53697 0.45509,-0.97227 1.01647,-0.97227 0.56138,0 1.01647,0.4353 1.01647,0.97227 z"
          transform="matrix(1.308543,0,0,-1.2771132,-127.76067,1683.5445)"
          inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Graphics/remote.png"
          inkscape:export-xdpi="213.12584"
@@ -4381,7 +4382,7 @@
          inkscape:export-xdpi="213.12584"
          inkscape:export-filename="/Users/johannesunger/workspace/vstforx/Graphics/remote.png"
          transform="matrix(0.22810826,-0.02886589,0.03298953,0.26069471,66.69212,645.60482)"
-         d="m 317.1879,301.81885 a 88.893425,77.781746 0 1 1 -177.78685,0 88.893425,77.781746 0 1 1 177.78685,0 z"
+         d="m 317.1879,301.81885 c 0,42.95767 -39.79894,77.78174 -88.89342,77.78174 -49.09448,0 -88.89343,-34.82407 -88.89343,-77.78174 0,-42.95767 39.79895,-77.78175 88.89343,-77.78175 49.09448,0 88.89342,34.82408 88.89342,77.78175 z"
          sodipodi:ry="77.781746"
          sodipodi:rx="88.893425"
          sodipodi:cy="301.81885"
@@ -4401,6 +4402,47 @@
            id="tspan4317"
            x="93.606972"
            y="778.86078">✓</tspan></text>
+    </g>
+    <g
+       transform="translate(128.68261,-133.65317)"
+       inkscape:export-ydpi="90.990036"
+       inkscape:export-xdpi="90.990036"
+       inkscape:export-filename="/Users/johannesunger/workspace/vstforx/src/images/packet.png"
+       id="g4511">
+      <use
+         x="0"
+         y="0"
+         xlink:href="#path4354"
+         id="use4513"
+         transform="translate(-3.4748737,302.47487)"
+         width="1052.3622"
+         height="744.09448" />
+      <g
+         id="g5298"
+         transform="translate(0.125,1.625)"
+         style="stroke-width:2;stroke-miterlimit:4;stroke-dasharray:none">
+        <rect
+           ry="4.1133552"
+           y="632.91895"
+           x="255.29749"
+           height="17.020792"
+           width="17.729986"
+           id="rect4523"
+           style="fill:none;stroke:#5ac2ff;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           rx="8.8649931" />
+        <path
+           transform="translate(-137.875,434.1427)"
+           inkscape:connector-curvature="0"
+           id="path5293"
+           d="m 401.75,215.84448 c 0,-16.75 0,-16.75 0,-16.75 -2.25,-2.75 -2.5,-4 -2.5,-4 l 2.375,-2.25 0.25,5.25 2,-3.625 1.5,1.75 -3.625,2.875"
+           style="fill:none;stroke:#5ac2ff;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           sodipodi:nodetypes="cccccccc" />
+        <path
+           inkscape:connector-curvature="0"
+           id="path5296"
+           d="m 255.75,641.36218 c 17,0 17,0 17,0"
+           style="fill:none;stroke:#5ac2ff;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+      </g>
     </g>
   </g>
   <g

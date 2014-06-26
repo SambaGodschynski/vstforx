@@ -41,7 +41,7 @@ void register_types_impl( Archive &ar, int version ) {
 	ar.template register_type<FrxSelection>();
 	ar.template register_type<FrxHover>();
 	ar.template register_type<FrxFlag>();
-    if (version>0) {
+    if (version>1) {
         ar.template register_type<FrxPacket>();
     }
 }
