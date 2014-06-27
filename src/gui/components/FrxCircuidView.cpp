@@ -41,17 +41,17 @@ public:
 	typedef boost::shared_ptr<BgPane> Ptr;
 	typedef sdc::Panel Super;
 protected:
-	BgPane(){}
-	sd::IPattern::Ptr pat;
-	sd::IPattern::Ptr shaderPat;
+	BgPane() : matrixInit(false) {}
 	sd::ISurface::Ptr logo;
     sd::ColorRGBA bg;
     double parallaxEffect;
     sd::Matrix bgTrans;
     sdc::Viewport::WPtr parent;
+    bool matrixInit;
 	virtual void postConstructor();
 	void drawShadingLayer(sd::IDrawContext::Ptr cn, 
 		const sd::Rectangle &r);
+    sambag::math::Matrix fillMatrix;
 public:
 	//-------------------------------------------------------------------------
 	/**
@@ -63,19 +63,18 @@ public:
 		bool includeSelf);
 	SAMBAG_STD_STATIC_COMPONENT_CREATOR(BgPane)
 	virtual void drawComponent(sd::IDrawContext::Ptr cn);
+    //-------------------------------------------------------------------------
+    void redraw(const sd::Rectangle &r) {
+        sdc::SvgComponent::Ptr svg = getFirstContainer<sdc::SvgComponent>();
+        if (!svg) {
+            return;
+        }
+        svg->redraw();
+    }
 };
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 namespace {
-	sd::IPattern::Ptr _createSPattern() {
-		sd::IGradient::ColorStops stops;
-		sdc::ui::UIManager &ui = sdc::ui::getUIManager();
-		ui.getProperty("FrxCircuidView.bg.gradient.colorStops", stops);
-		sd::ILinearPattern::Ptr sol = 
-			sd::getDiscoFactory()->createLinearPattern(sd::Point2D(0,0), sd::Point2D(0,600));
-		sol->addColorStops(stops);
-		return sol;
-	}
 	void _getViewportRect(sdc::AComponentPtr view, sd::Rectangle &res) {
 		sdc::Viewport::Ptr v =
 			boost::dynamic_pointer_cast<sdc::Viewport>(view->getParent());
@@ -84,25 +83,9 @@ namespace {
 		}
 		sd::Point2D p = v->getViewPosition();
 		res = v->getBounds();
-		res.x( p.x() );
+        res.x( p.x() );
 		res.y( p.y() );
 	}
-}
-void BgPane::drawShadingLayer(sd::IDrawContext::Ptr cn, 
-	const sd::Rectangle &r) 
-{
-	if (!shaderPat) {
-		shaderPat = _createSPattern();
-	}
-	cn->rect(r);
-	shaderPat->setMatrix(
-		sambag::math::translate2D(
-			-r.x(),
-			-r.y()
-		)
-	);
-	cn->setFillPattern(shaderPat);
-	cn->fill();
 }
 void drawNotifictaion(sd::IDrawContext::Ptr cn, const sd::Rectangle &r, const std::string &txt)
 {
@@ -141,27 +124,38 @@ void BgPane::drawComponent(sd::IDrawContext::Ptr cn) {
 	_getViewportRect(getPtr(), r);
 	drawDemoNotifictaion(cn, r);
     drawLogo(cn, logo, r);
+    
+    sd::IPattern::Ptr fill;
+    getClientProperty("svg.fill", fill);
+    if (!fill) {
+        return;
+    }
+    
+    if(!matrixInit) {
+        bgTrans = fill->getMatrix();
+        matrixInit=true;
+    }
+    
+    if (parallaxEffect>0.) {
+        sdc::Viewport::Ptr vp = parent.lock();
+        if (!vp) {
+            parent = vp = getFirstContainer<sdc::Viewport>();
+            if (!vp) {
+                SAMBAG_LOG_ERR<<"BgPane::drawComponent() Viewport==NULL";
+                return;
+            }
+        }
+        sd::Point2D p = vp->getViewPosition();
+        fill->setMatrix(
+            boost::numeric::ublas::prod(bgTrans,
+            sd::translate2D(p.x()*parallaxEffect, p.y()*parallaxEffect))
+        );
+    }
 }
 //-----------------------------------------------------------------------------
 void BgPane::postConstructor() {
 	sdc::ui::UIManager &ui = sdc::ui::getUIManager();
-	sd::ISurface::Ptr fillImg = 
-		sd::getResourceManager().getImage("FrxCircuidView.image");
 	ui.getProperty("FrxCircuidView.bgColor", bg);
-	if (!fillImg)
-		return;
-	pat = sd::getDiscoFactory()->createSurfacePattern(fillImg);
-	if (!pat)
-		return;
-	bgTrans = IDENTITY_MATRIX;
-	ui.getProperty("FrxCircuidView.bgTransfomation", bgTrans);
-	sd::IPattern::Extend e = sd::IPattern::DISCO_EXTEND_REPEAT;
-	ui.getProperty("FrxCircuidView.bgExtend", e);
-	double opac = 0.3;
-	ui.getProperty("FrxCircuidView.bgOpacity", opac);
-	pat->setMatrix(bgTrans);
-	pat->setExtendType(e);
-	pat->setOpacity(opac);
     logo = sd::getResourceManager().getImage("FrxCircuidView.logo");
     parallaxEffect = 0.;
     ui.getProperty("FrxCircuidView.bg.parallaxEffect", parallaxEffect);
@@ -370,21 +364,30 @@ void FrxCircuidView::postConstructor() {
 	viewPort = sdc::Viewport::create();
     // load SVG component
     sdc::SvgComponent::Ptr svg = sdc::SvgComponent::create();
-    svg->setSvgFilename("style/frx.svg");
+    svg->setSvgFilename(com::getSettings().getHomeDirectory()+"/images/bg.svg");
     sdc::SvgComponent::Dummy::Ptr svgMain = svg->getDummyById("#main");
     if (!svgMain) {
         throw std::runtime_error("missing svg main component");
     }
+    
     Super::add(svg);
-	svgMain->setLayout(sdc::FlowLayout::create());
+	svgMain->setLayout(sdc::BorderLayout::create());
     svgMain->add(viewPort);
 	// init contentpane
 	content = BgPane::create();
 	content->setSize(sd::Dimension(FRX_MAX_VIEW, FRX_MAX_VIEW));
     viewPort->add(content);
 	content->setLayout(sdc::ALayoutManagerPtr());
+    // assign fill pattern to content
+    sdc::SvgComponent::Dummy::Ptr bg = svg->getDummyById("#background");
+    if (bg) {
+        sd::IPattern::Ptr p = bg->getBackgroundPattern();
+        if(p) {
+           content->putClientProperty("svg.fill", p);
+        }
+    }
+    
     // set opaque
-    svgMain->setOpaque(false);
     viewPort->setOpaque(false);
     content->setOpaque(false);
 	// init selection

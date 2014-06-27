@@ -1,0 +1,33 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="800" height="600" 
+     xmlns="http://www.w3.org/2000/svg" 
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     version="1.1">
+  <defs>
+    <pattern id="bg" x="0" y="0" width="200" height="200"
+	     patternUnits="userSpaceOnUse">
+      <rect width="200" height="200" fill="#002050" 
+	    stroke="white" 
+	    stroke-opacity="0.5"
+	    stroke-width="0.2"/>
+    </pattern>
+    <linearGradient id="shader" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#000000" stop-opacity="1.0"/>
+      <stop offset="4%" stop-color="#000000" stop-opacity="0.0"/>
+      <stop offset="97%" stop-color="#000000" stop-opacity="0.0"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="1.0"/>
+    </linearGradient>
+  </defs>
+  <g>
+    <rect x="0" y="0" width="100%" height="100%"
+	  stroke-width="0" />
+    <rect x="0" y="0" width="100%" height="100%"
+	  fill="url(#bg)" stroke="black" id="background" class="disco"/>
+    <rect x="0%" y="0%" width="100%" height="100%"
+	  class="disco" id="main" fill="none"/>
+    <rect x="0" y="0" width="100%" height="100%"
+	  fill="url(#shader)" stroke="black"/>
+  </g>  
+</svg>
