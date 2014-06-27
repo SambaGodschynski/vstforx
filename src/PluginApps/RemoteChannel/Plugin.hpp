@@ -30,6 +30,9 @@ public:
 	typedef sambag::dsp::PluginProcessorBase Super;
 private:
     //-------------------------------------------------------------------------
+    struct TrackingDummy {};
+    boost::shared_ptr<TrackingDummy> trackingDummyPtr;
+    //-------------------------------------------------------------------------
     sambag::com::Mutex mutex;
 	//-------------------------------------------------------------------------
 	int blockSize;

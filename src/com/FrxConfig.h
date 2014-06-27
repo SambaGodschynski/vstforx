@@ -5,12 +5,12 @@
 // following values will be set automatically.
 #define FRX_VERSION_MAJOR 1
 #define FRX_VERSION_MINOR 0
-#define FRX_VERSION_MICRO 5
-#define FRX_VERSION_BUILD "4683adf" 
-#define FRX_VERSION_BRANCH "NEXT"
-#define FRX_GITHASH "4683adf"
+#define FRX_VERSION_MICRO 53
+#define FRX_VERSION_BUILD "b86a49d" 
+#define FRX_VERSION_BRANCH "DISCO"
+#define FRX_GITHASH "b86a49d"
 
-#define FRX_USE_FONTCACHE 0
+#define FRX_USE_FONTCACHE 1
 
 
 // async dsp timer config
@@ -28,6 +28,6 @@
 // the boost archive version. Set as HostInfoAdapter 
 // BOOST_CLASS_VERSION in VstForxPlug.cpp, because
 // this is the first object which will be loaded.
-#define FRX_ARCHIVE_VERSION 1
+#define FRX_ARCHIVE_VERSION 2
 
 #endif // FRX_CONFIG_H

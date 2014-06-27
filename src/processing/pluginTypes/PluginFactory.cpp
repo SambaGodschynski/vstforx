@@ -91,6 +91,14 @@ PluginFactory::Type PluginFactory::detectType(const std::string &loc) {
     return PluginInfo::UNKNOWN;
 }
 //-----------------------------------------------------------------------------
+std::string PluginFactory::complete(const std::string &str) {
+    boost::filesystem::path path(str);
+    if (path.is_absolute()) {
+        return str;
+    }
+    return com::getSettings().getHomeDirectory() + "/" + str;
+}
+//-----------------------------------------------------------------------------
 PluginFactory::ProductPtr
 PluginFactory::load(IHostInfo::Ptr hI,
     Parameters*par, const std::string &loc, Type type)
@@ -105,15 +113,17 @@ PluginFactory::load(IHostInfo::Ptr hI,
         }
     }
     
+    std::string path = complete(loc);
+    std::cout<<path<<std::endl;
     try {
         switch (type) {
-        case PluginInfo::VST2X : return loadVST2x(hI, par, loc);
-        case PluginInfo::LUA : return loadLua(hI, par, loc);
+        case PluginInfo::VST2X : return loadVST2x(hI, par, path);
+        case PluginInfo::LUA : return loadLua(hI, par, path);
         default : return ProductPtr();
         
         }
     } catch (const PluginArchitectureMissmatch &ex) {
-        return loadBridged(hI, par, loc);
+        return loadBridged(hI, par, path);
     }
     
     // no success

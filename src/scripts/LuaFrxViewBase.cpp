@@ -5,7 +5,7 @@
  *
  * LuaFrxViewBase.cpp
  *
- *  Created on: Tue Apr 29 22:18:02 2014
+ *  Created on: Mon Jun 23 19:18:52 2014
  *      Author: Samba Godschysnki
  */
 
@@ -47,7 +47,16 @@ void LuaFrxViewBase::addLuaFields(lua_State *lua, int index)
 		boost::bind(&LuaFrxViewBase::addViewListener, this, lua, _1),
 		boost::bind(&LuaFrxViewBase::removeViewListener, this, lua, _1),
 		boost::bind(&LuaFrxViewBase::setMenu, this, lua),
-		boost::bind(&LuaFrxViewBase::getContextObject, this, lua)),
+		boost::bind(&LuaFrxViewBase::getContextObject, this, lua),
+		boost::bind(&LuaFrxViewBase::createListWindow, this, lua)),
+	index, 
+	getUId() 
+	); 
+
+	registerClassFunctions<Functions3, TupleAccessor>(
+	lua,
+	boost::make_tuple(boost::bind(&LuaFrxViewBase::addToSelection, this, lua),
+		boost::bind(&LuaFrxViewBase::clearSelection, this, lua)),
 	index, 
 	getUId() 
 	); 
@@ -60,6 +69,7 @@ void LuaFrxViewBase::__lua_gc(lua_State *lua) {
     using namespace sambag::lua;
     unregisterClassFunctions<Functions1>(getUId());
 	unregisterClassFunctions<Functions2>(getUId());
+	unregisterClassFunctions<Functions3>(getUId());
 	unregisterClassFunctions<MetaFunctions>(getUId());
 	
     Super::__lua_gc(lua);

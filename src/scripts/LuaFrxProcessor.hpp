@@ -39,7 +39,9 @@ protected:
     void openCloseEditor(lua_State *lua);
     int getNumInputs(lua_State *lua);
     int getNumOutputs(lua_State *lua);
+    int getNumParameters(lua_State *lua);
     std::string getPluginLocation(lua_State *lua);
+    std::string sendMessage(lua_State *lua, const std::string &msg);
 private:
 public:
     //-------------------------------------------------------------------------

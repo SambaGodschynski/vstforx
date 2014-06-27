@@ -5,7 +5,7 @@
  *
  * LuaFrxParameterBase.hpp
  *
- *  Created on: Tue Apr 29 22:18:01 2014
+ *  Created on: Mon Jun 23 21:27:44 2014
  *      Author: Samba Godschysnki
  */
 
@@ -15,7 +15,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <sambag/lua/Lua.hpp>
-#include <loki/TypeList.h>
+#include <loki/Typelist.h>
 #include <sambag/lua/ALuaObject.hpp>
 
 #include <scripts/LuaFrxObject.hpp>
@@ -40,19 +40,31 @@ protected:
     //-------------------------------------------------------------------------
     SAMBAG_LUA_FTAG(setValue, void (float));
 	SAMBAG_LUA_FTAG(getValue, float ());
-    typedef LOKI_TYPELIST_2(Frx_setValue_Tag, 
-	Frx_getValue_Tag) Functions1;
+	SAMBAG_LUA_FTAG(addListener, void (std::string));
+    typedef LOKI_TYPELIST_3(Frx_setValue_Tag, 
+	Frx_getValue_Tag, 
+	Frx_addListener_Tag) Functions1;
 
 	
     ///////////////////////////////////////////////////////////////////////////
     /**
-	* @brief TODO
+	* @brief Set the parameter value.
+	* @param the value (0..1)
+	* @version 1.0.5
 	*/
 	virtual void setValue(lua_State *lua, float value) = 0;
 	/**
-	* @brief TODO
+	* @return the parameter value.
+	* @version 1.0.5
 	*/
 	virtual float getValue(lua_State *lua) = 0;
+	/**
+	* @brief Adds a listener which will be called when 
+	*        the parameter value was changed.
+	* @param a valid lua expression
+	* @version 1.0.52
+	*/
+	virtual void addListener(lua_State *lua, const std::string & expr) = 0;
     //-------------------------------------------------------------------------
     /**
      * @brief field getter and setter

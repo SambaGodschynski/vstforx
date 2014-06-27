@@ -434,10 +434,14 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 		);
 	}
 	OS_VSTPlugNode2x::setModuleLocation ( getLocation() );
-	loadModule( HostCallBackOnInit (
-		(audioMasterCallback)hI->getMasterCallback(), 
-		(AudioEffectX*)hI->getEffectPtr() ) 
-	);
+	try {
+        loadModule( HostCallBackOnInit (
+                (audioMasterCallback)hI->getMasterCallback(),
+                (AudioEffectX*)hI->getEffectPtr() )
+        );
+    } catch (...) {
+        aEff = &::processing::nullAEff;
+    }
 	param.clear();
 	initPlug ( *this );
 	// parameter

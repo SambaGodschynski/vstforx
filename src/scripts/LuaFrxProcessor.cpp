@@ -207,6 +207,25 @@ int LuaFrxProcessor::getNumOutputs(lua_State *lua) {
     return 0;
 }
 //-----------------------------------------------------------------------------
+int LuaFrxProcessor::getNumParameters(lua_State *lua) {
+    using frx::processing::IParameter;
+    using namespace frx::gui;
+    using namespace frx::gui::components;
+    try {
+        ModelObject::Ptr obj = getModelObject();
+        IViewModelMap::Ptr map;
+        map = getViewModelMap();
+        ModelObject::Parameters parameters;
+        obj->getParameters("*", parameters);
+        return (int)parameters.size();
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unkown error");
+    }
+    return -1;
+}
+//-----------------------------------------------------------------------------
 std::string LuaFrxProcessor::getPluginLocation(lua_State *lua) {
     using namespace frx::gui;
     using namespace frx::gui::components;
@@ -239,5 +258,25 @@ LuaFrxProcessor::createAndPush(lua_State *lua,
     res->setTypeId(typeId);
     res->createLuaObject(lua, "lua_processor");
     return res;
+}
+//-----------------------------------------------------------------------------
+std::string LuaFrxProcessor::sendMessage(lua_State *lua, const std::string &msg)
+{
+    using namespace frx::gui;
+    using namespace frx::gui::components;
+    using namespace frx::processing;
+    try {
+        IPluginAdapter::Ptr obj =
+            boost::dynamic_pointer_cast<IPluginAdapter>(getModelObject());
+        if (!obj) {
+            return "";
+        }
+        return obj->sendMessage(msg);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unkown error");
+    }
+    return "";
 }
 }} // namespace(s)

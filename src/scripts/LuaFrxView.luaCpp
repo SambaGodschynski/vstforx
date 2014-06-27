@@ -6,8 +6,8 @@ frx.scripts
  * able to create an instance of this. You can find the only instance in the
  * @see frx.Frx table (if the current lua context provides view access): 
  * <pre>
- * --example: get all view objects  
- * objs=frx.view:getObjects()
+ * --example: get all view objects  <br>
+ * objs=frx.view:getObjects() <br>
  * </pre>
  * @alias frx.view.View
  * @version 1.0.5
@@ -49,14 +49,14 @@ class LuaFrxViewBase extends sambag.lua.ALuaObject {
      * @param the "connect from" @see Object
      * @param the "connect to" @see Object
      * @returnType Object
-     * @return a @see Connection object
+     * @return a @see Connection object or nil if objects are unconnectable.
      * @version 1.0.5
      */
     ManuallyReturn<1> connect();
     /**
      * @brief Adds a "free parameter" knob to view.
      * @returnType Parameter
-     * @return a @see Parameter object or nil if objects are unconnectable.
+     * @return a @see Parameter object.
      * @version 1.0.5
      */
     ManuallyReturn<1> addKnob();
@@ -143,7 +143,8 @@ class LuaFrxViewBase extends sambag.lua.ALuaObject {
      * 	     &nbsp;&nbsp;<b>"requesting context menu"</b>, called when an objects context menu is opening <br>
      *	     &nbsp;&nbsp;<b>"on saving view state"</b>, called when the view state is going to be saved (there is no "on load" event because
      *	     	 	     	     the script dosen't run while loading) <br>
-     *	     &nbsp;&nbsp;<b>"object added"</b>, called when an object was added to view
+     *	     &nbsp;&nbsp;<b>"object added"</b>, called when an object was added to view (an "object removing" event is unfortunately missing because it is
+     *	     to late at this point to create a lua representation before destroying the actual object)
      */
     void addViewListener(string callbackFuncName);
     /**
@@ -177,6 +178,25 @@ class LuaFrxViewBase extends sambag.lua.ALuaObject {
      * @version 1.0.5
      */
     ManuallyReturn<1> getContextObject();
+    /**
+     * @brief Creates a @see frx.view.ListWindow object.
+     * @returnType ListWindow
+     * @return the created @see frx.view.ListWindow object or nil when creation failed.
+     * @version 1.0.52
+     */
+    ManuallyReturn<1> createListWindow();
+    /**
+     * @brief Add given object to selection
+     * @hiddenParam Object obj
+     * @param the @see Object to add 
+     * @version 1.0.53
+     */
+     void addToSelection();
+    /**
+     * @brief Remove all objects from selection.
+     * @version 1.0.53
+     */
+     void clearSelection();
 }
 
 

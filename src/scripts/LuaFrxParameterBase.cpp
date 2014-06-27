@@ -5,7 +5,7 @@
  *
  * LuaFrxParameterBase.cpp
  *
- *  Created on: Tue Apr 29 22:18:01 2014
+ *  Created on: Mon Jun 23 21:27:51 2014
  *      Author: Samba Godschysnki
  */
 
@@ -24,7 +24,8 @@ void LuaFrxParameterBase::addLuaFields(lua_State *lua, int index)
     registerClassFunctions<Functions1, TupleAccessor>(
 	lua,
 	boost::make_tuple(boost::bind(&LuaFrxParameterBase::setValue, this, lua, _1),
-		boost::bind(&LuaFrxParameterBase::getValue, this, lua)),
+		boost::bind(&LuaFrxParameterBase::getValue, this, lua),
+		boost::bind(&LuaFrxParameterBase::addListener, this, lua, _1)),
 	index, 
 	getUId() 
 	); 

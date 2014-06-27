@@ -26,13 +26,15 @@ namespace {
         if (!view) {
             return;
         }
-        try {
-            slua::executeString(lua, cmd);
-        } catch(const sambag::lua::ExecutionFailed &ex) {
-            view->errorMessage(cmd + " failed: " + ex.errMsg);
-        } catch(...) {
-            view->errorMessage(cmd + " failed for unkown reason");
-        }   
+        SAMBAG_BEGIN_SYNCHRONIZED(sambag::lua::ALuaObject::getLock(lua))
+            try {
+                slua::executeString(lua, cmd);
+            } catch(const sambag::lua::ExecutionFailed &ex) {
+                view->errorMessage(cmd + " failed: " + ex.errMsg);
+            } catch(...) {
+                view->errorMessage(cmd + " failed for unkown reason");
+            }
+        SAMBAG_END_SYNCHRONIZED
     }
 } // namespace
 //-----------------------------------------------------------------------------
@@ -274,9 +276,6 @@ void LuaFrxObject::setName(lua_State *lua, const std::string &name) {
 //-----------------------------------------------------------------------------
 std::string LuaFrxObject::getName(lua_State *lua) {
     fgc::FrxComponent::Ptr obj = getViewObject(lua);
-    if (!obj) {
-        return "";
-    }
     return obj->getName();
 }
 //-----------------------------------------------------------------------------

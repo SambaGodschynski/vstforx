@@ -92,12 +92,19 @@ void FrxComponent::serializeSelfPtr(::com::oArchive &ar, const unsigned int vers
 void FrxComponent::save(::com::oArchive &ar, const unsigned int version) const {
 	const sd::Rectangle &bounds = getBounds();
 	ar << bounds;
+    bool b=isVisible();
+    ar << b;
 }
 //----------------------------------------------------------------------------- 
 void FrxComponent::load(::com::iArchive &ar, const unsigned int version) {
 	sd::Rectangle bounds;
 	ar >> bounds;
 	setBounds(bounds);
+    if (version>1) {
+        bool b;
+        ar >> b;
+        setVisible(b);
+    }
 }
 //------------------------------------------------------------------------------
 void FrxComponent::serialize(::com::oArchive &ar, const unsigned int version) {

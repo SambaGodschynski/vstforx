@@ -295,6 +295,9 @@ namespace {
             std::string("dx.Plugin"),
             &T::create
         ) && ViewFactory::instance().register_<T>(
+            std::string("lua.Plugin"),
+            &T::create
+        ) && ViewFactory::instance().register_<T>(
             std::string("unknown-plugin.Plugin"),
             &T::create
         ) && ViewFactory::instance().register_<T>(

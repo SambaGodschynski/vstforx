@@ -91,7 +91,6 @@ void Plugin::loadImpl() {
         SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
                      "try to creating plugin without impl.");
     }
-    
     namespace se = sambag::com::events;
     impl->se::EventSender<se::PropertyChanged>::addEventListener(
         boost::bind(&Plugin::onImplPropertyChanged, this, _1, _2)
@@ -360,6 +359,29 @@ Processing is stopped. Please remove and load new.";
     }
 }
 //-----------------------------------------------------------------------------
+void Plugin::peek(IHostInfo::Ptr hI, oldPr::PluginInfo &info) {
+    if (!hI) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+			"Hostinfo == NULL"
+		);
+	}
+    using frx::processing::PluginFactory;
+    APluginImpl::Parameters parameters;
+    APluginImpl::Ptr impl = PluginFactory::instance().load(hI, &parameters,
+        info.location, oldPr::PluginInfo::UNKNOWN);
+    
+    if (!impl) {
+        SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+                     "failed to open "+info.location);
+    }
+	impl->openPlugin();
+    impl->updatePluginInfo(info);
+    info.access = impl->isAccessable() ? oldPr::PluginInfo::SUCCEED : oldPr::PluginInfo::FAILED;
+    // delete impl
+	impl->closePlugin();
+    impl.reset();
+}
+//-----------------------------------------------------------------------------
 Plugin::Ptr Plugin::create(frx::processing::IHostInfo::Ptr hI, const std::string &location)
 {
     using frx::processing::PluginFactory;
@@ -383,6 +405,15 @@ Plugin::Ptr Plugin::createVST3x(frx::processing::IHostInfo::Ptr hI, const std::s
     using frx::processing::PluginFactory;
     using frx::processing::APluginImpl;
     Ptr res( new Plugin(hI, location, oldPr::PluginInfo::VST3X) );
+    res->self = res;
+    return res;
+}
+//-----------------------------------------------------------------------------
+Plugin::Ptr Plugin::createLua(frx::processing::IHostInfo::Ptr hI, const std::string &location)
+{
+    using frx::processing::PluginFactory;
+    using frx::processing::APluginImpl;
+    Ptr res( new Plugin(hI, location, oldPr::PluginInfo::LUA) );
     res->self = res;
     return res;
 }

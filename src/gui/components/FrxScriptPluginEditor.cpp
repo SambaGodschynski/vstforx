@@ -42,12 +42,11 @@ void FrxScriptPluginEditor::delayedLog(const std::string &msg) {
     BOOST_FOREACH(const std::string &x, res) {
         consoleList->addElement(x);
     }
+    console->revalidate();
     int i = consoleList->ListModel::getSize()-1;
     consoleList->ensureIndexIsVisible(i);
     consoleList->revalidate();
     consoleList->redraw();
-    console->revalidate();
-    console->getVerticalScrollBar()->setEnabled(true);
 }
 //-----------------------------------------------------------------------------
 FrxScriptPluginEditor::FrxScriptPluginEditor(sdc::Window::Ptr parent, const sd::Dimension &size)

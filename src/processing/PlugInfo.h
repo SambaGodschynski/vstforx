@@ -69,6 +69,7 @@ public:
             case PluginInfo::VST3X : return res.type("vst3x").toString();
             case PluginInfo::DX    : return res.type("dx").toString();
             case PluginInfo::AU    : return res.type("au").toString();
+            case PluginInfo::LUA   : return res.type("lua").toString();
             default                : return res.type("unknown-plugin").toString();
         }
         return "";

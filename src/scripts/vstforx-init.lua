@@ -1,12 +1,13 @@
 -----------------------------------------------------------------
 -- main VSTForx init script                                    --
 -- will be (re)loaded after every "open editor" event          --
--- a VSTForx.Lua documantation can be found under:             --
---      xxx.xxx.xx                                             --
+-- a VSTForx.Lua documentation can be found under:             --
+--      http://api.vstforx.de                                  --
 -- author: Samba Godschynski                                   --
 -----------------------------------------------------------------
 require "vstforx-helper"
 require "vstforx-menusetup"
+require "vstforx-dbsetup"
 
 function onViewEvent(evName, evObj)
    if evName=="requesting context menu" then 

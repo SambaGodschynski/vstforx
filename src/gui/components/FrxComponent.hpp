@@ -173,6 +173,6 @@ public:
 }; // FrxComponent
 }}} // namespace(s)
 
-BOOST_CLASS_VERSION(frx::gui::components::FrxComponent, 1);
+BOOST_CLASS_VERSION(frx::gui::components::FrxComponent, 2);
 
 #endif /* SAMBAG_FRXCOMPONENT_H */

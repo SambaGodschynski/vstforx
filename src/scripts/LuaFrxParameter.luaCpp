@@ -2,7 +2,7 @@ frx.scripts
 #include <scripts/LuaFrxObject.hpp>
 
 /**
- * @brief This class represents a parameter object.
+ * @brief This class represents a parameter (view) object.
  * @alias frx.view.Parameter
  * @extends @see frx.view.Object
  * @version 1.0.5
@@ -19,6 +19,13 @@ class LuaFrxParameterBase extends LuaFrxObject {
        * @version 1.0.5
        */
       float getValue();
+     /**
+      * @brief Adds a listener which will be called when 
+      *        the parameter value was changed.
+      * @param a valid lua expression
+      * @version 1.0.52
+      */
+      void addListener(string expr);
 }
 
 

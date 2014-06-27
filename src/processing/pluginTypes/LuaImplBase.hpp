@@ -5,7 +5,7 @@
  *
  * LuaImplBase.hpp
  *
- *  Created on: Fri May 16 14:14:26 2014
+ *  Created on: Wed Jun  4 14:35:15 2014
  *      Author: Samba Godschysnki
  */
 
@@ -51,10 +51,14 @@ protected:
 	SAMBAG_LUA_FTAG(getPpqPos, double ());
 	SAMBAG_LUA_FTAG(getTimeSigNumerator, int ());
 	SAMBAG_LUA_FTAG(getTimeSigDenominator, int ());
+	SAMBAG_LUA_FTAG(getTempo, double ());
+	SAMBAG_LUA_FTAG(transportIsPlaying, bool ());
 	SAMBAG_LUA_FTAG(setParameterValue, void (std::string, float));
 	SAMBAG_LUA_FTAG(setParameterDisplay, void (std::string, std::string));
 	SAMBAG_LUA_FTAG(getParameterValue, float (std::string));
 	SAMBAG_LUA_FTAG(getParameterDisplay, std::string (std::string));
+	SAMBAG_LUA_FTAG(addParameterListener, void (std::string, std::string));
+	SAMBAG_LUA_FTAG(removeParameterListener, void (std::string, std::string));
 	SAMBAG_LUA_FTAG(getPersistUserData, sambag::lua::IgnoreReturn (std::string));
 	SAMBAG_LUA_FTAG(setPersistUserData, void ());
     typedef LOKI_TYPELIST_10(Frx_log_Tag, 
@@ -68,15 +72,20 @@ protected:
 	Frx_getSamplePos_Tag, 
 	Frx_getBarStartPos_Tag) Functions1;
 
-	typedef LOKI_TYPELIST_9(Frx_getPpqPos_Tag, 
+	typedef LOKI_TYPELIST_10(Frx_getPpqPos_Tag, 
 	Frx_getTimeSigNumerator_Tag, 
 	Frx_getTimeSigDenominator_Tag, 
+	Frx_getTempo_Tag, 
+	Frx_transportIsPlaying_Tag, 
 	Frx_setParameterValue_Tag, 
 	Frx_setParameterDisplay_Tag, 
 	Frx_getParameterValue_Tag, 
 	Frx_getParameterDisplay_Tag, 
+	Frx_addParameterListener_Tag) Functions2;
+
+	typedef LOKI_TYPELIST_3(Frx_removeParameterListener_Tag, 
 	Frx_getPersistUserData_Tag, 
-	Frx_setPersistUserData_Tag) Functions2;
+	Frx_setPersistUserData_Tag) Functions3;
 
 	
     ///////////////////////////////////////////////////////////////////////////
@@ -169,8 +178,13 @@ protected:
 	/**
 	* @return the current tempo in BPM
 	* @version 1.0.5
-	*
-	double getTempo();
+	*/
+	virtual double getTempo(lua_State *lua) = 0;
+	/**
+	* @return true if the transport of the main DAW is playing
+	* @version 1.0.51
+	*/
+	virtual bool transportIsPlaying(lua_State *lua) = 0;
 	/**
 	* @brief Set the parameter value
 	* @param the parameter id
@@ -197,6 +211,25 @@ protected:
 	* @version 1.0.5
 	*/
 	virtual std::string getParameterDisplay(lua_State *lua, const std::string & id) = 0;
+	/**
+	* @brief Adds a listener to a parameter.
+	* @param the parameter id
+	* @param a callback function which accepts a string (the id) and a float (the value) argument
+	* <pre>
+	* function onParameterChanged(id, value) <br>
+	*   frx.plug:log(id, value) <br>
+	* end <br>
+	* frx.plug:addParameterListener("param1", "onParameterChanged")
+	* </pre>
+	*
+	*/
+	virtual void addParameterListener(lua_State *lua, const std::string & id, const std::string & function) = 0;
+	/**
+	* @brief Removes a parameter listener. (@see addParameterListener())
+	* @param the parameter id
+	* @param the registered callback function
+	*/
+	virtual void removeParameterListener(lua_State *lua, const std::string & id, const std::string & function) = 0;
 	/**
 	* @return the persist user data for a key.
 	* @returnType sequence

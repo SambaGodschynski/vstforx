@@ -37,17 +37,37 @@ void FrxFlag::redraw() {
 	c->redraw(b);
 }
 //-----------------------------------------------------------------------------
-void FrxFlag::setTarget(FrxComponent::Ptr target) {
-	FrxComponent::Ptr old = this->target;
-	if (rmvConnection.connected()) {
+void FrxFlag::onTargetProperty(const sce::PropertyChanged &ev) {
+    if (ev.getPropertyName() == sdc::AComponent::PROPERTY_VISIBILITY) {
+        bool b;
+        ev.getNewValue(b);
+        setVisible(b);
+    }
+}
+//-----------------------------------------------------------------------------
+void FrxFlag::installListeners() {
+    if (rmvConnection.connected()) {
 		rmvConnection.disconnect();
 	}
-	this->target = target;
-	firePropertyChanged(PROPERTY_TARGET, old, target);
+	if (propertyConnection.connected()) {
+		propertyConnection.disconnect();
+	}
 	rmvConnection = target->sce::EventSender<OnRemoving>::addTrackedEventListener(
 		boost::bind(&FrxFlag::onComponentRemoving, this, _1, _2),
 		getPtr()
 	);
+    propertyConnection =
+        target->sce::EventSender<sce::PropertyChanged>::addTrackedEventListener(
+            boost::bind(&FrxFlag::onTargetProperty, this, _2),
+            getPtr()
+    );
+}
+//-----------------------------------------------------------------------------
+void FrxFlag::setTarget(FrxComponent::Ptr target) {
+	FrxComponent::Ptr old = this->target;
+	this->target = target;
+	firePropertyChanged(PROPERTY_TARGET, old, target);
+    installListeners();
 }
 //-----------------------------------------------------------------------------
 FrxFlag::~FrxFlag() {

@@ -14,6 +14,8 @@
 #include "FrxSelectionMouseListener.hpp"
 #include <sambag/disco/svg/graphicElements/Style.hpp>
 #include <gui/HandyNamespaces.hpp>
+#include <gui/components/IFormatter.hpp>
+#include <sambag/disco/components/events/ActionEvent.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -31,6 +33,10 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::weak_ptr<FrxSelectionUI> WPtr;
 protected:
+    //-------------------------------------------------------------------------
+    void rotate(const sdce::ActionEvent &ev, sdc::AComponentWPtr c);
+    //-------------------------------------------------------------------------
+    IFormatter::Ptr vFormatter, hFormatter;
 	//-------------------------------------------------------------------------
 	// to be found in FrxCircuidMouseListener's constructor:
 	// sd::svg::graphicElements::Style selectingStyle;

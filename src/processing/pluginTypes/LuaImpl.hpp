@@ -17,6 +17,7 @@
 #include <sambag/lua/ALuaObject.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include <boost/unordered_map.hpp>
+#include <boost/unordered_set.hpp>
 #include <processing/parameter/parameter.h>
 #include <loki/Typelist.h>
 #include <sambag/com/Thread.hpp>
@@ -54,7 +55,6 @@ public:
     typedef std::multimap<std::string, std::string> PersistUserData;
     //-------------------------------------------------------------------------
     struct LuaCall { // frxlLua
-       	LUA_CALL(lcOnParameterChanged);
         LUA_CALL(lcProcess);
         LUA_CALL(lcProcessMidi);
         LUA_CALL(lcSetAudioConfig);
@@ -63,7 +63,7 @@ public:
         LUA_CALL(lcOnLoad);
         // num > 32 can violate flags integer bounds @see lcFlags
         // use boost::dynamic_bitset in that case
-        typedef LOKI_TYPELIST_7(lcOnParameterChanged,
+        typedef LOKI_TYPELIST_6(
             lcProcess,
             lcProcessMidi,
             lcSetAudioConfig,
@@ -74,8 +74,7 @@ public:
     //-------------------------------------------------------------------------
     enum Flag {
         IsValid,
-        NeedsReload,
-        OnParameterChanged
+        NeedsReload
     };
 protected:
     ///////////////////////////////////////////////////////////////////////////
@@ -96,6 +95,18 @@ protected:
     void onExecError(const std::string &msg);
 private:
     //-------------------------------------------------------------------------
+    // the filename can have arguments: /file.lua////arg1=100&arg2=200
+    // you can find them in the table _ENV.__args
+    typedef std::map<std::string, std::string> Args;
+    Args args;
+    static std::string extractFilenameAndArgs(const std::string &filename, Args &out);
+    //-------------------------------------------------------------------------
+    void setArgs(const Args &out);
+    //-------------------------------------------------------------------------
+    void createArgTable(lua_State *lua);
+    //-------------------------------------------------------------------------
+    void updateLuaParameterMap(float value, const std::string &id);
+    //-------------------------------------------------------------------------
     std::string argsToString(lua_State *lua);
     //-------------------------------------------------------------------------
     sambag::com::RecursiveMutex logMutex;
@@ -112,8 +123,10 @@ private:
     //-------------------------------------------------------------------------
     void addToEditor(const std::string &msg);
     //-------------------------------------------------------------------------
-	typedef std::pair<oldPrPa::Parameter::Ptr,
-        oldPrPa::Parameter::Connection> ParameterContainer;
+    typedef boost::unordered_set<std::string> Callbacks;
+	typedef boost::tuple<oldPrPa::Parameter::Ptr,
+        oldPrPa::Parameter::Connection,
+        Callbacks> ParameterContainer;
 	//-------------------------------------------------------------------------
 	typedef boost::unordered_map<std::string, ParameterContainer> ParameterMap;
 	//-------------------------------------------------------------------------
@@ -193,6 +206,8 @@ public:
     //-------------------------------------------------------------------------
     void log(const std::string &msg);
     //-------------------------------------------------------------------------
+    void log(const std::string &scope, const std::string &msg);
+    //-------------------------------------------------------------------------
     void logErr(const std::string &msg);
     //-------------------------------------------------------------------------
     void logWarn(const std::string &msg);
@@ -236,6 +251,8 @@ public:
     int getTimeSigDenominator(lua_State *lua);
     //-------------------------------------------------------------------------
     double getTempo(lua_State *lua);
+	//-------------------------------------------------------------------------
+    bool transportIsPlaying(lua_State *lua);
     //-------------------------------------------------------------------------
     void setParameterValue(lua_State *lua, const std::string &name, float value);
     //-------------------------------------------------------------------------
@@ -250,6 +267,12 @@ public:
         const std::string &key);
     //-------------------------------------------------------------------------
     void setPersistUserData(lua_State *lua);
+    //-------------------------------------------------------------------------
+    void addParameterListener(lua_State *lua, const std::string &id,
+        const std::string &callBack);
+    //-------------------------------------------------------------------------
+    void removeParameterListener(lua_State *lua, const std::string &id,
+        const std::string &callBack);
 public:
     //-------------------------------------------------------------------------
     virtual void baseConfigChanged();
@@ -345,6 +368,8 @@ public:
     virtual AWindowImplPtr getWindowImpl() {
         return AWindowImplPtr();
     }
+    //-------------------------------------------------------------------------
+    virtual std::string sendMessage (const std::string &msg);
 }; // PluginImpl
 }} // namespace(s)
 

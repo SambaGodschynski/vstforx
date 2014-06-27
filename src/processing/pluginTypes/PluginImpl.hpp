@@ -183,6 +183,13 @@ struct APluginImpl :
     addTrackedMidiEventListener(const oldPr::IMidiEventProcessor::EventFunction &f,
         oldPr::IMidiEventProcessor::AnyWPtr trackingObject);
     //-------------------------------------------------------------------------
+    /**
+     * @brief sends a message to the impl.
+     */
+    virtual std::string sendMessage (const std::string &msg) {
+        return "";
+    }
+    //-------------------------------------------------------------------------
     ///////////////////////////////////////////////////////////////////////////
     // Fields
     //-------------------------------------------------------------------------

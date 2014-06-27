@@ -2,8 +2,8 @@
 -- VSTForx menu setup script                                   --
 -- While the init script will be executed when the editor      --
 -- is opening, this module will be executed on startup only    --
--- a VSTForx.Lua documantation can be found under:             --
---      xxx.xxx.xx                                             --
+-- a VSTForx.Lua documentation can be found under:             --
+--      http://api.vstforx.de                                  --
 -- author: Samba Godschynski                                   --
 -----------------------------------------------------------------
 require "vstforx-helper"
@@ -24,7 +24,7 @@ menus = {
 	  {name="Known Issues", action="frx.openUrl('http://issues.vstforx.de/roadmap_page.php?version_id=27')"}
       }},
       {name="Auxiliaries"},
-      {name="Find Plugin...", action="onAddPlugin()"},
+      {name="Find Plugins...", action="onAddPlugin()"},
       {name="Viewports", viewportMenu},
       {name="State"},
       {name="Load...", action="load()"},
@@ -35,25 +35,67 @@ menus = {
    },   
 }
 
+-- Select Plugins dlg, to be considered as singleton->creating a new one will close
+-- the previous instance
+SelectPluginsDlg = {
+   wnd = nil
+   ,
+   show = function(self, plugins)
+      self:create()
+      for k,v in ipairs(plugins) do
+	 self.wnd:add(tostring(v['location']))
+      end
+      self.wnd:setSize(640,400)
+      self.wnd:setTitle(string.format("Found %i plugins for '%s', please select:", #plugins, plugins['name']))
+      self.wnd:open()
+   end
+   ,
+   create = function(self)
+      if self.wnd~=nil then
+	 self.wnd:close()
+      end
+      self.wnd = frx.view:createListWindow()
+      self.wnd:addButton("Add", "SelectPluginsDlg:onAdd()")
+      self.wnd:addButton("Abbort", "SelectPluginsDlg:onAbbort()")
+      self.wnd:addCloseListener("SelectPluginsDlg:onClose()")
+   end
+   ,
+   onAbbort = function(self)
+      self.wnd:close()
+   end
+   ,
+   onAdd = function(self)
+      loc=self.wnd:getSelection()
+      x="unknown-plugin.Plugin('" .. loc .. "')"
+      if not pcall( frx.view.add, frx.view, x) then
+	 frx.messageBox("adding "..loc.." failed")
+      end
+   end
+   ,
+   onClose = function(self)
+      self.wnd=nil
+      collectgarbage() -- force immediate object destroying
+   end
+}
+
 function onAddPlugin()
    name=frx.showInputTextDlg("Plugin Name","")
    if #name==0 then
       return
    end
-   r = frx.queryDB("SELECT location FROM plugins WHERE name LIKE '%" .. name .. "%';")
+   r = frx.queryDB("SELECT location FROM plugins WHERE name LIKE '%" .. name .. "%'\
+ OR location LIKE '%" .. name .. "%';")
    if #r == 0 then
       frx.messageBox("no plugin "..name.." found")
       return 
    end
-   if #r > 1 then
-      if not frx.showYesNoDlg("found " .. #r .. " plugins '".. name .. "'. Add them all?") then
-	 return
-      end
-   end
-   for i=1,#r,1 do
-      loc = r[i]['location']
+   if #r == 1 then
+      loc = r[1]['location']
       frx.view:add("unknown-plugin.Plugin('" .. loc .. "')")
+      return
    end
+   r['name'] = name
+   SelectPluginsDlg:show(r)
 end
 
 function getViewportName(index, active)
@@ -168,7 +210,7 @@ end
 
 function addParameterConnectionMenu(obj)
    --get operators which can be added
-   ops=viewHelper.getConnectionOpNames()
+   ops=helper.getConnectionOpNames()
    addEntries={}
    -- create submenu table
    for i=1,#ops,1 do
@@ -215,6 +257,7 @@ function setObjectMenu(obj)
       table.insert(objMenu, {name="show details...", 
 			     action=string.format("onOpenBrowser('Main Scene/Plugins/%s')", obj:getViewId())})
       table.insert(objMenu, {name="clone", action="onClone()"})
+      table.insert(objMenu, {name="assign A/B morpher...", action="onAssignAB()"})
       if string.match(objType, ".*Input.*") then
 	 -- Input Step/Switch
 	 table.insert(objMenu, {name="add input", 
@@ -224,14 +267,21 @@ function setObjectMenu(obj)
 	 table.insert(objMenu, {name="add output", 
 				action="addOutput()"})
       end
+   elseif string.match(objType, ".*%.RemoteChReceiver")~=nil then     
+      -- interprocess.* (e.g. interprocess.RemoteChReceiver)
+      table.insert(objMenu, {name="show details...", 
+			     action=string.format("onOpenBrowser('Main Scene/Plugins/%s')", obj:getViewId())})
    elseif string.match(objType, ".*%.Plugin")~=nil then
       -- *.Plugin (e.g. vst2x.Plugin)
       table.insert(objMenu, {name="show details...", 
 			     action=string.format("onOpenBrowser('Main Scene/Plugins/%s')", obj:getViewId())})
       table.insert(objMenu, {name="clone", action="onClone()"})
+      table.insert(objMenu, {name="parameter assistant...", action="onCollectParameter()"})
       table.insert(objMenu, {name="open/close editor...", action="onOpenCloseEditor()"})
+      table.insert(objMenu, {name="assign A/B morpher...", action="onAssignAB()"})
    elseif string.match(objType, "parameter%..*")~=nil then
       -- parameter.* (e.g. parameter.StdKnob)
+      table.insert(objMenu, {name="set value...", action="onSetKnobValue()"})
       table.insert(objMenu, {name="show details...", 
 			     action=string.format("onOpenBrowser('Main Scene/Parameter/%s')", obj:getViewId())})
    elseif string.match(objType, "connection%..*")~=nil then
@@ -250,34 +300,22 @@ function setObjectMenu(obj)
    obj:setMenu(objMenu)
 end
 
-
-
-
-function clone(o)
-   id = o:getTypeId()
-   if (string.match(id, ".*%.Plugin")) then
-      id=string.format("%s('%s')", id, o:getPluginLocation())
-   end
-   if (string.match(id, ".*Input.*")) then
-      id=string.format("%s(%i, 2)", id, o:getNumInputs()) 
-   end
-   if (string.match(id, ".*Output.*")) then
-      id=string.format("%s(2, %i)", id, o:getNumOutputs()) 
-   end
-   new=frx.view:add(id)
-   op = o:getParameters()
-   np = new:getParameters()
-   if #op ~= #np then
+function onSetKnobValue()
+   o=frx.view:getContextObject()
+   x=o:getValue()
+   nx=frx.showInputTextDlg("Set Value for "..o:getName(), x)
+   nx=tonumber(nx)
+   if nx==nil or x==nx then
       return
    end
-   for i=1,#np,1 do
-      np[i]:setValue( op[i]:getValue() )
-   end
+   nx=math.min(nx, 1)
+   nx=math.max(nx, 0)
+   o:setValue(nx)
 end
 
 function onClone()
    o=frx.view:getContextObject()
-   clone(o)
+   helper.clone(o)
 end
 
 function onOpenCloseEditor()
@@ -289,6 +327,9 @@ function onRename()
    o=frx.view:getContextObject()
    name=o:getName()
    name=frx.showInputTextDlg("rename "..name, name)
+   if #name==0 then
+      return
+   end
    o:setName(name)
    setObjectMenu(o) -- reset menu
 end
@@ -316,3 +357,151 @@ function onOpenBrowser(x)
    frx.openSceneBrowser(x)
 end
 
+-- Collect parameter dlg, waiting for plugins parameter 
+-- changed and adding them to a list
+CollectParameterDlg = {
+   wnd = nil,
+   nbInstances = 0,
+   plug = nil,
+   param = nil,
+   res = nil,
+   show = function(self)
+      if self.plug==nil then
+	 return
+      end
+      self.param = self.plug:getParameters()
+      for k,v in pairs(self.param) do
+	 v:addListener(string.format("CollectParameterDlg.callback('%s', 'onParamChanged', %i)", self.__id, k))
+      end
+      self.wnd:setSize(400, 550)
+      self.wnd:setTitle(string.format("Change parameter in %s's editor", self.plug:getName()))
+      self.wnd:open()
+   end
+   ,
+   new = function(self, plug)
+      local o = {}
+      setmetatable(o, self)
+      self.__index = self
+      o.wnd = frx.view:createListWindow()
+      self.nbInstances=self.nbInstances+1
+      o.__id = string.format("__parDlg%i", self.nbInstances) 
+      o.plug = plug
+      o.res = {}
+      _ENV[o.__id] = o --we cannot use instances for callbacks, so we use this
+                       -- global table for accessing
+      o.wnd:addButton("OK", string.format("CollectParameterDlg.callback('%s', 'onOk')", o.__id))
+      o.wnd:addButton("Remove", string.format("CollectParameterDlg.callback('%s', 'onRemove')", o.__id))
+      o.wnd:addButton("Abbort", string.format("CollectParameterDlg.callback('%s', 'onAbbort')", o.__id))
+      o.wnd:addCloseListener(string.format("CollectParameterDlg.callback('%s', 'onClose')", o.__id))
+      return o
+   end
+   ,
+   callback = function(id, f, arg1)
+      --delegate callback
+      if _ENV[id] == nil then --check if exists
+	 return
+      end
+      if arg1==nil then
+	 _ENV[id][f](_ENV[id]);
+      else
+	 _ENV[id][f](_ENV[id], arg1);
+      end
+   end
+   ,
+   onAbbort = function(self)
+      self.wnd:close()
+   end
+   ,
+   onOk = function(self, x)
+      for k,v in ipairs(self.res) do
+	 frx.view:add(v)
+      end
+      self.wnd:close()
+   end
+   ,
+   onRemove = function(self)
+      i=self.wnd:getSelectedIndex()
+      self.wnd:removeElementAt(i)
+      table.remove(self.res, i)
+   end
+   ,
+   onClose = function(self)
+      -- delete global holder
+      if self.__id==nil then
+	 return
+      end
+      _ENV[self.__id].res = nil
+      _ENV[self.__id].wnd = nil
+      _ENV[self.__id].param = nil
+      _ENV[self.__id].plug = nil
+      _ENV[self.__id] = nil
+      collectgarbage() -- force immediate object destroying
+   end
+   ,
+   onParamChanged = function (self, pid) 
+      if self.res[tostring(pid)] ~= nil then
+	 return
+      end
+      local p = self.param[pid]
+      self.res[tostring(pid)]=1 -- insert pid as string for checking if already added
+      table.insert(self.res, p)
+      self.wnd:add(p:getName())
+   end
+}
+
+function onCollectParameter()
+   local p = frx.view:getContextObject()
+   if p==nil then
+      return
+   end
+   dlg = CollectParameterDlg:new(p)
+   dlg:show()
+end
+
+function onAssignAB()
+   local p = frx.view:getContextObject()
+   local num = p:getNumParameters()
+   print (num)
+   if num==0 then
+      return
+   end
+   if num>50 then
+      frx.messageBox(string.format("this plugin has %i parameter, for performace reasons its not recommended to use all parameter for A/B.", num))
+      return
+   end
+   local url=string.format("lua.Plugin('scripts/lua_plugins/ABMorpher.lua////numParams=%i')", num)
+   local x,y = p:getLocation()
+   local params = p:getParameters()
+   local ab = frx.view:add(url)
+   local marginPrPa=120 --margin processor<->parameter
+   local marginPrPr=230 --margin parameter<->parameter
+   local offsetY = y-num/2*50
+   --frx.view:addToSelection(ab)
+   ab:setLocation(x-marginPrPa*2-marginPrPr, y)
+   local p2 = ab:getParameters()
+   local i=2
+   local tmp={}
+   local abx, aby = ab:getLocation()
+   p2[1]:setLocation(abx-50, aby) -- A/B knob
+   for k,v in pairs(params) do
+      if v:getName()~="editor_X" and
+         v:getName()~="editor_Y" then
+	 local a= p2[i]
+	 local b = v
+	 frx.view:add(a)
+	 frx.view:add(b)
+	 frx.view:connect(a, b)
+	 table.insert(tmp, a)
+	 table.insert(tmp, b)
+	 --set knob location
+	 a:setLocation(x-marginPrPa-marginPrPr, offsetY+(i*50))
+	 b:setLocation(x-marginPrPa, offsetY+(i*50))
+	 --increment i
+	 i=i+1
+      end
+   end
+   frx.view:clearSelection()
+   for k,v in pairs(tmp) do
+      frx.view:addToSelection(v)
+   end
+end

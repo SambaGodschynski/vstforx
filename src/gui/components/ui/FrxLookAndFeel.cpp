@@ -25,6 +25,8 @@
 #include <gui/components/FrxConcreteIO.hpp>
 #include <gui/components/ui/FrxIOUI.hpp>
 #include <gui/components/FrxSelection.hpp>
+#include <gui/components/FrxPacket.hpp>
+#include <gui/components/ui/FrxPacketUI.hpp>
 #include <gui/components/FrxHover.hpp>
 #include <gui/components/ui/FrxHoverUI.hpp>
 #include <gui/components/ui/FrxSelectionUI.hpp>
@@ -122,6 +124,8 @@ void FrxLookAndFeel::installComponents() {
 		fgcu::FrxHoverUI>();
 	registerComponentUI<fgc::FrxFlag, 
 		fgcu::FrxFlagUI>();
+    registerComponentUI<fgc::FrxPacket,
+		fgcu::FrxPacketUI>();
 	// browser
 	using namespace sdc::ui::basic;
 	typedef FrxColumnBrowser::BrowserImpl CBrowser;
@@ -272,6 +276,7 @@ void FrxLookAndFeel::installDefaults() {
 	rManager->registerImage("FrxBrowser.addContent.image", "images/plus.png");
 	rManager->registerImage("About.logo", "images/logo.png");
 	rManager->registerImage("About.bg", "images/disco-floor.png");
+    rManager->registerImage("FrxPacket.image", "images/packet.png");
     
     std::string logoPath( globGetLogoPath() );
     if (!logoPath.empty()) {

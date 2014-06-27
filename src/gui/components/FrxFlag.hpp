@@ -34,10 +34,16 @@ protected:
 	FrxFlag(){}
 	//-------------------------------------------------------------------------
 	void onComponentRemoving(void *src, const OnRemoving &ev);
+	//-------------------------------------------------------------------------
+	void onTargetProperty(const sce::PropertyChanged &ev);
+    //-------------------------------------------------------------------------
+    void installListeners();
 private:
 	//-------------------------------------------------------------------------
 	typedef sce::EventSender<OnRemoving>::Connection RemovingConnection;
 	RemovingConnection rmvConnection;
+	typedef sce::EventSender<sce::PropertyChanged>::Connection PropertyEvConnection;
+	PropertyEvConnection propertyConnection;
 	//-------------------------------------------------------------------------
 	FrxComponent::Ptr target;
 	//-------------------------------------------------------------------------
@@ -47,6 +53,9 @@ private:
 	void serialize(Archive &ar, const unsigned int version) {
 		ar & boost::serialization::base_object<Super>(*this); 
 		ar & target;
+        if (Archive::is_loading::value) {
+            installListeners();
+        }
 	}
 public:
 	//-------------------------------------------------------------------------

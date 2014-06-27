@@ -5,7 +5,7 @@
  *
  * LuaImplBase.cpp
  *
- *  Created on: Fri May 16 14:14:33 2014
+ *  Created on: Wed Jun  4 14:35:18 2014
  *      Author: Samba Godschysnki
  */
 
@@ -42,10 +42,20 @@ void LuaImplBase::addLuaFields(lua_State *lua, int index)
 	boost::make_tuple(boost::bind(&LuaImplBase::getPpqPos, this, lua),
 		boost::bind(&LuaImplBase::getTimeSigNumerator, this, lua),
 		boost::bind(&LuaImplBase::getTimeSigDenominator, this, lua),
+		boost::bind(&LuaImplBase::getTempo, this, lua),
+		boost::bind(&LuaImplBase::transportIsPlaying, this, lua),
 		boost::bind(&LuaImplBase::setParameterValue, this, lua, _1, _2),
 		boost::bind(&LuaImplBase::setParameterDisplay, this, lua, _1, _2),
 		boost::bind(&LuaImplBase::getParameterValue, this, lua, _1),
 		boost::bind(&LuaImplBase::getParameterDisplay, this, lua, _1),
+		boost::bind(&LuaImplBase::addParameterListener, this, lua, _1, _2)),
+	index, 
+	getUId() 
+	); 
+
+	registerClassFunctions<Functions3, TupleAccessor>(
+	lua,
+	boost::make_tuple(boost::bind(&LuaImplBase::removeParameterListener, this, lua, _1, _2),
 		boost::bind(&LuaImplBase::getPersistUserData, this, lua, _1),
 		boost::bind(&LuaImplBase::setPersistUserData, this, lua)),
 	index, 
@@ -60,6 +70,7 @@ void LuaImplBase::__lua_gc(lua_State *lua) {
     using namespace sambag::lua;
     unregisterClassFunctions<Functions1>(getUId());
 	unregisterClassFunctions<Functions2>(getUId());
+	unregisterClassFunctions<Functions3>(getUId());
 	unregisterClassFunctions<MetaFunctions>(getUId());
 	
     Super::__lua_gc(lua);

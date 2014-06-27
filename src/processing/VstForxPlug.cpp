@@ -478,7 +478,7 @@ void VstForxPlug::loadEditor(::com::iArchive &ar, int version) {
 		::com::iArchive tmp(tmpss);
 		frx::gui::components::register_types(tmp, version);
 		frx::gui::components::FrxCircuidViewPtr view =
-			editor->deserializeViewTemp(tmp);
+			editor->deserializeViewTemp(tmp, version);
 		editor->setCircuidView(view);
 		return;
 	}

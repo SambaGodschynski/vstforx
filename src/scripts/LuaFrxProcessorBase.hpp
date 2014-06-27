@@ -5,7 +5,7 @@
  *
  * LuaFrxProcessorBase.hpp
  *
- *  Created on: Tue Apr 29 22:18:01 2014
+ *  Created on: Mon Jun 23 21:46:28 2014
  *      Author: Samba Godschysnki
  */
 
@@ -15,7 +15,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <sambag/lua/Lua.hpp>
-#include <loki/TypeList.h>
+#include <loki/Typelist.h>
 #include <sambag/lua/ALuaObject.hpp>
 
 #include <scripts/LuaFrxObject.hpp>
@@ -41,15 +41,18 @@ protected:
     SAMBAG_LUA_FTAG(getInputs, sambag::lua::IgnoreReturn ());
 	SAMBAG_LUA_FTAG(getOutputs, sambag::lua::IgnoreReturn ());
 	SAMBAG_LUA_FTAG(getParameters, sambag::lua::IgnoreReturn ());
+	SAMBAG_LUA_FTAG(getNumParameters, int ());
 	SAMBAG_LUA_FTAG(addInput, sambag::lua::IgnoreReturn (bool));
 	SAMBAG_LUA_FTAG(addOutput, sambag::lua::IgnoreReturn (bool));
 	SAMBAG_LUA_FTAG(openCloseEditor, void ());
 	SAMBAG_LUA_FTAG(getNumInputs, int ());
 	SAMBAG_LUA_FTAG(getNumOutputs, int ());
 	SAMBAG_LUA_FTAG(getPluginLocation, std::string ());
-    typedef LOKI_TYPELIST_9(Frx_getInputs_Tag, 
+	SAMBAG_LUA_FTAG(sendMessage, std::string (std::string));
+    typedef LOKI_TYPELIST_10(Frx_getInputs_Tag, 
 	Frx_getOutputs_Tag, 
 	Frx_getParameters_Tag, 
+	Frx_getNumParameters_Tag, 
 	Frx_addInput_Tag, 
 	Frx_addOutput_Tag, 
 	Frx_openCloseEditor_Tag, 
@@ -57,44 +60,86 @@ protected:
 	Frx_getNumOutputs_Tag, 
 	Frx_getPluginLocation_Tag) Functions1;
 
+	typedef LOKI_TYPELIST_1(Frx_sendMessage_Tag) Functions2;
+
 	
     ///////////////////////////////////////////////////////////////////////////
     /**
-	* @brief TODO
+	* @returnType Sequence
+	* @return a sequence of the processors @see IO input objects
+	* @version 1.0.5
 	*/
 	virtual sambag::lua::IgnoreReturn getInputs(lua_State *lua) = 0;
 	/**
-	* @brief TODO
+	* @returnType Sequence
+	* @return a sequence of the processors @see IO output objects
+	* @version 1.0.5
 	*/
 	virtual sambag::lua::IgnoreReturn getOutputs(lua_State *lua) = 0;
 	/**
-	* @brief TODO
+	* @returnType Sequence
+	* @return a sequence of the processors @see Parameter objects
+	* @version 1.0.5
 	*/
 	virtual sambag::lua::IgnoreReturn getParameters(lua_State *lua) = 0;
 	/**
-	* @brief TODO
+	* @return number of parameters
+	* @version 1.0.53
+	*/
+	virtual int getNumParameters(lua_State *lua) = 0;
+	/**
+	* @returnType IO
+	* @brief Adds a further input to the processor 
+	* (if the specific processor supports this)
+	* @param if true the newly created view object 
+	* will follow the mouse until a button was pressed
+	* @return a @see IO object or nil if the specific processor dosen't 
+	* support further inputs
+	* @version 1.0.5
 	*/
 	virtual sambag::lua::IgnoreReturn addInput(lua_State *lua, bool followMouse) = 0;
 	/**
-	* @brief TODO
+	* @returnType IO
+	* @brief Adds a further output to the processor 
+	* (if the specific processor supports this)
+	* @param if true the newly created view object 
+	* will follow the mouse until a button was pressed
+	* @return a @see IO object or nil if the specific processor dosen't 
+	* support further outputs
+	* @version 1.0.5
 	*/
 	virtual sambag::lua::IgnoreReturn addOutput(lua_State *lua, bool followMouse) = 0;
 	/**
-	* @brief TODO
+	* @brief Open the processors editor or close it if
+	* already open.
+	* @version 1.0.5
 	*/
 	virtual void openCloseEditor(lua_State *lua) = 0;
 	/**
-	* @brief TODO
+	* @return the number of inputs
+	* @version 1.0.5
 	*/
 	virtual int getNumInputs(lua_State *lua) = 0;
 	/**
-	* @brief TODO
+	* @return the number of outputs
+	* @version 1.0.5
 	*/
 	virtual int getNumOutputs(lua_State *lua) = 0;
 	/**
-	* @brief TODO
+	* @return if the processor is an external plugin the plugin path
+	* will be returned.
+	* @version 1.0.5
 	*/
 	virtual std::string getPluginLocation(lua_State *lua) = 0;
+	/**
+	* @brief Sends a internal message to the processor.
+	*        The behaviour depends on its specific 
+	*        processor implementation.
+	* @return a result string
+	* @param a message string
+	* @version 1.0.53
+	*/
+	virtual std::string sendMessage(lua_State *lua, const std::string & msg) = 0;
     //-------------------------------------------------------------------------
     /**
      * @brief field getter and setter
