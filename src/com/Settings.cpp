@@ -26,6 +26,7 @@ static const std::string WINDOW_WIDTH = "window_width";
 static const std::string WINDOW_HEIGHT = "window_height";
 static const std::string MAX_LOGSIZE = "max_logfile_sizeKB";
 static const std::string SKIP_SCAN = "fast_scan";
+static const std::string STYLE = "style_path";
 
 //------------------------------------------------------------------------------------------------------------
 static inline void parseConfigLine( std::ifstream &f, com::MyString &token, com::MyString &content ) {
@@ -81,7 +82,8 @@ Settings::Settings() :
 windowWidth(MIN_WINDOW_WIDTH), 
 windowHeight(MIN_WINDOW_HEIGHT),
 maxLogSize( KILO * 2000 ),
-fastScan ( true )
+fastScan ( true ),
+stylePath("styles/default")
 {
 }
 //------------------------------------------------------------------------------------------------------------
@@ -170,6 +172,10 @@ bool Settings::removePluginFolder ( const std::string &path ) {
 bool Settings::removeVSTFolder ( const std::string &path ) {
 	return removePluginFolder(path);
 }
+//--------------------------------------------------------------------------------------------------------
+std::string Settings::getStylePath() const {
+    return getHomeDirectory() + "/" + stylePath;
+}
 //------------------------------------------------------------------------------------------------------------
 void Settings::loadConfigFile() { // TODO: use boost::Program_options
 	// !! keine PPI ausnahmen oder TOLOG oder irgendetwas was indirekt wieder settings init. !!
@@ -197,27 +203,36 @@ void Settings::loadConfigFile() { // TODO: use boost::Program_options
 			}
 		}
 		if ( token == WINDOW_WIDTH ) {
-			if ( cont.length() == 0 ) continue;
+			if ( cont.length() == 0 )
+                continue;
 			windowWidth = atoi( cont.c_str() );
 			if ( windowWidth == 0 || windowWidth == INT_MAX || windowWidth == INT_MIN ) {
 				windowWidth = MIN_WINDOW_WIDTH;
 			}
 		}
 		if ( token == WINDOW_HEIGHT ) {
-			if ( cont.length() == 0 ) continue;
+			if ( cont.length() == 0 )
+                continue;
 			windowHeight = atoi( cont.c_str() );
 			if ( windowHeight == 0 || windowHeight == INT_MAX || windowHeight == INT_MIN ) {
 				windowHeight = MIN_WINDOW_HEIGHT;
 			}
 		}
 		if ( token == MAX_LOGSIZE ) {
-			if ( cont.length() == 0 ) continue;
+			if ( cont.length() == 0 )
+                continue;
 			maxLogSize = (unsigned int)atoi( cont.c_str() ) * KILO;
 		}
 		if ( token == SKIP_SCAN ) {
-			if ( cont.length() == 0 ) continue;
+			if ( cont.length() == 0 )
+                continue;
 			if ( atoi( cont.c_str() ) == 1 ) fastScan = true;
 				else fastScan = false;
+		}
+        if ( token == STYLE ) {
+			if ( cont.length() == 0 )
+                continue;
+			stylePath=cont;
 		}
 	}
 	f.close();
@@ -244,7 +259,8 @@ void Settings::saveConfigFile() {  // TODO: use boost::Program_options
 	// logfile
 	f<<MAX_LOGSIZE<<"="<<( getMaxLogSize() / KILO )<<std::endl;
 	// fastScan
-	f<<SKIP_SCAN<<"="<<isFastScan();
+	f<<SKIP_SCAN<<"="<<isFastScan()<<std::endl;
+    f<<STYLE<<"="<<stylePath;
 	f.close();
 }
 //------------------------------------------------------------------------------------------------------------

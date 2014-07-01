@@ -32,6 +32,53 @@
 #include <boost/xpressive/regex_primitives.hpp>
 #include <sambag/disco/components/SvgComponent.hpp>
 
+
+namespace {
+
+const std::string SVG_FALLBACK="                                        \
+<?xml version=\"1.0\" standalone=\"no\"?>                               \
+<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"                        \
+\"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">                   \
+<svg width=\"800\" height=\"600\"                                       \
+     xmlns=\"http://www.w3.org/2000/svg\"                               \
+     xmlns:xlink=\"http://www.w3.org/1999/xlink\"                       \
+     version=\"1.1\">                                                   \
+  <defs>                                                                \
+    <pattern id='bg' x='0' y='0' width='150' height='150'               \
+	     patternUnits='userSpaceOnUse'>                                 \
+      <rect width='150' height='150' fill='#002050'                     \
+	    stroke='white'                                                  \
+	    stroke-opacity='0.5'                                            \
+	    stroke-width='0.2'/>                                            \
+    </pattern>                                                          \
+    <linearGradient id='shader' x1='0%' y1='0%' x2='0%' y2='100%'>      \
+      <stop offset='0%' stop-color='#000000' stop-opacity='1.0'/>       \
+      <stop offset='4%' stop-color='#000000' stop-opacity='0.0'/>       \
+      <stop offset='97%' stop-color='#000000' stop-opacity='0.0'/>      \
+      <stop offset='100%' stop-color='#000000' stop-opacity='1.0'/>     \
+    </linearGradient>                                                   \
+  </defs>                                                               \
+  <g>                                                                   \
+    <rect x='0' y='0' width='100%' height='100%'                        \
+	  stroke-width='0' />                                               \
+    <rect x='0' y='0' width='100%' height='100%'                        \
+	  fill='url(#bg)' stroke='black' id='background' class='disco'/>    \
+    <rect x='0%' y='0%' width='100%' height='100%'                      \
+	  class='disco' id='main' fill='none'/>                             \
+    <rect x='0' y='0' width='100%' height='100%'                        \
+	  fill='url(#shader)' stroke='black'/>                              \
+         <text x='50%' y='50%'                                          \
+	  style='font-size:40px;fill:white; fill-opacity:0.3'               \
+	  transform='translate(-245)'>                                      \
+      Houston, we've had a problem.                                     \
+    </text>                                                             \
+  </g>                                                                  \
+</svg>                                                                  \
+";
+
+} // namespace
+
+
 namespace frx { namespace gui { namespace components {
 namespace {
 //-----------------------------------------------------------------------------
@@ -53,6 +100,8 @@ protected:
 		const sd::Rectangle &r);
     sambag::math::Matrix fillMatrix;
 public:
+    //-------------------------------------------------------------------------
+    void onViewport(sdc::Viewport::WPtr _vp);
 	//-------------------------------------------------------------------------
 	/**
 	 * @override
@@ -119,12 +168,11 @@ void drawLogo(sd::IDrawContext::Ptr cn, sd::ISurface::Ptr logo, const sd::Rectan
 	cn->drawSurface(logo);
     cn->restore();
 }
-void BgPane::drawComponent(sd::IDrawContext::Ptr cn) {
-	sd::Rectangle r;
-	_getViewportRect(getPtr(), r);
-	drawDemoNotifictaion(cn, r);
-    drawLogo(cn, logo, r);
-    
+void BgPane::onViewport(sdc::Viewport::WPtr _vp) {
+    sdc::Viewport::Ptr vp = _vp.lock();
+    if (!vp) {
+        return;
+    }
     sd::IPattern::Ptr fill;
     getClientProperty("svg.fill", fill);
     if (!fill) {
@@ -137,20 +185,18 @@ void BgPane::drawComponent(sd::IDrawContext::Ptr cn) {
     }
     
     if (parallaxEffect>0.) {
-        sdc::Viewport::Ptr vp = parent.lock();
-        if (!vp) {
-            parent = vp = getFirstContainer<sdc::Viewport>();
-            if (!vp) {
-                SAMBAG_LOG_ERR<<"BgPane::drawComponent() Viewport==NULL";
-                return;
-            }
-        }
         sd::Point2D p = vp->getViewPosition();
         fill->setMatrix(
             boost::numeric::ublas::prod(bgTrans,
             sd::translate2D(p.x()*parallaxEffect, p.y()*parallaxEffect))
         );
     }
+}
+void BgPane::drawComponent(sd::IDrawContext::Ptr cn) {
+	sd::Rectangle r;
+	_getViewportRect(getPtr(), r);
+	drawDemoNotifictaion(cn, r);
+    drawLogo(cn, logo, r);
 }
 //-----------------------------------------------------------------------------
 void BgPane::postConstructor() {
@@ -363,23 +409,47 @@ void FrxCircuidView::postConstructor() {
 	// init mainview
 	viewPort = sdc::Viewport::create();
     // load SVG component
-    sdc::SvgComponent::Ptr svg = sdc::SvgComponent::create();
-    svg->setSvgFilename(com::getSettings().getHomeDirectory()+"/images/bg.svg");
-    sdc::SvgComponent::Dummy::Ptr svgMain = svg->getDummyById("#main");
-    if (!svgMain) {
-        throw std::runtime_error("missing svg main component");
+    sdc::SvgComponent::Ptr svg;
+    sdc::SvgComponent::Dummy::Ptr bg;
+    sdc::SvgComponent::Dummy::Ptr svgMain;
+    try {
+        svg = sdc::SvgComponent::create();
+        svg->setSvgFilename(com::getSettings().getStylePath()+"/bg.svg");
+        svgMain = svg->getDummyById("#main");
+        if (!svgMain) {
+            throw std::runtime_error("missing svg #main component");
+        }
+        bg = svg->getDummyById("#background");
+        if (!svgMain) {
+            throw std::runtime_error("missing svg #background component");
+        }
+    } catch(const std::exception &ex) {
+        errorMessage(ex.what());
+        svg = sdc::SvgComponent::create();
+        svg->setSvgString(SVG_FALLBACK);
+        svgMain = svg->getDummyById("#main");
+        if (!svgMain) {
+            throw std::runtime_error("missing svg #main component");
+        }
+        bg = svg->getDummyById("#background");
+        if (!svgMain) {
+            throw std::runtime_error("missing svg #background component");
+        }
     }
-    
     Super::add(svg);
 	svgMain->setLayout(sdc::BorderLayout::create());
     svgMain->add(viewPort);
 	// init contentpane
-	content = BgPane::create();
+    BgPane::Ptr bgPane = BgPane::create();
+	content = bgPane;
 	content->setSize(sd::Dimension(FRX_MAX_VIEW, FRX_MAX_VIEW));
     viewPort->add(content);
 	content->setLayout(sdc::ALayoutManagerPtr());
+    viewPort->sce::EventSender<sdc::ViewportChanged>::addTrackedEventListener(
+        boost::bind(&BgPane::onViewport, bgPane.get(), sdc::Viewport::WPtr(viewPort)),
+        content
+    );
     // assign fill pattern to content
-    sdc::SvgComponent::Dummy::Ptr bg = svg->getDummyById("#background");
     if (bg) {
         sd::IPattern::Ptr p = bg->getBackgroundPattern();
         if(p) {

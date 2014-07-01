@@ -108,38 +108,6 @@ public:
 	 * See the <a href="#override">Implementation Note</a>
 	 * for more information.
 	 */
-	virtual void validate() {}
-	//-------------------------------------------------------------------------
-	/**
-	 * Overridden for performance reasons.
-	 * See the <a href="#override">Implementation Note</a>
-	 * for more information.
-	 *
-	 * @since 1.5
-	 */
-	virtual void invalidate() {}
-	//-------------------------------------------------------------------------
-	/**
-	 * Overridden for performance reasons.
-	 * See the <a href="#override">Implementation Note</a>
-	 * for more information.
-	 *
-	 * @since 1.5
-	 */
-	//void redraw() {}
-	//-------------------------------------------------------------------------
-	/**
-	 * Overridden for performance reasons.
-	 * See the <a href="#override">Implementation Note</a>
-	 * for more information.
-	 */
-	virtual void revalidate() {}
-	//-------------------------------------------------------------------------
-	/**
-	 * Overridden for performance reasons.
-	 * See the <a href="#override">Implementation Note</a>
-	 * for more information.
-	 */
 	//void redraw(const Rectangle &r) {}
 	//-------------------------------------------------------------------------
 	virtual void setUpperFlagText(const std::string &txt);

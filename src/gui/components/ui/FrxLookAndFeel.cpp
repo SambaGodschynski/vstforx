@@ -18,12 +18,15 @@
 #include <gui/components/ui/FrxComponentUI.hpp>
 #include <gui/components/FrxConcreteProcessor.hpp>
 #include <gui/components/ui/FrxProcessorNodeUI.hpp>
+#include <gui/components/ui/FrxSvgProcessorUI.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/components/ui/FrxCircuidViewUI.hpp>
 #include <gui/components/FrxConcreteConnections.hpp>
 #include <gui/components/ui/FrxConnectionUI.hpp>
 #include <gui/components/FrxConcreteIO.hpp>
 #include <gui/components/ui/FrxIOUI.hpp>
+#include <gui/components/ui/FrxSvgIOUI.hpp>
+#include <gui/components/ui/FrxSvgKnobUI.hpp>
 #include <gui/components/FrxSelection.hpp>
 #include <gui/components/FrxPacket.hpp>
 #include <gui/components/ui/FrxPacketUI.hpp>
@@ -45,6 +48,7 @@
 #include <sambag/disco/FileResourceManager.hpp>
 #include <sambag/disco/IPattern.hpp>
 #include <sambag/math/Matrix.hpp>
+#include <gui/components/ui/FrxDualUI.hpp>
 
 extern const char * globGetLogoPath();
 
@@ -74,6 +78,12 @@ namespace {
         typedef typename Processors::Head FrxProcessor;
         laf.registerComponentUI<FrxProcessor,
             fgcu::FrxProcessorNodeUI<FrxProcessor> >();
+        laf.registerComponentUI<FrxProcessor,
+            fgcu::FrxDualUI<
+                fgcu::FrxSvgProcessorUI,
+                fgcu::FrxProcessorNodeUI<FrxProcessor>
+        > >();
+        
         registerProcessors<typename Processors::Tail>(laf);
     }
     template <>
@@ -92,8 +102,11 @@ void FrxLookAndFeel::installComponents() {
     
     
 	// parameter components
-	registerComponentUI<fgc::FrxStdKnob, 
-		FrxParameterUI<FrxStdKnob::ControllerType> >();
+	registerComponentUI<fgc::FrxStdKnob,
+        fgcu::FrxDualUI<
+            FrxSvgKnobUI,
+            FrxParameterUI<FrxStdKnob::ControllerType>
+    > >();
 	registerComponentUI<sdc::Knob, FrxKnobUI<sdc::Knob::Model> >();
 	// connections
 	registerComponentUI<fgc::IOCn, 
@@ -109,14 +122,26 @@ void FrxLookAndFeel::installComponents() {
 	registerComponentUI<fgc::ParameterOPCn, 
 		fgcu::FrxConnectionUI<fgc::ParameterOPCn::ConnectionType> >();
 	// io's
-	registerComponentUI<fgc::FrxInputNode, 
-		fgcu::FrxIOUI<fgc::FrxInputNode::IOType> >();
-	registerComponentUI<fgc::FrxOutputNode, 
-		fgcu::FrxIOUI<fgc::FrxOutputNode::IOType> >();
+	registerComponentUI<fgc::FrxInputNode,
+        fgcu::FrxDualUI<
+            fgcu::FrxSvgIOUI,
+            fgcu::FrxIOUI<fgc::FrxInputNode::IOType>
+    > >();
+	registerComponentUI<fgc::FrxOutputNode,
+        fgcu::FrxDualUI<
+            fgcu::FrxSvgIOUI,
+            fgcu::FrxIOUI<fgc::FrxOutputNode::IOType>
+    > >();
 	registerComponentUI<fgc::FrxEntryNode, 
-		fgcu::FrxIOUI<fgc::FrxEntryNode::IOType> >();
-	registerComponentUI<fgc::FrxExitNode, 
-		fgcu::FrxIOUI<fgc::FrxExitNode::IOType> >();
+        fgcu::FrxDualUI<
+            fgcu::FrxSvgIOUI,
+            fgcu::FrxIOUI<fgc::FrxEntryNode::IOType>
+    > >();
+	registerComponentUI<fgc::FrxExitNode,
+        fgcu::FrxDualUI<
+            fgcu::FrxSvgIOUI,
+            fgcu::FrxIOUI<fgc::FrxExitNode::IOType>
+    > >();
 	// misc
 	registerComponentUI<fgc::FrxSelection, 
 		fgcu::FrxSelectionUI>();

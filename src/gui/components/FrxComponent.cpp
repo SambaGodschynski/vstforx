@@ -10,6 +10,7 @@
 #include <boost/algorithm/string.hpp>
 #include <gui/components/ui/FrxComponentUI.hpp>
 #include <gui/components/FrxCircuidView.hpp>
+#include <sambag/disco/components/BorderLayout.hpp>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -36,6 +37,7 @@ void FrxComponent::postConstructor() {
 	if (getUpperFlagText()=="") {
 		setUpperFlagText(getName());
 	}
+    setLayout(sdc::ALayoutManager::Ptr());
 }
 //-----------------------------------------------------------------------------
 void FrxComponent::__setTypeId_(const std::string &id) {

@@ -32,6 +32,8 @@ protected:
 private:
 public:
 	//-------------------------------------------------------------------------
+	virtual void installUI(sdc::AComponentPtr c);
+	//-------------------------------------------------------------------------
 	/**
 	 * @returns true if p hits knob concerning c's parent componentui.
 	 */
@@ -44,6 +46,11 @@ public:
 	}
 }; // FrxKnobUI
 ///////////////////////////////////////////////////////////////////////////////
+//-----------------------------------------------------------------------------
+template <class C>
+void FrxKnobUI<C>::installUI(sdc::AComponentPtr c) {
+    Super::installUI(c);
+}
 //-----------------------------------------------------------------------------
 template <class C>
 bool FrxKnobUI<C>::contains(sdc::AComponentPtr c, const sd::Point2D &p) {

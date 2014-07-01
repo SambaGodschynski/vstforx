@@ -8,6 +8,8 @@
 #include "FrxNode.hpp"
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <gui/components/ui/FrxNodeUI.hpp>
+#include <gui/components/ui/FrxDualUI.hpp>
+#include <sambag/disco/components/SvgComponent.hpp>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -33,7 +35,25 @@ sdcu::AComponentUIPtr FrxNode::createComponentUI(sdcu::ALookAndFeelPtr laf) cons
 sambag::com::Number FrxNode::getRadius() const {
 	ui::FrxNodeUI::Ptr ui = boost::dynamic_pointer_cast<ui::FrxNodeUI>(getUI());
 	if (!ui) {
-		return 0.;
+        ui::AFrxDualUI::Ptr dualUI =
+            boost::dynamic_pointer_cast<ui::AFrxDualUI>(getUI());
+        if (dualUI) {
+            ui =  boost::dynamic_pointer_cast<ui::FrxNodeUI>(dualUI->getUI());
+            if (ui) {
+                return ui->getCoreRadius(getPtr());
+            }
+        }
+    
+        // TODO: handle clipping via related path
+        sdc::AComponent::WPtr _imgc;
+        getClientProperty("imageComponent", _imgc);
+        sdc::SvgComponent::Ptr svg =
+            boost::dynamic_pointer_cast<sdc::SvgComponent>(_imgc.lock());
+        if (!svg) {
+            return 0;
+        }
+        sdc::AComponent::Ptr corona = svg->getDummyById("#core");
+        return corona->getWidth()/2.;
 	}
 	return ui->getCoreRadius(getPtr());
 }
