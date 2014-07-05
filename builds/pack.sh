@@ -16,6 +16,7 @@ function packVSTForx() {
     mkdir -p $target/$folder/scripts/lua_plugins
     cp $src/scripts/*.lua $target/$folder/scripts
     rm $target/$folder/scripts/util.lua
+    cp -r $src/styles $target/$folder
     cp $src/scripts/lua_plugins/*.lua $target/$folder/scripts/lua_plugins
     cp ../Documents/manual/vstforx.EN/main.pdf $target/$folder/manual.pdf
     cd $target
