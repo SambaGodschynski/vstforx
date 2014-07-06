@@ -342,4 +342,14 @@ void FrxSvgNodeUI::onMouse(void *src,
 	enum {F=sdce::MouseEvent::ALL_EVENTS & ~sdce::MouseEvent::DISCO_MOUSE_WHEEL};
 	sdc::events::MouseEventSwitch<F>::delegate(ev, *this);
 }
+//-----------------------------------------------------------------------------
+bool FrxSvgNodeUI::contains(sdc::AComponentPtr c, const sd::Point2D &p) {
+    sdc::AComponent::Ptr corona = getCorona();
+    if (corona->isVisible()) {
+        return sd::Rectangle(0,0,corona->getWidth(),
+               corona->getHeight()).contains(p);
+    }
+    sdc::AComponent::Ptr core = getCore();
+    return core->getBounds().contains(p);
+}
 }}}} // namespace(s)

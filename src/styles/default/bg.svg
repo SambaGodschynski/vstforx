@@ -6,26 +6,23 @@
      xmlns:xlink="http://www.w3.org/1999/xlink"
      version="1.1">
   <defs>
-    <pattern id="bg" x="0" y="0" width="150" height="150" 
+    <pattern id="bg" x="0" y="0" width="10" height="7" patternTransform="scale(4)" 
 	     patternUnits="userSpaceOnUse">
-      <rect width="150" height="150" fill="#002050" 
-	    stroke="white" 
-	    stroke-opacity="0.5"
-	    stroke-width="0.2"/>
+      <image x="0" y="0" width="10px" height="7px" xlink:href="bkgrey.png" />
     </pattern>
     <linearGradient id="shader" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#000000" stop-opacity="1.0"/>
-      <stop offset="4%" stop-color="#000000" stop-opacity="0.0"/>
-      <stop offset="97%" stop-color="#000000" stop-opacity="0.0"/>
-      <stop offset="100%" stop-color="#000000" stop-opacity="1.0"/>
+      <stop offset="0%" stop-color="#D75B8E" stop-opacity="0.7"/>
+      <stop offset="4%" stop-color="#901151" stop-opacity="0.7"/>
+      <stop offset="5%" stop-color="#5D002C" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#270217" stop-opacity="0.7"/>
     </linearGradient>
   </defs>
   <g>
-    <rect x="0" y="0" width="100%" height="100%"
+    <rect x="0" y="0" width="100%" height="100%" 
 	  stroke-width="0" />
     <rect x="0" y="0" width="100%" height="100%"
-	  fill="url(#bg)" stroke="black" id="background" class="disco"/>
-    <rect x="0%" y="0%" width="100%" height="100%"
+	  fill="url(#bg)" class="disco" id="background" stroke="black"/>
+    <rect x="0" y="0" width="100%" height="100%"
 	  class="disco" id="main" fill="none"/>
     <rect x="0" y="0" width="100%" height="100%"
 	  fill="url(#shader)" stroke="black"/>

@@ -156,6 +156,8 @@ public:
 	Ptr getPtr() const {
 		return boost::dynamic_pointer_cast<FrxSvgNodeUI>(Super::getPtr());
 	}
+    //-------------------------------------------------------------------------
+    virtual bool contains(sdc::AComponentPtr c, const sd::Point2D &p);
 }; // FrxSvgNodeUI
 }}}} // namespace(s)
 
