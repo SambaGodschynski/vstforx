@@ -50,6 +50,8 @@
 #include <sambag/disco/IPattern.hpp>
 #include <sambag/math/Matrix.hpp>
 #include <gui/components/ui/FrxDualUI.hpp>
+#include <com/Settings.h>
+#include <sambag/disco/svg/graphicElements/ISceneGraph.hpp>
 
 extern const char * globGetLogoPath();
 
@@ -171,6 +173,40 @@ void FrxLookAndFeel::installComponents() {
 	registerComponentUI<CBrowser::ListType, FrxBrowserListUI >();
 	registerComponentUI<FrxParameterLabel, FrxParameterLabelUI>();
 }
+//-------------------------------------------------------------------------
+void FrxLookAndFeel::loadStyle(const std::string &svgId,
+        const std::string &frxId, const std::string &fallback)
+{
+    sdcu::UIManager &m = sdcu::getUIManager();
+    if (!stylingRef && !loadingStyleRefFailed) {
+        stylingRef = sds::Image::create();
+        std::string f =
+            com::getSettings().getStylePath() + "/frx.gui.default.Misc.svg";
+        try {
+            stylingRef->setSvgPath(f);
+            stylingRef->setSize(sd::Dimension(740, 480));
+        } catch(...) {
+            SAMBAG_LOG_WARN<<"loading "<<f<<" failed.";
+            loadingStyleRefFailed = true;
+        }
+    }
+    if (loadingStyleRefFailed) {
+        // set fallback
+        m.putProperty(frxId, createStyle(fallback));
+        return;
+    }
+    sdsg::ISceneGraph::Ptr g =
+        stylingRef->getSceneGraph();
+    sd::IDrawable::Ptr x = g->getElementById(svgId);
+    if (!x) {
+        // set fallback
+        SAMBAG_LOG_WARN<<svgId<<" failed";
+        m.putProperty(frxId, createStyle(fallback));
+        return;
+    }
+    sdsg::Style s = g->calculateStyle(x);
+    m.putProperty(frxId, s);
+}
 //-----------------------------------------------------------------------------
 void FrxLookAndFeel::installDefaults() {
 	Super::installDefaults();
@@ -244,34 +280,34 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("SetupWindow.style", style);
 	m.putProperty("FrxComponent.menu.label.style", 
 		createStyle("stroke:darkgrey; fill:royalblue; font-size: 12; font-family: arial; font-style: italic;"));
-	m.putProperty("IOCn.style", 
-		createStyle("stroke-width: 4; stroke: darkgrey; stroke-opacity:0.5;"));
-	m.putProperty("IOCn.hoverStyle", 
-		createStyle("stroke-width: 8; stroke: darkgrey; stroke-opacity:0.5;"));
-	m.putProperty("ProcessorInputCn.style", 
-		createStyle("stroke-width: 8; stroke: darkgrey; stroke-opacity:0.5;"));
-	m.putProperty("ProcessorOutputCn.style", 
-		createStyle("stroke-width: 8; stroke: darkgrey; stroke-opacity:0.5;"));
-	m.putProperty("ProcessorParameterCn.style", 
-		createStyle("stroke-width: 2; stroke: red; purple;stroke-dasharray: 9, 5; stroke-opacity:0.5;"));
-	m.putProperty("ParameterCn.style", 
-		createStyle("stroke-width: 4; stroke: green;stroke-dasharray: 9, 5; stroke-opacity:0.5;"));
-	m.putProperty("ParameterCn.hoverStyle", 
-		createStyle("stroke-width: 8; stroke: green;stroke-dasharray: 9, 5; stroke-opacity:0.5;"));
-	m.putProperty("ParameterOPCn.style", 
-		createStyle("stroke-width: 4; stroke: grey;stroke-dasharray: 9, 5; stroke-opacity:0.5;"));
-	m.putProperty("FrxSelection.selectingStyle", 
-		createStyle("stroke-width: 4; stroke: grey; fill: purple;stroke-dasharray: 9, 5; fill-opacity: 0.25"));
-	m.putProperty("FrxSelection.selectedStyle", 
-		createStyle("stroke-width: 4; stroke: black; fill: purple; fill-opacity: 0.25"));
+	loadStyle("I2O", "IOCn.style",
+              "stroke-width: 4; stroke: darkgrey; stroke-opacity:0.5;");
+	loadStyle("I2O_R", "IOCn.hoverStyle", 
+		      "stroke-width: 8; stroke: darkgrey; stroke-opacity:0.5;");
+	loadStyle("Pc2I", "ProcessorInputCn.style", 
+		      "stroke-width: 8; stroke: darkgrey; stroke-opacity:0.5;");
+	loadStyle("Pc2O", "ProcessorOutputCn.style", 
+              "stroke-width: 8; stroke: darkgrey; stroke-opacity:0.5;");
+	loadStyle("Pc2Pr", "ProcessorParameterCn.style", 
+		      "stroke-width: 2; stroke: red; purple;stroke-dasharray: 9, 5; stroke-opacity:0.5;");
+	loadStyle("Pr2Pr", "ParameterCn.style", 
+		      "stroke-width: 4; stroke: green;stroke-dasharray: 9, 5; stroke-opacity:0.5;");
+	loadStyle("Pr2Pr_R", "ParameterCn.hoverStyle", 
+              "stroke-width: 8; stroke: green;stroke-dasharray: 9, 5; stroke-opacity:0.5;");
+	loadStyle("Prop", "ParameterOPCn.style", 
+              "stroke-width: 4; stroke: grey;stroke-dasharray: 9, 5; stroke-opacity:0.5;");
+	loadStyle("selecting", "FrxSelection.selectingStyle", 
+		      "stroke-width: 4; stroke: grey; fill: purple;stroke-dasharray: 9, 5; fill-opacity: 0.25");
+	loadStyle("selected", "FrxSelection.selectedStyle",
+              "stroke-width: 4; stroke: black; fill: purple; fill-opacity: 0.25");
+	loadStyle("flag", "FrxFlag.style", 
+		      "stroke-width: 1; fill: darkgrey; stroke: darkgrey;font-size: 13; font-family: arial");
 	m.putProperty("FrxParameterLabel.style", 
 		createStyle("stroke-width: 1; stroke: red; fill: grey; fill-opacity: 0.25"));
 	m.putProperty("FrxBrowserList.selectedEntryStyle", 
 		createStyle("stroke: white; fill: lightblue;"));
 	m.putProperty("StatusMessage.style", 
 		createStyle("stroke-width: 1; stroke: darkgrey;font-size: 13; font-family: arial"));
-	m.putProperty("FrxFlag.style", 
-		createStyle("stroke-width: 1; fill: darkgrey; stroke: darkgrey;font-size: 13; font-family: arial"));
 	m.putProperty("ProcessorInput.displayStyle", createStyle("fill: white; font-size: 10; font-family: arial"));
 	m.putProperty("ProcessorOutput.displayStyle", createStyle("fill: white; font-size: 10; font-family: arial"));
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<images

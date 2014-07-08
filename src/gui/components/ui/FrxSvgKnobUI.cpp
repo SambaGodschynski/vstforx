@@ -116,6 +116,8 @@ void FrxSvgKnobUI::installUI(sdc::AComponentPtr c) {
     coronaKnob->setStyle(style);
     // install listener
     installKnobListener();
+    // update value
+    par->getRangeModel()->setValue(par->getRangeModel()->getValue());
 
 }
 }}}} // namespace(s)

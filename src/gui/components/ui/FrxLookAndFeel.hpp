@@ -11,7 +11,8 @@
 #include <boost/shared_ptr.hpp>
 #include <sambag/disco/components/ui/basic/BasicLookAndFeel.hpp>
 #include <gui/HandyNamespaces.hpp>
-
+#include <sambag/disco/svg/Image.hpp>
+#include <sambag/com/ArithmeticWrapper.hpp>
 namespace frx { namespace gui {
 namespace components { namespace ui { 
 //=============================================================================
@@ -28,6 +29,9 @@ public:
 protected:
 	//-------------------------------------------------------------------------
 	FrxLookAndFeel();
+    //-------------------------------------------------------------------------
+    void loadStyle(const std::string &svgId,
+        const std::string &frxId, const std::string &fallback);
 	//-------------------------------------------------------------------------
 	virtual void installComponents();
 	//-------------------------------------------------------------------------
@@ -35,6 +39,9 @@ protected:
 	//-------------------------------------------------------------------------
 	void installTooltipManager();
 private:
+    //-------------------------------------------------------------------------
+    sds::Image::Ptr stylingRef;
+    sc::ArithmeticWrapper<bool> loadingStyleRefFailed;
 public:
 	//-------------------------------------------------------------------------
 	static Ptr create() {

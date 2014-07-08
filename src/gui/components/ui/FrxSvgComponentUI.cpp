@@ -141,7 +141,7 @@ void FrxSvgComponentUI::setImageComponent(sdc::SvgComponent::Ptr img) {
     if (imgc) {
         c->remove(imgc);
     }
-    sd::Dimension size = imageComponent->getSvgObject()->getSize().size();
+    sd::Dimension size = imageComponent->getSvgSize();
     imageComponent->setSize(size);
     c->setSize(size);
     c->add(imageComponent);

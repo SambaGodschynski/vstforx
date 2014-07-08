@@ -40,7 +40,9 @@ protected:
     //-------------------------------------------------------------------------
     void onProperty(const sce::PropertyChanged &ev);
     //-------------------------------------------------------------------------
-    boost::weak_ptr<sd::IDrawable> _state;
+    boost::weak_ptr<sd::IDrawable> _state, _display;
+    //-------------------------------------------------------------------------
+    void setDisplay(const std::string &txt);
 public:
 	//-------------------------------------------------------------------------
 	virtual void createPopupmenuEntries(sdc::PopupMenuPtr menu, 

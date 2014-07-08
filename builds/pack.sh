@@ -53,7 +53,8 @@ function packStandalone() {
     mkdir -p $target/$folder/scripts
     cp $bin/standalone$ext $target/$folder
     cp $ubin/unit_tests$ext $target/$folder
-    cp -r $src/images $target/$folder 
+    cp -r $src/images $target/$folder
+    cp -r $src/styles $target/$folder
     cp -r $src/testScripts $target/$folder
     cp -r $src/scripts $target/$folder
     cp license.txt $target/$folder
