@@ -17,7 +17,11 @@ const std::string FrxIO::PROPERTY_STATE = "property state";
 const std::string FrxIO::PROPERTY_DISPLAY_TXT = "property display txt";
 //-----------------------------------------------------------------------------
 bool FrxIO::getState(State state) const {
-	unsigned int mask = (1 << state);
+    return getState(state, states);
+}
+//-----------------------------------------------------------------------------
+bool FrxIO::getState(State state, int states) {
+    unsigned int mask = (1 << state);
 	return ((states & mask) == mask);
 }
 //-----------------------------------------------------------------------------

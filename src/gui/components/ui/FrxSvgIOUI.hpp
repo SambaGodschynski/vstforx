@@ -15,6 +15,7 @@
 #include <sambag/disco/IDiscoFactory.hpp>
 #include <sambag/disco/svg/graphicElements/Style.hpp>
 #include <gui/components/FrxFontCache.hpp>
+#include <sambag/com/events/PropertyChanged.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui { 
@@ -36,6 +37,10 @@ protected:
 	typedef FrxSvgIOUI ThisClassType;
 	//-------------------------------------------------------------------------
 	FrxSvgIOUI(){}
+    //-------------------------------------------------------------------------
+    void onProperty(const sce::PropertyChanged &ev);
+    //-------------------------------------------------------------------------
+    boost::weak_ptr<sd::IDrawable> _state;
 public:
 	//-------------------------------------------------------------------------
 	virtual void createPopupmenuEntries(sdc::PopupMenuPtr menu, 
@@ -44,10 +49,8 @@ public:
 	{
 	}
 	//-------------------------------------------------------------------------
-	virtual void installUI(sdc::AComponentPtr c) {
-        Super::installUI(c);
-    }
-	//-------------------------------------------------------------------------
+	virtual void installUI(sdc::AComponentPtr c);
+    //-------------------------------------------------------------------------
 	static Ptr create() {
 		Ptr res = Ptr(new ThisClassType());
 		res->self = res;

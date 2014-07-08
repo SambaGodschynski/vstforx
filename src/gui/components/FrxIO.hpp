@@ -67,6 +67,8 @@ public:
 	virtual bool getState(State state) const;
 	//-------------------------------------------------------------------------
 	virtual void setState(State state, bool val);
+    //-------------------------------------------------------------------------
+    static bool getState(State state, int states);
 }; // FrxIO
 }}} // namespace(s)
 
