@@ -10,7 +10,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
-#include <sambag/disco/components/ui/AComponentUI.hpp>
+#include <sambag/disco/components/ui/SvgComponentUI.hpp>
 #include <sambag/disco/components/Forward.hpp>
 #include <sambag/disco/svg/graphicElements/Style.hpp>
 #include <sambag/disco/components/SvgComponent.hpp>
@@ -25,7 +25,7 @@ namespace components { namespace ui {
 /** 
   * @class FrxSvgComponentUI.
   */
-class FrxSvgComponentUI : public sdcu::AComponentUI {
+class FrxSvgComponentUI : public sdcu::SvgComponentUIBase {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------

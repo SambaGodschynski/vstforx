@@ -14,17 +14,6 @@
 namespace frx { namespace gui { namespace components {
 namespace processorTypes {
 void Plugin::init( FrxProcessorNode::Ptr obj ) {
-	sdc::Button::Ptr btn(sdc::Button::create());
-	btn->setIcon(
-		sd::getResourceManager().getImage("Plugin.e.image")
-	);
-	btn->setSize(sd::Dimension(30., 30.));
-	btn->setFont( btn->getFont().setSize(25.) );
-	btn->setTooltipText("click the (e) to open/close plug's editor.");
-	//btn->putClientProperty("Button.cornerRadius", sd::Coordinate(10.));
-	btn->putClientProperty("Button.drawRect", false);
-	btn->setInheritsPopupMenu(true);
-	obj->add(btn);
 }
 ///////////////////////////////////////////////////////////////////////////////
 // Processor Details

@@ -346,8 +346,7 @@ void FrxSvgNodeUI::onMouse(void *src,
 bool FrxSvgNodeUI::contains(sdc::AComponentPtr c, const sd::Point2D &p) {
     sdc::AComponent::Ptr corona = getCorona();
     if (corona->isVisible()) {
-        return sd::Rectangle(0,0,corona->getWidth(),
-               corona->getHeight()).contains(p);
+        return corona->getBounds().contains(p);
     }
     sdc::AComponent::Ptr core = getCore();
     return core->getBounds().contains(p);

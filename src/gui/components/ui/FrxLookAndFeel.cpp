@@ -19,6 +19,7 @@
 #include <gui/components/FrxConcreteProcessor.hpp>
 #include <gui/components/ui/FrxProcessorNodeUI.hpp>
 #include <gui/components/ui/FrxSvgProcessorUI.hpp>
+#include <gui/components/ui/FrxSvgPluginUI.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 #include <gui/components/ui/FrxCircuidViewUI.hpp>
 #include <gui/components/FrxConcreteConnections.hpp>
@@ -71,19 +72,30 @@ void FrxLookAndFeel::installTooltipManager() {
 }
 //-----------------------------------------------------------------------------
 namespace {
-    template <class Processors>
-    void registerProcessors(sdcu::ALookAndFeel &laf) {
+    template <class Processor>
+    void registerProcessor(sdcu::ALookAndFeel &laf) {
         namespace fgc = frx::gui::components;
         namespace fgcu = fgc::ui;
-        typedef typename Processors::Head FrxProcessor;
-        laf.registerComponentUI<FrxProcessor,
-            fgcu::FrxProcessorNodeUI<FrxProcessor> >();
-        laf.registerComponentUI<FrxProcessor,
+        laf.registerComponentUI<Processor,
             fgcu::FrxDualUI<
                 fgcu::FrxSvgProcessorUI,
-                fgcu::FrxProcessorNodeUI<FrxProcessor>
+                fgcu::FrxProcessorNodeUI<Processor>
         > >();
-        
+    }
+    template <>
+    void registerProcessor<FrxPluginNode>(sdcu::ALookAndFeel &laf) {
+        namespace fgc = frx::gui::components;
+        namespace fgcu = fgc::ui;
+        laf.registerComponentUI<FrxPluginNode,
+            fgcu::FrxDualUI<
+                fgcu::FrxSvgPluginUI,
+                fgcu::FrxProcessorNodeUI<FrxPluginNode>
+        > >();
+    }
+    template <class Processors>
+    void registerProcessors(sdcu::ALookAndFeel &laf) {
+        typedef typename Processors::Head FrxProcessor;
+        registerProcessor<FrxProcessor>(laf);
         registerProcessors<typename Processors::Tail>(laf);
     }
     template <>

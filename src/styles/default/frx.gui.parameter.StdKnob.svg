@@ -29,8 +29,8 @@
 	    stroke-width="1"
 	    />
 
-    <g class="disco disco-knob node-inner">
-      <g class="disco disco-knob-handle">
+    <g class="disco disco-knob">
+      <g class="disco disco-knob-handle node-inner">
 	<circle cx="0" cy="0" 
 		r="10px"
 		stroke-width="2"

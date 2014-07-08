@@ -404,6 +404,32 @@ FrxCircuidView::createComponentUI(sdcu::ALookAndFeelPtr laf) const
 	return laf->getUI<FrxCircuidView>();
 }
 //-----------------------------------------------------------------------------
+namespace {
+    boost::tuple<sdc::SvgComponent::Ptr,
+        sdc::SvgComponent::Dummy::Ptr,
+        sdc::SvgComponent::Dummy::Ptr>
+    _loadSvgBg(const std::string &x, bool isFile) {
+        sdc::SvgComponent::Ptr svg;
+        sdc::SvgComponent::Dummy::Ptr bg;
+        sdc::SvgComponent::Dummy::Ptr svgMain;
+        svg = sdc::SvgComponent::create();
+        if (isFile) {
+            svg->setSvgFilename(x);
+        } else {
+            svg->setSvgString(x);
+        }
+        svgMain = svg->getDummyById("#main");
+        if (!svgMain) {
+            throw std::runtime_error("missing svg #main component");
+        }
+        bg = svg->getDummyById("#background");
+        if (!svgMain) {
+            throw std::runtime_error("missing svg #background component");
+        }
+        return boost::make_tuple(svg, bg, svgMain);
+    }
+}
+//-----------------------------------------------------------------------------
 void FrxCircuidView::postConstructor() {
 	Super::setLayout(sdc::BorderLayout::create());
 	// init mainview
@@ -413,28 +439,16 @@ void FrxCircuidView::postConstructor() {
     sdc::SvgComponent::Dummy::Ptr bg;
     sdc::SvgComponent::Dummy::Ptr svgMain;
     try {
-        svg = sdc::SvgComponent::create();
-        svg->setSvgFilename(com::getSettings().getStylePath()+"/bg.svg");
-        svgMain = svg->getDummyById("#main");
-        if (!svgMain) {
-            throw std::runtime_error("missing svg #main component");
-        }
-        bg = svg->getDummyById("#background");
-        if (!svgMain) {
-            throw std::runtime_error("missing svg #background component");
-        }
+        boost::tie(svg, bg, svgMain) =
+            _loadSvgBg(com::getSettings().getStylePath()+"/bg.svg", true);
     } catch(const std::exception &ex) {
         errorMessage(ex.what());
-        svg = sdc::SvgComponent::create();
-        svg->setSvgString(SVG_FALLBACK);
-        svgMain = svg->getDummyById("#main");
-        if (!svgMain) {
-            throw std::runtime_error("missing svg #main component");
-        }
-        bg = svg->getDummyById("#background");
-        if (!svgMain) {
-            throw std::runtime_error("missing svg #background component");
-        }
+        boost::tie(svg, bg, svgMain) =
+            _loadSvgBg(SVG_FALLBACK, false);
+    } catch(...) {
+        errorMessage("loading bg.svg failed: unknown error");
+        boost::tie(svg, bg, svgMain) =
+            _loadSvgBg(SVG_FALLBACK, false);
     }
     Super::add(svg);
 	svgMain->setLayout(sdc::BorderLayout::create());

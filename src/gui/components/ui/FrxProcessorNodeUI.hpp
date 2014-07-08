@@ -23,6 +23,7 @@
 #include <boost/assign.hpp>
 #include <gui/HandyNamespaces.hpp>
 #include <gui/components/FrxCircuidView.hpp>
+#include <sambag/disco/components/Button.hpp>
 
 namespace frx { namespace gui {
 namespace components { namespace ui {
@@ -179,11 +180,22 @@ inline void installSpecificDefs<FrxPluginNode>(sdc::AComponentPtr _c)
 	if (!c) {
 		return;
 	}
-	if (c->getComponentCount() == 0) {
-		return;
-	}
+    
 	FrxCircuidView::Ptr view = c->getFirstContainer<FrxCircuidView>();
-	sdc::AComponent::Ptr edctrl = c->getComponent(0);
+    
+    // install (e) button
+    sdc::Button::Ptr edctrl(sdc::Button::create());
+	edctrl->setIcon(
+		sd::getResourceManager().getImage("Plugin.e.image")
+	);
+	edctrl->setSize(sd::Dimension(30., 30.));
+	edctrl->setFont( edctrl->getFont().setSize(25.) );
+	edctrl->setTooltipText("click the (e) to open/close plug's editor.");
+	edctrl->putClientProperty("Button.drawRect", false);
+	edctrl->setInheritsPopupMenu(true);
+	c->add(edctrl);
+    
+    
 	if (!edctrl || !view) {
 		return;
 	}
