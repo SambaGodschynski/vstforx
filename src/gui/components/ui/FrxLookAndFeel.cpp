@@ -43,6 +43,7 @@
 #include <gui/components/FrxTooltipManager.hpp>
 #include <gui/components/FrxFlag.hpp>
 #include <gui/components/ui/FrxFlagUI.hpp>
+#include <gui/components/ui/FrxSvgPacketUI.hpp>
 #include <sambag/disco/components/Knob.hpp>
 #include <gui/components/ui/FrxKnobUI.hpp>
 #include <sambag/disco/DiscoHelper.hpp>
@@ -164,7 +165,10 @@ void FrxLookAndFeel::installComponents() {
 	registerComponentUI<fgc::FrxFlag, 
 		fgcu::FrxFlagUI>();
     registerComponentUI<fgc::FrxPacket,
-		fgcu::FrxPacketUI>();
+		fgcu::FrxDualUI<
+            fgcu::FrxSvgPacketUI,
+            fgcu::FrxPacketUI
+    > >();
 	// browser
 	using namespace sdc::ui::basic;
 	typedef FrxColumnBrowser::BrowserImpl CBrowser;
@@ -280,28 +284,30 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("SetupWindow.style", style);
 	m.putProperty("FrxComponent.menu.label.style", 
 		createStyle("stroke:darkgrey; fill:royalblue; font-size: 12; font-family: arial; font-style: italic;"));
-	loadStyle("I2O", "IOCn.style",
+	loadStyle("#I2O", "IOCn.style",
               "stroke-width: 4; stroke: darkgrey; stroke-opacity:0.5;");
-	loadStyle("I2O_R", "IOCn.hoverStyle", 
+	loadStyle("#I2O_R", "IOCn.hoverStyle",
 		      "stroke-width: 8; stroke: darkgrey; stroke-opacity:0.5;");
-	loadStyle("Pc2I", "ProcessorInputCn.style", 
+	loadStyle("#Pc2I", "ProcessorInputCn.style",
 		      "stroke-width: 8; stroke: darkgrey; stroke-opacity:0.5;");
-	loadStyle("Pc2O", "ProcessorOutputCn.style", 
+	loadStyle("#Pc2O", "ProcessorOutputCn.style",
               "stroke-width: 8; stroke: darkgrey; stroke-opacity:0.5;");
-	loadStyle("Pc2Pr", "ProcessorParameterCn.style", 
+	loadStyle("#Pc2Pr", "ProcessorParameterCn.style",
 		      "stroke-width: 2; stroke: red; purple;stroke-dasharray: 9, 5; stroke-opacity:0.5;");
-	loadStyle("Pr2Pr", "ParameterCn.style", 
+	loadStyle("#Pr2Pr", "ParameterCn.style",
 		      "stroke-width: 4; stroke: green;stroke-dasharray: 9, 5; stroke-opacity:0.5;");
-	loadStyle("Pr2Pr_R", "ParameterCn.hoverStyle", 
+	loadStyle("#Pr2Pr_R", "ParameterCn.hoverStyle",
               "stroke-width: 8; stroke: green;stroke-dasharray: 9, 5; stroke-opacity:0.5;");
-	loadStyle("Prop", "ParameterOPCn.style", 
+	loadStyle("#Prop", "ParameterOPCn.style",
               "stroke-width: 4; stroke: grey;stroke-dasharray: 9, 5; stroke-opacity:0.5;");
-	loadStyle("selecting", "FrxSelection.selectingStyle", 
+	loadStyle("#selecting", "FrxSelection.selectingStyle",
 		      "stroke-width: 4; stroke: grey; fill: purple;stroke-dasharray: 9, 5; fill-opacity: 0.25");
-	loadStyle("selected", "FrxSelection.selectedStyle",
+	loadStyle("#selected", "FrxSelection.selectedStyle",
               "stroke-width: 4; stroke: black; fill: purple; fill-opacity: 0.25");
-	loadStyle("flag", "FrxFlag.style", 
+	loadStyle("#flag", "FrxFlag.style", 
 		      "stroke-width: 1; fill: darkgrey; stroke: darkgrey;font-size: 13; font-family: arial");
+	loadStyle("#connecting", "FrxCircuidView.connector", 
+		      "stroke-width: 2; stroke: red;");
 	m.putProperty("FrxParameterLabel.style", 
 		createStyle("stroke-width: 1; stroke: red; fill: grey; fill-opacity: 0.25"));
 	m.putProperty("FrxBrowserList.selectedEntryStyle", 

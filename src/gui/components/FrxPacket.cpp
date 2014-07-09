@@ -31,6 +31,7 @@ void FrxPacket::postConstructor() {
         boost::bind(&FrxPacket::onPropertyChanged, this, _2)
     );
     setName("Packet");
+    __setTypeId_("frx.gui.internal.Packet");
 }
 //-----------------------------------------------------------------------------
 void FrxPacket::onPropertyChanged(const sce::PropertyChanged &ev) {

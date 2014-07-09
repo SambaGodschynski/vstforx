@@ -261,6 +261,7 @@ void FrxFlagUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	cn->stroke();
 
 	// draw text
+    cn->setFillColor(cn->getStrokeColor());
 	cn->setStrokeWidth(0.0);
 	cn->moveTo(sd::Point2D(distance.x(), fs/2. - 2.));
 	drawText(cn, target->getUpperFlagText());

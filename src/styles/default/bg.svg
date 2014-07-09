@@ -20,11 +20,11 @@
   <g>
     <rect x="0" y="0" width="100%" height="100%" 
 	  stroke-width="0" />
-    <rect x="0" y="0" width="100%" height="100%"
+    <rect x="0" y="10%" width="100%" height="75%"
 	  fill="url(#bg)" class="disco" id="background" stroke="black"/>
-    <rect x="0" y="0" width="100%" height="100%"
+    <rect x="0" y="10%" width="100%" height="75%"
 	  class="disco" id="main" fill="none"/>
-    <rect x="0" y="0" width="100%" height="100%"
+    <rect x="0" y="10%" width="100%" height="75%"
 	  fill="url(#shader)" stroke="black"/>
   </g>  
 </svg>

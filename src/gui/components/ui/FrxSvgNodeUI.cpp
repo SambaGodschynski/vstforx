@@ -68,6 +68,7 @@ sdc::SvgComponent::Dummy::Ptr FrxSvgNodeUI::getCore() const {
 }
 //-----------------------------------------------------------------------------
 void FrxSvgNodeUI::installDefaults(sdc::AComponent::Ptr c) {
+    sdcu::UIManager &uim = sdcu::getUIManager();
 	Super::installDefaults(c);
     // set corona alpha
     sdc::SvgComponent::Dummy::Ptr corona = getCorona();
@@ -86,9 +87,11 @@ void FrxSvgNodeUI::installDefaults(sdc::AComponent::Ptr c) {
 	line->getP0().y().setType(sd::svg::units::Unit::PX);
 	line->getP1().x().setType(sd::svg::units::Unit::PX);
 	line->getP1().y().setType(sd::svg::units::Unit::PX);
-	toConnect->setForeground(sd::ColorRGBA(1));
+	sdsg::Style lstyle;
+    uim.getProperty("FrxCircuidView.connector", lstyle);
+    toConnect->setStyle(lstyle);
+    
 	// fade timer
-	sdcu::UIManager &uim = sdcu::getUIManager();
 	long duration = 150, rfRate = 15;
 	std::string tweenType = "lin";
 	

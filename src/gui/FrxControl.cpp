@@ -715,7 +715,6 @@ fgc::FrxComponentPtr FrxControl::_addRelatedKnobToView(fgc::FrxCircuidViewPtr vi
 	// register knob
 	if (!map->registerObjects(knob, par))
 		return fgc::FrxComponentPtr();
-	registerComponent(view, knob);
 	// create connection
 	FrxConnection::Ptr cn = createConnectionForKnobAnd(c);
 	if (!cn) {
@@ -725,6 +724,7 @@ fgc::FrxComponentPtr FrxControl::_addRelatedKnobToView(fgc::FrxCircuidViewPtr vi
 	cn->setDstComponent(knob);
 	view->add(cn, FrxCircuidView::Z_Wires);
 	view->add(knob, FrxCircuidView::Z_Knobs);
+    registerComponent(view, knob);
 	return knob;
 }
 //-----------------------------------------------------------------------------

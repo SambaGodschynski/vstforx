@@ -29,13 +29,13 @@
 	   R = rollover
       --> 
       <line 
-	  id="connecting" x1="255px" y1="300px" x2="305px" y2="100px"
-	  style="stroke-width: 2; stroke: red; purple;stroke-dasharray: 9, 5; stroke-opacity:0.5;"
+	  id="connecting" x1="225px" y1="300px" x2="275px" y2="100px"
+	  style="stroke-width: 2; stroke: red;"
 	  />
       
       <line 
 	  id="I2O"   x1="35px" y1="300px" x2="85px" y2="100px"
-	  style="stroke-width: 4; stroke: yellow; stroke-opacity:0.5;"
+	  style="stroke-width: 4; stroke: darkgrey; stroke-opacity:0.5;"
 	    />
       <line 
 	  id="I2O_R"   x1="55px" y1="300px" x2="105px" y2="100px"
@@ -74,7 +74,7 @@
 	  style="stroke-width: 4; stroke: grey; fill: purple;stroke-dasharray: 9, 5; fill-opacity: 0.25"
 	  />
       <rect 
-	  id="selecting" x="500px" y="210px" width="200" height="100"
+	  id="selected" x="500px" y="210px" width="200" height="100"
 	  style="stroke-width: 4; stroke: black; fill: purple; fill-opacity: 0.25"
 	  />
     </g>
