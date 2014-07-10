@@ -83,7 +83,7 @@ windowWidth(MIN_WINDOW_WIDTH),
 windowHeight(MIN_WINDOW_HEIGHT),
 maxLogSize( KILO * 2000 ),
 fastScan ( true ),
-stylePath("styles/default")
+style("default")
 {
 }
 //------------------------------------------------------------------------------------------------------------
@@ -172,9 +172,17 @@ bool Settings::removePluginFolder ( const std::string &path ) {
 bool Settings::removeVSTFolder ( const std::string &path ) {
 	return removePluginFolder(path);
 }
-//--------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------
+std::string Settings::getStyle() const {
+    return style;
+}
+//------------------------------------------------------------------------------------------------------------
 std::string Settings::getStylePath() const {
-    return getHomeDirectory() + "/" + stylePath;
+    return getStyleRootPath() + "/" + getStyle();
+}
+//------------------------------------------------------------------------------------------------------------
+std::string Settings::getStyleRootPath() const {
+    return getHomeDirectory() + "/styles";
 }
 //------------------------------------------------------------------------------------------------------------
 void Settings::loadConfigFile() { // TODO: use boost::Program_options
@@ -232,7 +240,7 @@ void Settings::loadConfigFile() { // TODO: use boost::Program_options
         if ( token == STYLE ) {
 			if ( cont.length() == 0 )
                 continue;
-			stylePath=cont;
+			style=cont;
 		}
 	}
 	f.close();
@@ -260,7 +268,7 @@ void Settings::saveConfigFile() {  // TODO: use boost::Program_options
 	f<<MAX_LOGSIZE<<"="<<( getMaxLogSize() / KILO )<<std::endl;
 	// fastScan
 	f<<SKIP_SCAN<<"="<<isFastScan()<<std::endl;
-    f<<STYLE<<"="<<stylePath;
+    f<<STYLE<<"="<<style;
 	f.close();
 }
 //------------------------------------------------------------------------------------------------------------
@@ -297,6 +305,10 @@ std::string Settings::getStringValue(const std::string &key) const {
 }
 //------------------------------------------------------------------------------------------------------------
 void Settings::setStringValue(const std::string &key, const std::string &val) {
+    if (key=="style") {
+        style = val;
+        return;
+    }
 	SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
 		"Key: " + key + " not found.");
 }

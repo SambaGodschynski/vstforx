@@ -25,8 +25,32 @@
 #include <queue>
 #include <boost/unordered_map.hpp>
 #include <com/one4All.h>
+#include <sambag/disco/components/SvgComponent.hpp>
+#include <sambag/com/Filesystem.hpp>
 
 namespace frx { namespace gui { namespace components {
+namespace {
+    template <class C>
+    struct _StyleVis : public sc::IWalkerVisitor {
+        C &c;
+        _StyleVis(C &c) : c(c) {}
+        virtual bool changeDirectory (const sc::Location & path){
+            return true;
+        }
+        virtual void file ( const sc::Location & file ) {
+            // search for preview.svg
+            if (file.filename()=="preview.svg") {
+                c.push_back(file.parent_path().string());
+            }
+        }
+    };
+    template <class C>
+    void _scanForStyles(const std::string &root, C &out) {
+        _StyleVis<C> vis(out);
+        sc::dirWalker(root, vis);
+    }
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 //=============================================================================
 //  Class ScanningDialog
@@ -420,13 +444,27 @@ void SetupWindow::saveSettings() {
 	if (!ctrl)
 		return;
 	// directories already at place
-	ctrl->setBooleanValue("fastScan", chkbxFS->isButtonSelected());
+	// fastscan
+    ctrl->setBooleanValue("fastScan", chkbxFS->isButtonSelected());
 	// window size
 	sambag::disco::Dimension size = ctrl->getEditorSize();
 	if (size!=NULL_DIMENSION) {
 		ctrl->setIntegerValue("editorWidth", (int)size.width());
 		ctrl->setIntegerValue("editorHeight", (int)size.height());
 	}
+    // look and feel
+    if (styleList) {
+        const std::string *sel = styleList->getSelectedValue();
+        if (!sel || sel->empty()) {
+            return;
+        }
+        if (*sel != ::com::getSettings().getStyle()) {
+            ::com::osMessageBox (
+                "Look And Feel changed!", std::string("you need to reopen the editor."), ::com::MSG_HINT
+            );
+            ctrl->setStyle(*sel);
+        }
+    }
 	ctrl->saveSettings();
 }
 //-----------------------------------------------------------------------------
@@ -460,7 +498,7 @@ void SetupWindow::postConstructor() {
 	getContentPane()->add(createSetupPane(), sdc::BorderLayout::CENTER, APPEND);
 	getContentPane()->add(createMainBtnPane(), sdc::BorderLayout::SOUTH, APPEND);
 	setWindowSize(sd::Dimension(623., 462.));
-	windowImpl->setFlag(sdc::WindowFlags::WND_RESIZEABLE, false);
+	windowImpl->setFlag(sdc::WindowFlags::WND_RESIZEABLE, true);
 }
 //-----------------------------------------------------------------------------
 SetupWindow::~SetupWindow() {
@@ -490,15 +528,95 @@ void SetupWindow::onFastScanSelected(void *, const sdc::events::ActionEvent &ev)
 sdc::AContainerPtr SetupWindow::createMiscPane() {
 	sdc::Panel::Ptr pane = sdc::Panel::create();
 	pane->add( createWindowSizePane() );
+    pane->add( createStylePane() );
 	pane->setBackground(getContentPane()->getBackgroundPattern());
-	chkbxFS = sdc::CheckBox::create();
-	chkbxFS->setText("Fastscan");
-	chkbxFS->setOpaque(false);
-	chkbxFS->sce::EventSender<sdc::events::ActionEvent>::addEventListener(
-		boost::bind(&SetupWindow::onFastScanSelected, this, _1, _2)
-	);
-	pane->add(chkbxFS);
 	return pane;
+}
+//-----------------------------------------------------------------------------
+void SetupWindow::updatePreview(const std::string &path) {
+    if (!preview) {
+        return;
+    }
+    sdc::SvgComponent::Ptr img =
+        boost::dynamic_pointer_cast<sdc::SvgComponent>(preview->getComponent(0));
+    if(!img) {
+        return;
+    }
+    std::string file = path;
+    if (path.empty()) {
+        file = com::getSettings().getStylePath();
+    }
+    try {
+        file = file + "/preview.svg";
+        img->setSvgFilename(file);
+        img->setStretchToFit(true);
+        img->setSize(sd::Dimension(80,80));
+        img->setPreferredSize(sd::Dimension(80,80));
+        img->setMaximumSize(sd::Dimension(80,80));
+        img->revalidate();
+        img->redraw();
+    } catch (const std::exception &ex) {
+        SAMBAG_LOG_ERR<<"updatePreview("<<file<<"): "<<ex.what();
+    } catch (...) {
+        SAMBAG_LOG_ERR<<"updatePreview("<<file<<"): failed";
+    }
+    
+}
+//-----------------------------------------------------------------------------
+void SetupWindow::onStyleChanged() {
+    if (!styleList) {
+        return;
+    }
+    const std::string *sel = styleList->getSelectedValue();
+    if (!sel) {
+        return;
+    }
+    updatePreview(com::getSettings().getStyleRootPath() + "/" + *sel);
+}
+//-----------------------------------------------------------------------------
+sdc::AContainerPtr SetupWindow::createStylePane() {
+    sdc::Panel::Ptr pane = sdc::Panel::create();
+    sdc::TitledBorder::Ptr border = sdc::TitledBorder::create();
+    pane->setName("Look&Feel");
+    pane->setBorder(border);
+    // create list
+    styleList = sdc::StringList::create();
+    styleList->sce::EventSender<sdce::ListSelectionEvent>::addEventListener(
+        boost::bind(&SetupWindow::onStyleChanged, this)
+    );
+	styleListScrollPane = sdc::ScrollPane::create(styleList);
+	styleListScrollPane->setPreferredSize(sd::Dimension(183, 83));
+    pane->add(styleListScrollPane);
+    // fill list
+    std::vector<std::string> styles;
+    std::string root = com::getSettings().getStyleRootPath();
+    std::string curr = com::getSettings().getStyle();
+    _scanForStyles(root, styles);
+    int c=0, sel=0;
+    BOOST_FOREACH(const std::string &x, styles) {
+        size_t e = x.find(root); // remove root
+        if (e==std::string::npos) {
+            continue;
+        }
+        e+=root.length()+1;
+        if (e>=x.length()) {
+            continue;
+        }
+        std::string entry(x.begin()+e, x.end());
+        styleList->addElement(entry);
+        if (entry==curr) {
+            sel=c;
+        }
+        c++;
+    }
+    styleList->setSelectedIndex(sel);
+    // create preview
+    preview = sdc::Panel::create();
+    sdc::SvgComponent::Ptr img = sdc::SvgComponent::create();
+    preview->add(img);
+    pane->add(preview);
+    updatePreview();
+    return pane;
 }
 //-----------------------------------------------------------------------------
 sdc::AContainerPtr SetupWindow::createWindowSizePane() {
@@ -511,7 +629,7 @@ sdc::AContainerPtr SetupWindow::createWindowSizePane() {
 	rszBtnHandler = ResizeBtnHandler::create(this);
 	
 	sdc::TitledBorder::Ptr border = sdc::TitledBorder::create();
-	ueberpane->setName("Window Size:");
+	ueberpane->setName("Window Size");
 	ueberpane->setBorder(border);
 	ueberpane->add(pane);
 	
@@ -564,7 +682,7 @@ sdc::AContainerPtr SetupWindow::createWindowSizePane() {
 sdc::AContainerPtr SetupWindow::createDirListBtnPane() {
 	dirListBtnPane = sdc::Panel::create();
 	dirListBtnPane->setBackground(getContentPane()->getBackground());
-	dirListBtnPane->setLayout(sdc::GridLayout::create(4,0,0,5.));
+	dirListBtnPane->setLayout(sdc::GridLayout::create(5,0,0,5.));
 	sdc::Button::Ptr btn =
 		createBtn(&SetupWindow::onBtnAddDirPressed, "add directory");
 	dirListBtnPane->add(btn);
@@ -580,6 +698,14 @@ sdc::AContainerPtr SetupWindow::createDirListBtnPane() {
 	rescanBtn = btn =
 		createBtn(&SetupWindow::onBtnRescanPressed, "rescan");
 	dirListBtnPane->add(btn);
+    
+    chkbxFS = sdc::CheckBox::create();
+	chkbxFS->setText("Fastscan");
+	chkbxFS->setOpaque(false);
+	chkbxFS->sce::EventSender<sdc::events::ActionEvent>::addEventListener(
+		boost::bind(&SetupWindow::onFastScanSelected, this, _1, _2)
+	);
+	dirListBtnPane->add(chkbxFS);
 
 	return dirListBtnPane;
 }
@@ -658,7 +784,7 @@ void SetupWindow::onBtnOkPressed(void *, const sdc::events::ActionEvent &ev) {
 		return;
 	} catch(...) {
 		::com::osMessageBox ( 
-			"Error", "saving setting failed: unkown reason.", ::com::MSG_ALERT 
+			"Error", "saving setting failed: unknown reason.", ::com::MSG_ALERT 
 		);
 		return;
 	}
@@ -682,7 +808,7 @@ void SetupWindow::onBtnRescanPressed(void *, const sdc::events::ActionEvent &ev)
 		//return;
 	} catch(...) {
 		::com::osMessageBox ( 
-			"Error", "saving setting failed: unkown reason.", ::com::MSG_ALERT 
+			"Error", "saving setting failed: unknown reason.", ::com::MSG_ALERT
 		);
 		return;
 	}

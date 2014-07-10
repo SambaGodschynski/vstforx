@@ -52,7 +52,13 @@ protected:
 	//-------------------------------------------------------------------------
 	sdc::AContainerPtr createMiscPane();
 	//-------------------------------------------------------------------------
+	sdc::AContainerPtr createStylePane();
+	//-------------------------------------------------------------------------
 	sdc::AContainerPtr createWindowSizePane();
+    //-------------------------------------------------------------------------
+    void onStyleChanged();
+    //-------------------------------------------------------------------------
+    void updatePreview(const std::string &path="");
 private:
 	//-------------------------------------------------------------------------
 	struct ResizeBtnHandler;
@@ -61,13 +67,13 @@ private:
 	//-------------------------------------------------------------------------
 	SetupCtrl::Ptr ctrl;
 	//-------------------------------------------------------------------------
-	sdc::AContainerPtr dirListPane, dirListBtnPane, mainBtnPane;
+	sdc::AContainerPtr dirListPane, dirListBtnPane, mainBtnPane, preview;
     //-------------------------------------------------------------------------
     sdc::ButtonPtr rescanBtn;
 	//-------------------------------------------------------------------------
-	sdc::StringList::Ptr dirList;
+	sdc::StringList::Ptr dirList, styleList;
 	//-------------------------------------------------------------------------
-	sdc::ScrollPanePtr dirListScrollPane;
+	sdc::ScrollPanePtr dirListScrollPane, styleListScrollPane;
 	//-------------------------------------------------------------------------
 	sdc::CheckBox::Ptr chkbxFS;
 	//-------------------------------------------------------------------------

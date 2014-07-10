@@ -88,6 +88,10 @@ void SetupCtrl::saveSettings() {
 	::com::getSettings().saveConfigFile();
 }
 //-----------------------------------------------------------------------------
+void SetupCtrl::setStyle(const std::string &style) {
+    ::com::getSettings().setStringValue("style", style);
+}
+//-----------------------------------------------------------------------------
 namespace {
 boost::thread scanThread;
 sambag::com::Mutex mutex;

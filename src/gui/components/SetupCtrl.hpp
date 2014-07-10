@@ -83,6 +83,8 @@ public:
 	 * @see boost::thread::join()
 	 */
 	void joinScan();
+    //-------------------------------------------------------------------------
+    void setStyle(const std::string &style);
 	//-------------------------------------------------------------------------
 	std::string selectDirectory(const std::string &startDir, 
 		sdc::WindowPtr parent) const;
