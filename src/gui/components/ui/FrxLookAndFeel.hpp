@@ -37,12 +37,16 @@ protected:
 	//-------------------------------------------------------------------------
 	virtual void installDefaults();
 	//-------------------------------------------------------------------------
+	virtual void loadStyleDefaults();
+	//-------------------------------------------------------------------------
 	void installTooltipManager();
 private:
     //-------------------------------------------------------------------------
     sds::Image::Ptr stylingRef;
     sc::ArithmeticWrapper<bool> loadingStyleRefFailed;
 public:
+    //-------------------------------------------------------------------------
+    void reloadStyleDefaults();
 	//-------------------------------------------------------------------------
 	static Ptr create() {
 		Ptr res(new FrxLookAndFeel());

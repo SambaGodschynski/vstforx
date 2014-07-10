@@ -58,7 +58,7 @@ protected:
     //-------------------------------------------------------------------------
     void onStyleChanged();
     //-------------------------------------------------------------------------
-    void updatePreview(const std::string &path="");
+    void updatePreview(const std::string &path);
 private:
 	//-------------------------------------------------------------------------
 	struct ResizeBtnHandler;

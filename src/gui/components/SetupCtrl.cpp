@@ -16,6 +16,9 @@
 #include <sambag/disco/components/Window.hpp>
 #include <com/one4All.h>
 #include <sambag/com/Thread.hpp>
+#include <sambag/disco/components/RootPane.hpp>
+#include <gui/components/ui/FrxLookAndFeel.hpp>
+#include <sambag/disco/components/ui/UIManager.hpp>
 
 namespace com {
 extern std::string osSelectDirectory(const std::string &wndTitle, 
@@ -90,6 +93,18 @@ void SetupCtrl::saveSettings() {
 //-----------------------------------------------------------------------------
 void SetupCtrl::setStyle(const std::string &style) {
     ::com::getSettings().setStringValue("style", style);
+    // update lookandfeel
+    sdc::RootPane::Ptr root = view->getFirstContainer<sdc::RootPane>();
+    if (!root) {
+        return;
+    }
+    sdcu::resetUIPorpertyCache();
+    fgc::ui::FrxLookAndFeel::Ptr laf =
+        boost::dynamic_pointer_cast<fgc::ui::FrxLookAndFeel>(root->getCurrentLookAndFeel());
+    if (!laf) {
+        return;
+    }
+    laf->reloadStyleDefaults();
 }
 //-----------------------------------------------------------------------------
 namespace {

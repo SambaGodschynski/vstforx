@@ -212,6 +212,37 @@ void FrxLookAndFeel::loadStyle(const std::string &svgId,
     m.putProperty(frxId, s);
 }
 //-----------------------------------------------------------------------------
+void FrxLookAndFeel::loadStyleDefaults() {
+    loadStyle("#I2O", "IOCn.style",
+              "stroke-width: 4; stroke: darkgrey; stroke-opacity:0.5;");
+	loadStyle("#I2O_R", "IOCn.hoverStyle",
+		      "stroke-width: 8; stroke: darkgrey; stroke-opacity:0.5;");
+	loadStyle("#Pc2I", "ProcessorInputCn.style",
+		      "stroke-width: 8; stroke: darkgrey; stroke-opacity:0.5;");
+	loadStyle("#Pc2O", "ProcessorOutputCn.style",
+              "stroke-width: 8; stroke: darkgrey; stroke-opacity:0.5;");
+	loadStyle("#Pc2Pr", "ProcessorParameterCn.style",
+		      "stroke-width: 2; stroke: red; purple;stroke-dasharray: 9, 5; stroke-opacity:0.5;");
+	loadStyle("#Pr2Pr", "ParameterCn.style",
+		      "stroke-width: 4; stroke: green;stroke-dasharray: 9, 5; stroke-opacity:0.5;");
+	loadStyle("#Pr2Pr_R", "ParameterCn.hoverStyle",
+              "stroke-width: 8; stroke: green;stroke-dasharray: 9, 5; stroke-opacity:0.5;");
+	loadStyle("#Prop", "ParameterOPCn.style",
+              "stroke-width: 4; stroke: grey;stroke-dasharray: 9, 5; stroke-opacity:0.5;");
+	loadStyle("#selecting", "FrxSelection.selectingStyle",
+		      "stroke-width: 4; stroke: grey; fill: purple;stroke-dasharray: 9, 5; fill-opacity: 0.25");
+	loadStyle("#selected", "FrxSelection.selectedStyle",
+              "stroke-width: 4; stroke: black; fill: purple; fill-opacity: 0.25");
+	loadStyle("#flag", "FrxFlag.style", 
+		      "stroke-width: 1; fill: darkgrey; stroke: darkgrey;font-size: 13; font-family: arial");
+	loadStyle("#connecting", "FrxCircuidView.connector", 
+		      "stroke-width: 2; stroke: red;");
+}
+//-----------------------------------------------------------------------------
+void FrxLookAndFeel::reloadStyleDefaults() {
+    loadStyleDefaults();
+}
+//-----------------------------------------------------------------------------
 void FrxLookAndFeel::installDefaults() {
 	Super::installDefaults();
 	using namespace sambag::disco;
@@ -284,30 +315,6 @@ void FrxLookAndFeel::installDefaults() {
 	m.putProperty("SetupWindow.style", style);
 	m.putProperty("FrxComponent.menu.label.style", 
 		createStyle("stroke:darkgrey; fill:royalblue; font-size: 12; font-family: arial; font-style: italic;"));
-	loadStyle("#I2O", "IOCn.style",
-              "stroke-width: 4; stroke: darkgrey; stroke-opacity:0.5;");
-	loadStyle("#I2O_R", "IOCn.hoverStyle",
-		      "stroke-width: 8; stroke: darkgrey; stroke-opacity:0.5;");
-	loadStyle("#Pc2I", "ProcessorInputCn.style",
-		      "stroke-width: 8; stroke: darkgrey; stroke-opacity:0.5;");
-	loadStyle("#Pc2O", "ProcessorOutputCn.style",
-              "stroke-width: 8; stroke: darkgrey; stroke-opacity:0.5;");
-	loadStyle("#Pc2Pr", "ProcessorParameterCn.style",
-		      "stroke-width: 2; stroke: red; purple;stroke-dasharray: 9, 5; stroke-opacity:0.5;");
-	loadStyle("#Pr2Pr", "ParameterCn.style",
-		      "stroke-width: 4; stroke: green;stroke-dasharray: 9, 5; stroke-opacity:0.5;");
-	loadStyle("#Pr2Pr_R", "ParameterCn.hoverStyle",
-              "stroke-width: 8; stroke: green;stroke-dasharray: 9, 5; stroke-opacity:0.5;");
-	loadStyle("#Prop", "ParameterOPCn.style",
-              "stroke-width: 4; stroke: grey;stroke-dasharray: 9, 5; stroke-opacity:0.5;");
-	loadStyle("#selecting", "FrxSelection.selectingStyle",
-		      "stroke-width: 4; stroke: grey; fill: purple;stroke-dasharray: 9, 5; fill-opacity: 0.25");
-	loadStyle("#selected", "FrxSelection.selectedStyle",
-              "stroke-width: 4; stroke: black; fill: purple; fill-opacity: 0.25");
-	loadStyle("#flag", "FrxFlag.style", 
-		      "stroke-width: 1; fill: darkgrey; stroke: darkgrey;font-size: 13; font-family: arial");
-	loadStyle("#connecting", "FrxCircuidView.connector", 
-		      "stroke-width: 2; stroke: red;");
 	m.putProperty("FrxParameterLabel.style", 
 		createStyle("stroke-width: 1; stroke: red; fill: grey; fill-opacity: 0.25"));
 	m.putProperty("FrxBrowserList.selectedEntryStyle", 
@@ -316,6 +323,8 @@ void FrxLookAndFeel::installDefaults() {
 		createStyle("stroke-width: 1; stroke: darkgrey;font-size: 13; font-family: arial"));
 	m.putProperty("ProcessorInput.displayStyle", createStyle("fill: white; font-size: 10; font-family: arial"));
 	m.putProperty("ProcessorOutput.displayStyle", createStyle("fill: white; font-size: 10; font-family: arial"));
+    //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<style defaults
+    loadStyleDefaults();
 	//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<images
 	FileResourceManager *rManager = dynamic_cast<FileResourceManager*> (
 		&getResourceManager()

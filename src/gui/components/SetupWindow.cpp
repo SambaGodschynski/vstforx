@@ -609,13 +609,13 @@ sdc::AContainerPtr SetupWindow::createStylePane() {
         }
         c++;
     }
-    styleList->setSelectedIndex(sel);
+    
     // create preview
     preview = sdc::Panel::create();
     sdc::SvgComponent::Ptr img = sdc::SvgComponent::create();
     preview->add(img);
     pane->add(preview);
-    updatePreview();
+    styleList->setSelectedIndex(sel);
     return pane;
 }
 //-----------------------------------------------------------------------------
