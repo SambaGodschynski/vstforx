@@ -26,31 +26,8 @@
 #include <boost/unordered_map.hpp>
 #include <com/one4All.h>
 #include <sambag/disco/components/SvgComponent.hpp>
-#include <sambag/com/Filesystem.hpp>
 
 namespace frx { namespace gui { namespace components {
-namespace {
-    template <class C>
-    struct _StyleVis : public sc::IWalkerVisitor {
-        C &c;
-        _StyleVis(C &c) : c(c) {}
-        virtual bool changeDirectory (const sc::Location & path){
-            return true;
-        }
-        virtual void file ( const sc::Location & file ) {
-            // search for preview.svg
-            if (file.filename()=="preview.svg") {
-                c.push_back(file.parent_path().string());
-            }
-        }
-    };
-    template <class C>
-    void _scanForStyles(const std::string &root, C &out) {
-        _StyleVis<C> vis(out);
-        sc::dirWalker(root, vis);
-    }
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 //=============================================================================
 //  Class ScanningDialog
@@ -498,7 +475,7 @@ void SetupWindow::postConstructor() {
 	getContentPane()->add(createSetupPane(), sdc::BorderLayout::CENTER, APPEND);
 	getContentPane()->add(createMainBtnPane(), sdc::BorderLayout::SOUTH, APPEND);
 	setWindowSize(sd::Dimension(623., 462.));
-	windowImpl->setFlag(sdc::WindowFlags::WND_RESIZEABLE, true);
+	windowImpl->setFlag(sdc::WindowFlags::WND_RESIZEABLE, false);
 }
 //-----------------------------------------------------------------------------
 SetupWindow::~SetupWindow() {
@@ -550,9 +527,7 @@ void SetupWindow::updatePreview(const std::string &path) {
         file = file + "/preview.svg";
         img->setSvgFilename(file);
         img->setStretchToFit(true);
-        img->setSize(sd::Dimension(80,80));
-        img->setPreferredSize(sd::Dimension(80,80));
-        img->setMaximumSize(sd::Dimension(80,80));
+        img->setPreferredSize(sd::Dimension(100,80));
         img->revalidate();
         img->redraw();
     } catch (const std::exception &ex) {
@@ -591,7 +566,7 @@ sdc::AContainerPtr SetupWindow::createStylePane() {
     std::vector<std::string> styles;
     std::string root = com::getSettings().getStyleRootPath();
     std::string curr = com::getSettings().getStyle();
-    _scanForStyles(root, styles);
+    com::getSettings().getStyles(styles);
     int c=0, sel=0;
     BOOST_FOREACH(const std::string &x, styles) {
         size_t e = x.find(root); // remove root

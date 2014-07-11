@@ -196,6 +196,9 @@ void FrxLookAndFeel::loadStyle(const std::string &svgId,
     }
     if (loadingStyleRefFailed) {
         // set fallback
+        if (fallback.empty()) {
+            return;
+        }
         m.putProperty(frxId, createStyle(fallback));
         return;
     }

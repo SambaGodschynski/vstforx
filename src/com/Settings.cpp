@@ -19,6 +19,7 @@
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <sambag/com/Config.h>
 #include "FrxConfig.h"
+#include <sambag/com/Filesystem.hpp>
 
 static const std::string SEPARATOR = "=";
 static const std::string IN_DIR = "in_dir";
@@ -336,6 +337,28 @@ void Settings::setIntegerValue(const std::string &key, int val) {
 	}
 	SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
 		"Key: " + key + " not found.");
+}
+//------------------------------------------------------------------------------------------------------------
+namespace {
+    template <class C>
+    struct _StyleVis : public sambag::com::IWalkerVisitor {
+        C &c;
+        _StyleVis(C &c) : c(c) {}
+        virtual bool changeDirectory (const sambag::com::Location & path){
+            return true;
+        }
+        virtual void file ( const sambag::com::Location & file ) {
+            // search for preview.svg
+            if (file.filename()=="preview.svg") {
+                c.push_back(file.parent_path().string());
+            }
+        }
+    };
+}
+
+void Settings::getStyles(std::vector<std::string> &_out) {
+    _StyleVis< std::vector<std::string> > vis(_out);
+   sambag::com::dirWalker(getStyleRootPath(), vis);
 }
 }// namespace com
 

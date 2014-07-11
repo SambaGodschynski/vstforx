@@ -9,7 +9,7 @@
   <g transform="scale(4,4)"> 
     <image x="0" y="0" width="800" height="600" xlink:href="bg.svg"/>
     <image x="5%" y="5%" width="80" height="80" xlink:href="frx.gui.internal.ADSRTrigger.svg"/>
-    <image x="54%" y="35%" width="80" height="80" xlink:href="frx.gui.parameter.StdKnob.svg"/>
+    <image x="54%" y="35%" width="60" height="60" xlink:href="frx.gui.parameter.StdKnob.svg"/>
   </g>
 </svg>
 
