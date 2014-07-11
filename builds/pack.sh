@@ -51,7 +51,13 @@ function packStandalone() {
     target=$6
     folder=VSTForx
     mkdir -p $target/$folder/scripts
-    cp $bin/standalone$ext $target/$folder
+    if [ -z $ext ]
+    then
+      #no ext = mac = app
+      cp -r $bin/standalone.app $target/$folder
+    else
+      cp $bin/standalone$ext $target/$folder
+    fi
     cp $ubin/unit_tests$ext $target/$folder
     cp -r $src/images $target/$folder
     cp -r $src/styles $target/$folder
