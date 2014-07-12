@@ -16,7 +16,7 @@
 #include <gui/IFrxControl.hpp>
 #include <gui/components/FrxNode.hpp>
 #include <loki/MultiMethods.h>
-
+#include <boost/tuple/tuple_io.hpp>
 namespace frx { namespace gui {
 namespace components { namespace ui { 
 ///////////////////////////////////////////////////////////////////////////////

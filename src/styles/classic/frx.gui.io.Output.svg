@@ -7,12 +7,13 @@
      xmlns:xlink="http://www.w3.org/1999/xlink"
      version="1.1">
   <g transform="translate(25,25)">
-    <g id="frx-io-active">
+    <g id="frx-io-active">    
       <circle cx="0" cy="0" 
-	      r="18px"
-	      stroke-width="18"
-	      fill="red"
-	      stroke="none"
+	      r="16px"
+	      stroke-width="13"
+	      fill="none"
+	      stroke="red"
+	      stroke-opacity="0.3"
 	      />    
     </g>
     <circle cx="0" cy="0" 
@@ -28,7 +29,7 @@
 	    stroke-width="2"
 	    />
     <text x="-3" y="3" id="frx-io-display"
-	  style="stroke:none;fill:white;font-family:monospace;">
+	  style="stroke:white;fill:white;font-family:monospace;">
       X
     </text>
   </g>  

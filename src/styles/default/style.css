@@ -16,7 +16,7 @@
 
 .corona-output {
     stroke:yellow;
-    fill:yellow;
+    fill:none;
     fill-opacity:0.5;
     stroke-opacity:0.5;
 }

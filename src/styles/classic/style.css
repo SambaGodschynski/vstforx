@@ -8,17 +8,17 @@
 */
 
 .corona-input {
-    stroke:yellow;
+    stroke:darkgrey;
     fill:none;
-    fill-opacity:0.5;
-    stroke-opacity:0.5;
+    fill-opacity:0.7;
+    stroke-opacity:0.7;
 }
 
 .corona-output {
-    stroke:yellow;
-    fill:yellow;
-    fill-opacity:0.5;
-    stroke-opacity:0.5;
+    stroke:darkgrey;
+    fill:none;
+    fill-opacity:0.7;
+    stroke-opacity:0.7;
 }
 
 .node-inner {

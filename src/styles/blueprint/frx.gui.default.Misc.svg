@@ -29,8 +29,8 @@
 	   R = rollover
       --> 
       <line 
-	  id="connecting" x1="255px" y1="300px" x2="305px" y2="100px"
-	  style="stroke-width: 2; stroke: red; purple;stroke-dasharray: 9, 5; stroke-opacity:0.5;"
+	  id="connecting" x1="225px" y1="300px" x2="275px" y2="100px"
+	  style="stroke-width: 2; stroke: red;"
 	  />
       
       <line 

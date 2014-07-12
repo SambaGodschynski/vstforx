@@ -32,7 +32,7 @@
 	"
 	/>
       <path
-	  style="stroke:black;fill:none;stroke-width:2"
+	  style="stroke:white;fill:none;stroke-width:2"
 	  stroke-linecap="square"
 	  stroke-linejoin="round"	  
 	  d="M15,10 l0,-30 13, -8 
