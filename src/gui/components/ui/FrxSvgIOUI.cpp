@@ -27,7 +27,7 @@ void FrxSvgIOUI::installUI(sdc::AComponentPtr c) {
         boost::bind(&FrxSvgIOUI::onProperty, this, _2),
         shared_from_this()
     );
-    g->setFlag(state, sdsg::SceneGraph::Invisible, true);
+    g->setVisible(state, false);
     g->invalidate();
     svg->redraw();
 }
@@ -44,7 +44,7 @@ void FrxSvgIOUI::onProperty(const sce::PropertyChanged &ev) {
         ev.getNewValue(states);
         bool state = FrxIO::getState(FrxIO::Activated, states);
         SAMBAG_BEGIN_SYNCHRONIZED(svg->getTreeLock())
-            g->setFlag(x, sdsg::SceneGraph::Invisible, !state);
+            g->setVisible(x, state);
             g->invalidate();
         SAMBAG_END_SYNCHRONIZED
         svg->redraw();
