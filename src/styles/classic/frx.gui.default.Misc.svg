@@ -81,7 +81,8 @@
     <g transform="translate(30, 450)">
       <!-- flag -->
       <g id="flag"
-	 style="stroke-width: 1; fill: none; stroke: darkgrey;font-size: 13; font-family: arial"
+	 style="stroke-width: 1; fill: none; stroke: black;font-size: 13; 
+font-family: arial"
 	 >
 	<path 
 	    d="M0,0 l50,-50 200,0" 

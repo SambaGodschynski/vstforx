@@ -30,7 +30,7 @@
 	    stroke-width="2"
 	    />
     <text x="-3" y="3" id="frx-io-display"
-	  style="stroke:none;fill:white;font-family:monospace;">
+	  style="stroke:white;fill:white;font-family:monospace;">
       X
     </text>
   </g>  

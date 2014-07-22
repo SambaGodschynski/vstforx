@@ -243,6 +243,8 @@ void FrxLookAndFeel::loadStyleDefaults() {
 }
 //-----------------------------------------------------------------------------
 void FrxLookAndFeel::reloadStyleDefaults() {
+    stylingRef.reset();
+    sambag::disco::components::ui::resetUIPorpertyCache();
     loadStyleDefaults();
 }
 //-----------------------------------------------------------------------------

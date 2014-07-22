@@ -98,7 +98,6 @@ void SetupCtrl::setStyle(const std::string &style) {
     if (!root) {
         return;
     }
-    sdcu::resetUIPorpertyCache();
     fgc::ui::FrxLookAndFeel::Ptr laf =
         boost::dynamic_pointer_cast<fgc::ui::FrxLookAndFeel>(root->getCurrentLookAndFeel());
     if (!laf) {
