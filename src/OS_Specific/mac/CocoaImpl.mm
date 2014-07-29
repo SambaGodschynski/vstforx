@@ -38,7 +38,10 @@ std::string CocoaImpl::selectDirectory(const std::string &wndTitle,
                         fileURLWithPath:[NSString stringWithUTF8String:startPath.c_str()]
                          isDirectory: YES];
     [panel setDirectoryURL:_startPath];
-    [panel runModal];
+    NSInteger button = [panel runModal];
+    if (button != NSAlertDefaultReturn) {
+        return "";
+    }
     NSArray *res = [panel URLs];
     if ([res count] > 0) {
         NSURL *url = [res objectAtIndex:0];
@@ -63,7 +66,10 @@ std::string CocoaImpl::selectFile(const std::string &wndTitle,
                         fileURLWithPath:[NSString stringWithUTF8String:startPath.c_str()]
                          isDirectory: YES];
     [panel setDirectoryURL:_startPath];
-    [panel runModal];
+    NSInteger button = [panel runModal];
+    if (button != NSAlertDefaultReturn) {
+        return "";
+    }
     NSArray *res = [panel URLs];
     if ([res count] > 0) {
         NSURL *url = [res objectAtIndex:0];
@@ -85,7 +91,10 @@ std::string CocoaImpl::saveFile(const std::string &wndTitle,
                         fileURLWithPath:[NSString stringWithUTF8String:startPath.c_str()]
                          isDirectory: YES];
     [panel setDirectoryURL:_startPath];
-    [panel runModal];
+    NSInteger button = [panel runModal];
+    if (button != NSAlertDefaultReturn) {
+        return "";
+    }
     NSURL *url = [panel URL];
     if (url) {
         return toString([url path]);
