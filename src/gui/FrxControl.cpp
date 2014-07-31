@@ -762,10 +762,11 @@ FrxComponentPtr FrxControl::addProcessorInput(fgc::FrxCircuidViewPtr view,
 		return FrxComponentPtr();
 	// create view object
 	FrxInputNode::Ptr viewIo = FrxInputNode::create();
+    map->registerObjects(viewIo, io);
+    
 	proV->addInputNode(view, viewIo);
 	viewIo->setDisplayText(sambag::com::toString(proV->getInputs().size()));
 	
-	map->registerObjects(viewIo, io);
 	io->addRemoveRequestExecuter(
 		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
 	);
@@ -802,12 +803,10 @@ FrxComponentPtr FrxControl::addProcessorOutput(fgc::FrxCircuidViewPtr view,
 		return FrxComponentPtr();
 	// create view object
 	FrxOutputNode::Ptr viewIo = FrxOutputNode::create();
-
-	// create connection
-	ProcessorOutputCn::Ptr cn = ProcessorOutputCn::create();
+    map->registerObjects(viewIo, io);
+    
 	proV->addOutputNode(view, viewIo);
 	viewIo->setDisplayText(sambag::com::toString(proV->getOutputs().size()));
-	map->registerObjects(viewIo, io);
 	io->addRemoveRequestExecuter(
 		boost::bind(&onModelObjectRemoved, _1, FrxCircuidViewWPtr(view))
 	);
