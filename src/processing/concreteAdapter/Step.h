@@ -72,6 +72,8 @@ private:
 	 * StepDauer-Parameter pro StepState
 	 */
 	std::vector<Parameter::Ptr> nDuration;
+    //--------------------------------------------------------------------------------------------------------
+    Parameter::Ptr stepIndicator;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * StepDauer-Parameter geandert
@@ -84,11 +86,7 @@ public:
 	typedef boost::function<void(State, State)> StateChangedDelegate;
 	StateChangedDelegate stateChangedDelegate;
 	//--------------------------------------------------------------------------------------------------------
-	virtual void stateChanged(State old, State _new) {
-		if (stateChangedDelegate) {
-			stateChangedDelegate(old, _new);
-		}
-	}
+	virtual void stateChanged(State old, State _new);
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * holt Step-Dauer aus ValueTranslator und setzt uebernimmt diese
@@ -131,7 +129,13 @@ public:
 	 * @param index
 	 * @return Step-Parameter zu index. Wirft std::out_of_range
 	 */
-	Parameter::Ptr getParameter ( size_t index ){ return nDuration[index]; }
+	Parameter::Ptr getParameter ( size_t index );
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param index
+	 * @return Step-Parameter zu index. Wirft std::out_of_range
+	 */
+	Parameter::Ptr getStepIndicator () const;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * verschiebung der Step-Dauer um N Samples
