@@ -44,6 +44,9 @@ private:
 		ar & steps;
 		ar & duration;
 		ar & nDuration;
+        if (version>0) {
+            ar & stepIndicator;
+        }
 		//:::::::::::::::IF_LOADING::::::::::::::::::::::::::::::::
 		if ( !Archive::is_loading::value ) return;
 		Parameter::ParameterListenerFunction f = boost::bind( 
@@ -186,8 +189,10 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Step();
 };
-
 }// namespace processing
+
+BOOST_CLASS_VERSION(processing::Step, 1)
+
 
 #endif  // FORX_STEP_H
 
