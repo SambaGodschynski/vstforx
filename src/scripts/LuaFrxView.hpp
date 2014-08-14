@@ -82,6 +82,8 @@ protected:
     slua::IgnoreReturn createListWindow(lua_State *lua);
 	virtual void addToSelection(lua_State *lua);
 	virtual void clearSelection(lua_State *lua);
+    virtual void showMenu(lua_State *lua);
+    virtual void closeMenu(lua_State *lua);
 private:
     //-------------------------------------------------------------------------
     fgc::VstForxEditor *editor;

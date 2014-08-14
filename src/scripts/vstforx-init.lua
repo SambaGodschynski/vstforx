@@ -26,3 +26,4 @@ frx.view:addViewListener("onViewEvent")
  -- set custom main menu: (see vstforx-menusetup.lua)
 initViewportMenu(4)
 frx.view:setMenu(menus.main)
+

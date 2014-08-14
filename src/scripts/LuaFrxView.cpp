@@ -32,6 +32,7 @@
 #include <sambag/disco/components/Label.hpp>
 #include <gui/components/FrxMenuLabel.hpp>
 #include "LuaFrxListWindow.hpp"
+#include <sambag/disco/components/MenuSelectionManager.hpp>
 
 namespace frx { namespace scripts {
 //=============================================================================
@@ -554,6 +555,73 @@ void LuaFrxView::setMenu(lua_State *lua) {
             lua_pop(lua, 1);
         }
         getView()->setComponentPopupMenu(res);
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unknown error");
+    }
+}
+//-----------------------------------------------------------------------------
+void LuaFrxView::showMenu(lua_State *lua) {
+    using namespace sambag::disco::components;
+    try {
+        using namespace sambag::disco::components;
+        typedef boost::weak_ptr<PopupMenu> PopupMenuWPtr;
+        PopupMenuWPtr wres;
+        PopupMenuPtr res;
+        AComponentPtr invoker = getView();
+        invoker->getClientProperty("lua.addmenu", wres);
+        res = wres.lock();
+        if (res) {
+            res->hidePopup();
+        }
+        
+        wres = res = PopupMenu::create();
+        invoker->putClientProperty("lua.addmenu", wres);
+        // iterate through menu table
+        int index = -1;
+        if (lua_istable(lua, index)!=1) {
+            throw std::runtime_error("invalid value");
+        }
+        lua_pushnil(lua); /* first key */
+        --index;
+        while (lua_next(lua, index) != 0) {
+            if (lua_istable(lua, -1)==1) {
+                addMenuEntry(res, lua, -1);
+            }
+            lua_pop(lua, 1);
+        }
+        lua_pop(lua, 1);
+        // get pos
+        boost::tuple<int, int> pos;
+        sambag::lua::pop(lua, pos);
+        MenuSelectionManager &m = MenuSelectionManager::defaultManager();
+		m.clearSelectedPath();
+		IMenuElement::MenuElements p;
+		p.push_back(res);
+		m.setSelectedPath(p);
+		res->setInvoker(invoker);
+        res->showPopup(sd::Point2D(boost::get<1>(pos), boost::get<0>(pos)));
+    } catch(const std::exception &ex) {
+        slua::pushLuaError(lua, ex.what());
+    } catch(...) {
+        slua::pushLuaError(lua, "unknown error");
+    }
+}
+//-----------------------------------------------------------------------------
+void LuaFrxView::closeMenu(lua_State *lua) {
+    using namespace sambag::disco::components;
+    typedef boost::weak_ptr<PopupMenu> PopupMenuWPtr;
+    try {
+        AComponentPtr invoker = getView();
+        PopupMenuWPtr wres;
+        PopupMenuPtr res;
+        invoker->getClientProperty("lua.addmenu", wres);
+        res = wres.lock();
+        if (res) {
+            res->hidePopup();
+        }
+        invoker->putClientProperty("lua.addmenu", PopupMenuWPtr());
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua, ex.what());
     } catch(...) {

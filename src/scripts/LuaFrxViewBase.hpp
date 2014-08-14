@@ -5,7 +5,7 @@
  *
  * LuaFrxViewBase.hpp
  *
- *  Created on: Mon Jun 23 19:18:51 2014
+ *  Created on: Thu Aug 14 18:05:25 2014
  *      Author: Samba Godschysnki
  */
 
@@ -61,6 +61,8 @@ protected:
 	SAMBAG_LUA_FTAG(createListWindow, sambag::lua::IgnoreReturn ());
 	SAMBAG_LUA_FTAG(addToSelection, void ());
 	SAMBAG_LUA_FTAG(clearSelection, void ());
+	SAMBAG_LUA_FTAG(showMenu, void ());
+	SAMBAG_LUA_FTAG(closeMenu, void ());
     typedef LOKI_TYPELIST_10(Frx_add_Tag, 
 	Frx_remove_Tag, 
 	Frx_getObjects_Tag, 
@@ -83,8 +85,10 @@ protected:
 	Frx_getContextObject_Tag, 
 	Frx_createListWindow_Tag) Functions2;
 
-	typedef LOKI_TYPELIST_2(Frx_addToSelection_Tag, 
-	Frx_clearSelection_Tag) Functions3;
+	typedef LOKI_TYPELIST_4(Frx_addToSelection_Tag, 
+	Frx_clearSelection_Tag, 
+	Frx_showMenu_Tag, 
+	Frx_closeMenu_Tag) Functions3;
 
 	
     ///////////////////////////////////////////////////////////////////////////
@@ -271,6 +275,22 @@ protected:
 	* @version 1.0.53
 	*/
 	virtual void clearSelection(lua_State *lua) = 0;
+	/**
+	* @brief shows a popup menu on location x,y
+	* @hiddenParam int x
+	* @hiddenParam int y    
+	* @hiddenParam Table menu
+	* @param the menus x location
+	* @param the menus y location
+	* @param the menu entry table (@see setMenu)
+	* @version 1.0.55
+	*/
+	virtual void showMenu(lua_State *lua) = 0;
+	/**
+	*  @brief closes the menu previously opened with @see showMenu()
+	*  @version 1.0.55
+	*/
+	virtual void closeMenu(lua_State *lua) = 0;
     //-------------------------------------------------------------------------
     /**
      * @brief field getter and setter
