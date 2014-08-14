@@ -75,27 +75,13 @@ public:
 	 * @return Eingabewert als einen Musiknoten-String zb.: 1/4, etc.
 	 *
 	 */
-	virtual com::MyString  translateAsString ( float v ) {
-		int n = com::mapInteger ( v, musicalValues::NUM_STDNOTES );
-		return musicalValues::noteLengthTable[n].str;
-	}
+	virtual com::MyString  translateAsString ( float v );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param v
 	 * @return Eingabewert als einen Musiknoten-Zeitwert in Samples
 	 */
-	virtual int translate ( float v ) {
-		frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
-		if (!hI) {
-			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
-				"Hostinfo == NULL"
-			);
-		}
-		using namespace frx::processing;
-		int n = com::mapInteger ( v, musicalValues::NUM_STDNOTES );
-		TimeInfo *inf = hI->getHostTimeInfo( TimeInfo::FrxTempo );
-		return note2Sample ( musicalValues::noteLengthTable[n].val, inf->tempo, inf->sampleRate );
-	}
+	virtual int translate ( float v );
 };
 }// namespace processing
 
