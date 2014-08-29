@@ -824,26 +824,7 @@ void LuaImpl::setChannel(lua_State *lua) {
 void LuaImpl::setPersistUserData(lua_State *lua) {
     namespace slua=sambag::lua;
     try {
-        if(!lua_isstring(luaState.get(),  -2)) {
-            throw std::runtime_error("arguments mismatch");
-        }
-        std::string key( lua_tostring(luaState.get(),  -2) );
-        // first remove old values
-        persistUserData.erase(key);
-        
-        if(!lua_istable(luaState.get(),  -1)) {
-            throw std::runtime_error("arguments mismatch");
-        }
-        int index = -1;
-        lua_pushnil(luaState.get()); /* first key */
-        --index;
-        while (lua_next(luaState.get(),  index) != 0) {
-            boost::tuple<std::string> value;
-            slua::pop(luaState.get(),  value);
-            persistUserData.insert(std::make_pair(
-                key,
-                boost::get<0>(value)));
-        }
+        persistUserData.add(lua);
     } catch(const std::exception &ex) {
         slua::pushLuaError(luaState.get(),  ex.what());
     } catch (...) {
@@ -855,14 +836,14 @@ sambag::lua::IgnoreReturn LuaImpl::getPersistUserData(lua_State *lua,
     const std::string &key)
 {
     namespace slua=sambag::lua;
-    PersistUserData::iterator it, end;
-    boost::tie(it, end) = persistUserData.equal_range(key);
-    lua_createtable(luaState.get(), 0, 0);
+    std::vector<std::string> data;
+    persistUserData.get(key, data);
+    lua_createtable(luaState.get(), data.size(), 0);
     int tbl = lua_gettop(luaState.get());
     int index=0;
-    for(; it!=end; ++it) {
+    BOOST_FOREACH(const std::string &x, data) {
         lua_pushinteger(luaState.get(), ++index);
-        lua_pushstring(luaState.get(), it->second.c_str());
+        lua_pushstring(luaState.get(), x.c_str());
         lua_settable(luaState.get(), tbl);
     }
     return slua::IgnoreReturn();
@@ -920,8 +901,25 @@ void LuaImpl::setStateData(size_t size, void* data) {
     SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
     std::stringstream ss;
     ss.write((const char*)data, size);
-    com::iArchive ar(ss);
-    ar>>persistUserData;
+    
+    try {
+        com::iArchive ar(ss);
+        ar>>persistUserData;
+    } catch(...) {
+        try {
+            // legacy approach:
+            std::stringstream ss; // (we need a new stream!)
+            ss.write((const char*)data, size);
+            com::iArchive ar(ss);
+            std::multimap<std::string, std::string> legacy;
+            ar>>legacy;
+            persistUserData.clear();
+            persistUserData.migrate(legacy);
+        } catch(...) {
+            SAMBAG_LOG_ERR<<"LuaImpl::setStateData FAILED";
+        }
+    }
+    
     
     // call lua
     IF_LC_MISSING(lcOnLoad) {
