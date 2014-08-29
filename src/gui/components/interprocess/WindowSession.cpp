@@ -232,6 +232,9 @@ bool WindowSessionClient::getFlag (sdc::WindowFlags::Flag flag) const {
     return false;
 }
 //-----------------------------------------------------------------------------
+void WindowSessionClient::setFlags(unsigned int flags) {
+}
+//-----------------------------------------------------------------------------
 bool WindowSessionClient::isVisible () const {
     typedef SessionHost::Operations::IsVisible Op;
     MemoryGuard::Ptr g = getMemoryGuard();

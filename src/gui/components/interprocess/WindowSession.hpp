@@ -175,6 +175,7 @@ public:
     virtual void setParentWindow (sdc::WindowPtr parent);
     virtual void setFlag (sdc::WindowFlags::Flag flag, bool val);
     virtual bool getFlag (sdc::WindowFlags::Flag flag) const;
+    virtual void setFlags(unsigned int flags);
     virtual bool isVisible () const;
     virtual void setTitle (const std::string &title);
     virtual std::string getTitle () const;
