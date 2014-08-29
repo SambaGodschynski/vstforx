@@ -27,3 +27,6 @@ frx.view:addViewListener("onViewEvent")
 initViewportMenu(4)
 frx.view:setMenu(menus.main)
 
+data = frx.getPersistData("key01")
+print("!!!!!!")
+print(#data)

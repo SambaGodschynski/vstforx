@@ -23,7 +23,8 @@
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include <processing/ModelObject.hpp>
 #include <map>
-#include <com/Serialization.h>
+#include "LuaUserData.hpp"
+
 namespace frx {
 
 namespace processing {
@@ -53,7 +54,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef std::string LuaPtr;
     //-------------------------------------------------------------------------
-    typedef std::multimap<std::string, std::string> PersistUserData;
+    typedef LuaUserData PersistUserData;
 protected:
 	//-------------------------------------------------------------------------
 	void runThread();

@@ -14,6 +14,7 @@
 #include <boost/property_tree/ptree_serialization.hpp>
 #include <boost/foreach.hpp>
 
+struct lua_State;
 
 namespace frx { namespace scripts {
 //=============================================================================
@@ -43,7 +44,25 @@ public:
         return container;
     }
     //-------------------------------------------------------------------------
+    /**
+     * @brief clears all data
+     */
+    void clear();
+    //-------------------------------------------------------------------------
+    /**
+     * @brief removes values of a key.
+     */
+    void remove(const std::string &key);
+    //-------------------------------------------------------------------------
+    /**
+     * @brief adds a value to a key
+     */
     void add(const std::string &key, const std::string &value);
+    //-------------------------------------------------------------------------
+    /**
+     * @brief pops and migrates key,value data from lua stack.
+     */
+    void add(lua_State *lua);
     //-------------------------------------------------------------------------
     template <class STL>
     void get(const std::string &key, STL &out) const;

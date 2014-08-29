@@ -22,5 +22,11 @@ frx.wait(2000)
 load("tmp")
 frx.wait(2000)
 
+
+load("testScripts/legacy-1.0.54")
+
+
+frx.wait(2000)
+
 frx.closeEditor()
 frx.closePlugin()

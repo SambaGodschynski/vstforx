@@ -29,14 +29,33 @@ void TestLuaUserData::testLuaUserData() {
     data.add("keys.second", "23");
     data.add("keys.second", "1");
     data.add("keys.second", "00");
+    data.add("keys.third", "01");
+    data.add("keys.third", "02");
+    data.add("keys.third", "03");
 
     {
         std::vector<std::string> out;
         data.get("blah", out);
         CPPUNIT_ASSERT_EQUAL((size_t)0, out.size());
     }
-
     
+    {
+        std::vector<std::string> out;
+        data.get("keys.third", out);
+        CPPUNIT_ASSERT_EQUAL((size_t)3, out.size());
+    }
+    data.remove("keys.third");
+    {
+        std::vector<std::string> out;
+        data.get("keys.third", out);
+        CPPUNIT_ASSERT_EQUAL((size_t)0, out.size());
+    }
+    data.add("keys.third", "01");
+    {
+        std::vector<std::string> out;
+        data.get("keys.third", out);
+        CPPUNIT_ASSERT_EQUAL((size_t)1, out.size());
+    }
     {
         std::vector<std::string> out;
         data.get("keys.first", out);
