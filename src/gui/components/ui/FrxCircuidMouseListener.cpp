@@ -30,7 +30,7 @@ FrxCircuidMouseListener::FrxCircuidMouseListener() {
 	rect.size().width().setType(sd::svg::units::Unit::PX);
 	rect.size().height().setType(sd::svg::units::Unit::PX);
 	sdc::ui::UIManager &m = sdc::ui::getUIManager();
-	sd::svg::graphicElements::Style selectingStyle;
+	sd::svg::Style selectingStyle;
 	m.getProperty("FrxSelection.selectingStyle", selectingStyle);
 	selection->setStyle(selectingStyle);
 }
@@ -38,7 +38,7 @@ FrxCircuidMouseListener::FrxCircuidMouseListener() {
 void FrxCircuidMouseListener::drag(const sdc::events::MouseEvent &ev) {
 	namespace geom = boost::geometry;
 	namespace trans = geom::strategy::transform;
-	typedef trans::translate_transformer<sd::Point2D, sd::Point2D> Transl;
+	typedef trans::translate_transformer<double, 2, 2> Transl;
 	sdc::AComponent::Ptr c = ev.getSource();
 	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);

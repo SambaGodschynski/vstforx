@@ -12,7 +12,7 @@
 #include <boost/weak_ptr.hpp>
 #include <sambag/disco/components/ui/AComponentUI.hpp>
 #include <sambag/disco/components/Forward.hpp>
-#include <sambag/disco/svg/graphicElements/Style.hpp>
+#include <sambag/disco/svg/Style.hpp>
 #include <sambag/disco/Geometry.hpp>
 #include <gui/components/Forward.hpp>
 #include <sambag/disco/IResourceManager.hpp>

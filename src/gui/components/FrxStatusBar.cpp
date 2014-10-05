@@ -8,7 +8,7 @@
 #include "FrxStatusBar.hpp"
 #include <sambag/disco/IResourceManager.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
-#include <sambag/disco/svg/graphicElements/Style.hpp>
+#include <sambag/disco/svg/Style.hpp>
 #include <sambag/disco/components/SolidBorder.hpp>
 #include <sambag/disco/svg/StyleParser.hpp>
 #include <sambag/disco/components/FlowLayout.hpp>
@@ -61,12 +61,12 @@ void FrxStatusBar::setStatusMessage(const std::string &txt,
 }
 //-----------------------------------------------------------------------------
 void FrxStatusBar::initStatusBar() {
-	using sd::svg::graphicElements::Style;
+	using sd::svg::Style;
 	sdc::Panel::Ptr panel = getPtr();
 	// border
 	sdc::SolidBorder::Ptr border = sdc::SolidBorder::create();
 	Style statusStyle = 
-		createStyle("stroke-width: 1; stroke: black;font-size: 13; font-family: arial");
+		sambag::disco::svg::createStyle("stroke-width: 1; stroke: black;font-size: 13; font-family: arial");
 	sdc::ui::getUIManager().getProperty("StatusMessage.style", statusStyle);
 	border->setStyle(statusStyle);
 	panel->setBorder(border);

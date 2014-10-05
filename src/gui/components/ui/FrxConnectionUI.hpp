@@ -21,7 +21,7 @@
 #include <sambag/math/VectorNCreator.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <gui/IFrxControl.hpp>
-#include <sambag/disco/svg/graphicElements/Style.hpp>
+#include <sambag/disco/svg/Style.hpp>
 #include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui {
@@ -92,11 +92,11 @@ private:
 	//-------------------------------------------------------------------------
 	bool _mouseEntered;
 	//-------------------------------------------------------------------------
-	sdsg::Style lineStyle;
+	sds::Style lineStyle;
 	//-------------------------------------------------------------------------
-	sdsg::Style lineHoverStyle;
+	sds::Style lineHoverStyle;
 	//-------------------------------------------------------------------------
-	inline const sdsg::Style & determineStyle() const;
+	inline const sds::Style & determineStyle() const;
 public:
 	//-------------------------------------------------------------------------
 	virtual void installUI(sdc::AComponentPtr c);
@@ -146,51 +146,51 @@ template <>
 inline bool hasContextMenu<connectionTypes::ParameterOP>() { return false; }
 //-----------------------------------------------------------------------------
 template <class CT>
-void getStyles(sdsg::Style &normal, sdsg::Style &hover) {}
+void getStyles(sds::Style &normal, sds::Style &hover) {}
 //-----------------------------------------------------------------------------
 template <>
-inline void getStyles<connectionTypes::IO>(sdsg::Style &normal,
-	sdsg::Style &hover)
+inline void getStyles<connectionTypes::IO>(sds::Style &normal,
+	sds::Style &hover)
 { 
 	sdc::ui::getUIManager().getProperty("IOCn.style", normal);
 	sdc::ui::getUIManager().getProperty("IOCn.hoverStyle", hover);
 }
 //-----------------------------------------------------------------------------
 template <>
-inline void getStyles<connectionTypes::ProcessorInput>(sdsg::Style &normal,
-	sdsg::Style &hover)
+inline void getStyles<connectionTypes::ProcessorInput>(sds::Style &normal,
+	sds::Style &hover)
 { 
 	sdc::ui::getUIManager().getProperty("ProcessorInputCn.style", normal);
 	sdc::ui::getUIManager().getProperty("ProcessorInputCn.hoverStyle", hover);
 }
 //-----------------------------------------------------------------------------
 template <>
-inline void getStyles<connectionTypes::ProcessorOutput>(sdsg::Style &normal,
-	sdsg::Style &hover)
+inline void getStyles<connectionTypes::ProcessorOutput>(sds::Style &normal,
+	sds::Style &hover)
 { 
 	sdc::ui::getUIManager().getProperty("ProcessorOutputCn.style", normal);
 	sdc::ui::getUIManager().getProperty("ProcessorOutputCn.hoverStyle", hover);
 }
 //-----------------------------------------------------------------------------
 template <>
-inline void getStyles<connectionTypes::ProcessorParameter>(sdsg::Style &normal,
-	sdsg::Style &hover)
+inline void getStyles<connectionTypes::ProcessorParameter>(sds::Style &normal,
+	sds::Style &hover)
 { 
 	sdc::ui::getUIManager().getProperty("ProcessorParameterCn.style", normal);
 	sdc::ui::getUIManager().getProperty("ProcessorParameterCn.hoverStyle", hover);
 }
 //-----------------------------------------------------------------------------
 template <>
-inline void getStyles<connectionTypes::Parameter>(sdsg::Style &normal,
-	sdsg::Style &hover)
+inline void getStyles<connectionTypes::Parameter>(sds::Style &normal,
+	sds::Style &hover)
 { 
 	sdc::ui::getUIManager().getProperty("ParameterCn.style", normal);
 	sdc::ui::getUIManager().getProperty("ParameterCn.hoverStyle", hover);
 }
 //-----------------------------------------------------------------------------
 template <>
-inline void getStyles<connectionTypes::ParameterOP>(sdsg::Style &normal,
-	sdsg::Style &hover)
+inline void getStyles<connectionTypes::ParameterOP>(sds::Style &normal,
+	sds::Style &hover)
 { 
 	sdc::ui::getUIManager().getProperty("ParameterOPCn.style", normal);
 	sdc::ui::getUIManager().getProperty("ParameterOPCn.hoverStyle", hover);
@@ -294,7 +294,7 @@ inline void _createPopupmenuEntries<connectionTypes::Parameter>(
 ///////////////////////////////////////////////////////////////////////////////
 //-----------------------------------------------------------------------------
 template <class CT>
-inline const sdsg::Style & FrxConnectionUI<CT>::determineStyle() const {
+inline const sds::Style & FrxConnectionUI<CT>::determineStyle() const {
 	if (_mouseEntered) {
 		return lineHoverStyle;
 	} 
@@ -303,7 +303,7 @@ inline const sdsg::Style & FrxConnectionUI<CT>::determineStyle() const {
 //-----------------------------------------------------------------------------
 template <class CT>
 void FrxConnectionUI<CT>::setStyleToContext(sd::IDrawContext::Ptr cn) const {
-	const sdsg::Style & style = determineStyle(); 
+	const sds::Style & style = determineStyle(); 
 	style.intoContext(cn);
 }
 //-----------------------------------------------------------------------------

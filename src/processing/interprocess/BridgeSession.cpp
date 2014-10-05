@@ -5,13 +5,14 @@
  *      Author: Johannes Unger
  */
 
+#include <sambag/disco/components/WindowToolkit.hpp>
 #include "BridgeSession.hpp"
 #include <sambag/com/exceptions/IllegalArgumentException.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include "SessionManager.hpp"
 #include "PluginSession.hpp"
 #include <com/FrxConfig.h>
-#include <sambag/disco/components/WindowToolkit.hpp>
+
 
 namespace {
     enum { FRX_CREATE_PLUGINSESSION_TIME_OUT = 10000 };

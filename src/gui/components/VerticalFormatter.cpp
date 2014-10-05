@@ -50,7 +50,7 @@ void VerticalFormatter::translateCompound() {
 	sd::Rectangle env;
 	boost::geometry::envelope(points, env);
 	// translate bunch of points
-	trans::translate_transformer<sd::Point2D, sd::Point2D> 
+	trans::translate_transformer<double, 2, 2>
 		translate(lastPos.x(), lastPos.y());
 	Points res;
 	boost::geometry::transform(points, res, translate);

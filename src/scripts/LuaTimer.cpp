@@ -5,9 +5,9 @@
  *      Author: Johannes Unger
  */
 
+#include <gui/components/FrxCircuidView.hpp>
 #include "LuaTimer.hpp"
 #include <sambag/com/exceptions/IllegalStateException.hpp>
-#include <gui/components/FrxCircuidView.hpp>
 #include <gui/IFrxControl.hpp>
 #include <gui/HandyNamespaces.hpp>
 #include <gui/components/FrxComponent.hpp>

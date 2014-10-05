@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <scripts/PluginScriptCtrl.hpp>
 #include "LuaImpl.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
@@ -14,7 +15,6 @@
 #include <com/MyString.h>
 #include <processing/FrxAsyncDSPTimer.hpp>
 #include <gui/HandyNamespaces.hpp>
-#include <scripts/PluginScriptCtrl.hpp>
 #include <scripts/LuaParameter.hpp>
 #include <sambag/dsp/DefaultMidiEvents.hpp>
 #include <processing/IMidiEventProcessor.h>
@@ -99,7 +99,7 @@ std::string LuaImpl::extractFilenameAndArgs(const std::string &str, Args &out)
     // see: http://www.boost.org/doc/libs/1_55_0/doc/html/xpressive/user_s_guide.htm Semantic Action
     using namespace boost::xpressive;
     sregex pair = ( (s1= +alnum) >> "=" >> (s2= +~_s ) )
-        [ ref(out)[s1] = as<std::string>(s2) ];
+        [ boost::xpressive::ref(out)[s1] = as<std::string>(s2) ];
 
     sregex rx = pair >> *(+_s >> pair);
 

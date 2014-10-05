@@ -44,7 +44,7 @@ void FrxSvgKnobUI::setCoronaAlpha(double alpha) {
     if (!component) {
         return;
     }
-    sdsg::Style style = component->getStyle();
+    sds::Style style = component->getStyle();
     style.fillOpacity(alpha);
     style.strokeOpacity(alpha);
     component->setStyle(style);
@@ -110,7 +110,7 @@ void FrxSvgKnobUI::installUI(sdc::AComponentPtr c) {
         throw std::runtime_error("no #corona-knob element found");
     }
     _coronaKnob = coronaKnob;
-    sdsg::Style style = coronaKnob->getStyle();
+    sds::Style style = coronaKnob->getStyle();
     style.fillOpacity(0);
     style.strokeOpacity(0);
     coronaKnob->setStyle(style);

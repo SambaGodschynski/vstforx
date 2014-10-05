@@ -83,7 +83,7 @@ void FrxProcessorNode::resetIOLocation() {
 	if (!circ)
 		return;
 
-	typedef trans::rotate_transformer<sd::Point2D, sd::Point2D, geom::degree>
+	typedef trans::rotate_transformer<geom::degree, double, 2, 2>
 		Rotate;
 	// ### Input 
 	sd::Point2D origin = getLocation();

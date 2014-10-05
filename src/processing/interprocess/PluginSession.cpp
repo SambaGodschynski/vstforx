@@ -5,13 +5,13 @@
  *      Author: Johannes Unger
  */
 
+#include <gui/components/interprocess/WindowSession.hpp>
 #include "PluginSession.hpp"
 #include <sambag/com/exceptions/IllegalArgumentException.hpp>
 #include <algorithm>
 #include "SessionManager.hpp"
 #include "BridgeSession.hpp"
 #include <sambag/com/PlacementAlloc.hpp>
-#include <gui/components/interprocess/WindowSession.hpp>
 #include <sambag/disco/components/Timer.hpp>
 
 namespace frx { namespace processing { namespace interprocess {

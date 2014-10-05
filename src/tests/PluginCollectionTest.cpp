@@ -5,31 +5,10 @@
  * ===========================================================================================================
  */
 
-#include <cppunit/config/SourcePrefix.h>
-#include "PluginCollectionTest.hpp"
-#include "com/MyString.h"
-#include "processing/processing.h"
-#include "processing/ConcreteProcessAdapter.h"
-#include "com/one4All.h"
-#include <iostream>
-#include <boost/assign/list_of.hpp>
+
 #include <map>
-#include <processing/dspTools.h>
-#include "com/PluginCollectionSQL.h"
+#include <string>
 #include <iostream>
-#include <boost/assign.hpp>
-#include <boost/foreach.hpp>
-
-#if WIN32
-#define VSTPLUG_EXT ".dll"
-#else
-#define VSTPLUG_EXT ".vst"
-#endif
-
-#define FAST_SCAN_TIME 15.0 //seconds
-
-// Registers the fixture into the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( tests::PluginCollectionTest );
 
 //              folder       subfolder
 typedef std::multimap< std::string, std::string > ExcpectedFolderMap;
@@ -49,6 +28,32 @@ static std::ostream & operator<<(std::ostream &os, const ExcpectedFolderMap& m)
     os<<"}";
     return os;
 }
+
+
+#include <cppunit/config/SourcePrefix.h>
+#include "PluginCollectionTest.hpp"
+#include "com/MyString.h"
+#include "processing/processing.h"
+#include "processing/ConcreteProcessAdapter.h"
+#include "com/one4All.h"
+#include <boost/assign/list_of.hpp>
+#include <processing/dspTools.h>
+#include "com/PluginCollectionSQL.h"
+#include <iostream>
+#include <boost/assign.hpp>
+#include <boost/foreach.hpp>
+
+#if WIN32
+#define VSTPLUG_EXT ".dll"
+#else
+#define VSTPLUG_EXT ".vst"
+#endif
+
+#define FAST_SCAN_TIME 15.0 //seconds
+
+// Registers the fixture into the 'registry'
+CPPUNIT_TEST_SUITE_REGISTRATION( tests::PluginCollectionTest );
+
 
 namespace tests {
 //=============================================================================

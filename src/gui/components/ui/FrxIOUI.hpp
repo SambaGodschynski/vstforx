@@ -13,7 +13,7 @@
 #include "FrxNodeUI.hpp"
 #include <gui/HandyNamespaces.hpp>
 #include <sambag/disco/IDiscoFactory.hpp>
-#include <sambag/disco/svg/graphicElements/Style.hpp>
+#include <sambag/disco/svg/Style.hpp>
 #include <gui/components/FrxFontCache.hpp>
 
 namespace frx { namespace gui {
@@ -57,7 +57,7 @@ protected:
 	//-------------------------------------------------------------------------
 	virtual void drawDisplay(sd::IDrawContext::Ptr cn, FrxIO::Ptr c);
 	//-------------------------------------------------------------------------
-	sdsg::Style displayStyle;
+	sds::Style displayStyle;
 	//-------------------------------------------------------------------------
 	typedef FrxIOUI<ConcreteIO> ThisClassType;
 	//-------------------------------------------------------------------------
@@ -92,7 +92,7 @@ public:
 }; // FrxIOUI
 ///////////////////////////////////////////////////////////////////////////////
 namespace {
-	typedef sdsg::Style DisplayStyle;
+	typedef sds::Style DisplayStyle;
 	typedef boost::tuple<sd::ISurface::Ptr, DisplayStyle> ReturnValue;
 	template <class IOType>
 	ReturnValue _ioDef(sdc::AComponentPtr c) {

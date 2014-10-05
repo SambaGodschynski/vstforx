@@ -10,7 +10,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <sambag/disco/components/ui/basic/BasicLabelUI.hpp>
-#include <sambag/disco/svg/graphicElements/Style.hpp>
+#include <sambag/disco/svg/Style.hpp>
 #include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui {
@@ -33,7 +33,7 @@ protected:
 	void installListeners(sdc::AComponentPtr c);
 private:
 	//-------------------------------------------------------------------------
-	sdsg::Style style;
+	sds::Style style;
 public:
 	//-------------------------------------------------------------------------
 	virtual void installUI(sdc::AComponentPtr c);

@@ -22,7 +22,7 @@
 #include <sambag/disco/components/FlowLayout.hpp>
 #include <sambag/disco/components/ViewPort.hpp>
 #include <sambag/math/Matrix.hpp>
-#include <sambag/disco/svg/graphicElements/Style.hpp>
+#include <sambag/disco/svg/Style.hpp>
 #include <sambag/disco/components/Window.hpp>
 #include <sambag/disco/components/SolidBorder.hpp>
 #include <sambag/disco/svg/StyleParser.hpp>
