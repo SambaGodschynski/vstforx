@@ -206,7 +206,7 @@ void PluginCollectionTest::testScan() {
 				      ( "testVstFolder", "B" )
 					  ( "testVstFolder", "C'" )
 					 // ( "B", "B1" ) <= empty
-					  ( "B", "B2" );
+					  ( "B", "B2" ).to_container(exp);
 					// ( "B", "B3" ); <= no plug files
 
 	CPPUNIT_ASSERT ( !exp.empty() );
@@ -254,7 +254,7 @@ void PluginCollectionTest::testFastScan() {
 					  ( "testVstFolder", "C'" )
 					  // ( "B", "B1" ) <= empty
 					  ( "B", "B2" )
-					  ( "B", "B3" ); // <= no plug files but not checked
+					  ( "B", "B3" ).to_container(exp); // <= no plug files but not checked
 
 	CPPUNIT_ASSERT ( !exp.empty() );
 	checkTree( pC, exp );
