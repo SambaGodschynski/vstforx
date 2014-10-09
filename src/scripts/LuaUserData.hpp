@@ -79,6 +79,9 @@ public:
 template <class STL>
 void LuaUserData::get(const std::string &key, STL &out) const {
     try {
+		if (container.count(key) == 0) {
+			return;
+		}
         BOOST_FOREACH(const Container::value_type &v, container.get_child(key))
         {
             if (!v.second.data().empty()) {

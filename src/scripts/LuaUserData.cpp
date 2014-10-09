@@ -19,6 +19,9 @@ void LuaUserData::add(const std::string &key, const std::string &value) {
 //-----------------------------------------------------------------------------
 void LuaUserData::remove(const std::string &key) {
     try {
+		if (container.count(key) == 0) {
+			return;
+		}
         container.get_child(key).clear();
     } catch (const ContainerEx &) {
     }
