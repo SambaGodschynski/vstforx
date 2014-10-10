@@ -258,28 +258,36 @@ template <class CT>
 void FrxProcessorNodeUI<CT>::addHasMultipleInputEntry(sdc::PopupMenuPtr menu,
 	FrxCircuidViewPtr view, FrxComponentPtr c)
 {
-	sdc::MenuItem::Ptr m = sdc::MenuItem::create();
-	m->setText("add input");
-	IFrxControl &ctrl = getFrxControl(view); 
-	m->sdc::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
-		boost::bind(&IFrxControl::addProcessorInput, &ctrl, view, c, true),
-		c
-	);
-	menu->add(m);
+	//sdc::MenuItem::Ptr m = sdc::MenuItem::create();
+	//m->setText("add output");
+	//IFrxControl &ctrl = getFrxControl(view); 
+	//m->sdc::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
+	//	boost::bind(&IFrxControl::addProcessorInput, &ctrl, view, c, true), // adding view and c as shared_ptr
+																			// causes memory leaks. the SAMBAG_CREATE_FRXCONTROL_CMD dosen't work
+																			// because the f signature dosen't match.
+																			// since the menu is acutally handled by script
+																			// (this is left as fallback) we skip this part
+	//	c
+	//);
+	//menu->add(m); 
 }
 //-----------------------------------------------------------------------------
 template <class CT>
 void FrxProcessorNodeUI<CT>::addHasMultipleOutputEntry(sdc::PopupMenuPtr menu, 
 	FrxCircuidViewPtr view, FrxComponentPtr c)
 {
-	sdc::MenuItem::Ptr m = sdc::MenuItem::create();
-	m->setText("add output");
-	IFrxControl &ctrl = getFrxControl(view); 
-	m->sdc::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
-		boost::bind(&IFrxControl::addProcessorOutput, &ctrl, view, c, true),
-		c
-	);
-	menu->add(m); 
+	//sdc::MenuItem::Ptr m = sdc::MenuItem::create();
+	//m->setText("add output");
+	//IFrxControl &ctrl = getFrxControl(view); 
+	//m->sdc::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
+	//	boost::bind(&IFrxControl::addProcessorOutput, &ctrl, view, c, true), // adding view and c as shared_ptr
+																			 // causes memory leaks. the SAMBAG_CREATE_FRXCONTROL_CMD dosen't work
+																			 // because the f signature dosen't match.
+																			 // since the menu is acutally handled by script
+																			 // (this is left as fallback) we skip this part
+	//	c
+	//);
+	//menu->add(m); 
 }
 //-----------------------------------------------------------------------------
 template <class CT>
