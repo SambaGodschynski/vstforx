@@ -1,3 +1,4 @@
+#include <sambag/disco/components/WindowToolkit.hpp>
 #include "RemoteChannelMain.hpp"
 #include "../Plugin.hpp"
 #include <sambag/dsp/VST2xPluginWrapper.hpp>
@@ -6,7 +7,7 @@
 #include <exception>
 #include <com/one4All.h>
 #include <sambag/com/Common.hpp>
-#include <sambag/disco/components/WindowToolkit.hpp>
+
 
 #ifdef FRX_REMOTE_IS_DEMO
 enum {RC_UID='fxRC'};
