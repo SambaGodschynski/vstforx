@@ -7,7 +7,7 @@ inDir = "../src/"
 
 add = """
 IF(APPLE)
-  SET(FRX_SOURCES {FRX_SOURCES} ${FRX_MMSOURCES} )
+  SET(FRX_SOURCES ${FRX_MMSOURCES} )
 ENDIF(APPLE)
 
 add_library(frx_core ${FRX_SOURCES} ${VSTSDKSOURCE})
