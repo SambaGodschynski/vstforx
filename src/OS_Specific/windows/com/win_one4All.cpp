@@ -53,6 +53,7 @@ namespace {
 }
 //------------------------------------------------------------------------------------------------------------
 const char * FRX_VST_EXT = ".dll";
+const char * FRX_VST3_EXT = ".vst";
 const char * FRX_LUA_EXT = ".lua";
 //------------------------------------------------------------------------------------------------------------
 void startProcess(const char *path, int argc, const char **argv) {

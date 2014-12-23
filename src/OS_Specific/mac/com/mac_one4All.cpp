@@ -18,6 +18,7 @@
 namespace com {
 const char * FRX_VST_EXT = ".vst";
 const char * FRX_LUA_EXT = ".lua";
+const char * FRX_VST3_EXT = ".vst";
 const char * FRX_APP_EXT = ".app";
 //-----------------------------------------------------------------------------
 bool isPlugFilename ( const std::string &filename ) {

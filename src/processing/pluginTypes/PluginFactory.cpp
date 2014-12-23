@@ -14,6 +14,7 @@
 namespace com {
     // defined in OS_Specific/com/xxx_one4All.cpp
     extern const char * FRX_VST_EXT;
+	extern const char * FRX_VST3_EXT;
     extern const char * FRX_LUA_EXT;
 }
 
@@ -27,6 +28,9 @@ typedef Loki::SingletonHolder<PluginFactory> PluginFactoryHolder;
  * this "cheap" approach.
  */
 extern PluginFactory::ProductPtr createVST2xPluginImpl(IHostInfo::Ptr,
+    PluginFactory::Parameters*, const std::string&);
+
+extern PluginFactory::ProductPtr createVST3xPluginImpl(IHostInfo::Ptr,
     PluginFactory::Parameters*, const std::string&);
     
 extern PluginFactory::ProductPtr createBridgedPluginImpl(IHostInfo::Ptr,
@@ -63,7 +67,7 @@ PluginFactory::loadVST2x(IHostInfo::Ptr hI, Parameters*par, const std::string &l
 PluginFactory::ProductPtr
 PluginFactory::loadVST3x(IHostInfo::Ptr hI, Parameters*par, const std::string &loc)
 {
-    return ProductPtr();
+    return createVST3xPluginImpl(hI, par, loc);
 }
 //-----------------------------------------------------------------------------
 PluginFactory::ProductPtr
@@ -84,6 +88,9 @@ PluginFactory::Type PluginFactory::detectType(const std::string &loc) {
     std::string ext = path.extension().string();
     if (ext==std::string(com::FRX_VST_EXT)) {
         return PluginInfo::VST2X;
+    }
+	if (ext==std::string(com::FRX_VST3_EXT)) {
+		return PluginInfo::VST3X;
     }
     if (ext==std::string(com::FRX_LUA_EXT)) {
         return PluginInfo::LUA;
@@ -114,12 +121,13 @@ PluginFactory::load(IHostInfo::Ptr hI,
     }
     
     std::string path = complete(loc);
-    std::cout<<path<<std::endl;
+    
     try {
         switch (type) {
-        case PluginInfo::VST2X : return loadVST2x(hI, par, path);
-        case PluginInfo::LUA : return loadLua(hI, par, path);
-        default : return ProductPtr();
+			case PluginInfo::VST3X : return loadVST3x(hI, par, path);
+			case PluginInfo::VST2X : return loadVST2x(hI, par, path);
+			case PluginInfo::LUA : return loadLua(hI, par, path);
+			default : return ProductPtr();
         
         }
     } catch (const PluginArchitectureMissmatch &ex) {

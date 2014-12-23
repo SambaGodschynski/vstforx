@@ -87,6 +87,7 @@ find_package(LokiX REQUIRED)
 find_package(Lua52X REQUIRED)
 find_package(Sqlite3X REQUIRED)
 find_package(VST23X REQUIRED)
+find_package(VST3X REQUIRED)
 find_package(Sambag REQUIRED)
 find_package(BoostX REQUIRED)
 
@@ -97,11 +98,18 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${LOKI_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${LUA52_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${SAMBAG_INCLUDE_DIRS})
+
+#vst2
 INCLUDE_DIRECTORIES(${VSTSDK_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${VSTSDK_INCLUDE_DIRS}/PUBLIC.SDK/SOURCE/VST2.X/)
 INCLUDE_DIRECTORIES(${VSTSDK_INCLUDE_DIRS}/PLUGINTERFACES/VST2.X)
 INCLUDE_DIRECTORIES(${VSTPLUGIN_INTERFACES_DIRS})
-INCLUDE_DIRECTORIES(${SAMBAG_INCLUDE_DIRS})
+
+#vst3
+INCLUDE_DIRECTORIES(${VSTSDK3_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst)
+INCLUDE_DIRECTORIES(${VSTSDK3_INCLUDE_DIRS}/pluginterfaces/vst)
 
 
 SET (FRX_CLIBS ${FRX_CLIBS}
@@ -134,6 +142,16 @@ set (VSTSDKSOURCE ${VSTSDKSOURCE}
       ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/audioeffectx.cpp
       #${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp now part of target sources
 )
+
+set (VSTSDK3SOURCE ${VSTSDK3SOURCE}
+      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstaudioeffect.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstbus.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstcomponent.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vsteditcontroller.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstinitiids.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstparameters.cpp
+)
+
 
 
 CONFIGURE_FILE(
