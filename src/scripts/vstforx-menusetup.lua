@@ -16,19 +16,19 @@ currentViewport=1
 menus = {
    main={
       {name="VSTForx " .. frx.getVersionString() },
-      {name="Modify Scene...", action="onOpenBrowser()"},
-      {name="Open Setup Dialog", action="frx.openSetup()"},
+      {name="Modify Scene...", action="frx.runOnUIThread('onOpenBrowser()')"},
+      {name="Open Setup Dialog", action="frx.runOnUIThread('frx.openSetup()')"},
       {name="Help", {
-	  {name="About VSTForx", action="frx.openAbout()"},
+	  {name="About VSTForx", action="frx.runOnUIThread('frx.openAbout()"},
 	  {name="Report A Bug", action="frx.openUrl('http://www.vstforx.de/index.php/2014-01-12-14-49-45/report-a-bug')"},
 	  {name="Known Issues", action="frx.openUrl('http://issues.vstforx.de/roadmap_page.php?version_id=27')"}
       }},
       {name="Auxiliaries"},
-      {name="Find Plugins...", action="onAddPlugin()"},
+      {name="Find Plugins...", action="frx.runOnUIThread('onAddPlugin()')"},
       {name="Viewports", viewportMenu},
       {name="State"},
-      {name="Load...", action="load()"},
-      {name="Save...", action="save()"},
+      {name="Load...", action="frx.runOnUIThread('load()')"},
+      {name="Save...", action="frx.runOnUIThread('save()')"},
       --{name="Lua"},
       --{name="Execute Command...", action="onExecute()"}
       
