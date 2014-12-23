@@ -6,6 +6,7 @@
  */
 #include "processing/processing.h"
 #include "VST3xImpl.h"
+#include "processing/pluginTypes/VstShellPlugin.hpp"
 
 namespace frx { namespace processing {
 //-----------------------------------------------------------------------------
@@ -24,60 +25,79 @@ VST3PluginImpl::Ptr VST3PluginImpl::create(IHostInfo::Ptr hI, const std::string 
 //-------------------------------------------------------------------------
 VST3PluginImpl::VST3PluginImpl(IHostInfo::Ptr hI,
 	const std::string &location, Parameters *parameters)
-	: APluginImpl(hI, location, parameters)
+	: APluginImpl(hI, location, parameters), plugin(NULL)
 {
+    setModuleLocation(location);
+    loadModule();
+    determinePluginInstances();
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void VST3PluginImpl::createPluginInstance(const std::string &id)
+{
+    
+}
+//-----------------------------------------------------------------------------
+std::string VST3PluginImpl::determinePluginInstances()
+{
+    Steinberg::int32 nc = factory->countClasses();
+    oldPr::ShellPluginInfos infos;
+    for (Steinberg::int32 i=0; i<nc; ++i) {
+        Steinberg::PClassInfo info;
+        factory->getClassInfo(i, &info);
+        infos.push_back(std::string(&info.name[0]));
+    }
+}
+//-----------------------------------------------------------------------------
 void VST3PluginImpl::baseConfigChanged(){
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VST3PluginImpl::turnOff(){
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VST3PluginImpl::turnOn(){
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VST3PluginImpl::openPlugin(){
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VST3PluginImpl::closePlugin(){
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 size_t VST3PluginImpl::getNumInputChannels() const {
 	return 0;
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 size_t VST3PluginImpl::getNumOutputChannels() const {
 	return 0;
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 /**
 * @return true, wenn Plugin ueber Editor verfuegt.
 */
 bool VST3PluginImpl::hasEditor() const {
 	return false;
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VST3PluginImpl::openEditor(sambag::disco::components::WindowPtr win) {
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VST3PluginImpl::closeEditor(sambag::disco::components::WindowPtr win) {
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VST3PluginImpl::onEditorIdle() {
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 bool VST3PluginImpl::isAccessable() const {
 	return false;
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 /**
 * @return Anzahl aller Plugin-Programme (aka. Presets)
 */
 size_t VST3PluginImpl::getNumPrograms() {
 	return 0;
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 /**
 * @param index
 * @return Program-Name zu index.
@@ -85,54 +105,55 @@ size_t VST3PluginImpl::getNumPrograms() {
 std::string VST3PluginImpl::getProgramName( size_t index ) {
 	return "";
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 /**
 * Aktiviert Program zu index.
 * @param index
 */
 void VST3PluginImpl::setProgram( size_t index ) {
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 /**
 * @return index des akuell gesetzten Program, falls vorhanden. Andernfalls -1.
 */
 int VST3PluginImpl::getProgram() {
 	return -1;
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 /**
 * @return true, if plugin can handle MIDI events
 */
 bool VST3PluginImpl::canHandleMidiEvent() const {
 	return false;
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VST3PluginImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) 
 {
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 size_t VST3PluginImpl::getInitialDelay() const {
 	return 0;
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 /**
 * @note fills out name, isSynth, uid, vendor, type
 */
 void VST3PluginImpl::updatePluginInfo (::processing::PluginInfo &inf) const {
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VST3PluginImpl::processPlugin( oldPr::Frames::T **,
 	oldPr::Frames::T **, size_t numSamples)
 {
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 VST3PluginImpl::~VST3PluginImpl() {
+    unloadModule();
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 std::pair<size_t, void*> VST3PluginImpl::getStateData() const {
 	return std::make_pair(0, (void*)NULL);
 }
-//-------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 void VST3PluginImpl::setStateData(size_t size, void* data) {
 }
 }} // namespace

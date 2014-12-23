@@ -19,8 +19,10 @@ namespace processing {
 //------------------------------------------------------------------------------------------------------------
 struct ShellPluginInfo {
 	std::string name;
+    std::string vst3Id;
 	int id;
 	ShellPluginInfo(const std::string &name="", int id=0) : name(name), id(id) {}
+    ShellPluginInfo(const std::string &name, const std::string &vst3Id) : name(name), vst3Id(vst3Id), id(0) {}
 };
 //------------------------------------------------------------------------------------------------------------
 typedef std::list<ShellPluginInfo> ShellPluginInfos;

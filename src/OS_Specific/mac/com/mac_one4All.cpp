@@ -18,12 +18,13 @@
 namespace com {
 const char * FRX_VST_EXT = ".vst";
 const char * FRX_LUA_EXT = ".lua";
-const char * FRX_VST3_EXT = ".vst";
+const char * FRX_VST3_EXT = ".vst3";
 const char * FRX_APP_EXT = ".app";
 //-----------------------------------------------------------------------------
 bool isPlugFilename ( const std::string &filename ) {
     std::string ext = Filename(filename).extension().string();
 	return ext == std::string(FRX_VST_EXT) ||
+           ext == std::string(FRX_VST3_EXT) ||
            ext == std::string(FRX_LUA_EXT);
 } 
 //-----------------------------------------------------------------------------
@@ -35,6 +36,7 @@ bool isDirectory ( const std::string &filename ) {
     std::string ext = Filename(filename).extension().string();
 	return is_directory (s) &&
            ext != std::string(FRX_VST_EXT) &&
+           ext != std::string(FRX_VST3_EXT) &&
            ext != std::string(FRX_APP_EXT);
 } 	
 //-----------------------------------------------------------------------------

@@ -14,6 +14,7 @@
 #include <sambag/dsp/VstMidiEventAdapter.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include "PluginImpl.hpp"
+#include "pluginterfaces/base/ipluginbase.h"
 
 namespace frx { namespace processing {
 namespace oldPr = ::processing;
@@ -43,6 +44,21 @@ protected:
      */
     VST3PluginImpl(IHostInfo::Ptr hI, const std::string &location,
         Parameters *parameters);
+    /**
+     * @brief loads a concrete plugin.
+     * @param a vst3 specific id
+     */
+    void createPluginInstance(const std::string &cid);
+    /**
+     * @brief find out how many plugins are stored in this library.
+     * @throws ShellPlugin if more than one found.
+     *         It uses the existing VST2X shellplugin handling which ends
+     *         with a dialog while catching, where you can select a containing plugin and try
+     *         to load again with a specific id: bla.vst3@000AID.
+     */
+    std::string determinePluginInstances();
+private:
+    Steinberg::IPluginBase *plugin;
 public:
 	//-------------------------------------------------------------------------
 	static Ptr create(IHostInfo::Ptr hI, const std::string &location,
