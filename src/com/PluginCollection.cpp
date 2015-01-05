@@ -294,7 +294,7 @@ std::string PluginCollection::analyzeLog() {
 processing::PluginInfo PluginCollection::restorePluginInfo ( processing::PluginInfo &info ) 
 {
 	using namespace processing;
-	int shellId;
+	std::string shellId;
 	boost::tie(info.location, shellId) = com::extractVSTPluginFilename(info.location);
 	PluginInfo pI = getPlugInfo ( info.location );
 	// plugin not in db => search in db

@@ -18,6 +18,7 @@
 #include <sambag/dsp/TimeInfoVst2xHelper.hpp>
 #include <sambag/dsp/VstMidiEventAdapter.hpp>
 #include <sambag/disco/components/Window.hpp>
+#include <boost/lexical_cast.hpp>
 
 /**
  * get the apropriate handler from a window.
@@ -70,7 +71,7 @@ void VSTPluginImpl::openPlugin()
 	
 	// shellplugid is setted by loadModule (the filename contains the
 	// information eg.: 'plugin.dll@12345')
-	if (shellPlugId==0 && pluginCategory==kPlugCategShell) {
+	if (shellPlugId=="" && pluginCategory==kPlugCategShell) {
 		oldPr::ShellPluginInfos infos;
 		getShellPluginInfos(infos);
 		// plugin delivers shell plugins, at this point we can't go
@@ -432,7 +433,10 @@ VstIntPtr VSTPluginImpl::_hostCallback ( AEffect* effect,
 		// ( it calls callBkOnInit[static] again and again because it is not zero )
 		// see bug: 0000088
 		if (opcode==audioMasterCurrentId) {
-			return shellPlugIdOnInit;
+            if (shellPlugIdOnInit.empty()) {
+                return 0;
+            }
+			return boost::lexical_cast<int>(shellPlugIdOnInit);
 		}
 		HostCallBackOnInit tmp = callBkOnInit;
 		callBkOnInit = HostCallBackOnInit( NULL, NULL );

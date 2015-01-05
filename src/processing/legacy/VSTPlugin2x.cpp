@@ -19,6 +19,7 @@
 #include <processing/Plugin.h>
 #include <sambag/disco/Geometry.hpp>
 #include <sambag/disco/components/Window.hpp>
+#include <boost/lexical_cast.hpp>
 
 /**
  * get the apropriate handler from a window.
@@ -52,7 +53,7 @@ ioChangedLock(false)
 	
 	// shellplugid is setted by loadModule (the filename contains the
 	// information eg.: 'plugin.dll@12345')
-	if (shellPlugId==0 && pluginCategory==kPlugCategShell) {
+	if (shellPlugId=="" && pluginCategory==kPlugCategShell) {
 		::processing::ShellPluginInfos infos;
 		getShellPluginInfos(infos);
 		// plugin delivers shell plugins, at this pouint we can't go
@@ -550,7 +551,7 @@ VstIntPtr VSTPlugin::_hostCallback ( AEffect* effect,
 		// ( it calls callBkOnInit[static] again and again because it is not zero )
 		// see bug: 0000088
 		if (opcode==audioMasterCurrentId) {
-			return shellPlugIdOnInit;
+			return boost::lexical_cast<int>(shellPlugIdOnInit);
 		}
 		HostCallBackOnInit tmp = callBkOnInit;
 		callBkOnInit = HostCallBackOnInit( NULL, NULL );

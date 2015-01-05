@@ -10,6 +10,7 @@
 #include <processing/interprocess/BridgeSessionManager.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <boost/filesystem.hpp>
+#include <com/one4All.h>
 
 namespace com {
     // defined in OS_Specific/com/xxx_one4All.cpp
@@ -82,8 +83,11 @@ PluginFactory::loadLua(IHostInfo::Ptr hI, Parameters*par, const std::string &loc
     return createLuaImpl(hI, par, loc);
 }
 //-----------------------------------------------------------------------------
-PluginFactory::Type PluginFactory::detectType(const std::string &loc) {
+PluginFactory::Type PluginFactory::detectType(const std::string &pluginID) {
     using ::processing::PluginInfo;
+    std::string loc, shellID;
+    boost::tie(loc, shellID) = ::com::extractVSTPluginFilename(pluginID);
+    
     boost::filesystem::path path(loc);
     std::string ext = path.extension().string();
     if (ext==std::string(com::FRX_VST_EXT)) {

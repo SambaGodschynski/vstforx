@@ -14,7 +14,10 @@
 #include <sambag/dsp/VstMidiEventAdapter.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include "PluginImpl.hpp"
-#include "pluginterfaces/base/ipluginbase.h"
+#include <ivstcomponent.h>
+#include <ivsteditcontroller.h>
+#include "base/source/fobject.h"
+#include "processing/pluginTypes/VstShellPlugin.hpp"
 
 namespace frx { namespace processing {
 namespace oldPr = ::processing;
@@ -56,9 +59,14 @@ protected:
      *         with a dialog while catching, where you can select a containing plugin and try
      *         to load again with a specific id: bla.vst3@000AID.
      */
-    std::string determinePluginInstances();
+    void determinePluginInstances(oldPr::ShellPluginInfos& _out);
+    void unloadPlugin();
+    void initController();
 private:
-    Steinberg::IPluginBase *plugin;
+    Steinberg::Vst::IComponent *plugin;
+    Steinberg::Vst::IEditController *controller;
+    Steinberg::FObject dummyContext;
+    std::string cid;
 public:
 	//-------------------------------------------------------------------------
 	static Ptr create(IHostInfo::Ptr hI, const std::string &location,

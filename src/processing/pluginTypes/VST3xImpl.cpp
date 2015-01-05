@@ -6,7 +6,7 @@
  */
 #include "processing/processing.h"
 #include "VST3xImpl.h"
-#include "processing/pluginTypes/VstShellPlugin.hpp"
+#include "pluginterfaces/vst/ivstcomponent.h"
 
 namespace frx { namespace processing {
 //-----------------------------------------------------------------------------
@@ -27,40 +27,96 @@ VST3PluginImpl::VST3PluginImpl(IHostInfo::Ptr hI,
 	const std::string &location, Parameters *parameters)
 	: APluginImpl(hI, location, parameters), plugin(NULL)
 {
-    setModuleLocation(location);
+    std::string path;
+    boost::tie(path, cid) = com::extractVSTPluginFilename(location);
+    setModuleLocation(path);
     loadModule();
-    determinePluginInstances();
+    if (cid.empty()) {
+        oldPr::ShellPluginInfos infos;
+        determinePluginInstances(infos);
+        if (infos.empty()) {
+            throw std::runtime_error("no plugins found");
+        }
+        if (infos.size()>0) {
+            // now we have to throw because we don't know
+            // which exact plugin the user wan't
+            throw oldPr::ShellPluginException(location, infos);
+        }
+        cid = infos.front().id;
+    }
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::createPluginInstance(const std::string &id)
 {
-    
-}
-//-----------------------------------------------------------------------------
-std::string VST3PluginImpl::determinePluginInstances()
-{
-    Steinberg::int32 nc = factory->countClasses();
-    oldPr::ShellPluginInfos infos;
-    for (Steinberg::int32 i=0; i<nc; ++i) {
-        Steinberg::PClassInfo info;
-        factory->getClassInfo(i, &info);
-        infos.push_back(std::string(&info.name[0]));
+    Steinberg::FUID fuid;
+    fuid.fromString(id.c_str());
+    void * container[] = { NULL };
+    Steinberg::tresult res = factory->createInstance(fuid, Steinberg::Vst::IComponent::iid, container);
+    plugin = (Steinberg::Vst::IComponent*) *container;
+    if (res!=Steinberg::kResultOk || !plugin) {
+        throw std::runtime_error("creating plugin failed.");
     }
 }
 //-----------------------------------------------------------------------------
-void VST3PluginImpl::baseConfigChanged(){
+void VST3PluginImpl::determinePluginInstances(oldPr::ShellPluginInfos &infos)
+{
+    Steinberg::int32 nc = factory->countClasses();
+    for (Steinberg::int32 i=0; i<nc; ++i) {
+        Steinberg::PClassInfo info;
+        factory->getClassInfo(i, &info);
+        Steinberg::char8 cidString[50];
+        Steinberg::FUID (info.cid).toString (cidString);
+        infos.push_back(oldPr::ShellPluginInfo(std::string(&info.name[0]), std::string(cidString)));
+    }
 }
 //-----------------------------------------------------------------------------
-void VST3PluginImpl::turnOff(){
+void VST3PluginImpl::initController() {
+    using namespace Steinberg;
+    using namespace Vst;
+
+    // try to create the controller part from the component
+    // (for Plug-ins which did not succeed to separate component from controller)
+    if (plugin->queryInterface (IEditController::iid, (void**)&controller) != kResultTrue)
+    {
+        FUID controllerCID;
+        // ask for the associated controller class ID
+        if (plugin->getControllerClassId (controllerCID) == kResultTrue && controllerCID.isValid ())
+        {
+            // create its controller part created from the factory
+            tresult result = factory->createInstance (controllerCID, IEditController::iid, (void**)&controller);
+            if (controller && (result == kResultOk))
+            {
+                // initialize the component with our context
+                if (controller->initialize (&dummyContext) != kResultOk) {
+                    throw std::runtime_error("controller initalizing failed");
+                }
+            }
+        }
+    }
 }
 //-----------------------------------------------------------------------------
-void VST3PluginImpl::turnOn(){
+void VST3PluginImpl::baseConfigChanged() {
 }
 //-----------------------------------------------------------------------------
-void VST3PluginImpl::openPlugin(){
+void VST3PluginImpl::turnOff() {
 }
 //-----------------------------------------------------------------------------
-void VST3PluginImpl::closePlugin(){
+void VST3PluginImpl::turnOn() {
+}
+//-----------------------------------------------------------------------------
+void VST3PluginImpl::openPlugin() {
+    using namespace Steinberg;
+    using namespace Vst;
+    createPluginInstance(cid);
+    // initialize the component with our context
+    if (plugin->initialize (&dummyContext) != kResultOk) {
+        throw std::runtime_error("plugin initalizing failed");
+    }
+    initController();
+}
+//-----------------------------------------------------------------------------
+void VST3PluginImpl::closePlugin() {
+    unloadPlugin();
 }
 //-----------------------------------------------------------------------------
 size_t VST3PluginImpl::getNumInputChannels() const {
@@ -144,6 +200,33 @@ void VST3PluginImpl::updatePluginInfo (::processing::PluginInfo &inf) const {
 void VST3PluginImpl::processPlugin( oldPr::Frames::T **,
 	oldPr::Frames::T **, size_t numSamples)
 {
+}
+//-----------------------------------------------------------------------------
+void VST3PluginImpl::unloadPlugin() {
+    using namespace Steinberg;
+    using namespace Vst;
+	bool controllerIsComponent = false;		
+	if (plugin)
+	{
+		controllerIsComponent = FUnknownPtr<IEditController> (plugin).getInterface () != 0;
+		plugin->terminate ();
+	}
+
+	if (controller && controllerIsComponent == false)
+		controller->terminate ();
+
+	if (plugin)
+	{
+		plugin->release ();
+		plugin = NULL;
+	}
+
+	if (controller)
+	{
+		controller->release ();
+		controller = NULL;
+	}
+
 }
 //-----------------------------------------------------------------------------
 VST3PluginImpl::~VST3PluginImpl() {

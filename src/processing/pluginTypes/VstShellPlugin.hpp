@@ -11,6 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include <string>
 #include <list>
+#include <boost/lexical_cast.hpp>
 
 namespace processing {
 //============================================================================================================
@@ -18,11 +19,18 @@ namespace processing {
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
 struct ShellPluginInfo {
-	std::string name;
-    std::string vst3Id;
-	int id;
-	ShellPluginInfo(const std::string &name="", int id=0) : name(name), id(id) {}
-    ShellPluginInfo(const std::string &name, const std::string &vst3Id) : name(name), vst3Id(vst3Id), id(0) {}
+    std::string id;
+    std::string name;
+	ShellPluginInfo(const std::string &name="", int id=0) :
+        name(name),
+        id(boost::lexical_cast<std::string>(id))
+    {
+    }
+    ShellPluginInfo(const std::string &name, const std::string &id) :
+        name(name),
+        id(id)
+    {
+    }
 };
 //------------------------------------------------------------------------------------------------------------
 typedef std::list<ShellPluginInfo> ShellPluginInfos;
