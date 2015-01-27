@@ -7,8 +7,19 @@
 #include "processing/processing.h"
 #include "VST3xImpl.h"
 #include "pluginterfaces/vst/ivstcomponent.h"
+#include "processing/parameter/parameter.h"
+#include "base/source/fstring.h"
+
+
 
 namespace frx { namespace processing {
+namespace {
+    std::string tostdstring(const Steinberg::Vst::String128 &str) {
+        char ascii[128];
+        Steinberg::ConstString::wideStringToMultiByte(&ascii[0], &str[0], 128);
+        return std::string(ascii);
+    }
+}
 //-----------------------------------------------------------------------------
 APluginImpl::Ptr createVST3xPluginImpl(IHostInfo::Ptr hI,
     APluginImpl::Parameters *parameters, const std::string &location)
@@ -25,7 +36,9 @@ VST3PluginImpl::Ptr VST3PluginImpl::create(IHostInfo::Ptr hI, const std::string 
 //-------------------------------------------------------------------------
 VST3PluginImpl::VST3PluginImpl(IHostInfo::Ptr hI,
 	const std::string &location, Parameters *parameters)
-	: APluginImpl(hI, location, parameters), plugin(NULL)
+	: APluginImpl(hI, location, parameters)
+    , plugin(NULL)
+    , onPlugChangeParameterIndex(-1)
 {
     std::string path;
     boost::tie(path, cid) = com::extractVSTPluginFilename(location);
@@ -44,6 +57,59 @@ VST3PluginImpl::VST3PluginImpl(IHostInfo::Ptr hI,
         }
         cid = infos.front().id;
     }
+}
+//-----------------------------------------------------------------------------
+void VST3PluginImpl::initParameters() {
+    if (!controller) {
+        return;
+    }
+    int num = (int)controller->getParameterCount();
+    parameters->resize(num);
+    for (int i = 0; i<num; ++i) {
+        oldPrPr::Parameter::Ptr p = parameters->at(i);
+        if (!p) {
+            Steinberg::Vst::ParameterInfo pInf;
+            controller->getParameterInfo(i, pInf);
+            (*parameters)[i] = p = oldPrPr::Parameter::create(i);
+            p->setMin( (com::VstNumber)INT_MIN ); //entferne min, max ( siehe issue: 0000049 )
+            p->setMax( (com::VstNumber)INT_MAX );
+            Steinberg::Vst::ParamValue value = controller->getParamNormalized(pInf.id);
+            // wert
+            p->setValue(value);
+            // name
+            p->setName(tostdstring(pInf.title));
+            // label
+            p->setLabel(tostdstring(pInf.units));
+            // display
+            Steinberg::Vst::String128 displ;
+            controller->getParamStringByValue(pInf.id, value, &displ[0]);
+            p->setDisplay(tostdstring(displ));
+            // add listener
+            p->addValueChangedListener (
+                boost::bind(&VST3PluginImpl::valueChanged, this, _1, _2)
+            );
+        }
+    }
+}
+//-----------------------------------------------------------------------------
+void VST3PluginImpl::valueChanged(void *src, const float &value) {
+    if (!controller) {
+        return;
+    }
+	oldPrPr::Parameter *p = (oldPrPr::Parameter*) src;
+	int index = (int)p->getIndex();
+	if ( onPlugChangeParameterIndex == index ) 
+		return; // called by editorParameterChanged
+	if ( index>=parameters->size() ) {
+        return;
+    }
+	oldPrPr::Parameter::Ptr param = parameters->at(index);
+    Steinberg::Vst::ParameterInfo pInf;
+    controller->getParameterInfo(index, pInf);
+    controller->setParamNormalized(pInf.id, value);
+    Steinberg::Vst::String128 displ;
+    controller->getParamStringByValue(pInf.id, value, &displ[0]);
+    param->setDisplay(tostdstring(displ));
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::createPluginInstance(const std::string &id)
@@ -113,6 +179,7 @@ void VST3PluginImpl::openPlugin() {
         throw std::runtime_error("plugin initalizing failed");
     }
     initController();
+    initParameters();
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::closePlugin() {

@@ -62,11 +62,18 @@ protected:
     void determinePluginInstances(oldPr::ShellPluginInfos& _out);
     void unloadPlugin();
     void initController();
+    void initParameters();
 private:
     Steinberg::Vst::IComponent *plugin;
     Steinberg::Vst::IEditController *controller;
     Steinberg::FObject dummyContext;
     std::string cid;
+    void valueChanged(void *src, const float &value);
+    /**
+	 * boolsches Sperren von Parameteraenderungen.
+	 * plug => parameter[index] => plug
+	 */
+	int onPlugChangeParameterIndex;
 public:
 	//-------------------------------------------------------------------------
 	static Ptr create(IHostInfo::Ptr hI, const std::string &location,
