@@ -122,7 +122,7 @@ SET (FRX_CLIBS ${FRX_CLIBS}
 	${CAIRO_LIBRARIES}
 	${TINYXML_LIBRARIES}
 	${LUA52_LIBRARIES}
-	${VST3_LIBRARIES}
+	#${VST3_LIBRARIES}
 )
 
 IF(APPLE)
@@ -154,6 +154,28 @@ set (VSTSDK3SOURCE ${VSTSDK3SOURCE}
       ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vsteditcontroller.cpp
       ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstinitiids.cpp
       ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstparameters.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/pluginterfaces/base/ustring.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/pluginterfaces/base/conststringtable.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/pluginterfaces/base/funknown.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/baseiids.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/classfactory.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fatomic.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fbitset.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fbuffer.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fcpu.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fdebug.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fdynlib.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/finitializer.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fmemory.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fobject.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fpoint.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/frect.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fregion.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fstreamer.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fstring.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fthread.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/timer.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/updatehandler.cpp
 )
 
 

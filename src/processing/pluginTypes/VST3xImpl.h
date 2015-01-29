@@ -16,6 +16,7 @@
 #include "PluginImpl.hpp"
 #include <ivstcomponent.h>
 #include <ivsteditcontroller.h>
+#include "pluginterfaces/gui/iplugview.h"
 #include "base/source/fobject.h"
 #include "processing/pluginTypes/VstShellPlugin.hpp"
 
@@ -63,10 +64,12 @@ protected:
     void unloadPlugin();
     void initController();
     void initParameters();
+    void tryCreateEditor();
 private:
     Steinberg::Vst::IComponent *plugin;
     Steinberg::Vst::IEditController *controller;
     Steinberg::FObject dummyContext;
+    Steinberg::IPlugView *editor;
     std::string cid;
     void valueChanged(void *src, const float &value);
     /**

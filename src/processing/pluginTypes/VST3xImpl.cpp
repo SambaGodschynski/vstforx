@@ -9,8 +9,10 @@
 #include "pluginterfaces/vst/ivstcomponent.h"
 #include "processing/parameter/parameter.h"
 #include "base/source/fstring.h"
+#include "sambag/disco/components/Window.hpp"
+#include "sambag/disco/components/windowImpl/CocoaWindowImpl.hpp"
 
-
+extern void * __getHandlerForVstPlugins_(void*);
 
 namespace frx { namespace processing {
 namespace {
@@ -39,6 +41,7 @@ VST3PluginImpl::VST3PluginImpl(IHostInfo::Ptr hI,
 	: APluginImpl(hI, location, parameters)
     , plugin(NULL)
     , onPlugChangeParameterIndex(-1)
+    , editor(NULL)
 {
     std::string path;
     boost::tie(path, cid) = com::extractVSTPluginFilename(location);
@@ -180,6 +183,7 @@ void VST3PluginImpl::openPlugin() {
     }
     initController();
     initParameters();
+    tryCreateEditor();
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::closePlugin() {
@@ -198,13 +202,40 @@ size_t VST3PluginImpl::getNumOutputChannels() const {
 * @return true, wenn Plugin ueber Editor verfuegt.
 */
 bool VST3PluginImpl::hasEditor() const {
-	return false;
+    if (editor!=NULL) {
+        return true;
+    }
+    return false;
 }
 //-----------------------------------------------------------------------------
+namespace {
+    std::pair<void*, Steinberg::FIDString> getSytemHandle(sambag::disco::components::WindowPtr win)
+    {
+        using namespace sambag::disco::components;
+        AWindowImpl::Ptr impl = win->getWindowImpl();
+        // check if we have a cocoa window
+        CocoaWindowImpl::Ptr cocoa =
+        boost::dynamic_pointer_cast<CocoaWindowImpl>(impl);
+        if (!cocoa) {
+            void *res = ::__getHandlerForVstPlugins_(impl->getSystemHandle());
+            return std::make_pair((void*)res, Steinberg::kPlatformTypeHWND);
+        }
+        return std::make_pair((void*)cocoa->getNSView(), Steinberg::kPlatformTypeNSView);
+    }
+}
 void VST3PluginImpl::openEditor(sambag::disco::components::WindowPtr win) {
+    namespace sd = sambag::disco;
+    Steinberg::ViewRect size;
+    editor->getSize(&size);
+    win->setWindowSize(sd::Dimension(size.getWidth(), size.getHeight()));
+    void *hnd = NULL;
+    Steinberg::FIDString type = NULL;
+    boost::tie(hnd, type) = getSytemHandle(win);
+    editor->attached(hnd, type);
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::closeEditor(sambag::disco::components::WindowPtr win) {
+    editor->removed();
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::onEditorIdle() {
@@ -272,15 +303,20 @@ void VST3PluginImpl::processPlugin( oldPr::Frames::T **,
 void VST3PluginImpl::unloadPlugin() {
     using namespace Steinberg;
     using namespace Vst;
-	bool controllerIsComponent = false;		
+	bool controllerIsComponent = false;
+    if (editor) {
+        editor->release();
+        editor = NULL;
+    }
 	if (plugin)
 	{
 		controllerIsComponent = FUnknownPtr<IEditController> (plugin).getInterface () != 0;
 		plugin->terminate ();
 	}
 
-	if (controller && controllerIsComponent == false)
+	if (controller && controllerIsComponent == false) {
 		controller->terminate ();
+    }
 
 	if (plugin)
 	{
@@ -306,7 +342,32 @@ std::pair<size_t, void*> VST3PluginImpl::getStateData() const {
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::setStateData(size_t size, void* data) {
 }
+//-----------------------------------------------------------------------------
+void VST3PluginImpl::tryCreateEditor() {
+    using namespace Steinberg;
+    using namespace Vst;
+    if (!controller) {
+        return;
+    }
+    editor = controller->createView (ViewType::kEditor);
+    if (editor == NULL) {
+        editor = controller->createView (NULL);
+    }
+    if (editor == NULL) {
+        controller->queryInterface (IPlugView_iid, (void**) &editor);
+    }
+}
 }} // namespace
+
+
+
+
+
+
+
+
+
+
 
 
 
