@@ -74,6 +74,7 @@ void VST3PluginImpl::initParameters() {
             Steinberg::Vst::ParameterInfo pInf;
             controller->getParameterInfo(i, pInf);
             (*parameters)[i] = p = oldPrPr::Parameter::create(i);
+            indexMap[pInf.id] = i; // add id to indexmap
             p->setMin( (com::VstNumber)INT_MIN ); //entferne min, max ( siehe issue: 0000049 )
             p->setMax( (com::VstNumber)INT_MAX );
             Steinberg::Vst::ParamValue value = controller->getParamNormalized(pInf.id);
@@ -162,6 +163,9 @@ void VST3PluginImpl::initController() {
             }
         }
     }
+    if (controller) {
+        controller->setComponentHandler(this);
+    }
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::baseConfigChanged() {
@@ -208,6 +212,22 @@ bool VST3PluginImpl::hasEditor() const {
     return false;
 }
 //-----------------------------------------------------------------------------
+void VST3PluginImpl::onEditorBoundsChanged(const sambag::com::events::PropertyChanged &ev)
+{
+    if (!editor) {
+        return;
+    }
+    namespace sd = sambag::disco;
+    sd::Rectangle bounds;
+    ev.getNewValue(bounds);
+    int w = (int)bounds.getWidth();
+    int h = (int)bounds.getHeight();
+    if (w>0 && h>0 && editor->canResize()) {
+        Steinberg::ViewRect size(0,0,w,h);
+        editor->onSize(&size);
+    }
+}
+//-----------------------------------------------------------------------------
 namespace {
     std::pair<void*, Steinberg::FIDString> getSytemHandle(sambag::disco::components::WindowPtr win)
     {
@@ -225,6 +245,7 @@ namespace {
 }
 void VST3PluginImpl::openEditor(sambag::disco::components::WindowPtr win) {
     namespace sd = sambag::disco;
+    namespace sce = sambag::com::events;
     Steinberg::ViewRect size;
     editor->getSize(&size);
     win->setWindowSize(sd::Dimension(size.getWidth(), size.getHeight()));
@@ -232,10 +253,17 @@ void VST3PluginImpl::openEditor(sambag::disco::components::WindowPtr win) {
     Steinberg::FIDString type = NULL;
     boost::tie(hnd, type) = getSytemHandle(win);
     editor->attached(hnd, type);
+    // add event(s)
+    evBoundsConnection = win->sce::EventSender<sce::PropertyChanged>::addEventListener(
+        boost::bind(&VST3PluginImpl::onEditorBoundsChanged, this, _2)
+    );
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::closeEditor(sambag::disco::components::WindowPtr win) {
     editor->removed();
+    if (evBoundsConnection.connected()) {
+        evBoundsConnection.disconnect();
+    }
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::onEditorIdle() {
@@ -356,6 +384,87 @@ void VST3PluginImpl::tryCreateEditor() {
     if (editor == NULL) {
         controller->queryInterface (IPlugView_iid, (void**) &editor);
     }
+}
+//-----------------------------------------------------------------------------
+int VST3PluginImpl::getParameterIndex(Steinberg::Vst::ParamID id) const
+{
+    VstParam2Index::const_iterator it = indexMap.find(id);
+    if (it==indexMap.end()) {
+        return -1;
+    }
+    return it->second;
+}
+///////////////////////////////////////////////////////////////////////////
+// IComponentHandler
+static bool doUIDsMatch (const Steinberg::TUID a, const Steinberg::TUID b)
+{
+    return std::memcmp (a, b, sizeof (Steinberg::TUID)) == 0;
+}
+//-----------------------------------------------------------------------------
+Steinberg::tresult VST3PluginImpl::queryInterface (const Steinberg::TUID iid, void **obj)
+{
+    if (doUIDsMatch (iid, Steinberg::Vst::IComponentHandler::iid))
+    {
+        *obj = dynamic_cast<Steinberg::Vst::IComponentHandler*> (this);
+        return Steinberg::kResultOk;
+    }
+    return Steinberg::kResultFalse;
+}
+//-----------------------------------------------------------------------------
+Steinberg::uint32 VST3PluginImpl::addRef ()
+{
+    // we override the ref counting here because we own the plugin
+    // and this will be deleted when the plugin is gone already
+    return 1;
+}
+//-----------------------------------------------------------------------------
+Steinberg::uint32 VST3PluginImpl::release ()
+{
+    // we override the ref counting here because we own the plugin
+    // and this will be deleted when the plugin is gone already
+    return 1;
+}
+//-----------------------------------------------------------------------------
+Steinberg::tresult VST3PluginImpl::beginEdit (Steinberg::Vst::ParamID id)
+{
+    return Steinberg::kResultTrue;
+}
+//-----------------------------------------------------------------------------
+Steinberg::tresult VST3PluginImpl::performEdit (Steinberg::Vst::ParamID id,
+        Steinberg::Vst::ParamValue valueNormalized)
+        
+{
+    int index = getParameterIndex(id);
+    if (index<0) {
+        SAMBAG_LOG_WARN<<"parameter " << id << " not found";
+        return Steinberg::kResultTrue;
+    }
+    if ( parameters->empty() ) {
+		return Steinberg::kResultTrue;
+	}
+	// try to lock:
+	boost::unique_lock<boost::timed_mutex> lock( mutex, boost::try_to_lock);
+	if (!lock.owns_lock()) {
+		return Steinberg::kResultTrue; // lock failed
+	}
+
+	if ( index > (int)parameters->size() ) {
+		return Steinberg::kResultTrue;
+	}
+	onPlugChangeParameterIndex = index; 
+	(*parameters)[index]->setValue ( valueNormalized );
+	onPlugChangeParameterIndex = -1;
+    return Steinberg::kResultTrue;
+}
+//-----------------------------------------------------------------------------
+Steinberg::tresult VST3PluginImpl::endEdit (Steinberg::Vst::ParamID id)
+{
+    return Steinberg::kResultTrue;
+}
+//-----------------------------------------------------------------------------
+Steinberg::tresult VST3PluginImpl::restartComponent (Steinberg::int32 flags)
+{
+    return Steinberg::kResultTrue;
 }
 }} // namespace
 

@@ -19,7 +19,8 @@
 #include "pluginterfaces/gui/iplugview.h"
 #include "base/source/fobject.h"
 #include "processing/pluginTypes/VstShellPlugin.hpp"
-
+#include <sambag/com/events/PropertyChanged.hpp>
+#include <sambag/com/events/Events.hpp>
 namespace frx { namespace processing {
 namespace oldPr = ::processing;
 namespace oldPrPr = ::processing::parameter;
@@ -31,6 +32,7 @@ namespace oldPrPr = ::processing::parameter;
 class VST3PluginImpl: 
 	public oldPr::OS_VSTPlugNode3x, // Plattformspezifische impl.
 	public APluginImpl,
+    public Steinberg::Vst::IComponentHandler,
 	public com::Serializable
 {
 //=============================================================================
@@ -65,19 +67,31 @@ protected:
     void initController();
     void initParameters();
     void tryCreateEditor();
+    void onEditorBoundsChanged(const sambag::com::events::PropertyChanged &ev);
 private:
+	/**
+	 * Blockiert Deserialisierung gegen nebenlaufige
+	 * Parameteraenderungen, verursacht durch Host.
+	 */
+	com::Mutex mutex;
     Steinberg::Vst::IComponent *plugin;
     Steinberg::Vst::IEditController *controller;
     Steinberg::FObject dummyContext;
     Steinberg::IPlugView *editor;
     std::string cid;
+    typedef boost::unordered_map<Steinberg::Vst::ParamID, int> VstParam2Index;
+    VstParam2Index indexMap;
     void valueChanged(void *src, const float &value);
     /**
 	 * boolsches Sperren von Parameteraenderungen.
 	 * plug => parameter[index] => plug
 	 */
 	int onPlugChangeParameterIndex;
+    sambag::com::events::EventSender<sambag::com::events::PropertyChanged>::Connection
+        evBoundsConnection;
 public:
+    //-------------------------------------------------------------------------
+    int getParameterIndex(Steinberg::Vst::ParamID id) const;
 	//-------------------------------------------------------------------------
 	static Ptr create(IHostInfo::Ptr hI, const std::string &location,
         Parameters *parameters);
@@ -153,6 +167,16 @@ public:
     virtual std::pair<size_t, void*> getStateData() const;
     //-------------------------------------------------------------------------
     virtual void setStateData(size_t size, void* data);
+    ///////////////////////////////////////////////////////////////////////////
+    // IComponentHandler
+    virtual Steinberg::tresult queryInterface (const Steinberg::TUID iid, void **obj);
+    virtual Steinberg::uint32 addRef ();
+    virtual Steinberg::uint32 release ();
+    virtual Steinberg::tresult beginEdit (Steinberg::Vst::ParamID id);
+    virtual Steinberg::tresult performEdit (Steinberg::Vst::ParamID id,
+        Steinberg::Vst::ParamValue valueNormalized);
+    virtual Steinberg::tresult endEdit (Steinberg::Vst::ParamID id);
+    virtual Steinberg::tresult restartComponent (Steinberg::int32 flags);
 }; // class VST3PluginImpl
 }} // namespace processing
 
