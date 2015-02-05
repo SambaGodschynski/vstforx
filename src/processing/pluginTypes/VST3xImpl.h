@@ -62,7 +62,7 @@ protected:
      *         with a dialog while catching, where you can select a containing plugin and try
      *         to load again with a specific id: bla.vst3@000AID.
      */
-    void determinePluginInstances(oldPr::ShellPluginInfos& _out);
+    void determinePluginInstances(oldPr::ShellPluginInfos& _out) const;
     void unloadPlugin();
     void initController();
     void initParameters();
@@ -90,6 +90,10 @@ private:
     sambag::com::events::EventSender<sambag::com::events::PropertyChanged>::Connection
         evBoundsConnection;
 public:
+    //-------------------------------------------------------------------------
+    std::string getPluginName() const;
+    //-------------------------------------------------------------------------
+    std::string getPluginVendor() const;
     //-------------------------------------------------------------------------
     int getParameterIndex(Steinberg::Vst::ParamID id) const;
 	//-------------------------------------------------------------------------

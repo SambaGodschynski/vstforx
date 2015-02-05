@@ -110,7 +110,7 @@ void VSTPlugin::initPlug( VSTPlugin &plug ) {
 	plug.aEff->dispatcher ( plug.aEff, effGetVendorString, 0, NULL, &bff[0], NULL );
 	plug.setPlugVendor( string (bff) );
 	plug.setIsSynth ( plug.can(effFlagsIsSynth) );
-	plug.setUid ( plug.aEff->uniqueID );
+	plug.setUid ( boost::lexical_cast<std::string>(plug.aEff->uniqueID) );
 	plug.setType ( ::processing::PluginInfo::VST2X );
     plug._processDelay = plug.aEff->initialDelay;
 	if ( plug.aEff == &::processing::nullAEff ) {
@@ -490,6 +490,13 @@ void VSTPlugin::onPlugRequestWindowResize (size_t w, size_t h) {
     sce::EventSender<sce::PropertyChanged>::notifyListeners (this,
 			sce::PropertyChanged (PluginMII::PROPERTY_PARAMETER_EDITOR_SIZE, d, d)
     );
+}
+//------------------------------------------------------------------------------------------------------------
+void VSTPlugin::beforeOpenEditor(sambag::disco::components::WindowPtr win) {
+#if defined DISCO_USE_COCOA
+    namespace sdc = sambag::disco::components;
+    win->getWindowImpl()->setFlag(sdc::WindowFlags::WND_VST2X_CARBON_COCOA_HACK, true);
+#endif
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::openEditor(sambag::disco::components::WindowPtr _window) {

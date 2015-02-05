@@ -254,6 +254,10 @@ bool Plugin::hasEditor() const {
     return impl->hasEditor();
 }
 //-----------------------------------------------------------------------------
+void Plugin::beforeOpenEditor(sambag::disco::components::WindowPtr win) {
+    impl->beforeOpenEditor(win);
+}
+//-----------------------------------------------------------------------------
 void Plugin::openEditor(sambag::disco::components::WindowPtr window) {
     impl->openEditor(window);
 }

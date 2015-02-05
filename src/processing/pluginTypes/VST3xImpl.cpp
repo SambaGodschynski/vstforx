@@ -128,7 +128,7 @@ void VST3PluginImpl::createPluginInstance(const std::string &id)
     }
 }
 //-----------------------------------------------------------------------------
-void VST3PluginImpl::determinePluginInstances(oldPr::ShellPluginInfos &infos)
+void VST3PluginImpl::determinePluginInstances(oldPr::ShellPluginInfos &infos) const
 {
     Steinberg::int32 nc = factory->countClasses();
     for (Steinberg::int32 i=0; i<nc; ++i) {
@@ -195,11 +195,13 @@ void VST3PluginImpl::closePlugin() {
 }
 //-----------------------------------------------------------------------------
 size_t VST3PluginImpl::getNumInputChannels() const {
-	return 0;
+    using namespace Steinberg;
+    return (size_t)plugin->getBusCount(Vst::kAudio, Vst::kInput);
 }
 //-----------------------------------------------------------------------------
 size_t VST3PluginImpl::getNumOutputChannels() const {
-	return 0;
+    using namespace Steinberg;
+    return (size_t)plugin->getBusCount(Vst::kAudio, Vst::kOutput);
 }
 //-----------------------------------------------------------------------------
 /**
@@ -229,7 +231,9 @@ void VST3PluginImpl::onEditorBoundsChanged(const sambag::com::events::PropertyCh
 }
 //-----------------------------------------------------------------------------
 namespace {
-    std::pair<void*, Steinberg::FIDString> getSytemHandle(sambag::disco::components::WindowPtr win)
+    std::pair<void*, Steinberg::FIDString>
+    getSytemHandle(sambag::disco::components::WindowPtr win,
+        Steinberg::IPlugView *editor)
     {
         using namespace sambag::disco::components;
         AWindowImpl::Ptr impl = win->getWindowImpl();
@@ -240,6 +244,15 @@ namespace {
             void *res = ::__getHandlerForVstPlugins_(impl->getSystemHandle());
             return std::make_pair((void*)res, Steinberg::kPlatformTypeHWND);
         }
+//        // handle the afwul macosx impl.'s with its fucking several viewtypes
+//        if (editor->isPlatformTypeSupported(Steinberg::kPlatformTypeNSView)==Steinberg::kResultTrue)
+//        {
+//            return std::make_pair((void*)cocoa->getNSView(), Steinberg::kPlatformTypeNSView);
+//        }
+//        if (editor->isPlatformTypeSupported(Steinberg::kPlatformTypeHIView)==Steinberg::kResultTrue)
+//        {
+//            return std::make_pair((void*)cocoa->getHIView(), Steinberg::kPlatformTypeHIView);
+//        }
         return std::make_pair((void*)cocoa->getNSView(), Steinberg::kPlatformTypeNSView);
     }
 }
@@ -251,8 +264,11 @@ void VST3PluginImpl::openEditor(sambag::disco::components::WindowPtr win) {
     win->setWindowSize(sd::Dimension(size.getWidth(), size.getHeight()));
     void *hnd = NULL;
     Steinberg::FIDString type = NULL;
-    boost::tie(hnd, type) = getSytemHandle(win);
-    editor->attached(hnd, type);
+    boost::tie(hnd, type) = getSytemHandle(win, editor);
+    Steinberg::tresult res = editor->attached(hnd, type);
+    if (res==Steinberg::kResultFalse) {
+        throw std::runtime_error("attaching the editor failed");
+    }
     // add event(s)
     evBoundsConnection = win->sce::EventSender<sce::PropertyChanged>::addEventListener(
         boost::bind(&VST3PluginImpl::onEditorBoundsChanged, this, _2)
@@ -317,10 +333,35 @@ size_t VST3PluginImpl::getInitialDelay() const {
 	return 0;
 }
 //-----------------------------------------------------------------------------
+std::string VST3PluginImpl::getPluginName() const {
+    oldPr::ShellPluginInfos infos;
+    determinePluginInstances(infos);
+    BOOST_FOREACH(const oldPr::ShellPluginInfo &x, infos) {
+        // search for info with fitting id
+        if (x.id == cid) {
+            return x.name;
+        }
+    }
+    return com::getFileNameFromPath(location);
+}
+//-----------------------------------------------------------------------------
+std::string VST3PluginImpl::getPluginVendor() const {
+    using namespace Steinberg;
+    PFactoryInfo info;
+    factory->getFactoryInfo(&info);
+    return std::string(&info.vendor[0]);
+}
+//-----------------------------------------------------------------------------
 /**
 * @note fills out name, isSynth, uid, vendor, type
 */
 void VST3PluginImpl::updatePluginInfo (::processing::PluginInfo &inf) const {
+    using namespace Steinberg;
+	inf.name = getPluginName();
+    inf.vendor = getPluginVendor();
+	inf.isSynth  = plugin->getBusCount(Vst::kEvent, Vst::kInput);
+	inf.uid = cid;
+	inf.pluginType = oldPr::PluginInfo::VST3X;
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::processPlugin( oldPr::Frames::T **,

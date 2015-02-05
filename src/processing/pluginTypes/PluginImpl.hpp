@@ -100,6 +100,8 @@ struct APluginImpl :
 	 * @return true, wenn Plugin ueber Editor verfuegt.
 	 */
 	virtual bool hasEditor() const = 0;
+    //-------------------------------------------------------------------------
+    virtual void beforeOpenEditor(sambag::disco::components::WindowPtr win) {}
 	//-------------------------------------------------------------------------
 	virtual void openEditor(sambag::disco::components::WindowPtr win) = 0;
 	//-------------------------------------------------------------------------

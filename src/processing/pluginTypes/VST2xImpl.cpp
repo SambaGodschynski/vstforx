@@ -363,6 +363,13 @@ void VSTPluginImpl::onPlugRequestWindowResize (size_t w, size_t h) {
     oldEditorSize = _new;
 }
 //-----------------------------------------------------------------------------
+void VSTPluginImpl::beforeOpenEditor(sambag::disco::components::WindowPtr win) {
+#if defined DISCO_USE_COCOA
+    namespace sdc = sambag::disco::components;
+    win->getWindowImpl()->setFlag(sdc::WindowFlags::WND_VST2X_CARBON_COCOA_HACK, true);
+#endif
+}
+//-----------------------------------------------------------------------------
 void VSTPluginImpl::openEditor(sambag::disco::components::WindowPtr _window) {
     if (!_window)
 		return;

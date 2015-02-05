@@ -115,7 +115,7 @@ FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionHost, GetPluginInfo) {
     shm_cpystr(ret->name, info.name);
     shm_cpystr(ret->vendor, info.vendor);
     ret->isSynth = info.isSynth;
-    ret->uid = info.uid;
+    ret->uid = 0; //TODO: info.uid; string goes here
     ret->type = info.pluginType;
 }
 //-----------------------------------------------------------------------------

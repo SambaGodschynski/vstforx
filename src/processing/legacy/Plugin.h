@@ -182,13 +182,13 @@ public:
 	/**
 	 * @return Plugin-Uid.
 	 */
-	virtual int getUid() const { return pluginInfo.uid; }
+	virtual std::string getUid() const { return pluginInfo.uid; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * setzt Plugin-Uid
 	 * @param uid
 	 */
-	virtual void setUid ( int uid ) { pluginInfo.uid = uid; }
+	virtual void setUid ( std::string uid ) { pluginInfo.uid = uid; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Plugin-Typ (@see PluginInfo::PluginType)

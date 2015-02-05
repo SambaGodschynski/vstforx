@@ -214,6 +214,8 @@ public:
 		turnOff();
 		turnOn();
 	}
+    //-------------------------------------------------------------------------
+    virtual void beforeOpenEditor(sambag::disco::components::WindowPtr win);
 	//-------------------------------------------------------------------------
 	virtual void openEditor(sambag::disco::components::WindowPtr);
 	//-------------------------------------------------------------------------

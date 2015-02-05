@@ -10,6 +10,7 @@
 #include "com/Serialization.h"
 #include <string>
 #include <com/one4All.h>
+#include <boost/lexical_cast.hpp>
 
 namespace processing {
 //============================================================================================================
@@ -40,7 +41,7 @@ private:
 		ar & isSynth;
 		ar & timestamp;
 		ar & access;
-		ar & uid;
+		ar & uid_legacy;
         
         if (version>=1) {
             ar & id;
@@ -48,15 +49,21 @@ private:
         if (version>=2) {
             ar & vendor;
         }
+        if (version>=3) {
+            ar & uid;
+        } else {
+            uid = boost::lexical_cast<std::string>(uid_legacy);
+        }
 	}
 	//--------------------------------------------------------------------------------------------------------
 public:
 	std::string location;
 	std::string name;
     std::string vendor;
+    std::string uid;
 	PluginType pluginType;
 	int isSynth;
-	int uid;
+	int uid_legacy;
 	time_t timestamp;
 	AccessState access; // konnte geladen werden?
     int id; // database id
@@ -84,7 +91,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	PluginInfo() : pluginType(UNKNOWN),
         isSynth(0),
-        uid(0),
+        uid_legacy(0),
         timestamp(0),
         access (NOT_CHECKED),
         id(-1)
@@ -115,6 +122,6 @@ public:
 };
 } // namespace
 
-BOOST_CLASS_VERSION(processing::PluginInfo, 2)
+BOOST_CLASS_VERSION(processing::PluginInfo, 3)
 
 #endif
