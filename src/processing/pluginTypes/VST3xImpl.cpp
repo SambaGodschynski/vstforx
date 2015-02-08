@@ -12,7 +12,10 @@
 #include "sambag/disco/components/Window.hpp"
 #include "sambag/disco/components/windowImpl/CocoaWindowImpl.hpp"
 
+
 extern void * __getHandlerForVstPlugins_(void*);
+
+#define FRX_WARN_ON_FAILURE(x) warnOnFailure(x, __func__, __LINE__)
 
 namespace frx { namespace processing {
 namespace {
@@ -20,6 +23,17 @@ namespace {
         char ascii[128];
         Steinberg::ConstString::wideStringToMultiByte(&ascii[0], &str[0], 128);
         return std::string(ascii);
+    }
+    
+    static int warnOnFailure (int result, const char * fname, int line)
+    {
+        using namespace Steinberg;
+        if (result==kResultOk) {
+            return result;
+        }
+        SAMBAG_LOG_WARN<<fname<<" unsuccessful: " << result
+                       << " ("<< fname << ":" << line << ")";
+        return result;
     }
 }
 //-----------------------------------------------------------------------------
@@ -39,7 +53,6 @@ VST3PluginImpl::Ptr VST3PluginImpl::create(IHostInfo::Ptr hI, const std::string 
 VST3PluginImpl::VST3PluginImpl(IHostInfo::Ptr hI,
 	const std::string &location, Parameters *parameters)
 	: APluginImpl(hI, location, parameters)
-    , plugin(NULL)
     , onPlugChangeParameterIndex(-1)
     , editor(NULL)
 {
@@ -53,7 +66,7 @@ VST3PluginImpl::VST3PluginImpl(IHostInfo::Ptr hI,
         if (infos.empty()) {
             throw std::runtime_error("no plugins found");
         }
-        if (infos.size()>0) {
+        if (infos.size()>1) {
             // now we have to throw because we don't know
             // which exact plugin the user wan't
             throw oldPr::ShellPluginException(location, infos);
@@ -120,11 +133,21 @@ void VST3PluginImpl::createPluginInstance(const std::string &id)
 {
     Steinberg::FUID fuid;
     fuid.fromString(id.c_str());
-    void * container[] = { NULL };
-    Steinberg::tresult res = factory->createInstance(fuid, Steinberg::Vst::IComponent::iid, container);
-    plugin = (Steinberg::Vst::IComponent*) *container;
-    if (res!=Steinberg::kResultOk || !plugin) {
-        throw std::runtime_error("creating plugin failed.");
+    component.loadFromFactory(factory, fuid);
+    if (component.get() == NULL) {
+        throw std::runtime_error("creating component failed.");
+    }
+    
+    processor.loadFrom(component);
+    baseConfigChanged();
+    
+    //connect component and controller
+    componentConnection.loadFrom (component);
+    controllerConnection.loadFrom (controller);
+    if (componentConnection && controllerConnection)
+    {
+        FRX_WARN_ON_FAILURE (controllerConnection->connect (componentConnection));
+        FRX_WARN_ON_FAILURE (componentConnection->connect (controllerConnection));
     }
 }
 //-----------------------------------------------------------------------------
@@ -134,6 +157,9 @@ void VST3PluginImpl::determinePluginInstances(oldPr::ShellPluginInfos &infos) co
     for (Steinberg::int32 i=0; i<nc; ++i) {
         Steinberg::PClassInfo info;
         factory->getClassInfo(i, &info);
+        if (std::strcmp (info.category, kVstAudioEffectClass) != 0) {
+            continue;
+        }
         Steinberg::char8 cidString[50];
         Steinberg::FUID (info.cid).toString (cidString);
         infos.push_back(oldPr::ShellPluginInfo(std::string(&info.name[0]), std::string(cidString)));
@@ -146,20 +172,16 @@ void VST3PluginImpl::initController() {
 
     // try to create the controller part from the component
     // (for Plug-ins which did not succeed to separate component from controller)
-    if (plugin->queryInterface (IEditController::iid, (void**)&controller) != kResultTrue)
+    if (!controller.loadFrom(component))
     {
         FUID controllerCID;
         // ask for the associated controller class ID
-        if (plugin->getControllerClassId (controllerCID) == kResultTrue && controllerCID.isValid ())
+        if (component->getControllerClassId (controllerCID) == kResultTrue && controllerCID.isValid ())
         {
-            // create its controller part created from the factory
-            tresult result = factory->createInstance (controllerCID, IEditController::iid, (void**)&controller);
-            if (controller && (result == kResultOk))
+            if (controller.loadFromFactory(factory, controllerCID))
             {
                 // initialize the component with our context
-                if (controller->initialize (&dummyContext) != kResultOk) {
-                    throw std::runtime_error("controller initalizing failed");
-                }
+                FRX_WARN_ON_FAILURE(controller->initialize (&dummyContext));
             }
         }
     }
@@ -169,12 +191,55 @@ void VST3PluginImpl::initController() {
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::baseConfigChanged() {
+	frx::processing::IHostInfo::Ptr hI = hostInfo.lock();
+	if (!hI) {
+		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
+			"Hostinfo == NULL"
+		);
+	}
+    turnOff();
+    using namespace Steinberg;
+    Vst::ProcessSetup setup;
+    setup.symbolicSampleSize   = Vst::kSample32;
+    setup.maxSamplesPerBlock   = hI->getBlockSize();
+    setup.sampleRate           = hI->getSampleRate();
+    setup.processMode          = Vst::kRealtime;
+    FRX_WARN_ON_FAILURE(processor->setupProcessing (setup));
+    turnOn();
+}
+//-----------------------------------------------------------------------------
+void VST3PluginImpl::activateBusses(bool state, Steinberg::Vst::MediaTypes mediaType,
+    Steinberg::Vst::BusDirections direction)
+{
+    const Steinberg::int32 numBuses = component->getBusCount (mediaType, direction);
+    for (Steinberg::int32 i = numBuses; --i >= 0;) {
+        FRX_WARN_ON_FAILURE(component->activateBus(mediaType, direction, i, state));
+    }
+}
+//-----------------------------------------------------------------------------
+void VST3PluginImpl::activateAudioBusses(bool val) {
+    using namespace Steinberg;
+    activateBusses(val, Vst::kAudio, Vst::kInput);
+    activateBusses(val, Vst::kAudio, Vst::kOutput);
+}
+//-----------------------------------------------------------------------------
+void VST3PluginImpl::activateEventBusses(bool val) {
+    using namespace Steinberg;
+    activateBusses(val, Vst::kEvent, Vst::kInput);
+    activateBusses(val, Vst::kEvent, Vst::kOutput);
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::turnOff() {
+    activateAudioBusses(false);
+    activateEventBusses(false);
+    FRX_WARN_ON_FAILURE(component->setActive(false));
+    
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::turnOn() {
+    activateAudioBusses(true);
+    activateEventBusses(true);
+    FRX_WARN_ON_FAILURE(component->setActive(true));
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::openPlugin() {
@@ -182,8 +247,8 @@ void VST3PluginImpl::openPlugin() {
     using namespace Vst;
     createPluginInstance(cid);
     // initialize the component with our context
-    if (plugin->initialize (&dummyContext) != kResultOk) {
-        throw std::runtime_error("plugin initalizing failed");
+    if (component->initialize (&dummyContext) != kResultOk) {
+        throw std::runtime_error("component initalizing failed");
     }
     initController();
     initParameters();
@@ -196,12 +261,12 @@ void VST3PluginImpl::closePlugin() {
 //-----------------------------------------------------------------------------
 size_t VST3PluginImpl::getNumInputChannels() const {
     using namespace Steinberg;
-    return (size_t)plugin->getBusCount(Vst::kAudio, Vst::kInput);
+    return (size_t)component->getBusCount(Vst::kAudio, Vst::kInput);
 }
 //-----------------------------------------------------------------------------
 size_t VST3PluginImpl::getNumOutputChannels() const {
     using namespace Steinberg;
-    return (size_t)plugin->getBusCount(Vst::kAudio, Vst::kOutput);
+    return (size_t)component->getBusCount(Vst::kAudio, Vst::kOutput);
 }
 //-----------------------------------------------------------------------------
 /**
@@ -244,15 +309,6 @@ namespace {
             void *res = ::__getHandlerForVstPlugins_(impl->getSystemHandle());
             return std::make_pair((void*)res, Steinberg::kPlatformTypeHWND);
         }
-//        // handle the afwul macosx impl.'s with its fucking several viewtypes
-//        if (editor->isPlatformTypeSupported(Steinberg::kPlatformTypeNSView)==Steinberg::kResultTrue)
-//        {
-//            return std::make_pair((void*)cocoa->getNSView(), Steinberg::kPlatformTypeNSView);
-//        }
-//        if (editor->isPlatformTypeSupported(Steinberg::kPlatformTypeHIView)==Steinberg::kResultTrue)
-//        {
-//            return std::make_pair((void*)cocoa->getHIView(), Steinberg::kPlatformTypeHIView);
-//        }
         return std::make_pair((void*)cocoa->getNSView(), Steinberg::kPlatformTypeNSView);
     }
 }
@@ -265,10 +321,7 @@ void VST3PluginImpl::openEditor(sambag::disco::components::WindowPtr win) {
     void *hnd = NULL;
     Steinberg::FIDString type = NULL;
     boost::tie(hnd, type) = getSytemHandle(win, editor);
-    Steinberg::tresult res = editor->attached(hnd, type);
-    if (res==Steinberg::kResultFalse) {
-        throw std::runtime_error("attaching the editor failed");
-    }
+    FRX_WARN_ON_FAILURE(editor->attached(hnd, type));
     // add event(s)
     evBoundsConnection = win->sce::EventSender<sce::PropertyChanged>::addEventListener(
         boost::bind(&VST3PluginImpl::onEditorBoundsChanged, this, _2)
@@ -359,7 +412,7 @@ void VST3PluginImpl::updatePluginInfo (::processing::PluginInfo &inf) const {
     using namespace Steinberg;
 	inf.name = getPluginName();
     inf.vendor = getPluginVendor();
-	inf.isSynth  = plugin->getBusCount(Vst::kEvent, Vst::kInput);
+	inf.isSynth  = component->getBusCount(Vst::kEvent, Vst::kInput);
 	inf.uid = cid;
 	inf.pluginType = oldPr::PluginInfo::VST3X;
 }
@@ -373,32 +426,16 @@ void VST3PluginImpl::unloadPlugin() {
     using namespace Steinberg;
     using namespace Vst;
 	bool controllerIsComponent = false;
-    if (editor) {
-        editor->release();
-        editor = NULL;
-    }
-	if (plugin)
+
+	if (component)
 	{
-		controllerIsComponent = FUnknownPtr<IEditController> (plugin).getInterface () != 0;
-		plugin->terminate ();
+		controllerIsComponent = FUnknownPtr<IEditController> (component).getInterface () != 0;
+		component->terminate ();
 	}
 
 	if (controller && controllerIsComponent == false) {
 		controller->terminate ();
     }
-
-	if (plugin)
-	{
-		plugin->release ();
-		plugin = NULL;
-	}
-
-	if (controller)
-	{
-		controller->release ();
-		controller = NULL;
-	}
-
 }
 //-----------------------------------------------------------------------------
 VST3PluginImpl::~VST3PluginImpl() {

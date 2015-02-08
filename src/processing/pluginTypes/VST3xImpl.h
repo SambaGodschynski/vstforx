@@ -21,9 +21,70 @@
 #include "processing/pluginTypes/VstShellPlugin.hpp"
 #include <sambag/com/events/PropertyChanged.hpp>
 #include <sambag/com/events/Events.hpp>
+#include <ivstaudioprocessor.h>
+#include <ivstmessage.h>
+
 namespace frx { namespace processing {
 namespace oldPr = ::processing;
 namespace oldPrPr = ::processing::parameter;
+
+//==============================================================================
+template <class T>
+class ComPtr
+{
+public:
+    ComPtr() : source (NULL) {}
+    ComPtr (T* object) : source (object)
+    {
+        if (source != NULL) {
+            source->addRef();
+        }
+    }
+    ComPtr (const ComPtr& other) : source (other.source)
+    {
+        if (source != NULL) {
+            source->addRef();
+        }
+    }
+    ~ComPtr()
+    {
+        if (source != NULL) {
+            source->release();
+        }
+    }
+
+    operator T*() const { return source; }
+    T* get() const { return source; }
+    T& operator*() const { return *source; }
+    T* operator->() const { return source; }
+
+    ComPtr& operator= (const ComPtr& other) { return operator= (other.source); }
+    ComPtr& operator= (T* const newObject)
+    {
+        ComPtr p (newObject);
+        std::swap (p.source, source);
+        return *this;
+    }
+
+    bool operator== (T* const other) { return source == other; }
+    bool operator!= (T* const other) { return source != other; }
+    operator bool() const { return get()!=NULL; }
+    
+    bool loadFrom (Steinberg::FUnknown* o, Steinberg::FUID id = T::iid)
+    {
+        *this = NULL;
+        return o != NULL && o->queryInterface (id, (void**) &source) == Steinberg::kResultOk;
+    }
+    bool loadFromFactory (Steinberg::IPluginFactory* factory, const Steinberg::FUID& uuid)
+    {
+        *this = NULL;
+        return factory->createInstance (uuid, T::iid, (void**) &source) == Steinberg::kResultOk;
+    }
+private:
+    T* source;
+};
+
+
 //=============================================================================
 /**
  * @class: VST3PluginImpl.
@@ -68,14 +129,21 @@ protected:
     void initParameters();
     void tryCreateEditor();
     void onEditorBoundsChanged(const sambag::com::events::PropertyChanged &ev);
+    void activateBusses(bool state, Steinberg::Vst::MediaTypes mediaType,
+        Steinberg::Vst::BusDirections direction);
+    void activateAudioBusses(bool state);
+    void activateEventBusses(bool state);
 private:
 	/**
 	 * Blockiert Deserialisierung gegen nebenlaufige
 	 * Parameteraenderungen, verursacht durch Host.
 	 */
 	com::Mutex mutex;
-    Steinberg::Vst::IComponent *plugin;
-    Steinberg::Vst::IEditController *controller;
+    ComPtr<Steinberg::Vst::IComponent> component;
+    ComPtr<Steinberg::Vst::IAudioProcessor> processor;
+    ComPtr<Steinberg::Vst::IEditController> controller;
+    ComPtr<Steinberg::Vst::IConnectionPoint> componentConnection;
+    ComPtr<Steinberg::Vst::IConnectionPoint> controllerConnection;
     Steinberg::FObject dummyContext;
     Steinberg::IPlugView *editor;
     std::string cid;

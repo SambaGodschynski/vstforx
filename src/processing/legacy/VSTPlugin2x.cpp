@@ -21,6 +21,7 @@
 #include <sambag/disco/components/Window.hpp>
 #include <boost/lexical_cast.hpp>
 
+
 /**
  * get the apropriate handler from a window.
  * HWND, WindowRef or NSView
