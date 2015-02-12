@@ -147,6 +147,10 @@ struct APluginImpl :
      */
     virtual void updatePluginInfo (::processing::PluginInfo &inf) const = 0;
     //-------------------------------------------------------------------------
+    /**
+     * @brief processes all in/output channels, thus 
+     * data dimensions = numIn/Outputs
+     */
     virtual void processPlugin( oldPr::Frames::T **,
         oldPr::Frames::T **, size_t numSamples) = 0;
     //-------------------------------------------------------------------------

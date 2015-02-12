@@ -98,7 +98,7 @@ void VST3PluginImpl::initParameters() {
             // label
             p->setLabel(tostdstring(pInf.units));
             // display
-            Steinberg::Vst::String128 displ;
+            Steinberg::Vst::String128 displ = {0};
             controller->getParamStringByValue(pInf.id, value, &displ[0]);
             p->setDisplay(tostdstring(displ));
             // add listener
@@ -124,7 +124,7 @@ void VST3PluginImpl::valueChanged(void *src, const float &value) {
     Steinberg::Vst::ParameterInfo pInf;
     controller->getParameterInfo(index, pInf);
     controller->setParamNormalized(pInf.id, value);
-    Steinberg::Vst::String128 displ;
+    Steinberg::Vst::String128 displ = {0};
     controller->getParamStringByValue(pInf.id, value, &displ[0]);
     param->setDisplay(tostdstring(displ));
 }
@@ -383,7 +383,10 @@ void VST3PluginImpl::processMidiEvents( sambag::dsp::IMidiEvents * events )
 }
 //-----------------------------------------------------------------------------
 size_t VST3PluginImpl::getInitialDelay() const {
-	return 0;
+	if (!processor) {
+        return 0;
+    }
+    return (size_t)processor->getLatencySamples();
 }
 //-----------------------------------------------------------------------------
 std::string VST3PluginImpl::getPluginName() const {
@@ -417,9 +420,34 @@ void VST3PluginImpl::updatePluginInfo (::processing::PluginInfo &inf) const {
 	inf.pluginType = oldPr::PluginInfo::VST3X;
 }
 //-----------------------------------------------------------------------------
-void VST3PluginImpl::processPlugin( oldPr::Frames::T **,
-	oldPr::Frames::T **, size_t numSamples)
+void VST3PluginImpl::processPlugin( oldPr::Frames::T ** inData,
+	oldPr::Frames::T ** outData, size_t numSamples)
 {
+    using namespace Steinberg;
+    if (!processor) {
+        return;
+    }
+    processor->setProcessing(true);
+    // setup process data
+    Vst::ProcessData data;
+    data.processMode = Vst::kRealtime;
+    data.symbolicSampleSize = Vst::kSample32;
+    data.numSamples = numSamples;
+    data.numInputs  = (int32)getNumInputChannels();
+    data.numOutputs = (int32)getNumOutputChannels();
+    // buffers
+    Vst::AudioBusBuffers ins, outs;
+    data.inputs = &ins;
+    data.outputs = &outs;
+    ins.numChannels = data.numInputs;
+    outs.numChannels = data.numOutputs;
+    ins.channelBuffers32 = inData;
+    outs.channelBuffers32 = outData;
+    // events
+    // ... TODO
+    // process
+    processor->process(data);
+    processor->setProcessing(false);
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::unloadPlugin() {
