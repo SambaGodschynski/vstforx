@@ -253,7 +253,7 @@ void Graph::onPropertyChanged(void*,
     }
 }
 //------------------------------------------------------------------------------------------------------------
-void Graph::onProcessorMidiEvent(void *src, sambag::dsp::IMidiEvents * events) {
+void Graph::onProcessorMidiEvent(void *src, sambag::dsp::IMidiEvents::Ptr events) {
   	GraphObjectContainer::iterator it = graphObjects.begin();
 	for ( ; it!=graphObjects.end(); ++it ){
 		IMidiEventProcessor *pr = 
@@ -379,7 +379,7 @@ Graph::Ptr Graph::create( frx::processing::IHostInfo::Ptr hostInfo ) {
 	return neu;
 }
 //------------------------------------------------------------------------------------------------------------
-void Graph::processEvents(sambag::dsp::IMidiEvents * events) {
+void Graph::processEvents(sambag::dsp::IMidiEvents::Ptr events) {
 	GraphObjectContainer::iterator it = graphObjects.begin();
 	for ( ; it!=graphObjects.end(); ++it ){
 		IMidiEventProcessor *pr = 

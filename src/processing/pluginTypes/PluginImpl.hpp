@@ -138,7 +138,7 @@ struct APluginImpl :
 	 */
 	virtual bool canHandleMidiEvent() const = 0;
 	//-------------------------------------------------------------------------
-	virtual void processMidiEvents( sambag::dsp::IMidiEvents * events ) = 0;
+	virtual void processMidiEvents( sambag::dsp::IMidiEvents::Ptr events ) = 0;
 	//-------------------------------------------------------------------------
 	virtual size_t getInitialDelay() const = 0;
     //-------------------------------------------------------------------------

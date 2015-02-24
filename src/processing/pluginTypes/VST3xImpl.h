@@ -11,7 +11,7 @@
 #include "boost/unordered_map.hpp"
 #include "OS_Specific/os_processing.h"
 #include <string>
-#include <sambag/dsp/VstMidiEventAdapter.hpp>
+#include <sambag/dsp/Vst3MidiEvents.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include "PluginImpl.hpp"
 #include <ivstcomponent.h>
@@ -157,6 +157,7 @@ private:
 	int onPlugChangeParameterIndex;
     sambag::com::events::EventSender<sambag::com::events::PropertyChanged>::Connection
         evBoundsConnection;
+    sambag::dsp::Vst3MidiAdapter::Ptr midiEv;
 public:
     //-------------------------------------------------------------------------
     std::string getPluginName() const;
@@ -222,7 +223,7 @@ public:
 	 */
 	virtual bool canHandleMidiEvent() const;
 	//-------------------------------------------------------------------------
-	virtual void processMidiEvents( sambag::dsp::IMidiEvents * events );
+	virtual void processMidiEvents( sambag::dsp::IMidiEvents::Ptr events );
 	//-------------------------------------------------------------------------
 	virtual size_t getInitialDelay() const;
     //-------------------------------------------------------------------------

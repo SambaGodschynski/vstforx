@@ -254,7 +254,7 @@ FRX_OP_CALLBACK_METHOD_IMPL(PluginSessionHost, ProcessMidiEvents) {
     TransferReceiverGuardPtr guard;
     boost::tie(data, guard) = getTransferedData(OPC);
     tmpMidiEvents = MidiEventsPtr(sambag::dsp::createMidiEvents((IMidiEvents::DataPtr)data, byteSize));
-    delegate->getPluginImpl()->processMidiEvents(tmpMidiEvents.get());
+    delegate->getPluginImpl()->processMidiEvents(tmpMidiEvents);
 }
 //=============================================================================
 //  Class PluginSessionClient
@@ -477,7 +477,7 @@ bool PluginSessionClient::canHandleMidiEvent() {
     return rets->value;
 }
 //-----------------------------------------------------------------------------
-void PluginSessionClient::processMidiEvents(sambag::dsp::IMidiEvents *ev) {
+void PluginSessionClient::processMidiEvents(sambag::dsp::IMidiEvents::Ptr ev) {
     if (!ev) {
         return;
     }

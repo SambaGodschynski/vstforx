@@ -1,0 +1,44 @@
+<?xml version="1.0" standalone="no"?>
+<?xml-stylesheet type="text/css" href="style.css"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="80"
+     height="80"
+     xmlns="http://www.w3.org/2000/svg" 
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     version="1.1">
+  <g transform="translate(40,40)" class="processor">
+    <circle cx="0" cy="0" 
+	    r="30px"
+	    class="disco corona-input"
+	    id="corona"
+	    stroke-width="15"
+	    />
+    <circle cx="0" cy="0" 
+	    r="20px"
+	    class="disco core-intput"
+	    id="core"
+	    stroke-width="10"
+	    />
+    <g class="disco disco-button" fill="none">
+      <g class="disco disco-button-handle" 
+	 style="stroke-width:2px;">
+	<text x="-5" y="4.5" class="node-inner"
+	      style="font-size:18;stroke-width:0px;font-family:arial;">
+	  e
+	</text>
+	<g class="disco disco-button-handle-idle node-inner">
+	  <circle cx="0" cy="0" r="10" fill="none"/>
+	</g>
+	<g class="disco disco-button-handle-rollover node-inner">
+	  <circle cx="0" cy="0" r="10" fill="red" fill-opacity="0.3"/>
+	</g>
+	<g class="disco disco-button-handle-pressed node-inner">
+	  <circle cx="0" cy="0" r="10" fill="black" fill-opacity="0.5"/>
+	</g>
+
+      </g>
+    </g>
+  </g>
+</svg>
+

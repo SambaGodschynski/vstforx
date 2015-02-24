@@ -131,7 +131,7 @@ private:
         const sambag::com::events::PropertyChanged &ev);
 protected:
     //-------------------------------------------------------------------------
-    void onImplMidiEvent(sambag::dsp::IMidiEvents *ev);
+    void onImplMidiEvent(sambag::dsp::IMidiEvents::Ptr ev);
 	//-------------------------------------------------------------------------
 	/**
 	 * Initalisiert Listener.
@@ -305,7 +305,7 @@ public:
 	 * Verarbeitet Midi-Events (@see VST-SDK VstEvents)
 	 * @param events
 	 */
-	void processMidiEvents( sambag::dsp::IMidiEvents * events );
+	void processMidiEvents( sambag::dsp::IMidiEvents::Ptr events );
 	//-------------------------------------------------------------------------
 	virtual ~Plugin();
 	//-------------------------------------------------------------------------

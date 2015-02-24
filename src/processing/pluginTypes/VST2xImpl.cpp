@@ -93,14 +93,12 @@ void VSTPluginImpl::closePlugin()
     }
 }
 //-----------------------------------------------------------------------------
-void VSTPluginImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
+void VSTPluginImpl::processMidiEvents( sambag::dsp::IMidiEvents::Ptr events ) {
 	if ( !canHandleMidiEvent() ) {
 		return;
 	}
 	if (!tmpMidiData) {
-		tmpMidiData = VstMidiEventAdapterPtr(
-			new sambag::dsp::VstMidiEventAdapter(events)
-		);
+		tmpMidiData = sambag::dsp::VstMidiEventAdapter::create(events);
 		aEff->dispatcher( aEff, effProcessEvents, 0, NULL, (void*)tmpMidiData->events, NULL );
 		return;
 	}
@@ -571,9 +569,9 @@ std::pair<VstIntPtr, bool> VSTPluginImpl::processRequest( frx::processing::IHost
             if (!ev || ev->numEvents==0) {
                 return std::make_pair(0, true);
             }
-            sambag::dsp::VstMidiEventAdapter midiev(ev);
+            sambag::dsp::VstMidiEventAdapter::Ptr midiev = sambag::dsp::VstMidiEventAdapter::create(ev);
             try {
-                oldPr::IMidiEventProcessor::EventSender::notifyListeners(this, &midiev);
+                oldPr::IMidiEventProcessor::EventSender::notifyListeners(this, midiev);
             } catch(...) {
                 SAMBAG_LOG_ERR<<"VST2xImpl. audioMasterProcessEvents failed";
                 return std::make_pair(0, true);

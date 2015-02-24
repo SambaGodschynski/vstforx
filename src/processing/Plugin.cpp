@@ -105,7 +105,7 @@ void Plugin::loadImpl() {
     impl->updatePluginInfo(pluginInfo);
 }
 //-----------------------------------------------------------------------------
-void Plugin::onImplMidiEvent(sambag::dsp::IMidiEvents *ev) {
+void Plugin::onImplMidiEvent(sambag::dsp::IMidiEvents::Ptr ev) {
     sendMidiEvents(ev);
 }
 //-----------------------------------------------------------------------------
@@ -242,7 +242,7 @@ bool Plugin::canHandleMidiEvent() const {
     return impl->canHandleMidiEvent();
 }
 //-----------------------------------------------------------------------------
-void Plugin::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
+void Plugin::processMidiEvents( sambag::dsp::IMidiEvents::Ptr events ) {
     impl->processMidiEvents(events);
 }
 //-----------------------------------------------------------------------------

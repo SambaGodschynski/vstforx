@@ -378,8 +378,12 @@ bool VST3PluginImpl::canHandleMidiEvent() const {
 	return false;
 }
 //-----------------------------------------------------------------------------
-void VST3PluginImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) 
+void VST3PluginImpl::processMidiEvents( sambag::dsp::IMidiEvents::Ptr events )
 {
+    if (!midiEv) {
+        midiEv = sambag::dsp::Vst3MidiAdapter::create();
+    }
+    midiEv->set(events);
 }
 //-----------------------------------------------------------------------------
 size_t VST3PluginImpl::getInitialDelay() const {
@@ -427,6 +431,7 @@ void VST3PluginImpl::processPlugin( oldPr::Frames::T ** inData,
     if (!processor) {
         return;
     }
+
     processor->setProcessing(true);
     // setup process data
     Vst::ProcessData data;
@@ -444,10 +449,17 @@ void VST3PluginImpl::processPlugin( oldPr::Frames::T ** inData,
     ins.channelBuffers32 = inData;
     outs.channelBuffers32 = outData;
     // events
-    // ... TODO
+    if (midiEv) {
+        data.inputEvents = midiEv.get();
+        // TODO: out events
+    }
     // process
     processor->process(data);
     processor->setProcessing(false);
+    // clear old events
+//    if (midiEv) {
+//        midiEv->set(sambag::dsp::IMidiEvents::Ptr());
+//    }
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::unloadPlugin() {

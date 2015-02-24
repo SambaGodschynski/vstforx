@@ -82,14 +82,12 @@ ioChangedLock(false)
 	return ::com::MyString ( p.stem().string() );
 }
 //------------------------------------------------------------------------------------------------------------
-void VSTPlugin::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
+void VSTPlugin::processMidiEvents( sambag::dsp::IMidiEvents::Ptr events ) {
 	if ( !canHandleMidiEvent() ) {
 		return;
 	}
 	if (!tmpMidiData) {
-		tmpMidiData = VstMidiEventAdapterPtr(
-			new sambag::dsp::VstMidiEventAdapter(events)
-		);
+		tmpMidiData = sambag::dsp::VstMidiEventAdapter::create(events);
 		aEff->dispatcher( aEff, effProcessEvents, 0, NULL, (void*)tmpMidiData->events, NULL );
 		return;
 	}
