@@ -94,7 +94,7 @@ void Plugin::process(float **in, float **out, int numSamples) {
 	dcStream.flush(numSamples, out);
 }
 //-----------------------------------------------------------------------------
-void Plugin::processEvents(sambag::dsp::IMidiEvents *ev) {
+void Plugin::processEvents(sambag::dsp::IMidiEvents::Ptr ev) {
 }
 //-----------------------------------------------------------------------------
 namespace {

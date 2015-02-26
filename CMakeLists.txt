@@ -151,9 +151,13 @@ set (VSTSDK3SOURCE ${VSTSDK3SOURCE}
       ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstaudioeffect.cpp
       ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstbus.cpp
       ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstcomponent.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstcomponentbase.cpp
       ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vsteditcontroller.cpp
       ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstinitiids.cpp
       ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstparameters.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/common/pluginview.cpp
+
+      
       ${VSTSDK3_INCLUDE_DIRS}/pluginterfaces/base/ustring.cpp
       ${VSTSDK3_INCLUDE_DIRS}/pluginterfaces/base/conststringtable.cpp
       ${VSTSDK3_INCLUDE_DIRS}/pluginterfaces/base/funknown.cpp

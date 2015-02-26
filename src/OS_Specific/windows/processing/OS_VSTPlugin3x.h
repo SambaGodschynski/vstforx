@@ -12,6 +12,8 @@
 #include "com/one4All.h"
 #include "processing/processing.h"
 #include <windows.h>
+#include "pluginterfaces/base/ipluginbase.h"
+
 using namespace std;
 
 namespace processing {
@@ -31,6 +33,7 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	string moduleLocation;
 protected:
+    Steinberg::IPluginFactory* factory;
 	//--------------------------------------------------------------------------------------------------------
 	bool loadModule ();
 	//--------------------------------------------------------------------------------------------------------
@@ -40,12 +43,11 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	const string & getModuleLocation () const { return moduleLocation; }
 	//--------------------------------------------------------------------------------------------------------
-	OS_VSTPlugNode3x() {}
+	OS_VSTPlugNode3x() : module(NULL), factory(NULL) {}
 public:
 	//--------------------------------------------------------------------------------------------------------
-	const Module & getModule() const { return module; }
-	//--------------------------------------------------------------------------------------------------------
-	OS_VSTPlugNode3x ( const string &moduleLocation ) : moduleLocation(moduleLocation), module(NULL){}
+	OS_VSTPlugNode3x ( const string &moduleLocation ) :
+		moduleLocation(moduleLocation), module(NULL), factory(NULL) {}
 
 }; // class VSTPlugin
 } // namespace processing

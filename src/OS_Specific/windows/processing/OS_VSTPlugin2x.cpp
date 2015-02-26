@@ -135,7 +135,7 @@ OS_VSTPlugNode2x::HostCallBackOnInit OS_VSTPlugNode2x::callBkOnInit = HostCallBa
 //------------------------------------------------------------------------------------------------------------
 com::Mutex OS_VSTPlugNode2x::onInitLock;
 //------------------------------------------------------------------------------------------------------------
-int OS_VSTPlugNode2x::shellPlugIdOnInit = 0;
+std::string OS_VSTPlugNode2x::shellPlugIdOnInit = 0;
 //------------------------------------------------------------------------------------------------------------
 bool OS_VSTPlugNode2x::loadModule( const HostCallBackOnInit &_callBkOnInit ) {
 	if ( moduleLocation.length() == 0 ) return false;
@@ -148,7 +148,7 @@ bool OS_VSTPlugNode2x::loadModule( const HostCallBackOnInit &_callBkOnInit ) {
 		OS_VSTPlugNode2x::callBkOnInit = _callBkOnInit;
 		::loadModule ( filename.c_str(), &module, &aEff );
 		OS_VSTPlugNode2x::callBkOnInit = HostCallBackOnInit(NULL, NULL);
-		shellPlugIdOnInit = 0;
+		shellPlugIdOnInit = "";
 	}
 	if ( aEff ) {
 		return true;
