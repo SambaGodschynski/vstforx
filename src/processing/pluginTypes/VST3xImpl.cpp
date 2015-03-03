@@ -6,6 +6,8 @@
  */
 #include "processing/processing.h"
 #include "VST3xImpl.h"
+#include "pluginterfaces/base/ipluginbase.h"
+#include "pluginterfaces/gui/iplugview.h"
 #include "pluginterfaces/vst/ivstcomponent.h"
 #include "processing/parameter/parameter.h"
 #include "base/source/fstring.h"
@@ -13,9 +15,15 @@
 #include "sambag/disco/components/windowImpl/CocoaWindowImpl.hpp"
 
 
+
+namespace Steinberg {
+	DEF_CLASS_IID (IPluginBase)
+	DEF_CLASS_IID (IPlugView)
+}
+
 extern void * __getHandlerForVstPlugins_(void*);
 
-#define FRX_WARN_ON_FAILURE(x) warnOnFailure(x, __func__, __LINE__)
+#define FRX_WARN_ON_FAILURE(x) warnOnFailure(x, __FILE__, __LINE__)
 
 namespace frx { namespace processing {
 namespace {
@@ -323,8 +331,9 @@ namespace {
     getSytemHandle(sambag::disco::components::WindowPtr win,
         Steinberg::IPlugView *editor)
     {
-        using namespace sambag::disco::components;
+		using namespace sambag::disco::components;
         AWindowImpl::Ptr impl = win->getWindowImpl();
+#ifdef DISCO_USE_COCOA
         // check if we have a cocoa window
         CocoaWindowImpl::Ptr cocoa =
         boost::dynamic_pointer_cast<CocoaWindowImpl>(impl);
@@ -333,6 +342,10 @@ namespace {
             return std::make_pair((void*)res, Steinberg::kPlatformTypeHWND);
         }
         return std::make_pair((void*)cocoa->getNSView(), Steinberg::kPlatformTypeNSView);
+#else
+	void *res = ::__getHandlerForVstPlugins_(impl->getSystemHandle());
+    return std::make_pair((void*)res, Steinberg::kPlatformTypeHWND);
+#endif
     }
 }
 void VST3PluginImpl::openEditor(sambag::disco::components::WindowPtr win) {
@@ -537,7 +550,7 @@ void VST3PluginImpl::tryCreateEditor() {
         editor = controller->createView (NULL);
     }
     if (editor == NULL) {
-        controller->queryInterface (IPlugView_iid, (void**) &editor);
+        controller->queryInterface (IPlugView::iid, (void**) &editor);
     }
 }
 //-----------------------------------------------------------------------------

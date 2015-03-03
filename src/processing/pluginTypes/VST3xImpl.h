@@ -250,14 +250,14 @@ public:
     virtual void setStateData(size_t size, void* data);
     ///////////////////////////////////////////////////////////////////////////
     // IComponentHandler
-    virtual Steinberg::tresult queryInterface (const Steinberg::TUID iid, void **obj);
-    virtual Steinberg::uint32 addRef ();
-    virtual Steinberg::uint32 release ();
-    virtual Steinberg::tresult beginEdit (Steinberg::Vst::ParamID id);
-    virtual Steinberg::tresult performEdit (Steinberg::Vst::ParamID id,
+    virtual Steinberg::tresult PLUGIN_API queryInterface (const Steinberg::TUID iid, void **obj);
+    virtual Steinberg::uint32 PLUGIN_API addRef ();
+    virtual Steinberg::uint32 PLUGIN_API release ();
+    virtual Steinberg::tresult PLUGIN_API beginEdit (Steinberg::Vst::ParamID id);
+    virtual Steinberg::tresult PLUGIN_API performEdit (Steinberg::Vst::ParamID id,
         Steinberg::Vst::ParamValue valueNormalized);
-    virtual Steinberg::tresult endEdit (Steinberg::Vst::ParamID id);
-    virtual Steinberg::tresult restartComponent (Steinberg::int32 flags);
+    virtual Steinberg::tresult PLUGIN_API endEdit (Steinberg::Vst::ParamID id);
+    virtual Steinberg::tresult PLUGIN_API restartComponent (Steinberg::int32 flags);
 }; // class VST3PluginImpl
 }} // namespace processing
 

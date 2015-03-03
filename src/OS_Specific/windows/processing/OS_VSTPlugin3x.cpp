@@ -8,38 +8,63 @@
 
 #include "OS_VSTPlugin3x.h" 
 
+#include <windows.h>
+#include <conio.h>
+extern "C"
+{
+	typedef bool (PLUGIN_API *InitModuleProc) ();
+	typedef bool (PLUGIN_API *ExitModuleProc) ();
+}
+static const Steinberg::FIDString kInitModuleProcName = "InitDll";
+static const Steinberg::FIDString kExitModuleProcName = "ExitDll";
+
 namespace {
 //------------------------------------------------------------------------------------------------------------
 void unloadModule ();
 //------------------------------------------------------------------------------------------------------------
-static void loadModule ( const char *filename,  processing::OS_VSTPlugNode3x::Module *module ) {
-	//*aEff = NULL;
-	//// Lade Plugin (.dll datei)
-	//__try {
-	//	*module = LoadLibrary ( filename );
-	//	std::cout<<"Err "<<GetLastError()<<std::endl;
-	//}  __except ( EXCEPTION_EXECUTE_HANDLER ) {
-	//	*module = NULL;
-	//	return;
-	//}
-	//if ( ! (*module) ) return;
-	//__try {
-	//	*aEff = getAEffect ( *module );
-	//} __except ( EXCEPTION_EXECUTE_HANDLER ) {
-	//	*aEff = NULL;
-	//	return;
-	//}
-	//if ( *aEff ) {
-	//	if ( (*aEff)->magic != kEffectMagic ) *aEff = NULL;
-	//}
+static void loadModule (const char *filename,  
+	processing::OS_VSTPlugNode3x::Module *module, Steinberg::IPluginFactory **factory ) 
+{
+	GetFactoryProc entryProc = NULL;
+	*module = ::LoadLibraryA (filename);
+	processing::OS_VSTPlugNode3x::Module libHandle = *module;
+	if (libHandle)
+	{
+		InitModuleProc initProc = (InitModuleProc)::GetProcAddress ((HMODULE)libHandle, kInitModuleProcName);
+		if (initProc)
+		{
+			if (initProc () == false)
+			{
+				FreeLibrary ((HMODULE)libHandle);
+				libHandle = 0;	
+			}
+		}
+	}
+	if (libHandle) {
+		entryProc = (GetFactoryProc)::GetProcAddress ((HMODULE)libHandle, "GetPluginFactory");
+	}
+	// create factory
+	if (entryProc) {
+		*factory = entryProc ();
+	}
 }
 //------------------------------------------------------------------------------------------------------------
 void unloadModule (  processing::OS_VSTPlugNode3x::Module module ) {
-	if ( !module ) return;
+	if ( !module ) {
+		return;
+	}
+	ExitModuleProc exitProc = (ExitModuleProc)::GetProcAddress ((HMODULE)module, kExitModuleProcName);
+	if (exitProc) {
+		exitProc ();
+	}
+	
+	::FreeLibrary ((HMODULE)module);
+
+	
 	if ( !FreeLibrary ( module ) ) {
 		throw com::ppiError::DllError ("dll unload failed.", __FILE__, __LINE__ );
 	}
-	module = NULL;
+	
 }
 } // namepsace
 
@@ -51,29 +76,28 @@ namespace processing {
 //============================================================================================================
 //------------------------------------------------------------------------------------------------------------
 bool OS_VSTPlugNode3x::loadModule() {
-	//if ( moduleLocation.length() == 0 ) return false;
-	//std::string filename;
-	//boost::tie(filename, shellPlugId) = com::extractVSTPluginFilename(moduleLocation);
-	//__checkArch(filename);
-	//{ // lock scope
-	//	TRY_TO_LOCK_TIMED (onInitLock)
-	//	shellPlugIdOnInit = shellPlugId;
-	//	OS_VSTPlugNode2x::callBkOnInit = _callBkOnInit;
-	//	::loadModule ( filename.c_str(), &module, &aEff );
-	//	OS_VSTPlugNode2x::callBkOnInit = HostCallBackOnInit(NULL, NULL);
-	//	shellPlugIdOnInit = 0;
-	//}
-	//if ( aEff ) {
-	//	return true;
-	//}
-	//aEff = &nullAEff;
-	//::unloadModule ( module );
-	return false;
+	if ( moduleLocation.length() == 0 ) {
+        return false;
+    }
+    Module moduleWrapper[] = { NULL };
+    Steinberg::IPluginFactory *factoryWrapper[] = { NULL };
+    ::loadModule(moduleLocation.c_str(), &moduleWrapper[0], &factoryWrapper[0]);
+    this->module = moduleWrapper[0];
+    this->factory = factoryWrapper[0];
+	return true;
 }
 //------------------------------------------------------------------------------------------------------------
 bool OS_VSTPlugNode3x::unloadModule() {
 	try {
-		::unloadModule ( module );
+    	// release factory
+        if (factory) {
+            factory->release ();
+        }
+        factory = NULL;
+        if (module) {
+            ::unloadModule ( module );
+        }
+        module = NULL;
 	} catch (...) {
 		return false;
 	}

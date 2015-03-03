@@ -19,7 +19,7 @@
 #include <processing/IPlugin.hpp>
 
 namespace frx { namespace processing {
-    class APluginImpl;
+    struct APluginImpl;
     typedef boost::shared_ptr<APluginImpl> APluginImplPtr;
 }}
 

@@ -37,9 +37,9 @@ private:
 	string moduleLocation;
 protected:
 	//--------------------------------------------------------------------------------------------------------
-	int shellPlugId;
+	std::string shellPlugId;
 	//--------------------------------------------------------------------------------------------------------
-	static int shellPlugIdOnInit; // setted during loadModule for hostcallack on init
+	static std::string shellPlugIdOnInit; // setted during loadModule for hostcallack on init
 	//--------------------------------------------------------------------------------------------------------
 	static HostCallBackOnInit callBkOnInit;
 	//--------------------------------------------------------------------------------------------------------
