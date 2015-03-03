@@ -139,7 +139,6 @@ void VST3PluginImpl::createPluginInstance(const std::string &id)
     }
     
     processor.loadFrom(component);
-    baseConfigChanged();
     
     //connect component and controller
     componentConnection.loadFrom (component);
@@ -208,6 +207,28 @@ void VST3PluginImpl::baseConfigChanged() {
     turnOn();
 }
 //-----------------------------------------------------------------------------
+void VST3PluginImpl::initBusArrangements() {
+    using namespace Steinberg;
+    using namespace Vst;
+    SpeakerArrangement *ins = NULL, *outs = NULL;
+    if (!processor) {
+        return;
+    }
+    const Steinberg::int32 numInBuses = component->getBusCount (kAudio, kInput);
+    ins = numInBuses > 0 ? new SpeakerArrangement[numInBuses] : NULL;
+    for (int32 i = numInBuses; --i >= 0;) {
+        FRX_WARN_ON_FAILURE( processor->getBusArrangement(kInput, i, ins[i]) );
+    }
+    const Steinberg::int32 numOutBuses = component->getBusCount (kAudio, kOutput);
+    outs = numOutBuses > 0 ? new SpeakerArrangement[numOutBuses] : NULL;
+    for (int32 i = numOutBuses; --i >= 0;) {
+        FRX_WARN_ON_FAILURE( processor->getBusArrangement(kOutput, i, outs[i]) );
+    }
+    FRX_WARN_ON_FAILURE(
+        processor->setBusArrangements(ins, numInBuses, outs, numOutBuses)
+    );
+}
+//-----------------------------------------------------------------------------
 void VST3PluginImpl::activateBusses(bool state, Steinberg::Vst::MediaTypes mediaType,
     Steinberg::Vst::BusDirections direction)
 {
@@ -251,6 +272,8 @@ void VST3PluginImpl::openPlugin() {
         throw std::runtime_error("component initalizing failed");
     }
     initController();
+    initBusArrangements();
+    baseConfigChanged();
     initParameters();
     tryCreateEditor();
 }
@@ -457,9 +480,9 @@ void VST3PluginImpl::processPlugin( oldPr::Frames::T ** inData,
     processor->process(data);
     processor->setProcessing(false);
     // clear old events
-//    if (midiEv) {
-//        midiEv->set(sambag::dsp::IMidiEvents::Ptr());
-//    }
+    if (midiEv) {
+        midiEv->set(sambag::dsp::IMidiEvents::Ptr());
+    }
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::unloadPlugin() {
@@ -471,10 +494,24 @@ void VST3PluginImpl::unloadPlugin() {
 	{
 		controllerIsComponent = FUnknownPtr<IEditController> (component).getInterface () != 0;
 		component->terminate ();
+        component.reset();
 	}
 
 	if (controller && controllerIsComponent == false) {
 		controller->terminate ();
+        controller.reset();
+    }
+    
+    if (processor) {
+        processor.reset();
+    }
+    
+    if (componentConnection) {
+        componentConnection.reset();
+    }
+    
+    if (controllerConnection) {
+        controllerConnection.reset();
     }
 }
 //-----------------------------------------------------------------------------

@@ -52,6 +52,13 @@ public:
             source->release();
         }
     }
+    
+    void reset() {
+        if (source != NULL) {
+            source->release();
+            source = NULL;
+        }
+    }
 
     operator T*() const { return source; }
     T* get() const { return source; }
@@ -128,6 +135,7 @@ protected:
     void initController();
     void initParameters();
     void tryCreateEditor();
+    void initBusArrangements();
     void onEditorBoundsChanged(const sambag::com::events::PropertyChanged &ev);
     void activateBusses(bool state, Steinberg::Vst::MediaTypes mediaType,
         Steinberg::Vst::BusDirections direction);
