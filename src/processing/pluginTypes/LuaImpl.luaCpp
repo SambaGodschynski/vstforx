@@ -5,7 +5,7 @@ frx.processing
 /**
  * @alias Plugin
  * @brief 
- * <h4>Setting up a Plugin</h4>
+ * <h4>Setting up a Plugin1</h4>
  * A Lua Plugin is a Lua script file which (if is valid) is treated as any other plugin by VSTForx. That means
  * it will be recognized by the plugin scanner. So the first step to create a Lua plugin sould be to create 
  * a *.lua textfile in your VST plugin folder. 
@@ -65,14 +65,14 @@ frx.processing
  *   </dd>
  * <dt>lcProcess(numSamples)</dt>
  * <dd>
- *	This is the heart of the plugin. All input and output processing happens now.
- * 	see @getChannel() and @setChannel()
+ *	This is the heart of the plugin. All input and output processing happens here.
+ * 	@see getChannel() and @see setChannel()
  * </dd>
  * <dt>lcProcessMidi(messages)</dt>
  *   <dd>
  *     Will be called when a midi message receives. The messages have following format:
  *     <pre>
- *       { {deltaFrames=0, size=0, data={}}, ... }
+ *       { {deltaFrames=0, data={dataByte1, ...}}, ... }
  *     </pre>
  *   </dd>
  * <dt>lcSetAudioConfig(blockSize, sampleRate)</dt>
@@ -80,7 +80,7 @@ frx.processing
  *     Whenever your DAW changes its configuration this function will be called. Use this
  *     to configure buffers etc.
  *   </dd>
- * </ul>
+ * </dl>
  * @version 1.0.5
  */
 class LuaImplBase extends sambag.lua.ALuaObject {

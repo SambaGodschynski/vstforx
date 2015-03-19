@@ -466,7 +466,7 @@ function onAssignAB()
       return
    end
    if num>50 then
-      frx.messageBox(string.format("this plugin has %i parameter, for performace reasons its not recommended to use all parameter for A/B.", num))
+      Frx.messageBox(string.format("this plugin has %i parameter, for performace reasons its not recommended to use all parameter for A/B.", num))
       return
    end
    local url=string.format("lua.Plugin('scripts/lua_plugins/ABMorpher.lua////numParams=%i')", num)
