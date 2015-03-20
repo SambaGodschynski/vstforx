@@ -1,38 +1,61 @@
 midi = {
-   UNKNOWN_STATUS=0,
-   UNKNOWN_CHANNEL=0,
-   NOTE_ON=0x90,
-   NOTE_OFF=0x80,
-   isStatus=function(byte)
-      -- return true if byte is status byte
-      return byte>=0x80 and byte<0xFF 
+   MessageTypes = {
+      UNKNOWN=0,
+      NOTE_ON=0x9,
+      NOTE_OFF=0x8,
+      POLY_AFTERTOUCH=0xA,
+      CC=0xB,
+      PC=0xC,
+      MONO_AFTERTOUCH=0xD,
+      PITCH_BEND=0xE,
+      SYSEX=0xF,
+      -- status to string
+      [0] = "Unknown",
+      [0x9] = "Note On",
+      [0x8] = "Note Off",
+      [0xA] = "Poly Aftertouch",
+      [0xB] = "Control Change",
+      [0xC] = "Program Change",
+      [0xD] = "Mono Aftertouch",
+      [0xE] = "Pitch Bend",
+      [0xF] = "Sysex"
+   }
+   ,
+   -- returns a string representation of a type
+   typeToString = function(type)
+      return midi.MessageTypes[type]
    end
-   , getMidiEvents=function(this, data)
-      -- return table: { {status, channel, {value1, ...}} }
-      res={}
-      this.lastEvent=nil
-      for i=1, #data, 1 do
-	 v=data[i]   
-	 if this.isStatus(v) then
-	    if this.lastEvent~=nil then
-	       --finish previous event
-	       table.insert(res, this.lastEvent)
-	    end
-	    status=bit32.band(0xF0, v)
-	    channel=bit32.band(0x0F, v)
-	    this.lastEvent={status, channel, {}}
-	 else
-	    --add data byte to this.lastEvent
-	    if this.lastEvent~=nil then
-	       table.insert(this.lastEvent[3], v)
-	    end
-	 end
+   ,
+   -- returns true when given byte is a status byte
+   isStatus=function(status)
+      if status==nil then
+	 return false
       end
-      if this.lastEvent~=nil then
-	 --add last event
-	 table.insert(res, this.lastEvent)
-	 end
-      return res
+      return status>=0x80 and status<=0xF0
+   end
+   ,
+   -- returns a message type determined by its status byte  
+   getMessageType = function(status)
+      if not midi.isStatus(status) then
+	 return midi.UNKNOWN
+      end
+      return bit32.rshift(status, 4)
+   end
+   ,
+   -- returns the bytesize of a midi message determined by its status type
+   -- returns 0 if type unknown or nil if sysex
+   getMessageSize = function(mtype)
+      if mtype == midi.MessageTypes.UNKNOWN then
+	 return 0
+      end
+      if mtype == midi.MessageTypes.SYSEX then
+	 return nil
+      end
+      if mtype == midi.MessageTypes.MONO_AFTERTOUCH 
+      or mtype == midi.MessageTypes.PC then
+	 return 2
+      end
+      return 3
    end
    ,
    Iterator = {
@@ -64,18 +87,74 @@ midi = {
 	       return nil
 	    end
 	 end
-	 byte = self.__data[self.__bytePos]
+	 local byte = self.__data[self.__bytePos]
 	 self.__bytePos = self.__bytePos + 1
 	 return byte
       end
       ,
+      -- returns the current pitch if exists or nil
+      pitch = function(self)
+	 if self.type ~= midi.MessageTypes.NOTE_ON and
+	    self.type ~= midi.MessageTypes.NOTE_OFF and
+	    self.type ~= midi.MessageTypes.POLY_AFTERTOUCH
+	 then
+	    return nil
+	 end
+	 return self.data[1]
+      end
+      ,
+      -- returns the current velocity if exists or nil
+      velocity = function(self)
+	 if self.type ~= midi.MessageTypes.NOTE_ON and
+	    self.type ~= midi.MessageTypes.NOTE_OFF and
+	    self.type ~= midi.MessageTypes.POLY_AFTERTOUCH and
+	    self.type ~= midi.MessageTypes.POLY_AFTERTOUCH
+	 then
+	    return nil
+	 end
+	 return self.data[2]
+      end
+      ,
+      -- returns the current pitchbend if exists or nil
+      pitchBend = function(self)
+	 if self.type ~= midi.MessageTypes.PITCH_BEND then
+	    return nil
+	 end
+	 return bit32.lshift(self.data[2], 7) + self.data[1]
+      end
+      ,
       -- goto next event and return true or false if no further event
       next = function(self)
-	 byte = self:__nextByte()
+	 local byte = self:__nextByte()
 	 while byte~=nil do
-	    print(string.format("0x%x", byte))
+	    if midi.isStatus(byte) then
+	       if self.type == midi.MessageTypes.SYSEX then
+		  self.data={}
+		  self.channel = nil
+		  self.size=0
+		  byte = self:__nextByte()
+		  while byte~=0xF7 and byte~=nil do
+		     self.size = self.size + 1
+		     table.insert(self.data, byte)
+		     byte = self:__nextByte()
+		  end
+		  return true
+	       end
+	       self.type = midi.getMessageType(byte)
+	       self.size = midi.getMessageSize(self.type)
+	       self.channel = bit32.band(byte, 0x0F)
+	       if self.size == 2 then
+		  self.data = {self:__nextByte()}
+		  return true
+	       end
+	       if self.size == 3 then
+		  self.data = {self:__nextByte(), self:__nextByte()}
+		  return true
+	       end
+	    end
 	    byte = self:__nextByte()
 	 end
+	 return false
       end
    }
 }
