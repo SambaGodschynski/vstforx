@@ -624,7 +624,7 @@ void LuaImpl::processMidiEvents( sambag::dsp::IMidiEvents::Ptr events ) {
 	for (size_t i = 0; i<(size_t)events->getNumEvents(); ++i) {
         IMidiEvents::MidiEvent ev = events->getMidiEvent(i);
 		push(lua, i+1); // index
-		//insert map: {'deltaFrames'=0, 'size'=0, 'data'={} }
+		//insert map: {'deltaFrames'=0, 'data'={} }
 		{
 			lua_newtable(lua);
 			int top = lua_gettop(lua);

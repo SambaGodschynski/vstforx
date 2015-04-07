@@ -97,6 +97,12 @@ void VSTPluginImpl::processMidiEvents( sambag::dsp::IMidiEvents::Ptr events ) {
 	if ( !canHandleMidiEvent() ) {
 		return;
 	}
+//    if (events) {
+//        std::string msg = sambag::dsp::toString(*events);
+//        std::cout<<"--1111111111111111"<<std::endl;
+//        std::cout<<msg;
+//        std::cout<<std::endl;
+//    }
 	if (!tmpMidiData) {
 		tmpMidiData = sambag::dsp::VstMidiEventAdapter::create(events);
 		aEff->dispatcher( aEff, effProcessEvents, 0, NULL, (void*)tmpMidiData->events, NULL );

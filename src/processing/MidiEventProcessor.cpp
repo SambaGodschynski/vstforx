@@ -39,7 +39,7 @@ MidiEventProcessor::MidiEventProcessor() {
 //-----------------------------------------------------------------------------
 void MidiEventProcessor::processEvents( sambag::dsp::IMidiEvents::Ptr ev ) {
 	
-	int channel = com::mapInteger ( midiChannel->getValue(), 17 ); // 16 midi channels + all channels
+    int channel = com::mapInteger ( midiChannel->getValue(), 17 ); // 16 midi channels + all channels
 
 	if (channel!=ALL_CHANNEL) {
 		tmpEv->copyDeepFiltered(ev, channel);

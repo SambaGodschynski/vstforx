@@ -63,6 +63,8 @@ VST3PluginImpl::VST3PluginImpl(IHostInfo::Ptr hI,
 	: APluginImpl(hI, location, parameters)
     , onPlugChangeParameterIndex(-1)
     , editor(NULL)
+    , inParameterChanges(NULL)
+    , outParameterChanges(NULL)
 {
     std::string path;
     boost::tie(path, cid) = com::extractVSTPluginFilename(location);
@@ -115,6 +117,8 @@ void VST3PluginImpl::initParameters() {
             );
         }
     }
+    inParameterChanges = new VST3ParameterChanges();
+    outParameterChanges = new VST3ParameterChanges();
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::valueChanged(void *src, const float &value) {
@@ -134,6 +138,8 @@ void VST3PluginImpl::valueChanged(void *src, const float &value) {
     controller->setParamNormalized(pInf.id, value);
     Steinberg::Vst::String128 displ = {0};
     controller->getParamStringByValue(pInf.id, value, &displ[0]);
+    Steinberg::int32 dummyIndex;
+    inParameterChanges->addParameterData (pInf.id, dummyIndex)->addPoint (0, value, dummyIndex);
     param->setDisplay(tostdstring(displ));
 }
 //-----------------------------------------------------------------------------
@@ -476,6 +482,8 @@ void VST3PluginImpl::processPlugin( oldPr::Frames::T ** inData,
     data.numSamples = numSamples;
     data.numInputs  = (int32)getNumInputChannels();
     data.numOutputs = (int32)getNumOutputChannels();
+    data.inputParameterChanges = inParameterChanges;
+    data.outputParameterChanges = outParameterChanges;
     // buffers
     Vst::AudioBusBuffers ins, outs;
     data.inputs = &ins;
@@ -496,6 +504,8 @@ void VST3PluginImpl::processPlugin( oldPr::Frames::T ** inData,
     if (midiEv) {
         midiEv->set(sambag::dsp::IMidiEvents::Ptr());
     }
+    inParameterChanges->clear();
+    outParameterChanges->clear();
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::unloadPlugin() {
@@ -525,6 +535,14 @@ void VST3PluginImpl::unloadPlugin() {
     
     if (controllerConnection) {
         controllerConnection.reset();
+    }
+    if(inParameterChanges) {
+        inParameterChanges->release();
+        inParameterChanges = NULL;
+    }
+    if(outParameterChanges) {
+        outParameterChanges->release();
+        outParameterChanges = NULL;
     }
 }
 //-----------------------------------------------------------------------------
@@ -622,6 +640,8 @@ Steinberg::tresult VST3PluginImpl::performEdit (Steinberg::Vst::ParamID id,
 	onPlugChangeParameterIndex = index; 
 	(*parameters)[index]->setValue ( valueNormalized );
 	onPlugChangeParameterIndex = -1;
+    Steinberg::int32 dummyIndex;
+    inParameterChanges->addParameterData (id, dummyIndex)->addPoint (0, valueNormalized, dummyIndex);
     return Steinberg::kResultTrue;
 }
 //-----------------------------------------------------------------------------

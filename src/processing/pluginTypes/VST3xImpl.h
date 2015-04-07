@@ -18,6 +18,7 @@
 #include <ivsteditcontroller.h>
 #include "pluginterfaces/gui/iplugview.h"
 #include "base/source/fobject.h"
+#include "VST3ParameterChanges.hpp"
 #include "processing/pluginTypes/VstShellPlugin.hpp"
 #include <sambag/com/events/PropertyChanged.hpp>
 #include <sambag/com/events/Events.hpp>
@@ -154,6 +155,7 @@ private:
     ComPtr<Steinberg::Vst::IConnectionPoint> controllerConnection;
     Steinberg::FObject dummyContext;
     Steinberg::IPlugView *editor;
+    VST3ParameterChanges *inParameterChanges, *outParameterChanges;
     std::string cid;
     typedef boost::unordered_map<Steinberg::Vst::ParamID, int> VstParam2Index;
     VstParam2Index indexMap;
