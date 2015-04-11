@@ -168,6 +168,7 @@ private:
     sambag::com::events::EventSender<sambag::com::events::PropertyChanged>::Connection
         evBoundsConnection;
     sambag::dsp::Vst3MidiAdapter::Ptr midiEv;
+    void updateParameterDisplay(int index);
 public:
     //-------------------------------------------------------------------------
     std::string getPluginName() const;

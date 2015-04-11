@@ -135,11 +135,18 @@ void VST3PluginImpl::valueChanged(void *src, const float &value) {
 	oldPrPr::Parameter::Ptr param = parameters->at(index);
     Steinberg::Vst::ParameterInfo pInf;
     controller->getParameterInfo(index, pInf);
-    controller->setParamNormalized(pInf.id, value);
-    Steinberg::Vst::String128 displ = {0};
-    controller->getParamStringByValue(pInf.id, value, &displ[0]);
     Steinberg::int32 dummyIndex;
     inParameterChanges->addParameterData (pInf.id, dummyIndex)->addPoint (0, value, dummyIndex);
+    updateParameterDisplay(index);
+}
+//-----------------------------------------------------------------------------
+void VST3PluginImpl::updateParameterDisplay(int index) {
+    oldPrPr::Parameter::Ptr param = parameters->at(index);
+    Steinberg::Vst::ParameterInfo pInf;
+    controller->getParameterInfo(index, pInf);
+    controller->setParamNormalized(pInf.id, param->getValue());
+    Steinberg::Vst::String128 displ = {0};
+    controller->getParamStringByValue(pInf.id, param->getValue(), &displ[0]);
     param->setDisplay(tostdstring(displ));
 }
 //-----------------------------------------------------------------------------
@@ -473,8 +480,6 @@ void VST3PluginImpl::processPlugin( oldPr::Frames::T ** inData,
     if (!processor) {
         return;
     }
-
-    processor->setProcessing(true);
     // setup process data
     Vst::ProcessData data;
     data.processMode = Vst::kRealtime;
@@ -499,7 +504,6 @@ void VST3PluginImpl::processPlugin( oldPr::Frames::T ** inData,
     }
     // process
     processor->process(data);
-    processor->setProcessing(false);
     // clear old events
     if (midiEv) {
         midiEv->set(sambag::dsp::IMidiEvents::Ptr());
@@ -642,6 +646,7 @@ Steinberg::tresult VST3PluginImpl::performEdit (Steinberg::Vst::ParamID id,
 	onPlugChangeParameterIndex = -1;
     Steinberg::int32 dummyIndex;
     inParameterChanges->addParameterData (id, dummyIndex)->addPoint (0, valueNormalized, dummyIndex);
+    updateParameterDisplay(index);
     return Steinberg::kResultTrue;
 }
 //-----------------------------------------------------------------------------

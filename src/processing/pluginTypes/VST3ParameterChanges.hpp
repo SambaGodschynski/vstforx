@@ -28,6 +28,7 @@ private:
 public:
     virtual ParamID PLUGIN_API getParameterId ();
     virtual int32 PLUGIN_API getPointCount ();
+    void clear();
     virtual ::Steinberg::tresult PLUGIN_API getPoint (int32 index, int32 &sampleOffset, ParamValue &value);
     virtual ::Steinberg::tresult PLUGIN_API addPoint (int32 sampleOffset, ParamValue value, int32 &index);
     ///////////////////////////////////////////////////////////////////////////
@@ -52,7 +53,7 @@ protected:
     VST3ParameterChanges(const VST3ParameterChanges&) : __funknownRefCount(0){}
     VST3ParameterChanges & operator=(const VST3ParameterChanges&) {return *this;}
 private:
-    typedef std::vector<IParamValueQueue*> Queues;
+    typedef std::vector<VST3ParamValueQueue*> Queues;
     Queues _queues;
 public:
     void clear();

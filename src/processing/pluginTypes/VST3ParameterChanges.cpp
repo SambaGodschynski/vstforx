@@ -21,6 +21,10 @@ VST3ParamValueQueue::int32 PLUGIN_API VST3ParamValueQueue::getPointCount ()
 {
     return _points.size();
 }
+void VST3ParamValueQueue::clear()
+{
+    return _points.clear();
+}
 ::Steinberg::tresult PLUGIN_API VST3ParamValueQueue::getPoint (int32 index, int32 &sampleOffset, ParamValue &value)
 {
     if (index>=_points.size()) {
@@ -49,16 +53,18 @@ VST3ParamValueQueue::int32 PLUGIN_API VST3ParamValueQueue::getPointCount ()
 IMPLEMENT_FUNKNOWN_METHODS(VST3ParameterChanges, Steinberg::Vst::IParameterChanges, Steinberg::Vst::IParameterChanges::iid)
 VST3ParameterChanges::~VST3ParameterChanges()
 {
-    clear();
-}
-void VST3ParameterChanges::clear()
-{
     BOOST_FOREACH(Queues::value_type &x, _queues)
     {
         x->release();
         x = NULL;
     }
-    _queues.clear();
+}
+void VST3ParameterChanges::clear()
+{
+    BOOST_FOREACH(Queues::value_type &x, _queues)
+    {
+        x->clear();
+    }
 }
 VST3ParameterChanges::int32 VST3ParameterChanges::getParameterCount ()
 {
