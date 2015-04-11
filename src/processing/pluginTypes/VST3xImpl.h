@@ -169,6 +169,7 @@ private:
         evBoundsConnection;
     sambag::dsp::Vst3MidiAdapter::Ptr midiEv;
     void updateParameterDisplay(int index);
+    void updateParameterChages(VST3ParameterChanges*);
 public:
     //-------------------------------------------------------------------------
     std::string getPluginName() const;

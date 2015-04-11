@@ -508,8 +508,46 @@ void VST3PluginImpl::processPlugin( oldPr::Frames::T ** inData,
     if (midiEv) {
         midiEv->set(sambag::dsp::IMidiEvents::Ptr());
     }
+    updateParameterChages(outParameterChanges);
     inParameterChanges->clear();
     outParameterChanges->clear();
+}
+//-----------------------------------------------------------------------------
+void VST3PluginImpl::updateParameterChages(VST3ParameterChanges* changes) {
+    // set only the last available value (max sample offset)
+    if (!changes || !parameters) {
+        return;
+    }
+    typedef Steinberg::int32 int32;
+    typedef Steinberg::Vst::ParamID ParamID;
+    typedef Steinberg::Vst::IParamValueQueue IParamValueQueue;
+    typedef Steinberg::Vst::ParamValue ParamValue;
+    int32 count = changes->getParameterCount();
+    for (int32 i=0; i<count; ++i) { // all parameter
+        IParamValueQueue *queue = changes->getParameterData(i);
+        if (!queue) {
+            continue;
+        }
+        ParamID id = queue->getParameterId();
+        int32 maxSampleOffset = INT_MIN;
+        ParamValue endValue = -1.0;
+        int32 nbPoints = queue->getPointCount();
+        for (int32 i=0; i<nbPoints; ++i) { // all points
+            int32 sampleOffset = INT_MIN;
+            ParamValue value = 0;
+            queue->getPoint(i, sampleOffset, value);
+            if (sampleOffset>maxSampleOffset) {
+                maxSampleOffset = sampleOffset;
+                endValue = value;
+            }
+        } // all points
+        if (maxSampleOffset!=INT_MIN) {
+            int index = getParameterIndex(id);
+            oldPrPr::Parameter::Ptr param = parameters->at(index);
+            param->setValue(endValue);
+            updateParameterDisplay(index);
+        }
+    }  // all parameter
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::unloadPlugin() {
