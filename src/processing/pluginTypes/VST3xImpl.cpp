@@ -424,7 +424,10 @@ int VST3PluginImpl::getProgram() {
 * @return true, if plugin can handle MIDI events
 */
 bool VST3PluginImpl::canHandleMidiEvent() const {
-	return false;
+    if (!component) {
+        return false;
+    }
+	return component->getBusCount(Steinberg::Vst::kEvent, Steinberg::Vst::kInput)>0;
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::processMidiEvents( sambag::dsp::IMidiEvents::Ptr events )
@@ -432,7 +435,13 @@ void VST3PluginImpl::processMidiEvents( sambag::dsp::IMidiEvents::Ptr events )
     if (!midiEv) {
         midiEv = sambag::dsp::Vst3MidiAdapter::create();
     }
-    midiEv->set(events);
+    try {
+        SAMBAG_LOG_TRACE << " BEFORE " << *events;
+        midiEv->set(events);
+        SAMBAG_LOG_TRACE << " AFTER " << *(midiEv->get());
+    } catch(const sambag::dsp::MidiDataError &ex) {
+        SAMBAG_LOG_ERR<<ex.what();
+    }
 }
 //-----------------------------------------------------------------------------
 size_t VST3PluginImpl::getInitialDelay() const {
@@ -468,7 +477,7 @@ void VST3PluginImpl::updatePluginInfo (::processing::PluginInfo &inf) const {
     using namespace Steinberg;
 	inf.name = getPluginName();
     inf.vendor = getPluginVendor();
-	inf.isSynth  = component->getBusCount(Vst::kEvent, Vst::kInput);
+	inf.isSynth  = canHandleMidiEvent();
 	inf.uid = cid;
 	inf.pluginType = oldPr::PluginInfo::VST3X;
 }
