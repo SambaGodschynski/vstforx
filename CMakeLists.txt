@@ -4,7 +4,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{CLIBS}/sambag)
 
 SET(FRX_VERSION_MAJOR 1)
 SET(FRX_VERSION_MINOR 0)
-SET(FRX_VERSION_MICRO 54)
+SET(FRX_VERSION_MICRO 6)
 SET(FRX_VERSION_STR "${FRX_VERSION_MAJOR}.${FRX_VERSION_MINOR}.${FRX_VERSION_MICRO}")
 
 execute_process(COMMAND git --work-tree=${PROJECT_SOURCE_DIR} log --pretty=format:%h -n 1
@@ -56,6 +56,9 @@ IF(APPLE)
 	FIND_LIBRARY(CARBON_LIBRARY Carbon)
 	SET(FRX_ASYNC_DSP_TIMER "FRX_BOOST_TIMER")
 	SET(FRX_USE_FONTCACHE "0")
+	#vst3 fdebug.h want's that
+	SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
+	SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG")
 ELSEIF(UNIX)
 	find_package(X11 REQUIRED)
 	include_directories(${X11_INCLUDE_DIRS})
@@ -87,6 +90,7 @@ find_package(LokiX REQUIRED)
 find_package(Lua52X REQUIRED)
 find_package(Sqlite3X REQUIRED)
 find_package(VST23X REQUIRED)
+find_package(VST3X REQUIRED)
 find_package(Sambag REQUIRED)
 find_package(BoostX REQUIRED)
 
@@ -97,11 +101,18 @@ INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${LOKI_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${LUA52_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${SAMBAG_INCLUDE_DIRS})
+
+#vst2
 INCLUDE_DIRECTORIES(${VSTSDK_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${VSTSDK_INCLUDE_DIRS}/PUBLIC.SDK/SOURCE/VST2.X/)
 INCLUDE_DIRECTORIES(${VSTSDK_INCLUDE_DIRS}/PLUGINTERFACES/VST2.X)
 INCLUDE_DIRECTORIES(${VSTPLUGIN_INTERFACES_DIRS})
-INCLUDE_DIRECTORIES(${SAMBAG_INCLUDE_DIRS})
+
+#vst3
+INCLUDE_DIRECTORIES(${VSTSDK3_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst)
+INCLUDE_DIRECTORIES(${VSTSDK3_INCLUDE_DIRS}/pluginterfaces/vst)
 
 
 SET (FRX_CLIBS ${FRX_CLIBS}
@@ -111,6 +122,7 @@ SET (FRX_CLIBS ${FRX_CLIBS}
 	${CAIRO_LIBRARIES}
 	${TINYXML_LIBRARIES}
 	${LUA52_LIBRARIES}
+	#${VST3_LIBRARIES}
 )
 
 IF(APPLE)
@@ -134,6 +146,42 @@ set (VSTSDKSOURCE ${VSTSDKSOURCE}
       ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/audioeffectx.cpp
       #${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp now part of target sources
 )
+
+set (VSTSDK3SOURCE ${VSTSDK3SOURCE}
+      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstaudioeffect.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstbus.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstcomponent.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstcomponentbase.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vsteditcontroller.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstinitiids.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstparameters.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/common/pluginview.cpp
+
+      
+      ${VSTSDK3_INCLUDE_DIRS}/pluginterfaces/base/ustring.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/pluginterfaces/base/conststringtable.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/pluginterfaces/base/funknown.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/baseiids.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/classfactory.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fatomic.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fbitset.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fbuffer.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fcpu.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fdebug.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fdynlib.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/finitializer.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fmemory.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fobject.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fpoint.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/frect.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fregion.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fstreamer.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fstring.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/fthread.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/timer.cpp
+      ${VSTSDK3_INCLUDE_DIRS}/base/source/updatehandler.cpp
+)
+
 
 
 CONFIGURE_FILE(

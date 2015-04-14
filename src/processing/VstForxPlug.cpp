@@ -223,7 +223,7 @@ void VstForxPlug::process(float **in, float **out, int numSamples) {
 	}
 }
 //-----------------------------------------------------------------------------
-void VstForxPlug::processEvents(sambag::dsp::IMidiEvents *ev) {
+void VstForxPlug::processEvents(sambag::dsp::IMidiEvents::Ptr ev) {
 	if ( !graph ) 
 		return;
 	graph->processEvents(ev);

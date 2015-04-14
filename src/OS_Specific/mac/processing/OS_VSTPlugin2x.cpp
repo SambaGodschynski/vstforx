@@ -24,39 +24,42 @@ extern VstIntPtr VSTCALLBACK pluginCallToPlugNode (
 
 typedef AEffect* (*PluginEntryProc) (audioMasterCallback audioMaster);
 
+namespace frx {
+    //--------------------------------------------------------------------------------------------------------
+    long getCurrentArch() {
+    #ifdef SAMBAG_32
+        return kCFBundleExecutableArchitectureI386;
+    #elif defined SAMBAG_64
+        return kCFBundleExecutableArchitectureX86_64;
+    #else
+        #error "VSTForx: architecture missmatch"
+    #endif
+    }
+    //--------------------------------------------------------------------------------------------------------
+    bool checkArchitecture(CFBundleRef module) {
+        CFArrayRef archs = CFBundleCopyExecutableArchitectures(module);
+        if (!archs) {
+            return false;
+        }
+        long current = getCurrentArch();
+        for (int i=0; i<CFArrayGetCount(archs); ++i) {
+            CFNumberRef archCode = (CFNumberRef)CFArrayGetValueAtIndex(archs, i);
+            long arch = 0;
+            CFNumberGetValue(archCode, kCFNumberLongType, &arch);
+            if (arch==current) {
+                CFRelease(archs);
+                return true;
+            }
+        }
+        CFRelease(archs);
+        return false;
+    }
+}
+
 namespace {
 typedef processing::OS_VSTPlugNode2x::Module Module;
 //------------------------------------------------------------------------------------------------------------
 void unloadModule ( Module module ) ;
-//------------------------------------------------------------------------------------------------------------
-long getCurrentArch() {
-#ifdef SAMBAG_32
-    return kCFBundleExecutableArchitectureI386;
-#elif defined SAMBAG_64
-    return kCFBundleExecutableArchitectureX86_64;
-#else
-    #error "VSTForx: architecture missmatch"
-#endif
-}
-//------------------------------------------------------------------------------------------------------------
-bool checkArchitecture(Module module) {
-    CFArrayRef archs = CFBundleCopyExecutableArchitectures(module);
-    if (!archs) {
-        return false;
-    }
-    long current = getCurrentArch();
-    for (int i=0; i<CFArrayGetCount(archs); ++i) {
-        CFNumberRef archCode = (CFNumberRef)CFArrayGetValueAtIndex(archs, i);
-        long arch = 0;
-        CFNumberGetValue(archCode, kCFNumberLongType, &arch);
-        if (arch==current) {
-            CFRelease(archs);
-            return true;
-        }
-    }
-    CFRelease(archs);
-    return false;
-}
 //------------------------------------------------------------------------------------------------------------
 AEffect * getAEffect( Module module ) {
 	PluginEntryProc mainProc = NULL;
@@ -83,7 +86,7 @@ void loadModule ( const char *filename, Module *module, AEffect **aEff ) {
 	*module = CFBundleCreate (NULL, url);
 	CFRelease (url);
 	if (*module) {
-        if (!checkArchitecture(*module)) {
+        if (!frx::checkArchitecture(*module)) {
             SAMBAG_THROW(
                 frx::processing::PluginArchitectureMissmatch,
                 "Plugin architecture missmatch."
@@ -118,7 +121,7 @@ namespace processing {
 //------------------------------------------------------------------------------------------------------------
 OS_VSTPlugNode2x::HostCallBackOnInit OS_VSTPlugNode2x::callBkOnInit = HostCallBackOnInit( NULL, NULL);
 //------------------------------------------------------------------------------------------------------------
-int OS_VSTPlugNode2x::shellPlugIdOnInit = 0;
+std::string OS_VSTPlugNode2x::shellPlugIdOnInit;
 //------------------------------------------------------------------------------------------------------------
 com::Mutex OS_VSTPlugNode2x::onInitLock;
 //------------------------------------------------------------------------------------------------------------
@@ -132,7 +135,7 @@ bool OS_VSTPlugNode2x::loadModule( const HostCallBackOnInit &_callBkOnInit ) {
 		OS_VSTPlugNode2x::callBkOnInit = _callBkOnInit;
 		::loadModule ( filename.c_str(), &module, &aEff );
 		OS_VSTPlugNode2x::callBkOnInit = HostCallBackOnInit(NULL, NULL);
-		shellPlugIdOnInit = 0;
+		shellPlugIdOnInit = "";
 	}
 	if ( aEff ) 
 		return true;

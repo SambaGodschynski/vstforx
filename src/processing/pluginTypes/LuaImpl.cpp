@@ -602,7 +602,7 @@ void LuaImpl::setParameterDisplay(lua_State *lua, const std::string &name,
     }
 }
 //-----------------------------------------------------------------------------
-void LuaImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
+void LuaImpl::processMidiEvents( sambag::dsp::IMidiEvents::Ptr events ) {
 	using namespace sambag::lua;
     using namespace sambag::dsp;
 	if (!getFlag(IsValid)) {
@@ -624,7 +624,7 @@ void LuaImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
 	for (size_t i = 0; i<(size_t)events->getNumEvents(); ++i) {
         IMidiEvents::MidiEvent ev = events->getMidiEvent(i);
 		push(lua, i+1); // index
-		//insert map: {'deltaFrames'=0, 'size'=0, 'data'={} }
+		//insert map: {'deltaFrames'=0, 'data'={} }
 		{
 			lua_newtable(lua);
 			int top = lua_gettop(lua);
@@ -656,7 +656,7 @@ namespace {
     std::pair<
         sambag::dsp::DefaultMidiEvents::DataPtr,
         size_t>
-    __addMidiData(lua_State *lua, sambag::dsp::DefaultMidiEvents &midiEvents)
+    __addMidiData(lua_State *lua, sambag::dsp::DefaultMidiEvents::Ptr midiEvents)
     {
         using sambag::dsp::DefaultMidiEvents;
         if(!lua_istable(lua, -1)) {
@@ -677,11 +677,11 @@ namespace {
             data[i++] = lua_tointeger(lua, -1);
             lua_pop(lua, 1);
         }
-        midiEvents.dataContainer.push_back(data);
+        midiEvents->dataContainer.push_back(data);
         return std::make_pair(data.get(), size);
 
     }
-    void __addMidiEvent(lua_State *lua, sambag::dsp::DefaultMidiEvents &midiEvents)
+    void __addMidiEvent(lua_State *lua, sambag::dsp::DefaultMidiEvents::Ptr midiEvents)
     {
         if(!lua_istable(lua, -1)) {
             throw std::runtime_error("invalid midi event");
@@ -707,7 +707,7 @@ namespace {
             }
             lua_pop(lua, 1);
         }
-        midiEvents.events.push_back(
+        midiEvents->events.push_back(
             sambag::dsp::IMidiEvents::MidiEvent(size, delta, data)
         );
     }
@@ -722,15 +722,16 @@ void LuaImpl::sendMidi(lua_State *lua) {
         if (size==0) {
             return;
         }
-        sambag::dsp::DefaultMidiEvents midiEvents;
-        midiEvents.reserve(size);
+        sambag::dsp::DefaultMidiEvents::Ptr midiEvents =
+            sambag::dsp::DefaultMidiEvents::create();
+        midiEvents->reserve(size);
         lua_pushnil(lua); /* first key */
         while (lua_next(lua, -2) != 0) {
             __addMidiEvent(lua, midiEvents);
             lua_pop(lua, 1);
         }
         using ::processing::IMidiEventProcessor;
-        IMidiEventProcessor::EventSender::notifyListeners(this, &midiEvents);
+        IMidiEventProcessor::EventSender::notifyListeners(this, midiEvents);
     } catch (const std::exception &ex) {
         sambag::lua::pushLuaError(lua, ex.what());
     } catch (...) {

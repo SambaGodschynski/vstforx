@@ -1,0 +1,43 @@
+/*
+ the vstforx css capabilities are currently
+ very limited:
+   - only basic selectors: 'tag', '#', '." and '*'
+   - no css rule priorities will be considered. If there are
+     ambiguous rules for an element, the resulting style is more
+     or less random.
+*/
+
+.corona-input {
+    stroke:yellow;
+    fill:none;
+    fill-opacity:0.5;
+    stroke-opacity:0.5;
+}
+
+.corona-output {
+    stroke:yellow;
+    fill:yellow;
+    fill-opacity:0.5;
+    stroke-opacity:0.5;
+}
+
+.node-inner {
+    stroke:#5ac2ff;
+    fill:#5ac2ff;
+}
+
+.core-input {
+    stroke:#5ac2ff;
+    fill:none;
+}
+
+.core-output {
+    stroke:#5ac2ff;
+    fill:#5ac2ff;
+}
+
+.processor {
+    stroke:#5ac2ff;
+    fill:none;
+}
+

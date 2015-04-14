@@ -1,0 +1,45 @@
+<?xml version="1.0" standalone="no"?>
+<?xml-stylesheet type="text/css" href="style.css"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
+"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="70" height="70" 
+     xmlns="http://www.w3.org/2000/svg" 
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     version="1.1">
+  <g transform="translate(35,35)">
+    <g class="disco corona-input" id="corona">
+      <path d="M0,-9 l-9, 0  l0,18 l9,0"
+            fill="none" stroke="red" 
+	    stroke-width="20"
+	    stroke-opacity="0.5"
+	    class="disco"
+	    id="corona-knob"
+	    />
+      <path d="M0,-9 l9, 0  l0,18 l-9,0"
+            stroke-width="20"
+	    stroke-opacity="0.5"
+	    />
+    </g>
+    <circle cx="0" cy="0" 
+	    class="disco core-input"
+	    id="core"
+	    r="10px"
+	    stroke-width="0"
+	    />
+
+    <g class="disco disco-knob">
+      <g class="disco disco-knob-handle node-inner">
+	  <rect   x="-6px" y="-6px" width="12px" height="12px"
+		  fill="black" stroke="black"
+		  stroke-width="1.5px"/>
+	  <path d="M4.5,-6 l-9,11 0,-5 m0,5 l5,-1" 
+		stroke-width="1"
+		stroke="white"
+		fill="none"
+		stroke-linecap="square"
+		stroke-linejoin="round"/>
+      </g>
+    </g>
+  </g>  
+</svg>
+

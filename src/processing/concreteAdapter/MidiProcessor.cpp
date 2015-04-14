@@ -27,7 +27,7 @@ MidiProcessor::MidiProcessor ( frx::processing::IHostInfo::Ptr iHost ) :
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-void MidiProcessor::processMidiEvents ( sambag::dsp::IMidiEvents *ev ) {
+void MidiProcessor::processMidiEvents ( sambag::dsp::IMidiEvents::Ptr ev ) {
 	using namespace sambag::dsp;
 	size_t numEv = ev->getNumEvents();
 	for ( size_t i=0; i<numEv; ++i ) {

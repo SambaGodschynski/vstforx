@@ -246,6 +246,9 @@ void VstForxEditor::open() {
 		clientWindow = fWin = sdc::FramedWindow::create();
 		clientWindow->getContentPane()->setOpaque(false);
 		clientWindow->getWindowImpl()->setFlag(sdc::WindowFlags::WND_RAW, true);
+#if defined DISCO_USE_COCOA
+        clientWindow->getWindowImpl()->setFlag(sdc::WindowFlags::WND_VST2X_CARBON_COCOA_HACK, true);
+#endif
 		clientWindow->addOnOpenEventListener(
 			boost::bind(&VstForxEditor::onHostWindowOpen, this, _1, _2)
 		);

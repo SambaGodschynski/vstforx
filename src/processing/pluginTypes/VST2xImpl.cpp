@@ -18,6 +18,7 @@
 #include <sambag/dsp/TimeInfoVst2xHelper.hpp>
 #include <sambag/dsp/VstMidiEventAdapter.hpp>
 #include <sambag/disco/components/Window.hpp>
+#include <boost/lexical_cast.hpp>
 
 /**
  * get the apropriate handler from a window.
@@ -70,7 +71,7 @@ void VSTPluginImpl::openPlugin()
 	
 	// shellplugid is setted by loadModule (the filename contains the
 	// information eg.: 'plugin.dll@12345')
-	if (shellPlugId==0 && pluginCategory==kPlugCategShell) {
+	if (shellPlugId=="" && pluginCategory==kPlugCategShell) {
 		oldPr::ShellPluginInfos infos;
 		getShellPluginInfos(infos);
 		// plugin delivers shell plugins, at this point we can't go
@@ -92,14 +93,18 @@ void VSTPluginImpl::closePlugin()
     }
 }
 //-----------------------------------------------------------------------------
-void VSTPluginImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
+void VSTPluginImpl::processMidiEvents( sambag::dsp::IMidiEvents::Ptr events ) {
 	if ( !canHandleMidiEvent() ) {
 		return;
 	}
+//    if (events) {
+//        std::string msg = sambag::dsp::toString(*events);
+//        std::cout<<"--1111111111111111"<<std::endl;
+//        std::cout<<msg;
+//        std::cout<<std::endl;
+//    }
 	if (!tmpMidiData) {
-		tmpMidiData = VstMidiEventAdapterPtr(
-			new sambag::dsp::VstMidiEventAdapter(events)
-		);
+		tmpMidiData = sambag::dsp::VstMidiEventAdapter::create(events);
 		aEff->dispatcher( aEff, effProcessEvents, 0, NULL, (void*)tmpMidiData->events, NULL );
 		return;
 	}
@@ -362,6 +367,13 @@ void VSTPluginImpl::onPlugRequestWindowResize (size_t w, size_t h) {
     oldEditorSize = _new;
 }
 //-----------------------------------------------------------------------------
+void VSTPluginImpl::beforeOpenEditor(sambag::disco::components::WindowPtr win) {
+#if defined DISCO_USE_COCOA
+    namespace sdc = sambag::disco::components;
+    win->getWindowImpl()->setFlag(sdc::WindowFlags::WND_VST2X_CARBON_COCOA_HACK, true);
+#endif
+}
+//-----------------------------------------------------------------------------
 void VSTPluginImpl::openEditor(sambag::disco::components::WindowPtr _window) {
     if (!_window)
 		return;
@@ -432,7 +444,10 @@ VstIntPtr VSTPluginImpl::_hostCallback ( AEffect* effect,
 		// ( it calls callBkOnInit[static] again and again because it is not zero )
 		// see bug: 0000088
 		if (opcode==audioMasterCurrentId) {
-			return shellPlugIdOnInit;
+            if (shellPlugIdOnInit.empty()) {
+                return 0;
+            }
+			return boost::lexical_cast<int>(shellPlugIdOnInit);
 		}
 		HostCallBackOnInit tmp = callBkOnInit;
 		callBkOnInit = HostCallBackOnInit( NULL, NULL );
@@ -560,9 +575,9 @@ std::pair<VstIntPtr, bool> VSTPluginImpl::processRequest( frx::processing::IHost
             if (!ev || ev->numEvents==0) {
                 return std::make_pair(0, true);
             }
-            sambag::dsp::VstMidiEventAdapter midiev(ev);
+            sambag::dsp::VstMidiEventAdapter::Ptr midiev = sambag::dsp::VstMidiEventAdapter::create(ev);
             try {
-                oldPr::IMidiEventProcessor::EventSender::notifyListeners(this, &midiev);
+                oldPr::IMidiEventProcessor::EventSender::notifyListeners(this, midiev);
             } catch(...) {
                 SAMBAG_LOG_ERR<<"VST2xImpl. audioMasterProcessEvents failed";
                 return std::make_pair(0, true);

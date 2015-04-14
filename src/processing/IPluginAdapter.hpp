@@ -31,6 +31,8 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::shared_ptr<IPluginAdapter> Ptr;
 	typedef boost::weak_ptr<IPluginAdapter> WPtr;
+    //-------------------------------------------------------------------------
+    virtual void beforeOpenEditor(sdc::WindowPtr win) = 0;
 	//-------------------------------------------------------------------------
 	virtual void openEditor(sdc::WindowPtr win) = 0;
 	//-------------------------------------------------------------------------

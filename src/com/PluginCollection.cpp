@@ -294,7 +294,7 @@ std::string PluginCollection::analyzeLog() {
 processing::PluginInfo PluginCollection::restorePluginInfo ( processing::PluginInfo &info ) 
 {
 	using namespace processing;
-	int shellId;
+	std::string shellId;
 	boost::tie(info.location, shellId) = com::extractVSTPluginFilename(info.location);
 	PluginInfo pI = getPlugInfo ( info.location );
 	// plugin not in db => search in db
@@ -500,6 +500,14 @@ void PluginCollection::removeUnusedPlugins() {
 }
 //------------------------------------------------------------------------------------------------------------
 namespace {
+    /**
+     * checks table version and updates if needed.
+     * assuming that the SqlTable representation implements
+     * static string update (const Loki::Int2Type<Version> &)
+	 * AND
+     * static string check_update (const Loki::Int2Type<Version> &)
+     * an update has to be performed when check_update throws DataBaseQueryFailed
+     */
     template <int Version, class Tbl>
     struct _NUpdates {
         static void _do(sambag::cpsqlite::DataBase::Executer::Ptr exec) {
@@ -507,8 +515,13 @@ namespace {
                 exec->execute( Tbl::check_update(Loki::Int2Type<Version>()) );
             } catch (const DataBaseQueryFailed &) {
                 SAMBAG_LOG_INFO<<"update "<<Tbl::tblName()<<" to version "<<Version;
-                exec->execute( Tbl::update(Loki::Int2Type<Version>()) );
-                exec->execute( Tbl::check_update(Loki::Int2Type<Version>()) );
+                try {
+                    exec->execute( Tbl::update(Loki::Int2Type<Version>()) );
+                    exec->execute( Tbl::check_update(Loki::Int2Type<Version>()) );
+                } catch(const DataBaseQueryFailed &ex) {
+                    SAMBAG_LOG_WARN<<"update "<<Tbl::tblName()<<" failed: "<<ex.what();
+                    throw;
+                }
             }
             _NUpdates<Version-1, Tbl>::_do(exec);
         }
@@ -543,6 +556,8 @@ void PluginCollection::initDB() {
     // check for updates
     _NUpdates<1, TblFolder>::_do(exec);
     _NUpdates<1, TblPlugins>::_do(exec);
+    // _NUpdates<2, TblFolder>::_do(exec); NO TABLE UPDATE FOR V2
+    _NUpdates<2, TblPlugins>::_do(exec);
 }
 //------------------------------------------------------------------------------------------------------------
 void PluginCollection::updateScanStamp() {

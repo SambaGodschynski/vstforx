@@ -131,7 +131,7 @@ private:
         const sambag::com::events::PropertyChanged &ev);
 protected:
     //-------------------------------------------------------------------------
-    void onImplMidiEvent(sambag::dsp::IMidiEvents *ev);
+    void onImplMidiEvent(sambag::dsp::IMidiEvents::Ptr ev);
 	//-------------------------------------------------------------------------
 	/**
 	 * Initalisiert Listener.
@@ -247,13 +247,13 @@ public:
 	/**
 	 * @return Plugin-Uid.
 	 */
-	int getUid() const { return pluginInfo.uid; }
+	std::string getUid() const { return pluginInfo.uid; }
 	//-------------------------------------------------------------------------
 	/**
 	 * setzt Plugin-Uid
 	 * @param uid
 	 */
-	void setUid ( int uid ) { pluginInfo.uid = uid; }
+	void setUid ( std::string uid ) { pluginInfo.uid = uid; }
 	//-------------------------------------------------------------------------
 	/**
 	 * @return Plugin-Typ (@see PluginInfo::PluginType)
@@ -286,6 +286,8 @@ public:
 	 * @return true, wenn Plugin ueber Editor verfuegt.
 	 */
 	bool hasEditor() const;
+    //-------------------------------------------------------------------------
+    virtual void beforeOpenEditor(sambag::disco::components::WindowPtr win);
 	//-------------------------------------------------------------------------
 	void openEditor(sambag::disco::components::WindowPtr);
 	//-------------------------------------------------------------------------
@@ -303,7 +305,7 @@ public:
 	 * Verarbeitet Midi-Events (@see VST-SDK VstEvents)
 	 * @param events
 	 */
-	void processMidiEvents( sambag::dsp::IMidiEvents * events );
+	void processMidiEvents( sambag::dsp::IMidiEvents::Ptr events );
 	//-------------------------------------------------------------------------
 	virtual ~Plugin();
 	//-------------------------------------------------------------------------

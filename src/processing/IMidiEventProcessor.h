@@ -22,7 +22,7 @@ class IMidiEventProcessor {
 //=============================================================================
 public:
     //-------------------------------------------------------------------------
-    typedef sambag::com::events::EventSender<sambag::dsp::IMidiEvents*>
+    typedef sambag::com::events::EventSender<sambag::dsp::IMidiEvents::Ptr>
         EventSender;
     typedef EventSender::EventFunction EventFunction;
     typedef EventSender::Connection Connection;
@@ -31,7 +31,7 @@ public:
     /**
      * @brief processes the midi event
      */
-	virtual void processEvents(sambag::dsp::IMidiEvents *events) = 0;
+	virtual void processEvents(sambag::dsp::IMidiEvents::Ptr events) = 0;
     //-------------------------------------------------------------------------
     /**
      * @brief adds a listener for outgoing midi signals

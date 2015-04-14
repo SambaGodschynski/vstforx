@@ -131,7 +131,7 @@ public:
 	//-------------------------------------------------------------------------
 	bool requestEditorResize(int width, int height);
 	//-------------------------------------------------------------------------
-	void processEvents(sambag::dsp::IMidiEvents *ev);
+	void processEvents(sambag::dsp::IMidiEvents::Ptr ev);
 	//-------------------------------------------------------------------------
 	void hostParameterChanged(void *src, float value, int index);
 	//-------------------------------------------------------------------------

@@ -252,7 +252,7 @@ public:
     std::pair<size_t, void*> getStateData();
     void setStateData(size_t size, void* data);
     bool canHandleMidiEvent();
-    void processMidiEvents(sambag::dsp::IMidiEvents *ev);
+    void processMidiEvents(sambag::dsp::IMidiEvents::Ptr ev);
 }; // PluginSession
 }}} // namespace(s)
 

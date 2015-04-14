@@ -112,7 +112,17 @@ void onPluginEditorChanged(const sce::PropertyChanged &ev, sdc::WindowWPtr _win)
 //  Class PluginAdapter
 //=============================================================================
 //-----------------------------------------------------------------------------
-void initPos(IPlugin *plugin, std::pair<double, double> x, sdc::WindowWPtr _win) {
+void PluginAdapter::beforeOpenEditor(sdc::WindowPtr win)
+{
+    Adaptee::Ptr plug = getPlugin();
+	if (!plug) {
+		return;
+    }
+    plug->beforeOpenEditor(win);
+}
+//-----------------------------------------------------------------------------
+void initPos(IPlugin *plugin, std::pair<double, double> x, sdc::WindowWPtr _win)
+{
     sdc::WindowPtr win = _win.lock();
     if (!win) {
         return;

@@ -42,6 +42,11 @@ public:
 	 * @return true if has editor
 	 */
 	virtual bool hasEditor() const = 0;
+    //-------------------------------------------------------------------------
+    /**
+     * @brief the editor is about to open
+     */
+	virtual void beforeOpenEditor(sambag::disco::components::WindowPtr win) = 0;
 	//-------------------------------------------------------------------------
 	virtual void openEditor(sambag::disco::components::WindowPtr win) = 0;
 	//-------------------------------------------------------------------------

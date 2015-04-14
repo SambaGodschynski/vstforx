@@ -1258,6 +1258,8 @@ void FrxControl::openClosePluginEditor(fgc::FrxCircuidViewPtr view,
 	pluginCtrl->setPlugin(plugin);
 	ed->setControl(pluginCtrl);
 	ed->positionWindow();
+    plugin->beforeOpenEditor(ed); // give the impl a chance to
+                                  // adjust the window before it will open
     ed->open();
 }
 //-----------------------------------------------------------------------------

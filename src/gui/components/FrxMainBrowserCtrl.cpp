@@ -149,13 +149,26 @@ onShellPluginSelected(void*, const sdc::events::ActionEvent &ev)
 		boost::dynamic_pointer_cast<ShellPluginSelection>(ev.getSource());
 	if (!shlsl)
 		return;
+    FrxCircuidViewPtr view = wView.lock();
+    if (!view) {
+        return;
+    }
 	const ::processing::PluginInfo &pI
 		= shlsl->getCurrentSelection();
 	if (pI.location == "") {
 		return;
 	}
-	BrowserNodeData::ResultPtr res = addPlugin(pI);
-	handleBrowserNodeResult(res);
+    try {
+        BrowserNodeData::ResultPtr res = addPlugin(pI);
+        handleBrowserNodeResult(res);
+    } // we need an extra handling here because we are in a async event
+    catch (const std::exception &ex)
+    {
+        view->errorMessage(ex.what());
+    } catch(...)
+    {
+        view->errorMessage("unknown error");
+    }
 }
 //-----------------------------------------------------------------------------
 BrowserNodeData::ResultPtr 

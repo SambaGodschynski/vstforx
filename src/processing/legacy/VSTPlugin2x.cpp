@@ -19,6 +19,8 @@
 #include <processing/Plugin.h>
 #include <sambag/disco/Geometry.hpp>
 #include <sambag/disco/components/Window.hpp>
+#include <boost/lexical_cast.hpp>
+
 
 /**
  * get the apropriate handler from a window.
@@ -52,7 +54,7 @@ ioChangedLock(false)
 	
 	// shellplugid is setted by loadModule (the filename contains the
 	// information eg.: 'plugin.dll@12345')
-	if (shellPlugId==0 && pluginCategory==kPlugCategShell) {
+	if (shellPlugId=="" && pluginCategory==kPlugCategShell) {
 		::processing::ShellPluginInfos infos;
 		getShellPluginInfos(infos);
 		// plugin delivers shell plugins, at this pouint we can't go
@@ -80,14 +82,12 @@ ioChangedLock(false)
 	return ::com::MyString ( p.stem().string() );
 }
 //------------------------------------------------------------------------------------------------------------
-void VSTPlugin::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
+void VSTPlugin::processMidiEvents( sambag::dsp::IMidiEvents::Ptr events ) {
 	if ( !canHandleMidiEvent() ) {
 		return;
 	}
 	if (!tmpMidiData) {
-		tmpMidiData = VstMidiEventAdapterPtr(
-			new sambag::dsp::VstMidiEventAdapter(events)
-		);
+		tmpMidiData = sambag::dsp::VstMidiEventAdapter::create(events);
 		aEff->dispatcher( aEff, effProcessEvents, 0, NULL, (void*)tmpMidiData->events, NULL );
 		return;
 	}
@@ -109,7 +109,7 @@ void VSTPlugin::initPlug( VSTPlugin &plug ) {
 	plug.aEff->dispatcher ( plug.aEff, effGetVendorString, 0, NULL, &bff[0], NULL );
 	plug.setPlugVendor( string (bff) );
 	plug.setIsSynth ( plug.can(effFlagsIsSynth) );
-	plug.setUid ( plug.aEff->uniqueID );
+	plug.setUid ( boost::lexical_cast<std::string>(plug.aEff->uniqueID) );
 	plug.setType ( ::processing::PluginInfo::VST2X );
     plug._processDelay = plug.aEff->initialDelay;
 	if ( plug.aEff == &::processing::nullAEff ) {
@@ -491,6 +491,13 @@ void VSTPlugin::onPlugRequestWindowResize (size_t w, size_t h) {
     );
 }
 //------------------------------------------------------------------------------------------------------------
+void VSTPlugin::beforeOpenEditor(sambag::disco::components::WindowPtr win) {
+#if defined DISCO_USE_COCOA
+    namespace sdc = sambag::disco::components;
+    win->getWindowImpl()->setFlag(sdc::WindowFlags::WND_VST2X_CARBON_COCOA_HACK, true);
+#endif
+}
+//------------------------------------------------------------------------------------------------------------
 void VSTPlugin::openEditor(sambag::disco::components::WindowPtr _window) {
     if (!_window)
 		return;
@@ -550,7 +557,7 @@ VstIntPtr VSTPlugin::_hostCallback ( AEffect* effect,
 		// ( it calls callBkOnInit[static] again and again because it is not zero )
 		// see bug: 0000088
 		if (opcode==audioMasterCurrentId) {
-			return shellPlugIdOnInit;
+			return boost::lexical_cast<int>(shellPlugIdOnInit);
 		}
 		HostCallBackOnInit tmp = callBkOnInit;
 		callBkOnInit = HostCallBackOnInit( NULL, NULL );

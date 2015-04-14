@@ -33,15 +33,17 @@ MidiEventProcessor::MidiEventProcessor() {
 	midiSend->addValueChangedListener ( f );
 	midiSend->setValue ( 1.0f );
 	midiSend->setName ("send midi");
+    // create midi ev
+    tmpEv = sambag::dsp::DefaultMidiEvents::create();
 }
 //-----------------------------------------------------------------------------
-void MidiEventProcessor::processEvents( sambag::dsp::IMidiEvents *ev ) {
+void MidiEventProcessor::processEvents( sambag::dsp::IMidiEvents::Ptr ev ) {
 	
-	int channel = com::mapInteger ( midiChannel->getValue(), 17 ); // 16 midi channels + all channels
+    int channel = com::mapInteger ( midiChannel->getValue(), 17 ); // 16 midi channels + all channels
 
 	if (channel!=ALL_CHANNEL) {
-		tmpEv.copyDeepFiltered(ev, channel);
-		processMidiEvents(&tmpEv);
+		tmpEv->copyDeepFiltered(ev, channel);
+		processMidiEvents(tmpEv);
 		return;
 	}
 	processMidiEvents(ev);
@@ -65,7 +67,7 @@ MidiEventProcessor::addListener(const IMidiEventProcessor::EventFunction &f)
     return IMidiEventProcessor::EventSender::addEventListener(f);
 }
 //-----------------------------------------------------------------------------
-void MidiEventProcessor::sendMidiEvents( sambag::dsp::IMidiEvents * events ) {
+void MidiEventProcessor::sendMidiEvents(sambag::dsp::IMidiEvents::Ptr events ) {
     using namespace parameter;
 	if (com::mapInteger(midiSend->getValue(),2)==0) {
         return;

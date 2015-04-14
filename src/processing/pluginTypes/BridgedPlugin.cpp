@@ -134,7 +134,7 @@ bool BridgedPlugin::canHandleMidiEvent() const {
     return session->canHandleMidiEvent();
 }
 //-----------------------------------------------------------------------------
-void BridgedPlugin::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
+void BridgedPlugin::processMidiEvents( sambag::dsp::IMidiEvents::Ptr events ) {
     session->processMidiEvents(events);
 }
 //-----------------------------------------------------------------------------

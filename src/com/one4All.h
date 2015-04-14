@@ -210,7 +210,7 @@ namespace com {
 	 * @note If Plugin is shellplugtype specific shell id comes with filename(eg): "plugin.dll@172832".
 	 * @return pair<filename, shellid>
 	 */
-	std::pair<std::string, int> extractVSTPluginFilename(const std::string &filename);
+	std::pair<std::string, std::string> extractVSTPluginFilename(const std::string &filename);
 	//--------------------------------------------------------------------------------------------------------
     typedef boost::tuple<std::string, // namespace
                          std::string, // type
@@ -265,7 +265,7 @@ namespace com {
     //------------------------------------------------------------------------------------------------------
     std::ostream & operator << (std::ostream &os, const IdParser &pd);
 	//------------------------------------------------------------------------------------------------------
-	std::string createVSTPluginFilename(const std::string &filename, int shellId);
+	std::string createVSTPluginFilename(const std::string &filename, const std::string &shellId);
 	/*//====================================================================================================
 	//	Funktion: typeDetector.
 	//  Gebeben werden TypeList und zeiger zu objekt .

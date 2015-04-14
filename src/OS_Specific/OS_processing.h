@@ -11,8 +11,10 @@
 
 #if defined(FRX_OS_WINDOWS)
 #include "windows/processing/OS_VSTPlugin2x.h"
+#include "windows/processing/OS_VSTPlugin3x.h"
 #elif defined(FRX_OS_MAC)
 #include "mac/processing/OS_VSTPlugin2x.h"
+#include "mac/processing/OS_VSTPlugin3x.h"
 #elif defined(FRX_OS_LINUX)
 #include "linux/processing/OS_VSTPlugin2x.h"
 #endif
