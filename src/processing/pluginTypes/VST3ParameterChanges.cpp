@@ -66,7 +66,7 @@ void VST3ParameterChanges::clear()
         x->clear();
     }
 }
-VST3ParameterChanges::int32 VST3ParameterChanges::getParameterCount ()
+VST3ParameterChanges::int32 PLUGIN_API VST3ParameterChanges::getParameterCount ()
 {
     return _queues.size();
 }

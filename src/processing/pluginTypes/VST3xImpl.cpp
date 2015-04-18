@@ -436,7 +436,6 @@ void VST3PluginImpl::processMidiEvents( sambag::dsp::IMidiEvents::Ptr events )
         midiEv = sambag::dsp::Vst3MidiAdapter::create();
     }
     try {
-        SAMBAG_LOG_TRACE << " BEFORE " << *events;
         midiEv->set(events);
         SAMBAG_LOG_TRACE << " AFTER " << *(midiEv->get());
     } catch(const sambag::dsp::MidiDataError &ex) {

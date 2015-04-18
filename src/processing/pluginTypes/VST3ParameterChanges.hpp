@@ -5,6 +5,7 @@
 #include "pluginterfaces/base/funknown.h"
 #include <boost/unordered_map.hpp>
 #include <boost/tuple/tuple.hpp>
+#include <vector>
 
 namespace frx { namespace processing {
 //=============================================================================
@@ -57,7 +58,7 @@ private:
     Queues _queues;
 public:
     void clear();
-    virtual int32 getParameterCount ();
+    virtual int32 PLUGIN_API getParameterCount ();
     virtual IParamValueQueue * PLUGIN_API getParameterData (int32 index);
     virtual IParamValueQueue * PLUGIN_API addParameterData (const ParamID &id, int32 &index);
     ///////////////////////////////////////////////////////////////////////////
