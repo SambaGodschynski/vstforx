@@ -91,6 +91,9 @@ void VST3PluginImpl::initParameters() {
     }
     int num = (int)controller->getParameterCount();
     parameters->resize(num);
+    inParameterChanges = new VST3ParameterChanges();
+    outParameterChanges = new VST3ParameterChanges();
+    
     for (int i = 0; i<num; ++i) {
         oldPrPr::Parameter::Ptr p = parameters->at(i);
         if (!p) {
@@ -115,10 +118,11 @@ void VST3PluginImpl::initParameters() {
             p->addValueChangedListener (
                 boost::bind(&VST3PluginImpl::valueChanged, this, _1, _2)
             );
+            
+            Steinberg::int32 dummyIndex;
+            inParameterChanges->addParameterData (pInf.id, dummyIndex)->addPoint (0, value, dummyIndex);
         }
     }
-    inParameterChanges = new VST3ParameterChanges();
-    outParameterChanges = new VST3ParameterChanges();
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::valueChanged(void *src, const float &value) {
@@ -437,7 +441,7 @@ void VST3PluginImpl::processMidiEvents( sambag::dsp::IMidiEvents::Ptr events )
     }
     try {
         midiEv->set(events);
-        SAMBAG_LOG_TRACE << " AFTER " << *(midiEv->get());
+        //SAMBAG_LOG_TRACE << " AFTER " << *(midiEv->get());
     } catch(const sambag::dsp::MidiDataError &ex) {
         SAMBAG_LOG_ERR<<ex.what();
     }
