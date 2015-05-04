@@ -20,6 +20,7 @@
 namespace Steinberg {
 	DEF_CLASS_IID (IPluginBase)
 	DEF_CLASS_IID (IPlugView)
+    DEF_CLASS_IID (IBStream)
 }
 
 extern void * __getHandlerForVstPlugins_(void*);
@@ -47,10 +48,11 @@ namespace {
     
     struct VST3PluginState
     {
-        static const int ClassVersion = 1;
+        enum { ClassVersion = 1 };
+        int classVersion;
+        VST3PluginState() : classVersion(ClassVersion) {}
         typedef boost::tuple<Steinberg::Vst::IComponent*,
         Steinberg::Vst::IEditController*> Sources;
-        std::string component, controller;
         void fromSources (const Sources &sources, ::com::oArchive &oa);
         void intoSources (const Sources &sources, ::com::iArchive &ia);
         
@@ -86,7 +88,7 @@ namespace {
         boost::tie(comp, ctrl) = sources;
         std::string compData = getState(comp);
         std::string ctrlData = getState(ctrl);
-        ar << ClassVersion;
+        ar << classVersion;
         ar << compData;
         ar << ctrlData;
     }
@@ -666,12 +668,17 @@ VST3PluginImpl::~VST3PluginImpl() {
 }
 //-----------------------------------------------------------------------------
 std::pair<size_t, void*> VST3PluginImpl::getStateData() const {
-    std::stringstream ss;
-    ::com::oArchive ar(ss);
-    VST3PluginState state;
-    state.fromSources( VST3PluginState::Sources(component, controller), ar );
-    __tempStateData = ss.str(); // copy stream to temp string
-    return std::make_pair(__tempStateData.size(), (void*)__tempStateData.c_str());
+    try {
+        std::stringstream ss;
+        ::com::oArchive ar(ss);
+        VST3PluginState state;
+        state.fromSources( VST3PluginState::Sources(component, controller), ar );
+        __tempStateData = ss.str(); // copy stream to temp string
+        return std::make_pair(__tempStateData.size(), (void*)__tempStateData.c_str());
+    } catch (std::exception &ex) {
+        SAMBAG_LOG_ERR<<ex.what();
+        throw;
+    }
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::setStateData(size_t size, void* data)
@@ -679,12 +686,17 @@ void VST3PluginImpl::setStateData(size_t size, void* data)
     if (size==0) {
         return;
     }
-    std::string rawData((const char*)data, size);
-    std::stringstream ss(rawData);
-    ::com::iArchive ar(ss);
+    try {
+        std::string rawData((const char*)data, size);
+        std::stringstream ss(rawData);
+        ::com::iArchive ar(ss);
     
-    VST3PluginState state;
-    state.intoSources(VST3PluginState::Sources(component, controller), ar );
+        VST3PluginState state;
+        state.intoSources(VST3PluginState::Sources(component, controller), ar );
+    } catch (std::exception &ex) {
+        SAMBAG_LOG_ERR<<ex.what();
+        throw;
+    }
    
     // update parameter
     int num = (int)controller->getParameterCount();
