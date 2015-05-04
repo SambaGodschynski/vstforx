@@ -157,6 +157,7 @@ private:
     Steinberg::IPlugView *editor;
     VST3ParameterChanges *inParameterChanges, *outParameterChanges;
     std::string cid;
+    mutable std::string __tempStateData;
     typedef boost::unordered_map<Steinberg::Vst::ParamID, int> VstParam2Index;
     VstParam2Index indexMap;
     void valueChanged(void *src, const float &value);

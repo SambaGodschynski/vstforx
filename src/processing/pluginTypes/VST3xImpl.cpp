@@ -13,7 +13,8 @@
 #include "base/source/fstring.h"
 #include "sambag/disco/components/Window.hpp"
 #include "sambag/disco/components/windowImpl/CocoaWindowImpl.hpp"
-
+#include "public.sdk/source/common/memorystream.h"
+#include "com/Serialization.h"
 
 
 namespace Steinberg {
@@ -42,6 +43,66 @@ namespace {
         SAMBAG_LOG_WARN<<fname<<" unsuccessful: " << result
                        << " ("<< fname << ":" << line << ")";
         return result;
+    }
+    
+    struct VST3PluginState
+    {
+        static const int ClassVersion = 1;
+        typedef boost::tuple<Steinberg::Vst::IComponent*,
+        Steinberg::Vst::IEditController*> Sources;
+        std::string component, controller;
+        void fromSources (const Sources &sources, ::com::oArchive &oa);
+        void intoSources (const Sources &sources, ::com::iArchive &ia);
+        
+        template<class T>
+        static std::string getState(T * const src)
+        {
+            if (src==NULL) {
+                return "";
+            }
+            Steinberg::MemoryStream stream;
+            if (src->getState(&stream)==Steinberg::kResultFalse) {
+                throw std::runtime_error("VST3PluginState::getState failed");
+            }
+            return std::string(stream.getData(), stream.getSize());
+        }
+        
+        template<class T>
+        static void setState(T * const src, const std::string &data)
+        {
+            if (src==NULL || data.empty()) {
+                return;
+            }
+            Steinberg::MemoryStream stream((void*)data.c_str(), data.size());
+            if (src->setState(&stream)==Steinberg::kResultFalse) {
+                throw std::runtime_error("VST3PluginState::setState failed");
+            }
+        }
+    };
+    void VST3PluginState::fromSources (const Sources &sources, ::com::oArchive &ar)
+    {
+        Steinberg::Vst::IComponent* comp;
+        Steinberg::Vst::IEditController* ctrl;
+        boost::tie(comp, ctrl) = sources;
+        std::string compData = getState(comp);
+        std::string ctrlData = getState(ctrl);
+        ar << ClassVersion;
+        ar << compData;
+        ar << ctrlData;
+    }
+    void VST3PluginState::intoSources (const Sources &sources, ::com::iArchive &ar)
+    {
+        Steinberg::Vst::IComponent* comp;
+        Steinberg::Vst::IEditController* ctrl;
+        boost::tie(comp, ctrl) = sources;
+        std::string compData;
+        std::string ctrlData;
+        int archiveVersion;
+        ar >> archiveVersion;
+        ar >> compData;
+        ar >> ctrlData;
+        setState(comp, compData);
+        setState(ctrl, ctrlData);
     }
 }
 //-----------------------------------------------------------------------------
@@ -605,10 +666,41 @@ VST3PluginImpl::~VST3PluginImpl() {
 }
 //-----------------------------------------------------------------------------
 std::pair<size_t, void*> VST3PluginImpl::getStateData() const {
-	return std::make_pair(0, (void*)NULL);
+    std::stringstream ss;
+    ::com::oArchive ar(ss);
+    VST3PluginState state;
+    state.fromSources( VST3PluginState::Sources(component, controller), ar );
+    __tempStateData = ss.str(); // copy stream to temp string
+    return std::make_pair(__tempStateData.size(), (void*)__tempStateData.c_str());
 }
 //-----------------------------------------------------------------------------
-void VST3PluginImpl::setStateData(size_t size, void* data) {
+void VST3PluginImpl::setStateData(size_t size, void* data)
+{
+    if (size==0) {
+        return;
+    }
+    std::string rawData((const char*)data, size);
+    std::stringstream ss(rawData);
+    ::com::iArchive ar(ss);
+    
+    VST3PluginState state;
+    state.intoSources(VST3PluginState::Sources(component, controller), ar );
+   
+    // update parameter
+    int num = (int)controller->getParameterCount();
+    for (int i = 0; i<num; ++i) {
+        oldPrPr::Parameter::Ptr p = parameters->at(i);
+        if (p) {
+            Steinberg::Vst::ParameterInfo pInf;
+            controller->getParameterInfo(i, pInf);
+            Steinberg::Vst::ParamValue value = controller->getParamNormalized(pInf.id);
+            Steinberg::Vst::String128 displ = {0};
+            controller->getParamStringByValue(pInf.id, value, &displ[0]);
+            p->setDisplay(tostdstring(displ));
+            Steinberg::int32 dummyIndex;
+            inParameterChanges->addParameterData (pInf.id, dummyIndex)->addPoint (0, value, dummyIndex);
+        }
+    }
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::tryCreateEditor() {
