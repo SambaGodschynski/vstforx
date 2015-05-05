@@ -156,8 +156,7 @@ set (VSTSDK3SOURCE ${VSTSDK3SOURCE}
       ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstinitiids.cpp
       ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstparameters.cpp
       ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/common/pluginview.cpp
-
-      
+      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/common/memorystream.cpp      
       ${VSTSDK3_INCLUDE_DIRS}/pluginterfaces/base/ustring.cpp
       ${VSTSDK3_INCLUDE_DIRS}/pluginterfaces/base/conststringtable.cpp
       ${VSTSDK3_INCLUDE_DIRS}/pluginterfaces/base/funknown.cpp

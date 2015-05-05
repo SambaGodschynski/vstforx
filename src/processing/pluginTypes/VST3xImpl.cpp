@@ -13,12 +13,14 @@
 #include "base/source/fstring.h"
 #include "sambag/disco/components/Window.hpp"
 #include "sambag/disco/components/windowImpl/CocoaWindowImpl.hpp"
-
+#include "public.sdk/source/common/memorystream.h"
+#include "com/Serialization.h"
 
 
 namespace Steinberg {
 	DEF_CLASS_IID (IPluginBase)
 	DEF_CLASS_IID (IPlugView)
+    DEF_CLASS_IID (IBStream)
 }
 
 extern void * __getHandlerForVstPlugins_(void*);
@@ -42,6 +44,67 @@ namespace {
         SAMBAG_LOG_WARN<<fname<<" unsuccessful: " << result
                        << " ("<< fname << ":" << line << ")";
         return result;
+    }
+    
+    struct VST3PluginState
+    {
+        enum { ClassVersion = 1 };
+        int classVersion;
+        VST3PluginState() : classVersion(ClassVersion) {}
+        typedef boost::tuple<Steinberg::Vst::IComponent*,
+        Steinberg::Vst::IEditController*> Sources;
+        void fromSources (const Sources &sources, ::com::oArchive &oa);
+        void intoSources (const Sources &sources, ::com::iArchive &ia);
+        
+        template<class T>
+        static std::string getState(T * const src)
+        {
+            if (src==NULL) {
+                return "";
+            }
+            Steinberg::MemoryStream stream;
+            if (src->getState(&stream)==Steinberg::kResultFalse) {
+                throw std::runtime_error("VST3PluginState::getState failed");
+            }
+            return std::string(stream.getData(), stream.getSize());
+        }
+        
+        template<class T>
+        static void setState(T * const src, const std::string &data)
+        {
+            if (src==NULL || data.empty()) {
+                return;
+            }
+            Steinberg::MemoryStream stream((void*)data.c_str(), data.size());
+            if (src->setState(&stream)==Steinberg::kResultFalse) {
+                throw std::runtime_error("VST3PluginState::setState failed");
+            }
+        }
+    };
+    void VST3PluginState::fromSources (const Sources &sources, ::com::oArchive &ar)
+    {
+        Steinberg::Vst::IComponent* comp;
+        Steinberg::Vst::IEditController* ctrl;
+        boost::tie(comp, ctrl) = sources;
+        std::string compData = getState(comp);
+        std::string ctrlData = getState(ctrl);
+        ar << classVersion;
+        ar << compData;
+        ar << ctrlData;
+    }
+    void VST3PluginState::intoSources (const Sources &sources, ::com::iArchive &ar)
+    {
+        Steinberg::Vst::IComponent* comp;
+        Steinberg::Vst::IEditController* ctrl;
+        boost::tie(comp, ctrl) = sources;
+        std::string compData;
+        std::string ctrlData;
+        int archiveVersion;
+        ar >> archiveVersion;
+        ar >> compData;
+        ar >> ctrlData;
+        setState(comp, compData);
+        setState(ctrl, ctrlData);
     }
 }
 //-----------------------------------------------------------------------------
@@ -91,34 +154,40 @@ void VST3PluginImpl::initParameters() {
     }
     int num = (int)controller->getParameterCount();
     parameters->resize(num);
+    if (!inParameterChanges) {
+        inParameterChanges = new VST3ParameterChanges();
+    }
+    if (!outParameterChanges) {
+        outParameterChanges = new VST3ParameterChanges();
+    }
     for (int i = 0; i<num; ++i) {
         oldPrPr::Parameter::Ptr p = parameters->at(i);
+        Steinberg::Vst::ParameterInfo pInf;
+        controller->getParameterInfo(i, pInf);
         if (!p) {
-            Steinberg::Vst::ParameterInfo pInf;
-            controller->getParameterInfo(i, pInf);
             (*parameters)[i] = p = oldPrPr::Parameter::create(i);
-            indexMap[pInf.id] = i; // add id to indexmap
             p->setMin( (com::VstNumber)INT_MIN ); //entferne min, max ( siehe issue: 0000049 )
             p->setMax( (com::VstNumber)INT_MAX );
-            Steinberg::Vst::ParamValue value = controller->getParamNormalized(pInf.id);
-            // wert
-            p->setValue(value);
-            // name
-            p->setName(tostdstring(pInf.title));
-            // label
-            p->setLabel(tostdstring(pInf.units));
-            // display
-            Steinberg::Vst::String128 displ = {0};
-            controller->getParamStringByValue(pInf.id, value, &displ[0]);
-            p->setDisplay(tostdstring(displ));
-            // add listener
-            p->addValueChangedListener (
-                boost::bind(&VST3PluginImpl::valueChanged, this, _1, _2)
-            );
         }
+        Steinberg::Vst::ParamValue value = controller->getParamNormalized(pInf.id);
+        // wert
+        p->setValue(value);
+        // name
+        p->setName(tostdstring(pInf.title));
+        // label
+        p->setLabel(tostdstring(pInf.units));
+        // display
+        Steinberg::Vst::String128 displ = {0};
+        controller->getParamStringByValue(pInf.id, value, &displ[0]);
+        p->setDisplay(tostdstring(displ));
+        Steinberg::int32 dummyIndex;
+        inParameterChanges->addParameterData (pInf.id, dummyIndex)->addPoint (0, value, dummyIndex);
+        indexMap[pInf.id] = i; // add id to indexmap
+        // add listener
+        p->addValueChangedListener (
+            boost::bind(&VST3PluginImpl::valueChanged, this, _1, _2)
+        );
     }
-    inParameterChanges = new VST3ParameterChanges();
-    outParameterChanges = new VST3ParameterChanges();
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::valueChanged(void *src, const float &value) {
@@ -436,9 +505,8 @@ void VST3PluginImpl::processMidiEvents( sambag::dsp::IMidiEvents::Ptr events )
         midiEv = sambag::dsp::Vst3MidiAdapter::create();
     }
     try {
-        SAMBAG_LOG_TRACE << " BEFORE " << *events;
         midiEv->set(events);
-        SAMBAG_LOG_TRACE << " AFTER " << *(midiEv->get());
+        //SAMBAG_LOG_TRACE << " AFTER " << *(midiEv->get());
     } catch(const sambag::dsp::MidiDataError &ex) {
         SAMBAG_LOG_ERR<<ex.what();
     }
@@ -602,10 +670,50 @@ VST3PluginImpl::~VST3PluginImpl() {
 }
 //-----------------------------------------------------------------------------
 std::pair<size_t, void*> VST3PluginImpl::getStateData() const {
-	return std::make_pair(0, (void*)NULL);
+    try {
+        std::stringstream ss;
+        ::com::oArchive ar(ss);
+        VST3PluginState state;
+        state.fromSources( VST3PluginState::Sources(component, controller), ar );
+        __tempStateData = ss.str(); // copy stream to temp string
+        return std::make_pair(__tempStateData.size(), (void*)__tempStateData.c_str());
+    } catch (std::exception &ex) {
+        SAMBAG_LOG_ERR<<ex.what();
+        throw;
+    }
 }
 //-----------------------------------------------------------------------------
-void VST3PluginImpl::setStateData(size_t size, void* data) {
+void VST3PluginImpl::setStateData(size_t size, void* data)
+{
+    if (size==0) {
+        return;
+    }
+    try {
+        std::string rawData((const char*)data, size);
+        std::stringstream ss(rawData);
+        ::com::iArchive ar(ss);
+    
+        VST3PluginState state;
+        state.intoSources(VST3PluginState::Sources(component, controller), ar );
+    } catch (std::exception &ex) {
+        SAMBAG_LOG_ERR<<ex.what();
+        throw;
+    }
+    
+//    // update parameter
+//    int num = (int)controller->getParameterCount();
+//    for (int i = 0; i<num; ++i) {
+//        oldPrPr::Parameter::Ptr p = parameters->at(i);
+//        if (!p) {
+//            SAMBAG_LOG_ERR<<"missing parameter on deserialize: "<<i;
+//            continue;
+//        }
+//        Steinberg::Vst::ParameterInfo pInf;
+//        controller->getParameterInfo(i, pInf);
+//        Steinberg::Vst::ParamValue value = (Steinberg::Vst::ParamValue)p->getValue();
+//        Steinberg::int32 dummyIndex;
+//        inParameterChanges->addParameterData (pInf.id, dummyIndex)->addPoint (0, value, dummyIndex);
+//    }
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::tryCreateEditor() {
