@@ -154,37 +154,39 @@ void VST3PluginImpl::initParameters() {
     }
     int num = (int)controller->getParameterCount();
     parameters->resize(num);
-    inParameterChanges = new VST3ParameterChanges();
-    outParameterChanges = new VST3ParameterChanges();
-    
+    if (!inParameterChanges) {
+        inParameterChanges = new VST3ParameterChanges();
+    }
+    if (!outParameterChanges) {
+        outParameterChanges = new VST3ParameterChanges();
+    }
     for (int i = 0; i<num; ++i) {
         oldPrPr::Parameter::Ptr p = parameters->at(i);
+        Steinberg::Vst::ParameterInfo pInf;
+        controller->getParameterInfo(i, pInf);
         if (!p) {
-            Steinberg::Vst::ParameterInfo pInf;
-            controller->getParameterInfo(i, pInf);
             (*parameters)[i] = p = oldPrPr::Parameter::create(i);
-            indexMap[pInf.id] = i; // add id to indexmap
             p->setMin( (com::VstNumber)INT_MIN ); //entferne min, max ( siehe issue: 0000049 )
             p->setMax( (com::VstNumber)INT_MAX );
-            Steinberg::Vst::ParamValue value = controller->getParamNormalized(pInf.id);
-            // wert
-            p->setValue(value);
-            // name
-            p->setName(tostdstring(pInf.title));
-            // label
-            p->setLabel(tostdstring(pInf.units));
-            // display
-            Steinberg::Vst::String128 displ = {0};
-            controller->getParamStringByValue(pInf.id, value, &displ[0]);
-            p->setDisplay(tostdstring(displ));
-            // add listener
-            p->addValueChangedListener (
-                boost::bind(&VST3PluginImpl::valueChanged, this, _1, _2)
-            );
-            
-            Steinberg::int32 dummyIndex;
-            inParameterChanges->addParameterData (pInf.id, dummyIndex)->addPoint (0, value, dummyIndex);
         }
+        Steinberg::Vst::ParamValue value = controller->getParamNormalized(pInf.id);
+        // wert
+        p->setValue(value);
+        // name
+        p->setName(tostdstring(pInf.title));
+        // label
+        p->setLabel(tostdstring(pInf.units));
+        // display
+        Steinberg::Vst::String128 displ = {0};
+        controller->getParamStringByValue(pInf.id, value, &displ[0]);
+        p->setDisplay(tostdstring(displ));
+        Steinberg::int32 dummyIndex;
+        inParameterChanges->addParameterData (pInf.id, dummyIndex)->addPoint (0, value, dummyIndex);
+        indexMap[pInf.id] = i; // add id to indexmap
+        // add listener
+        p->addValueChangedListener (
+            boost::bind(&VST3PluginImpl::valueChanged, this, _1, _2)
+        );
     }
 }
 //-----------------------------------------------------------------------------
@@ -697,22 +699,21 @@ void VST3PluginImpl::setStateData(size_t size, void* data)
         SAMBAG_LOG_ERR<<ex.what();
         throw;
     }
-   
-    // update parameter
-    int num = (int)controller->getParameterCount();
-    for (int i = 0; i<num; ++i) {
-        oldPrPr::Parameter::Ptr p = parameters->at(i);
-        if (p) {
-            Steinberg::Vst::ParameterInfo pInf;
-            controller->getParameterInfo(i, pInf);
-            Steinberg::Vst::ParamValue value = controller->getParamNormalized(pInf.id);
-            Steinberg::Vst::String128 displ = {0};
-            controller->getParamStringByValue(pInf.id, value, &displ[0]);
-            p->setDisplay(tostdstring(displ));
-            Steinberg::int32 dummyIndex;
-            inParameterChanges->addParameterData (pInf.id, dummyIndex)->addPoint (0, value, dummyIndex);
-        }
-    }
+    
+//    // update parameter
+//    int num = (int)controller->getParameterCount();
+//    for (int i = 0; i<num; ++i) {
+//        oldPrPr::Parameter::Ptr p = parameters->at(i);
+//        if (!p) {
+//            SAMBAG_LOG_ERR<<"missing parameter on deserialize: "<<i;
+//            continue;
+//        }
+//        Steinberg::Vst::ParameterInfo pInf;
+//        controller->getParameterInfo(i, pInf);
+//        Steinberg::Vst::ParamValue value = (Steinberg::Vst::ParamValue)p->getValue();
+//        Steinberg::int32 dummyIndex;
+//        inParameterChanges->addParameterData (pInf.id, dummyIndex)->addPoint (0, value, dummyIndex);
+//    }
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::tryCreateEditor() {
