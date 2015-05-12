@@ -19,20 +19,27 @@ then
   exit 1
 fi
 
+if [ -z $FRX_SAMBAG_LOC ]
+then
+  echo "missing sambag location. use export FRX_SAMBAG_LOC=xy."
+  exit 1
+fi
+
+
 if [ -z $FRX_VSTFORX_LOC ]
 then
   echo "missing vstforx location. use export FRX_VSTFORX_LOC=xy."
   exit 1
 fi
 
-
+ROOT=$(pwd)
 FRX_LOC=$FRX_VSTFORX_LOC
-SAMBAG_LOC=$FRX_CLIB_LOC/sambag
-
+SAMBAG_LOC=$FRX_SAMBAG_LOC
+DEPL=builds/$FRX_VSTFORX_COMMIT
 
 log()
 {
-    echo "[[[ $(date) ]]] $1" >> $FRX_LOC/build.log
+    echo "[[[ $(date) ]]] $1" >> $ROOT/build.log
 }
 
 
@@ -60,8 +67,10 @@ build $SAMBAG_LOC $FRX_SAMBAG_COMMIT $@
 build $FRX_LOC $FRX_VSTFORX_COMMIT $@
 
 #deploy
-DEPL=builds/$FRX_VSTFORX_COMMIT
 mkdir -p $DEPL
 cp -r $FRX_LOC/src/PluginApps/vstforx.app $DEPL/vstforx.vst
 cp -r $FRX_LOC/src/PluginApps/standalone.app $DEPL
 cp -r $FRX_LOC/src/unit_tests $DEPL
+
+#make sure that we end in our root folder
+cd $ROOT
