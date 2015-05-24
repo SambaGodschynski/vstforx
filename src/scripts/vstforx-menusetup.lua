@@ -19,7 +19,7 @@ menus = {
       {name="Modify Scene...", action="frx.runOnUIThread('onOpenBrowser()')"},
       {name="Open Setup Dialog", action="frx.runOnUIThread('frx.openSetup()')"},
       {name="Help", {
-	  {name="About VSTForx", action="frx.runOnUIThread('frx.openAbout()"},
+	  {name="About VSTForx", action="print(frx.getBuildHash()) frx.runOnUIThread('frx.openAbout()')"},
 	  {name="Report A Bug", action="frx.openUrl('http://www.vstforx.de/index.php/2014-01-12-14-49-45/report-a-bug')"},
 	  {name="Known Issues", action="frx.openUrl('http://issues.vstforx.de/roadmap_page.php?version_id=27')"}
       }},

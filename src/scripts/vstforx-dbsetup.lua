@@ -14,7 +14,7 @@ VALUES ('%s', 1, '%s', 1)", name, path)
 end
 
 function addLuaPlugin(name, path, folder_path)
-   q = string.format("INSERT OR IGNORE INTO plugins(location,name,folderID,access,uidX, plugin_type, doNotDelete) \
+   q = string.format("INSERT OR IGNORE INTO plugins(location,name,folderID,access,uid, plugin_type, doNotDelete) \
 VALUES ('%s', '%s', %s, 1, %s, 5, 1)"
    ,path
    ,name
