@@ -35,7 +35,7 @@ fi
 ROOT=$(pwd)
 FRX_LOC=$FRX_VSTFORX_LOC
 SAMBAG_LOC=$FRX_SAMBAG_LOC
-DEPL=builds/$FRX_VSTFORX_COMMIT
+DEPL=~/tmp/$FRX_VSTFORX_COMMIT
 
 log()
 {
@@ -49,6 +49,7 @@ build()
   tmpdir=$(pwd)
   cd $1
   make clean
+  git stash
   git checkout $2
   if [ $? -ne 0 ]
   then
@@ -68,6 +69,7 @@ build $FRX_LOC $FRX_VSTFORX_COMMIT $@
 
 #deploy
 mkdir -p $DEPL
+cp -r $FRX_LOC/src/images $FRX_LOC/src/styles $FRX_LOC/src/scripts $DEPL
 cp -r $FRX_LOC/src/PluginApps/vstforx.app $DEPL/vstforx.vst
 cp -r $FRX_LOC/src/PluginApps/standalone.app $DEPL
 cp -r $FRX_LOC/src/unit_tests $DEPL

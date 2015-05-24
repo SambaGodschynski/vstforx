@@ -7,7 +7,7 @@ SET(FRX_VERSION_MINOR 0)
 SET(FRX_VERSION_MICRO 6)
 SET(FRX_VERSION_STR "${FRX_VERSION_MAJOR}.${FRX_VERSION_MINOR}.${FRX_VERSION_MICRO}")
 
-execute_process(COMMAND git --work-tree=${PROJECT_SOURCE_DIR} log --pretty=format:%h -n 1
+execute_process(COMMAND git --work-tree=. log --pretty=format:%h -n 1
               OUTPUT_VARIABLE FRX_GITHASH)
 
 

@@ -550,7 +550,7 @@ void VstForxPlug::load(std::istream &is, int version) {
     }
     if (version>2) {
         scripts::PluginScriptCtrl::PersistUserData &data =
-            scriptCtrl->getPersistUserData();
+            getScriptController()->getPersistUserData();
         ar >> data;
     }
 }
