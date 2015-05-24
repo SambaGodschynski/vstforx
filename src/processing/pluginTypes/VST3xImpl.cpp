@@ -457,7 +457,7 @@ void VST3PluginImpl::onEditorIdle() {
 }
 //-----------------------------------------------------------------------------
 bool VST3PluginImpl::isAccessable() const {
-	return false;
+	return component && controller;
 }
 //-----------------------------------------------------------------------------
 /**

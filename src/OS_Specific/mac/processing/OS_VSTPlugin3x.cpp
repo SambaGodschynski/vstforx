@@ -10,6 +10,11 @@
 #include "OS_VSTPlugin3x.h"
 #include <sambag/com/Config.h>
 
+
+namespace frx {
+    extern void checkArchitecture(CFBundleRef module);
+}
+
 namespace {
 typedef processing::OS_VSTPlugNode3x::Module Module;
 typedef bool (*BundleEntryPtr)(CFBundleRef);
@@ -30,6 +35,7 @@ void loadModule ( const char *path, Module *module,  Steinberg::IPluginFactory *
     Module libHandle = *module;
     if (libHandle)
     {
+        frx::checkArchitecture((CFBundleRef)libHandle);
         CFErrorRef errorRef = 0;
         if (CFBundleLoadExecutableAndReturnError ((CFBundleRef)libHandle, &errorRef))
         {

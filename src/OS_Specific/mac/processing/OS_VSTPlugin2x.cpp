@@ -36,11 +36,8 @@ namespace frx {
     #endif
     }
     //--------------------------------------------------------------------------------------------------------
-    bool checkArchitecture(CFBundleRef module) {
+    void checkArchitecture(CFBundleRef module) {
         CFArrayRef archs = CFBundleCopyExecutableArchitectures(module);
-        if (!archs) {
-            return false;
-        }
         long current = getCurrentArch();
         for (int i=0; i<CFArrayGetCount(archs); ++i) {
             CFNumberRef archCode = (CFNumberRef)CFArrayGetValueAtIndex(archs, i);
@@ -48,11 +45,11 @@ namespace frx {
             CFNumberGetValue(archCode, kCFNumberLongType, &arch);
             if (arch==current) {
                 CFRelease(archs);
-                return true;
+                return; // true
             }
         }
         CFRelease(archs);
-        return false;
+        SAMBAG_THROW(frx::processing::PluginArchitectureMissmatch, "Plugin architecture missmatch")
     }
 }
 
@@ -86,13 +83,8 @@ void loadModule ( const char *filename, Module *module, AEffect **aEff ) {
 	*module = CFBundleCreate (NULL, url);
 	CFRelease (url);
 	if (*module) {
-        if (!frx::checkArchitecture(*module)) {
-            SAMBAG_THROW(
-                frx::processing::PluginArchitectureMissmatch,
-                "Plugin architecture missmatch."
-        );
-    }
-	} else {
+        frx::checkArchitecture(*module);
+    } else {
 		TOLOG ("getBundleRef FAILED!");
 		return;
 	}

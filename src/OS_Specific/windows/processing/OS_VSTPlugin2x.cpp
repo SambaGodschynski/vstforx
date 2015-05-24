@@ -26,8 +26,8 @@ extern VstIntPtr VSTCALLBACK pluginCallToPlugNode (
 
 typedef AEffect* (*PluginEntryProc) (audioMasterCallback audioMaster);
 
-namespace {
-void __checkArch(const std::string &filename) {
+namespace frx {
+void checkArchWin32(const std::string &filename) {
 	// source: 
     // http://stackoverflow.com/questions/495244/how-can-i-test-a-windows-dll-to-determine-if-it-is-32bit-or-64bit#495305
 	typedef boost::int_t<32>::exact Integer;
@@ -141,7 +141,7 @@ bool OS_VSTPlugNode2x::loadModule( const HostCallBackOnInit &_callBkOnInit ) {
 	if ( moduleLocation.length() == 0 ) return false;
 	std::string filename;
 	boost::tie(filename, shellPlugId) = com::extractVSTPluginFilename(moduleLocation);
-	__checkArch(filename);
+	frx::checkArchWin32(filename);
 	{ // lock scope
 		TRY_TO_LOCK_TIMED (onInitLock)
 		shellPlugIdOnInit = shellPlugId;

@@ -18,6 +18,10 @@ extern "C"
 static const Steinberg::FIDString kInitModuleProcName = "InitDll";
 static const Steinberg::FIDString kExitModuleProcName = "ExitDll";
 
+namespace frx {
+    extern void checkArchWin32(const std::string &filename);
+}
+
 namespace {
 //------------------------------------------------------------------------------------------------------------
 void unloadModule ();
@@ -25,6 +29,7 @@ void unloadModule ();
 static void loadModule (const char *filename,  
 	processing::OS_VSTPlugNode3x::Module *module, Steinberg::IPluginFactory **factory ) 
 {
+    frx::checkArchWin32(std::string(filename));
 	GetFactoryProc entryProc = NULL;
 	*module = ::LoadLibraryA (filename);
 	processing::OS_VSTPlugNode3x::Module libHandle = *module;
