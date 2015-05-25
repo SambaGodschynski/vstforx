@@ -73,6 +73,10 @@ void checkArchWin32(const std::string &filename) {
 		#endif
 	}
 }
+} // namespace frx
+
+
+namespace {
 //------------------------------------------------------------------------------------------------------------
 void unloadModule ( processing::OS_VSTPlugNode2x::Module module );
 //------------------------------------------------------------------------------------------------------------
