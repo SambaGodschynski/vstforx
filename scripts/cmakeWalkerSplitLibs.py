@@ -10,7 +10,7 @@ IF(APPLE)
   SET(FRX_SOURCES ${FRX_MMSOURCES} )
 ENDIF(APPLE)
 
-add_library(frx_core ${FRX_SOURCES} ${VSTSDKSOURCE})
+add_library(frx_core ${FRX_SOURCES} ${VSTSDKSOURCE} ${VST3SDKSOURCE})
 add_subdirectory(PluginApps)
 add_subdirectory(mobile)
 
