@@ -593,7 +593,7 @@ void VST3PluginImpl::processPlugin( oldPr::Frames::T ** inData,
     if (midiEv) {
         midiEv->set(sambag::dsp::IMidiEvents::Ptr());
     }
-    updateParameterChages(outParameterChanges);
+    //updateParameterChages(outParameterChanges); // crash in podolski here
     inParameterChanges->clear();
     outParameterChanges->clear();
 }
