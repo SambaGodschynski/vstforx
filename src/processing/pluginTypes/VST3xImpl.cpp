@@ -15,7 +15,7 @@
 #include "sambag/disco/components/windowImpl/CocoaWindowImpl.hpp"
 #include "public.sdk/source/common/memorystream.h"
 #include "com/Serialization.h"
-
+#include "sambag/disco/components/WindowToolkit.hpp"
 
 namespace Steinberg {
 	DEF_CLASS_IID (IPluginBase)
@@ -433,6 +433,9 @@ namespace {
 void VST3PluginImpl::openEditor(sambag::disco::components::WindowPtr win) {
     namespace sd = sambag::disco;
     namespace sce = sambag::com::events;
+	if (!editor) {
+		return;
+	}
     Steinberg::ViewRect size;
     editor->getSize(&size);
     win->setWindowSize(sd::Dimension(size.getWidth(), size.getHeight()));
@@ -440,6 +443,7 @@ void VST3PluginImpl::openEditor(sambag::disco::components::WindowPtr win) {
     Steinberg::FIDString type = NULL;
     boost::tie(hnd, type) = getSytemHandle(win, editor);
     FRX_WARN_ON_FAILURE(editor->attached(hnd, type));
+	viewWindowMap[editor] = win;
     // add event(s)
     evBoundsConnection = win->sce::EventSender<sce::PropertyChanged>::addEventListener(
         boost::bind(&VST3PluginImpl::onEditorBoundsChanged, this, _2)
@@ -447,7 +451,11 @@ void VST3PluginImpl::openEditor(sambag::disco::components::WindowPtr win) {
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::closeEditor(sambag::disco::components::WindowPtr win) {
+	if (!editor) {
+		return;
+	}
     editor->removed();
+	viewWindowMap.erase(editor);
     if (evBoundsConnection.connected()) {
         evBoundsConnection.disconnect();
     }
@@ -634,12 +642,12 @@ void VST3PluginImpl::unloadPlugin() {
 
 	if (component)
 	{
-		controllerIsComponent = FUnknownPtr<IEditController> (component).getInterface () != 0;
+		// controllerIsComponent = FUnknownPtr<IEditController> (component).getInterface () != 0;
 		component->terminate ();
         component.reset();
 	}
 
-	if (controller && controllerIsComponent == false) {
+	if (controller) {
 		controller->terminate ();
         controller.reset();
     }
@@ -729,6 +737,9 @@ void VST3PluginImpl::tryCreateEditor() {
     if (editor == NULL) {
         controller->queryInterface (IPlugView::iid, (void**) &editor);
     }
+	if (editor) {
+		editor->setFrame(this);
+	}
 }
 //-----------------------------------------------------------------------------
 int VST3PluginImpl::getParameterIndex(Steinberg::Vst::ParamID id) const
@@ -813,6 +824,34 @@ Steinberg::tresult VST3PluginImpl::endEdit (Steinberg::Vst::ParamID id)
 Steinberg::tresult VST3PluginImpl::restartComponent (Steinberg::int32 flags)
 {
     return Steinberg::kResultTrue;
+}
+//-----------------------------------------------------------------------------
+
+namespace {
+	void OnResize(sambag::disco::components::WindowWPtr _win, int w, int h) 
+	{
+		using namespace sambag::disco;
+		components::WindowPtr win = _win.lock();
+		if (!win) {
+			return;
+		}
+		win->setWindowSize(Dimension(w, h));
+	}
+}
+
+Steinberg::tresult PLUGIN_API 
+VST3PluginImpl::resizeView (Steinberg::IPlugView* view, Steinberg::ViewRect* newSize)
+{
+	
+	ViewWindowMap::const_iterator it = viewWindowMap.find(view);
+	if (it==viewWindowMap.end()) {
+		return Steinberg::kResultTrue; 
+	}
+	sambag::disco::components::getWindowToolkit()->invokeLater(
+		boost::bind(&OnResize, it->second, newSize->getWidth(), newSize->getHeight())
+	);
+	
+	return Steinberg::kResultTrue;
 }
 }} // namespace
 

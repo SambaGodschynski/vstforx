@@ -23,6 +23,24 @@ namespace frx {
 }
 
 namespace {
+std::string GetLastErrorAsString()
+{
+    //Get the error message, if any.
+    DWORD errorMessageID = ::GetLastError();
+    if(errorMessageID == 0)
+        return "No error message has been recorded";
+
+    LPSTR messageBuffer = NULL;
+    size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                                 NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+
+    std::string message(messageBuffer, size);
+
+    //Free the buffer.
+    LocalFree(messageBuffer);
+
+    return message;
+}
 //------------------------------------------------------------------------------------------------------------
 void unloadModule ();
 //------------------------------------------------------------------------------------------------------------
@@ -62,12 +80,11 @@ void unloadModule (  processing::OS_VSTPlugNode3x::Module module ) {
 	if (exitProc) {
 		exitProc ();
 	}
-	
-	::FreeLibrary ((HMODULE)module);
-
-	
+		
 	if ( !FreeLibrary ( module ) ) {
-		throw com::ppiError::DllError ("dll unload failed.", __FILE__, __LINE__ );
+		std::stringstream ss;
+		ss << "dll unload failed:" << GetLastErrorAsString();
+		throw com::ppiError::DllError (ss.str(), __FILE__, __LINE__ );
 	}
 	
 }
