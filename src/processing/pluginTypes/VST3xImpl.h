@@ -98,10 +98,11 @@ private:
  * @class: VST3PluginImpl.
  * Represaentriert ein VST-Plugin.
  */
-class VST3PluginImpl: 
+class VST3PluginImpl :
 	public oldPr::OS_VSTPlugNode3x, // Plattformspezifische impl.
 	public APluginImpl,
-    public Steinberg::Vst::IComponentHandler,
+	public Steinberg::Vst::IComponentHandler,
+	public Steinberg::IPlugFrame,
 	public com::Serializable
 {
 //=============================================================================
@@ -171,6 +172,8 @@ private:
     sambag::dsp::Vst3MidiAdapter::Ptr midiEv;
     void updateParameterDisplay(int index);
     void updateParameterChages(VST3ParameterChanges*);
+	typedef boost::unordered_map < Steinberg::IPlugView*, sambag::disco::components::WindowWPtr > ViewWindowMap;
+	ViewWindowMap viewWindowMap;
 public:
     //-------------------------------------------------------------------------
     std::string getPluginName() const;
@@ -263,6 +266,9 @@ public:
         Steinberg::Vst::ParamValue valueNormalized);
     virtual Steinberg::tresult PLUGIN_API endEdit (Steinberg::Vst::ParamID id);
     virtual Steinberg::tresult PLUGIN_API restartComponent (Steinberg::int32 flags);
+	//////////////////////////////////////////////////////////////////////////////
+	// IPlugFrame
+	virtual Steinberg::tresult PLUGIN_API resizeView (Steinberg::IPlugView* view, Steinberg::ViewRect* newSize);
 }; // class VST3PluginImpl
 }} // namespace processing
 
