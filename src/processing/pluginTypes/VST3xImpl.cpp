@@ -204,6 +204,7 @@ void VST3PluginImpl::valueChanged(void *src, const float &value) {
 	oldPrPr::Parameter::Ptr param = parameters->at(index);
     Steinberg::Vst::ParameterInfo pInf;
     controller->getParameterInfo(index, pInf);
+    controller->setParamNormalized(pInf.id, param->getValue());
     Steinberg::int32 dummyIndex;
     inParameterChanges->addParameterData (pInf.id, dummyIndex)->addPoint (0, value, dummyIndex);
     updateParameterDisplay(index);
@@ -213,7 +214,6 @@ void VST3PluginImpl::updateParameterDisplay(int index) {
     oldPrPr::Parameter::Ptr param = parameters->at(index);
     Steinberg::Vst::ParameterInfo pInf;
     controller->getParameterInfo(index, pInf);
-    controller->setParamNormalized(pInf.id, param->getValue());
     Steinberg::Vst::String128 displ = {0};
     controller->getParamStringByValue(pInf.id, param->getValue(), &displ[0]);
     param->setDisplay(tostdstring(displ));
@@ -365,7 +365,6 @@ void VST3PluginImpl::openPlugin() {
     initBusArrangements();
     baseConfigChanged();
     initParameters();
-    tryCreateEditor();
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::closePlugin() {
@@ -386,10 +385,7 @@ size_t VST3PluginImpl::getNumOutputChannels() const {
 * @return true, wenn Plugin ueber Editor verfuegt.
 */
 bool VST3PluginImpl::hasEditor() const {
-    if (editor!=NULL) {
-        return true;
-    }
-    return false;
+    return true;
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::onEditorBoundsChanged(const sambag::com::events::PropertyChanged &ev)
@@ -433,6 +429,10 @@ namespace {
 void VST3PluginImpl::openEditor(sambag::disco::components::WindowPtr win) {
     namespace sd = sambag::disco;
     namespace sce = sambag::com::events;
+    if (editor) {
+		return;
+	}
+    tryCreateEditor();
 	if (!editor) {
 		return;
 	}
@@ -459,6 +459,8 @@ void VST3PluginImpl::closeEditor(sambag::disco::components::WindowPtr win) {
     if (evBoundsConnection.connected()) {
         evBoundsConnection.disconnect();
     }
+    editor->release();
+    editor = NULL;
 }
 //-----------------------------------------------------------------------------
 void VST3PluginImpl::onEditorIdle() {
@@ -593,7 +595,7 @@ void VST3PluginImpl::processPlugin( oldPr::Frames::T ** inData,
     if (midiEv) {
         midiEv->set(sambag::dsp::IMidiEvents::Ptr());
     }
-    //updateParameterChages(outParameterChanges); // crash in podolski here
+    updateParameterChages(outParameterChanges);
     inParameterChanges->clear();
     outParameterChanges->clear();
 }
@@ -638,11 +640,9 @@ void VST3PluginImpl::updateParameterChages(VST3ParameterChanges* changes) {
 void VST3PluginImpl::unloadPlugin() {
     using namespace Steinberg;
     using namespace Vst;
-	bool controllerIsComponent = false;
 
 	if (component)
 	{
-		// controllerIsComponent = FUnknownPtr<IEditController> (component).getInterface () != 0;
 		component->terminate ();
         component.reset();
 	}
