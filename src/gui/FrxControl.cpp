@@ -938,7 +938,7 @@ void _initExtraMap()
 	using namespace boost::assign;
 	extraMap = map_list_of
 		(Loki::TypeInfo(typeid(FrxPeakTrackerNode)), &addOutParameter)
-		(Loki::TypeInfo(typeid(FrxADSRNode)), &addOutParameter)
+		(Loki::TypeInfo(typeid(FrxADSRNode)), &addOutParameter).to_container(extraMap);
 	;
     // these inserts does not work with boost::assign
     extraMap.insert(std::make_pair( Loki::TypeInfo(typeid(FrxVolumeNode)), boost::bind( &addParameters, _1, _2, _3, 0)));
@@ -1258,6 +1258,8 @@ void FrxControl::openClosePluginEditor(fgc::FrxCircuidViewPtr view,
 	pluginCtrl->setPlugin(plugin);
 	ed->setControl(pluginCtrl);
 	ed->positionWindow();
+    plugin->beforeOpenEditor(ed); // give the impl a chance to
+                                  // adjust the window before it will open
     ed->open();
 }
 //-----------------------------------------------------------------------------

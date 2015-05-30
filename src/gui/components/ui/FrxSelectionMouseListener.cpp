@@ -27,7 +27,7 @@ void FrxSelectionMouseListener::translateSelection(FrxSelectionPtr sel,
 {
 	namespace geom = boost::geometry;
 	namespace trans = geom::strategy::transform;
-	typedef trans::translate_transformer<sd::Point2D, sd::Point2D> Transl;
+	typedef trans::translate_transformer<double, 2, 2> Transl;
 	Transl transl(distance.x(), distance.y());
 	BOOST_FOREACH(sdc::AComponent::WPtr _sc, sel->getContent()) {
 		sdc::AComponent::Ptr sc = _sc.lock();

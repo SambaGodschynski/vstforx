@@ -46,7 +46,7 @@ void TooltipTexts::initMap() {
 	(_typeInfo<FrxInSwitchNode>(), "InSwitch")
 	(_typeInfo<FrxOutSwitchNode>(), "OutSwitch")
 	(_typeInfo<FrxADSRNode>(), "ADSRNode")
-	(_typeInfo<FrxPeakTrackerNode>(), "PeakTracker");
+	(_typeInfo<FrxPeakTrackerNode>(), "PeakTracker").to_container(typeMap);
 }
 //-----------------------------------------------------------------------------
 const std::string & TooltipTexts::_getTooltipText(const Loki::TypeInfo &typeinfo) 

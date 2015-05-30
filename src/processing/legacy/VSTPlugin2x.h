@@ -224,7 +224,7 @@ public:
 	 * Verarbeitet Midi-Events (@see VST-SDK VstEvents)
 	 * @param events
 	 */
-	virtual void processMidiEvents( sambag::dsp::IMidiEvents * events );
+	virtual void processMidiEvents( sambag::dsp::IMidiEvents::Ptr events );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Signal-Verabeitungs-Verzoegerung des uebergeordneten ProcessAdapter
@@ -275,6 +275,8 @@ public:
 		turnOff();
 		turnOn();
 	}
+    //--------------------------------------------------------------------------------------------------------
+    virtual void beforeOpenEditor(sambag::disco::components::WindowPtr win);
 	//--------------------------------------------------------------------------------------------------------
 	virtual void openEditor(sambag::disco::components::WindowPtr win);
 	//--------------------------------------------------------------------------------------------------------

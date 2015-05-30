@@ -9,7 +9,7 @@
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <sambag/disco/svg/HtmlColors.hpp>
 #include <sambag/disco/svg/StyleParser.hpp>
-#include <sambag/disco/svg/graphicElements/Style.hpp>
+#include <sambag/disco/svg/Style.hpp>
 #include <sambag/disco/components/ColumnBrowser.hpp>
 #include <sambag/disco/components/List.hpp>
 #include <sambag/disco/components/ColumnView.hpp>
@@ -211,7 +211,7 @@ void FrxLookAndFeel::loadStyle(const std::string &svgId,
         m.putProperty(frxId, createStyle(fallback));
         return;
     }
-    sdsg::Style s = g->calculateStyle(x);
+    sds::Style s = g->calculateStyle(x);
     m.putProperty(frxId, s);
 }
 //-----------------------------------------------------------------------------

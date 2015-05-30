@@ -7,7 +7,7 @@
 
 #include "FrxMenuLabel.hpp"
 #include <sambag/disco/components/ui/UIManager.hpp>
-#include <sambag/disco/svg/graphicElements/Style.hpp>
+#include <sambag/disco/svg/Style.hpp>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -20,7 +20,7 @@ FrxMenuLabel::FrxMenuLabel() {
 //-----------------------------------------------------------------------------
 void FrxMenuLabel::postConstructor() {
     setOpaque(false);
-    sdsg::Style menuLabelStyle = sdsg::Style::DEFAULT_STYLE;
+    sds::Style menuLabelStyle = sds::Style::DEFAULT_STYLE;
 	sdcu::getUIManager().getProperty("FrxComponent.menu.label.style", menuLabelStyle);
     setForeground( menuLabelStyle.strokePattern() );
 	setBackground( menuLabelStyle.fillPattern() );

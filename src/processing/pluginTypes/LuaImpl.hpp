@@ -21,6 +21,7 @@
 #include <processing/parameter/parameter.h>
 #include <loki/Typelist.h>
 #include <sambag/com/Thread.hpp>
+#include <scripts/LuaUserData.hpp>
 #include <map>
 #include <list>
 
@@ -52,7 +53,7 @@ public:
     //-------------------------------------------------------------------------
     typedef boost::weak_ptr<LuaImpl> WPtr;
     //-------------------------------------------------------------------------
-    typedef std::multimap<std::string, std::string> PersistUserData;
+    typedef frx::scripts::LuaUserData PersistUserData;
     //-------------------------------------------------------------------------
     struct LuaCall { // frxlLua
         LUA_CALL(lcProcess);
@@ -329,7 +330,7 @@ public:
 	 */
 	virtual bool canHandleMidiEvent() const;
 	//-------------------------------------------------------------------------
-	virtual void processMidiEvents( sambag::dsp::IMidiEvents * events );
+	virtual void processMidiEvents( sambag::dsp::IMidiEvents::Ptr events );
 	//-------------------------------------------------------------------------
 	virtual size_t getInitialDelay() const;
     //-------------------------------------------------------------------------

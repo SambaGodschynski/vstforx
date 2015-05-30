@@ -152,7 +152,7 @@ public:
     }
     //-------------------------------------------------------------------------
     void setZero() {
-        setZeroImpl(__buffer_);
+        this->setZeroImpl(__buffer_);
     }
 
 };
@@ -162,7 +162,7 @@ template < typename T, int I, int J>
 void DefaultMemoryPolicy<T, I, J>::allocate(std::size_t blockSize)
 {
     Allocator allocator;
-    allocateImpl(allocator, __buffer_, blockSize);
+    this->allocateImpl(allocator, __buffer_, blockSize);
     Super::setBlockSize(blockSize);
     setZero();
 }
@@ -171,7 +171,7 @@ template < typename T, int I, int J >
 void DefaultMemoryPolicy<T, I, J>::deallocate()
 {
     Allocator allocator;
-    deallocateImpl(allocator, __buffer_, Super::getSize());
+    this->deallocateImpl(allocator, __buffer_, Super::getSize());
     Super::setBlockSize(0);
 }
 
@@ -360,7 +360,7 @@ AsyncBuffer<T, I, J, A>::readBlock(U **out, UInteger &blocksRead) const
     for (UInteger i=0; i<getNumChannels(); ++i) {
         T *ptr = (*this)[i];
         ptr+=toSamplePos(toBufferBlocks(blocksRead));
-        copy(ptr, out[i], getBlockSize());
+        this->copy(ptr, out[i], getBlockSize());
     }
     ++blocksRead;
     return 0;

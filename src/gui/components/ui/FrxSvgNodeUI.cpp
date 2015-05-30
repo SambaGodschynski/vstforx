@@ -42,7 +42,7 @@ void FrxSvgNodeUI::setCoronaAlpha(double alpha) {
     if (!component) {
         return;
     }
-    sdsg::Style style = component->getStyle();
+    sds::Style style = component->getStyle();
     style.fillOpacity(alpha);
     style.strokeOpacity(alpha);
     component->setStyle(style);
@@ -72,7 +72,7 @@ void FrxSvgNodeUI::installDefaults(sdc::AComponent::Ptr c) {
 	Super::installDefaults(c);
     // set corona alpha
     sdc::SvgComponent::Dummy::Ptr corona = getCorona();
-    sdsg::Style style = corona->getStyle();
+    sds::Style style = corona->getStyle();
     alphaEndValue = style.fillOpacity();
     corona->setStyle(style.fillOpacity(0.0));
     corona->setStyle(style.strokeOpacity(0.0));
@@ -87,7 +87,7 @@ void FrxSvgNodeUI::installDefaults(sdc::AComponent::Ptr c) {
 	line->getP0().y().setType(sd::svg::units::Unit::PX);
 	line->getP1().x().setType(sd::svg::units::Unit::PX);
 	line->getP1().y().setType(sd::svg::units::Unit::PX);
-	sdsg::Style lstyle;
+	sds::Style lstyle;
     uim.getProperty("FrxCircuidView.connector", lstyle);
     toConnect->setStyle(lstyle);
     
@@ -115,7 +115,7 @@ namespace {
 void FrxSvgNodeUI::drag(const sdc::events::MouseEvent &ev) {
 	namespace geom = boost::geometry;
 	namespace trans = geom::strategy::transform;
-	typedef trans::translate_transformer<sd::Point2D, sd::Point2D> Transl;
+	typedef trans::translate_transformer<double, 2, 2> Transl;
 	sdc::AComponent::Ptr c = ev.getSource();
 	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);

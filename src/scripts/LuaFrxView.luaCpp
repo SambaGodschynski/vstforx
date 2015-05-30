@@ -197,6 +197,22 @@ class LuaFrxViewBase extends sambag.lua.ALuaObject {
      * @version 1.0.53
      */
      void clearSelection();
+     /**
+      * @brief shows a popup menu on location x,y
+      * @hiddenParam int x
+      * @hiddenParam int y    
+      * @hiddenParam Table menu
+      * @param the menus x location
+      * @param the menus y location
+      * @param the menu entry table (@see setMenu)
+      * @version 1.0.55
+      */
+      void showMenu();
+     /**
+      *  @brief closes the menu previously opened with @see showMenu()
+      *  @version 1.0.55
+      */
+      void closeMenu();
 }
 
 

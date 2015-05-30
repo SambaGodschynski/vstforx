@@ -49,6 +49,7 @@ void InputStep::init(){
 			parameterMap.push_back ( cStep->Switch::getCurveTypeParameterOUT(i) );
 		}
 	}
+    parameterMap.push_back(cStep->getStepIndicator());
 }
 //------------------------------------------------------------------------------------------------------------
 ProcessorNode::Ptr InputStep::addInputNode(){

@@ -19,7 +19,7 @@
 #include <processing/IPlugin.hpp>
 
 namespace frx { namespace processing {
-    class APluginImpl;
+    struct APluginImpl;
     typedef boost::shared_ptr<APluginImpl> APluginImplPtr;
 }}
 
@@ -182,13 +182,13 @@ public:
 	/**
 	 * @return Plugin-Uid.
 	 */
-	virtual int getUid() const { return pluginInfo.uid; }
+	virtual std::string getUid() const { return pluginInfo.uid; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * setzt Plugin-Uid
 	 * @param uid
 	 */
-	virtual void setUid ( int uid ) { pluginInfo.uid = uid; }
+	virtual void setUid ( std::string uid ) { pluginInfo.uid = uid; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Plugin-Typ (@see PluginInfo::PluginType)
@@ -227,7 +227,7 @@ public:
 	 * Verarbeitet Midi-Events (@see VST-SDK VstEvents)
 	 * @param events
 	 */
-	virtual void processMidiEvents( sambag::dsp::IMidiEvents * events ) = 0;
+	virtual void processMidiEvents( sambag::dsp::IMidiEvents::Ptr events ) = 0;
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Plugin();
 	//--------------------------------------------------------------------------------------------------------

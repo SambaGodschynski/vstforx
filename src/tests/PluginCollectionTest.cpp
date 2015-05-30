@@ -5,31 +5,10 @@
  * ===========================================================================================================
  */
 
-#include <cppunit/config/SourcePrefix.h>
-#include "PluginCollectionTest.hpp"
-#include "com/MyString.h"
-#include "processing/processing.h"
-#include "processing/ConcreteProcessAdapter.h"
-#include "com/one4All.h"
-#include <iostream>
-#include <boost/assign/list_of.hpp>
+
 #include <map>
-#include <processing/dspTools.h>
-#include "com/PluginCollectionSQL.h"
+#include <string>
 #include <iostream>
-#include <boost/assign.hpp>
-#include <boost/foreach.hpp>
-
-#if WIN32
-#define VSTPLUG_EXT ".dll"
-#else
-#define VSTPLUG_EXT ".vst"
-#endif
-
-#define FAST_SCAN_TIME 15.0 //seconds
-
-// Registers the fixture into the 'registry'
-CPPUNIT_TEST_SUITE_REGISTRATION( tests::PluginCollectionTest );
 
 //              folder       subfolder
 typedef std::multimap< std::string, std::string > ExcpectedFolderMap;
@@ -49,6 +28,32 @@ static std::ostream & operator<<(std::ostream &os, const ExcpectedFolderMap& m)
     os<<"}";
     return os;
 }
+
+
+#include <cppunit/config/SourcePrefix.h>
+#include "PluginCollectionTest.hpp"
+#include "com/MyString.h"
+#include "processing/processing.h"
+#include "processing/ConcreteProcessAdapter.h"
+#include "com/one4All.h"
+#include <boost/assign/list_of.hpp>
+#include <processing/dspTools.h>
+#include "com/PluginCollectionSQL.h"
+#include <iostream>
+#include <boost/assign.hpp>
+#include <boost/foreach.hpp>
+
+#if WIN32
+#define VSTPLUG_EXT ".dll"
+#else
+#define VSTPLUG_EXT ".vst"
+#endif
+
+#define FAST_SCAN_TIME 15.0 //seconds
+
+// Registers the fixture into the 'registry'
+CPPUNIT_TEST_SUITE_REGISTRATION( tests::PluginCollectionTest );
+
 
 namespace tests {
 //=============================================================================
@@ -201,7 +206,7 @@ void PluginCollectionTest::testScan() {
 				      ( "testVstFolder", "B" )
 					  ( "testVstFolder", "C'" )
 					 // ( "B", "B1" ) <= empty
-					  ( "B", "B2" );
+					  ( "B", "B2" ).to_container(exp);
 					// ( "B", "B3" ); <= no plug files
 
 	CPPUNIT_ASSERT ( !exp.empty() );
@@ -249,7 +254,7 @@ void PluginCollectionTest::testFastScan() {
 					  ( "testVstFolder", "C'" )
 					  // ( "B", "B1" ) <= empty
 					  ( "B", "B2" )
-					  ( "B", "B3" ); // <= no plug files but not checked
+					  ( "B", "B3" ).to_container(exp); // <= no plug files but not checked
 
 	CPPUNIT_ASSERT ( !exp.empty() );
 	checkTree( pC, exp );

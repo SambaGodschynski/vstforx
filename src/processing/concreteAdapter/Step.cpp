@@ -28,6 +28,8 @@ currTranslator(tr), Switch (initSteps, sampleRate ),  steps(initSteps), nDuratio
 		p->addValueChangedListener (f);
 		p->setValue(0.35f);
 	}
+    stepIndicator = Parameter::create();
+    stepIndicator->setName("current step");
 	resetDuration();
 }
 //------------------------------------------------------------------------------------------------------------
@@ -65,5 +67,22 @@ void Step::resetDuration() {
 void Step::durationParameterChanged ( void *src, const float &v ){
 	Parameter *p = (Parameter*) src;
 	p->setDisplay ( currTranslator->translateAsString(v) );
+}
+//------------------------------------------------------------------------------------------------------------
+void Step::stateChanged(State old, State _new) {
+    if (stateChangedDelegate) {
+        stateChangedDelegate(old, _new);
+    }
+    // update step indicator
+    stepIndicator->setValue(_new/(float)(getNumStates()-1));
+    stepIndicator->setDisplay("step " + com::MyString(_new+1));
+}
+//------------------------------------------------------------------------------------------------------------
+parameter::Parameter::Ptr Step::getParameter ( size_t index ) {
+    return nDuration.at(index);
+}
+//------------------------------------------------------------------------------------------------------------
+parameter::Parameter::Ptr Step::getStepIndicator () const {
+    return stepIndicator;
 }
 }// namespace processing

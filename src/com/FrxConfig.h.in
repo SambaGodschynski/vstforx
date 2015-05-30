@@ -28,6 +28,6 @@
 // the boost archive version. Set as HostInfoAdapter 
 // BOOST_CLASS_VERSION in VstForxPlug.cpp, because
 // this is the first object which will be loaded.
-#define FRX_ARCHIVE_VERSION 2
+#define FRX_ARCHIVE_VERSION 3
 
 #endif // FRX_CONFIG_H

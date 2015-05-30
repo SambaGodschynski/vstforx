@@ -90,7 +90,7 @@ public:
 	 */
 	virtual bool canHandleMidiEvent() const;
 	//-------------------------------------------------------------------------
-	virtual void processMidiEvents( sambag::dsp::IMidiEvents * events );
+	virtual void processMidiEvents( sambag::dsp::IMidiEvents::Ptr events );
 	//-------------------------------------------------------------------------
 	virtual size_t getInitialDelay() const;
     //-------------------------------------------------------------------------

@@ -12,7 +12,7 @@
 #include <boost/weak_ptr.hpp>
 #include <sambag/disco/components/ui/AComponentUI.hpp>
 #include "FrxSelectionMouseListener.hpp"
-#include <sambag/disco/svg/graphicElements/Style.hpp>
+#include <sambag/disco/svg/Style.hpp>
 #include <gui/HandyNamespaces.hpp>
 #include <gui/components/IFormatter.hpp>
 #include <sambag/disco/components/events/ActionEvent.hpp>
@@ -41,7 +41,7 @@ protected:
 	// to be found in FrxCircuidMouseListener's constructor:
 	// sd::svg::graphicElements::Style selectingStyle;
 	//-------------------------------------------------------------------------
-	sd::svg::graphicElements::Style selectedStyle;
+	sd::svg::Style selectedStyle;
 	//-------------------------------------------------------------------------
 	WPtr self;
 	//-------------------------------------------------------------------------

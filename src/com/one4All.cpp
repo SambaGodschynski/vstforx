@@ -30,28 +30,24 @@ bool isSubDirectory ( const sambag::com::Location &a,  const sambag::com::Locati
     return false;
 }
 //------------------------------------------------------------------------------------------------------------
-std::pair<std::string, int> extractVSTPluginFilename(const std::string &filename) {
+std::pair<std::string, std::string> extractVSTPluginFilename(const std::string &filename) {
 	using namespace boost::xpressive;
 	mark_tag tFilename(1), tShellid(2);
 	// (.+?)@{0,1}\d+$
-	cregex pat = (tFilename= -+_) >> "@" >> (tShellid= +_d) >> eol;
+	cregex pat = (tFilename= -+_) >> "@" >> (tShellid= +set[range('a','z')|range('A','Z')|range('0','9')|'-']) >> eol;
 	cmatch what;
 	if(regex_search(filename.c_str(), what, pat)) { // matches filename@number
-		std::stringstream ss;
-		int shellId;
-		ss << what[tShellid];
-		ss >> shellId;
 		return std::make_pair(
 			what[tFilename],
-			shellId
+			what[tShellid]
 		);
 	}
 	// no match: return whole string
-	return std::make_pair(filename, 0);
+	return std::make_pair(filename, "");
 }
 //------------------------------------------------------------------------------------------------------------
-std::string createVSTPluginFilename(const std::string &filename, int shellId) {
-	if (shellId == 0)
+std::string createVSTPluginFilename(const std::string &filename, const std::string &shellId) {
+	if (shellId == "")
 		return filename;
 	std::stringstream ss;
 	ss<<filename<<"@"<<shellId;

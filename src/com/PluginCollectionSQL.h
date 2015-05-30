@@ -296,7 +296,8 @@ struct TblPlugins {
 		return string ("CREATE TABLE IF NOT EXISTS plugins ( ") +
 		"id INTEGER PRIMARY KEY AUTOINCREMENT, " +
 		"location TEXT NOT NULL, " +
-		"uid INTEGER NOT NULL, " + 
+        "uid INTEGER NOT NULL, " + // legacy
+		"uidX TEXT, " +
 		"plugin_type INTEGER NOT NULL DEFAULT 0, " + 
 		"is_synth INTEGER NOT NULL DEFAULT 0, " + 
 		"folderID INTEGER UNSIGNED NULL,"
@@ -317,9 +318,17 @@ struct TblPlugins {
 		return "SELECT doNotDelete FROM plugins;";
 	}
 	//--------------------------------------------------------------------------------------------------------
+	static string update (const Loki::Int2Type<2> &) {
+		return "ALTER TABLE plugins ADD COLUMN uidX;";
+	}
+    //--------------------------------------------------------------------------------------------------------
+	static string check_update (const Loki::Int2Type<2> &) {
+		return "SELECT uidX FROM plugins;";
+	}
+	//--------------------------------------------------------------------------------------------------------
 	static string insertPlugin ( const string &location, 
 		                         const string &name,
-								 const Int &uid,
+								 const string &uid,
 								 const Int &isSynth,
 								 const Int &plugType,
 								 const Int &folderID,
@@ -330,8 +339,8 @@ struct TblPlugins {
 	{
 		using namespace sambag::cpsqlite;
 		string q = string("INSERT INTO plugins(location, name, folderID, access, ") + 
-			"timestamp, scanstamp, uid, plugin_type, is_synth)";
-		q += " VALUES (?,?,?,?,?,?,?,?,?);";
+			"timestamp, scanstamp, uidX, plugin_type, is_synth, uid)";
+		q += " VALUES (?,?,?,?,?,?,?,?,?,?);";
 		size_t index = 1;
 		pL.push_back( TextParameter::create( index++, location ) );
 		pL.push_back( TextParameter::create( index++, name ) );
@@ -339,15 +348,16 @@ struct TblPlugins {
 		pL.push_back( IntParameter::create( index++, access ) );
 		pL.push_back( Int64Parameter::create( index++, timestamp ) );
 		pL.push_back( Int64Parameter::create( index++, scanstamp ) );
-		pL.push_back( IntParameter::create( index++, uid ) );
+		pL.push_back( TextParameter::create( index++, uid ) );
 		pL.push_back( IntParameter::create( index++, plugType ) );
 		pL.push_back( IntParameter::create( index++, isSynth ) );
+        pL.push_back( IntParameter::create( index++, 0 ) ); // legacy
 		return q;
 	}
 	//--------------------------------------------------------------------------------------------------------
 	static string updatePlugin ( const string &location, 
 		                         const string &name,
-								 const Int &uid,
+								 const string &uid,
 								 const Int &isSynth,
 								 const Int &plugType,
 								 const time_t &timestamp,
@@ -357,13 +367,13 @@ struct TblPlugins {
 	{
 		using namespace sambag::cpsqlite;
 		string q = string("UPDATE plugins SET name=?, access=?, timestamp=?, ") +
-			      "scanstamp=?, uid=?, plugin_type=?, is_synth=? WHERE location=?";
+			      "scanstamp=?, uidX=?, plugin_type=?, is_synth=? WHERE location=?";
 		size_t index = 1;
 		pL.push_back( TextParameter::create( index++, name ) );
 		pL.push_back( IntParameter::create( index++, access ) );
 		pL.push_back( Int64Parameter::create( index++, timestamp ) );
 		pL.push_back( Int64Parameter::create( index++, scanstamp ) );
-		pL.push_back( IntParameter::create( index++, uid ) );
+		pL.push_back( TextParameter::create( index++, uid ) );
 		pL.push_back( IntParameter::create( index++, plugType ) );
 		pL.push_back( IntParameter::create( index++, isSynth ) );
 		pL.push_back( TextParameter::create( index++, location ) );
@@ -404,11 +414,11 @@ struct TblPlugins {
 		return q;
 	}
 	//--------------------------------------------------------------------------------------------------------
-	static string getPluginsByUid ( const Int &uid, sambag::cpsqlite::ParameterList &out_pL ) 
+	static string getPluginsByUid ( const std::string &uid, sambag::cpsqlite::ParameterList &out_pL )
 	{
 		using namespace sambag::cpsqlite;
-		string q("SELECT * FROM plugins WHERE uid=?;");
-		out_pL.push_back( IntParameter::create( 1, uid ) );
+		string q("SELECT * FROM plugins WHERE uidX=?;");
+		out_pL.push_back( TextParameter::create( 1, uid ) );
 		return q;
 	}
 	//--------------------------------------------------------------------------------------------------------

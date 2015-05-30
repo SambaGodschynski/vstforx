@@ -379,26 +379,7 @@ void FrxSetPersistData::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
         return;
     }
     try {
-        if(!lua_isstring(lua.get(),  -2)) {
-            throw std::runtime_error("arguments mismatch");
-        }
-        std::string key( lua_tostring(lua.get(),  -2) );
-        // first remove old values
-        ctrl->getPersistUserData().erase(key);
-        
-        if(!lua_istable(lua.get(),  -1)) {
-            throw std::runtime_error("arguments mismatch");
-        }
-        int index = -1;
-        lua_pushnil(lua.get()); /* first key */
-        --index;
-        while (lua_next(lua.get(),  index) != 0) {
-            boost::tuple<std::string> value;
-            slua::pop(lua.get(),  value);
-            ctrl->getPersistUserData().insert(std::make_pair(
-                key,
-                boost::get<0>(value)));
-        }
+        ctrl->getPersistUserData().add(lua.get());
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua.get(),  ex.what());
     } catch (...) {
@@ -411,14 +392,14 @@ slua::IgnoreReturn FrxGetPersistData::process(const std::string &key, Ctrl *ctrl
     if(!lua) {
         return slua::IgnoreReturn();
     }
-    Ctrl::PersistUserData::iterator it, end;
-    boost::tie(it, end) = ctrl->getPersistUserData().equal_range(key);
+    std::vector<std::string> data;
+    ctrl->getPersistUserData().get(key, data);
     lua_createtable(lua.get(), 0, 0);
     int tbl = lua_gettop(lua.get());
     int index=0;
-    for(; it!=end; ++it) {
+    BOOST_FOREACH(const std::string &x, data) {
         lua_pushinteger(lua.get(), ++index);
-        lua_pushstring(lua.get(), it->second.c_str());
+        lua_pushstring(lua.get(), x.c_str());
         lua_settable(lua.get(), tbl);
     }
     return slua::IgnoreReturn();

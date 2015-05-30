@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <scripts/PluginScriptCtrl.hpp>
 #include "LuaImpl.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
@@ -14,7 +15,6 @@
 #include <com/MyString.h>
 #include <processing/FrxAsyncDSPTimer.hpp>
 #include <gui/HandyNamespaces.hpp>
-#include <scripts/PluginScriptCtrl.hpp>
 #include <scripts/LuaParameter.hpp>
 #include <sambag/dsp/DefaultMidiEvents.hpp>
 #include <processing/IMidiEventProcessor.h>
@@ -99,7 +99,7 @@ std::string LuaImpl::extractFilenameAndArgs(const std::string &str, Args &out)
     // see: http://www.boost.org/doc/libs/1_55_0/doc/html/xpressive/user_s_guide.htm Semantic Action
     using namespace boost::xpressive;
     sregex pair = ( (s1= +alnum) >> "=" >> (s2= +~_s ) )
-        [ ref(out)[s1] = as<std::string>(s2) ];
+        [ boost::xpressive::ref(out)[s1] = as<std::string>(s2) ];
 
     sregex rx = pair >> *(+_s >> pair);
 
@@ -602,7 +602,7 @@ void LuaImpl::setParameterDisplay(lua_State *lua, const std::string &name,
     }
 }
 //-----------------------------------------------------------------------------
-void LuaImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
+void LuaImpl::processMidiEvents( sambag::dsp::IMidiEvents::Ptr events ) {
 	using namespace sambag::lua;
     using namespace sambag::dsp;
 	if (!getFlag(IsValid)) {
@@ -624,7 +624,7 @@ void LuaImpl::processMidiEvents( sambag::dsp::IMidiEvents * events ) {
 	for (size_t i = 0; i<(size_t)events->getNumEvents(); ++i) {
         IMidiEvents::MidiEvent ev = events->getMidiEvent(i);
 		push(lua, i+1); // index
-		//insert map: {'deltaFrames'=0, 'size'=0, 'data'={} }
+		//insert map: {'deltaFrames'=0, 'data'={} }
 		{
 			lua_newtable(lua);
 			int top = lua_gettop(lua);
@@ -656,7 +656,7 @@ namespace {
     std::pair<
         sambag::dsp::DefaultMidiEvents::DataPtr,
         size_t>
-    __addMidiData(lua_State *lua, sambag::dsp::DefaultMidiEvents &midiEvents)
+    __addMidiData(lua_State *lua, sambag::dsp::DefaultMidiEvents::Ptr midiEvents)
     {
         using sambag::dsp::DefaultMidiEvents;
         if(!lua_istable(lua, -1)) {
@@ -677,11 +677,11 @@ namespace {
             data[i++] = lua_tointeger(lua, -1);
             lua_pop(lua, 1);
         }
-        midiEvents.dataContainer.push_back(data);
+        midiEvents->dataContainer.push_back(data);
         return std::make_pair(data.get(), size);
 
     }
-    void __addMidiEvent(lua_State *lua, sambag::dsp::DefaultMidiEvents &midiEvents)
+    void __addMidiEvent(lua_State *lua, sambag::dsp::DefaultMidiEvents::Ptr midiEvents)
     {
         if(!lua_istable(lua, -1)) {
             throw std::runtime_error("invalid midi event");
@@ -707,7 +707,7 @@ namespace {
             }
             lua_pop(lua, 1);
         }
-        midiEvents.events.push_back(
+        midiEvents->events.push_back(
             sambag::dsp::IMidiEvents::MidiEvent(size, delta, data)
         );
     }
@@ -722,15 +722,16 @@ void LuaImpl::sendMidi(lua_State *lua) {
         if (size==0) {
             return;
         }
-        sambag::dsp::DefaultMidiEvents midiEvents;
-        midiEvents.reserve(size);
+        sambag::dsp::DefaultMidiEvents::Ptr midiEvents =
+            sambag::dsp::DefaultMidiEvents::create();
+        midiEvents->reserve(size);
         lua_pushnil(lua); /* first key */
         while (lua_next(lua, -2) != 0) {
             __addMidiEvent(lua, midiEvents);
             lua_pop(lua, 1);
         }
         using ::processing::IMidiEventProcessor;
-        IMidiEventProcessor::EventSender::notifyListeners(this, &midiEvents);
+        IMidiEventProcessor::EventSender::notifyListeners(this, midiEvents);
     } catch (const std::exception &ex) {
         sambag::lua::pushLuaError(lua, ex.what());
     } catch (...) {
@@ -824,26 +825,7 @@ void LuaImpl::setChannel(lua_State *lua) {
 void LuaImpl::setPersistUserData(lua_State *lua) {
     namespace slua=sambag::lua;
     try {
-        if(!lua_isstring(luaState.get(),  -2)) {
-            throw std::runtime_error("arguments mismatch");
-        }
-        std::string key( lua_tostring(luaState.get(),  -2) );
-        // first remove old values
-        persistUserData.erase(key);
-        
-        if(!lua_istable(luaState.get(),  -1)) {
-            throw std::runtime_error("arguments mismatch");
-        }
-        int index = -1;
-        lua_pushnil(luaState.get()); /* first key */
-        --index;
-        while (lua_next(luaState.get(),  index) != 0) {
-            boost::tuple<std::string> value;
-            slua::pop(luaState.get(),  value);
-            persistUserData.insert(std::make_pair(
-                key,
-                boost::get<0>(value)));
-        }
+        persistUserData.add(lua);
     } catch(const std::exception &ex) {
         slua::pushLuaError(luaState.get(),  ex.what());
     } catch (...) {
@@ -855,14 +837,14 @@ sambag::lua::IgnoreReturn LuaImpl::getPersistUserData(lua_State *lua,
     const std::string &key)
 {
     namespace slua=sambag::lua;
-    PersistUserData::iterator it, end;
-    boost::tie(it, end) = persistUserData.equal_range(key);
-    lua_createtable(luaState.get(), 0, 0);
+    std::vector<std::string> data;
+    persistUserData.get(key, data);
+    lua_createtable(luaState.get(), data.size(), 0);
     int tbl = lua_gettop(luaState.get());
     int index=0;
-    for(; it!=end; ++it) {
+    BOOST_FOREACH(const std::string &x, data) {
         lua_pushinteger(luaState.get(), ++index);
-        lua_pushstring(luaState.get(), it->second.c_str());
+        lua_pushstring(luaState.get(), x.c_str());
         lua_settable(luaState.get(), tbl);
     }
     return slua::IgnoreReturn();
@@ -920,8 +902,25 @@ void LuaImpl::setStateData(size_t size, void* data) {
     SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
     std::stringstream ss;
     ss.write((const char*)data, size);
-    com::iArchive ar(ss);
-    ar>>persistUserData;
+    
+    try {
+        com::iArchive ar(ss);
+        ar>>persistUserData;
+    } catch(...) {
+        try {
+            // legacy approach:
+            std::stringstream ss; // (we need a new stream!)
+            ss.write((const char*)data, size);
+            com::iArchive ar(ss);
+            std::multimap<std::string, std::string> legacy;
+            ar>>legacy;
+            persistUserData.clear();
+            persistUserData.migrate(legacy);
+        } catch(...) {
+            SAMBAG_LOG_ERR<<"LuaImpl::setStateData FAILED";
+        }
+    }
+    
     
     // call lua
     IF_LC_MISSING(lcOnLoad) {

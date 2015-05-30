@@ -46,8 +46,7 @@ private:
     //-------------------------------------------------------------------------
     mutable sambag::com::ArithmeticWrapper<size_t> _processDelay;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<sambag::dsp::VstMidiEventAdapter> VstMidiEventAdapterPtr;
-	VstMidiEventAdapterPtr tmpMidiData;
+	sambag::dsp::VstMidiEventAdapter::Ptr tmpMidiData;
 	//-------------------------------------------------------------------------
 	/**
 	 * plugin calls ioChanged.
@@ -177,7 +176,7 @@ public:
 	 * Verarbeitet Midi-Events (@see VST-SDK VstEvents)
 	 * @param events
 	 */
-	virtual void processMidiEvents( sambag::dsp::IMidiEvents * events );
+	virtual void processMidiEvents( sambag::dsp::IMidiEvents::Ptr events );
 	//-------------------------------------------------------------------------
 	/**
 	 * @return Signal-Verabeitungs-Verzoegerung des uebergeordneten ProcessAdapter
@@ -214,6 +213,8 @@ public:
 		turnOff();
 		turnOn();
 	}
+    //-------------------------------------------------------------------------
+    virtual void beforeOpenEditor(sambag::disco::components::WindowPtr win);
 	//-------------------------------------------------------------------------
 	virtual void openEditor(sambag::disco::components::WindowPtr);
 	//-------------------------------------------------------------------------

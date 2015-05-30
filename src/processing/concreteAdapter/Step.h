@@ -44,6 +44,9 @@ private:
 		ar & steps;
 		ar & duration;
 		ar & nDuration;
+        if (version>0) {
+            ar & stepIndicator;
+        }
 		//:::::::::::::::IF_LOADING::::::::::::::::::::::::::::::::
 		if ( !Archive::is_loading::value ) return;
 		Parameter::ParameterListenerFunction f = boost::bind( 
@@ -72,6 +75,8 @@ private:
 	 * StepDauer-Parameter pro StepState
 	 */
 	std::vector<Parameter::Ptr> nDuration;
+    //--------------------------------------------------------------------------------------------------------
+    Parameter::Ptr stepIndicator;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * StepDauer-Parameter geandert
@@ -84,11 +89,7 @@ public:
 	typedef boost::function<void(State, State)> StateChangedDelegate;
 	StateChangedDelegate stateChangedDelegate;
 	//--------------------------------------------------------------------------------------------------------
-	virtual void stateChanged(State old, State _new) {
-		if (stateChangedDelegate) {
-			stateChangedDelegate(old, _new);
-		}
-	}
+	virtual void stateChanged(State old, State _new);
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * holt Step-Dauer aus ValueTranslator und setzt uebernimmt diese
@@ -131,7 +132,13 @@ public:
 	 * @param index
 	 * @return Step-Parameter zu index. Wirft std::out_of_range
 	 */
-	Parameter::Ptr getParameter ( size_t index ){ return nDuration[index]; }
+	Parameter::Ptr getParameter ( size_t index );
+	//--------------------------------------------------------------------------------------------------------
+	/**
+	 * @param index
+	 * @return Step-Parameter zu index. Wirft std::out_of_range
+	 */
+	Parameter::Ptr getStepIndicator () const;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * verschiebung der Step-Dauer um N Samples
@@ -182,8 +189,10 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Step();
 };
-
 }// namespace processing
+
+BOOST_CLASS_VERSION(processing::Step, 1)
+
 
 #endif  // FORX_STEP_H
 

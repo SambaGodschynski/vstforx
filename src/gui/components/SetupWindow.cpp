@@ -18,7 +18,7 @@
 #include <sambag/disco/components/TitledBorder.hpp>
 #include <sambag/disco/components/SolidBorder.hpp>
 #include <sambag/disco/components/Timer.hpp>
-#include <sambag/disco/svg/graphicElements/Style.hpp>
+#include <sambag/disco/svg/Style.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include <boost/foreach.hpp>
 #include <sambag/com/Thread.hpp>
@@ -456,7 +456,7 @@ void SetupWindow::cancelSettings() {
 	ctrl->setEditorSize(size);
 	
 }
-//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------sudo 
 SetupCtrl::Ptr SetupWindow::getCtrl() const {
 	return ctrl;
 }
@@ -467,7 +467,7 @@ void SetupWindow::postConstructor() {
 	sdc::ui::UIManager::instance().installLookAndFeel(getRootPane(),
 		ui::FrxLookAndFeel::create()
 	);
-	sdsg::Style style = sdsg::Style::DEFAULT_STYLE;
+	sds::Style style = sds::Style::DEFAULT_STYLE;
 	sdcu::UIManager::instance().getProperty("SetupWindow.style", style);
 	getContentPane()->setBackground(style.fillPattern());
 	getContentPane()->setForeground(style.strokePattern());

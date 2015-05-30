@@ -12,7 +12,7 @@
 #include <boost/weak_ptr.hpp>
 #include <sambag/disco/components/ui/basic/BasicListUI.hpp>
 #include <gui/components/FrxColumnBrowser.hpp>
-#include <sambag/disco/svg/graphicElements/Style.hpp>
+#include <sambag/disco/svg/Style.hpp>
 #include <gui/HandyNamespaces.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
 
@@ -46,7 +46,7 @@ protected:
 	void installListeners(sdc::AComponentPtr c);
 private:
 	//-------------------------------------------------------------------------
-	sdsg::Style selectedStyle;
+	sds::Style selectedStyle;
 	//-------------------------------------------------------------------------
 	sambag::com::ArithmeticWrapper<int, -1> currentIndex;
 public:

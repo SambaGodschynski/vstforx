@@ -53,6 +53,7 @@ namespace {
 }
 //------------------------------------------------------------------------------------------------------------
 const char * FRX_VST_EXT = ".dll";
+const char * FRX_VST3_EXT = ".vst3";
 const char * FRX_LUA_EXT = ".lua";
 //------------------------------------------------------------------------------------------------------------
 void startProcess(const char *path, int argc, const char **argv) {
@@ -83,6 +84,7 @@ std::string getRootDirectory() {
 bool isPlugFilename ( const std::string &filename ) { 
     std::string ext = Filename(filename).extension().string();
 	return ext == std::string(FRX_VST_EXT) ||
+           ext == std::string(FRX_VST3_EXT) ||
            ext == std::string(FRX_LUA_EXT);
 } 
 //------------------------------------------------------------------------------------------------------------
@@ -163,30 +165,20 @@ std::string osSelectFile ( const std::string &wndTitle,
 						    const std::string &startPath,
 							void *parentWindow)
 {
-	std::string ret;
-	BROWSEINFO bi = { 0 };
-	bi.lpfn = &BrowseCallbackProc;
-	bi.lpszTitle = ( wndTitle.c_str() );
-	bi.hwndOwner = (HWND)parentWindow;
-	bi.ulFlags = BIF_USENEWUI | BIF_BROWSEINCLUDEFILES;
-    _startPath = startPath;
-	LPITEMIDLIST pidl = SHBrowseForFolder ( &bi );
-    if ( pidl != 0 )
-    {
-        // get the name of the folder
-        char path[MAX_PATH];
-        if ( SHGetPathFromIDList ( pidl, path ) ) {
-			ret = std::string(path);
-        }
-
-        // free memory used
-        IMalloc * imalloc = 0;
-        if ( SUCCEEDED( SHGetMalloc ( &imalloc )) ) {
-            imalloc->Free ( pidl );
-            imalloc->Release ( );
-        }
-    }
-	return ret;
+	//TCHAR szFilters[] = _T("Scribble Files (*.dat)\0*.dat\0\0");
+	char szFilePathName[_MAX_PATH] = "";
+	OPENFILENAME ofn = {0};
+	ofn.lStructSize = sizeof(OPENFILENAME);
+	ofn.hwndOwner = (HWND)parentWindow;
+	//ofn.lpstrFilter = szFilters;
+	ofn.lpstrFile = szFilePathName;
+	//ofn.lpstrDefExt = _T("dat");
+	ofn.nMaxFile = _MAX_PATH;
+	ofn.lpstrTitle = wndTitle.c_str();
+	ofn.Flags = OFN_OVERWRITEPROMPT;
+	ofn.lpstrInitialDir = startPath.c_str();
+	GetOpenFileName(&ofn);
+	return std::string(ofn.lpstrFile);
 }
 //--------------------------------------------------------------------------------------------------------
 std::string osSaveFile ( const std::string &wndTitle,
@@ -202,7 +194,7 @@ std::string osSaveFile ( const std::string &wndTitle,
 	ofn.lpstrFile = szFilePathName;
 	//ofn.lpstrDefExt = _T("dat");
 	ofn.nMaxFile = _MAX_PATH;
-	ofn.lpstrTitle = "Save File";
+	ofn.lpstrTitle = wndTitle.c_str();
 	ofn.Flags = OFN_OVERWRITEPROMPT;
 	ofn.lpstrInitialDir = startPath.c_str();
 	GetSaveFileName(&ofn);

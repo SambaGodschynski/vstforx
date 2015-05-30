@@ -41,7 +41,7 @@ void TestFrxCircuidView::testZOrder() {
 	circ->add(p025, 3.5f);
 	circ->add(p03, 1.f);
 	circ->add(p04, 2.f);
-	std::string expStr("{FrxSelection[1], Plugin_3[1], Plugin_4[2], Plugin_1[3], Plugin_2[3.5], Plugin[4]}");
+	std::string expStr("{FrxSelection[1], Plugin[1], Plugin[2], Plugin[3], Plugin[3.5], Plugin[4]}");
 	CPPUNIT_ASSERT_EQUAL(expStr, circ->componentsToString());
 }
 namespace {
@@ -201,7 +201,7 @@ void TestFrxCircuidView::testGetIndexOf() {
 	//std::fstream f("outp.txt", std::fstream::out);
 	//f<<circ->componentsToString();
 	//f.close();
-	std::string ist("{Plugin[0], FrxSelection[1], Plugin_3[1], Plugin_4[2], Plugin_1[3], Plugin_2[3.5], Plugin_5[5], Plugin_6[6], Plugin_7[7]}");
+	std::string ist("{Plugin[0], FrxSelection[1], Plugin[1], Plugin[2], Plugin[3], Plugin[3.5], Plugin[5], Plugin[6], Plugin[7]}");
 	CPPUNIT_ASSERT_EQUAL(ist, circ->componentsToString());
 	CPPUNIT_ASSERT_EQUAL((int)0, circ->getIndexOf(0.));
 	CPPUNIT_ASSERT_EQUAL((int)1, circ->getIndexOf(0.5));

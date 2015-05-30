@@ -327,8 +327,8 @@ void FrxCircuidView::findComponents(Container &container, Filter &filter,
 }
 //-----------------------------------------------------------------------------
 template <class Container>
-void FrxCircuidView::findAllComponents(Container &container, ZOrder start = FLT_MIN, 
-	ZOrder end = FLT_MAX) const
+void FrxCircuidView::findAllComponents(Container &container, ZOrder start, 
+	ZOrder end) const
 {
 	int startIndex = getIndexOf(start);
 	sdc::AContainer::Ptr cnt = getContentPane(); 

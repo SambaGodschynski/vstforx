@@ -100,6 +100,8 @@ struct APluginImpl :
 	 * @return true, wenn Plugin ueber Editor verfuegt.
 	 */
 	virtual bool hasEditor() const = 0;
+    //-------------------------------------------------------------------------
+    virtual void beforeOpenEditor(sambag::disco::components::WindowPtr win) {}
 	//-------------------------------------------------------------------------
 	virtual void openEditor(sambag::disco::components::WindowPtr win) = 0;
 	//-------------------------------------------------------------------------
@@ -136,7 +138,7 @@ struct APluginImpl :
 	 */
 	virtual bool canHandleMidiEvent() const = 0;
 	//-------------------------------------------------------------------------
-	virtual void processMidiEvents( sambag::dsp::IMidiEvents * events ) = 0;
+	virtual void processMidiEvents( sambag::dsp::IMidiEvents::Ptr events ) = 0;
 	//-------------------------------------------------------------------------
 	virtual size_t getInitialDelay() const = 0;
     //-------------------------------------------------------------------------
@@ -145,6 +147,10 @@ struct APluginImpl :
      */
     virtual void updatePluginInfo (::processing::PluginInfo &inf) const = 0;
     //-------------------------------------------------------------------------
+    /**
+     * @brief processes all in/output channels, thus 
+     * data dimensions = numIn/Outputs
+     */
     virtual void processPlugin( oldPr::Frames::T **,
         oldPr::Frames::T **, size_t numSamples) = 0;
     //-------------------------------------------------------------------------

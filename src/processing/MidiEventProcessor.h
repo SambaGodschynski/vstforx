@@ -59,16 +59,16 @@ private:
 	//-------------------------------------------------------------------------
 	virtual void midiSendChanged ( void *src, const float &val );
 	//-------------------------------------------------------------------------
-	sambag::dsp::DefaultMidiEvents tmpEv;
+	sambag::dsp::DefaultMidiEvents::Ptr tmpEv;
 public:
 	//-------------------------------------------------------------------------
 	MidiEventProcessor();
 	//-------------------------------------------------------------------------
-	virtual void processEvents( sambag::dsp::IMidiEvents * events );
+	virtual void processEvents( sambag::dsp::IMidiEvents::Ptr events );
     //-------------------------------------------------------------------------
-	virtual void sendMidiEvents( sambag::dsp::IMidiEvents * events );
+	virtual void sendMidiEvents( sambag::dsp::IMidiEvents::Ptr events );
 	//-------------------------------------------------------------------------
-	virtual void processMidiEvents( sambag::dsp::IMidiEvents * events ) = 0;
+	virtual void processMidiEvents( sambag::dsp::IMidiEvents::Ptr events ) = 0;
 	//-------------------------------------------------------------------------
 	parameter::Parameter::Ptr getMidiChannelParameter() { return midiChannel; }
 	//-------------------------------------------------------------------------

@@ -13,7 +13,7 @@
 #include "FrxSvgProcessorUI.hpp"
 #include <gui/HandyNamespaces.hpp>
 #include <sambag/disco/IDiscoFactory.hpp>
-#include <sambag/disco/svg/graphicElements/Style.hpp>
+#include <sambag/disco/svg/Style.hpp>
 #include <gui/components/FrxFontCache.hpp>
 
 namespace frx { namespace gui {

@@ -62,7 +62,7 @@ protected:
 	void onWindowClose(void *, const OnCloseEvent &ev);
 private:
 	//-------------------------------------------------------------------------
-	std::vector<VstPlugId> plugids;
+	std::vector<std::string> plugids;
 	//-------------------------------------------------------------------------
 	::processing::PluginInfo plugInf;
 public:

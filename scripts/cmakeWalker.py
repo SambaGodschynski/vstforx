@@ -10,7 +10,7 @@ IF(APPLE)
   SET(FRX_SOURCES ${FRX_SOURCES} ${FRX_MMSOURCES} )
 ENDIF(APPLE)
 
-add_library(frx_core ${FRX_SOURCES} ${VSTSDKSOURCE})
+add_library(frx_core ${FRX_SOURCES} ${VSTSDKSOURCE} ${VSTSDK3SOURCE})
 
 SET (FRX_TESTSOURCES ${FRX_TESTSOURCES} PluginApps/com/FrxPlugSettings.cpp)
 add_executable(unit_tests ${FRX_TESTSOURCES})

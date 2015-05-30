@@ -206,7 +206,7 @@ private:
     IdleHandlerPtr __idle_;
 protected:
     //--------------------------------------------------------------------------------------------------------
-    void onProcessorMidiEvent(void *src, sambag::dsp::IMidiEvents * events);
+    void onProcessorMidiEvent(void *src, sambag::dsp::IMidiEvents::Ptr events);
 	//--------------------------------------------------------------------------------------------------------
 	frx::processing::IHostInfo::WPtr hostInfo;
 	//--------------------------------------------------------------------------------------------------------
@@ -239,7 +239,7 @@ public:
     typedef boost::function<void()> Function;
     void addIdleTask(const Function &f);
 	//--------------------------------------------------------------------------------------------------------
-	void processEvents(sambag::dsp::IMidiEvents * events);
+	void processEvents(sambag::dsp::IMidiEvents::Ptr events);
 	//--------------------------------------------------------------------------------------------------------
 	void setHostInfo(frx::processing::IHostInfo::Ptr hI);
 	//--------------------------------------------------------------------------------------------------------

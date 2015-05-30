@@ -223,7 +223,7 @@ void VstForxPlug::process(float **in, float **out, int numSamples) {
 	}
 }
 //-----------------------------------------------------------------------------
-void VstForxPlug::processEvents(sambag::dsp::IMidiEvents *ev) {
+void VstForxPlug::processEvents(sambag::dsp::IMidiEvents::Ptr ev) {
 	if ( !graph ) 
 		return;
 	graph->processEvents(ev);
@@ -493,21 +493,14 @@ void VstForxPlug::save(std::ostream &os) {
 	ar & hostInfoAdapter;
 	ar & graph;
 	saveEditor(ar);
-    // script ctrl user data
-    // the boost::serialization multimap impl. gives a fuck about
-    // map value order, so we have to do it manually
-    // (for some reason Map::value_type produces compiler errors)
-    typedef std::pair<std::string, std::string> Bodge;
-    std::vector<Bodge> tmp;
     if (scriptCtrl) {
         const scripts::PluginScriptCtrl::PersistUserData &data =
             scriptCtrl->getPersistUserData();
-        tmp.reserve(data.size());
-        BOOST_FOREACH(const Bodge &x, data) {
-            tmp.push_back(x);
-        }
+        ar << data;
+    } else {
+        scripts::PluginScriptCtrl::PersistUserData empty;
+        ar << empty;
     }
-    ar<<tmp;
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::load(std::istream &is, int version) {
@@ -544,20 +537,21 @@ void VstForxPlug::load(std::istream &is, int version) {
 	}
 	initHostParameter();
     // script ctrl user data
-    if (version>0) {
-        getScriptController()->getPersistUserData().clear();
-        // script ctrl user data
-        // the boost::serialization multimap impl. gives a fuck about
-        // map value order, so we have to do it manually
-        // (for some reason Map::value_type produces compiler errors)
-        typedef std::pair<std::string, std::string> Bodge;
-        std::vector<Bodge> tmp;
+    if (version>0 && version<=2) {
         scripts::PluginScriptCtrl::PersistUserData &data =
             scriptCtrl->getPersistUserData();
+        data.clear();
+        typedef std::pair<std::string, std::string> Bodge;
+        std::vector<Bodge> tmp;
         ar >> tmp;
         BOOST_FOREACH(const Bodge &x, tmp) {
-            data.insert(x);
+            data.add(x.first, x.second);
         }
+    }
+    if (version>2) {
+        scripts::PluginScriptCtrl::PersistUserData &data =
+            getScriptController()->getPersistUserData();
+        ar >> data;
     }
 }
 //-----------------------------------------------------------------------------

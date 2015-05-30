@@ -19,6 +19,7 @@ function packVSTForx() {
     cp -r $src/styles $target/$folder
     cp $src/scripts/lua_plugins/*.lua $target/$folder/scripts/lua_plugins
     cp ../Documents/manual/vstforx.EN/main.pdf $target/$folder/manual.pdf
+    cp ../THIRDPARTY_LICENSES.txt $target/$folder/
     cd $target
     zip -r $vstr.zip $folder
     rm -rf $folder

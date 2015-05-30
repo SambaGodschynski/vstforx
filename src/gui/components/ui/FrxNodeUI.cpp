@@ -141,7 +141,7 @@ void FrxNodeUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 void FrxNodeUI::drag(const sdc::events::MouseEvent &ev) {
 	namespace geom = boost::geometry;
 	namespace trans = geom::strategy::transform;
-	typedef trans::translate_transformer<sd::Point2D, sd::Point2D> Transl;
+	typedef trans::translate_transformer<double, 2, 2> Transl;
 	sdc::AComponent::Ptr c = ev.getSource();
 	FrxCircuidView::Ptr circ = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(circ);
