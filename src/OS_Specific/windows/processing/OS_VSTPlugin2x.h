@@ -55,13 +55,13 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	const string & getModuleLocation () const { return moduleLocation; }
 	//--------------------------------------------------------------------------------------------------------
-	OS_VSTPlugNode2x() : shellPlugId(0) {}
+	OS_VSTPlugNode2x() : shellPlugId("") {}
 public:
 	//--------------------------------------------------------------------------------------------------------
 	const Module & getModule() const { return module; }
 	//--------------------------------------------------------------------------------------------------------
 	OS_VSTPlugNode2x ( const string &moduleLocation ) : 
-	  moduleLocation(moduleLocation), shellPlugId(0), aEff(NULL), module(NULL){}
+	  moduleLocation(moduleLocation), shellPlugId(""), aEff(NULL), module(NULL){}
 	//--------------------------------------------------------------------------------------------------------
 	AEffect * getAEffect (){ return aEff; }
 
