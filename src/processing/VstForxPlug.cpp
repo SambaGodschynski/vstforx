@@ -161,7 +161,9 @@ void VstForxPlug::open() {
 		return;
 	}
 	hostInfoAdapter = IHostInfo::Ptr(new HostInfoAdapter(this));
-	graph = ::processing::Graph::create(hostInfoAdapter);
+    numInputs = getHost()->getNumInputs() / 2;
+    numOutputs = getHost()->getNumOutputs() / 2;
+	graph = ::processing::Graph::create(hostInfoAdapter, numInputs, numOutputs);
 	installGraphListener();
 	ctrl = ModelController::create();
 	ctrl->setGraph(graph);
@@ -211,7 +213,8 @@ void VstForxPlug::process(float **in, float **out, int numSamples) {
 	if ( !graph ) 
 		return;
 	::processing::Frames fr ( in, numSamples ); 
-	if ( !graph->getEndNode()->isActive() ){
+	if ( !graph->getTerminatorNode()->isActive() )
+    {
 		fr.setZero ( numSamples );
 		fr.getBlock ( out, numSamples );
 		return;

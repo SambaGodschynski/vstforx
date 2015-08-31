@@ -158,10 +158,59 @@ _hasCycle(false)
 	initBglGraph();
 	startNode = StartNode::create();
 	endNode = EndNode::create();
+    terminator = NOPNode::create("terminator");
 	Janitor::Ptr j = getJanitor();
 	j->add ( startNode );
 	j->add ( endNode );
+    j->add ( terminator );
 	initHostParameter();
+}
+//-----------------------------------------------------------------------------------------------------------
+void Graph::setIO(int numInputs, int numOutputs) {
+    --numInputs; // the first index locates to entryNode
+    Janitor::Ptr j = getJanitor();
+    for (int i=0; i<numInputs; ++i) {
+        startNodes.push_back( StartNode::create() );
+        j->add ( startNodes[i] );
+    }
+    --numOutputs;
+    for (int i=0; i<numOutputs; ++i) {
+        endNodes.push_back( EndNode::create() );
+        j->add ( endNodes[i] );
+    }
+}
+//-----------------------------------------------------------------------------------------------------------
+bool Graph::hasActiveEndNode() const {
+    for (int i=0; i<getNumEndNodes(); ++i) {
+        if (getEndNode(i)->isActive()) {
+            return true;
+        }
+    }
+    return false;
+}
+//-----------------------------------------------------------------------------------------------------------
+bool Graph::isStartNode(ProcessorNode::Ptr node) const
+{
+    if (node==startNode) {
+        return true;
+    }
+    return std::find(startNodes.begin(), startNodes.end(), node) != startNodes.end();
+}
+//-----------------------------------------------------------------------------------------------------------
+bool Graph::isEndNode(ProcessorNode::Ptr node) const
+{
+    if (node==endNode) {
+        return true;
+    }
+    return std::find(endNodes.begin(), endNodes.end(), node) != endNodes.end();
+}
+//-----------------------------------------------------------------------------------------------------------
+void Graph::connectEndNodesWithTerminator()
+{
+    Janitor::Ptr j = getJanitor();
+    for (int i=0; i<getNumEndNodes(); ++i) {
+        j->connectNodes(getEndNode(i), terminator);
+    }
 }
 //-----------------------------------------------------------------------------------------------------------
 void Graph::setHostInfo(frx::processing::IHostInfo::Ptr hI) {
@@ -319,29 +368,51 @@ bool Graph::contains ( PObject::Ptr obj ) const {
 }
 //------------------------------------------------------------------------------------------------------------
 void Graph::processGraph( float **outputs, Processor::Int numSamples ) {
-
-	if ( endNode->isActive() ) {
+    
+    
+	if ( terminator->isActive() ) {
 		SignalProcessPath::iterator it = signalProcessPath.begin();
 		for ( ; it!=signalProcessPath.end(); ++it ) { // process path
 			(*it)->processNode( numSamples );
 		}
-		endNode->getDCStream().flush( numSamples, outputs );
+		//terminator->getDCStream().flush( numSamples, outputs );
 	}
 }
 //------------------------------------------------------------------------------------------------------------
-StartNode::Ptr Graph::getStartNode() {
-	return startNode;
+StartNode::Ptr Graph::getStartNode(int nr) const {
+    if (nr==0) {
+        return startNode;
+    }
+    return startNodes.at(nr-1);
 }
 //------------------------------------------------------------------------------------------------------------
-EndNode::Ptr Graph::getEndNode() {
-	return endNode;
+EndNode::Ptr Graph::getEndNode(int nr) const {
+    if (nr==0) {
+        return endNode;
+    }
+    return endNodes.at(nr-1);
 }
 //------------------------------------------------------------------------------------------------------------
-void Graph::pushAndCopy ( Frames *fr, Processor::Int numSamples ){
-	if (!endNode->isActive()) return;
-	startNode->pushAndCopy ( fr, numSamples );
+void Graph::pushAndCopy ( Frames *fr, Processor::Int numSamples, int inputNr )
+{
+	if (!terminator->isActive()) {
+        return;
+    }
+	StartNode::Ptr startNode = getStartNode(inputNr);
+    startNode->pushAndCopy ( fr, numSamples );
 }
 //------------------------------------------------------------------------------------------------------------
+namespace
+{
+    void print_signal_path(Graph::SignalProcessPath &p)
+    {
+        std::cout<<":::::::::::::::::::::::::::::::::::::::::::"<<std::endl;
+        Graph::SignalProcessPath::iterator it = p.begin();
+		for ( ; it!=p.end(); ++it ) { // process path
+			std::cout<<typeid(**it).name()<<std::endl;
+		}
+    }
+}
 void Graph::updateGraph() {
 	size_t oldDelay = getGraphDelay();
 	DFSVisitor vis(this);
@@ -349,12 +420,13 @@ void Graph::updateGraph() {
 	boost::depth_first_search( 
 		rg, 
 		boost::visitor(vis).	// !! http://www.boost.org/doc/libs/1_46_1/libs/graph/doc/bgl_named_params.html
-		root_vertex( endNode->getBglVertex() ) 
+		root_vertex( terminator->getBglVertex() )
 	);
 	size_t delay = getGraphDelay();
 	if (oldDelay!=delay) {
         sendGraphDelayChangedMessageAsync();
 	}
+    //print_signal_path(signalProcessPath);
 }
 //------------------------------------------------------------------------------------------------------------
 void Graph::initHostParameter(){
@@ -370,12 +442,15 @@ Graph::~Graph(){
 }
 //------------------------------------------------------------------------------------------------------------
 size_t Graph::getGraphDelay() {
-	return getEndNode()->getNodeDelay();
+	return terminator->getNodeDelay();
 }
 //------------------------------------------------------------------------------------------------------------
-Graph::Ptr Graph::create( frx::processing::IHostInfo::Ptr hostInfo ) {
+Graph::Ptr Graph::create( frx::processing::IHostInfo::Ptr hostInfo, int numInputs, int numOutputs ) {
 	Graph::Ptr neu( new Graph( hostInfo ) );
+    Janitor::Ptr j = neu->getJanitor(); // hold janitor instance
 	neu->self = neu;
+    neu->setIO(numInputs, numOutputs);
+    neu->connectEndNodesWithTerminator();
 	return neu;
 }
 //------------------------------------------------------------------------------------------------------------
@@ -418,36 +493,45 @@ void Graph::onHostIOChanged(void *src, const frx::processing::HostIOChanged &ev)
 //------------------------------------------------------------------------------------------------------------
 void Graph::serialize ( com::iArchive &ar, const unsigned int version )
 {
-	ar & self;
-	ar & hostInfo;
-	ar & startNode;
-	ar & endNode;
-	ar & graphObjects;
-	ar & hostParameter;
-	ar & parameterConnections;
-	ar & g;
-	if ( com::iArchive::is_loading::value ) {
-        installListeners();
-		Ptr graph = self.lock();
-		graph->getJanitor()->updateProcessorNodeVertexRelations();
-	}
+	ar >> self;
+	ar >> hostInfo;
+	ar >> startNode;
+	ar >> endNode;
+	ar >> graphObjects;
+	ar >> hostParameter;
+	ar >> parameterConnections;
+	ar >> g;
+	
+    if (version>=2) {
+        ar >> startNodes;
+        ar >> endNodes;
+        ar >> terminator;
+    } else
+    { // older version -> create missing terminator
+        terminator = NOPNode::create("terminatior");
+        Janitor::Ptr j = getJanitor();
+        j->add ( terminator );
+        connectEndNodesWithTerminator();
+    }
+    
+    installListeners();
+    Ptr graph = self.lock();
+    graph->getJanitor()->updateProcessorNodeVertexRelations();
 }
 //------------------------------------------------------------------------------------------------------------
 void Graph::serialize ( com::oArchive &ar, const unsigned int version )
 {
-	ar & self;
-	ar & hostInfo;
-	ar & startNode;
-	ar & endNode;
-	ar & graphObjects;
-	ar & hostParameter;
-	ar & parameterConnections;
-	ar & g;
-	if ( com::oArchive::is_loading::value ) {
-        installListeners();
-		Ptr graph = self.lock();
-		graph->getJanitor()->updateProcessorNodeVertexRelations();
-	}
+	ar << self;
+	ar << hostInfo;
+	ar << startNode;
+	ar << endNode;
+	ar << graphObjects;
+	ar << hostParameter;
+	ar << parameterConnections;
+	ar << g;
+    ar << startNodes;
+    ar << endNodes;
+    ar << terminator;
 }
 //============================================================================================================
 // Klasse Janitor

@@ -26,6 +26,7 @@
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <sambag/com/Thread.hpp>
+#include <algorithm>
 
 //============================================================================================================
 //	Vorwaerts Deklarationen
@@ -113,7 +114,7 @@ private:
 	}
 	//--------------------------------------------------------------------------------------------------------
 	/**
-	 * enthaelt topologisch sortierte ProcessNode-Objekte
+	 * enthaelt topologisch sortierte ProcessNode-Objekte, für je ein output
 	 */
 	SignalProcessPath signalProcessPath;
 	//--------------------------------------------------------------------------------------------------------
@@ -206,6 +207,8 @@ private:
     IdleHandlerPtr __idle_;
 protected:
     //--------------------------------------------------------------------------------------------------------
+    void connectEndNodesWithTerminator();
+    //--------------------------------------------------------------------------------------------------------
     void onProcessorMidiEvent(void *src, sambag::dsp::IMidiEvents::Ptr events);
 	//--------------------------------------------------------------------------------------------------------
 	frx::processing::IHostInfo::WPtr hostInfo;
@@ -215,6 +218,24 @@ protected:
 	//--------------------------------------------------------------------------------------------------------
 	//End Knoten
 	EndNode::Ptr endNode;
+    //--------------------------------------------------------------------------------------------------------
+    /**
+     * @brief since we have more than one output we need an end node for all end 
+     * nodes. the signal process path ends here.
+     */
+    NOPNode::Ptr terminator;
+    //--------------------------------------------------------------------------------------------------------
+    /**
+     * @brief further start nodes. for savegame compatibility we keep the first
+     * at the original location (@see startNode)
+     */
+    std::vector<StartNode::Ptr> startNodes;
+    //--------------------------------------------------------------------------------------------------------
+    /**
+     * @brief further end nodes. for savegame compatibility we keep the first
+     * at the original location (@see endNode)
+     */
+    std::vector<EndNode::Ptr> endNodes;
     //--------------------------------------------------------------------------------------------------------
     void installListener(ProcessAdapter::Ptr);
     //--------------------------------------------------------------------------------------------------------
@@ -230,7 +251,18 @@ protected:
     void updateGraphAsync();
     //--------------------------------------------------------------------------------------------------------
     IdleHandlerPtr getIdleHandler();
+    //--------------------------------------------------------------------------------------------------------
+    /**
+     * @brief configurates the in and outputs (always stereo), if not called a configuration of 1 i/o
+     * will be assumed.
+     */
+    void setIO(int numInputs, int numOutputs);
 public:
+    //--------------------------------------------------------------------------------------------------------
+    /**
+     * @return true if at least one of the end nodes is active
+     */
+    bool hasActiveEndNode() const;
     //--------------------------------------------------------------------------------------------------------
     const GraphObjectContainer & getGraphObjects() const {
         return graphObjects;
@@ -325,7 +357,7 @@ public:
 	 * @param hostInfo Objekt
 	 * @return Graph Objekt
 	 */
-	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo );
+	static Ptr create( frx::processing::IHostInfo::Ptr hostInfo, int numInputs = 1, int numOutputs = 1 );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Processing Mutex
@@ -365,12 +397,22 @@ public:
 	/**
 	 * @return Eintritts-ProcessorNode Objekt.
 	 */
-	StartNode::Ptr getStartNode();
+	StartNode::Ptr getStartNode(int nr = 0) const;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @return Austritts-ProcessorNode Objekt.
 	 */
-	EndNode::Ptr getEndNode();
+	EndNode::Ptr getEndNode(int nr = 0) const;
+    //--------------------------------------------------------------------------------------------------------
+	NOPNode::Ptr getTerminatorNode() const { return terminator; }
+    //--------------------------------------------------------------------------------------------------------
+    size_t getNumStartNodes() const { return startNodes.size() + 1; }
+    //--------------------------------------------------------------------------------------------------------
+    size_t getNumEndNodes() const { return endNodes.size() + 1; }
+    //--------------------------------------------------------------------------------------------------------
+    bool isStartNode(ProcessorNode::Ptr node) const;
+    //--------------------------------------------------------------------------------------------------------
+    bool isEndNode(ProcessorNode::Ptr node) const;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Wurde zuvor mittels pushAndCopy() ein Frames(=Eingabe-Samplemenge) Objekt uebergeben,
@@ -385,7 +427,7 @@ public:
 	 * @param fr Frames-Objekt
 	 * @param numSamples anzhal der zu Berechnenden Samples
 	 */
-	void pushAndCopy( Frames *fr, Processor::Int numSamples );
+	void pushAndCopy( Frames *fr, Processor::Int numSamples, int inputNr = 0 );
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param obj
@@ -677,15 +719,24 @@ public:
 	template <class Vertex, class Graph>
 	void finish_vertex(const Vertex &v, Graph&) {
 		ProcessorNode::Ptr n = graph->vertexProcessorNode[v];
-		if ( n == graph->getStartNode() ) {
+		if ( graph->isStartNode(n) ) {
 			n->setActive( true );
 			return;
 		}
-		if ( n == graph->getEndNode() ) {
-			endFinalized = true;
-			if ( boost::in_degree( v, graph->g ) == 0 ) return;
+		if ( graph->isEndNode(n) ) {
+			if ( boost::in_degree( v, graph->g ) == 0 ) {
+                return;
+            }
 			n->setActive( true );
 			addToSignalProcessPath( n );
+			return;
+		}
+        if ( n == graph->getTerminatorNode() ) {
+			endFinalized = true;
+            if (!graph->hasActiveEndNode()) {
+                return;
+            }
+			n->setActive( true );
 			return;
 		}
 		// alles nach endFinalized ist inaktiv
@@ -706,5 +757,7 @@ public:
 };
 ///////////////////////////////////////////////////////////////////////////////
 } // namespace Processing
+
+BOOST_CLASS_VERSION(processing::Graph, 2);
 
 #endif
