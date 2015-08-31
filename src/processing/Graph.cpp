@@ -18,7 +18,7 @@
 #include <processing/FrxAsyncDSPTimer.hpp>
 #include <sambag/com/events/PropertyChanged.hpp>
 #include <boost/unordered_set.hpp>
-
+#include <processing/dspTools.h>
 
 namespace {
     const int FRX_IDLE_TIME_MS = 100;
@@ -211,7 +211,7 @@ void Graph::connectEndNodesWithTerminator()
     for (int i=0; i<getNumEndNodes(); ++i) {
         j->connectNodes(getEndNode(i), terminator);
     }
-    
+    j->connectNodes( getStartNode(0), getEndNode(1)); // XXX FOR TEST PUROSE ONLY
 }
 //-----------------------------------------------------------------------------------------------------------
 void Graph::setHostInfo(frx::processing::IHostInfo::Ptr hI) {
@@ -379,10 +379,11 @@ void Graph::processGraph( float **outputs, Processor::Int numSamples ) {
 		// copy outputs
         for (int i=0; i<getNumEndNodes(); ++i) {
             ProcessorNode::Ptr node = getEndNode(i);
+            float *out[2] = { outputs[i*2], outputs[i*2+1] };
             if (!node->isActive()) {
+                setZero(out, 2, numSamples); // mute output
                 continue;
             }
-            float *out[2] = { outputs[i*2], outputs[i*2+1] };
             node->getDCStream().flush(numSamples, out );
         }
 	}
