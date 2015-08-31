@@ -211,6 +211,7 @@ void Graph::connectEndNodesWithTerminator()
     for (int i=0; i<getNumEndNodes(); ++i) {
         j->connectNodes(getEndNode(i), terminator);
     }
+    
 }
 //-----------------------------------------------------------------------------------------------------------
 void Graph::setHostInfo(frx::processing::IHostInfo::Ptr hI) {
@@ -375,7 +376,15 @@ void Graph::processGraph( float **outputs, Processor::Int numSamples ) {
 		for ( ; it!=signalProcessPath.end(); ++it ) { // process path
 			(*it)->processNode( numSamples );
 		}
-		//terminator->getDCStream().flush( numSamples, outputs );
+		// copy outputs
+        for (int i=0; i<getNumEndNodes(); ++i) {
+            ProcessorNode::Ptr node = getEndNode(i);
+            if (!node->isActive()) {
+                continue;
+            }
+            float *out[2] = { outputs[i*2], outputs[i*2+1] };
+            node->getDCStream().flush(numSamples, out );
+        }
 	}
 }
 //------------------------------------------------------------------------------------------------------------

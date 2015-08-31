@@ -28,7 +28,7 @@ typedef sambag::dsp::vst::VST2xPluginWrapper<
 	frx::processing::VstForxPlug, // Processor
 	'frxr', // uid
 	sambag::dsp::StdPluginTraits<
-		2,2,false,::com::Settings::PROGRAM_PARAMETER
+		2,4,false,::com::Settings::PROGRAM_PARAMETER
 	>,
 	frx::gui::components::CreateVstForxEditor
 > Plugin;
@@ -64,12 +64,14 @@ void fillBlock(float **data, int blockSize) {
 void processPlugin(Plugin * plug) {
 	static const int BS = 512;
 	float **in = new float*[2];
-	float **out = new float*[2];
+	float **out = new float*[4];
 	in[0] = new float[BS];
 	in[1] = new float[BS];
 	fillBlock(in, BS);
 	out[0] = new float[BS];
 	out[1] = new float[BS];
+    out[2] = new float[BS];
+    out[3] = new float[BS];
 	plug->suspend();
 	plug->setSampleRate(44100.);
 	plug->setBlockSize(BS);
@@ -85,6 +87,8 @@ void processPlugin(Plugin * plug) {
 	delete[] in[1];
 	delete[] out[0];
 	delete[] out[1];
+    delete[] out[2];
+	delete[] out[3];
 	delete[] in;
 	delete[] out;
 }

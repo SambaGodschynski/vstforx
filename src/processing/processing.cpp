@@ -107,8 +107,6 @@ void EndNode::processNode( Processor::Int numSamples ) {
 		if ( !n->isActive() ) continue;
 		stream.addFrame ( n->popFrame(), numSamples,  getNodeDelay() - n->getNodeDelay() );
 	}
-    stream.flush ( numSamples, tmpFrames->getData() );
-	pushAndCopy(tmpFrames, numSamples);
 }
 //============================================================================================================
 // class ProcessAdapter::InputNode
