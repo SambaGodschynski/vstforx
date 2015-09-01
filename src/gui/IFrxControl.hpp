@@ -73,10 +73,11 @@ public:
 		fgc::FrxComponentPtr)> CtrlCmd;
 	//-------------------------------------------------------------------------
 	/**
-	 * @return tuple(entry, exit)
+	 * @brief inits the entry and exit nodes
 	 */
-	virtual boost::tuple<fgc::FrxNodePtr, fgc::FrxNodePtr>
-	createEntryExtitNodes(fgc::FrxCircuidViewPtr c) = 0;
+    typedef std::vector<fgc::FrxNodePtr> NodeList;
+	virtual void
+    createEntryExtitNodes(fgc::FrxCircuidViewPtr c, NodeList &o_entries, NodeList & o_exits) = 0;
 	//-------------------------------------------------------------------------
 	virtual sdc::PopupMenuPtr 
 	getCircuidViewPopup(fgc::FrxCircuidViewPtr c) = 0;

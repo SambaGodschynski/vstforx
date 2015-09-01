@@ -211,7 +211,6 @@ void Graph::connectEndNodesWithTerminator()
     for (int i=0; i<getNumEndNodes(); ++i) {
         j->connectNodes(getEndNode(i), terminator);
     }
-    j->connectNodes( getStartNode(0), getEndNode(1)); // XXX FOR TEST PUROSE ONLY
 }
 //-----------------------------------------------------------------------------------------------------------
 void Graph::setHostInfo(frx::processing::IHostInfo::Ptr hI) {
