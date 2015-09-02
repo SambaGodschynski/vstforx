@@ -1151,6 +1151,7 @@ FrxControl::createEntryExtitNodes(fgc::FrxCircuidViewPtr circ,
     	FrxEntryNode::Ptr et = FrxEntryNode::create();
         circ->add(et, FrxCircuidView::Z_IO);
         map->registerObjects(et, ctrl->getEntry(i));
+        et->setDisplayText(::sambag::com::toString(i+1));
         o_entries.push_back(et);
     }
 
@@ -1160,6 +1161,7 @@ FrxControl::createEntryExtitNodes(fgc::FrxCircuidViewPtr circ,
         FrxExitNode::Ptr ex = FrxExitNode::create();
         circ->add(ex, FrxCircuidView::Z_IO);
         map->registerObjects(ex, ctrl->getExit(i));
+        ex->setDisplayText(::sambag::com::toString(i+1));
         o_exits.push_back(ex);
     }
 

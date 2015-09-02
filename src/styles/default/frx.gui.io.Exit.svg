@@ -19,5 +19,11 @@
 	    id="core"
 	    stroke-width="10"
 	    />
+    
+    <text x="-7" y="8" id="frx-io-display"
+	  class="disco core-display"
+	  style="font-family:arial;font-size:22">
+      X
+    </text>
   </g>  
 </svg>
