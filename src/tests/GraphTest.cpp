@@ -156,7 +156,7 @@ void GraphTest::testConstructor() {
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> std constr.
 	Graph::Ptr graph = Graph::create ( dummyFX );
 	CPPUNIT_ASSERT ( graph );
-	size_t numNodes = 2;
+	size_t numNodes = 3;
 	CPPUNIT_ASSERT_EQUAL ( numNodes, graph->getNumNodes() );
 }
 //=============================================================================
