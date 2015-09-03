@@ -53,7 +53,7 @@ void fillFrame ( processing::Frames *f, float left, float right ) {
 template <typename T>
 inline bool compareFloat ( T a, T b ) {
 //=============================================================================
-	return fabs(a - b) < 0.00001;
+	return fabs(a - b) < 0.001;
 }
 //=============================================================================
 template <typename T>
@@ -156,7 +156,7 @@ void GraphTest::testConstructor() {
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> std constr.
 	Graph::Ptr graph = Graph::create ( dummyFX );
 	CPPUNIT_ASSERT ( graph );
-	size_t numNodes = 2;
+	size_t numNodes = 3;
 	CPPUNIT_ASSERT_EQUAL ( numNodes, graph->getNumNodes() );
 }
 //=============================================================================
@@ -386,7 +386,7 @@ void GraphTest::testSignalProcessPath() {
 	jan->connectNodes( graph->getStartNode(), graph->getEndNode() );
 	jan.reset();
 	// soll
-	expectations += ProcessorNodeExpection( graph->getEndNode(), true, 0 );
+	expectations += ProcessorNodeExpection( graph->getEndNode(), true, 1 );
 	// ist
 	const Graph::SignalProcessPath &sPath = graph->getSignalProcessPath();
 	// evaluation
@@ -416,7 +416,7 @@ void GraphTest::testSignalProcessPath() {
 	jan->connectNodes( adapter[0]->getOutputNode(0), graph->getEndNode() );
 	jan.reset();
 	// soll
-	expectations += ProcessorNodeExpection( graph->getEndNode(), true, 0 ),           //   A
+	expectations += ProcessorNodeExpection( graph->getEndNode(), true, 1 ),           //   A
 					ProcessorNodeExpection( adapter[0]->getOutputNode(0), true, 1 ),  //   |
 					ProcessorNodeExpection( adapter[0]->getAdapterNode(), true, 1 ),  //   |
 					ProcessorNodeExpection( adapter[0]->getInputNode(0),  true, 1 );  //   _
@@ -443,7 +443,7 @@ void GraphTest::testSignalProcessPath() {
 	jan->connectNodes( graph->getStartNode(), adapter[0]->getInputNode(0) );
 	jan.reset();
 	// soll
-	expectations += ProcessorNodeExpection( graph->getEndNode(), true, 0 ),           //   A
+	expectations += ProcessorNodeExpection( graph->getEndNode(), true, 1 ),           //   A
 					ProcessorNodeExpection( adapter[0]->getOutputNode(0), true, 1 ),  //   |
 					ProcessorNodeExpection( adapter[0]->getAdapterNode(), true, 1 ),  //   |
 					ProcessorNodeExpection( adapter[0]->getInputNode(0),  true, 1 );  //   _
@@ -485,7 +485,7 @@ void GraphTest::testSignalProcessPath() {
 	CPPUNIT_ASSERT ( a || b );
 	// soll
 	if ( a ) { // variante 1
-		expectations += ProcessorNodeExpection( graph->getEndNode(), true, 0 ),
+		expectations += ProcessorNodeExpection( graph->getEndNode(), true, 1 ),
 			ProcessorNodeExpection( adapter[2]->getOutputNode(0), true, 1 ),  //   A
 			ProcessorNodeExpection( adapter[2]->getAdapterNode(), true, 1 ), //    |
 			ProcessorNodeExpection( adapter[2]->getInputNode(0), true, 1 ),   //   |
@@ -493,7 +493,7 @@ void GraphTest::testSignalProcessPath() {
 			ProcessorNodeExpection( adapter[0]->getAdapterNode(), true, 1 ),  //   |
 			ProcessorNodeExpection( adapter[0]->getInputNode(0),  true, 1 );  //   _
 	} else { // variante 2
-		expectations += ProcessorNodeExpection( graph->getEndNode(), true, 0 ),
+		expectations += ProcessorNodeExpection( graph->getEndNode(), true, 1 ),
 			ProcessorNodeExpection( adapter[0]->getOutputNode(0), true, 1 ),  //   A
 			ProcessorNodeExpection( adapter[0]->getAdapterNode(), true, 1 ), //    |
 			ProcessorNodeExpection( adapter[0]->getInputNode(0), true, 1 ),   //   |
@@ -932,19 +932,19 @@ void GraphTest::testGraphConsistency() {
 		OutputStep::Ptr ad = OutputStep::create( graph->getHostInfo() );
 		CPPUNIT_ASSERT ( janitor->add ( ad ) == SUCCEED );
 		// start-, endNode, In, Adapter, Out1, Out2 = 6
-		CPPUNIT_ASSERT_EQUAL ( (size_t)6, graph->getNumNodes() );
+		CPPUNIT_ASSERT_EQUAL ( (size_t)7, graph->getNumNodes() );
 		janitor.reset();
 		// ..remove
 		janitor = graph->getJanitor();
 		janitor->remove( ad );
 	}
-	CPPUNIT_ASSERT_EQUAL ( (size_t)0, graph->getNumEdges() );
+	CPPUNIT_ASSERT_EQUAL ( (size_t)1, graph->getNumEdges() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add Adapter
 	Graph::Janitor::Ptr janitor = graph->getJanitor();
 	OutputStep::Ptr ad = OutputStep::create( graph->getHostInfo() );
 	CPPUNIT_ASSERT ( janitor->add ( ad ) == SUCCEED );
 	// start-, endNode, In, Adapter, Out1, Out2 = 6
-	size_t numNodes = 6; 
+	size_t numNodes = 7;
 	CPPUNIT_ASSERT_EQUAL ( numNodes, graph->getNumNodes() );
 	janitor.reset();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>add NULL
@@ -1064,7 +1064,7 @@ void GraphTest::testGraphConsistency() {
 	janitor = graph->getJanitor();
 	CPPUNIT_ASSERT ( janitor->add ( ad2 ) == SUCCEED );
 	// start-, endNode, ( In, Adapter, Out1, Out2 ) * 2 = 10
-	numNodes = 10; 
+	numNodes = 11;
 	janitor.reset();
 	CPPUNIT_ASSERT_EQUAL ( numNodes, graph->getNumNodes() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>try to create feedback connection
@@ -1104,9 +1104,9 @@ void GraphTest::testGraphSeries() {
 	CreateSeries< CreateAdapter<Volume>, GRAPH_DEPTH > 
 		series( graph, graph->getStartNode(), graph->getEndNode() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> check creation
-	//                              4 = input + adapter + output + helper ( created by CreateSeries )
+	//                              5 = terminator + input + adapter + output + helper ( created by CreateSeries )
 	//                              |
-	CPPUNIT_ASSERT_EQUAL ( (size_t)(4 * GRAPH_DEPTH + 2), graph->getNumNodes() );
+	CPPUNIT_ASSERT_EQUAL ( (size_t)(4 * GRAPH_DEPTH + 3), graph->getNumNodes() );
 	CPPUNIT_ASSERT ( graph->isActive() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> process
 	Frames inFrame( blockSize );
@@ -1136,9 +1136,9 @@ void GraphTest::testGraphParallel() {
 	CreateParallel< CreateAdapter<Volume>, GRAPH_DEPTH > 
 		parallel( graph, graph->getStartNode(), graph->getEndNode() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> check creation
-	//                              3= input + adapter + output  
+	//                              4= terminator + input + adapter + output
 	//                              |
-	CPPUNIT_ASSERT_EQUAL ( (size_t)(3 * GRAPH_DEPTH + 2), graph->getNumNodes() );
+	CPPUNIT_ASSERT_EQUAL ( (size_t)(3 * GRAPH_DEPTH + 3), graph->getNumNodes() );
 	CPPUNIT_ASSERT ( graph->isActive() );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> process
 	Frames inFrame( blockSize );
@@ -1217,7 +1217,7 @@ void performComplex1(processing::Graph::Ptr graph, float inValue) {
 	typedef CreateAdapter< VolumeAdapterX<VOL_NUMERATOR, VOL_DENOMINATOR> > Adapter;
 	typedef CreateParallel< CreateSeries< Adapter, M >, N> Creator;
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-	static const size_t NB_NODES = M * N * 4 + 2;
+	static const size_t NB_NODES = M * N * 4 + 3;
 	static const size_t COPYINTO = N - 1;
 	testCreatorGraph<Creator>( graph, X, NB_NODES, COPYINTO, SUM );	
 }
@@ -1264,7 +1264,7 @@ void performComplex2(processing::Graph::Ptr graph, float inValue) {
 	typedef CreateAdapter< VolumeAdapterX<VOL_NUMERATOR, VOL_DENOMINATOR> > Adapter;
 	typedef CreateSeries< CreateParallel< Adapter, N >, M> Creator;
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-	static const size_t NB_NODES = N * M * 3 + M + 2;
+	static const size_t NB_NODES = N * M * 3 + M + 3;
 	static const size_t COPYINTO = (N-1)*M;
 	testCreatorGraph<Creator>( graph, X, NB_NODES, COPYINTO, SUM );
 }
@@ -1305,7 +1305,7 @@ void performComplex3(processing::Graph::Ptr graph, float inValue) {
 	typedef CreateBinaryTree< Adapter, N > Creator;
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	static const size_t NUM_BINARY = (1 << N) - 1;
-	static const size_t NB_NODES = Creator::NUM_CREATED_ADAPTER * 3 + NUM_BINARY + 1;
+	static const size_t NB_NODES = Creator::NUM_CREATED_ADAPTER * 3 + NUM_BINARY + 2;
 	int a = Creator::NUM_CREATED_ADAPTER;
 	static const size_t COPYINTO = Creator::NUM_CREATED_ADAPTER/2;
 	testCreatorGraph<Creator>( graph, X, NB_NODES, COPYINTO, SUM );

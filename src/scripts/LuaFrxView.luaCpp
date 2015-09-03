@@ -92,12 +92,14 @@ class LuaFrxViewBase extends sambag.lua.ALuaObject {
     void setSize(float width, float height);
     /**
      * @returnType Object
-     * @return the "Entry" @see Object 
+     * @return the "Entry" @see Object
+     * @param [optional] the channel nummer 
      * @version 1.0.5
      */
     ManuallyReturn<1> getEntry();
     /**
      * @returnType Object
+     * @param [optional] the channel nummer 
      * @return the "Exit" @see Object 
      * @version 1.0.5
      */

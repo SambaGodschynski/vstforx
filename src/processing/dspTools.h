@@ -19,6 +19,7 @@
 #include <limits>
 #include <exception>
 #include <sambag/com/Common.hpp>
+#include <cstring> // memset
 
 namespace processing {
 	//====================================================================================================
@@ -43,6 +44,18 @@ inline int note2Sample ( double noteVal, double tempo, double samplerate ){
 	double wholeInMs = 4000.0 * 60.0 / tempo;
 	return (int) ( oneMsInSamples * wholeInMs * noteVal );
 }
+
+/**
+ * @brief mutes channels
+ */
+template<typename T>
+inline void setZero(T **data, size_t numChannels, size_t samples)
+{
+    for(size_t c=0; c<numChannels; ++c) {
+        ::memset(data[c], 0, sizeof(T) * samples);
+    }
+}
+
 //========================================================================================================
 /** 
  * @deprecated

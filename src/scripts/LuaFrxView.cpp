@@ -345,17 +345,25 @@ slua::IgnoreReturn LuaFrxView::getEntry(lua_State *lua) {
 	using namespace frx::gui::components; 
 	using namespace sambag::disco::components;
     using namespace frx::gui;
-    FrxNode::Ptr entry;
+    FrxEntryNode::Ptr entry;
     FrxCircuidViewPtr view = getView(lua);
     IViewModelMap::Ptr map = getViewModelMap(view);
     if (!view || !map) {
         //not here because getview pushes error already: lua_pushnil(lua);
         return slua::IgnoreReturn();
     }
+    std::string id("1");
+    if (lua_isstring(lua, -1)) {
+        id = std::string(lua_tostring(lua,-1));
+        lua_pop(lua, 1);
+    }
 	const FrxCircuidView::Components &comps = view->getContentPane()->getComponents();
 	BOOST_FOREACH(AComponentPtr c, comps) {
 		entry = boost::dynamic_pointer_cast<FrxEntryNode>(c);
-        if (entry) {
+        if (!entry) {
+            continue;
+        }
+        if (id.length()>0 && id==entry->getDisplayText()) {
             break;
         }
 	}
@@ -372,16 +380,23 @@ slua::IgnoreReturn LuaFrxView::getExit(lua_State *lua) {
 	using namespace frx::gui::components; 
 	using namespace sambag::disco::components;
     using namespace frx::gui;
-	FrxNode::Ptr exit;
+	FrxExitNode::Ptr exit;
     FrxCircuidViewPtr view = getView(lua);
     IViewModelMap::Ptr map = getViewModelMap(view);
     if (!view || !map) {
         return slua::IgnoreReturn();
     }
+    std::string id("1");
+    if (lua_isstring(lua, -1)) {
+        id = std::string(lua_tostring(lua,-1));
+    }
 	const FrxCircuidView::Components &comps = view->getContentPane()->getComponents();
 	BOOST_FOREACH(AComponentPtr c, comps) {
 		exit = boost::dynamic_pointer_cast<FrxExitNode>(c);
-        if (exit) {
+        if (!exit) {
+            continue;
+        }
+        if (id.length()>0 && id==exit->getDisplayText()) {
             break;
         }
 	}

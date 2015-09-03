@@ -59,8 +59,9 @@ public:
 	/**
 	 * @return tuple(entry, exit)
 	 */
-	boost::tuple<fgc::FrxNodePtr, fgc::FrxNodePtr>
-	createEntryExtitNodes(fgc::FrxCircuidViewPtr c);
+	virtual void
+    createEntryExtitNodes(fgc::FrxCircuidViewPtr c,
+                          NodeList &o_entries, NodeList & o_exits);
 	//-------------------------------------------------------------------------
 	sdc::PopupMenuPtr getCircuidViewPopup(fgc::FrxCircuidViewPtr c);
 	//-------------------------------------------------------------------------

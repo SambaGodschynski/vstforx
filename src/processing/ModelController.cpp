@@ -161,24 +161,44 @@ bool ModelController::removeProcessor(IProcessor::Ptr cn) {
 	return res == Janitor::SUCCEED;
 }
 //-----------------------------------------------------------------------------
-INode::Ptr ModelController::getEntry() {
+INode::Ptr ModelController::getEntry(int idx) {
 	if (!graph)
 		return INode::Ptr();
-	if (!entry) {
-		::processing::ProcessorNode::Ptr o = graph->getStartNode();
-		entry = NodeAdapter::create(o);
+    if (idx>=entries.size()) {
+        entries.resize(idx+1);
+    }
+	if (!entries[idx]) {
+		::processing::ProcessorNode::Ptr o = graph->getStartNode(idx);
+		entries[idx] = NodeAdapter::create(o);
 	}
-	return entry;
+	return entries[idx];
 }
 //-----------------------------------------------------------------------------
-INode::Ptr ModelController::getExit() {
+INode::Ptr ModelController::getExit(int idx) {
 	if (!graph)
 		return INode::Ptr();
-	if (!exit) {
-		::processing::ProcessorNode::Ptr o = graph->getEndNode();
-		exit = NodeAdapter::create(o);
+    if (idx>=exits.size()) {
+        exits.resize(idx+1);
+    }
+	if (!exits[idx]) {
+		::processing::ProcessorNode::Ptr o = graph->getEndNode(idx);
+		exits[idx] = NodeAdapter::create(o);
 	}
-	return exit;
+	return exits[idx];
+}
+//-------------------------------------------------------------------------
+size_t ModelController::getNumEntries() const {
+    if (!graph) {
+        return 0;
+    }
+    return graph->getNumStartNodes();
+}
+//-------------------------------------------------------------------------
+size_t ModelController::getNumExits() const {
+    if (!graph) {
+        return 0;
+    }
+    return graph->getNumEndNodes();
 }
 //-----------------------------------------------------------------------------
 IHostInfo::Ptr ModelController::getHostInfo() const {

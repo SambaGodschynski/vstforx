@@ -57,27 +57,26 @@ void VstForxEditor::initEntryExit(FrxCircuidViewPtr circ) {
 	::com::Settings &set = com::getSettings();
 	sd::Dimension winSize(set.getWindowWidth(), set.getWindowHeight());
 	
-	FrxNodePtr entry, exit;
-	boost::tie(entry, exit) = getFrxControl(circ).createEntryExtitNodes(circ);
+	IFrxControl::NodeList entries, exits;
+	getFrxControl(circ).createEntryExtitNodes(circ, entries, exits);
 	
-	if (!entry || !exit) {
-		SAMBAG_THROW(
-			sambag::com::exceptions::IllegalStateException,
-			"creating entry/exit failed."
-		);
-	}
 	double nodeRadius;
+    double gap = 60.;
 	sdcu::getUIManager().getProperty("Entry.radius", nodeRadius);
-
-	// entry node
-	sd::Coordinate xLoc = winSize.width()/2. - nodeRadius;
-	sd::Coordinate yLoc = 0.;
-	sd::Point2D viewPos = circ->getViewport()->getViewPosition();
-	entry->setLocation(xLoc + viewPos.x(), yLoc + viewPos.y());
-	
+    sd::Coordinate xLoc = winSize.width()/2. - (nodeRadius + gap) * entries.size();
+    sd::Coordinate yLoc = 0.;
+    sd::Point2D viewPos = circ->getViewport()->getViewPosition();
+    
+    // entry nodes
+    for (int i=0; i<entries.size(); ++i) {
+        entries[i]->setLocation(xLoc + i * (nodeRadius + gap) + viewPos.x(), yLoc + viewPos.y());
+    }
+	xLoc = winSize.width()/2. - (nodeRadius * exits.size() + gap);
 	//exit node
-	yLoc = winSize.height() - nodeRadius*2 - 60.;
-	exit->setLocation(xLoc + viewPos.x(), yLoc + viewPos.y());
+    for (int i=0; i<exits.size(); ++i) {
+        yLoc = winSize.height() - nodeRadius*2 - 60.;
+        exits[i]->setLocation(xLoc + i * (nodeRadius + gap) + viewPos.x(), yLoc + viewPos.y());
+    }
 }
 //-----------------------------------------------------------------------------
 FrxCircuidViewPtr VstForxEditor::createEmptyView() {

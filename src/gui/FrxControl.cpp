@@ -1137,25 +1137,33 @@ void FrxControl::handleContextMenuPopup(const sdc::events::MouseEvent &ev) {
 	currPopup = popup;
 }
 //-----------------------------------------------------------------------------
-boost::tuple<fgc::FrxNodePtr, fgc::FrxNodePtr>
-FrxControl::createEntryExtitNodes(fgc::FrxCircuidViewPtr circ)
+void
+FrxControl::createEntryExtitNodes(fgc::FrxCircuidViewPtr circ,
+    NodeList &o_entries, NodeList &o_exits)
 {
 	frx::processing::IModelController::Ptr ctrl;
 	IViewModelMap::Ptr map;
 	boost::tie(ctrl, map) = getControllerAndMap(circ);
 	boost::tuple<fgc::FrxNodePtr, fgc::FrxNodePtr> res;
 
-	// entry node
-	boost::get<0>(res) = FrxEntryNode::create();
-	circ->add(boost::get<0>(res), FrxCircuidView::Z_IO);
-	map->registerObjects(boost::get<0>(res), ctrl->getEntry());
-	
-	//exit node
-	boost::get<1>(res) = FrxExitNode::create();
-	circ->add(boost::get<1>(res), FrxCircuidView::Z_IO);
-	map->registerObjects(boost::get<1>(res), ctrl->getExit());
+	// entry nodes
+    for (size_t i=0; i<ctrl->getNumEntries(); ++i) {
+    	FrxEntryNode::Ptr et = FrxEntryNode::create();
+        circ->add(et, FrxCircuidView::Z_IO);
+        map->registerObjects(et, ctrl->getEntry(i));
+        et->setDisplayText(::sambag::com::toString(i+1));
+        o_entries.push_back(et);
+    }
 
-	return res;
+	
+	//exit nodes
+    for (size_t i=0; i<ctrl->getNumExits(); ++i) {
+        FrxExitNode::Ptr ex = FrxExitNode::create();
+        circ->add(ex, FrxCircuidView::Z_IO);
+        map->registerObjects(ex, ctrl->getExit(i));
+        ex->setDisplayText(::sambag::com::toString(i+1));
+        o_exits.push_back(ex);
+    }
 
 }
 //-----------------------------------------------------------------------------

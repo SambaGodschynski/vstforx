@@ -21,6 +21,8 @@
 #include <sambag/com/Common.hpp>
 #include <com/Legacy.hpp>
 #include <processing/ProcessorAdapter.hpp>
+#include <processing/dspTools.h>
+
 namespace frx { namespace processing {
 namespace {
     /**
@@ -161,7 +163,9 @@ void VstForxPlug::open() {
 		return;
 	}
 	hostInfoAdapter = IHostInfo::Ptr(new HostInfoAdapter(this));
-	graph = ::processing::Graph::create(hostInfoAdapter);
+    numInputs = getHost()->getNumInputs() / 2;
+    numOutputs = getHost()->getNumOutputs() / 2;
+	graph = ::processing::Graph::create(hostInfoAdapter, numInputs, numOutputs);
 	installGraphListener();
 	ctrl = ModelController::create();
 	ctrl->setGraph(graph);
@@ -210,11 +214,15 @@ void VstForxPlug::process(float **in, float **out, int numSamples) {
 	TRY_TO_LOCK_TIMED2 (processingLoadLock, 120);
 	if ( !graph ) 
 		return;
-	::processing::Frames fr ( in, numSamples ); 
-	if ( !graph->getEndNode()->isActive() ){
+	::processing::Frames fr ( in, numSamples );
+    // we have currently only a stereo input to feed (not sure if we ever need that)
+    // if we wan't more later we have to pushAndCopy for each in ch.
+	if ( !graph->getTerminatorNode()->isActive() )
+    {
 		fr.setZero ( numSamples );
-		fr.getBlock ( out, numSamples );
-		return;
+		//fr.getBlock ( out, numSamples );
+		::processing::setZero(out, getHost()->getNumOutputs(), numSamples);
+        return;
 	}
 	{
 		TRY_TO_LOCK_TIMED2 ( graph->getProcessingLock(), 10 ); // pushandcopy needs the lock #issue272
