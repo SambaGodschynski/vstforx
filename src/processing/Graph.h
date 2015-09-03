@@ -737,6 +737,7 @@ public:
                 return;
             }
 			n->setActive( true );
+            processNodeParents(n);
 			return;
 		}
 		// alles nach endFinalized ist inaktiv
