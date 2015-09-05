@@ -63,7 +63,7 @@ void VstForxEditor::initEntryExit(FrxCircuidViewPtr circ) {
 	double nodeRadius;
     double gap = 60.;
 	sdcu::getUIManager().getProperty("Entry.radius", nodeRadius);
-    sd::Coordinate xLoc = winSize.width()/2. - (nodeRadius + gap) * entries.size();
+    sd::Coordinate xLoc = winSize.width()/2. - ((nodeRadius + gap) * entries.size())/2;
     sd::Coordinate yLoc = 0.;
     sd::Point2D viewPos = circ->getViewport()->getViewPosition();
     
@@ -71,7 +71,7 @@ void VstForxEditor::initEntryExit(FrxCircuidViewPtr circ) {
     for (int i=0; i<entries.size(); ++i) {
         entries[i]->setLocation(xLoc + i * (nodeRadius + gap) + viewPos.x(), yLoc + viewPos.y());
     }
-	xLoc = winSize.width()/2. - (nodeRadius * exits.size() + gap);
+	xLoc = winSize.width()/2. - ((nodeRadius + gap) * exits.size())/2;
 	//exit node
     for (int i=0; i<exits.size(); ++i) {
         yLoc = winSize.height() - nodeRadius*2 - 60.;

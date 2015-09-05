@@ -8,9 +8,18 @@ function packVSTForx() {
     target=$5
     folder=$6
     ext=$7
+    config=$8
+
     mkdir -p $target/$folder
     cp -r $bin/vstforx$post.$ext $target/$folder
     cp -r $bin/vstforxInstrument$post.$ext $target/$folder
+    if [ $config = "ALL" ]
+    then
+	cp -r $bin/vstforxInstrument_O2$post.$ext $target/$folder
+	cp -r $bin/vstforxInstrument_O4$post.$ext $target/$folder
+	cp -r $bin/vstforxInstrument_O8$post.$ext $target/$folder
+    fi
+
     cp license.txt $target/$folder
     cp vstforx.conf $target/$folder
     mkdir -p $target/$folder/scripts/lua_plugins
@@ -84,7 +93,7 @@ version=$2
 if [ $1 = "mac" ]
 then
     echo mac $version:
-    packVSTForx ../src ../src/PluginApps VSTForx-$version-mac '' mac VSTForx vst
+    packVSTForx ../src ../src/PluginApps VSTForx-$version-mac '' mac VSTForx vst ALL
     packVSTForx ../src ../src/PluginApps VSTForxDEMO-$version-mac DEMO mac VSTForx vst
     packRemote ../src ../src/PluginApps RemoteChannelSender-$version-mac '' mac VSTForx vst
     packRemote ../src ../src/PluginApps RemoteChannelSenderDEMO-$version-mac _DEMO mac VSTForx vst
@@ -92,7 +101,7 @@ then
 elif [ $1 = "win" ] 
 then
     echo win $version:
-    packVSTForx ../src ../src/PluginApps/Release VSTForx-$version-win '' win VSTForx dll
+    packVSTForx ../src ../src/PluginApps/Release VSTForx-$version-win '' win VSTForx dll ALL
     packVSTForx ../src ../src/PluginApps/Release VSTForxDEMO-$version-win DEMO win VSTForx dll
     packRemote ../src ../src/PluginApps/Release RemoteChannelSender-$version-win '' win VSTForx dll
     packRemote ../src ../src/PluginApps/Release RemoteChannelSenderDEMO-$version-win _DEMO win VSTForx dll
@@ -100,7 +109,7 @@ then
 elif [ $1 = "win64" ] 
 then
     echo win64 $version:
-    packVSTForx ../src ../src/PluginApps/Release VSTForx-$version-win64 '' win VSTForx64 dll
+    packVSTForx ../src ../src/PluginApps/Release VSTForx-$version-win64 '' win VSTForx64 dll ALL
     packVSTForx ../src ../src/PluginApps/Release VSTForxDEMO-$version-win64 DEMO win VSTForx64 dll
     packRemote ../src ../src/PluginApps/Release RemoteChannelSender-$version-win64 '' win VSTForx64 dll
     packRemote ../src ../src/PluginApps/Release RemoteChannelSenderDEMO-$version-win64 _DEMO win VSTForx64 dll

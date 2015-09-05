@@ -11,13 +11,22 @@
 struct PlugSettings 
 {
 
+#ifndef FRX_O
+    #define FRX_O 2
+#endif
+
+    enum {
+        PluginInputs = 2,
+        PluginOutputs = FRX_O
+    };
+
 #ifdef FRX_IS_INSTRUMENT
 	enum { IsInstrument = 1 };
 #else
 	enum { IsInstrument = 0 };
 #endif
 
-enum VersionTypes { Normal, Demo, CM };
+    enum VersionTypes { Normal, Demo, CM };
 
 #if defined FRX_IS_DEMO && defined FRX_IS_CM
   #error Demo and CM defined
@@ -33,7 +42,7 @@ enum VersionTypes { Normal, Demo, CM };
   enum {Version=Normal};
 #endif
 
-enum { FRX_UID = '_frx' + (IsInstrument*2) + (Version*3) };
+    enum { FRX_UID = '_frx' + (IsInstrument*2) + (Version*3) + ((PluginOutputs-2)*4) };
 
 };
 

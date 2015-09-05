@@ -21,6 +21,9 @@ function build() {
   cd src/PluginApps
   __nameWorkaround vstforx.app vstforx.vst
   __nameWorkaround vstforxInstrument.app vstforxInstrument.vst
+  __nameWorkaround vstforxInstrument_O2.app vstforxInstrument_O2.vst
+  __nameWorkaround vstforxInstrument_O4.app vstforxInstrument_O4.vst
+  __nameWorkaround vstforxInstrument_O8.app vstforxInstrument_O8.vst
   __nameWorkaround VSTForx-CM.app VSTForx-CM.vst
   __nameWorkaround VSTForxInstrument-CM.app VSTForxInstrument-CM.vst
   __nameWorkaround vstforxDEMO.app vstforxDEMO.vst

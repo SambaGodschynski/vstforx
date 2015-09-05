@@ -77,6 +77,21 @@ IF (WIN32)
   target_link_libraries (vstforxInstrument frx_core ${FRX_CLIBS})
   target_compile_definitions(vstforxInstrument PUBLIC "FRX_IS_INSTRUMENT")
 
+  add_library(vstforxInstrument_O2 SHARED ${PlugSources})
+  target_link_libraries (vstforxInstrument_O2 frx_core ${FRX_CLIBS})
+  target_compile_definitions(vstforxInstrument_O2 PUBLIC "FRX_IS_INSTRUMENT")
+  target_compile_definitions(vstforxInstrument_O2 PUBLIC "FRX_O=4")
+
+  add_library(vstforxInstrument_O4 SHARED ${PlugSources})
+  target_link_libraries (vstforxInstrument_O4 frx_core ${FRX_CLIBS})
+  target_compile_definitions(vstforxInstrument_O4 PUBLIC "FRX_IS_INSTRUMENT")
+  target_compile_definitions(vstforxInstrument_O4 PUBLIC "FRX_O=8")
+
+  add_library(vstforxInstrument_O8 SHARED ${PlugSources})
+  target_link_libraries (vstforxInstrument_O8 frx_core ${FRX_CLIBS})
+  target_compile_definitions(vstforxInstrument_O8 PUBLIC "FRX_IS_INSTRUMENT")
+  target_compile_definitions(vstforxInstrument_O8 PUBLIC "FRX_O=16")
+
   add_library(vstforxDEMO SHARED ${PlugSources})
   target_link_libraries (vstforxDEMO frx_core ${FRX_CLIBS})
   target_compile_definitions(vstforxDEMO PUBLIC "FRX_IS_DEMO")
@@ -125,6 +140,28 @@ ELSEIF(APPLE)
   	  "tmpl.plist.in"
   	  "VSTForx/mac/ivstforx.plist"
 	)
+
+	SET(PLIST_PROD VSTForxInstrument_O2)
+	SET(PLIST_EXEC vstforxInstrument_O2)
+	CONFIGURE_FILE(
+  	  "tmpl.plist.in"
+  	  "VSTForx/mac/ivstforx_o2.plist"
+	)
+
+	SET(PLIST_PROD VSTForxInstrument_O4)
+	SET(PLIST_EXEC vstforxInstrument_O4)
+	CONFIGURE_FILE(
+  	  "tmpl.plist.in"
+  	  "VSTForx/mac/ivstforx_o4.plist"
+	)
+
+	SET(PLIST_PROD VSTForxInstrument_O8)
+	SET(PLIST_EXEC vstforxInstrument_O8)
+	CONFIGURE_FILE(
+  	  "tmpl.plist.in"
+  	  "VSTForx/mac/ivstforx_o8.plist"
+	)
+
 	SET(PLIST_PROD VSTForx-CM)
 	SET(PLIST_EXEC VSTForx-CM)
 	CONFIGURE_FILE(
@@ -185,6 +222,36 @@ ELSEIF(APPLE)
   SET_TARGET_PROPERTIES(vstforxInstrument PROPERTIES LINK_FLAGS "-bundle")
   target_compile_definitions(vstforxInstrument PUBLIC "FRX_IS_INSTRUMENT"
   					       PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.VSTForxInstrument\"")
+  #vstforxInstrument O2
+  ADD_EXECUTABLE(vstforxInstrument_O2 MACOSX_BUNDLE ${PlugSources})
+  target_link_libraries (vstforxInstrument_O2 frx_core ${FRX_CLIBS})
+  SET_TARGET_PROPERTIES(vstforxInstrument_O2 PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/ivstforx_o2.plist")
+  SET_TARGET_PROPERTIES(vstforxInstrument_O2 PROPERTIES LINK_FLAGS "-bundle")
+  target_compile_definitions(vstforxInstrument_O2 PUBLIC "FRX_IS_INSTRUMENT"
+  					       PUBLIC "FRX_O=4"
+  					       PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.VSTForxInstrument_O2\"")
+  #vstforxInstrument O4
+  ADD_EXECUTABLE(vstforxInstrument_O4 MACOSX_BUNDLE ${PlugSources})
+  target_link_libraries (vstforxInstrument_O4 frx_core ${FRX_CLIBS})
+  SET_TARGET_PROPERTIES(vstforxInstrument_O4 PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/ivstforx_o4.plist")
+  SET_TARGET_PROPERTIES(vstforxInstrument_O4 PROPERTIES LINK_FLAGS "-bundle")
+  target_compile_definitions(vstforxInstrument_O4 PUBLIC "FRX_IS_INSTRUMENT"
+  					       PUBLIC "FRX_O=8"
+  					       PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.VSTForxInstrument_O4\"")
+  #vstforxInstrument O8
+  ADD_EXECUTABLE(vstforxInstrument_O8 MACOSX_BUNDLE ${PlugSources})
+  target_link_libraries (vstforxInstrument_O8 frx_core ${FRX_CLIBS})
+  SET_TARGET_PROPERTIES(vstforxInstrument_O8 PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/ivstforx_o8.plist")
+  SET_TARGET_PROPERTIES(vstforxInstrument_O8 PROPERTIES LINK_FLAGS "-bundle")
+  target_compile_definitions(vstforxInstrument_O8 PUBLIC "FRX_IS_INSTRUMENT"
+  					       PUBLIC "FRX_O=16"
+  					       PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.VSTForxInstrument_O8\"")
+
+
+
+
+
+
   #vstforx-CM
 #  ADD_EXECUTABLE(VSTForx-CM MACOSX_BUNDLE ${CMPlugSources} )
 #  target_link_libraries (VSTForx-CM frx_core ${FRX_CLIBS})
