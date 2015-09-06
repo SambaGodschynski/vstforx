@@ -5,7 +5,7 @@
  *
  * LuaImplBase.cpp
  *
- *  Created on: Wed Jun  4 14:35:18 2014
+ *  Created on: Sun Sep  6 10:33:25 2015
  *      Author: Samba Godschysnki
  */
 
@@ -30,16 +30,17 @@ void LuaImplBase::addLuaFields(lua_State *lua, int index)
 		boost::bind(&LuaImplBase::sendMidi, this, lua),
 		boost::bind(&LuaImplBase::getChannel, this, lua, _1),
 		boost::bind(&LuaImplBase::fft, this, lua),
+		boost::bind(&LuaImplBase::getFrequency, this, lua),
 		boost::bind(&LuaImplBase::setChannel, this, lua),
-		boost::bind(&LuaImplBase::getSamplePos, this, lua),
-		boost::bind(&LuaImplBase::getBarStartPos, this, lua)),
+		boost::bind(&LuaImplBase::getSamplePos, this, lua)),
 	index, 
 	getUId() 
 	); 
 
 	registerClassFunctions<Functions2, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaImplBase::getPpqPos, this, lua),
+	boost::make_tuple(boost::bind(&LuaImplBase::getBarStartPos, this, lua),
+		boost::bind(&LuaImplBase::getPpqPos, this, lua),
 		boost::bind(&LuaImplBase::getTimeSigNumerator, this, lua),
 		boost::bind(&LuaImplBase::getTimeSigDenominator, this, lua),
 		boost::bind(&LuaImplBase::getTempo, this, lua),
@@ -47,15 +48,15 @@ void LuaImplBase::addLuaFields(lua_State *lua, int index)
 		boost::bind(&LuaImplBase::setParameterValue, this, lua, _1, _2),
 		boost::bind(&LuaImplBase::setParameterDisplay, this, lua, _1, _2),
 		boost::bind(&LuaImplBase::getParameterValue, this, lua, _1),
-		boost::bind(&LuaImplBase::getParameterDisplay, this, lua, _1),
-		boost::bind(&LuaImplBase::addParameterListener, this, lua, _1, _2)),
+		boost::bind(&LuaImplBase::getParameterDisplay, this, lua, _1)),
 	index, 
 	getUId() 
 	); 
 
 	registerClassFunctions<Functions3, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaImplBase::removeParameterListener, this, lua, _1, _2),
+	boost::make_tuple(boost::bind(&LuaImplBase::addParameterListener, this, lua, _1, _2),
+		boost::bind(&LuaImplBase::removeParameterListener, this, lua, _1, _2),
 		boost::bind(&LuaImplBase::getPersistUserData, this, lua, _1),
 		boost::bind(&LuaImplBase::setPersistUserData, this, lua)),
 	index, 

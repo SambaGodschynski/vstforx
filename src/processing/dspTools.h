@@ -56,6 +56,9 @@ inline void setZero(T **data, size_t numChannels, size_t samples)
     }
 }
 
+
+double detectFrequency(float *data, float sampleRate, int numSamples);
+
 //========================================================================================================
 /** 
  * @deprecated
