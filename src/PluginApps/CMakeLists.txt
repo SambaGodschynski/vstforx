@@ -79,18 +79,18 @@ IF (WIN32)
 
   add_library(vstforxInstrument_O2 SHARED ${PlugSources})
   target_link_libraries (vstforxInstrument_O2 frx_core ${FRX_CLIBS})
-  target_compile_definitions(vstforxInstrument_O2 PUBLIC "FRX_IS_INSTRUMENT")
-  target_compile_definitions(vstforxInstrument_O2 PUBLIC "FRX_O=4")
+  target_compile_definitions(vstforxInstrument_O2 PUBLIC "FRX_IS_INSTRUMENT"
+  						  PUBLIC "FRX_O=4")
 
   add_library(vstforxInstrument_O4 SHARED ${PlugSources})
   target_link_libraries (vstforxInstrument_O4 frx_core ${FRX_CLIBS})
-  target_compile_definitions(vstforxInstrument_O4 PUBLIC "FRX_IS_INSTRUMENT")
-  target_compile_definitions(vstforxInstrument_O4 PUBLIC "FRX_O=8")
+  target_compile_definitions(vstforxInstrument_O4 PUBLIC "FRX_IS_INSTRUMENT"
+  						  PUBLIC "FRX_O=8")
 
   add_library(vstforxInstrument_O8 SHARED ${PlugSources})
   target_link_libraries (vstforxInstrument_O8 frx_core ${FRX_CLIBS})
-  target_compile_definitions(vstforxInstrument_O8 PUBLIC "FRX_IS_INSTRUMENT")
-  target_compile_definitions(vstforxInstrument_O8 PUBLIC "FRX_O=16")
+  target_compile_definitions(vstforxInstrument_O8 PUBLIC "FRX_IS_INSTRUMENT"
+  						  PUBLIC "FRX_O=16")
 
   add_library(vstforxDEMO SHARED ${PlugSources})
   target_link_libraries (vstforxDEMO frx_core ${FRX_CLIBS})
