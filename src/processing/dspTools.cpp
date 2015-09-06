@@ -54,6 +54,46 @@ namespace processing {
 		const CCNamesMap ccNamesMap = initCCNames();
 	} // namespace musicalValues
 
+//--------------------------------------------------------------------------------------------------------
+double detectFrequency(float *data, float sampleRate, int len)
+{
+    // based on: http://www.instructables.com/id/Reliable-Frequency-Detection-Using-DSP-Techniques/?ALLSTEPS
+    int i,k;
+    double sum, sum_old;
+    double thresh = 0;
+    unsigned char pd_state = 0;
+    sum = 0;
+    pd_state = 0;
+    double period = 0;
+    // Autocorrelation
+    for(i=0; i < len; i++)
+    {
+        sum_old = sum;
+        sum = 0;
+        for(k=0; k < len-i; k++)
+        {
+            sum += (data[k])*(data[k+i]);
+        }
+        // Peak Detect State Machine
+        if (pd_state == 2 && (sum-sum_old) <=0)
+        {
+            period = i;
+            pd_state = 3;
+        }
+        if (pd_state == 1 && (sum > thresh) && (sum-sum_old) > 0)
+        {
+            pd_state = 2;
+        }
+        if (!i)
+        {
+            thresh = sum * 0.5;
+            pd_state = 1;
+        }
+    }
+    // Frequency identified in Hz
+    return (double)sampleRate/period;
+}
+
 //========================================================================================================
 // Klasse ADSR :
 // Attack, Decay, Sustain, Release bestehend aus FadeValue
@@ -280,6 +320,5 @@ std::string getCCName ( size_t index ) {
 	if ( it==ccNamesMap.end() ) return "unnamed";
 	return it->second;
 }
-
 } // namespace musicalValues
 } // namespace com

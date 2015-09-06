@@ -135,6 +135,17 @@ class LuaImplBase extends sambag.lua.ALuaObject {
        * @version 1.0.5
        */
       User<FFTData> fft();
+
+      /**
+       * @brief Calculates the current frequency of a signal 
+       * @return the frequency of a signal
+       * @hiddenParam sequence data
+       * @param the input data
+       * @returnType float
+       * @version 1.0.65
+       */
+      double getFrequency();
+
       /**
        * @brief Set the channel output data.
        * @hiddenParam int nb

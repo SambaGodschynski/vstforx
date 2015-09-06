@@ -875,6 +875,24 @@ FFTData LuaImpl::fft(lua_State *lua) {
     return FFTData();
 }
 //-----------------------------------------------------------------------------
+double LuaImpl::getFrequency(lua_State *lua) {
+      try {
+        boost::tuple<LuaFloatSeq> datac;
+        if(!sambag::lua::pop(luaState.get(), datac)) {
+            throw std::runtime_error("arguments mismatch");
+        }
+        LuaFloatSeq data = boost::get<0>(datac);
+        IHostInfo::Ptr hI = hostInfo.lock();
+        return ::processing::detectFrequency( &data[0], hI->getSampleRate(), data.size());
+    } catch(const std::exception &ex) {
+        sambag::lua::pushLuaError(luaState.get(), ex.what());
+    } catch(...) {
+        sambag::lua::pushLuaError(luaState.get(), "unknown error");
+    }
+    return 0.;
+  
+}
+//-----------------------------------------------------------------------------
 LuaImpl::~LuaImpl() {
 }
 //-----------------------------------------------------------------------------

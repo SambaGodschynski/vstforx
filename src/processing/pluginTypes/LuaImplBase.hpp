@@ -5,7 +5,7 @@
  *
  * LuaImplBase.hpp
  *
- *  Created on: Wed Jun  4 14:35:15 2014
+ *  Created on: Sun Sep  6 10:33:25 2015
  *      Author: Samba Godschysnki
  */
 
@@ -45,6 +45,7 @@ protected:
 	SAMBAG_LUA_FTAG(sendMidi, void ());
 	SAMBAG_LUA_FTAG(getChannel, LuaFrames (int));
 	SAMBAG_LUA_FTAG(fft, FFTData ());
+	SAMBAG_LUA_FTAG(getFrequency, double ());
 	SAMBAG_LUA_FTAG(setChannel, void ());
 	SAMBAG_LUA_FTAG(getSamplePos, double ());
 	SAMBAG_LUA_FTAG(getBarStartPos, double ());
@@ -68,11 +69,12 @@ protected:
 	Frx_sendMidi_Tag, 
 	Frx_getChannel_Tag, 
 	Frx_fft_Tag, 
+	Frx_getFrequency_Tag, 
 	Frx_setChannel_Tag, 
-	Frx_getSamplePos_Tag, 
-	Frx_getBarStartPos_Tag) Functions1;
+	Frx_getSamplePos_Tag) Functions1;
 
-	typedef LOKI_TYPELIST_10(Frx_getPpqPos_Tag, 
+	typedef LOKI_TYPELIST_10(Frx_getBarStartPos_Tag, 
+	Frx_getPpqPos_Tag, 
 	Frx_getTimeSigNumerator_Tag, 
 	Frx_getTimeSigDenominator_Tag, 
 	Frx_getTempo_Tag, 
@@ -80,10 +82,10 @@ protected:
 	Frx_setParameterValue_Tag, 
 	Frx_setParameterDisplay_Tag, 
 	Frx_getParameterValue_Tag, 
-	Frx_getParameterDisplay_Tag, 
-	Frx_addParameterListener_Tag) Functions2;
+	Frx_getParameterDisplay_Tag) Functions2;
 
-	typedef LOKI_TYPELIST_3(Frx_removeParameterListener_Tag, 
+	typedef LOKI_TYPELIST_4(Frx_addParameterListener_Tag, 
+	Frx_removeParameterListener_Tag, 
 	Frx_getPersistUserData_Tag, 
 	Frx_setPersistUserData_Tag) Functions3;
 
@@ -140,6 +142,15 @@ protected:
 	* @version 1.0.5
 	*/
 	virtual FFTData fft(lua_State *lua) = 0;
+	/**
+	* @brief Calculates the current frequency of a signal 
+	* @return the frequency of a signal
+	* @hiddenParam sequence data
+	* @param the input data
+	* @returnType float
+	* @version 1.0.65
+	*/
+	virtual double getFrequency(lua_State *lua) = 0;
 	/**
 	* @brief Set the channel output data.
 	* @hiddenParam int nb
@@ -234,6 +245,8 @@ protected:
 	* @return the persist user data for a key.
 	* @returnType sequence
 	* @param the key
+	* @note there is currently an issue here: it's not guaranteed that the data table
+	* entries are in the same order as saved. (see <a href="http://issues.vstforx.de/view.php?id=488">#488</a>)
 	* @version 1.0.5
 	*/
 	virtual sambag::lua::IgnoreReturn getPersistUserData(lua_State *lua, const std::string & key) = 0;
