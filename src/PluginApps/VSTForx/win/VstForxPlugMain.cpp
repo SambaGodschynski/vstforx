@@ -85,7 +85,8 @@ AudioEffect * createEffectInstance ( audioMasterCallback audioMaster ) {
 		frx::processing::VstForxPlug, // Processor
 	        PlugSettings::FRX_UID, // uid
 		sambag::dsp::StdPluginTraits<
-		  2,2,
+		  PlugSettings::PluginInputs,
+		  PlugSettings::PluginOutputs,
 		  PlugSettings::IsInstrument,
 		  ::com::Settings::PROGRAM_PARAMETER
 		>,
