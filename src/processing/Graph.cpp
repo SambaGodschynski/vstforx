@@ -455,12 +455,11 @@ size_t Graph::getGraphDelay() {
 }
 //------------------------------------------------------------------------------------------------------------
 Graph::Ptr Graph::create( frx::processing::IHostInfo::Ptr hostInfo, int numInputs, int numOutputs ) {
-	Graph::Ptr neu( new Graph( hostInfo ) );
-    Janitor::Ptr j = neu->getJanitor(); // hold janitor instance
-	neu->self = neu;
-    neu->setIO(numInputs, numOutputs);
-    neu->connectEndNodesWithTerminator();
-	return neu;
+  Graph::Ptr neu( new Graph( hostInfo ) );
+  neu->self = neu;
+  neu->setIO(numInputs, numOutputs);
+  neu->connectEndNodesWithTerminator();
+  return neu;
 }
 //------------------------------------------------------------------------------------------------------------
 void Graph::processEvents(sambag::dsp::IMidiEvents::Ptr events) {
