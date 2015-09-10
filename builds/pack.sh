@@ -13,12 +13,10 @@ function packVSTForx() {
     mkdir -p $target/$folder
     cp -r $bin/vstforx$post.$ext $target/$folder
     cp -r $bin/vstforxInstrument$post.$ext $target/$folder
-    if [ $config = "ALL" ]
-    then
-	cp -r $bin/vstforxInstrument_O2$post.$ext $target/$folder
-	cp -r $bin/vstforxInstrument_O4$post.$ext $target/$folder
-	cp -r $bin/vstforxInstrument_O8$post.$ext $target/$folder
-    fi
+    cp -r $bin/vstforxInstrument_2Out$post.$ext $target/$folder
+    cp -r $bin/vstforxInstrument_4Out$post.$ext $target/$folder
+    cp -r $bin/vstforxInstrument_8Out$post.$ext $target/$folder
+
 
     cp license.txt $target/$folder
     cp vstforx.conf $target/$folder
