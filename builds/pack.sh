@@ -13,9 +13,9 @@ function packVSTForx() {
     mkdir -p $target/$folder
     cp -r $bin/vstforx$post.$ext $target/$folder
     cp -r $bin/vstforxInstrument$post.$ext $target/$folder
-    cp -r $bin/vstforxInstrument_2Out$post.$ext $target/$folder
-    cp -r $bin/vstforxInstrument_4Out$post.$ext $target/$folder
-    cp -r $bin/vstforxInstrument_8Out$post.$ext $target/$folder
+    cp -r $bin/vstforxInstrument${post}_2Out.$ext $target/$folder
+    cp -r $bin/vstforxInstrument${post}_4Out.$ext $target/$folder
+    cp -r $bin/vstforxInstrument${post}_8Out.$ext $target/$folder
 
 
     cp license.txt $target/$folder
@@ -82,7 +82,7 @@ function packStandalone() {
 
 if [ $# -ne 2 ]
 then
-  echo 'usage: $0 target[mac|win|win64] version'
+  echo 'usage: target[mac|win|win64] version'
   exit 1
 fi
 
