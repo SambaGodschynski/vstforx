@@ -24,8 +24,6 @@ function build() {
   __nameWorkaround vstforxInstrument_2Out.app vstforxInstrument_2Out.vst
   __nameWorkaround vstforxInstrument_4Out.app vstforxInstrument_4Out.vst
   __nameWorkaround vstforxInstrument_8Out.app vstforxInstrument_8Out.vst
-  __nameWorkaround VSTForx-CM.app VSTForx-CM.vst
-  __nameWorkaround VSTForxInstrument-CM.app VSTForxInstrument-CM.vst
   __nameWorkaround vstforxDEMO.app vstforxDEMO.vst
   __nameWorkaround vstforxInstrumentDEMO.app vstforxInstrumentDEMO.vst
   __nameWorkaround vstforxInstrumentDEMO_2Out.app vstforxInstrumentDEMO_2Out.vst
