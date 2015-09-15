@@ -1,5 +1,11 @@
 #!/bin/sh
 
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# THIS IS NOT THE BUILD SCRIPT USED BY JENKINS
+# IF YOU WANT TO CHANGE THE CI BUILD SETTINGS GO
+# TO THE RELATED JENKNGS PRODUCT SETTINGS
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 function __nameWorkaround() {
   if [ -d $2 ]
   then
