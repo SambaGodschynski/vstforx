@@ -217,6 +217,14 @@ namespace processorTypes {
             static const char * toolTip;
         };
     };
+	struct FrqDetector : ProcessorTypeBase {
+        struct Details {
+            static const char * ns;
+            static const char * name;
+            static const char * beautyName;
+            static const char * toolTip;
+        };
+    };
 } // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -232,8 +240,9 @@ typedef FrxConcreteProcessor<processorTypes::PeakTracker> FrxPeakTrackerNode;
 typedef FrxConcreteProcessor<processorTypes::MIDIReceiver> FrxMIDIReceiver;
 typedef FrxConcreteProcessor<processorTypes::RemoteChReceiver> FrxRemoteChReceiver;
 typedef FrxConcreteProcessor<processorTypes::DCTester> FrxDCTester;
+typedef FrxConcreteProcessor<processorTypes::FrqDetector> FrxFrqDetector;
 ///////////////////////////////////////////////////////////////////////////////
-typedef LOKI_TYPELIST_12(FrxPluginNode,
+typedef LOKI_TYPELIST_13(FrxPluginNode,
                  FrxVolumeNode,
                  FrxPanNode,
                  FrxInStepNode,
@@ -244,7 +253,8 @@ typedef LOKI_TYPELIST_12(FrxPluginNode,
                  FrxPeakTrackerNode,
                  FrxMIDIReceiver,
                  FrxRemoteChReceiver,
-                 FrxDCTester
+                 FrxDCTester,
+                 FrxFrqDetector
         ) FrxProcessorList;
 //-----------------------------------------------------------------------------
 template <class _ProcessorType>

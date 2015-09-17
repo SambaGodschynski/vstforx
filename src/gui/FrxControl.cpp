@@ -938,6 +938,7 @@ void _initExtraMap()
 	using namespace boost::assign;
 	extraMap = map_list_of
 		(Loki::TypeInfo(typeid(FrxPeakTrackerNode)), &addOutParameter)
+        (Loki::TypeInfo(typeid(FrxFrqDetector)), &addOutParameter)
 		(Loki::TypeInfo(typeid(FrxADSRNode)), &addOutParameter).to_container(extraMap);
 	;
     // these inserts does not work with boost::assign
