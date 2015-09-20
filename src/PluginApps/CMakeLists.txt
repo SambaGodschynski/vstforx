@@ -164,40 +164,26 @@ ELSEIF(APPLE)
   	  "VSTForx/mac/ivstforx.plist"
 	)
 
-	SET(PLIST_PROD vstforxInstrument2Out)
+	SET(PLIST_PROD VSTForxInstrument2Out)
 	SET(PLIST_EXEC vstforxInstrument_2Out)
 	CONFIGURE_FILE(
   	  "tmpl.plist.in"
   	  "VSTForx/mac/ivstforx_o2.plist"
 	)
 
-	SET(PLIST_PROD vstforxInstrument4Out)
+	SET(PLIST_PROD VSTForxInstrument4Out)
 	SET(PLIST_EXEC vstforxInstrument_4Out)
 	CONFIGURE_FILE(
   	  "tmpl.plist.in"
   	  "VSTForx/mac/ivstforx_o4.plist"
 	)
 
-	SET(PLIST_PROD vstforxInstrument8Out)
+	SET(PLIST_PROD VSTForxInstrument8Out)
 	SET(PLIST_EXEC vstforxInstrument_8Out)
 	CONFIGURE_FILE(
   	  "tmpl.plist.in"
   	  "VSTForx/mac/ivstforx_o8.plist"
 	)
-
-	SET(PLIST_PROD VSTForx-CM)
-	SET(PLIST_EXEC VSTForx-CM)
-	CONFIGURE_FILE(
-  	  "tmpl.plist.in"
-  	  "VSTForx/mac/vstforxcm.plist"
-	)	
-
-	SET(PLIST_PROD VSTForxInstrument-CM)
-	SET(PLIST_EXEC VSTForxInstrument-CM)
-	CONFIGURE_FILE(
-  	  "tmpl.plist.in"
-  	  "VSTForx/mac/ivstforxcm.plist"
-	)		
 
 	SET(PLIST_PROD VSTForxDEMO)
 	SET(PLIST_EXEC vstforxDEMO)
