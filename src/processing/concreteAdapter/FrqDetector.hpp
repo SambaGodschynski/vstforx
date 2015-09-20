@@ -10,8 +10,9 @@
 #include "processing/processing.h"
 #include "processing/parameter/parameter.h"
 #include "com/Serialization.h"
-#include "processing/dspTools.h"
 #include <processing/ModelFactory.hpp>
+#include <sambag/com/Thread.hpp> 
+#include <boost/circular_buffer.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -39,14 +40,34 @@ private:
 	void serialize ( ::com::iArchive &ar, const unsigned int version );
 	void serialize ( ::com::oArchive &ar, const unsigned int version );
 	//-------------------------------------------------------------------------
-	FrqDetector (){}
+	FrqDetector (){ init(); }
     //-------------------------------------------------------------------------
-    unsigned int sampleCounter;
+    enum { WindowSize = 2048 };
+    enum { MaxBuffer = WindowSize * 3 };
+    enum { SleepTime = 10, Idle = 100 };
+    static const double MaxFrq;
+    typedef Frames::T T;
+    typedef boost::circular_buffer<T> Buffer;
+    float sampleRate;
+    Buffer buffer;
     //-------------------------------------------------------------------------
-    static const int WindowSize;
+    boost::thread *worker;
+    sambag::com::RecursiveMutex mutex;
+    bool running;
+    //-------------------------------------------------------------------------
+    void doWork();
+    void startWorker();
+    void stopWorker();
+    inline void sleep(int millis) {
+        boost::this_thread::sleep(boost::posix_time::milliseconds(millis));
+    }
 protected:
 	//-------------------------------------------------------------------------
 	FrqDetector ( frx::processing::IHostInfo::Ptr hostInfo );
+    //-------------------------------------------------------------------------
+    void init();
+    //-------------------------------------------------------------------------
+    void updateDisplay(double f);
 public:
 	//-------------------------------------------------------------------------
 	/**
