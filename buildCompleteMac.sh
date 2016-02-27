@@ -1,15 +1,17 @@
-#PATH=$PATH;/opt/local/bin:/opt/local/sbin:/usr/local/git/bin:/usr/X11/bin
+#!/bin/sh
+set -u
+
 CLIBS=/Users/samba/clibs
-SAMBA_USELOG=1
+SAMBA_USELOG=0
 NEWEST=true
 SAMBAG_BRANCH=master
 VSTFORX_BRANCH=DISCO
 SSH_USER=samba
 SSH_SERVER=johanness-mini.fritz.box
-SAMBAG_LOC=workspace/sambag
-SAMBAG_LOC=workspace/vstforx
+SAMBAG_REMOTE_LOC=$SSH_USER@$SSH_SERVER:workspace/sambag
+VSTFORX_REMOTE_LOC=$SSH_USER@$SSH_SERVER:workspace/vstforx
 ROOT=$(pwd)
-TARGET=$SSH_SERVER:owncloud/nightly
+TARGET=$SSH_USER@$SSH_SERVER:owncloud/nightly
 
 function __nameWorkaround() {
   if [ -d $2 ]
@@ -30,7 +32,7 @@ then
     fi
   git stash
   git checkout $SAMBAG_BRANCH
-  git pull $SSH_USER@$SSH_SERVER:$SAMBAG_LOC $SAMBAG_BRANCH
+  git pull $SAMBAG_REMOTE_LOC $SAMBAG_BRANCH
   if [ -f CMakeCache.txt ]
   then
       rm CMakeCache.txt
@@ -52,7 +54,7 @@ then
     fi
   git stash
   git checkout $VSTFORX_BRANCH
-  git pull $SSH_USER@$SSH_SERVER:$VSTFORX_LOC $VSTFORX_BRANCH
+  git pull $VSTFORX_REMOTE_LOC $VSTFORX_BRANCH
   if [ -f CMakeCache.txt ]
   then
       rm CMakeCache.txt
@@ -85,4 +87,6 @@ rm -rf mac/*
 
 sh pack.sh mac $V
 scp mac/* $TARGET
+
+cd $ROOT
 
