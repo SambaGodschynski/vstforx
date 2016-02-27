@@ -101,7 +101,7 @@ public:
 	/**
 	 * @return Anzahl aller FrqDetector-Parameter
 	 */
-	virtual size_t getNumParameter () const { 0; }
+	virtual size_t getNumParameter () const { return 0; }
 	//-------------------------------------------------------------------------
 	/**
 	 * @return Anzahl aller FrqDetector-Parameter
