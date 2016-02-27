@@ -83,7 +83,6 @@ __nameWorkaround vstforxInstrumentDEMO_8Out.app vstforxInstrumentDEMO_8Out.vst
 #packing VSTForx
 cd $ROOT/builds
 V=$(cat currVersion.txt | grep -o "[0-9A-Za-z.]*")
-V=$V.$BUILD_NUMBER
 
 rm -rf mac/*
 
