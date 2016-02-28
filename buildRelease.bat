@@ -63,10 +63,9 @@ IF "%NEWEST%" == "true" (
 
 
 cd builds
-FOR /F %%x IN ('cat currVersion.txt | grep -o '[0-9A-Za-z.]*'') DO SET V=%%x
 
 del -rf win/*
 
-sh pack.sh win %V%
+sh packLastBuild.sh mac
 
 scp win/* %TARGET%

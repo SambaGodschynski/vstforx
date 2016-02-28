@@ -82,11 +82,10 @@ __nameWorkaround vstforxInstrumentDEMO_8Out.app vstforxInstrumentDEMO_8Out.vst
 
 #packing VSTForx
 cd $ROOT/builds
-V=$(cat currVersion.txt | grep -o "[0-9A-Za-z.]*")
 
 rm -rf mac/*
+sh packLastBuild.sh mac
 
-sh pack.sh mac $V
 scp mac/* $TARGET
 
 cd $ROOT
