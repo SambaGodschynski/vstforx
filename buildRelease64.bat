@@ -66,7 +66,7 @@ cd builds
 
 del /F /Q win\*
 
-sh packLastBuild.sh win
+sh packLastBuild.sh win7
 
 scp win/*.* %TARGET%
 
