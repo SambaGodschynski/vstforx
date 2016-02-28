@@ -64,7 +64,7 @@ IF "%NEWEST%" == "true" (
 
 cd builds
 
-del -rf win/*
+del /F /Q win\*
 
 sh packLastBuild.sh mac
 
