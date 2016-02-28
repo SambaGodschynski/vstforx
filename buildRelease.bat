@@ -48,7 +48,7 @@ git pull %VSTFORX_REMOTE_LOC% %VSTFORX_BRANCH%
 del CMakeCache.txt
 cd scripts
 python cmakeWalker.py
-createResourcesMeta.bat
+CALL createResourcesMeta.bat
 cd ..
 :END
 
