@@ -29,6 +29,7 @@ const char * PeakTracker::Details::name      = "PeakTracker";
 const char * MIDIReceiver::Details::name     = "MidiProcessor";
 const char * RemoteChReceiver::Details::name = "RemoteChReceiver";
 const char * DCTester::Details::name         = "DCTester";
+const char * FrqDetector::Details::name         = "FrqDetector";
 
 
 const char * Plugin::Details::beautyName           = "Plugin";
@@ -43,6 +44,7 @@ const char * PeakTracker::Details::beautyName      = "Peak Tracker";
 const char * MIDIReceiver::Details::beautyName     = "Midi Receiver";
 const char * RemoteChReceiver::Details::beautyName = "Remote Channel Receiver";
 const char * DCTester::Details::beautyName         = "DC Tester";
+const char * FrqDetector::Details::beautyName      = "Frequency Detector";
 
 const char * Plugin::Details::toolTip           = "click the (e) to open/close plug's editor.";
 const char * Volume::Details::toolTip           = "changes volume";
@@ -56,6 +58,7 @@ const char * PeakTracker::Details::toolTip      = "transforms audio peaks into p
 const char * MIDIReceiver::Details::toolTip     = "transform midi events into parameter values";
 const char * RemoteChReceiver::Details::toolTip = "receives remote channel data";
 const char * DCTester::Details::toolTip         = "adds delay between input and output";
+const char * FrqDetector::Details::toolTip      = "Determines the frequency of a signal";
 
 const char * Plugin::Details::ns           = "?";
 const char * Volume::Details::ns           = "internal";
@@ -69,7 +72,7 @@ const char * PeakTracker::Details::ns      = "internal";
 const char * MIDIReceiver::Details::ns     = "internal";
 const char * RemoteChReceiver::Details::ns = "interprocess";
 const char * DCTester::Details::ns         = "internal-private";
-
+const char * FrqDetector::Details::ns      = "internal";
 
 } // namespace processorTypes
 //-----------------------------------------------------------------------------

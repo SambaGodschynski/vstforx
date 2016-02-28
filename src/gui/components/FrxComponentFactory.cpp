@@ -83,7 +83,8 @@ FrxProcessorNodePtr createProcessor(FrxCircuidViewPtr circ, std::string id)
 	boost::tie(ctrl, map) = getControllerAndMap(circ);
     
     bool invisibleOuts = pid.name() == "ADSRTrigger" ||
-                       pid.name() == "PeakTracker";
+                       pid.name() == "PeakTracker" ||
+                       pid.name() == "FrqDetector";
     
 	frx::processing::IProcessor::Ptr mObj = ctrl->createProcessor(
         pid.namespace_("processing").toString(),
