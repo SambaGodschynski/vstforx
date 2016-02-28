@@ -54,7 +54,7 @@ IF "%NEWEST%" == "true" (
 
 
 cd builds
-V= eval "$(cat currVersion.txt | grep -o '[0-9A-Za-z.]*')"
+FOR /F %%x IN ('cat currVersion.txt | grep -o '[0-9A-Za-z.]*'') DO SET V=%%x
 
 del -rf win/*
 

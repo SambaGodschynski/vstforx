@@ -11,7 +11,7 @@ SSH_SERVER=johanness-mini.fritz.box
 SAMBAG_REMOTE_LOC=$SSH_USER@$SSH_SERVER:workspace/sambag
 VSTFORX_REMOTE_LOC=$SSH_USER@$SSH_SERVER:workspace/vstforx
 ROOT=$(pwd)
-TARGET=$SSH_USER@$SSH_SERVER:owncloud/nightly
+TARGET=$SSH_USER@$SSH_SERVER:workspace/VSTForxBuilds
 
 function __nameWorkaround() {
   if [ -d $2 ]
