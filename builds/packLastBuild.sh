@@ -1,4 +1,4 @@
-if [ $# -ne 2 ]
+if [ $# -ne 1 ]
 then
   echo 'usage: $0 mac|win|win64'
   exit 1

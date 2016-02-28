@@ -68,4 +68,6 @@ del /F /Q win\*
 
 sh packLastBuild.sh mac
 
-scp win/* %TARGET%
+scp win\* %TARGET%
+
+ECHO ON
