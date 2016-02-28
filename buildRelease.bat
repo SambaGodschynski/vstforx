@@ -52,6 +52,8 @@ CALL createResourcesMeta.bat
 cd ..
 :END
 
+sh build.sh -i %CLIBS_LOC% -g %CMAKE_TARGET%
+
 REM Build vstforx
 IF "%NEWEST%" == "true" (
   msbuild VSTForx-%VSTFORX_BRANCH%.sln /t:Rebuild /p:Configuration=Release
