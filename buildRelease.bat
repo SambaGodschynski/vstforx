@@ -17,6 +17,8 @@ SET TARGET=%SSH_USER%@%SSH_SERVER%:owncloud/nightly
 
 call "%VS90COMNTOOLS%\vsvars32.bat"
 
+GOTO PACK
+
 REM Prepare sambag
 cd %SAMBAG_LOC%
 
@@ -61,13 +63,13 @@ IF "%NEWEST%" == "true" (
   msbuild VSTForx-%VSTFORX_BRANCH%.sln /p:Configuration=Release
 )
 
-
+:PACK
 cd builds
 
 del /F /Q win\*
 
-sh packLastBuild.sh mac
+sh packLastBuild.sh win
 
-scp win\* %TARGET%
+scp win\*.* %TARGET%
 
 ECHO ON
