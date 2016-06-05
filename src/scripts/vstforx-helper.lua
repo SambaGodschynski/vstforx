@@ -68,7 +68,8 @@ function ___getConnectionOpNames()
 	   "Offset Operator", 
 	   "EXP Operator",
 	   "LOG Operator",
-	   "Multiplier Operator"
+	   "Multiplier Operator",
+       "MinMax Operator"
    }
 end
 
