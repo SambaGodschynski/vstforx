@@ -199,6 +199,11 @@ class LuaFrxViewBase extends sambag.lua.ALuaObject {
      * @version 1.0.53
      */
      void clearSelection();
+   /**
+     * @brief packs selected items to a packet
+     * @version 1.0.8
+     */
+     void packSelection(string packetName);
      /**
       * @brief shows a popup menu on location x,y
       * @hiddenParam int x

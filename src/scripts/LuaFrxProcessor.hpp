@@ -42,6 +42,8 @@ protected:
     int getNumParameters(lua_State *lua);
     std::string getPluginLocation(lua_State *lua);
     std::string sendMessage(lua_State *lua, const std::string &msg);
+	std::string serialize(lua_State *lua);
+	void deserialize(lua_State *lua, const std::string & data);
 private:
 public:
     //-------------------------------------------------------------------------

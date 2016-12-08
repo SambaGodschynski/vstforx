@@ -15,6 +15,8 @@
 #include "LuaFrxParameter.hpp"
 #include <processing/IParameter.hpp>
 #include <processing/IPluginAdapter.hpp>
+#include <processing/ProcessorAdapter.hpp>
+#include <processing/SerializationRegister.hpp>
 
 namespace frx { namespace scripts {
 //=============================================================================
@@ -243,6 +245,47 @@ std::string LuaFrxProcessor::getPluginLocation(lua_State *lua) {
         slua::pushLuaError(lua, "unkown error");
     }
     return "";
+}
+//-----------------------------------------------------------------------------
+std::string LuaFrxProcessor::serialize(lua_State *lua) {
+	using namespace frx::gui;
+	using namespace frx::gui::components;
+	using namespace frx::processing;
+	try {
+		ProcessorAdapter::Ptr obj =
+			boost::dynamic_pointer_cast<ProcessorAdapter>(getModelObject());
+		if (!obj || !obj->supportsPresetSerialization()) {
+			return "";
+		}
+		return obj->getPresetData();
+	}
+	catch (const std::exception &ex) {
+		slua::pushLuaError(lua, ex.what());
+	}
+	catch (...) {
+		slua::pushLuaError(lua, "unkown error");
+	}
+	return "";
+}
+//-----------------------------------------------------------------------------
+void LuaFrxProcessor::deserialize(lua_State *lua, const std::string & data) {
+	using namespace frx::gui;
+	using namespace frx::gui::components;
+	using namespace frx::processing;
+	try {
+		ProcessorAdapter::Ptr obj =
+			boost::dynamic_pointer_cast<ProcessorAdapter>(getModelObject());
+		if (!obj || !obj->supportsPresetSerialization()) {
+			return;
+		}
+		obj->setPresetData(data);
+	}
+	catch (const std::exception &ex) {
+		slua::pushLuaError(lua, ex.what());
+	}
+	catch (...) {
+		slua::pushLuaError(lua, "unkown error");
+	}
 }
 //-----------------------------------------------------------------------------
 LuaFrxProcessor::LuaFrxProcessor() {

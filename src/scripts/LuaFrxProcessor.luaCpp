@@ -84,6 +84,17 @@ class LuaFrxProcessorBase extends LuaFrxObject {
        * @version 1.0.53
        */
        string sendMessage(string msg);
+      /**
+       * @return the processor serialized as byte string
+       * @version 1.0.72
+       */
+      string serialize();
+      /**
+       * @brief loads a byte string
+       * @version 1.0.72
+       */
+      void deserialize(string data);
+
 }
 
 

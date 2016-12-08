@@ -159,6 +159,10 @@ struct APluginImpl :
     virtual std::pair<size_t, void*> getStateData() const = 0;
     //-------------------------------------------------------------------------
     virtual void setStateData(size_t size, void* data) = 0;
+	//-------------------------------------------------------------------------
+	virtual void setPresetData(const std::string &data);
+	//-------------------------------------------------------------------------
+	virtual std::string getPresetData();
     //-------------------------------------------------------------------------
     /**
      * @return true if plugin is bridged.

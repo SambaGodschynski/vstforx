@@ -89,6 +89,10 @@ public:
     virtual APluginImpl::Ptr getPluginImpl() const = 0;
     //-------------------------------------------------------------------------
     virtual std::string getPlugName() const = 0;
+	//-------------------------------------------------------------------------
+	virtual void setPresetData(const std::string &data) = 0;
+	//-------------------------------------------------------------------------
+	virtual std::string getPresetData() = 0;
 }; // IPlugin
 }} // namespace(s)
 

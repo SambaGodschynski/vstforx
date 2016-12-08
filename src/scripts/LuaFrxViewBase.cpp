@@ -5,7 +5,7 @@
  *
  * LuaFrxViewBase.cpp
  *
- *  Created on: Thu Aug 14 18:05:25 2014
+ *  Created on: Sun Dec  4 15:42:57 2016
  *      Author: Samba Godschysnki
  */
 
@@ -57,6 +57,7 @@ void LuaFrxViewBase::addLuaFields(lua_State *lua, int index)
 	lua,
 	boost::make_tuple(boost::bind(&LuaFrxViewBase::addToSelection, this, lua),
 		boost::bind(&LuaFrxViewBase::clearSelection, this, lua),
+		boost::bind(&LuaFrxViewBase::packSelection, this, lua, _1),
 		boost::bind(&LuaFrxViewBase::showMenu, this, lua),
 		boost::bind(&LuaFrxViewBase::closeMenu, this, lua)),
 	index, 

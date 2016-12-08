@@ -5,7 +5,7 @@
  *
  * LuaFrxViewBase.hpp
  *
- *  Created on: Thu Aug 14 18:05:25 2014
+ *  Created on: Sun Dec  4 15:42:57 2016
  *      Author: Samba Godschysnki
  */
 
@@ -61,6 +61,7 @@ protected:
 	SAMBAG_LUA_FTAG(createListWindow, sambag::lua::IgnoreReturn ());
 	SAMBAG_LUA_FTAG(addToSelection, void ());
 	SAMBAG_LUA_FTAG(clearSelection, void ());
+	SAMBAG_LUA_FTAG(packSelection, void (std::string));
 	SAMBAG_LUA_FTAG(showMenu, void ());
 	SAMBAG_LUA_FTAG(closeMenu, void ());
     typedef LOKI_TYPELIST_10(Frx_add_Tag, 
@@ -85,8 +86,9 @@ protected:
 	Frx_getContextObject_Tag, 
 	Frx_createListWindow_Tag) Functions2;
 
-	typedef LOKI_TYPELIST_4(Frx_addToSelection_Tag, 
+	typedef LOKI_TYPELIST_5(Frx_addToSelection_Tag, 
 	Frx_clearSelection_Tag, 
+	Frx_packSelection_Tag, 
 	Frx_showMenu_Tag, 
 	Frx_closeMenu_Tag) Functions3;
 
@@ -170,12 +172,14 @@ protected:
 	virtual void setSize(lua_State *lua, float width, float height) = 0;
 	/**
 	* @returnType Object
-	* @return the "Entry" @see Object 
+	* @return the "Entry" @see Object
+	* @param [optional] the channel nummer 
 	* @version 1.0.5
 	*/
 	virtual sambag::lua::IgnoreReturn getEntry(lua_State *lua) = 0;
 	/**
 	* @returnType Object
+	* @param [optional] the channel nummer 
 	* @return the "Exit" @see Object 
 	* @version 1.0.5
 	*/
@@ -275,6 +279,11 @@ protected:
 	* @version 1.0.53
 	*/
 	virtual void clearSelection(lua_State *lua) = 0;
+	/**
+	* @brief packs selected items to a packet
+	* @version 1.0.8
+	*/
+	virtual void packSelection(lua_State *lua, const std::string & packetName) = 0;
 	/**
 	* @brief shows a popup menu on location x,y
 	* @hiddenParam int x

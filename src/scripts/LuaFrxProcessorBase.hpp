@@ -5,7 +5,7 @@
  *
  * LuaFrxProcessorBase.hpp
  *
- *  Created on: Mon Jun 23 21:46:28 2014
+ *  Created on: Wed Dec  7 21:59:39 2016
  *      Author: Samba Godschysnki
  */
 
@@ -49,6 +49,8 @@ protected:
 	SAMBAG_LUA_FTAG(getNumOutputs, int ());
 	SAMBAG_LUA_FTAG(getPluginLocation, std::string ());
 	SAMBAG_LUA_FTAG(sendMessage, std::string (std::string));
+	SAMBAG_LUA_FTAG(serialize, std::string ());
+	SAMBAG_LUA_FTAG(deserialize, void (std::string));
     typedef LOKI_TYPELIST_10(Frx_getInputs_Tag, 
 	Frx_getOutputs_Tag, 
 	Frx_getParameters_Tag, 
@@ -60,7 +62,9 @@ protected:
 	Frx_getNumOutputs_Tag, 
 	Frx_getPluginLocation_Tag) Functions1;
 
-	typedef LOKI_TYPELIST_1(Frx_sendMessage_Tag) Functions2;
+	typedef LOKI_TYPELIST_3(Frx_sendMessage_Tag, 
+	Frx_serialize_Tag, 
+	Frx_deserialize_Tag) Functions2;
 
 	
     ///////////////////////////////////////////////////////////////////////////
@@ -140,6 +144,16 @@ protected:
 	* @version 1.0.53
 	*/
 	virtual std::string sendMessage(lua_State *lua, const std::string & msg) = 0;
+	/**
+	* @return the processor serialized as byte string
+	* @version 1.0.72
+	*/
+	virtual std::string serialize(lua_State *lua) = 0;
+	/**
+	* @brief loads a byte string
+	* @version 1.0.72
+	*/
+	virtual void deserialize(lua_State *lua, const std::string & data) = 0;
     //-------------------------------------------------------------------------
     /**
      * @brief field getter and setter

@@ -283,6 +283,10 @@ public:
     virtual frx::processing::APluginImplPtr getPluginImpl() const {
         return frx::processing::APluginImplPtr();
     }
+	//-------------------------------------------------------------------------
+	virtual void setPresetData(const std::string &data) = 0;
+	//-------------------------------------------------------------------------
+	virtual std::string getPresetData() = 0;
 };
 }
 

@@ -70,6 +70,7 @@ protected:
     slua::IgnoreReturn getByName(lua_State *lua, const std::string &name);
     slua::IgnoreReturn getByType(lua_State *lua, const std::string &type);
     slua::IgnoreReturn getContextObject(lua_State *lua);
+	void packSelection(lua_State *lua, const std::string & packetName);
     void addMenuEntry(sdc::PopupMenuPtr res, lua_State *lua, int index);
     void onMenu(lua_State *lua, const std::string &cmd);
     void setMenu(lua_State *lua);

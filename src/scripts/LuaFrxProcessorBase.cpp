@@ -5,7 +5,7 @@
  *
  * LuaFrxProcessorBase.cpp
  *
- *  Created on: Mon Jun 23 21:46:38 2014
+ *  Created on: Wed Dec  7 21:59:39 2016
  *      Author: Samba Godschysnki
  */
 
@@ -39,7 +39,9 @@ void LuaFrxProcessorBase::addLuaFields(lua_State *lua, int index)
 
 	registerClassFunctions<Functions2, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaFrxProcessorBase::sendMessage, this, lua, _1)),
+	boost::make_tuple(boost::bind(&LuaFrxProcessorBase::sendMessage, this, lua, _1),
+		boost::bind(&LuaFrxProcessorBase::serialize, this, lua),
+		boost::bind(&LuaFrxProcessorBase::deserialize, this, lua, _1)),
 	index, 
 	getUId() 
 	); 

@@ -244,6 +244,20 @@ void PluginAdapter::setPreset(int i) {
 	plug->setProgram(i);
 }
 //-----------------------------------------------------------------------------
+bool PluginAdapter::supportsPresetSerialization() const {
+	return true;
+}
+//-----------------------------------------------------------------------------
+void PluginAdapter::setPresetData(const std::string &data) {
+	Adaptee::Ptr plug = getPlugin();
+	plug->setPresetData(data);
+}
+//-----------------------------------------------------------------------------
+std::string PluginAdapter::getPresetData() {
+	Adaptee::Ptr plug = getPlugin();
+	return plug->getPresetData();
+}
+//-----------------------------------------------------------------------------
 sdc::AWindowImplPtr PluginAdapter::getWindowImpl() {
     Adaptee::Ptr plug = getPlugin();
     APluginImpl::Ptr impl = plug->getPluginImpl();

@@ -173,6 +173,10 @@ protected:
 	VSTPlugin( frx::processing::IHostInfo::Ptr hostInfo, const string &filename );
 public:
 	//--------------------------------------------------------------------------------------------------------
+	virtual void setPresetData(const std::string &data);
+	//--------------------------------------------------------------------------------------------------------
+	virtual std::string getPresetData();
+	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param hostInfo
 	 * @param filename

@@ -30,7 +30,6 @@ void FrxPacket::postConstructor() {
     sce::EventSender<sce::PropertyChanged>::addEventListener(
         boost::bind(&FrxPacket::onPropertyChanged, this, _2)
     );
-    setName("Packet");
     __setTypeId_("frx.gui.internal.Packet");
 }
 //-----------------------------------------------------------------------------

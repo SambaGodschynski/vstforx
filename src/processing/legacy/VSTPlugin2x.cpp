@@ -384,6 +384,34 @@ void VSTPlugin::onEditorParameterChanged (int index, float value){
 	onPlugChangeParameterIndex = -1;
 }
 //------------------------------------------------------------------------------------------------------------
+void VSTPlugin::setPresetData(const std::string &strData) {
+	std::stringstream ss;
+	size_t size;
+	ss << strData;
+	::com::iArchive ar(ss);
+	ar >> size;
+	if (size == 0) {
+		return;
+	}
+	unsigned char *data[1] = { new unsigned char[size] };
+	ar.load_binary(*data, size);
+	aEff->dispatcher(aEff, effSetChunk, 0, size, *data, 0);
+	resetPlugin();
+}
+//------------------------------------------------------------------------------------------------------------
+std::string VSTPlugin::getPresetData() {
+	if (!can(effFlagsProgramChunks)) {
+		return "";
+	}
+	std::stringstream ss;
+	::com::oArchive ar(ss);
+	void *data;
+	size_t size = aEff->dispatcher(aEff, effGetChunk, 0, 0, &data, 0);
+	ar << size;
+	ar.save_binary(data, size);
+	return ss.str();
+}
+//------------------------------------------------------------------------------------------------------------
 void VSTPlugin::save(com::oArchive &ar, const unsigned int version) const {
 	ar << boost::serialization::base_object< Plugin > ( *this ); //.........................................1
 	// save plugInfo

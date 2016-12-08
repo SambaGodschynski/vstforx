@@ -12,6 +12,8 @@ viewportMenu={}
 viewports={}
 currentViewport=1
 
+MAX_ASSIGNAB = 200
+
 -- main menu def
 menus = {
    main={
@@ -187,6 +189,39 @@ function load()
    frx.deserializePlugin(data)
 end
 
+function onSavePreset()
+   if _ENV.f==nil then
+      _ENV.f=""
+   end
+
+   path=frx.showSaveFileDlg(_ENV.f)
+   if path == nil or #path==0 then
+      return
+   end
+   _ENV.f = path
+   o=frx.view:getContextObject()
+   data = o:serialize();
+   fh=io.open(_ENV.f,"w")
+   fh:write(data)
+   fh:close()
+end
+
+function onLoadPreset()
+   if _ENV.f==nil then
+      _ENV.f=""
+   end
+   path=frx.showSelectFileDlg(_ENV.f)
+   if path == nil or #path==0 then
+      return
+   end
+   _ENV.f = path
+   fh=io.open(_ENV.f,"r")
+   data=fh:read("*a")
+   fh:close()
+   o=frx.view:getContextObject()
+   o:deserialize(data);
+end
+
 function addOperator(x)
    o=frx.view:getContextObject()
    if o==nil then
@@ -246,6 +281,7 @@ function addOutput()
    o:addOutput(true)
 end
 
+
 function setObjectMenu(obj)
    if obj==nil then
       return
@@ -278,6 +314,11 @@ function setObjectMenu(obj)
       table.insert(objMenu, {name="clone", action="onClone()"})
       table.insert(objMenu, {name="parameter assistant...", action="onCollectParameter()"})
       table.insert(objMenu, {name="open/close editor...", action="onOpenCloseEditor()"})
+      table.insert(objMenu, {name="preset...", {
+        { name="preset" },
+        { name="save", action="onSavePreset()"},
+        { name="load", action="onLoadPreset()"}
+      }})
       table.insert(objMenu, {name="assign A/B morpher...", action="onAssignAB()"})
    elseif string.match(objType, "parameter%..*")~=nil then
       -- parameter.* (e.g. parameter.StdKnob)
@@ -461,12 +502,11 @@ end
 function onAssignAB()
    local p = frx.view:getContextObject()
    local num = p:getNumParameters()
-   print (num)
    if num==0 then
       return
    end
-   if num>50 then
-      Frx.messageBox(string.format("this plugin has %i parameter, for performace reasons its not recommended to use all parameter for A/B.", num))
+   if num>MAX_ASSIGNAB then
+      frx.messageBox(string.format("this plugin has %i parameter, for performace reasons the max limit is set to %i.", num, MAX_ASSIGNAB))
       return
    end
    local url=string.format("lua.Plugin('scripts/lua_plugins/ABMorpher.lua////numParams=%i')", num)
@@ -504,4 +544,5 @@ function onAssignAB()
    for k,v in pairs(tmp) do
       frx.view:addToSelection(v)
    end
+   frx.view:packSelection(string.format("%i param. connected", num));
 end

@@ -163,6 +163,12 @@ public:
      * @return status string such as "not available" if any.
      */
     virtual std::string getStatusMessage() const;
+	//-------------------------------------------------------------------------
+	virtual bool supportsPresetSerialization() const;
+	//-------------------------------------------------------------------------
+	virtual void setPresetData(const std::string &data);
+	//-------------------------------------------------------------------------
+	virtual std::string getPresetData();
 	///////////////////////////////////////////////////////////////////////////
 	// Events
 	//-------------------------------------------------------------------------

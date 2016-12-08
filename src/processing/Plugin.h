@@ -159,6 +159,10 @@ public:
     APluginImpl::Ptr getPluginImpl() const {
         return impl;
     }
+	//-------------------------------------------------------------------------
+	virtual void setPresetData(const std::string &data) { impl->setPresetData(data); }
+	//-------------------------------------------------------------------------
+	virtual std::string getPresetData() { return impl->getPresetData(); }
     //-------------------------------------------------------------------------
     static Ptr create(IHostInfo::Ptr, const std::string &location);
     //-------------------------------------------------------------------------

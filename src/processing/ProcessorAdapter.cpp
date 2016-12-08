@@ -269,6 +269,18 @@ std::string ProcessorAdapter::getPresetName(size_t i) const {
 void ProcessorAdapter::setPreset(int i) {
 }
 //-----------------------------------------------------------------------------
+bool ProcessorAdapter::supportsPresetSerialization() const {
+	return false;
+}
+//-----------------------------------------------------------------------------
+void ProcessorAdapter::setPresetData(const std::string &data) {
+	
+}
+//-----------------------------------------------------------------------------
+std::string ProcessorAdapter::getPresetData() {
+	return "";
+}
+//-----------------------------------------------------------------------------
 ProcessorAdapter::IOChangedEventSender::Connection ProcessorAdapter::
 addIOChangedListener(const IOChangedEventSender::EventFunction &f)
 {

@@ -16,6 +16,7 @@
 #include <gui/components/FrxConnection.hpp>
 #include <gui/components/FrxProcessorNode.hpp>
 #include <gui/components/FrxParameter.hpp>
+#include <gui/components/FrxPacket.hpp>
 #include <gui/IFrxControl.hpp>
 #include "LuaFrxProcessor.hpp"
 #include "LuaFrxIO.hpp"
@@ -866,6 +867,26 @@ void LuaFrxView::clearSelection(lua_State *lua) {
     } catch(...) {
         slua::pushLuaError(lua, "view is not available");
     }
+}
+//-----------------------------------------------------------------------------
+void LuaFrxView::packSelection(lua_State *lua, const std::string & packetName) {
+	try {
+		fgc::FrxCircuidViewPtr view = getView();
+		fgc::FrxSelection::Ptr sel = view->getSelection();
+		fgc::FrxPacket::Ptr packet = fgc::FrxPacket::create(view, sel->getContent());
+		sd::Point2D p = sel->getLocation();
+		p.x(p.x() + sel->getWidth() / 2. - packet->getWidth() / 2.);
+		p.y(p.y() + sel->getHeight() / 2. - packet->getHeight() / 2.);
+		packet->setLocation(p);
+		packet->setName(packetName);
+		sel->clearContent();
+	}
+	catch (const std::exception &ex) {
+		slua::pushLuaError(lua, std::string("view is not available: ") + ex.what());
+	}
+	catch (...) {
+		slua::pushLuaError(lua, "view is not available");
+	}
 }
 //-----------------------------------------------------------------------------
 LuaFrxView::Ptr
