@@ -142,6 +142,8 @@ struct APluginImpl :
 	//-------------------------------------------------------------------------
 	virtual size_t getInitialDelay() const = 0;
     //-------------------------------------------------------------------------
+	virtual ::processing::PluginInfo getPluginInfo() const;
+	//-------------------------------------------------------------------------
     /**
      * @note fills out name, isSynth, uid, vendor, type
      */

@@ -11,6 +11,7 @@
 #include <string>
 #include <com/one4All.h>
 #include <boost/lexical_cast.hpp>
+#include <ostream>
 
 namespace processing {
 //============================================================================================================
@@ -68,7 +69,7 @@ public:
 	AccessState access; // konnte geladen werden?
     int id; // database id
     //--------------------------------------------------------------------------------------------------------
-    std::string getFactoryId() {
+    std::string getFactoryId() const {
         ::com::IdParser res;
         res.namespace_("processing").name("Plugin").details(location);
         switch (pluginType) {
@@ -121,6 +122,21 @@ public:
 	}
 };
 } // namespace
+
+inline std::ostream & operator<<(std::ostream &os, const processing::PluginInfo &inf) {
+	os << inf.getFactoryId() << std::endl;
+	os << inf.location << std::endl;
+	os << inf.name << std::endl;
+	os << inf.pluginType << std::endl;
+	os << inf.isSynth << std::endl;
+	os << inf.timestamp << std::endl;
+	os << inf.access << std::endl;
+	os << inf.uid_legacy << std::endl;
+	os << inf.id << std::endl;
+	os << inf.vendor << std::endl;
+	os << inf.uid << std::endl;
+	return os;
+}
 
 BOOST_CLASS_VERSION(processing::PluginInfo, 3)
 

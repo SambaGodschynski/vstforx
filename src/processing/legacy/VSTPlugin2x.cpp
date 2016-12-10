@@ -387,8 +387,14 @@ void VSTPlugin::onEditorParameterChanged (int index, float value){
 void VSTPlugin::setPresetData(const std::string &strData) {
 	std::stringstream ss;
 	size_t size;
+	std::string uid;
 	ss << strData;
 	::com::iArchive ar(ss);
+	ar >> uid;
+	if (uid != getPluginInfo().uid) {
+		throw std::runtime_error("preset data dosen't match to plugin");
+	}
+
 	ar >> size;
 	if (size == 0) {
 		return;
@@ -397,6 +403,7 @@ void VSTPlugin::setPresetData(const std::string &strData) {
 	ar.load_binary(*data, size);
 	aEff->dispatcher(aEff, effSetChunk, 0, size, *data, 0);
 	resetPlugin();
+	delete[] data[0];
 }
 //------------------------------------------------------------------------------------------------------------
 std::string VSTPlugin::getPresetData() {
@@ -407,6 +414,8 @@ std::string VSTPlugin::getPresetData() {
 	::com::oArchive ar(ss);
 	void *data;
 	size_t size = aEff->dispatcher(aEff, effGetChunk, 0, 0, &data, 0);
+	std::string uid = sambag::com::toString(getPluginInfo().uid_legacy);
+	ar << uid;
 	ar << size;
 	ar.save_binary(data, size);
 	return ss.str();
@@ -507,7 +516,7 @@ void VSTPlugin::load(com::iArchive &ar, const unsigned int version) {
 	//(AEffect* effect, VstInt32 opcode, VstInt32 index, VstIntPtr value, void* ptr, float opt)
 	aEff->dispatcher ( aEff, effSetChunk, 0, size, *data, 0 );
 	resetPlugin();
-	delete *data;
+	delete[] data[0];
 }
 //------------------------------------------------------------------------------------------------------------
 void VSTPlugin::onPlugRequestWindowResize (size_t w, size_t h) {

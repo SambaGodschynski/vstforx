@@ -19,6 +19,7 @@
 #include <sambag/dsp/VstMidiEventAdapter.hpp>
 #include <sambag/disco/components/Window.hpp>
 #include <boost/lexical_cast.hpp>
+#include "com/one4All.h"
 
 /**
  * get the apropriate handler from a window.
@@ -124,7 +125,7 @@ void VSTPluginImpl::updatePluginInfo (::processing::PluginInfo &inf) const {
 	aEff->dispatcher ( aEff, effGetVendorString, 0, NULL, &bff[0], NULL );
 	inf.vendor = string (bff);
 	inf.isSynth  = can(effFlagsIsSynth);
-	inf.uid = aEff->uniqueID;
+	inf.uid = sambag::com::toString(aEff->uniqueID);
 	inf.pluginType = oldPr::PluginInfo::VST2X;
 }
 //-----------------------------------------------------------------------------
