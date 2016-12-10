@@ -319,7 +319,7 @@ void FrxLookAndFeel::installDefaults() {
 	//style.fillPattern( sd::createPattern("lin(0,1,[D3D3D3FF:0, D3D3D3FF:0.66, D3D3D3FF:0.667, FF:1])") );
 	m.putProperty("SetupWindow.style", style);
 	m.putProperty("FrxComponent.menu.label.style", 
-		createStyle("stroke:darkgrey; fill:royalblue; font-size: 12; font-family: arial; font-style: italic;"));
+		createStyle("stroke:black; fill:royalblue; font-size: 12; font-family: arial; font-style: italic;"));
 	m.putProperty("FrxParameterLabel.style", 
 		createStyle("stroke-width: 1; stroke: red; fill: grey; fill-opacity: 0.25"));
 	m.putProperty("FrxBrowserList.selectedEntryStyle", 
