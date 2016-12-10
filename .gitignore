@@ -15,6 +15,12 @@ src/com/FrxConfig.h
 CMakeCache.txt
 /.project
 
+
+src/PluginApps/VSTForx/win/initResourceMap.cpp
+src/PluginApps/VSTForx/win/initResourceMap.h
+src/PluginApps/VSTForx/win/resources.rc
+
+
 *vstforx_plugin_db_dump*
 
 *.sln

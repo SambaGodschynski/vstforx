@@ -1,4 +1,6 @@
 ECHO OFF
+ECHO GIT REMOTE AUF TRABANT STELLEN!
+PAUSE
 SET CLIBS=/Users/samba/clibs
 SET SAMBA_USELOG=0
 SET WORKSPACE_LOC=c:\workspace64
@@ -14,6 +16,7 @@ SET SSH_SERVER=johanness-mini.fritz.box
 SET SAMBAG_REMOTE_LOC=%SSH_USER%@%SSH_SERVER%:workspace/sambag
 SET VSTFORX_REMOTE_LOC=%SSH_USER%@%SSH_SERVER%:workspace/vstforx
 SET TARGET=%SSH_USER%@%SSH_SERVER%:workspace/VSTForxBuilds
+
 
 call "%VS90COMNTOOLS%\vsvars32.bat"
 
@@ -61,13 +64,14 @@ IF "%NEWEST%" == "true" (
   msbuild VSTForx-%VSTFORX_BRANCH%.sln /p:Configuration=Release
 )
 
-
 cd builds
 
 del /F /Q win\*
 
-sh packLastBuild.sh win7
+sh packLastBuild.sh win64
+
 
 scp win/*.* %TARGET%
 
+cd ..
 ECHO ON
