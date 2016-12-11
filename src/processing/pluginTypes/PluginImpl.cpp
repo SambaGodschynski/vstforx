@@ -58,7 +58,8 @@ void APluginImpl::setPresetData(const std::string &strData) {
 std::string APluginImpl::getPresetData() {
 	std::stringstream ss;
 	::com::oArchive ar(ss);
-	ar << getPluginInfo().uid;
+	std::string uid = getPluginInfo().uid; 
+	ar << uid;
 	std::pair<size_t, void*> state = getStateData();
 	ar << state.first;
 	ar.save_binary(state.second, state.first);
