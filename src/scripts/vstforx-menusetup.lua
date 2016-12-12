@@ -194,14 +194,14 @@ function onSavePreset()
       _ENV.f=""
    end
 
-   path=frx.showSaveFileDlg(_ENV.f)
+   local path=frx.showSaveFileDlg(_ENV.f)
    if path == nil or #path==0 then
       return
    end
    _ENV.f = path
-   o=frx.view:getContextObject()
-   data = o:serialize();
-   fh=io.open(_ENV.f,"w")
+   local o=frx.view:getContextObject()
+   local data = o:serialize();
+   fh=io.open(_ENV.f,"wb")
    fh:write(data)
    fh:close()
 end
@@ -210,15 +210,15 @@ function onLoadPreset()
    if _ENV.f==nil then
       _ENV.f=""
    end
-   path=frx.showSelectFileDlg(_ENV.f)
+   local path=frx.showSelectFileDlg(_ENV.f)
    if path == nil or #path==0 then
       return
    end
    _ENV.f = path
-   fh=io.open(_ENV.f,"r")
-   data=fh:read("*a")
+   local fh=io.open(_ENV.f,"rb")
+   local data=fh:read("*all")
    fh:close()
-   o=frx.view:getContextObject()
+   local o=frx.view:getContextObject()
    o:deserialize(data);
 end
 

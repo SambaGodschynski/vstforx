@@ -247,7 +247,7 @@ std::string LuaFrxProcessor::getPluginLocation(lua_State *lua) {
     return "";
 }
 //-----------------------------------------------------------------------------
-std::string LuaFrxProcessor::serialize(lua_State *lua) {
+sambag::lua::IgnoreReturn LuaFrxProcessor::serialize(lua_State *lua) {
 	using namespace frx::gui;
 	using namespace frx::gui::components;
 	using namespace frx::processing;
@@ -255,9 +255,10 @@ std::string LuaFrxProcessor::serialize(lua_State *lua) {
 		ProcessorAdapter::Ptr obj =
 			boost::dynamic_pointer_cast<ProcessorAdapter>(getModelObject());
 		if (!obj || !obj->supportsPresetSerialization()) {
-			return "";
+			return sambag::lua::IgnoreReturn();
 		}
-		return obj->getPresetData();
+		std::string data = obj->getPresetData();
+		lua_pushlstring(lua, data.c_str(), data.length());
 	}
 	catch (const std::exception &ex) {
 		slua::pushLuaError(lua, ex.what());
@@ -265,10 +266,10 @@ std::string LuaFrxProcessor::serialize(lua_State *lua) {
 	catch (...) {
 		slua::pushLuaError(lua, "unkown error");
 	}
-	return "";
+	return sambag::lua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
-void LuaFrxProcessor::deserialize(lua_State *lua, const std::string & data) {
+void LuaFrxProcessor::deserialize(lua_State *lua) {
 	using namespace frx::gui;
 	using namespace frx::gui::components;
 	using namespace frx::processing;
@@ -278,6 +279,10 @@ void LuaFrxProcessor::deserialize(lua_State *lua, const std::string & data) {
 		if (!obj || !obj->supportsPresetSerialization()) {
 			return;
 		}
+		size_t len = 0;
+		const char * strData = lua_tolstring(lua, -1, &len);
+		lua_pop(lua, 1);
+		std::string data(strData, len);
 		obj->setPresetData(data);
 	}
 	catch (const std::exception &ex) {

@@ -7,7 +7,6 @@
 
 #include "PluginImpl.hpp"
 #include <sstream>
-#include "com/Serialization.h"
 
 #include <iostream>
 
@@ -37,33 +36,13 @@ APluginImpl::addTrackedMidiEventListener(const oldPr::IMidiEventProcessor::Event
 }
 //-----------------------------------------------------------------------------
 void APluginImpl::setPresetData(const std::string &strData) {
-	std::stringstream ss;
-	size_t size;
-	std::string uid;
-	ss << strData;
-	::com::iArchive ar(ss);
-	ar >> uid;
-	if (uid != getPluginInfo().uid) {
-		throw std::runtime_error("preset data dosen't match to plugin");
-	}
-	ar >> size;
-	if (size == 0) {
-		return;
-	}
-	unsigned char *data[1] = { new unsigned char[size] };
-	ar.load_binary(*data, size);
-	setStateData(size, data[0]);
+	setStateData(strData.length(), (void*)strData.c_str());
 }
 //-----------------------------------------------------------------------------
 std::string APluginImpl::getPresetData() {
-	std::stringstream ss;
-	::com::oArchive ar(ss);
-	std::string uid = getPluginInfo().uid; 
-	ar << uid;
 	std::pair<size_t, void*> state = getStateData();
-	ar << state.first;
-	ar.save_binary(state.second, state.first);
-	return ss.str();
+	const char * pData = static_cast<const char*>(state.second);
+	return std::string(pData, state.first);
 }
 //-----------------------------------------------------------------------------
 ::processing::PluginInfo APluginImpl::getPluginInfo() const {
