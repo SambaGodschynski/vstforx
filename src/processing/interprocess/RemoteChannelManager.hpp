@@ -1,64 +1,33 @@
-/*
- * RemoteChannelManager.hpp
- *
- *  Created on: Sat Sep 14 09:23:31 2013
- *      Author: Johannes Unger
- */
-
-#ifndef SAMBAG_REMOTECHANNELMANAGER_H
-#define SAMBAG_REMOTECHANNELMANAGER_H
-
-#include <loki/Singleton.h>
-#include "Stream.hpp"
-#include "SessionManager.hpp"
+// Stub: interprocess bridge removed. Provides no-op RemoteChannelManager.
+#pragma once
+#include <string>
+#include <list>
+#include <vector>
 
 namespace frx { namespace processing { namespace interprocess {
-//=============================================================================
-/** 
-  * @class RemoteChannelManager<Singleton>.
-  *
-  * Manages between RemoteChannels/Receiver and it's related RCHandler.
-  */
-class RemoteChannelManager : public SessionManager {
-//=============================================================================
-friend struct Loki::CreateUsingNew<RemoteChannelManager>;
-private:
-    //-------------------------------------------------------------------------
-    bool isStreamIdValid(const std::string &streamId) const;
-protected:
-    //-------------------------------------------------------------------------
-    RemoteChannelManager();
-public:
-    //-------------------------------------------------------------------------
-    typedef SessionManager Super;
-    //-------------------------------------------------------------------------
-    typedef Super::SessionId RCId;
-    //-------------------------------------------------------------------------
-    typedef Super::SessionData RCData;
-    //-------------------------------------------------------------------------
-	static RemoteChannelManager & instance();
-    //-------------------------------------------------------------------------
-    UInteger getNumChannels() const;
-    //-------------------------------------------------------------------------
-    void getChannels(std::vector<SessionId> &out);
-    void getChannels(std::list<SessionId> &out);
-    //-------------------------------------------------------------------------
-    SessionData getChannelData(const SessionId &id) const;
-    //-------------------------------------------------------------------------
-    Stream::Ptr getStream(const SessionId &rc);
-    //-------------------------------------------------------------------------
-    // Sender stuff
-    //-------------------------------------------------------------------------
-    void addChannel(const SessionId &hnd, const SessionData &data);
-    //-------------------------------------------------------------------------
-    SessionId addChannel(const SessionData &data);
-    //-------------------------------------------------------------------------
-    void removeChannel(const SessionId &hnd);
-    //-------------------------------------------------------------------------
-    void removeAllChannels();
-    //-------------------------------------------------------------------------
-    std::string getName(const SessionId &id);
-}; // RemoteChannelManager
-}}} // namespace(s)
 
-#endif /* SAMBAG_REMOTECHANNELMANAGER_H */
+class RemoteChannelManager {
+public:
+    typedef std::string SessionId;
+    typedef std::string RCId;
+    struct SessionData {};
+    typedef SessionData RCData;
+
+    static RemoteChannelManager & instance() {
+        static RemoteChannelManager inst;
+        return inst;
+    }
+    int getLastChangedTime() const { return 0; }
+    void getChannels(std::list<SessionId> &) const {}
+    void getChannels(std::vector<SessionId> &) const {}
+    SessionData getChannelData(const SessionId &) const { return {}; }
+    std::string getName(const SessionId &) const { return ""; }
+    std::string getAddress(const SessionId &) const { return ""; }
+    void addChannel(const SessionId &, const SessionData &) {}
+    SessionId addChannel(const SessionData &) { return {}; }
+    void removeChannel(const SessionId &) {}
+    void removeAllChannels() {}
+    unsigned getNumChannels() const { return 0; }
+};
+
+}}} // namespace frx::processing::interprocess

@@ -83,10 +83,10 @@ void FrxSvgNodeUI::installDefaults(sdc::AComponent::Ptr c) {
 	toConnect = Line::create();
 	toConnect->setName("connector");
 	sdsg::Line::Ptr line = toConnect->getObject();
-	line->getP0().x().setType(sd::svg::units::Unit::PX);
-	line->getP0().y().setType(sd::svg::units::Unit::PX);
-	line->getP1().x().setType(sd::svg::units::Unit::PX);
-	line->getP1().y().setType(sd::svg::units::Unit::PX);
+	line->getP0().x().setType(sd::svg::units::Unit::UnitPX);
+	line->getP0().y().setType(sd::svg::units::Unit::UnitPX);
+	line->getP1().x().setType(sd::svg::units::Unit::UnitPX);
+	line->getP1().y().setType(sd::svg::units::Unit::UnitPX);
 	sds::Style lstyle;
     uim.getProperty("FrxCircuidView.connector", lstyle);
     toConnect->setStyle(lstyle);

@@ -12,7 +12,6 @@
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 #include "ConcreteProcessAdapter.h"
-#include "interprocess/RemoteChReceiver.hpp"
 #include "IHostInfo.h"
 #include <processing/ProcessorAdapter.hpp>
 #include <processing/ParameterAdapter.hpp>

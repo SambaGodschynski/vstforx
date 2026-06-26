@@ -1,198 +1,151 @@
-cmake_minimum_required (VERSION 2.8.11)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{CLIBS}/sambag)
+cmake_minimum_required(VERSION 3.15)
 
+if(POLICY CMP0091)
+    cmake_policy(SET CMP0091 NEW)
+endif()
+if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 NEW)
+endif()
 
-SET(FRX_VERSION_MAJOR 1)
-SET(FRX_VERSION_MINOR 0)
-SET(FRX_VERSION_MICRO 72)
-SET(FRX_VERSION_STR "${FRX_VERSION_MAJOR}.${FRX_VERSION_MINOR}.${FRX_VERSION_MICRO}")
+project(vstforx VERSION 1.0.72 LANGUAGES C CXX)
 
-execute_process(COMMAND git --work-tree=. log --pretty=format:%h -n 1
-              OUTPUT_VARIABLE FRX_GITHASH)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
+# ── Options ───────────────────────────────────────────────────────────────────
+option(FRX_BUILD_STANDALONE "Build standalone application" ON)
+option(FRX_BUILD_PLUGIN     "Build VST plugin shared library" OFF)
+option(FRX_BUILD_VST3       "Include VST3 hosting support (requires VST3 SDK)" OFF)
+option(FRX_USE_LOG          "Enable boost::log" OFF)
 
-IF($ENV{BUILD_NUMBER})
-  SET(FRX_VERSION_BUILD $ENV{BUILD_NUMBER})
-ELSE($ENV{BUILD_NUMBER})
-  SET(FRX_VERSION_BUILD ${FRX_GITHASH})
-ENDIF($ENV{BUILD_NUMBER})
+# ── Version / config ──────────────────────────────────────────────────────────
+set(FRX_VERSION_MAJOR 1)
+set(FRX_VERSION_MINOR 0)
+set(FRX_VERSION_MICRO 72)
 
+execute_process(
+    COMMAND git --work-tree=${PROJECT_SOURCE_DIR} log --pretty=format:%h -n 1
+    OUTPUT_VARIABLE FRX_GITHASH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+)
+if(NOT FRX_GITHASH)
+    set(FRX_GITHASH "unknown")
+endif()
+set(FRX_VERSION_BUILD "${FRX_GITHASH}")
+set(FRX_VERSION_BRANCH "main")
 
+# ── VST2 SDK (bundled in sambag submodule) ────────────────────────────────────
+# When built as add_subdirectory from the workspace root, CMAKE_SOURCE_DIR
+# points to the workspace root where sambag lives.
+set(FRX_VSTSDK2_DIR "${CMAKE_SOURCE_DIR}/sambag/ext/vstsdk2.4"
+    CACHE PATH "VST2 SDK root")
 
-execute_process(COMMAND sh getbranch.sh OUTPUT_VARIABLE FRX_VERSION_BRANCH)
-project(VSTForx-${FRX_VERSION_BRANCH})
+if(NOT EXISTS "${FRX_VSTSDK2_DIR}/pluginterfaces/vst2.x/aeffect.h")
+    message(FATAL_ERROR
+        "VST2 SDK not found at FRX_VSTSDK2_DIR=${FRX_VSTSDK2_DIR}\n"
+        "Expected: ${FRX_VSTSDK2_DIR}/pluginterfaces/vst2.x/aeffect.h")
+endif()
 
+# ── Platform ──────────────────────────────────────────────────────────────────
+if(APPLE)
+    add_compile_definitions(DISCO_USE_COCOA FRX_OS_MAC RELEASE)
+    find_library(COCOA_LIBRARY  Cocoa  REQUIRED)
+    find_library(CARBON_LIBRARY Carbon REQUIRED)
+    set(FRX_ASYNC_DSP_TIMER 1)
+    set(FRX_USE_FONTCACHE 0)
+elseif(UNIX)
+    find_package(X11 REQUIRED)
+    add_compile_definitions(DISCO_USE_X11 FRX_OS_LINUX)
+    # aeffect.h uses __cdecl which GCC doesn't know without this
+    add_compile_definitions("__cdecl=__attribute__((__cdecl__))")
+    set(FRX_ASYNC_DSP_TIMER 1)
+    set(FRX_USE_FONTCACHE 0)
+elseif(WIN32)
+    add_compile_definitions(
+        DISCO_USE_WIN32
+        FRX_OS_WINDOWS
+        WIN32_LEAN_AND_MEAN
+        NOMINMAX
+        SAMBAG_USE_WINDOWS_SHARED_MEMORY
+        _WIN32_WINNT=0x0A00
+    )
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    set(FRX_ASYNC_DSP_TIMER 1)
+    set(FRX_USE_FONTCACHE 1)
+endif()
 
-# Common Features
-add_definitions(-DFRX_FEATURE_REMOTE_CHANNEL)
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DFRX_FEATURE_DC_TESTER")
+add_compile_definitions(
+    BOOST_UBLAS_TYPE_CHECK=0
+    BOOST_BIND_GLOBAL_PLACEHOLDERS
+    BOOST_FILESYSTEM_VERSION=3
+    _SCL_SECURE_NO_WARNINGS
+    _CRT_SECURE_NO_WARNINGS
+    FRX_FEATURE_REMOTE_CHANNEL
+)
+if(FRX_USE_LOG)
+    add_compile_definitions(SAMBAG_USE_LOG FRX_USE_LOG)
+endif()
 
-include_directories ("${PROJECT_SOURCE_DIR}/src")
-add_definitions(-DBOOST_UBLAS_TYPE_CHECK=0)
-add_definitions(-DBOOST_FILESYSTEM_VERSION=3)
-add_definitions(-D_SCL_SECURE_NO_WARNINGS) #disable warning C4996: 'std::uninitialized_copy' caused by boost::ublas
-add_definitions(-D_CRT_SECURE_NO_WARNINGS) #disable strcpy warning in audioeffect.h
+# ── Dependencies ──────────────────────────────────────────────────────────────
+if(NOT WIN32)
+    find_package(PkgConfig REQUIRED)
+endif()
 
-IF($ENV{SAMBA_USELOG})
-  add_definitions(-DSAMBAG_USE_LOG) #BOOST_LOG FAILS WHEN CALLING FROM VST(.dll) SEE #332
-ENDIF($ENV{SAMBA_USELOG})
+# Boost
+set(_BOOST_COMPS filesystem system thread regex serialization
+                 date_time timer chrono program_options)
+if(FRX_USE_LOG)
+    list(APPEND _BOOST_COMPS log log_setup)
+endif()
+find_package(Boost 1.55.0 REQUIRED COMPONENTS ${_BOOST_COMPS})
 
+# Cairo
+if(WIN32)
+    find_path(CAIRO_INCLUDE_DIR NAMES cairo/cairo.h REQUIRED)
+    find_library(CAIRO_LIBRARY  NAMES cairo         REQUIRED)
+    find_library(PIXMAN_LIBRARY NAMES pixman-1       REQUIRED)
+    find_package(Freetype REQUIRED)
+    find_package(ZLIB     REQUIRED)
+    find_package(PNG      REQUIRED)
+    find_library(FONTCONFIG_LIBRARY NAMES fontconfig)
+    find_package(EXPAT REQUIRED)
+    set(FRX_CAIRO_LIBRARIES
+        "${CAIRO_LIBRARY}" "${PIXMAN_LIBRARY}"
+        Freetype::Freetype ZLIB::ZLIB PNG::PNG
+    )
+    if(FONTCONFIG_LIBRARY)
+        list(APPEND FRX_CAIRO_LIBRARIES "${FONTCONFIG_LIBRARY}" EXPAT::EXPAT)
+    endif()
+else()
+    pkg_check_modules(Cairo REQUIRED IMPORTED_TARGET cairo)
+    set(FRX_CAIRO_LIBRARIES PkgConfig::Cairo)
+endif()
 
-#add_definitions(-DSAMBA_WARN_MISSING_IMPL) #show xy not impl. warning
+# Lua
+if(WIN32)
+    find_package(Lua REQUIRED)
+    add_library(_frx_lua INTERFACE)
+    target_include_directories(_frx_lua INTERFACE ${LUA_INCLUDE_DIR})
+    target_link_libraries(_frx_lua INTERFACE ${LUA_LIBRARIES})
+    set(FRX_LUA_LIBRARIES _frx_lua)
+else()
+    pkg_check_modules(Lua lua5.4 IMPORTED_TARGET)
+    if(NOT Lua_FOUND)
+        pkg_check_modules(Lua lua5.2 IMPORTED_TARGET)
+    endif()
+    if(NOT Lua_FOUND)
+        pkg_check_modules(Lua REQUIRED lua IMPORTED_TARGET)
+    endif()
+    set(FRX_LUA_LIBRARIES PkgConfig::Lua)
+endif()
 
-#to avoid name conflicts with existing FindSomeLib.cmake scripts
-#every finding script has a "X" postfix: FindSomeLibX.cmake
-#(concerns scriptname only)
-
-#UNIX is TRUE on all UNIX-like OS's, including Apple OS X and Cygwin.
-#WIN32 is TRUE on Windows, including Cygwin.
-#APPLE is TRUE on Apple systems.
-
-IF(APPLE)
-	find_package(IConvX REQUIRED)
-	add_definitions(-DFRX_OS_MAC)
-	add_definitions(-DDISCO_USE_COCOA)	
-	FIND_LIBRARY(COCOA_LIBRARY Cocoa)	
-	FIND_LIBRARY(CARBON_LIBRARY Carbon)
-	SET(FRX_ASYNC_DSP_TIMER "FRX_BOOST_TIMER")
-	SET(FRX_USE_FONTCACHE "0")
-	#vst3 fdebug.h want's that
-	SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
-	SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG")
-	add_definitions(-DRELEASE) #VST3 wants RELEASE DEBUG or DEVELOPMENT
-ELSEIF(UNIX)
-	find_package(X11 REQUIRED)
-	include_directories(${X11_INCLUDE_DIRS})
-	add_definitions(-DDISCO_USE_X11)
-	add_definitions(-D__cdecl=__attribute__\(\(__cdecl__\)\)) #aeffect.h: unarm __cdecl
-	add_definitions(-DFRX_OS_LINUX)
-	SET(FRX_ASYNC_DSP_TIMER "FRX_BOOST_TIMER")
-	SET(FRX_USE_FONTCACHE "0")
-ELSEIF(WIN32)
-        add_definitions(-DDISCO_USE_WIN32)
-	add_definitions(-DFRX_OS_WINDOWS)
-	add_definitions(-DWIN32_LEAN_AND_MEAN)
-	add_definitions(-DNOMINMAX) #prevent collision with std::min/max
-	add_definitions(-DSAMBAG_USE_WINDOWS_SHARED_MEMORY)
-	SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd /Zi")
-	SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
-	## lnk:out of memory issue fixed with /OPT:NOREF
-	SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /OPT:NOREF")
-	SET(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_DLL_LINKER_FLAGS_RELEASE} /OPT:NOREF")
-	SET(FRX_ASYNC_DSP_TIMER "FRX_BOOST_TIMER")
-	SET(FRX_USE_FONTCACHE "1")
-
-ENDIF(APPLE)
-
-find_package(Cairo REQUIRED)
-find_package(CppUnitX REQUIRED)
-find_package(TinyXMLX REQUIRED)
-find_package(LokiX REQUIRED)
-find_package(Lua52X REQUIRED)
-find_package(Sqlite3X REQUIRED)
-find_package(VST23X REQUIRED)
-find_package(VST3X REQUIRED)
-find_package(BoostX REQUIRED)
-# sambag is provided by the top-level CMakeLists.txt (prebuilt or submodule)
-
-INCLUDE_DIRECTORIES(${CAIRO_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${CPPUNIT_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${TINYXML_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${LOKI_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${LUA52_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${SQLITE3_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${SAMBAG_INCLUDE_DIRS})
-
-#vst2
-INCLUDE_DIRECTORIES(${VSTSDK_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${VSTSDK_INCLUDE_DIRS}/PUBLIC.SDK/SOURCE/VST2.X/)
-INCLUDE_DIRECTORIES(${VSTSDK_INCLUDE_DIRS}/PLUGINTERFACES/VST2.X)
-INCLUDE_DIRECTORIES(${VSTPLUGIN_INTERFACES_DIRS})
-
-#vst3
-INCLUDE_DIRECTORIES(${VSTSDK3_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst)
-INCLUDE_DIRECTORIES(${VSTSDK3_INCLUDE_DIRS}/pluginterfaces/vst)
-
-
-SET (FRX_CLIBS ${FRX_CLIBS}
-	${SAMBAG_LIBRARIES}
-	${Boost_LIBRARIES}
-	${CPPUNIT_LIBRARIES}
-	${CAIRO_LIBRARIES}
-	${TINYXML_LIBRARIES}
-	${LUA52_LIBRARIES}
-	#${VST3_LIBRARIES}
+# ── Configure generated header (after platform vars are set) ─────────────────
+configure_file(
+    "${PROJECT_SOURCE_DIR}/src/com/FrxConfig.h.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/src/com/FrxConfig.h"
 )
 
-IF(APPLE)
-	set (FRX_CLIBS ${FRX_CLIBS}
-		${COCOA_LIBRARY}
-                ${CARBON_LIBRARY}			
-
-	)
-ELSEIF(UNIX)
-	set (FRX_CLIBS ${FRX_CLIBS}
-		${X11_LIBRARIES}
-		rt #undefined reference to `clock_gettime'
-	)
-ELSEIF(WIN32)
-ENDIF(APPLE)
-
-
-
-set (VSTSDKSOURCE ${VSTSDKSOURCE}
-      ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/audioeffect.cpp
-      ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/audioeffectx.cpp
-      #${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp now part of target sources
-)
-
-set (VSTSDK3SOURCE ${VSTSDK3SOURCE}
-      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstaudioeffect.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstbus.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstcomponent.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstcomponentbase.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vsteditcontroller.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstinitiids.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/vst/vstparameters.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/common/pluginview.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/public.sdk/source/common/memorystream.cpp      
-      ${VSTSDK3_INCLUDE_DIRS}/pluginterfaces/base/ustring.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/pluginterfaces/base/conststringtable.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/pluginterfaces/base/funknown.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/baseiids.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/classfactory.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/fatomic.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/fbitset.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/fbuffer.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/fcpu.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/fdebug.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/fdynlib.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/finitializer.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/fmemory.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/fobject.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/fpoint.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/frect.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/fregion.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/fstreamer.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/fstring.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/fthread.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/timer.cpp
-      ${VSTSDK3_INCLUDE_DIRS}/base/source/updatehandler.cpp
-)
-
-
-
-CONFIGURE_FILE(
-  "${PROJECT_SOURCE_DIR}/src/com/FrxConfig.h.in"
-  "${PROJECT_BINARY_DIR}/src/com/FrxConfig.h"
-)
-
-CONFIGURE_FILE(
-  "${PROJECT_SOURCE_DIR}/builds/currVersion.txt.in"
-  "${PROJECT_BINARY_DIR}/builds/currVersion.txt"
-)
-
-
+# ── Subdir ────────────────────────────────────────────────────────────────────
 add_subdirectory(src)

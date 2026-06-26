@@ -49,7 +49,7 @@ slua::IgnoreReturn2 LuaFrxConnection::getObjects(lua_State *lua) {
     } catch(...) {
         slua::pushLuaError(lua, "unknown error");
     }
-    return slua::IgnoreReturn();
+    return slua::IgnoreReturn2();
 }
 //-----------------------------------------------------------------------------
 LuaFrxConnection::LuaFrxConnection() {

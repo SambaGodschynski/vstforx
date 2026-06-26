@@ -12,7 +12,7 @@
 namespace processing {
 
 OS_VSTPlugNode2x::HostCallBackOnInit OS_VSTPlugNode2x::callBkOnInit;
-int OS_VSTPlugNode2x::shellPlugIdOnInit = 0;
+std::string OS_VSTPlugNode2x::shellPlugIdOnInit;
 
 } // namespace(s)
 

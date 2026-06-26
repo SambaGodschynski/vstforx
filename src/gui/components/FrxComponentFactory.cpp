@@ -24,7 +24,6 @@
 #include <sambag/com/Exception.hpp>
 #include <processing/IModelController.hpp>
 #include <com/Settings.h>
-#include <processing/interprocess/RemoteChannelManager.hpp>
 #include <processing/ModelFactory.hpp>
 #include <gui/ViewFactory.hpp>
 #include <com/one4All.h>

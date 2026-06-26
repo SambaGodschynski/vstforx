@@ -1,7 +1,10 @@
-SET ( FRX_STANDALONE
-        GuiStandalone/Main.cpp
-	com/FrxPlugSettings.cpp
-	VSTForx/win/resources.rc)
+set(_STANDALONE_SRCS
+    GuiStandalone/Main.cpp
+    com/FrxPlugSettings.cpp
+)
+if(WIN32)
+    list(APPEND _STANDALONE_SRCS VSTForx/win/resources.rc)
+endif()
 
 # common files
 SET (PlugSources ${PlugSources}
@@ -19,9 +22,15 @@ SET (RemoteSrc ${RemoteSrc} RemoteChannel/Plugin.cpp)
 # )
 # target_link_libraries (VSTForx.bridge frx_core ${FRX_CLIBS})
 
-IF(WIN32)
+IF(UNIX AND NOT APPLE)
+  if(FRX_BUILD_STANDALONE)
+    add_executable(standalone ${_STANDALONE_SRCS})
+    target_link_libraries(standalone PRIVATE frx_core)
+  endif()
+
+ELSEIF(WIN32)
   #standalone
-  add_executable(standalone ${FRX_STANDALONE})
+  add_executable(standalone ${_STANDALONE_SRCS})
   target_link_libraries (standalone frx_core ${FRX_CLIBS})
 
   #vstforx

@@ -134,14 +134,14 @@ void About::initView() {
 		typedef sdc::ComponentWrapper<sdsg::Image> Image;
 		Image::Ptr img = Image::create();
 		img->setMouseEventsEnabled(false);
-		img->getObject()->getOutline().x0().x().setType(sds::units::Unit::PERCENT);
+		img->getObject()->getOutline().x0().x().setType(sds::units::Unit::UnitPERCENT);
 		img->getObject()->getOutline().x0().x().setValue(45);
-		img->getObject()->getOutline().x0().y().setType(sds::units::Unit::PERCENT);
+		img->getObject()->getOutline().x0().y().setType(sds::units::Unit::UnitPERCENT);
 		img->getObject()->getOutline().x0().y().setValue(10);
 
-		img->getObject()->getOutline().size().width().setType(sds::units::Unit::PX);
+		img->getObject()->getOutline().size().width().setType(sds::units::Unit::UnitPX);
 		img->getObject()->getOutline().size().width().setValue(130);
-		img->getObject()->getOutline().size().height().setType(sds::units::Unit::PX);
+		img->getObject()->getOutline().size().height().setType(sds::units::Unit::UnitPX);
 		img->getObject()->getOutline().size().height().setValue(130);
 		img->getObject()->setSurface(logo);
 		img->updateBounds();

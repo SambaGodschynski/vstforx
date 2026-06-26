@@ -47,9 +47,9 @@ public:
 	//--------------------------------------------------------------------------
 	const string & getModuleLocation () const { return moduleLocation; }
 	//--------------------------------------------------------------------------
-	int shellPlugId;
+	std::string shellPlugId;
 	//--------------------------------------------------------------------------
-	static int shellPlugIdOnInit; // setted during loadModule for hostcallack on init
+	static std::string shellPlugIdOnInit; // setted during loadModule for hostcallack on init
 
 }; // class VSTPlugin
 } // namespace processing

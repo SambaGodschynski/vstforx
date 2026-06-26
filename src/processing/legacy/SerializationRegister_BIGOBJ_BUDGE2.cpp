@@ -11,7 +11,7 @@
 #include <processing/concreteAdapter/PeakTracker.h>
 #include <processing/concreteAdapter/Pan.h>
 #include <processing/concreteAdapter/ADSRTrigger.h>
-#include <processing/interprocess/RemoteChReceiver.hpp>
+// interprocess removed
 #include <processing/concreteAdapter/DCTester.hpp>
 #include <processing/concreteAdapter/MidiProcessor.h>
 
@@ -27,7 +27,6 @@ void register_types_impl_BIGOBJ_BUDGE_2(::com::iArchive &ar) {
 	ar.register_type<pr::PeakTracker>();
 	ar.register_type<pr::ADSRTrigger>();
 	ar.register_type<pr::MidiProcessor>();
-	ar.register_type<frx::processing::interprocess::RemoteChReceiver>();
 	ar.register_type<pr::DCTester>();
 }
 }}}} // namespace(s)

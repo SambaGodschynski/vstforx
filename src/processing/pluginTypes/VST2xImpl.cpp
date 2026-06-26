@@ -590,7 +590,7 @@ std::pair<VstIntPtr, bool> VSTPluginImpl::processRequest( frx::processing::IHost
             return std::make_pair(kVstProcessLevelUnknown, true);
         //---------------------------------------------------------------------
         // TODOs:
-        case DECLARE_VST_DEPRECATED(audioMasterPinConnected):
+        case audioMasterPinConnected:
             return std::make_pair(0, false);
         //---------------------------------------------------------------------
         case DECLARE_VST_DEPRECATED(audioMasterSetTime):

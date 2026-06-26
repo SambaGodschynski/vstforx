@@ -25,10 +25,10 @@ namespace components { namespace ui {
 FrxCircuidMouseListener::FrxCircuidMouseListener() {
 	selection = Rect::create();
 	sd::svg::units::Rectangle & rect = selection->getObject()->getRectangle();
-	rect.x0().x().setType(sd::svg::units::Unit::PX);
-	rect.x0().y().setType(sd::svg::units::Unit::PX);
-	rect.size().width().setType(sd::svg::units::Unit::PX);
-	rect.size().height().setType(sd::svg::units::Unit::PX);
+	rect.x0().x().setType(sd::svg::units::Unit::UnitPX);
+	rect.x0().y().setType(sd::svg::units::Unit::UnitPX);
+	rect.size().width().setType(sd::svg::units::Unit::UnitPX);
+	rect.size().height().setType(sd::svg::units::Unit::UnitPX);
 	sdc::ui::UIManager &m = sdc::ui::getUIManager();
 	sd::svg::Style selectingStyle;
 	m.getProperty("FrxSelection.selectingStyle", selectingStyle);
