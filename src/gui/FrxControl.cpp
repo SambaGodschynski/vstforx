@@ -515,7 +515,7 @@ FrxColumnBrowser::Ptr __openMainBrowser(fgc::FrxCircuidViewPtr view,
 	return browser;
 }
 //-----------------------------------------------------------------------------
-void __openSetup(fgc::FrxCircuidViewPtr view, 
+void __openSetup(fgc::FrxCircuidViewPtr view,
 		fgc::FrxComponentPtr c)
 {
 	SetupWindow::Ptr setup;
@@ -541,7 +541,7 @@ void __onViewMouse(void *src, const sdce::MouseEvent &ev, About::WPtr _about) {
 		}
 	}
 }
-void __openAbout(fgc::FrxCircuidViewPtr view, 
+void __openAbout(fgc::FrxCircuidViewPtr view,
 		fgc::FrxComponentPtr c)
 {
 	About::Ptr about = About::create( view->getLastContainer<sdc::Window>() );

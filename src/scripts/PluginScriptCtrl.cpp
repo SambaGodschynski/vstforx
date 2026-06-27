@@ -546,7 +546,6 @@ void FrxOpenSetup::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
         using namespace frx::gui;
         using namespace frx::gui::components;
         FrxCircuidViewPtr view = editor->getCircuidView();
-        
         sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
         if (!win) {
             return;
@@ -554,7 +553,6 @@ void FrxOpenSetup::process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
         if (win->getThreadId() != sambag::com::getThreadId()) {
             throw std::runtime_error("this function need to be called from main thread. Use runOnUIThread for this purpose.");
         }
-        
         IFrxControl &frxctrl = getFrxControl(view);
         frxctrl.openSetup(view);
     } catch(const std::exception &ex) {
