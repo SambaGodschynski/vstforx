@@ -1,0 +1,3 @@
+# Copies only .lua files from SRC_DIR to DST_DIR, preserving subdirectory structure.
+# Called via cmake -P with -D SRC_DIR=... -D DST_DIR=...
+file(COPY "${SRC_DIR}/" DESTINATION "${DST_DIR}" FILES_MATCHING PATTERN "*.lua")

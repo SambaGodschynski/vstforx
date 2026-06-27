@@ -10,6 +10,9 @@
 #include <gui/components/VstForxEditor.hpp>
 #include <sambag/disco/IResourceManager.hpp>
 #include <sambag/disco/components/WindowToolkit.hpp>
+#ifdef FRX_OS_LINUX
+#include <sambag/disco/components/windowImpl/X11WindowToolkit.hpp>
+#endif
 #include <sambag/com/Common.hpp>
 #include <boost/program_options.hpp>
 #include <com/settings.h>
@@ -248,6 +251,15 @@ int main(int narg, char **args) {
     scriptCtrl->appendJob( "require\"scripts/vstforx-helper\"" );
 	processScripts();
     processExecutes();
+	// Start the main loop in its own thread so that scripts can safely use
+	// invokeLater() to queue X11 work onto the main-loop thread.
+	boost::thread mainLoopThread([](){
+		sambag::disco::components::Window::startMainLoop();
+	});
+	// Wait until the main loop is actually spinning before launching scripts.
+	while (!sambag::disco::components::X11WindowToolkit::isMainLoopRunning()) {
+		boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+	}
 	scriptCtrl->start();
 	// start console thread
 	bool consoleRunning = true;
@@ -257,7 +269,7 @@ int main(int narg, char **args) {
 	processingThread = boost::thread(
 		boost::bind(&processPlugin, plug)
 	);
-	sambag::disco::components::Window::startMainLoop();
+	mainLoopThread.join();
 	consoleRunning = false;
 	scriptCtrl->join();
 	consoleThread.join();

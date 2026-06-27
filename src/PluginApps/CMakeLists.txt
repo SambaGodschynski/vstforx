@@ -26,6 +26,21 @@ IF(UNIX AND NOT APPLE)
   if(FRX_BUILD_STANDALONE)
     add_executable(standalone ${_STANDALONE_SRCS})
     target_link_libraries(standalone PRIVATE frx_core)
+
+    set(_FRX_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
+    add_custom_command(TARGET standalone POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${_FRX_SRC_DIR}/images" "$<TARGET_FILE_DIR:standalone>/images"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${_FRX_SRC_DIR}/styles" "$<TARGET_FILE_DIR:standalone>/styles"
+        COMMAND ${CMAKE_COMMAND}
+            -D "SRC_DIR=${_FRX_SRC_DIR}/scripts"
+            -D "DST_DIR=$<TARGET_FILE_DIR:standalone>/scripts"
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/CopyLuaScripts.cmake"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${_FRX_SRC_DIR}/testScripts" "$<TARGET_FILE_DIR:standalone>/testScripts"
+        COMMENT "Copying resources next to standalone binary"
+    )
   endif()
 
 ELSEIF(WIN32)
@@ -75,7 +90,7 @@ ELSEIF(APPLE)
         com/mac/CocoaHelper.mm
 	${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp
    )
-ENDIF(WIN32)
+endif()
 
 IF (WIN32)
   #vstforx
