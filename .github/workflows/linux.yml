@@ -44,13 +44,19 @@ jobs:
             --output sambag-linux-x64.tar.gz
           mkdir -p sambag-dist
           tar xzf sambag-linux-x64.tar.gz -C sambag-dist
+          echo "=== sambag-dist/lib ==="
+          ls sambag-dist/lib/
+          echo "=== sambag-dist/src ==="
+          ls sambag-dist/src/sambag/dsp/ 2>/dev/null || echo "(no src/)"
+          echo "=== ext/vstsdk2.4 ==="
+          ls sambag-dist/ext/vstsdk2.4/pluginterfaces/vst2.x/ 2>/dev/null || echo "(no vstsdk)"
 
       - name: Configure
         run: |
           cmake -B build \
             -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/sambag-dist \
-            -DFRX_VSTSDK2_DIR=${{ github.workspace }}/sambag-dist/ext/vstsdk2.4
+            -DSAMBAG_DIST=${{ github.workspace }}/sambag-dist \
+            2>&1 || (cat build/CMakeFiles/CMakeError.log 2>/dev/null; exit 1)
 
       - name: Build
         run: cmake --build build --target standalone --parallel $(nproc)
