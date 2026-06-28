@@ -20,12 +20,17 @@ option(FRX_BUILD_VST3       "Include VST3 hosting support (requires VST3 SDK)" O
 option(FRX_USE_LOG          "Enable boost::log" OFF)
 
 # ── sambag dependency ─────────────────────────────────────────────────────────
-# Pass -DSAMBAG_DIR=/path/to/sambag to build sambag from source.
-# Without SAMBAG_DIR, falls back to find_package(sambag REQUIRED).
+# Three modes (mutually exclusive, checked in order):
+#
+#   -DSAMBAG_DIR=/path/to/sambag    build sambag from source via add_subdirectory
+#   -DSAMBAG_DIST=/path/to/dist     use prebuilt tarball (lib + headers); system
+#                                   Boost/Cairo/Lua are found separately below
+#   (neither)                       find_package(sambag REQUIRED) — installed pkg
+#
 if(SAMBAG_DIR)
     message(STATUS "sambag: building from ${SAMBAG_DIR}")
-    set(SAMBAG_VST_SUPPORT  OFF CACHE BOOL "" FORCE)
-    set(SAMBAG_BUILD_TESTS  OFF CACHE BOOL "" FORCE)
+    set(SAMBAG_VST_SUPPORT   OFF CACHE BOOL "" FORCE)
+    set(SAMBAG_BUILD_TESTS   OFF CACHE BOOL "" FORCE)
     set(SAMBAG_BUILD_TESTAPP OFF CACHE BOOL "" FORCE)
     add_subdirectory("${SAMBAG_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/sambag")
     set(SAMBAG_LIBRARIES sambag)
@@ -34,6 +39,14 @@ if(SAMBAG_DIR)
         "${CMAKE_CURRENT_BINARY_DIR}/sambag/src"
         "${LOKI_INCLUDE_DIR}"
     )
+    set(_SAMBAG_SRC "${SAMBAG_DIR}/src")
+elseif(SAMBAG_DIST)
+    message(STATUS "sambag: using prebuilt at ${SAMBAG_DIST}")
+    find_library(SAMBAG_LIB sambag PATHS "${SAMBAG_DIST}/lib" NO_DEFAULT_PATH REQUIRED)
+    find_library(TICPP_LIB ticpp  PATHS "${SAMBAG_DIST}/lib" NO_DEFAULT_PATH REQUIRED)
+    set(SAMBAG_LIBRARIES "${SAMBAG_LIB}" "${TICPP_LIB}")
+    set(SAMBAG_INCLUDE_DIRS "${SAMBAG_DIST}/include")
+    set(_SAMBAG_SRC "${SAMBAG_DIST}/src")
 else()
     find_package(sambag REQUIRED)
     message(STATUS "sambag: using installed package")
@@ -60,9 +73,13 @@ set(FRX_VERSION_BUILD "${FRX_GITHASH}")
 set(FRX_VERSION_BRANCH "main")
 
 # ── VST2 SDK ──────────────────────────────────────────────────────────────────
-# Bundled inside the sambag repo under ext/vstsdk2.4.
-# Override with -DFRX_VSTSDK2_DIR=/path/to/vstsdk2.4 if needed.
-set(FRX_VSTSDK2_DIR "${SAMBAG_DIR}/ext/vstsdk2.4"
+# Lives at ext/vstsdk2.4 inside both the sambag source tree and the prebuilt dist.
+if(SAMBAG_DIST)
+    set(_FRX_VSTSDK2_DEFAULT "${SAMBAG_DIST}/ext/vstsdk2.4")
+else()
+    set(_FRX_VSTSDK2_DEFAULT "${SAMBAG_DIR}/ext/vstsdk2.4")
+endif()
+set(FRX_VSTSDK2_DIR "${_FRX_VSTSDK2_DEFAULT}"
     CACHE PATH "VST2 SDK root")
 
 if(NOT EXISTS "${FRX_VSTSDK2_DIR}/pluginterfaces/vst2.x/aeffect.h")

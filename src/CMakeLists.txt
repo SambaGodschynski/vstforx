@@ -221,8 +221,8 @@ set(_VSTSDK2_SRCS
 
 # sambag DSP helpers that depend on VST2 SDK (excluded from sambag build when SAMBAG_VST_SUPPORT=OFF)
 set(_SAMBAG_DSP_VST_SRCS
-    "${SAMBAG_DIR}/src/sambag/dsp/VstMidiEventAdapter.cpp"
-    "${SAMBAG_DIR}/src/sambag/dsp/TimeInfoVst2xHelper.cpp"
+    "${_SAMBAG_SRC}/sambag/dsp/VstMidiEventAdapter.cpp"
+    "${_SAMBAG_SRC}/sambag/dsp/TimeInfoVst2xHelper.cpp"
 )
 
 # ── frx_core library ──────────────────────────────────────────────────────────
