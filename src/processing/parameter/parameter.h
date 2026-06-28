@@ -298,7 +298,7 @@ namespace processing { namespace parameter {
  *  vergleicht zwei ParameterConnection. Wobei Reihenfolge egal ist:  
  *  A<->B oder B<->A ist die gleiche Verbindung.
  */
-struct ParameterConnectionComparator : std::binary_function<std::string, std::string, bool> 
+struct ParameterConnectionComparator
 {
 //============================================================================================================
 	//--------------------------------------------------------------------------------------------------------   
@@ -315,7 +315,7 @@ struct ParameterConnectionComparator : std::binary_function<std::string, std::st
 /**
  *  @class ParameterConnectionSetHash.
  */
-struct ParameterConnectionSetHash : std::unary_function<std::string, std::size_t> 
+struct ParameterConnectionSetHash
 {
 //============================================================================================================
 	//-------------------------------------------------------------------------------------------------------- 

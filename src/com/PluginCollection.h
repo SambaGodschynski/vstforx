@@ -11,7 +11,7 @@
 #include "com/one4All.h"
 #include "com/PPIError.h"
 #include "boost/shared_ptr.hpp"
-#include "settings.h"
+#include "Settings.h"
 #include "Events.h"
 #include "MyString.h"
 #include "processing/Graph.h"
