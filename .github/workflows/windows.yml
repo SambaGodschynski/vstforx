@@ -1,0 +1,87 @@
+name: Windows Build
+
+on:
+  push:
+    branches: [ DISCO, main ]
+  pull_request:
+    branches: [ DISCO, main ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSVC (x64)
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x64
+
+      - name: Create vcpkg binary cache dir
+        run: New-Item -ItemType Directory -Force -Path "C:\vcpkg-archives" | Out-Null
+        shell: pwsh
+
+      - name: Restore vcpkg binary cache
+        id: vcpkg-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: C:\vcpkg-archives
+          key: vcpkg-vstforx-x64-windows-static-${{ hashFiles('.github/workflows/windows.yml') }}
+          restore-keys: vcpkg-vstforx-x64-windows-static-
+
+      - name: Install dependencies via vcpkg
+        env:
+          VCPKG_DEFAULT_BINARY_CACHE: C:\vcpkg-archives
+        run: |
+          vcpkg install --classic --triplet x64-windows-static `
+            boost cairo lua
+        shell: pwsh
+
+      - name: Save vcpkg binary cache
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: C:\vcpkg-archives
+          key: vcpkg-vstforx-x64-windows-static-${{ hashFiles('.github/workflows/windows.yml') }}
+
+      - name: Download sambag prebuilt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release download prebuilt-latest `
+            --repo SambaGodschynski/sambag `
+            --pattern "sambag-windows-x64-static.zip" `
+            --output sambag-windows-x64-static.zip
+          Expand-Archive -Path sambag-windows-x64-static.zip -DestinationPath sambag-dist
+        shell: pwsh
+
+      - name: Configure
+        run: |
+          cmake -B build `
+            -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `
+            -DVCPKG_TARGET_TRIPLET=x64-windows-static `
+            -DVCPKG_MANIFEST_MODE=OFF `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DSAMBAG_DIST="${{ github.workspace }}/sambag-dist"
+        shell: pwsh
+
+      - name: Build plugins
+        run: |
+          cmake --build build --config Release `
+            --target vstforx vstforxInstrument vstforxInstrument_2Out vstforxInstrument_4Out vstforxInstrument_8Out `
+            --parallel
+        shell: pwsh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vstforx-plugins-windows-x64
+          path: |
+            build/src/PluginApps/Release/vstforx.dll
+            build/src/PluginApps/Release/vstforxInstrument.dll
+            build/src/PluginApps/Release/vstforxInstrument_2Out.dll
+            build/src/PluginApps/Release/vstforxInstrument_4Out.dll
+            build/src/PluginApps/Release/vstforxInstrument_8Out.dll
+          retention-days: 14

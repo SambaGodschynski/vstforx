@@ -20,7 +20,7 @@ SET (RemoteSrc ${RemoteSrc} RemoteChannel/Plugin.cpp)
 # add_executable(VSTForx.bridge Bridge/main.cpp
 # 		      com/FrxPlugSettings.cpp	
 # )
-# target_link_libraries (VSTForx.bridge frx_core ${FRX_CLIBS})
+# target_link_libraries (VSTForx.bridge frx_core)
 
 IF(UNIX AND NOT APPLE)
   if(FRX_BUILD_STANDALONE)
@@ -46,21 +46,21 @@ IF(UNIX AND NOT APPLE)
 ELSEIF(WIN32)
   #standalone
   add_executable(standalone ${_STANDALONE_SRCS})
-  target_link_libraries (standalone frx_core ${FRX_CLIBS})
+  target_link_libraries (standalone frx_core)
 
   #vstforx
   SET (PlugSources ${PlugSources}
       VSTForx/win/VstForxResourceManager.cpp
       VSTForx/win/VstForxPlugMain.cpp
       VSTForx/win/initResourceMap.cpp
-      ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp
+      ${FRX_VSTSDK2_DIR}/public.sdk/source/vst2.x/vstplugmain.cpp
       VSTForx/win/vstplug.def
       VSTForx/win/resources.rc
    )
   #remote channel
   SET (RemoteSrc ${RemoteSrc}
   	RemoteChannel/win/RemoteChannelMain.cpp
-   	${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp
+   	${FRX_VSTSDK2_DIR}/public.sdk/source/vst2.x/vstplugmain.cpp
 
      	RemoteChannel/win/vstplug.def
    )
@@ -71,7 +71,7 @@ ELSEIF(APPLE)
       VSTForx/mac/VstForxPlugMain.cpp
       VSTForx/mac/VstForxResourceManager.cpp
       com/mac/CocoaHelper.mm
-      ${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp
+      ${FRX_VSTSDK2_DIR}/public.sdk/source/vst2.x/vstplugmain.cpp
    )
   SET_SOURCE_FILES_PROPERTIES(${FRX_RESOURCES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
   set_source_files_properties(VSTForx/mac/CocoaHelper.mm PROPERTIES COMPILE_FLAGS "-x objective-c++")
@@ -88,58 +88,58 @@ ELSEIF(APPLE)
   SET (RemoteSrc ${RemoteSrc}
         RemoteChannel/mac/RemoteChannelMain.cpp
         com/mac/CocoaHelper.mm
-	${VSTSDK_INCLUDE_DIRS}/public.sdk/source/vst2.x/vstplugmain.cpp
+	${FRX_VSTSDK2_DIR}/public.sdk/source/vst2.x/vstplugmain.cpp
    )
 endif()
 
 IF (WIN32)
   #vstforx
   add_library(vstforx SHARED ${PlugSources})
-  target_link_libraries (vstforx frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforx frx_core)
 
   add_library(vstforxInstrument SHARED ${PlugSources})
-  target_link_libraries (vstforxInstrument frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforxInstrument frx_core)
   target_compile_definitions(vstforxInstrument PUBLIC "FRX_IS_INSTRUMENT")
 
   add_library(vstforxInstrument_2Out SHARED ${PlugSources})
-  target_link_libraries (vstforxInstrument_2Out frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforxInstrument_2Out frx_core)
   target_compile_definitions(vstforxInstrument_2Out PUBLIC "FRX_IS_INSTRUMENT"
   						  PUBLIC "FRX_O=4")
 
   add_library(vstforxInstrument_4Out SHARED ${PlugSources})
-  target_link_libraries (vstforxInstrument_4Out frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforxInstrument_4Out frx_core)
   target_compile_definitions(vstforxInstrument_4Out PUBLIC "FRX_IS_INSTRUMENT"
   						  PUBLIC "FRX_O=8")
 
   add_library(vstforxInstrument_8Out SHARED ${PlugSources})
-  target_link_libraries (vstforxInstrument_8Out frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforxInstrument_8Out frx_core)
   target_compile_definitions(vstforxInstrument_8Out PUBLIC "FRX_IS_INSTRUMENT"
   						  PUBLIC "FRX_O=16")
 
   add_library(vstforxDEMO SHARED ${PlugSources})
-  target_link_libraries (vstforxDEMO frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforxDEMO frx_core)
   target_compile_definitions(vstforxDEMO PUBLIC "FRX_IS_DEMO")
 
 
   add_library(vstforxInstrumentDEMO SHARED ${PlugSources})
-  target_link_libraries (vstforxInstrumentDEMO frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforxInstrumentDEMO frx_core)
   target_compile_definitions(vstforxInstrumentDEMO PUBLIC "FRX_IS_INSTRUMENT" 
   							PUBLIC "FRX_IS_DEMO")
 
   add_library(vstforxInstrumentDEMO_2Out SHARED ${PlugSources})
-  target_link_libraries (vstforxInstrumentDEMO_2Out frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforxInstrumentDEMO_2Out frx_core)
   target_compile_definitions(vstforxInstrumentDEMO_2Out PUBLIC "FRX_IS_INSTRUMENT" 
   							PUBLIC "FRX_IS_DEMO"
 							PUBLIC "FRX_O=4")
   
   add_library(vstforxInstrumentDEMO_4Out SHARED ${PlugSources})
-  target_link_libraries (vstforxInstrumentDEMO_4Out frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforxInstrumentDEMO_4Out frx_core)
   target_compile_definitions(vstforxInstrumentDEMO_4Out PUBLIC "FRX_IS_INSTRUMENT" 
   							PUBLIC "FRX_IS_DEMO"
 							PUBLIC "FRX_O=8")
  
   add_library(vstforxInstrumentDEMO_8Out SHARED ${PlugSources})
-  target_link_libraries (vstforxInstrumentDEMO_8Out frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforxInstrumentDEMO_8Out frx_core)
   target_compile_definitions(vstforxInstrumentDEMO_8Out PUBLIC "FRX_IS_INSTRUMENT" 
   							PUBLIC "FRX_IS_DEMO"
 							PUBLIC "FRX_O=16")
@@ -148,19 +148,19 @@ IF (WIN32)
 
 
 #  add_library(VSTForx-CM SHARED ${PlugSources}) 
-#  target_link_libraries (VSTForx-CM frx_core ${FRX_CLIBS})
+#  target_link_libraries (VSTForx-CM frx_core)
 #  target_compile_definitions(VSTForx-CM PUBLIC "FRX_IS_CM")
 
 #  add_library(VSTForxInstrument-CM SHARED ${PlugSources}) 
-#  target_link_libraries (VSTForxInstrument-CM frx_core ${FRX_CLIBS})
+#  target_link_libraries (VSTForxInstrument-CM frx_core)
 #  target_compile_definitions(VSTForxInstrument-CM PUBLIC "FRX_IS_INSTRUMENT" PUBLIC "FRX_IS_CM")
 
   #remote channel
   add_library(remoteChannelSender SHARED ${RemoteSrc})
-  target_link_libraries (remoteChannelSender frx_core ${FRX_CLIBS})
+  target_link_libraries (remoteChannelSender frx_core)
 
   add_library(remoteChannelSender_DEMO SHARED ${RemoteSrc})
-  target_link_libraries (remoteChannelSender_DEMO frx_core ${FRX_CLIBS})
+  target_link_libraries (remoteChannelSender_DEMO frx_core)
   target_compile_definitions(remoteChannelSender_DEMO PUBLIC "FRX_REMOTE_IS_DEMO")
 
 #process plistfiles
@@ -262,7 +262,7 @@ ELSEIF(APPLE)
   #set executables
   #standalone
   add_executable(standalone MACOSX_BUNDLE ${FRX_STANDALONE})
-  target_link_libraries (standalone frx_core ${FRX_CLIBS})
+  target_link_libraries (standalone frx_core)
   SET_TARGET_PROPERTIES(standalone PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/standalone.plist")
   #SET_TARGET_PROPERTIES(standalone PROPERTIES LINK_FLAGS "-bundle")
   target_compile_definitions(standalone PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.Standalone\"")
@@ -270,21 +270,21 @@ ELSEIF(APPLE)
 
   #vstforx
   ADD_EXECUTABLE(vstforx MACOSX_BUNDLE ${PlugSources})
-  target_link_libraries (vstforx frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforx frx_core)
   SET_TARGET_PROPERTIES(vstforx PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/vstforx.plist")
   SET_TARGET_PROPERTIES(vstforx PROPERTIES LINK_FLAGS "-bundle")
   target_compile_definitions(vstforx PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.VSTForx\"")
   
   #vstforxInstrument
   ADD_EXECUTABLE(vstforxInstrument MACOSX_BUNDLE ${PlugSources})
-  target_link_libraries (vstforxInstrument frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforxInstrument frx_core)
   SET_TARGET_PROPERTIES(vstforxInstrument PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/ivstforx.plist")
   SET_TARGET_PROPERTIES(vstforxInstrument PROPERTIES LINK_FLAGS "-bundle")
   target_compile_definitions(vstforxInstrument PUBLIC "FRX_IS_INSTRUMENT"
   					       PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.VSTForxInstrument\"")
   #vstforxInstrument O2
   ADD_EXECUTABLE(vstforxInstrument_2Out MACOSX_BUNDLE ${PlugSources})
-  target_link_libraries (vstforxInstrument_2Out frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforxInstrument_2Out frx_core)
   SET_TARGET_PROPERTIES(vstforxInstrument_2Out PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/ivstforx_o2.plist")
   SET_TARGET_PROPERTIES(vstforxInstrument_2Out PROPERTIES LINK_FLAGS "-bundle")
   target_compile_definitions(vstforxInstrument_2Out PUBLIC "FRX_IS_INSTRUMENT"
@@ -292,7 +292,7 @@ ELSEIF(APPLE)
   					       PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.VSTForxInstrument2Out\"")
   #vstforxInstrument O4
   ADD_EXECUTABLE(vstforxInstrument_4Out MACOSX_BUNDLE ${PlugSources})
-  target_link_libraries (vstforxInstrument_4Out frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforxInstrument_4Out frx_core)
   SET_TARGET_PROPERTIES(vstforxInstrument_4Out PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/ivstforx_o4.plist")
   SET_TARGET_PROPERTIES(vstforxInstrument_4Out PROPERTIES LINK_FLAGS "-bundle")
   target_compile_definitions(vstforxInstrument_4Out PUBLIC "FRX_IS_INSTRUMENT"
@@ -300,7 +300,7 @@ ELSEIF(APPLE)
   					       PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.VSTForxInstrument4Out\"")
   #vstforxInstrument O8
   ADD_EXECUTABLE(vstforxInstrument_8Out MACOSX_BUNDLE ${PlugSources})
-  target_link_libraries (vstforxInstrument_8Out frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforxInstrument_8Out frx_core)
   SET_TARGET_PROPERTIES(vstforxInstrument_8Out PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/ivstforx_o8.plist")
   SET_TARGET_PROPERTIES(vstforxInstrument_8Out PROPERTIES LINK_FLAGS "-bundle")
   target_compile_definitions(vstforxInstrument_8Out PUBLIC "FRX_IS_INSTRUMENT"
@@ -309,7 +309,7 @@ ELSEIF(APPLE)
 
   #vstforxDemo
   ADD_EXECUTABLE(vstforxDEMO MACOSX_BUNDLE ${PlugSources})
-  target_link_libraries (vstforxDEMO frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforxDEMO frx_core)
   SET_TARGET_PROPERTIES(vstforxDEMO PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/vstforxDemo.plist")
   SET_TARGET_PROPERTIES(vstforxDEMO PROPERTIES LINK_FLAGS "-bundle")
   target_compile_definitions(vstforxDEMO PUBLIC "FRX_IS_DEMO"
@@ -317,7 +317,7 @@ ELSEIF(APPLE)
 
   #vstforxDemoInstrument
   ADD_EXECUTABLE(vstforxInstrumentDEMO_2Out MACOSX_BUNDLE ${PlugSources})
-  target_link_libraries (vstforxInstrumentDEMO_2Out frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforxInstrumentDEMO_2Out frx_core)
   SET_TARGET_PROPERTIES(vstforxInstrumentDEMO_2Out PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/ivstforxDEMO_o2.plist")
   SET_TARGET_PROPERTIES(vstforxInstrumentDEMO_2Out PROPERTIES LINK_FLAGS "-bundle")
   target_compile_definitions(vstforxInstrumentDEMO_2Out PUBLIC "FRX_IS_INSTRUMENT"
@@ -327,7 +327,7 @@ ELSEIF(APPLE)
 
   #vstforxDemoInstrument
   ADD_EXECUTABLE(vstforxInstrumentDEMO MACOSX_BUNDLE ${PlugSources})
-  target_link_libraries (vstforxInstrumentDEMO frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforxInstrumentDEMO frx_core)
   SET_TARGET_PROPERTIES(vstforxInstrumentDEMO PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/ivstforxDEMO.plist")
   SET_TARGET_PROPERTIES(vstforxInstrumentDEMO PROPERTIES LINK_FLAGS "-bundle")
   target_compile_definitions(vstforxInstrumentDEMO PUBLIC "FRX_IS_INSTRUMENT"
@@ -337,7 +337,7 @@ ELSEIF(APPLE)
 
 
   ADD_EXECUTABLE(vstforxInstrumentDEMO_4Out MACOSX_BUNDLE ${PlugSources})
-  target_link_libraries (vstforxInstrumentDEMO_4Out frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforxInstrumentDEMO_4Out frx_core)
   SET_TARGET_PROPERTIES(vstforxInstrumentDEMO_4Out PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/ivstforxDEMO_o4.plist")
   SET_TARGET_PROPERTIES(vstforxInstrumentDEMO_4Out PROPERTIES LINK_FLAGS "-bundle")
   target_compile_definitions(vstforxInstrumentDEMO_4Out PUBLIC "FRX_IS_INSTRUMENT"
@@ -346,7 +346,7 @@ ELSEIF(APPLE)
 						   PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.VSTForxInstrumentDEMO4Out\"")
 
   ADD_EXECUTABLE(vstforxInstrumentDEMO_8Out MACOSX_BUNDLE ${PlugSources})
-  target_link_libraries (vstforxInstrumentDEMO_8Out frx_core ${FRX_CLIBS})
+  target_link_libraries (vstforxInstrumentDEMO_8Out frx_core)
   SET_TARGET_PROPERTIES(vstforxInstrumentDEMO_8Out PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/VSTForx/mac/ivstforxDEMO_o8.plist")
   SET_TARGET_PROPERTIES(vstforxInstrumentDEMO_8Out PROPERTIES LINK_FLAGS "-bundle")
   target_compile_definitions(vstforxInstrumentDEMO_8Out PUBLIC "FRX_IS_INSTRUMENT"
@@ -356,13 +356,13 @@ ELSEIF(APPLE)
 
   #remote channel
   ADD_EXECUTABLE(remoteChannelSender MACOSX_BUNDLE ${RemoteSrc})
-  target_link_libraries (remoteChannelSender frx_core ${FRX_CLIBS})
+  target_link_libraries (remoteChannelSender frx_core)
   SET_TARGET_PROPERTIES(remoteChannelSender PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/RemoteChannel/mac/remoteChannel.plist")
   SET_TARGET_PROPERTIES(remoteChannelSender PROPERTIES LINK_FLAGS "-bundle")
   target_compile_definitions(remoteChannelSender PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.RemoteChannelSender\"")	
 
   ADD_EXECUTABLE(remoteChannelSender_DEMO MACOSX_BUNDLE ${RemoteSrc})
-  target_link_libraries (remoteChannelSender_DEMO frx_core ${FRX_CLIBS})
+  target_link_libraries (remoteChannelSender_DEMO frx_core)
   SET_TARGET_PROPERTIES(remoteChannelSender_DEMO PROPERTIES MACOSX_BUNDLE_INFO_PLIST "src/PluginApps/RemoteChannel/mac/remoteChannel_DEMO.plist")
   SET_TARGET_PROPERTIES(remoteChannelSender_DEMO PROPERTIES LINK_FLAGS "-bundle")
   target_compile_definitions(remoteChannelSender_DEMO PUBLIC "FRX_BNDL_ID=\"com.sambagodschynski.frx.RemoteChannelSenderDEMO\""
