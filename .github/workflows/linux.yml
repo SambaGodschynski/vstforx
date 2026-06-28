@@ -68,3 +68,10 @@ jobs:
             grep -E "error:|undefined reference" build.log | head -50 >&2 || true
             exit $rc
           fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vstforx-standalone-linux-x64
+          path: build/src/PluginApps/standalone
+          retention-days: 14
