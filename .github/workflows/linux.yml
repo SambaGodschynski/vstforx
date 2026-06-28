@@ -59,4 +59,12 @@ jobs:
             2>&1 || (cat build/CMakeFiles/CMakeError.log 2>/dev/null; exit 1)
 
       - name: Build
-        run: cmake --build build --target standalone --parallel $(nproc)
+        run: |
+          set +e
+          cmake --build build --target standalone --parallel $(nproc) 2>&1 | tee build.log
+          rc=${PIPESTATUS[0]}
+          if [ $rc -ne 0 ]; then
+            echo "=== ERRORS ===" >&2
+            grep -E "error:|undefined reference" build.log | head -50 >&2 || true
+            exit $rc
+          fi
