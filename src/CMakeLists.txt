@@ -262,6 +262,7 @@ target_link_libraries(frx_core PUBLIC
     Boost::timer
     Boost::chrono
     Boost::program_options
+    ${FRX_LOG_LIBRARIES}
     ${FRX_CAIRO_LIBRARIES}
     ${FRX_LUA_LIBRARIES}
 )

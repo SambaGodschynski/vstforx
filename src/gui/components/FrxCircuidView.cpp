@@ -20,7 +20,7 @@
 #include <sambag/disco/components/Panel.hpp>
 #include <sambag/disco/components/BorderLayout.hpp>
 #include <sambag/disco/components/FlowLayout.hpp>
-#include <sambag/disco/components/ViewPort.hpp>
+#include <sambag/disco/components/Viewport.hpp>
 #include <sambag/math/Matrix.hpp>
 #include <sambag/disco/svg/Style.hpp>
 #include <sambag/disco/components/Window.hpp>

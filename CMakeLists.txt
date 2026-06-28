@@ -139,6 +139,7 @@ set(_BOOST_COMPS filesystem system thread regex serialization
                  date_time timer chrono program_options)
 if(FRX_USE_LOG)
     list(APPEND _BOOST_COMPS log log_setup)
+    set(FRX_LOG_LIBRARIES Boost::log Boost::log_setup)
 endif()
 find_package(Boost 1.55.0 REQUIRED COMPONENTS ${_BOOST_COMPS})
 

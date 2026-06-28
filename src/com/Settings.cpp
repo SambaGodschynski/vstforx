@@ -19,7 +19,7 @@
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <sambag/com/Config.h>
 #include "FrxConfig.h"
-#include <sambag/com/Filesystem.hpp>
+#include <sambag/com/FileSystem.hpp>
 
 static const std::string SEPARATOR = "=";
 static const std::string IN_DIR = "in_dir";
