@@ -19,6 +19,29 @@ option(FRX_BUILD_PLUGIN     "Build VST plugin shared library" OFF)
 option(FRX_BUILD_VST3       "Include VST3 hosting support (requires VST3 SDK)" OFF)
 option(FRX_USE_LOG          "Enable boost::log" OFF)
 
+# ── sambag dependency ─────────────────────────────────────────────────────────
+# Pass -DSAMBAG_DIR=/path/to/sambag to build sambag from source.
+# Without SAMBAG_DIR, falls back to find_package(sambag REQUIRED).
+if(SAMBAG_DIR)
+    message(STATUS "sambag: building from ${SAMBAG_DIR}")
+    set(SAMBAG_VST_SUPPORT  OFF CACHE BOOL "" FORCE)
+    set(SAMBAG_BUILD_TESTS  OFF CACHE BOOL "" FORCE)
+    set(SAMBAG_BUILD_TESTAPP OFF CACHE BOOL "" FORCE)
+    add_subdirectory("${SAMBAG_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/sambag")
+    set(SAMBAG_LIBRARIES sambag)
+    set(SAMBAG_INCLUDE_DIRS
+        "${SAMBAG_DIR}/src"
+        "${CMAKE_CURRENT_BINARY_DIR}/sambag/src"
+        "${LOKI_INCLUDE_DIR}"
+    )
+else()
+    find_package(sambag REQUIRED)
+    message(STATUS "sambag: using installed package")
+    get_target_property(SAMBAG_INCLUDE_DIRS sambag::sambag
+        INTERFACE_INCLUDE_DIRECTORIES)
+    set(SAMBAG_LIBRARIES sambag::sambag)
+endif()
+
 # ── Version / config ──────────────────────────────────────────────────────────
 set(FRX_VERSION_MAJOR 1)
 set(FRX_VERSION_MINOR 0)
@@ -36,16 +59,17 @@ endif()
 set(FRX_VERSION_BUILD "${FRX_GITHASH}")
 set(FRX_VERSION_BRANCH "main")
 
-# ── VST2 SDK (bundled in sambag submodule) ────────────────────────────────────
-# When built as add_subdirectory from the workspace root, CMAKE_SOURCE_DIR
-# points to the workspace root where sambag lives.
-set(FRX_VSTSDK2_DIR "${CMAKE_SOURCE_DIR}/sambag/ext/vstsdk2.4"
+# ── VST2 SDK ──────────────────────────────────────────────────────────────────
+# Bundled inside the sambag repo under ext/vstsdk2.4.
+# Override with -DFRX_VSTSDK2_DIR=/path/to/vstsdk2.4 if needed.
+set(FRX_VSTSDK2_DIR "${SAMBAG_DIR}/ext/vstsdk2.4"
     CACHE PATH "VST2 SDK root")
 
 if(NOT EXISTS "${FRX_VSTSDK2_DIR}/pluginterfaces/vst2.x/aeffect.h")
     message(FATAL_ERROR
         "VST2 SDK not found at FRX_VSTSDK2_DIR=${FRX_VSTSDK2_DIR}\n"
-        "Expected: ${FRX_VSTSDK2_DIR}/pluginterfaces/vst2.x/aeffect.h")
+        "Pass -DSAMBAG_DIR=/path/to/sambag (the SDK lives at sambag/ext/vstsdk2.4)\n"
+        "or set -DFRX_VSTSDK2_DIR=/path/to/vstsdk2.4 explicitly.")
 endif()
 
 # ── Platform ──────────────────────────────────────────────────────────────────
