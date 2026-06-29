@@ -15,7 +15,7 @@
 #endif
 #include <sambag/com/Common.hpp>
 #include <boost/program_options.hpp>
-#include <com/settings.h>
+#include <com/Settings.h>
 
 
 #ifdef FRX_OS_WINDOWS
