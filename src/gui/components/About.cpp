@@ -22,7 +22,7 @@
 #include <lua.h>
 #include <boost/version.hpp>
 #include <cairo-version.h>
-#include <sqlite3.h>
+#include <sambag/cpsqlite/sqlite3.h>
 
 namespace frx { namespace gui { namespace components {
 namespace {
