@@ -8,7 +8,6 @@
 #include "HorizontalFormatter.hpp"
 #include <sambag/disco/components/AComponent.hpp>
 #include <boost/geometry.hpp>
-#include <boost/geometry/multi/geometries/multi_point.hpp>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================
