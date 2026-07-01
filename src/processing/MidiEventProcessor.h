@@ -8,7 +8,7 @@
 #ifndef MIDI_EVENT_PROCESSOR_H_
 #define MIDI_EVENT_PROCESSOR_H_
 
-#include "processing/parameter/Parameter.h"
+#include "processing/parameter/parameter.h"
 #include "boost/shared_ptr.hpp"
 #include "IMidiEventProcessor.h"
 #include "processing/processing.h"

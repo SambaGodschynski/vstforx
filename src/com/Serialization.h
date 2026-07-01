@@ -35,7 +35,7 @@
 #include <boost/serialization/set.hpp> 
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/weak_ptr.hpp>
-#include <com/boostPathSerialization.hpp> 
+#include <com/boostpathserialization.hpp> 
 
 namespace com {
 /*

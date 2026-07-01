@@ -11,7 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include "IModelController.hpp"
-#include "graph.h"
+#include "Graph.h"
 #include <boost/function.hpp>
 #include "Forward.hpp"
 #include <vector>

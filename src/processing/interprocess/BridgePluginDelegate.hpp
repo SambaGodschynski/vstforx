@@ -12,7 +12,7 @@
 #include <string>
 #include <processing/IHostInfo.h>
 #include <processing/pluginTypes/PluginImpl.hpp>
-#include <processing/parameter/Parameter.h>
+#include <processing/parameter/parameter.h>
 #include <gui/HandyNamespaces.hpp>
 
 namespace frx { namespace gui { namespace components { namespace interprocess {

@@ -14,7 +14,7 @@
 #include "ShmCom.hpp"
 #include "BridgePluginDelegate.hpp"
 #include <processing/pluginTypes/PluginImpl.hpp>
-#include <processing/parameter/Parameter.h>
+#include <processing/parameter/parameter.h>
 #include <sambag/dsp/HostTimeInfo.hpp>
 #include <sambag/dsp/IMidiEvents.hpp>
 

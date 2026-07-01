@@ -6,7 +6,7 @@
  */
 #include "processing.h"
 #include "com/one4All.h"
-#include "parameter/Parameter.h"
+#include "parameter/parameter.h"
 #include "OS_Specific/OS_com.h"
 #include "OS_Specific/OS_processing.h"
 #include "Graph.h"
