@@ -11,7 +11,7 @@
 #include "processing/parameter/parameter.h"
 #include "com/Serialization.h"
 #include "Switch.h"
-#include "com/One4All.h"
+#include "com/one4All.h"
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <processing/ModelFactory.hpp>

@@ -7,7 +7,7 @@
 #include "Plugin.h"
 #include "OS_Specific/os_processing.h"
 #include "pluginTypes/PluginFactory.hpp"
-#include "com/One4All.h"
+#include "com/one4All.h"
 #include <boost/filesystem.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <sambag/com/Common.hpp>

@@ -12,7 +12,7 @@
 #include <string>
 #include <boost/algorithm/string.hpp> 
 #include "boost/filesystem.hpp"
-#include "com/One4All.h"
+#include "com/one4All.h"
 #include "OS_Specific/OS_com.h"
 #include "com/PPIError.h"
 #include <sambag/disco/FileResourceManager.hpp>

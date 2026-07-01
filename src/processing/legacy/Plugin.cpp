@@ -7,7 +7,7 @@
 
 #include "Plugin.h"
 #include "OS_Specific/os_processing.h"
-#include "com/One4All.h"
+#include "com/one4All.h"
 #include <boost/filesystem.hpp>
 #include <sambag/disco/Geometry.hpp>
 #include <processing/Plugin.h> // new plugin
