@@ -19,7 +19,7 @@
 #include <sambag/com/Common.hpp>
 #include <loki/MultiMethods.h>
 #include <loki/Typelist.h>
-#include <loki/LokiTypeinfo.h>
+#include <loki/LokiTypeInfo.h>
 #include <sambag/disco/components/PopupMenu.hpp>
 #include <sambag/disco/components/Label.hpp>
 #include <sambag/disco/components/MenuSelectionManager.hpp>

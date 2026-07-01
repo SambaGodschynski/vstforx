@@ -15,7 +15,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <sambag/lua/Lua.hpp>
-#include <loki/TypeList.h>
+#include <loki/Typelist.h>
 #include <sambag/lua/ALuaObject.hpp>
 
 
