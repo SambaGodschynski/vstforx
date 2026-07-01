@@ -188,11 +188,13 @@ if(WIN32)
     set(_OS_SRCS
         ${_S}/OS_Specific/windows/com/win_one4All.cpp
         ${_S}/OS_Specific/windows/processing/OS_VSTPlugin2x.cpp
+        ${_S}/OS_Specific/windows/gui/hostWontResizeFix.cpp
     )
 elseif(APPLE)
     set(_OS_SRCS
         ${_S}/OS_Specific/mac/com/mac_one4All.cpp
         ${_S}/OS_Specific/mac/processing/OS_VSTPlugin2x.cpp
+        ${_S}/OS_Specific/mac/gui/hostWontResizeFix.cpp
     )
 elseif(UNIX)
     set(_OS_SRCS
