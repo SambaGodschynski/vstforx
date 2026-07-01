@@ -13,7 +13,7 @@
 #include "processing/processing.h"
 #include "PluginCollection.h"
 #include "OS_Specific/OS_com.h"
-#include "OS_Specific/os_processing.h"
+#include "OS_Specific/OS_processing.h"
 
 namespace com {
 //============================================================================================================

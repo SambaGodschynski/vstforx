@@ -12,7 +12,7 @@
 #include "Plugin.h"
 #include "processing/parameter/parameter.h"
 #include "boost/unordered_map.hpp"
-#include "OS_Specific/os_processing.h"
+#include "OS_Specific/OS_processing.h"
 #include <processing/pluginTypes/NullAEffect.h>
 #include <string>
 #include <vector>

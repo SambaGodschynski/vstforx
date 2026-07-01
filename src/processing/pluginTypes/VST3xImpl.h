@@ -9,7 +9,7 @@
 
 #include "com/one4All.h"
 #include "boost/unordered_map.hpp"
-#include "OS_Specific/os_processing.h"
+#include "OS_Specific/OS_processing.h"
 #include <string>
 #include <sambag/dsp/Vst3MidiEvents.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
