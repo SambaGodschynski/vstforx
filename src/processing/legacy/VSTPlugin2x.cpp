@@ -14,7 +14,7 @@
 #include <boost/foreach.hpp>
 #include <limits>
 #include <OS_Specific/OS_com.h>
-#include <processing/pluginTypes/TestAeffect.hpp>
+#include <processing/pluginTypes/TestAEffect.hpp>
 #include <processing/ModelFactory.hpp>
 #include <processing/Plugin.h>
 #include <sambag/disco/Geometry.hpp>

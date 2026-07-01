@@ -13,7 +13,7 @@
 #include <boost/foreach.hpp>
 #include <limits>
 #include <OS_Specific/OS_com.h>
-#include "TestAeffect.hpp"
+#include "TestAEffect.hpp"
 #include <sambag/com/Thread.hpp>
 #include <sambag/dsp/TimeInfoVst2xHelper.hpp>
 #include <sambag/dsp/VstMidiEventAdapter.hpp>

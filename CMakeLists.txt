@@ -89,6 +89,13 @@ if(NOT EXISTS "${FRX_VSTSDK2_DIR}/pluginterfaces/vst2.x/aeffect.h")
         "or set -DFRX_VSTSDK2_DIR=/path/to/vstsdk2.4 explicitly.")
 endif()
 
+# ── VST3 SDK (pluginterfaces only) ────────────────────────────────────────────
+# The pluginterfaces submodule lives at ext/VST3/pluginterfaces.
+# Adding ext/VST3 to the include path makes #include "pluginterfaces/base/..."
+# resolve correctly for OS_VSTPlugin3x.h.
+set(FRX_VSTSDK3_DIR "${CMAKE_SOURCE_DIR}/ext/VST3"
+    CACHE PATH "VST3 pluginterfaces root (parent of pluginterfaces/)")
+
 # ── Platform ──────────────────────────────────────────────────────────────────
 if(APPLE)
     add_compile_definitions(DISCO_USE_COCOA FRX_OS_MAC RELEASE)

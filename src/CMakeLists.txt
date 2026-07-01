@@ -247,6 +247,8 @@ target_include_directories(frx_core PUBLIC
     "${FRX_VSTSDK2_DIR}"
     "${FRX_VSTSDK2_DIR}/public.sdk/source/vst2.x"
     "${FRX_VSTSDK2_DIR}/pluginterfaces/vst2.x"
+    # VST3 SDK: ext/VST3 is the parent of pluginterfaces/
+    "${FRX_VSTSDK3_DIR}"
     # Loki (header-only, found by sambag)
     "${LOKI_INCLUDE_DIR}"
 )
