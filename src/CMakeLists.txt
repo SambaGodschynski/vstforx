@@ -291,13 +291,6 @@ else()
     # pkg-config Cairo adds its own include dirs via PkgConfig::Cairo
 endif()
 
-# ── Unity build (MSVC only) ───────────────────────────────────────────────────
-# Groups 8 .cpp files per TU: 181 files → ~23 TUs, dramatically fewer header
-# parse cycles. GCC/Clang are fast enough without it.
-if(MSVC)
-    set_target_properties(frx_core PROPERTIES UNITY_BUILD ON)
-endif()
-
 # ── Precompiled header (MSVC only) ────────────────────────────────────────────
 # one4All.h pulls boost/archive/*, boost/thread, boost/filesystem and
 # boost/signals2 into ~55 TUs. Pre-compiling them once cuts MSVC build time
