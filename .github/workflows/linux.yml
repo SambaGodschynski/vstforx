@@ -75,5 +75,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: vstforx-standalone-linux-x64
-          path: build/src/PluginApps/standalone
+          path: |
+            build/src/PluginApps/standalone
+            build/src/PluginApps/images
+            build/src/PluginApps/styles
+            build/src/PluginApps/scripts
           retention-days: 14

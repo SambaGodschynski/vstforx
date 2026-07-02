@@ -16,12 +16,6 @@ SET (PlugSources ${PlugSources}
 SET (RemoteSrc ${RemoteSrc} RemoteChannel/Plugin.cpp)
 
 
-#bridge
-# add_executable(VSTForx.bridge Bridge/main.cpp
-# 		      com/FrxPlugSettings.cpp	
-# )
-# target_link_libraries (VSTForx.bridge frx_core)
-
 IF(UNIX AND NOT APPLE)
   if(FRX_BUILD_STANDALONE)
     add_executable(standalone ${_STANDALONE_SRCS})
@@ -47,6 +41,19 @@ ELSEIF(WIN32)
   #standalone
   add_executable(standalone ${_STANDALONE_SRCS})
   target_link_libraries (standalone frx_core)
+
+  set(_FRX_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
+  add_custom_command(TARGET standalone POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+          "${_FRX_SRC_DIR}/images" "$<TARGET_FILE_DIR:standalone>/images"
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+          "${_FRX_SRC_DIR}/styles" "$<TARGET_FILE_DIR:standalone>/styles"
+      COMMAND ${CMAKE_COMMAND}
+          -D "SRC_DIR=${_FRX_SRC_DIR}/scripts"
+          -D "DST_DIR=$<TARGET_FILE_DIR:standalone>/scripts"
+          -P "${CMAKE_CURRENT_SOURCE_DIR}/CopyLuaScripts.cmake"
+      COMMENT "Copying resources next to standalone binary"
+  )
 
   #vstforx
   SET (PlugSources ${PlugSources}
@@ -96,6 +103,18 @@ IF (WIN32)
   #vstforx
   add_library(vstforx SHARED ${PlugSources})
   target_link_libraries (vstforx frx_core)
+  # All DLLs share the same output dir; copy resources once via the primary target.
+  add_custom_command(TARGET vstforx POST_BUILD
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+          "${_FRX_SRC_DIR}/images" "$<TARGET_FILE_DIR:vstforx>/images"
+      COMMAND ${CMAKE_COMMAND} -E copy_directory
+          "${_FRX_SRC_DIR}/styles" "$<TARGET_FILE_DIR:vstforx>/styles"
+      COMMAND ${CMAKE_COMMAND}
+          -D "SRC_DIR=${_FRX_SRC_DIR}/scripts"
+          -D "DST_DIR=$<TARGET_FILE_DIR:vstforx>/scripts"
+          -P "${CMAKE_CURRENT_SOURCE_DIR}/CopyLuaScripts.cmake"
+      COMMENT "Copying resources next to vstforx.dll"
+  )
 
   add_library(vstforxInstrument SHARED ${PlugSources})
   target_link_libraries (vstforxInstrument frx_core)
@@ -145,15 +164,6 @@ IF (WIN32)
 							PUBLIC "FRX_O=16")
   
 
-
-
-#  add_library(VSTForx-CM SHARED ${PlugSources}) 
-#  target_link_libraries (VSTForx-CM frx_core)
-#  target_compile_definitions(VSTForx-CM PUBLIC "FRX_IS_CM")
-
-#  add_library(VSTForxInstrument-CM SHARED ${PlugSources}) 
-#  target_link_libraries (VSTForxInstrument-CM frx_core)
-#  target_compile_definitions(VSTForxInstrument-CM PUBLIC "FRX_IS_INSTRUMENT" PUBLIC "FRX_IS_CM")
 
   #remote channel
   add_library(remoteChannelSender SHARED ${RemoteSrc})

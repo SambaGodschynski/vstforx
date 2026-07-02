@@ -80,10 +80,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: vstforx-plugins-windows-x64
-          path: |
-            build/src/PluginApps/Release/vstforx.dll
-            build/src/PluginApps/Release/vstforxInstrument.dll
-            build/src/PluginApps/Release/vstforxInstrument_2Out.dll
-            build/src/PluginApps/Release/vstforxInstrument_4Out.dll
-            build/src/PluginApps/Release/vstforxInstrument_8Out.dll
+          path: build/src/PluginApps/Release/
           retention-days: 14
