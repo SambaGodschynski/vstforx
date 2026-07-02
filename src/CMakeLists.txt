@@ -291,4 +291,34 @@ else()
     # pkg-config Cairo adds its own include dirs via PkgConfig::Cairo
 endif()
 
+# ── Precompiled header (MSVC only) ────────────────────────────────────────────
+# one4All.h pulls boost/archive/*, boost/thread, boost/filesystem and
+# boost/signals2 into ~55 TUs. Pre-compiling them once cuts MSVC build time
+# significantly. GCC/Clang are fast enough without it.
+if(MSVC)
+    target_precompile_headers(frx_core PRIVATE
+        # Heaviest: boost archive + serialization (pulled in via Serialization.h)
+        <boost/archive/text_oarchive.hpp>
+        <boost/archive/text_iarchive.hpp>
+        <boost/archive/binary_oarchive.hpp>
+        <boost/archive/binary_iarchive.hpp>
+        <boost/serialization/string.hpp>
+        <boost/serialization/vector.hpp>
+        <boost/serialization/list.hpp>
+        <boost/serialization/map.hpp>
+        <boost/serialization/set.hpp>
+        <boost/serialization/shared_ptr.hpp>
+        <boost/serialization/weak_ptr.hpp>
+        # Heavy: thread, filesystem (pulled in via one4All.h directly)
+        <boost/thread.hpp>
+        <boost/filesystem.hpp>
+        # Medium: signals2, function, bind (via Events.h / one4All.h)
+        <boost/signals2.hpp>
+        <boost/function.hpp>
+        <boost/bind.hpp>
+        <boost/shared_ptr.hpp>
+        <boost/weak_ptr.hpp>
+    )
+endif()
+
 add_subdirectory(PluginApps)
