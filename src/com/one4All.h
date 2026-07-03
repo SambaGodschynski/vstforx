@@ -29,7 +29,10 @@
 #include <sstream>
 #include "com/SerializationFwd.h"
 #include "OS_Specific/OS_com.h"
-#include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/locks.hpp>
+#include <boost/thread/thread_time.hpp>
+#include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <float.h>
 #include "TList.h"
 #include <sambag/com/FileSystem.hpp>
