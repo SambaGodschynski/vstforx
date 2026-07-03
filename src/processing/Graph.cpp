@@ -8,9 +8,11 @@
 
 #include <boost/graph/reverse_graph.hpp> // occurs compiler error: 'declaration does not declare anything'
 										 // when declared after '#include "Graph.h"' on XCode with gcc4.0
+#include <com/Serialization.h>
       // http://stackoverflow.com/questions/8173620/c-boost-1-48-type-traits-and-cocoa-inclusion-weirdness
 
 #include "Graph.h"
+#include <com/Serialization.h>
 #include "OS_Specific/OS_com.h"
 #include "OS_Specific/OS_processing.h"
 #include <sambag/com/events/PropertyChanged.hpp>

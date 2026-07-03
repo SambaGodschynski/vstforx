@@ -10,7 +10,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/serialization/access.hpp>
-#include <com/Serialization.h>
+#include <com/SerializationFwd.h>
 namespace frx { namespace gui {
 //=============================================================================
 /** 

@@ -10,7 +10,7 @@
 #include <sstream>
 #include "aeffeditor.h"
 #include <sambag/dsp/IEditor.hpp>
-#include <com/Serialization.h>
+#include <com/SerializationFwd.h>
 #include <sambag/com/Thread.hpp>
 #include <gui/HandyNamespaces.hpp>
 #include <com/FrxConfig.h>

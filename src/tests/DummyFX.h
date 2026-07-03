@@ -16,7 +16,7 @@
 #include "audioeffectx.h"
 #include "processing/IHostInfo.h"
 #include <boost/shared_ptr.hpp>
-#include <com/Serialization.h>
+#include <com/SerializationFwd.h>
 
 
 namespace processing {

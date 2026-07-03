@@ -8,7 +8,7 @@
 #define FORX_SYNCTRANSLATOR_H
 
 
-#include "com/Serialization.h"
+#include "com/SerializationFwd.h"
 #include "processing/dspTools.h"
 #include "processing/IHostInfo.h"
 #include "ValueTranslator.h"

@@ -7,7 +7,7 @@
 #ifndef PLUGIN_INFO_H
 #define PLUGIN_INFO_H
 
-#include "com/Serialization.h"
+#include "com/SerializationFwd.h"
 #include <string>
 #include <com/one4All.h>
 #include <boost/lexical_cast.hpp>

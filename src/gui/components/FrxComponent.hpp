@@ -21,7 +21,7 @@
 #include <sambag/disco/GeometrySerialization.hpp>
 #include <gui/HandyNamespaces.hpp>
 #include <sambag/disco/components/Forward.hpp>
-#include <com/Serialization.h>
+#include <com/SerializationFwd.h>
 
 namespace frx { namespace gui { namespace components {
 //=============================================================================

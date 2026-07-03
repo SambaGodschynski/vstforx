@@ -9,7 +9,7 @@
 
 #include "processing/processing.h"
 #include "processing/parameter/parameter.h"
-#include "com/Serialization.h"
+#include "com/SerializationFwd.h"
 #include "processing/dspTools.h"
 
 namespace processing {

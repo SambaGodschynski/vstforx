@@ -8,7 +8,7 @@
 #define FORX_VALUETRANSLATOR_H
 
 #include "com/MyString.h"
-#include "com/Serialization.h"
+#include "com/SerializationFwd.h"
 
 
 namespace processing {

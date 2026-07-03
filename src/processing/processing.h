@@ -13,7 +13,7 @@
 #include <map>
 #include <list>
 #include <stack>
-#include "com/Serialization.h"
+#include "com/SerializationFwd.h"
 #include "IHostInfo.h"
 #include "PObject.h"
 #include "IMidiEventProcessor.h"

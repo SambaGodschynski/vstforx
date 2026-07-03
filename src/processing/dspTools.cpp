@@ -6,6 +6,7 @@
  */
 
 #include "dspTools.h"
+#include <com/Serialization.h>
 #include <boost/assign/list_inserter.hpp>
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>

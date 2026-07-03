@@ -6,6 +6,7 @@
  */
 
 #include "FrxComponent.hpp"
+#include <com/Serialization.h>
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <boost/algorithm/string.hpp>
 #include <gui/components/ui/FrxComponentUI.hpp>

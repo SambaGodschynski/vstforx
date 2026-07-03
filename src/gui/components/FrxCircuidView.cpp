@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 #include "FrxCircuidView.hpp"
+#include <com/Serialization.h>
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <gui/IFrxControl.hpp>
 #include "FrxComponent.hpp"

@@ -27,7 +27,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <sstream>
-#include "Serialization.h"
+#include "com/SerializationFwd.h"
 #include "OS_Specific/OS_com.h"
 #include <boost/thread.hpp>
 #include <float.h>

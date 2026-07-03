@@ -6,6 +6,7 @@
  */
 
 #include "ViewModelMap.hpp"
+#include <com/Serialization.h>
 
 namespace frx { namespace gui {
 //=============================================================================

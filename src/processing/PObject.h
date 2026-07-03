@@ -8,7 +8,7 @@
 #define _POBJECT_H
 
 #include "com/Events.h"
-#include "com/Serialization.h"
+#include "com/SerializationFwd.h"
 
 namespace processing {
 class Graph;

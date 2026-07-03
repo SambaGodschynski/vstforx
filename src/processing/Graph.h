@@ -12,7 +12,7 @@
 #include <vector>
 #include <list>
 #include "com/Events.h"
-#include "com/Serialization.h"
+#include "com/SerializationFwd.h"
 #include "IHostInfo.h"
 #include "PObject.h"
 #include "parameter/parameter.h"

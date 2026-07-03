@@ -11,7 +11,7 @@
 #include <math.h>
 #include <string>
 #include "processing/parameter/parameter.h"
-#include "com/Serialization.h"
+#include "com/SerializationFwd.h"
 #include "time.h"
 #include "processing/IHostInfo.h"
 #include <boost/timer/timer.hpp>

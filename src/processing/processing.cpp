@@ -5,6 +5,7 @@
  * ===========================================================================================================
  */
 #include "processing.h"
+#include <com/Serialization.h>
 #include "com/one4All.h"
 #include "parameter/parameter.h"
 #include "OS_Specific/OS_com.h"

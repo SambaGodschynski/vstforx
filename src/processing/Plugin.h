@@ -11,7 +11,7 @@
 #include "processing/processing.h"
 #include "processing/parameter/parameter.h"
 #include "com/one4All.h"
-#include "com/Serialization.h"
+#include "com/SerializationFwd.h"
 #include "com/Events.h"
 #include "PlugInfo.h"
 #include "processing/MidiEventProcessor.h"

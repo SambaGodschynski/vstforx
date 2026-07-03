@@ -20,7 +20,7 @@
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <boost/serialization/access.hpp>
 #include <boost/bimap/unordered_set_of.hpp>
-#include <com/Serialization.h>
+#include <com/SerializationFwd.h>
 #include <sambag/com/Thread.hpp>
 
 namespace frx { namespace gui {

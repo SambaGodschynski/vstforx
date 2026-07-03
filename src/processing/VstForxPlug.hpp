@@ -18,7 +18,7 @@
 #include <gui/ViewModelMap.hpp>
 #include <gui/components/Forward.hpp>
 #include <iostream>
-#include <com/Serialization.h>
+#include <com/SerializationFwd.h>
 #include <sambag/com/Thread.hpp>
 #include <com/FrxConfig.h>
 #include <scripts/PluginScriptCtrl.hpp>

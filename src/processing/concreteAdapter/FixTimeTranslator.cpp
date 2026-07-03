@@ -5,6 +5,7 @@
  * ===========================================================================================================
  */
 #include "FixTimeTranslator.h"
+#include <com/Serialization.h>
 
 
 namespace processing{

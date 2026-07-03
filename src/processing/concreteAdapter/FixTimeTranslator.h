@@ -7,7 +7,7 @@
 #ifndef FORX_FIXTIMETRANSLATOR_H
 #define FORX_FIXTIMETRANSLATOR_H
 
-#include "com/Serialization.h"
+#include "com/SerializationFwd.h"
 #include "ValueTranslator.h"
 
 namespace processing {

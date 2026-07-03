@@ -1,4 +1,5 @@
 #include "PObject.h"
+#include <com/Serialization.h>
 
 namespace processing {
 
