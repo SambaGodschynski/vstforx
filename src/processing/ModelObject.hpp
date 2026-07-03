@@ -10,13 +10,14 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
+#include <boost/make_shared.hpp>
 #include <boost/function.hpp>
-#include <boost/signals2.hpp>
 #include "com/SerializationFwd.h"
 #include <boost/serialization/access.hpp>
 #include <string>
 #include <vector>
 #include <set>
+#include <list>
 
 
 namespace frx { namespace processing {
@@ -25,27 +26,7 @@ typedef boost::shared_ptr<IModelController> IModelControllerPtr;
 class IParameter;
 typedef boost::shared_ptr<IParameter> IParameterPtr;
 //=============================================================================
-/** 
-  * @class BooleanCombiner.
-  * Combiner for boost::signal. Returns res1 && res2 & ... resN
-  */
-//=============================================================================
-struct BooleanCombiner {
-	typedef bool result_type; 
-	template <typename It> 
-	bool operator()(It first, It last) const {
-		bool res = false;
-		for (It it=first; it!=last; ++it) {
-			if (*it == false) {
-				return false;
-			}
-			res = true;
-		}
-		return res;
-	} 
-};
-//=============================================================================
-/** 
+/**
   * @class ModelObject.
   */
 class ModelObject {
@@ -60,9 +41,67 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::function<bool(Ptr obj)> RequestRemoveFunction;
 	//-------------------------------------------------------------------------
-	typedef boost::signals2::signal<bool(Ptr obj), BooleanCombiner> Signal;
+	class Connection {
+		boost::shared_ptr<bool> disconnected_;
+		explicit Connection(boost::shared_ptr<bool> d) : disconnected_(d) {}
+	public:
+		Connection() {}
+		void disconnect() { if (disconnected_) *disconnected_ = true; }
+		bool connected() const { return disconnected_ && !*disconnected_; }
+		friend class ModelObject;
+	};
 	//-------------------------------------------------------------------------
-	typedef boost::signals2::connection Connection;
+	// Lightweight boolean-combining signal replacing boost::signals2
+	class Signal {
+		struct Slot {
+			RequestRemoveFunction fn;
+			boost::weak_ptr<void> tracker;
+			bool hasTracker;
+			boost::shared_ptr<bool> disconnected;
+		};
+		std::list<Slot> slots;
+	public:
+		Connection connect(const RequestRemoveFunction &f) {
+			boost::shared_ptr<bool> d = boost::make_shared<bool>(false);
+			Slot s;
+			s.fn = f;
+			s.hasTracker = false;
+			s.disconnected = d;
+			slots.push_back(s);
+			return Connection(d);
+		}
+		Connection connect_tracked(const RequestRemoveFunction &f,
+			const boost::weak_ptr<void> &toTrack)
+		{
+			boost::shared_ptr<bool> d = boost::make_shared<bool>(false);
+			Slot s;
+			s.fn = f;
+			s.tracker = toTrack;
+			s.hasTracker = true;
+			s.disconnected = d;
+			slots.push_back(s);
+			return Connection(d);
+		}
+		size_t num_slots() const {
+			size_t count = 0;
+			for (typename std::list<Slot>::const_iterator it = slots.begin(); it != slots.end(); ++it) {
+				if (!*it->disconnected && (!it->hasTracker || !it->tracker.expired()))
+					++count;
+			}
+			return count;
+		}
+		// Returns true if all slots return true (AND-combining), false if any returns false.
+		// Returns true if no slots connected.
+		bool operator()(Ptr obj) {
+			for (std::list<Slot>::iterator it = slots.begin(); it != slots.end(); ) {
+				if (*it->disconnected) { it = slots.erase(it); continue; }
+				if (it->hasTracker && it->tracker.expired()) { it = slots.erase(it); continue; }
+				if (!it->fn(obj)) return false;
+				++it;
+			}
+			return true;
+		}
+	};
 protected:
 	//-------------------------------------------------------------------------
 	WPtr self;
@@ -100,9 +139,7 @@ public:
 	virtual Connection addRemoveRequestExecuter(const RequestRemoveFunction& f,
 		AnyWPtr toTrack)
 	{
-		return signal.connect(
-			Signal::slot_type(f).track(toTrack)
-		);
+		return signal.connect_tracked(f, toTrack);
 	}
 	//-------------------------------------------------------------------------
 	virtual bool remove(IModelControllerPtr ctrl);

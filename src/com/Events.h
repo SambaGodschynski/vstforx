@@ -11,21 +11,22 @@
 #include <list>
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
-#include <boost/signals2.hpp>
-#include <boost/smart_ptr.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/weak_ptr.hpp>
+#include <boost/make_shared.hpp>
 
 namespace com{
 namespace events{
 //============================================================================================================
 /**
- * @class Event: 
+ * @class Event:
  */
 struct Event {
 //============================================================================================================
 	//--------------------------------------------------------------------------------------------------------
 	virtual ~Event(){}
 	//--------------------------------------------------------------------------------------------------------
-	enum EventTypeVerification { verification }; 
+	enum EventTypeVerification { verification };
 };
 //============================================================================================================
 /**
@@ -38,7 +39,7 @@ struct ValueChangedEvent : public Event {
 	ValueChangedEvent ( const T &value ) : value(value) {}
 };
 //============================================================================================================
-/** 
+/**
  * @class OnDestroy :
  */
 template < typename T >
@@ -61,7 +62,7 @@ struct TrackingDummy {
 	virtual ~TrackingDummy(){}
 };
 //============================================================================================================
-/**	
+/**
  * @class Listener:
  * Oberklasse fuer alle Listener.
  */
@@ -76,8 +77,47 @@ public:
 	typedef std::list<Listener*> ListenerContainer;
 };
 //============================================================================================================
+/**
+ * @class Connection.
+ * Lightweight replacement for boost::signals2::connection.
+ * Shared state between the handle and the slot ensures the slot remains
+ * connected as long as disconnect() has not been called, regardless of
+ * whether the Connection handle itself is kept alive.
+ */
+class Connection {
+	struct State {
+		bool disconnected;
+		int  blocked;
+		State() : disconnected(false), blocked(0) {}
+	};
+	boost::shared_ptr<State> state_;
+	explicit Connection(boost::shared_ptr<State> s) : state_(s) {}
+public:
+	Connection() {}
+	void disconnect()  { if (state_) state_->disconnected = true; }
+	bool connected()   const { return state_ && !state_->disconnected; }
+	bool is_blocked()  const { return state_ &&  state_->blocked > 0; }
+	// Internal for ScopedBlock
+	void _block()   { if (state_) ++state_->blocked; }
+	void _unblock() { if (state_) --state_->blocked; }
+	template<class T> friend class ValueChangedSender;
+};
+//============================================================================================================
+/**
+ * @class ScopedBlock.
+ * RAII guard that temporarily blocks a connection (like signals2::shared_connection_block).
+ * While blocked, notifyListeners silently skips the slot without removing it.
+ */
+class ScopedBlock {
+	Connection cn_;
+public:
+	explicit ScopedBlock(Connection &cn) : cn_(cn) { cn_._block(); }
+	~ScopedBlock() { cn_._unblock(); }
+};
+//============================================================================================================
 /*
  * @class ValueChangedEventSender.
+ * Lightweight replacement for boost::signals2::signal<void(void*, const T&)>.
  */
 template < class T >
 class ValueChangedSender {
@@ -86,47 +126,65 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef boost::function< void ( void*, const T& ) > ValueChangedFunction;
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::signals2::signal< void ( void*, const T& ) > Signal;
-	//--------------------------------------------------------------------------------------------------------
-	typedef boost::signals2::connection Connection;
+	typedef ::com::events::Connection Connection;
 private:
 	//--------------------------------------------------------------------------------------------------------
-	Signal signal;
+	struct Slot {
+		ValueChangedFunction fn;
+		boost::weak_ptr<void> tracker;
+		bool hasTracker;
+		boost::shared_ptr<Connection::State> state;
+	};
+	std::list<Slot> slots;
 protected:
 public:
 	//--------------------------------------------------------------------------------------------------------
-	Connection addValueChangedListener ( const ValueChangedFunction &vCl ) { 
-		return signal.connect(vCl);
+	Connection addValueChangedListener ( const ValueChangedFunction &vCl ) {
+		boost::shared_ptr<Connection::State> s = boost::make_shared<Connection::State>();
+		Slot slot;
+		slot.fn = vCl;
+		slot.hasTracker = false;
+		slot.state = s;
+		slots.push_back(slot);
+		return Connection(s);
 	}
-	//--------------------------------------------------------------------------------------------------------
-	// kann nicht sicher impl. werden :
-	// http://www.boost.org/doc/libs/1_49_0/doc/html/function/faq.html 
-	// Why can't I compare boost::function objects with operator== or operator!=?
-	// Alternative:
-	// addTrackedValueChangedListener UND ggf. TrackingDummy
-	// void removealueChangedListener ( const ValueChangedFunction &vCl ) {}
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Fuegt Listener hinzu und aktiviert tracking.
-	 * @see http://www.boost.org/doc/libs/1_40_0/doc/html/signals2/tutorial.html#id1664686 
-	 * Section: Automatic Connection Management (Intermediate)
-	 * @param 
-	 * @param weak pointer zum zu trackenden Objekt
+	 * Slot wird automatisch entfernt wenn toTrack ablaeuft.
 	 */
 	Connection addTrackedValueChangedListener ( const ValueChangedFunction &vCl,
-		const boost::weak_ptr<void> &toTrack ) 
-	{ 
-		return signal.connect(
-			typename Signal::slot_type(vCl).track(toTrack)
-		);
+		const boost::weak_ptr<void> &toTrack )
+	{
+		boost::shared_ptr<Connection::State> s = boost::make_shared<Connection::State>();
+		Slot slot;
+		slot.fn = vCl;
+		slot.tracker = toTrack;
+		slot.hasTracker = true;
+		slot.state = s;
+		slots.push_back(slot);
+		return Connection(s);
 	}
 	//--------------------------------------------------------------------------------------------------------
 	void notifyListeners ( void *src, const T &value ) {
-		signal( src, value );
+		for (typename std::list<Slot>::iterator it = slots.begin(); it != slots.end(); ) {
+			if (it->state->disconnected) {
+				it = slots.erase(it);
+				continue;
+			}
+			if (it->hasTracker && it->tracker.expired()) {
+				it = slots.erase(it);
+				continue;
+			}
+			if (!it->state->blocked) {
+				it->fn(src, value);
+			}
+			++it;
+		}
 	}
 };
 //============================================================================================================
-/**	
+/**
  * @class EventListener:
  */
 template < typename EventType >
@@ -136,7 +194,7 @@ private:
 protected:
 public:
 	//--------------------------------------------------------------------------------------------------------
-	virtual void eventHandler ( void *src, const EventType &ev ) = 0;  
+	virtual void eventHandler ( void *src, const EventType &ev ) = 0;
 };
 //============================================================================================================
 /**
@@ -148,8 +206,6 @@ class EventSender  {
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef typename ValueChangedSender<EventType>::Connection EventConnection;
-	//--------------------------------------------------------------------------------------------------------
-	typedef typename ValueChangedSender<EventType>::Signal EventSignal;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	typedef ValueChangedSender<EventType> Base;
@@ -173,8 +229,6 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Fuegt Listener hinzu und aktiviert tracking.
-	 * @see http://www.boost.org/doc/libs/1_40_0/doc/html/signals2/tutorial.html#id1664686
-	 * Section: Automatic Connection Management (Intermediate)
 	 * @param
 	 * @param weak pointer zum zu trackenden Objekt
 	 */

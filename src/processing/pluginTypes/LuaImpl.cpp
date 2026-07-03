@@ -318,7 +318,7 @@ void LuaImpl::onParameterChanged(void *src, float value, const std::string &id)
     oldPrPa::Parameter::Connection &cn = boost::get<1>(it->second);
     
     // block signal to prevent stack overflow
-    boost::signals2::shared_connection_block block(cn);
+    com::events::ScopedBlock block(cn);
     
     // perform callbacks
     BOOST_FOREACH(const std::string &cbk, callbacks) {
