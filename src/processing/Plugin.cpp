@@ -4,6 +4,7 @@
  *      Author: Johannes Unger
  * ============================================================================
  */
+#include <boost/bind.hpp>
 #include "Plugin.h"
 #include <com/Serialization.h>
 #include "OS_Specific/OS_processing.h"

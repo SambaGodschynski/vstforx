@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <boost/bind.hpp>
 #include "PluginAdapter.hpp"
 #include "NodeAdapter.hpp"
 #include "ParameterAdapter.hpp"

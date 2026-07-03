@@ -186,7 +186,7 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	void initListener() {
 		slope->addValueChangedListener(
-			boost::bind(&ExpConnection::onSlopeChanged, this, _1, _2)
+			[this](void* s, const com::VstNumber& e){ onSlopeChanged(s, e); }
 		);
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -301,7 +301,7 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	void initListener() {
 		slope->addValueChangedListener(
-			boost::bind(&LogConnection::onSlopeChanged, this, _1, _2)
+			[this](void* s, const com::VstNumber& e){ onSlopeChanged(s, e); }
 		);
 	}
 	//--------------------------------------------------------------------------------------------------------
@@ -417,7 +417,7 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	void initListener() {
         m->addValueChangedListener(
-			boost::bind(&MultiplierConnection::onMulChanged, this, _1, _2)
+			[this](void* s, const com::VstNumber& e){ onMulChanged(s, e); }
 		);
     }
     //--------------------------------------------------------------------------------------------------------

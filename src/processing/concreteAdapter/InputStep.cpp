@@ -4,6 +4,7 @@
  *      Author: Johannes Unger
  * ===========================================================================================================
  */
+#include <boost/bind.hpp>
 #include "InputStep.h"
 #include <com/Serialization.h>
 

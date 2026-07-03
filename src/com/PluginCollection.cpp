@@ -5,6 +5,7 @@
  * ===========================================================================================================
  */
 
+#include <boost/bind.hpp>
 #include "PluginCollection.h"
 #include "Log.h"
 #include "one4All.h"

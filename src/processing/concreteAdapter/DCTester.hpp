@@ -41,7 +41,7 @@ private:
 	 */
 	void initListener() {
 		delay->addValueChangedListener (
-			boost::bind(&DCTester::valueChanged, this, _1, _2)
+			[this](void* s, const com::VstNumber& e){ valueChanged(s, e); }
 		);
 	}
 	//-------------------------------------------------------------------------

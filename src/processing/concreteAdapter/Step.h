@@ -49,9 +49,7 @@ private:
         }
 		//:::::::::::::::IF_LOADING::::::::::::::::::::::::::::::::
 		if ( !Archive::is_loading::value ) return;
-		Parameter::ParameterListenerFunction f = boost::bind( 
-			&Step::durationParameterChanged, this, _1, _2 
-		);
+		auto f = [this](void* s, const com::VstNumber& e){ durationParameterChanged(s, e); };
 		for (int i=0; i<steps; ++i) {
 			nDuration[i]->addValueChangedListener ( f );
 		}

@@ -13,8 +13,6 @@
 #include <map>
 #include "com/one4All.h"
 #include "com/Events.h"
-#include "boost/bind.hpp"
-#include "boost/function.hpp"
 #include "processing/PObject.h"
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/foreach.hpp>

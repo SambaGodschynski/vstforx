@@ -38,7 +38,7 @@ private:
 	 */
 	void initListener() {
 		volume->addValueChangedListener (
-			boost::bind(&Volume::valueChanged, this, _1, _2)
+			[this](void* s, const com::VstNumber& e){ valueChanged(s, e); }
 		);
 	}
 	//--------------------------------------------------------------------------------------------------------

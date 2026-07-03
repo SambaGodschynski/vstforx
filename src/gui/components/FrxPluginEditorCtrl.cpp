@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <boost/bind.hpp>
 #include "FrxPluginEditorCtrl.hpp"
 #include <sambag/com/Common.hpp>
 

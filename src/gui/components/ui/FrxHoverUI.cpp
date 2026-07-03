@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <boost/bind.hpp>
 #include "FrxHoverUI.hpp"
 #include <sambag/disco/components/AComponent.hpp>
 #include <sambag/disco/components/ui/UIManager.hpp>

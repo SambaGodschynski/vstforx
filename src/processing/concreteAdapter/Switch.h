@@ -51,15 +51,9 @@ private:
 		ar & parameterMap;
 		ar & state;
 		if ( Archive::is_loading::value ) { // rebind func listener
-			Parameter::ParameterListenerFunction dI = boost::bind( 
-				&Switch::durationINChanged, this, _1, _2 
-			);
-			Parameter::ParameterListenerFunction dO = boost::bind( 
-				&Switch::durationOUTChanged, this, _1, _2 
-			);
-			Parameter::ParameterListenerFunction cT = boost::bind( 
-				&Switch::curveTypeChanged, this, _1, _2 
-			);
+			auto dI = [this](void* s, const com::VstNumber& e){ durationINChanged(s, e); };
+			auto dO = [this](void* s, const com::VstNumber& e){ durationOUTChanged(s, e); };
+			auto cT = [this](void* s, const com::VstNumber& e){ curveTypeChanged(s, e); };
 
 			for ( size_t i=0; i<numStates; ++i ) {
 				nDurationIN[i]->addValueChangedListener ( dI );

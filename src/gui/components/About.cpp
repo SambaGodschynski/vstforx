@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <boost/bind.hpp>
 #include "About.hpp"
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include "ui/FrxLookAndFeel.hpp"

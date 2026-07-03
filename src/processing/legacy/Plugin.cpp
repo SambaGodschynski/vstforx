@@ -5,6 +5,7 @@
  * ===========================================================================================================
  */
 
+#include <boost/bind.hpp>
 #include "Plugin.h"
 #include "OS_Specific/OS_processing.h"
 #include "com/one4All.h"

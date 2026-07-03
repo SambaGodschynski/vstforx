@@ -23,7 +23,7 @@
 #include <map>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
-#include <boost/function.hpp>
+#include <functional>
 #include <boost/filesystem.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <sstream>
@@ -185,7 +185,7 @@ namespace com {
 	//--------------------------------------------------------------------------------------------------------
 	typedef std::list<std::string> StringList;
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::function< void ( const Filename& ) > FileFoundFuncPtr;
+	typedef std::function< void ( const Filename& ) > FileFoundFuncPtr;
     //--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param fileName

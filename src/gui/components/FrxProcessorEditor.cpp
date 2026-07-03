@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <boost/bind.hpp>
 #include "FrxProcessorEditor.hpp"
 #include <com/one4All.h>
 

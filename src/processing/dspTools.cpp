@@ -5,6 +5,7 @@
  * ===========================================================================================================
  */
 
+#include <boost/bind.hpp>
 #include "dspTools.h"
 #include <com/Serialization.h>
 #include <boost/assign/list_inserter.hpp>

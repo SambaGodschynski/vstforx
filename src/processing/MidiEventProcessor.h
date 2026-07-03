@@ -38,20 +38,16 @@ private:
 		ar & midiChannel;
 		// -=-=-=-=-=-=-=-=-=-=-=-
         if ( Archive::is_loading::value == true ) {
-			parameter::Parameter::ValueChangedFunction f = boost::bind( 
-				&MidiEventProcessor::midiChannelChanged, this, _1, _2 
-			);
-			midiChannel->addValueChangedListener ( f );
+			midiChannel->addValueChangedListener(
+				[this](void* s, const com::VstNumber& e){ midiChannelChanged(s, e); });
 		}
         if (version<=0) {
             return;
         }
         ar & midiSend;
         if ( Archive::is_loading::value == true ) {
-			parameter::Parameter::ValueChangedFunction f = boost::bind( 
-				&MidiEventProcessor::midiSendChanged, this, _1, _2 
-			);
-			midiSend->addValueChangedListener ( f );
+			midiSend->addValueChangedListener(
+				[this](void* s, const com::VstNumber& e){ midiSendChanged(s, e); });
 		}
 	}
 	//-------------------------------------------------------------------------

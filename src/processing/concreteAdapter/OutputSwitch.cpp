@@ -4,6 +4,7 @@
  *      Author: Johannes Unger
  * ===========================================================================================================
  */
+#include <boost/bind.hpp>
 #include "OutputSwitch.h"
 #include <com/Serialization.h>
 

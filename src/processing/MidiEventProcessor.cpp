@@ -5,6 +5,7 @@
  * ============================================================================
  */
 
+#include <boost/bind.hpp>
 #include "MidiEventProcessor.h"
 
 namespace {

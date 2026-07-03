@@ -9,8 +9,7 @@
 #define EVENTS_H
 
 #include <list>
-#include <boost/bind.hpp>
-#include <boost/function.hpp>
+#include <functional>
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/make_shared.hpp>
@@ -124,7 +123,7 @@ class ValueChangedSender {
 //============================================================================================================
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::function< void ( void*, const T& ) > ValueChangedFunction;
+	typedef std::function< void ( void*, const T& ) > ValueChangedFunction;
 	//--------------------------------------------------------------------------------------------------------
 	typedef ::com::events::Connection Connection;
 private:
@@ -223,20 +222,15 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	EventConnection addEventListener ( EventListener<EventType> *eL ) {
 		return sender.addValueChangedListener(
-			boost::bind( &EventListener<EventType>::eventHandler, eL, _1, _2)
+			[eL](void *src, const EventType &ev){ eL->eventHandler(src, ev); }
 		);
 	}
 	//--------------------------------------------------------------------------------------------------------
-	/**
-	 * Fuegt Listener hinzu und aktiviert tracking.
-	 * @param
-	 * @param weak pointer zum zu trackenden Objekt
-	 */
 	EventConnection addTrackedEventListener ( EventListener<EventType> *eL,
 		const boost::weak_ptr<void> &toTrack )
 	{
 		return sender.addTrackedValueChangedListener(
-			boost::bind(&EventListener<EventType>::eventHandler, eL, _1, _2),
+			[eL](void *src, const EventType &ev){ eL->eventHandler(src, ev); },
 			toTrack
 		);
 	}

@@ -4,6 +4,7 @@
  *      Author: Johannes Unger
  * ============================================================================
  */
+#include <boost/bind.hpp>
 #include "processing/processing.h"
 #include "VST2xImpl.h"
 #include "com/Settings.h"
