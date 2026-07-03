@@ -5,6 +5,7 @@
  * ===========================================================================================================
  */
 #include "Pan.h"
+#include <com/Serialization.h>
 
 
 namespace processing{
@@ -34,3 +35,8 @@ void Pan::processAdapter( Processor::Int numSamples ) {
 	getOutputNode(0)->pushAndCopy ( fr, numSamples );
 }
 }// namespace processing
+
+#include <processing/ModelFactory.hpp>
+namespace processing {
+FRX_MODELFACTORY_REGISTER(internal, Pan);
+} // namespace processing

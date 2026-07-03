@@ -14,7 +14,7 @@
 #include <boost/function.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/shared_ptr.hpp>
-#include <com/Serialization.h>
+#include <com/SerializationFwd.h>
 #include <list>
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>

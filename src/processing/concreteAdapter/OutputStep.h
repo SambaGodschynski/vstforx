@@ -16,7 +16,6 @@
 #include "SyncTranslator.h"
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
-#include <processing/ModelFactory.hpp>
 
 namespace processing {
 //============================================================================================================
@@ -170,16 +169,6 @@ public:
 	 */
 	ProcessorNode::Ptr addOutputNode();
 };
-
-namespace {
-    const bool INTERNAL_OUTSTEP_IO_Registered =
-        frx::processing::ModelFactory::instance().
-            registerWithIO<OutputStep>("internal.OutputStep", &OutputStep::create);
-    
-    const bool INTERNAL_OUTSTEP_Registered =
-        frx::processing::ModelFactory::instance().
-		register_<OutputStep>("internal.OutputStep", boost::bind(&OutputStep::create,_1,0,2));
-}
 
 }// namespace processing
 

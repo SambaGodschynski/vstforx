@@ -11,7 +11,6 @@
 #include "processing/parameter/parameter.h"
 #include "com/SerializationFwd.h"
 #include "processing/MidiEventProcessor.h"
-#include <processing/ModelFactory.hpp>
 
 namespace processing {
 //============================================================================================================
@@ -123,7 +122,6 @@ public:
 	}
 };
 
-FRX_MODELFACTORY_REGISTER(internal, MidiProcessor);
 
 }// namespace processing
 

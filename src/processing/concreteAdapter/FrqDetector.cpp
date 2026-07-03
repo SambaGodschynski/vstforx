@@ -5,6 +5,7 @@
  * ============================================================================
  */
 #include "FrqDetector.hpp"
+#include <com/Serialization.h>
 #include <processing/ModelFactory.hpp>
 #include "processing/dspTools.h"
 #include <sstream>
@@ -119,3 +120,8 @@ FrqDetector::~FrqDetector () {
     }
  }
 }// namespace processing
+
+#include <processing/ModelFactory.hpp>
+namespace processing {
+FRX_MODELFACTORY_REGISTER(internal, FrqDetector);
+} // namespace processing

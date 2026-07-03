@@ -10,7 +10,6 @@
 #include "processing/processing.h"
 #include "processing/parameter/parameter.h"
 #include "com/SerializationFwd.h"
-#include <processing/ModelFactory.hpp>
 #include <sambag/com/Thread.hpp> 
 #include <boost/circular_buffer.hpp>
 
@@ -116,7 +115,6 @@ public:
 	virtual ~FrqDetector ();
 };
 
-FRX_MODELFACTORY_REGISTER(internal, FrqDetector);
 
 }// namespace processing
 

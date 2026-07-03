@@ -5,6 +5,7 @@
  * ===========================================================================================================
  */
 #include "OutputStep.h"
+#include <com/Serialization.h>
 
 
 namespace processing{
@@ -188,3 +189,16 @@ void OutputStep::load(com::iArchive &ar, const unsigned int version) {
 	outpMatrix = OutputMatrix( cStep->getNumSteps(), (Frames*)NULL );
 }
 }// namespace processing
+
+#include <com/Serialization.h>
+#include <processing/ModelFactory.hpp>
+namespace processing {
+namespace {
+    const bool INTERNAL_OUTSTEP_IO_Registered =
+        frx::processing::ModelFactory::instance().
+            registerWithIO<OutputStep>("internal.OutputStep", &OutputStep::create);
+    const bool INTERNAL_OUTSTEP_Registered =
+        frx::processing::ModelFactory::instance().
+        register_<OutputStep>("internal.OutputStep", boost::bind(&OutputStep::create, _1, 0, 2));
+}
+} // namespace processing

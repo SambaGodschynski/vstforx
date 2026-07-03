@@ -289,32 +289,7 @@ namespace {
         );
     }
     template <>
-    inline bool _doRegister<FrxPluginNode>() {
-        typedef FrxPluginNode T;
-        // register FrxPluginNode for all plugin types
-        return ViewFactory::instance().register_<T>(
-            std::string("vst2x.Plugin"),
-            &T::create
-        ) && ViewFactory::instance().register_<T>(
-            std::string("vst3x.Plugin"),
-            &T::create
-        ) && ViewFactory::instance().register_<T>(
-            std::string("au.Plugin"),
-            &T::create
-        ) && ViewFactory::instance().register_<T>(
-            std::string("dx.Plugin"),
-            &T::create
-        ) && ViewFactory::instance().register_<T>(
-            std::string("lua.Plugin"),
-            &T::create
-        ) && ViewFactory::instance().register_<T>(
-            std::string("unknown-plugin.Plugin"),
-            &T::create
-        ) && ViewFactory::instance().register_<T>(
-            std::string("bridged-plugin.Plugin"),
-            &T::create
-        );
-    }
+    bool _doRegister<FrxPluginNode>();
     template <class ProcessorList>
     inline bool registerInFactory() {
         typedef typename ProcessorList::Head T;
@@ -323,8 +298,6 @@ namespace {
     template <>
     inline bool registerInFactory<Loki::NullType>() { return true; }
     
-    bool FrxProcessors_Registered = registerInFactory<FrxProcessorList>();
-
 } // namespace(s)
 }}} // namespace(s)
 

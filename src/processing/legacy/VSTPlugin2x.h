@@ -21,7 +21,6 @@
 #include <sambag/dsp/VstMidiEventAdapter.hpp>
 #include <processing/pluginTypes/VstShellPlugin.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
-#include <processing/ModelFactory.hpp>
 
 /*namespace legacy {*/ namespace processing {
 //============================================================================================================
@@ -341,13 +340,6 @@ public:
 									void* ptr, 
 									float opt ); 
 }; // class VSTPlugin
-
-namespace {
-    const bool LegacyVST2xPluginReg =
-        ::frx::processing::ModelFactory::instance().registerWithDetail<VSTPlugin>(
-                "legacy.VST2xPlugin", &VSTPlugin::create
-    );
-}
 
 } // namespace processing
 

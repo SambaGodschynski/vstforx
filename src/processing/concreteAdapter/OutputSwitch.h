@@ -14,7 +14,6 @@
 #include "com/one4All.h"
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
-#include <processing/ModelFactory.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -155,16 +154,6 @@ public:
 	 */
 	virtual ProcessorNode::Ptr addOutputNode();
 };
-
-namespace {
-    const bool INTERNAL_OUTSWITCH_IO_Registered =
-        frx::processing::ModelFactory::instance().
-		registerWithIO<OutputSwitch>("internal.OutputSwitch", &OutputSwitch::create);
-    
-    const bool INTERNAL_OUTSWITCH_Registered =
-        frx::processing::ModelFactory::instance().
-		register_<OutputSwitch>("internal.OutputSwitch", boost::bind(&OutputSwitch::create, _1, 0, 2));
-}
 
 }// namespace processing
 

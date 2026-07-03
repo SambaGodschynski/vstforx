@@ -11,7 +11,6 @@
 #include "processing/parameter/parameter.h"
 #include "com/SerializationFwd.h"
 #include "processing/dspTools.h"
-#include <processing/ModelFactory.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -100,7 +99,6 @@ public:
 	virtual ~ADSRTrigger ();
 };
 
-FRX_MODELFACTORY_REGISTER(internal, ADSRTrigger);
 
 }// namespace processing
 

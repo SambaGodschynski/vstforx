@@ -10,7 +10,6 @@
 #include "processing/processing.h"
 #include "processing/parameter/parameter.h"
 #include "com/SerializationFwd.h"
-#include <processing/ModelFactory.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -77,7 +76,6 @@ public:
 	}
 };
 
-FRX_MODELFACTORY_REGISTER(internal, Pan);
 
 }// namespace processing
 

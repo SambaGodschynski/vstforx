@@ -18,7 +18,6 @@
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include "pluginTypes/PluginImpl.hpp"
-#include <processing/ModelFactory.hpp>
 #include <sambag/com/events/PropertyChanged.hpp>
 #include <sambag/com/events/Events.hpp>
 #include <processing/IPlugin.hpp>
@@ -391,28 +390,6 @@ public:
     size_t getNumOutputChannels() const;
 };
 
-namespace {
-    const bool UnkownPluginReg =
-        ::frx::processing::ModelFactory::instance().registerWithDetail<Plugin>(
-                "unknown-plugin.Plugin", &Plugin::create
-    );
-    const bool VST2xPluginReg =
-        ::frx::processing::ModelFactory::instance().registerWithDetail(
-                "vst2x.Plugin", &Plugin::createVST2x
-    );
-    const bool VST3PluginReg =
-        ::frx::processing::ModelFactory::instance().registerWithDetail(
-                "vst3x.Plugin", &Plugin::createVST3x
-    );
-    const bool AUPluginReg =
-        ::frx::processing::ModelFactory::instance().registerWithDetail(
-                "au.Plugin", &Plugin::createAU
-    );
-    const bool LuaPluginReg =
-        ::frx::processing::ModelFactory::instance().registerWithDetail(
-                "lua.Plugin", &Plugin::createLua
-    );
-}
 }}// namespace processing
 
 #endif

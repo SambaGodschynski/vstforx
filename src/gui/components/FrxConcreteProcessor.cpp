@@ -126,3 +126,34 @@ std::string getProcessorTooltip(const std::string &processorName) {
 	return boost::get<1>( it->second )();
 }
 }}} // namespace(s)
+
+#include <com/Serialization.h>
+namespace frx { namespace gui { namespace components {
+namespace {
+    bool FrxProcessors_Registered = registerInFactory<FrxProcessorList>();
+}
+}}} // namespace frx::gui::components
+
+namespace frx { namespace gui { namespace components {
+namespace {
+    template <>
+    bool _doRegister<FrxPluginNode>() {
+        typedef FrxPluginNode T;
+        return ViewFactory::instance().register_<T>(
+            std::string("vst2x.Plugin"),   &T::create
+        ) && ViewFactory::instance().register_<T>(
+            std::string("vst3x.Plugin"),   &T::create
+        ) && ViewFactory::instance().register_<T>(
+            std::string("au.Plugin"),      &T::create
+        ) && ViewFactory::instance().register_<T>(
+            std::string("dx.Plugin"),      &T::create
+        ) && ViewFactory::instance().register_<T>(
+            std::string("lua.Plugin"),     &T::create
+        ) && ViewFactory::instance().register_<T>(
+            std::string("unknown-plugin.Plugin"),  &T::create
+        ) && ViewFactory::instance().register_<T>(
+            std::string("bridged-plugin.Plugin"),  &T::create
+        );
+    }
+}
+}}} // namespace frx::gui::components

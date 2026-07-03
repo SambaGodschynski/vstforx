@@ -5,6 +5,7 @@
  * ============================================================================
  */
 #include "Plugin.h"
+#include <com/Serialization.h>
 #include "OS_Specific/OS_processing.h"
 #include "pluginTypes/PluginFactory.hpp"
 #include "com/one4All.h"
@@ -459,3 +460,25 @@ void Plugin::paramEditorOpenChanged ( void *src, const float &val ) {
 		);
 }
 }} //namespace processing
+
+#include <com/Serialization.h>
+#include <processing/ModelFactory.hpp>
+namespace frx { namespace processing {
+namespace {
+    const bool UnkownPluginReg =
+        ::frx::processing::ModelFactory::instance().registerWithDetail<Plugin>(
+                "unknown-plugin.Plugin", &Plugin::create);
+    const bool VST2xPluginReg =
+        ::frx::processing::ModelFactory::instance().registerWithDetail(
+                "vst2x.Plugin", &Plugin::createVST2x);
+    const bool VST3PluginReg =
+        ::frx::processing::ModelFactory::instance().registerWithDetail(
+                "vst3x.Plugin", &Plugin::createVST3x);
+    const bool AUPluginReg =
+        ::frx::processing::ModelFactory::instance().registerWithDetail(
+                "au.Plugin", &Plugin::createAU);
+    const bool LuaPluginReg =
+        ::frx::processing::ModelFactory::instance().registerWithDetail(
+                "lua.Plugin", &Plugin::createLua);
+}
+}} // namespace frx::processing

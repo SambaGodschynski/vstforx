@@ -5,6 +5,7 @@
  * ===========================================================================================================
  */
 #include "ADSRTrigger.h"
+#include <com/Serialization.h>
 #include <processing/ModelFactory.hpp>
 
 namespace processing{
@@ -76,3 +77,8 @@ ADSRTrigger::~ADSRTrigger () {
 	delete adsr; 
 }
 }// namespace processing
+
+#include <processing/ModelFactory.hpp>
+namespace processing {
+FRX_MODELFACTORY_REGISTER(internal, ADSRTrigger);
+} // namespace processing

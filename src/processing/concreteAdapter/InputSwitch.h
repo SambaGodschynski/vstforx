@@ -14,7 +14,6 @@
 #include "Switch.h"
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
-#include <processing/ModelFactory.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -157,16 +156,6 @@ public:
 	 */
 	virtual ProcessorNode::Ptr addInputNode();
 };
-
-namespace {
-    const bool INTERNAL_INSWITCH_IO_Registered =
-        frx::processing::ModelFactory::instance().
-            registerWithIO<InputSwitch>("internal.InputSwitch", &InputSwitch::create);
-    
-    const bool INTERNAL_INSWITCH_Registered =
-        frx::processing::ModelFactory::instance().
-		register_<InputSwitch>("internal.InputSwitch", boost::bind(&InputSwitch::create,_1,2,0));
-}
 
 }// namespace processing
 

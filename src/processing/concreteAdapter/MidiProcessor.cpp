@@ -5,6 +5,7 @@
  * ===========================================================================================================
  */
 #include "MidiProcessor.h"
+#include <com/Serialization.h>
 #include "processing/dspTools.h"
 #include <sambag/dsp/IMidiEvents.hpp>
 
@@ -61,3 +62,8 @@ void MidiProcessor::processMidiEvents ( sambag::dsp::IMidiEvents::Ptr ev ) {
 	}
 }
 }// namespace processing
+
+#include <processing/ModelFactory.hpp>
+namespace processing {
+FRX_MODELFACTORY_REGISTER(internal, MidiProcessor);
+} // namespace processing

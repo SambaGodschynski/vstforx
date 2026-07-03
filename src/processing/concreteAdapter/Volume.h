@@ -13,7 +13,6 @@
 #include "processing/dspTools.h"
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
-#include <processing/ModelFactory.hpp>
 
 namespace processing {
 using namespace parameter;
@@ -146,7 +145,6 @@ public:
 	}
 };
 
-FRX_MODELFACTORY_REGISTER(internal, Volume);
 
 }// namespace processing
 

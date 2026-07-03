@@ -5,6 +5,7 @@
  * ===========================================================================================================
  */
 #include "OutputSwitch.h"
+#include <com/Serialization.h>
 
 
 namespace processing{
@@ -119,3 +120,16 @@ void OutputSwitch::load(com::iArchive &ar, const unsigned int version) {
 
 }
 }// namespace processing
+
+#include <com/Serialization.h>
+#include <processing/ModelFactory.hpp>
+namespace processing {
+namespace {
+    const bool INTERNAL_OUTSWITCH_IO_Registered =
+        frx::processing::ModelFactory::instance().
+        registerWithIO<OutputSwitch>("internal.OutputSwitch", &OutputSwitch::create);
+    const bool INTERNAL_OUTSWITCH_Registered =
+        frx::processing::ModelFactory::instance().
+        register_<OutputSwitch>("internal.OutputSwitch", boost::bind(&OutputSwitch::create, _1, 0, 2));
+}
+} // namespace processing

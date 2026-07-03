@@ -15,6 +15,7 @@
 #include <limits>
 #include <OS_Specific/OS_com.h>
 #include <processing/pluginTypes/TestAEffect.hpp>
+#include <com/Serialization.h>
 #include <processing/ModelFactory.hpp>
 #include <processing/Plugin.h>
 #include <sambag/disco/Geometry.hpp>
@@ -644,3 +645,11 @@ VstIntPtr VSTPlugin::_hostCallback ( AEffect* effect,
 
 
 
+
+namespace processing {
+namespace {
+    const bool LegacyVST2xPluginReg =
+        ::frx::processing::ModelFactory::instance().registerWithDetail<VSTPlugin>(
+                "legacy.VST2xPlugin", &VSTPlugin::create);
+}
+} // namespace processing

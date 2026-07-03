@@ -5,6 +5,7 @@
  * ===========================================================================================================
  */
 #include "Volume.h"
+#include <com/Serialization.h>
 #include <boost/static_assert.hpp>
 
 namespace processing {
@@ -25,3 +26,8 @@ void Volume::processAdapter( Processor::Int numSamples ) {
 	outputNodes[0]->pushAndCopy( fr, numSamples );
 }
 }// namespace processing
+
+#include <processing/ModelFactory.hpp>
+namespace processing {
+FRX_MODELFACTORY_REGISTER(internal, Volume);
+} // namespace processing

@@ -5,6 +5,7 @@
  * ===========================================================================================================
  */
 #include "InputSwitch.h"
+#include <com/Serialization.h>
 
 
 namespace processing{
@@ -115,3 +116,16 @@ void InputSwitch::load(com::iArchive &ar, const unsigned int version) {
 	tmpFrame.setSize ( hI->getBlockSize() );
 }
 }// namespace processing
+
+#include <com/Serialization.h>
+#include <processing/ModelFactory.hpp>
+namespace processing {
+namespace {
+    const bool INTERNAL_INSWITCH_IO_Registered =
+        frx::processing::ModelFactory::instance().
+            registerWithIO<InputSwitch>("internal.InputSwitch", &InputSwitch::create);
+    const bool INTERNAL_INSWITCH_Registered =
+        frx::processing::ModelFactory::instance().
+        register_<InputSwitch>("internal.InputSwitch", boost::bind(&InputSwitch::create,_1,2,0));
+}
+} // namespace processing

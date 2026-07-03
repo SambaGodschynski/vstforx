@@ -5,6 +5,7 @@
  * ===========================================================================================================
  */
 #include "PeakTracker.h"
+#include <com/Serialization.h>
 
 namespace {
     // check if inertia parameter connection is working after
@@ -51,3 +52,8 @@ void PeakTracker::processAdapter( Processor::Int numSamples ) {
 	outputNodes[0]->pushAndCopy(frame, numSamples);
 }
 }// namespace processing
+
+#include <processing/ModelFactory.hpp>
+namespace processing {
+FRX_MODELFACTORY_REGISTER(internal, PeakTracker);
+} // namespace processing
