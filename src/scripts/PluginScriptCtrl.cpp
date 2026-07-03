@@ -407,7 +407,7 @@ slua::IgnoreReturn FrxGetPersistData::process(const std::string &key, Ctrl *ctrl
 //-----------------------------------------------------------------------------
 namespace {
     void onTimerFailure(const LuaTimer::ExecFailedEvent &ev,
-        boost::function<void(std::string)> &handler)
+        std::function<void(std::string)> handler)
     {
         if (handler) {
             handler(ev.msg);

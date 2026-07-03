@@ -236,7 +236,7 @@ void _extendPopupMenu(sdc::PopupMenu::WPtr _menu,
         sdc::MenuItem::Ptr item = sdc::MenuItem::create();
         item->setText(op.second);
         item->sce::EventSender<sdc::events::ActionEvent>::addTrackedEventListener (
-            boost::bind(&IFrxControl::removeOperator, &ctrl, view, connection, op.first),
+            [&ctrl, view, connection, opId = op.first](void*, const sdc::events::ActionEvent&){ ctrl.removeOperator(view, connection, opId); },
             c
         );
         smenu->add(item);
@@ -312,7 +312,7 @@ void FrxConnectionUI<CT>::installListeners(sdc::AComponent::Ptr c) {
 	if ( !hasContextMenu<CT>() )
 		return;
 	c->sce::EventSender<sdc::events::MouseEvent>::addTrackedEventListener(
-		boost::bind(&Class::onMouse, this, _1, _2),
+		[this](void* s, const sdc::events::MouseEvent& e){ onMouse(s, e); },
 		getPtr()
 	);
 }

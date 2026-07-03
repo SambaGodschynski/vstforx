@@ -19,7 +19,7 @@
 #include <sambag/disco/components/BorderLayout.hpp>
 #include <sambag/disco/components/Panel.hpp>
 #include <sambag/disco/components/Label.hpp>
-#include <boost/function.hpp>
+#include <functional>
 #include <string>
 #include "IFrxColumnBrowserCtrl.hpp"
 #include "Forward.hpp"
@@ -77,21 +77,21 @@ struct BrowserNodeData : public BrowserConstants {
 	 * specific draw callback: will be called with renderer 
 	 * component before rendering.
 	 */
-	typedef boost::function<void(sdc::AComponentPtr)> 
+	typedef std::function<void(sdc::AComponentPtr)> 
 		DrawCallback;
 	DrawCallback drawCallback;
 	/**
 	 * value changed callback.
 	 * called by FrxBrowserListUI when parameter changed in browser.
 	 */
-	typedef boost::function<void(float)> ValueChanged;
+	typedef std::function<void(float)> ValueChanged;
 	ValueChanged valueChanged;
 	/**
 	 * will be called when node is selected and (eg.) ok is pressed.
 	 */ 
 	typedef sambag::com::ArbitraryType Result;
 	typedef Result::Ptr ResultPtr;
-	typedef boost::function<ResultPtr()> AcceptedFunction;
+	typedef std::function<ResultPtr()> AcceptedFunction;
 	AcceptedFunction f;
 	std::string type; // specify node type for rendering 
 	std::string actionText; // eg. for browser button

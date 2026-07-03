@@ -118,10 +118,10 @@ public:
     typedef std::pair<sambag::lua::LuaStateRef, LockPtr> LuaState;
     LockPtr getLock();
     LuaState getLuaState();
-    typedef boost::function<void(std::string)> OnExecErrorF;
+    typedef std::function<void(std::string)> OnExecErrorF;
     typedef boost::shared_ptr<void> AnyPtr;
     typedef boost::weak_ptr<void> AnyWPtr;
-    typedef boost::function<AnyPtr()> GetLockObjectF;
+    typedef std::function<AnyPtr()> GetLockObjectF;
     typedef boost::tuple<sambag::lua::LuaStateWRef, // lua_state
         GetLockObjectF,                             // getLockObject
         OnExecErrorF,                               // executation fails callbk

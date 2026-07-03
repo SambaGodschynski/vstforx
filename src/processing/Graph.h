@@ -268,7 +268,7 @@ public:
         return graphObjects;
     }
     //--------------------------------------------------------------------------------------------------------
-    typedef boost::function<void()> Function;
+    typedef std::function<void()> Function;
     void addIdleTask(const Function &f);
 	//--------------------------------------------------------------------------------------------------------
 	void processEvents(sambag::dsp::IMidiEvents::Ptr events);

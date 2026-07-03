@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <boost/bind.hpp>
 #include "FrxConnection.hpp"
 #include "ui/FrxConnectionUI.hpp"
 #include "FrxCircuidView.hpp"

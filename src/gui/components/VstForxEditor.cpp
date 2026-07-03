@@ -1,3 +1,4 @@
+#include <boost/bind.hpp>
 #include "FrxSerializationRegister.hpp"
 #include "VstForxEditor.hpp"
 #include <sambag/disco/components/WindowToolkit.hpp>

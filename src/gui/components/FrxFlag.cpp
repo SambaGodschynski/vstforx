@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <boost/bind.hpp>
 #include "FrxFlag.hpp"
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include "FrxCircuidView.hpp"

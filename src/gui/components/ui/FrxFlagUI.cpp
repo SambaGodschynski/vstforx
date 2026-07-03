@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <boost/bind.hpp>
 #include "FrxFlagUI.hpp"
 #include <sambag/disco/components/ui/UIManager.hpp>
 #include <sambag/disco/IDiscoFactory.hpp>

@@ -15,7 +15,7 @@
 #include <gui/IViewModelMap.hpp>
 #include <boost/unordered_map.hpp>
 #include <map>
-#include <boost/function.hpp>
+#include <functional>
 
 namespace frx { namespace scripts {
 namespace slua = sambag::lua;

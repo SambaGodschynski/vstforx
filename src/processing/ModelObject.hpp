@@ -11,7 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <boost/make_shared.hpp>
-#include <boost/function.hpp>
+#include <functional>
 #include "com/SerializationFwd.h"
 #include <boost/serialization/access.hpp>
 #include <string>
@@ -39,7 +39,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef boost::weak_ptr<void> AnyWPtr;
 	//-------------------------------------------------------------------------
-	typedef boost::function<bool(Ptr obj)> RequestRemoveFunction;
+	typedef std::function<bool(Ptr)> RequestRemoveFunction;
 	//-------------------------------------------------------------------------
 	class Connection {
 		boost::shared_ptr<bool> disconnected_;

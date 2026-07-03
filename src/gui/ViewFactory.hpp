@@ -9,7 +9,7 @@
 #define SAMBAG_VIEWFACTORY_H
 
 #include <loki/Singleton.h>
-#include <boost/function.hpp>
+#include <functional>
 #include <boost/unordered_map.hpp>
 #include <boost/shared_ptr.hpp>
 #include <com/SerializationFwd.h>
@@ -28,11 +28,11 @@ friend struct Loki::CreateUsingNew<ViewFactory>;
 public:
     //-------------------------------------------------------------------------
     typedef FrxProcessorNode::Ptr Product;
-    typedef boost::function<Product()> Creator;
+    typedef std::function<Product()> Creator;
     typedef std::string Id;
     typedef boost::unordered_map<Id, Creator> CreatorMap;
-    typedef boost::function<void(com::oArchive*)> OArchiveRegisterF;
-    typedef boost::function<void(com::iArchive*)> IArchiveRegisterF;
+    typedef std::function<void(com::oArchive*)> OArchiveRegisterF;
+    typedef std::function<void(com::iArchive*)> IArchiveRegisterF;
     typedef std::list<OArchiveRegisterF> OARegList;
     typedef std::list<IArchiveRegisterF> IARegList;
 protected:

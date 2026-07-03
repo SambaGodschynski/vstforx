@@ -17,7 +17,7 @@
 #include <boost/unordered_map.hpp>
 #include <gui/components/Forward.hpp>
 #include <map>
-#include <boost/function.hpp>
+#include <functional>
 #include <loki/Singleton.h>
 #include <sambag/disco/components/PopupMenu.hpp>
 #include <sambag/disco/components/Label.hpp>
@@ -54,7 +54,7 @@ public:
     //-------------------------------------------------------------------------
     struct Factory {
         friend struct Loki::CreateUsingNew<Factory>;
-        typedef boost::function<LuaFrxObject::Ptr(lua_State * lua,
+        typedef std::function<LuaFrxObject::Ptr(lua_State * lua,
             ModelObject::Ptr obj, ViewModelMap::Ptr map)> Creator;
         typedef std::map<std::string, Creator> CreatorMap;
         //---------------------------------------------------------------------

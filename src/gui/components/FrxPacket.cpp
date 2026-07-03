@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <boost/bind.hpp>
 #include "FrxPacket.hpp"
 #include "FrxCircuidView.hpp"
 #include "FrxSelection.hpp"

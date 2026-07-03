@@ -12,7 +12,7 @@
 #include <boost/shared_ptr.hpp>
 #include <string>
 #include <boost/unordered_map.hpp>
-#include <boost/function.hpp>
+#include <functional>
 #include <boost/ref.hpp>
 #include <sstream>
 
@@ -39,7 +39,7 @@ public:
     //-------------------------------------------------------------------------
     typedef std::string RequestTarget;
     typedef std::stringstream Response;
-    typedef boost::function< void(Request&, Response&) > RequestHandler;
+    typedef std::function< void(Request&, Response&) > RequestHandler;
     typedef boost::unordered_map<RequestTarget, RequestHandler> RequestHandlers;
 protected:
     //-------------------------------------------------------------------------

@@ -13,7 +13,7 @@
 #include "processing/dspTools.h"
 #include "Switch.h"
 #include "ValueTranslator.h"
-#include <boost/function.hpp>
+#include <functional>
 
 namespace processing {
 using namespace parameter;
@@ -84,7 +84,7 @@ private:
 	void durationParameterChanged ( void *src, const float &v );
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::function<void(State, State)> StateChangedDelegate;
+	typedef std::function<void(State, State)> StateChangedDelegate;
 	StateChangedDelegate stateChangedDelegate;
 	//--------------------------------------------------------------------------------------------------------
 	virtual void stateChanged(State old, State _new);

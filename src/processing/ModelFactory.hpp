@@ -11,7 +11,7 @@
 #include <loki/Singleton.h>
 #include "IHostInfo.h"
 #include "processing.h"
-#include <boost/function.hpp>
+#include <functional>
 #include <boost/bind.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/shared_ptr.hpp>
@@ -54,9 +54,9 @@ friend struct Loki::CreateUsingNew<ModelFactory>;
 public:
     //-------------------------------------------------------------------------
     typedef ::processing::ProcessAdapter::Ptr Product;
-    typedef boost::function<Product(IHostInfo::Ptr)> CreatorDefault;
-    typedef boost::function<Product(IHostInfo::Ptr,int, int)> CreatorWithIO;
-    typedef boost::function<Product(IHostInfo::Ptr, std::string)> CreatorWithDetail;
+    typedef std::function<Product(IHostInfo::Ptr)> CreatorDefault;
+    typedef std::function<Product(IHostInfo::Ptr,int, int)> CreatorWithIO;
+    typedef std::function<Product(IHostInfo::Ptr, std::string)> CreatorWithDetail;
     typedef std::string Id;
     struct CreatorFunctions {
         CreatorDefault _defaultF;
@@ -88,8 +88,8 @@ public:
         }
     };
     typedef boost::unordered_map<Id, CreatorFunctions> CreatorMap;
-    typedef boost::function<void(com::oArchive*)> OArchiveRegisterF;
-    typedef boost::function<void(com::iArchive*)> IArchiveRegisterF;
+    typedef std::function<void(com::oArchive*)> OArchiveRegisterF;
+    typedef std::function<void(com::iArchive*)> IArchiveRegisterF;
 	typedef std::map<Id, OArchiveRegisterF> OARegList;
 	typedef std::map<Id, IArchiveRegisterF> IARegList;
 protected:

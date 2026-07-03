@@ -11,7 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <sambag/lua/ALuaObject.hpp>
-#include <boost/function.hpp>
+#include <functional>
 #include <processing/FrxAsyncDSPTimer.hpp>
 #include <sambag/com/Thread.hpp>
 #include <sambag/com/events/Events.hpp>
@@ -42,7 +42,7 @@ public:
 	typedef boost::shared_ptr<LuaTimer> Ptr;
     //-------------------------------------------------------------------------
     typedef boost::shared_ptr<void> AnyPtr;
-    typedef boost::function< AnyPtr() > GetLockObjectF;
+    typedef std::function< AnyPtr() > GetLockObjectF;
 private:
     //-------------------------------------------------------------------------
     typedef frx::processing::FrxAsyncDSPTimer Timer;

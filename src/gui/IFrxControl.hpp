@@ -12,8 +12,7 @@
 #include <sambag/disco/components/events/ActionEvent.hpp>
 #include <sambag/disco/components/events/MouseEvent.hpp>
 #include "components/Forward.hpp"
-#include <boost/function.hpp>
-#include <boost/bind.hpp>
+#include <functional>
 #include <boost/tuple/tuple.hpp>
 #include <sambag/com/events/Events.hpp>
 #include <processing/IParameter.hpp>
@@ -27,21 +26,21 @@
   ((frxctrl).createCtrlCommandFunction(                                           \
     (view),                                                                       \
     (frxcomponent),                                                               \
-	boost::bind((frxcmdfunction), &(frxctrl), _1, _2)                             \
+    [ctrlPtr_ = &(frxctrl), fn_ = (frxcmdfunction)](fgc::FrxCircuidViewPtr v, fgc::FrxComponentPtr c){ (ctrlPtr_->*fn_)(v, c); } \
   ))
 
 #define SAMBAG_CREATE_FRXCONTROL_CMD1(frxctrl, view, frxcomponent, frxcmdfunction, arg1) \
   ((frxctrl).createCtrlCommandFunction(                                           \
     (view),                                                                       \
     (frxcomponent),                                                               \
-	boost::bind((frxcmdfunction), &(frxctrl), _1, _2, (arg1))                     \
+    [ctrlPtr_ = &(frxctrl), fn_ = (frxcmdfunction), a1_ = (arg1)](fgc::FrxCircuidViewPtr v, fgc::FrxComponentPtr c){ (ctrlPtr_->*fn_)(v, c, a1_); } \
   ))
 
 #define SAMBAG_CREATE_FRXCONTROL_CMD2(frxctrl, view, frxcomponent, frxcmdfunction, arg1, arg2) \
   ((frxctrl).createCtrlCommandFunction(                                           \
     (view),                                                                       \
     (frxcomponent),                                                               \
-	boost::bind((frxcmdfunction), &(frxctrl), _1, _2, (arg1), (arg2))             \
+    [ctrlPtr_ = &(frxctrl), fn_ = (frxcmdfunction), a1_ = (arg1), a2_ = (arg2)](fgc::FrxCircuidViewPtr v, fgc::FrxComponentPtr c){ (ctrlPtr_->*fn_)(v, c, a1_, a2_); } \
   ))
 
 
@@ -69,7 +68,7 @@ public:
 	virtual void addParameterToView(fgc::FrxCircuidViewPtr view, 
 		fgc::FrxParameterPtr pr) = 0;
 	//-------------------------------------------------------------------------
-	typedef boost::function<void(fgc::FrxCircuidViewPtr, 
+	typedef std::function<void(fgc::FrxCircuidViewPtr,
 		fgc::FrxComponentPtr)> CtrlCmd;
 	//-------------------------------------------------------------------------
 	/**

@@ -96,7 +96,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef std::pair<FrxComponentPtr, ZOrder> FrxComponentInfo;
 	//-------------------------------------------------------------------------
-	typedef boost::function<void(int width, int height)> EditorResizeHandler;
+	typedef std::function<void(int width, int height)> EditorResizeHandler;
     //-------------------------------------------------------------------------
     /**
      * @brief ensure that no name exists twice on view

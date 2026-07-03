@@ -183,7 +183,7 @@ private:
 	sambag::com::ArithmeticWrapper<bool> sceneTreeInit;
 	//-------------------------------------------------------------------------
 	enum Reason { Add, Update };
-	typedef boost::function<Tree::Node(FrxComponentPtr, Reason)> 
+	typedef std::function<Tree::Node(FrxComponentPtr, Reason)> 
         SceneTreeEventHandler;
 	//-------------------------------------------------------------------------
     typedef Tree::Node (FrxMainBrowserCtrl::* AddComponentHandler)

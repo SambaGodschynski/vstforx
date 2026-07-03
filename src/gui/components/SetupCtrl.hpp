@@ -9,7 +9,7 @@
 #define SAMBAG_SETUPCTRL_H
 
 #include <boost/shared_ptr.hpp>
-#include <boost/function.hpp>
+#include <functional>
 #include <string>
 #include <list>
 #include "Forward.hpp"
@@ -61,9 +61,9 @@ public:
 	//-------------------------------------------------------------------------
 	enum FileStatus{OnOpening, Succeed, Failed, Skipped};
 	//-------------------------------------------------------------------------
-	typedef boost::function<void(const std::string&, FileStatus)> NotifyFileFunc;
-	typedef boost::function<void(int, int, int)> ScanCompletedFunc;
-	typedef boost::function<void(std::string)> ScanFailedFunc;
+	typedef std::function<void(const std::string&, FileStatus)> NotifyFileFunc;
+	typedef std::function<void(int, int, int)> ScanCompletedFunc;
+	typedef std::function<void(std::string)> ScanFailedFunc;
 	//-------------------------------------------------------------------------
 	/**
 	 * starts plugin scan (in a seperate thread so don't forget joinScan())

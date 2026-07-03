@@ -12,7 +12,7 @@
 #include <boost/weak_ptr.hpp>
 #include "IModelController.hpp"
 #include "Graph.h"
-#include <boost/function.hpp>
+
 #include "Forward.hpp"
 #include <vector>
 

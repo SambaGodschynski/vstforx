@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <boost/bind.hpp>
 #include "SetupCtrl.hpp"
 #include <com/Settings.h>
 #include <boost/foreach.hpp>

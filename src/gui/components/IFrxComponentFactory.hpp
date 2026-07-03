@@ -9,7 +9,7 @@
 #define SAMBAG_IFRXCOMPONENTFACTORY_H
 
 #include "Forward.hpp"
-#include <boost/function.hpp>
+#include <functional>
 #include <string>
 #include <list>
 #include <processing/PlugInfo.h>
@@ -25,18 +25,18 @@ class IFrxComponentFactory {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::function<FrxProcessorNodePtr(FrxCircuidViewPtr)> 
+	typedef std::function<FrxProcessorNodePtr(FrxCircuidViewPtr)> 
 	ProcessorCreator;
 	//-------------------------------------------------------------------------
-	typedef boost::function<
+	typedef std::function<
 		FrxProcessorNodePtr(FrxCircuidViewPtr, ::processing::PluginInfo)
 	> PluginCreator;
 	//-------------------------------------------------------------------------
-	typedef boost::function<
+	typedef std::function<
 		FrxParameterPtr(FrxCircuidViewPtr)
 	> FreeParameterCreator;
 	//-------------------------------------------------------------------------
-	typedef boost::function<
+	typedef std::function<
 		FrxParameterPtr(FrxCircuidViewPtr, int)
 	> HostParameterCreator;
 	//-------------------------------------------------------------------------

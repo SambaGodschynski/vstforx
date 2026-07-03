@@ -13,7 +13,7 @@
 #include "components/Forward.hpp"
 #include <processing/Forward.hpp>
 #include <sambag/com/ArbitraryType.hpp>
-#include <boost/function.hpp>
+
 #include <boost/tuple/tuple.hpp>
 #include <loki/Singleton.h>
 #include <gui/HandyNamespaces.hpp>
