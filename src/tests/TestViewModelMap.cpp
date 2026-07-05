@@ -8,7 +8,7 @@
 #include "TestViewModelMap.hpp"
 #include <gui/ViewModelMap.hpp>
 #include <cppunit/config/SourcePrefix.h>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/com/Common.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <boost/archive/text_oarchive.hpp> 
@@ -22,7 +22,7 @@ namespace tests {
 template <class Base>
 struct TestClass : public Base {
 	int id;
-	typedef boost::shared_ptr<TestClass> Ptr;
+	typedef std::shared_ptr<TestClass> Ptr;
 	virtual std::string getObjectName(void) const {
 		return "";
 	}

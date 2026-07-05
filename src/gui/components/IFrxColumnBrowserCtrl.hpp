@@ -8,7 +8,7 @@
 #ifndef SAMBAG_IFRXCOLUMNBROWSERCTRL_H
 #define SAMBAG_IFRXCOLUMNBROWSERCTRL_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "Forward.hpp"
 
 namespace frx { namespace gui { namespace components {
@@ -20,7 +20,7 @@ class IFrxColumnBrowserCtrl {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<IFrxColumnBrowserCtrl> Ptr;
+	typedef std::shared_ptr<IFrxColumnBrowserCtrl> Ptr;
 protected:
 private:
 public:

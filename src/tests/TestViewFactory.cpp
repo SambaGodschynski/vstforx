@@ -25,7 +25,7 @@ void TestViewFactory::testCreateProducts() {
     using namespace frx::gui::components;
     ViewFactory &fac = ViewFactory::instance();
     CPPUNIT_ASSERT(fac.create("frx.gui.internal.Volume"));
-    CPPUNIT_ASSERT( boost::dynamic_pointer_cast<FrxVolumeNode>(
+    CPPUNIT_ASSERT( std::dynamic_pointer_cast<FrxVolumeNode>(
             fac.create("frx.gui.internal.Volume")
         )
     );

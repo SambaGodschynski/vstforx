@@ -8,7 +8,7 @@
 #ifndef SAMBAG_IPARAMETERCONNECTION_H
 #define SAMBAG_IPARAMETERCONNECTION_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "IConnection.hpp"
 #include "IParameter.hpp"
 
@@ -31,7 +31,7 @@ private:
 	}
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<IParameterConnection> Ptr;
+	typedef std::shared_ptr<IParameterConnection> Ptr;
 	//-------------------------------------------------------------------------
 	/**
 	 * @return the number of ops on connection.

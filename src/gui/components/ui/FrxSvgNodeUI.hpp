@@ -8,8 +8,8 @@
 #ifndef SAMBAG_FrxSvgNodeUI_H
 #define SAMBAG_FrxSvgNodeUI_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <tuple>
+#include <memory>
 #include <gui/components/FrxComponent.hpp>
 #include <gui/components/Forward.hpp>
 #include "FrxSvgComponentUI.hpp"
@@ -37,13 +37,13 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxSvgComponentUI Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxSvgNodeUI> Ptr;
+	typedef std::shared_ptr<FrxSvgNodeUI> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxSvgNodeUI> WPtr;
+	typedef std::weak_ptr<FrxSvgNodeUI> WPtr;
 protected:
     //-------------------------------------------------------------------------
     struct MouseListener;
-    typedef boost::shared_ptr<MouseListener> MouseListenerPtr;
+    typedef std::shared_ptr<MouseListener> MouseListenerPtr;
     MouseListenerPtr connect, move;
 	//-------------------------------------------------------------------------
 	virtual void installListeners(sdc::AComponent::Ptr c);
@@ -76,7 +76,7 @@ protected:
     //-------------------------------------------------------------------------
     void startCoronaFadeOut();
 	//-------------------------------------------------------------------------
-	typedef boost::tuple<FrxNodePtr, FrxNodePtr, sd::Point2D> ConnectingComponents;
+	typedef std::tuple<FrxNodePtr, FrxNodePtr, sd::Point2D> ConnectingComponents;
 	//-------------------------------------------------------------------------
 	ConnectingComponents getConnectingComponents(const sdc::events::MouseEvent &ev);
     //-------------------------------------------------------------------------
@@ -154,7 +154,7 @@ public:
 	}
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::dynamic_pointer_cast<FrxSvgNodeUI>(Super::getPtr());
+		return std::dynamic_pointer_cast<FrxSvgNodeUI>(Super::getPtr());
 	}
     //-------------------------------------------------------------------------
     virtual bool contains(sdc::AComponentPtr c, const sd::Point2D &p);

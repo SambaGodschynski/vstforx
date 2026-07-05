@@ -8,15 +8,14 @@
 #ifndef SAMBAG_IPLUGIN_H
 #define SAMBAG_IPLUGIN_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <string>
 #include <processing/pluginTypes/PluginImpl.hpp>
 
 
 namespace processing { namespace parameter {
     class Parameter;
-    typedef boost::shared_ptr<Parameter> ParameterPtr;
+    typedef std::shared_ptr<Parameter> ParameterPtr;
 }}
 
 namespace frx { namespace processing {
@@ -28,9 +27,9 @@ class IPlugin {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<IPlugin> Ptr;
+	typedef std::shared_ptr<IPlugin> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<IPlugin> WPtr;
+	typedef std::weak_ptr<IPlugin> WPtr;
 public:
 	//-------------------------------------------------------------------------
 	/**

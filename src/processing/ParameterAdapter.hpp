@@ -8,7 +8,7 @@
 #ifndef SAMBAG_PARAMETERADAPTER_H
 #define SAMBAG_PARAMETERADAPTER_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "IParameter.hpp"
 #include "parameter/parameter.h"
 #include <sambag/com/Exception.hpp>
@@ -24,7 +24,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef IParameter Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<ParameterAdapter> Ptr;
+	typedef std::shared_ptr<ParameterAdapter> Ptr;
 	//-------------------------------------------------------------------------
 	typedef ::processing::parameter::Parameter Adaptee;
 protected:
@@ -59,7 +59,7 @@ public:
 	}
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::dynamic_pointer_cast<ParameterAdapter>( self.lock() );
+		return std::dynamic_pointer_cast<ParameterAdapter>( self.lock() );
 	}
 	//-------------------------------------------------------------------------
 	void setAdaptee(Adaptee::Ptr p) {

@@ -6,6 +6,7 @@
  */
 
 
+#include <tuple>
 #include <boost/graph/reverse_graph.hpp> // occurs compiler error: 'declaration does not declare anything'
 										 // when declared after '#include "Graph.h"' on XCode with gcc4.0
 #include <com/Serialization.h>
@@ -19,7 +20,7 @@
 #include <boost/foreach.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
 #include <sambag/com/events/PropertyChanged.hpp>
-#include <boost/unordered_set.hpp>
+#include <unordered_set>
 #include <processing/dspTools.h>
 
 namespace {
@@ -45,7 +46,7 @@ endFinalized(false)
 // aktualsiert parent activeChildren; setzt node->parents; ermittelt delay
 void DFSVisitor::processNodeParents( ProcessorNode::Ptr node ) {
 	bgl::InvAdjacencyIterator i, end;
-	boost::tie( i, end ) = boost::inv_adjacent_vertices( node->getBglVertex(), graph->g );
+	std::tie( i, end ) = boost::inv_adjacent_vertices( node->getBglVertex(), graph->g );
 	size_t delay = node->getProcessDelay();
 	
 	// anzahl der eingehenden kanten
@@ -90,9 +91,9 @@ private:
     frx::processing::FrxAsyncDSPTimer::Ptr timer;
     sambag::com::RecursiveMutex mutex;
     typedef char Dummy;
-    typedef boost::shared_ptr<Dummy> DummyPtr;
-    typedef boost::weak_ptr<Dummy> DummyWPtr;
-    typedef boost::unordered_set<DummyPtr> Holder;
+    typedef std::shared_ptr<Dummy> DummyPtr;
+    typedef std::weak_ptr<Dummy> DummyWPtr;
+    typedef std::unordered_set<DummyPtr> Holder;
     Holder holder;
     void doIdle(Function f, DummyWPtr);
 public:
@@ -339,7 +340,7 @@ void Graph::installListener( ProcessAdapter::Ptr obj ) {
 //------------------------------------------------------------------------------------------------------------
 void Graph::installListeners() {
     BOOST_FOREACH(PObject::Ptr obj, graphObjects) {
-        ProcessAdapter::Ptr po = boost::dynamic_pointer_cast<ProcessAdapter>(obj);
+        ProcessAdapter::Ptr po = std::dynamic_pointer_cast<ProcessAdapter>(obj);
         if (!po) {
             continue;
         }
@@ -488,7 +489,7 @@ Graph::Janitor::Ptr Graph::getJanitor() {
 //------------------------------------------------------------------------------------------------------------
 bgl::Edge Graph::findEdge( ProcessorNode::Ptr source, ProcessorNode::Ptr target ) const {
 	bgl::EdgeIterator ei, end;
-	boost::tie( ei, end ) = boost::edges( g );
+	std::tie( ei, end ) = boost::edges( g );
 	for ( ; ei!=end; ++ei ) {
 		if ( 
 			boost::source( *ei, g ) == source->getBglVertex() &&
@@ -609,7 +610,7 @@ Graph::Janitor::State Graph::Janitor::connectNodes( ProcessorNode::Ptr parent, P
 	}
 	bgl::Edge e; 
 	bool inserted = false;
-	boost::tie(e, inserted) = boost::add_edge( parent->getBglVertex(), 
+	std::tie(e, inserted) = boost::add_edge( parent->getBglVertex(), 
 		                                       child->getBglVertex(), 
 											   graph->g );
 	if ( !inserted ) {
@@ -659,24 +660,24 @@ void Graph::Janitor::removeAdjacencyEdges ( ProcessorNode::Ptr obj  ) {
 	bgl::Vertex v = obj->getBglVertex();
 	// entferne parent verbindungen
 	bgl::InEdgeIterator iEnd, iNext;
-	boost::tie(iNext, iEnd) = boost::in_edges ( v, graph->g );
+	std::tie(iNext, iEnd) = boost::in_edges ( v, graph->g );
 	while ( iNext != iEnd ) {
 		boost::remove_edge( *iNext, graph->g );
-		boost::tie(iNext, iEnd) = boost::in_edges ( v, graph->g );
+		std::tie(iNext, iEnd) = boost::in_edges ( v, graph->g );
 	}
 	// entferne child verbindungen
 	bgl::OutEdgeIterator oEnd, oNext;
-	boost::tie(oNext, oEnd) = boost::out_edges ( v, graph->g );
+	std::tie(oNext, oEnd) = boost::out_edges ( v, graph->g );
 	while ( oNext != oEnd ) {
 		boost::remove_edge( *oNext, graph->g );
-		boost::tie(oNext, oEnd) = boost::out_edges ( v, graph->g );
+		std::tie(oNext, oEnd) = boost::out_edges ( v, graph->g );
 	}
 }
 //------------------------------------------------------------------------------------------------------------
 void Graph::Janitor::updateProcessorNodeVertexRelations() {
 	// update ProcessorNode nach Vertex 
 	bgl::VertexIterator vi,end;
-	boost::tie( vi, end ) = vertices( graph->g );
+	std::tie( vi, end ) = vertices( graph->g );
 	for ( ; vi!=end; ++vi ) {
 		graph->updateProcessorNode ( graph->vertexProcessorNode[*vi], _bglVertex = *vi );
 	}

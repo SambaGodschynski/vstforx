@@ -5,6 +5,7 @@
  * ===========================================================================================================
  */
 
+#include <tuple>
 #include <cppunit/config/SourcePrefix.h>
 #include "GraphTest.hpp"
 #include "com/MyString.h"
@@ -195,7 +196,7 @@ void GraphTest::testAddRemoveNodes() {
 	CPPUNIT_ASSERT ( !res.empty() );
 	const bgl::G & g = graph->getBglGraph(); 
 	bgl::VertexIterator vi,end;
-	for ( boost::tie(vi,end) = boost::vertices(g); vi!=end; ++vi ) {
+	for ( std::tie(vi,end) = boost::vertices(g); vi!=end; ++vi ) {
 		ProcessorNode::Ptr n1 = res.top();
 		ProcessorNode::Ptr n2 = graph->getProcessorNode(*vi);
 		CPPUNIT_ASSERT_EQUAL ( n1->getName(), n2->getName() );
@@ -211,7 +212,7 @@ void GraphTest::testAddRemoveNodes() {
 		   graph->getEndNode(), // versagt falls in graph constr. 
 		   graph->getStartNode(); // add reihenfolge vertauscht
 	CPPUNIT_ASSERT ( !res.empty() );
-	for ( boost::tie(vi,end) = boost::vertices(g); vi!=end; ++vi ) {
+	for ( std::tie(vi,end) = boost::vertices(g); vi!=end; ++vi ) {
 		ProcessorNode::Ptr n1 = res.top();
 		ProcessorNode::Ptr n2 = graph->getProcessorNode(*vi);
 		CPPUNIT_ASSERT_EQUAL ( n1->getName(), n2->getName() );
@@ -313,7 +314,7 @@ void GraphTest::testConnectNodes() {
 // helfer
 //.............................................................................
 namespace signalProcessTest {
-typedef boost::tuple < 
+typedef std::tuple< 
 	processing::ProcessorNode::Ptr,  // node
 	bool, // is_active 
 	size_t // numActiveChildren
@@ -322,7 +323,7 @@ typedef boost::tuple <
 ProcessorNodeExpection getNodeExpectionInfo ( processing::ProcessorNode *nPtr ) {
 	using namespace processing;
 	ProcessorNode::Ptr n = 
-		boost::dynamic_pointer_cast< ProcessorNode, PObject> ( nPtr->getPtr() );
+		std::dynamic_pointer_cast< ProcessorNode, PObject> ( nPtr->getPtr() );
 	return ProcessorNodeExpection ( n , n->isActive(), n->getNumActiveChildren() );
 }
 //.............................................................................
@@ -332,20 +333,20 @@ bool compare (
 	const ProcessorNodeExpection &soll,
 	const ProcessorNodeExpection &ist 
 ) {
-	errMsg = "Expection with " + boost::get<0>(soll)->getName() + " failed because: ";
+	errMsg = "Expection with " + std::get<0>(soll)->getName() + " failed because: ";
 
-	if ( boost::get<0>(soll) != boost::get<0>(ist) ) {
-		errMsg += "unexpected node = " + boost::get<0>(ist)->getName();
+	if ( std::get<0>(soll) != std::get<0>(ist) ) {
+		errMsg += "unexpected node = " + std::get<0>(ist)->getName();
 		return false;
 	}
-	if ( boost::get<1>(soll) != boost::get<1>(ist) ) {
-		errMsg += "isActive( " + com::MyString( boost::get<1>(soll) ) + "!=" + 
-			       com::MyString( boost::get<1>(ist) ) + " )";
+	if ( std::get<1>(soll) != std::get<1>(ist) ) {
+		errMsg += "isActive( " + com::MyString( std::get<1>(soll) ) + "!=" + 
+			       com::MyString( std::get<1>(ist) ) + " )";
 		return false;
 	}
-	if ( boost::get<2>(soll) != boost::get<2>(ist) ) {
-		errMsg += "numActiveChildren( " + com::MyString( boost::get<2>(soll) ) + "!=" + 
-			       com::MyString( boost::get<2>(ist) ) + " )";
+	if ( std::get<2>(soll) != std::get<2>(ist) ) {
+		errMsg += "numActiveChildren( " + com::MyString( std::get<2>(soll) ) + "!=" + 
+			       com::MyString( std::get<2>(ist) ) + " )";
 		return false;
 	}
 	return true;
@@ -872,39 +873,39 @@ void GraphTest::testJanitorLock() { // erwartet exception
 	using namespace std;
 	using namespace com;
 	using namespace processing;
-	typedef boost::unique_lock<com::Mutex> UniqueLock;
+	typedef std::unique_lock<com::Mutex> UniqueLock;
 	Graph::Ptr graph = createGraph( 255, 44100.0f );
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Graph unlocked
 	{
-		UniqueLock lock( graph->getProcessingLock(), boost::try_to_lock);
+		UniqueLock lock( graph->getProcessingLock(), std::try_to_lock);
 		CPPUNIT_ASSERT ( lock.owns_lock() ); 
 	}
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>get Janitor
 	Graph::Janitor::Ptr jan1 = graph->getJanitor();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Graph locked
 	{
-		UniqueLock lock( graph->getProcessingLock(), boost::try_to_lock);
+		UniqueLock lock( graph->getProcessingLock(), std::try_to_lock);
 		CPPUNIT_ASSERT ( !lock.owns_lock() ); 
 	}
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>get Janitor2
 	Graph::Janitor::Ptr jan2 = graph->getJanitor();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Graph locked2
 	{
-		UniqueLock lock( graph->getProcessingLock(), boost::try_to_lock);
+		UniqueLock lock( graph->getProcessingLock(), std::try_to_lock);
 		CPPUNIT_ASSERT ( !lock.owns_lock() ); 
 	}
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>release Janitor2
 	jan2.reset();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Graph locked2
 	{
-		UniqueLock lock( graph->getProcessingLock(), boost::try_to_lock);
+		UniqueLock lock( graph->getProcessingLock(), std::try_to_lock);
 		CPPUNIT_ASSERT ( !lock.owns_lock() ); 
 	}
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>release Janitor1
 	jan1.reset();
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>Graph unlocked2
 	{
-		UniqueLock lock( graph->getProcessingLock(), boost::try_to_lock);
+		UniqueLock lock( graph->getProcessingLock(), std::try_to_lock);
 		CPPUNIT_ASSERT ( lock.owns_lock() ); 
 	}
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>get Janitor
@@ -1352,11 +1353,11 @@ namespace {
             int s = i;
             int e = i+numTasks-1;
             g->addIdleTask( boost::bind(&sum, s, e, res) );
-            boost::this_thread::sleep( boost::posix_time::milliseconds(sleepms) );
+            std::this_thread::sleep_for( std::chrono::milliseconds(sleepms) );
         }
         SAMBAG_TRY_TO_LOCK_TIMED(m1);
         if (--countdown<=0) {
-            boost::this_thread::sleep( boost::posix_time::seconds(5) );
+            std::this_thread::sleep_for( std::chrono::seconds(5) );
             busy=false;
         }
     }
@@ -1378,7 +1379,7 @@ void GraphTest::testGraphIdleHandler() {
         busy=true;
         graph->addIdleTask( boost::bind(&add<int>, 1, 100, &res) );
         while (busy==true) {
-            boost::this_thread::sleep( boost::posix_time::milliseconds(100) );
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
         CPPUNIT_ASSERT_EQUAL((int)101, res);
     }
@@ -1390,7 +1391,7 @@ void GraphTest::testGraphIdleHandler() {
         graph->addIdleTask( boost::bind(&add<int>, 1, 100, &res) );
         graph->addIdleTask( boost::bind(&add<float>, 1.5, 0.2, &fres) );
         while (busy==true) {
-            boost::this_thread::sleep( boost::posix_time::milliseconds(100) );
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
         CPPUNIT_ASSERT_EQUAL((int)101, res);
         CPPUNIT_ASSERT_EQUAL(1.7f, fres);
@@ -1399,20 +1400,12 @@ void GraphTest::testGraphIdleHandler() {
         int res = 0;
         countdown = 4;
         busy=true;
-        boost::thread t1 = boost::thread(
-            boost::bind(&sumTaskThread, graph, 1, 100, 10, 10, &res)
-        );
-        boost::thread t2 = boost::thread(
-            boost::bind(&sumTaskThread, graph, 101, 200, 10, 10, &res)
-        );
-        boost::thread t3 = boost::thread(
-            boost::bind(&sumTaskThread, graph, 201, 300, 10, 20, &res)
-        );
-        boost::thread t4 = boost::thread(
-            boost::bind(&sumTaskThread, graph, 301, 400, 10, 20, &res)
-        );
+        std::thread t1(&sumTaskThread, graph, 1, 100, 10, 10, &res);
+        std::thread t2(&sumTaskThread, graph, 101, 200, 10, 10, &res);
+        std::thread t3(&sumTaskThread, graph, 201, 300, 10, 20, &res);
+        std::thread t4(&sumTaskThread, graph, 301, 400, 10, 20, &res);
         while (busy==true) {
-            boost::this_thread::sleep( boost::posix_time::milliseconds(100) );
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }
         t1.join();
         t2.join();
@@ -1451,7 +1444,7 @@ namespace {
         int blockSize = graph->getHostInfo()->getBlockSize();
             std::stringstream ss;
         ss<<"frx.processing.vst2x.FrxTestPlugin("<<Ins<<","<<Outs<<")";
-        Plugin::Ptr pl = boost::dynamic_pointer_cast<Plugin>(
+        Plugin::Ptr pl = std::dynamic_pointer_cast<Plugin>(
             fac.create(ss.str(), graph->getHostInfo())
         );
         //pl->getAEffect()->processReplacing = &_process;

@@ -8,8 +8,7 @@
 #ifndef SAMBAG_LuaTimer_H
 #define SAMBAG_LuaTimer_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/lua/ALuaObject.hpp>
 #include <functional>
 #include <processing/FrxAsyncDSPTimer.hpp>
@@ -39,9 +38,9 @@ public:
     //-------------------------------------------------------------------------
     typedef slua::ALuaObject Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<LuaTimer> Ptr;
+	typedef std::shared_ptr<LuaTimer> Ptr;
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<void> AnyPtr;
+    typedef std::shared_ptr<void> AnyPtr;
     typedef std::function< AnyPtr() > GetLockObjectF;
 private:
     //-------------------------------------------------------------------------
@@ -64,7 +63,7 @@ public:
     //-------------------------------------------------------------------------
     virtual ~LuaTimer();
     //-------------------------------------------------------------------------
-    typedef boost::weak_ptr<void> Tracker;
+    typedef std::weak_ptr<void> Tracker;
     /**
      * @brief creates a lua timer
      * @param the lua state

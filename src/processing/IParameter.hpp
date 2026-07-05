@@ -8,8 +8,7 @@
 #ifndef SAMBAG_IPARAMETER_H
 #define SAMBAG_IPARAMETER_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include "ModelObject.hpp"
 #include <string>
 #include <com/Events.h>
@@ -43,9 +42,9 @@ public:
 	//-------------------------------------------------------------------------
 	typedef float Number;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<IParameter> Ptr;
+	typedef std::shared_ptr<IParameter> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<IParameter> WPtr;
+	typedef std::weak_ptr<IParameter> WPtr;
 	//-------------------------------------------------------------------------
 	/**
 	 * @see VST-SDK:

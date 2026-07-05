@@ -8,7 +8,7 @@
 #ifndef SAMBAG_PARAMETERCONNECTION_H
 #define SAMBAG_PARAMETERCONNECTION_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "IParameterConnection.hpp"
 #include "ParameterAdapter.hpp"
 #include "parameter/parameter.h"
@@ -25,7 +25,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef IParameterConnection Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<ParameterConnection> Ptr;
+	typedef std::shared_ptr<ParameterConnection> Ptr;
 	//-------------------------------------------------------------------------
 	typedef ::processing::parameter::ConnectionOperator ConnectionOperator;
     //-------------------------------------------------------------------------
@@ -70,7 +70,7 @@ public:
     void initConnectionParameter();
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::dynamic_pointer_cast<ParameterConnection>( self.lock() );
+		return std::dynamic_pointer_cast<ParameterConnection>( self.lock() );
 	}
 	//-------------------------------------------------------------------------
 	virtual ~ParameterConnection() {

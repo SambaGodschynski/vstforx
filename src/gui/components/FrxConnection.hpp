@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXCONNECTION_H
 #define SAMBAG_FRXCONNECTION_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include "FrxComponent.hpp"
 #include <sambag/com/events/PropertyChanged.hpp>
@@ -25,7 +25,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxComponent Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxConnection> Ptr;
+	typedef std::shared_ptr<FrxConnection> Ptr;
 private:
 	//-------------------------------------------------------------------------
 	mutable std::string tmpName;
@@ -86,7 +86,7 @@ public:
 	virtual const std::string & getName() const;
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::dynamic_pointer_cast<FrxConnection>(Super::getPtr());
+		return std::dynamic_pointer_cast<FrxConnection>(Super::getPtr());
 	}
 	//-------------------------------------------------------------------------
 	void setSrcComponent(FrxComponent::Ptr a);

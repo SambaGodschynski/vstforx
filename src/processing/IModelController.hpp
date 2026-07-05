@@ -8,7 +8,7 @@
 #ifndef SAMBAG_IMODELCONTROLLER_H
 #define SAMBAG_IMODELCONTROLLER_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <gui/components/Forward.hpp>
 #include "ModelObject.hpp"
 #include "IProcessor.hpp"
@@ -30,7 +30,7 @@ class IModelController {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<IModelController> Ptr;
+	typedef std::shared_ptr<IModelController> Ptr;
 	//-------------------------------------------------------------------------
 	/**
      * @param the id of the processor to create

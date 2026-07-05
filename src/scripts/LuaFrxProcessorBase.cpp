@@ -23,7 +23,7 @@ void LuaFrxProcessorBase::addLuaFields(lua_State *lua, int index)
     // register functions
     registerClassFunctions<Functions1, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaFrxProcessorBase::getInputs, this, lua),
+	std::make_tuple(boost::bind(&LuaFrxProcessorBase::getInputs, this, lua),
 		boost::bind(&LuaFrxProcessorBase::getOutputs, this, lua),
 		boost::bind(&LuaFrxProcessorBase::getParameters, this, lua),
 		boost::bind(&LuaFrxProcessorBase::getNumParameters, this, lua),
@@ -39,7 +39,7 @@ void LuaFrxProcessorBase::addLuaFields(lua_State *lua, int index)
 
 	registerClassFunctions<Functions2, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaFrxProcessorBase::sendMessage, this, lua, _1),
+	std::make_tuple(boost::bind(&LuaFrxProcessorBase::sendMessage, this, lua, _1),
 		boost::bind(&LuaFrxProcessorBase::serialize, this, lua),
 		boost::bind(&LuaFrxProcessorBase::deserialize, this, lua)),
 	index, 

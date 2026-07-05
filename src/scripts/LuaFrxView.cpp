@@ -5,6 +5,7 @@
  * ============================================================================
  */
 
+#include <tuple>
 #include "LuaFrxView.hpp"
 #include <sambag/com/Common.hpp>
 #include <gui/components/FrxCircuidView.hpp>
@@ -27,7 +28,7 @@
 #include <com/one4All.h>
 #include <gui/components/FrxConcreteIO.hpp>
 #include <processing/IParameter.hpp>
-#include <boost/regex.hpp>
+#include <regex>
 #include <boost/algorithm/string.hpp>
 #include <sambag/disco/components/PopupMenu.hpp>
 #include <sambag/disco/components/Label.hpp>
@@ -48,9 +49,9 @@ slua::IgnoreReturn LuaFrxView::add(lua_State *lua)
             return addObject(lua);
         }
         if (lua_isstring(lua, -1)) {
-            boost::tuple<std::string> id;
+            std::tuple<std::string> id;
             slua::pop(lua, id);
-            return addProcessor(lua, boost::get<0>(id));
+            return addProcessor(lua, std::get<0>(id));
         }
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua, ex.what());
@@ -66,12 +67,12 @@ slua::IgnoreReturn LuaFrxView::addObject(lua_State *lua)
     if (!lua_isstring(lua, -1)) {
         throw std::runtime_error("unknown table type");
     }
-    boost::tuple<std::string> id;
+    std::tuple<std::string> id;
     slua::pop(lua, id);
-    if (boost::get<0>(id)=="frx.lua.parameter.StdKnob") {
+    if (std::get<0>(id)=="frx.lua.parameter.StdKnob") {
         return addRelatedParameter(lua);
     }
-    throw std::runtime_error("cannot add " + boost::get<0>(id));
+    throw std::runtime_error("cannot add " + std::get<0>(id));
 }
 //-----------------------------------------------------------------------------
 slua::IgnoreReturn LuaFrxView::addProcessor(lua_State *lua, const std::string &id)
@@ -107,14 +108,14 @@ slua::IgnoreReturn LuaFrxView::addRelatedParameter(lua_State *lua) {
     if (!lua_isstring(lua, -1)) {
         throw std::runtime_error("no related object found");
     }
-    boost::tuple<std::string> prId;
+    std::tuple<std::string> prId;
     slua::pop(lua, prId);
-    LuaFrxObject::Ptr fobj = LuaFrxObject::getByUId(boost::get<0>(prId));
+    LuaFrxObject::Ptr fobj = LuaFrxObject::getByUId(std::get<0>(prId));
     // get object
     LuaFrxObject::Ptr vobj = LuaFrxObject::getFromLuaStack(lua, -1);
     using frx::processing::IParameter;
     IParameter::Ptr par =
-        boost::dynamic_pointer_cast<IParameter>(vobj->getModelObject());
+        std::dynamic_pointer_cast<IParameter>(vobj->getModelObject());
     SAMBAG_ASSERT(par);
     FrxComponent::Ptr res =
         frxctrl.addRelatedKnobToView(view, fobj->getViewObject(), par);
@@ -209,8 +210,8 @@ slua::IgnoreReturn LuaFrxView::connect(lua_State *lua) {
         LuaFrxObject::Ptr b = LuaFrxObject::getFromLuaStack(lua, -2);
         // remove object
         IFrxControl &frxctrl = getFrxControl(view);
-        FrxNode::Ptr na = boost::dynamic_pointer_cast<FrxNode>(a->getViewObject());
-        FrxNode::Ptr nb = boost::dynamic_pointer_cast<FrxNode>(b->getViewObject());
+        FrxNode::Ptr na = std::dynamic_pointer_cast<FrxNode>(a->getViewObject());
+        FrxNode::Ptr nb = std::dynamic_pointer_cast<FrxNode>(b->getViewObject());
         if (!na || !nb) {
             lua_pushnil(lua);
             return slua::IgnoreReturn();
@@ -285,19 +286,19 @@ slua::IgnoreReturn LuaFrxView::getSelectedObjects(lua_State *lua) {
     return slua::IgnoreReturn();
 }
 //-----------------------------------------------------------------------------
-boost::tuple<float,float> LuaFrxView::getLocation(lua_State *lua) {
+std::tuple<float,float> LuaFrxView::getLocation(lua_State *lua) {
     using namespace frx::gui;
 	using namespace frx::gui::components;
     FrxCircuidViewPtr view = getView(lua);
     if (!view) {
-        return boost::make_tuple(0.f, 0.f);
+        return std::make_tuple(0.f, 0.f);
     }
     sdc::Viewport::Ptr vp = view->getViewport();
     if (!vp) {
-        return boost::make_tuple(0.f, 0.f);
+        return std::make_tuple(0.f, 0.f);
     }
     sd::Point2D pos = vp->getViewPosition();
-    return boost::make_tuple(pos.x(), pos.y());
+    return std::make_tuple(pos.x(), pos.y());
 }
 //-----------------------------------------------------------------------------
 void LuaFrxView::setLocation(lua_State *lua, float x, float y) {
@@ -317,19 +318,19 @@ void LuaFrxView::setLocation(lua_State *lua, float x, float y) {
     SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
-boost::tuple<float,float> LuaFrxView::getSize(lua_State *lua) {
+std::tuple<float,float> LuaFrxView::getSize(lua_State *lua) {
     using namespace frx::gui;
 	using namespace frx::gui::components;
     FrxCircuidViewPtr view = getView(lua);
     if (!view) {
-        return boost::make_tuple(0.f, 0.f);
+        return std::make_tuple(0.f, 0.f);
     }
     sdc::Window::Ptr win = view->getFirstContainer<sdc::Window>();
     if (!win) {
-        return boost::make_tuple(0.f, 0.f);
+        return std::make_tuple(0.f, 0.f);
     }
     sd::Dimension d = win->getWindowSize();
-    return boost::make_tuple(d.width(), d.height());
+    return std::make_tuple(d.width(), d.height());
 }
 //-----------------------------------------------------------------------------
 void LuaFrxView::setSize(lua_State *lua, float x, float y) {
@@ -360,7 +361,7 @@ slua::IgnoreReturn LuaFrxView::getEntry(lua_State *lua) {
     }
 	const FrxCircuidView::Components &comps = view->getContentPane()->getComponents();
 	BOOST_FOREACH(AComponentPtr c, comps) {
-		entry = boost::dynamic_pointer_cast<FrxEntryNode>(c);
+		entry = std::dynamic_pointer_cast<FrxEntryNode>(c);
         if (!entry) {
             continue;
         }
@@ -393,7 +394,7 @@ slua::IgnoreReturn LuaFrxView::getExit(lua_State *lua) {
     }
 	const FrxCircuidView::Components &comps = view->getContentPane()->getComponents();
 	BOOST_FOREACH(AComponentPtr c, comps) {
-		exit = boost::dynamic_pointer_cast<FrxExitNode>(c);
+		exit = std::dynamic_pointer_cast<FrxExitNode>(c);
         if (!exit) {
             continue;
         }
@@ -421,7 +422,7 @@ slua::IgnoreReturn LuaFrxView::getByName(lua_State *lua, const std::string &name
         IViewModelMap::Ptr map = getViewModelMap(view);
         const FrxCircuidView::Components &comps = view->getContentPane()->getComponents();
         BOOST_FOREACH(AComponentPtr c, comps) {
-            FrxComponent::Ptr x = boost::dynamic_pointer_cast<FrxComponent>(c);
+            FrxComponent::Ptr x = std::dynamic_pointer_cast<FrxComponent>(c);
             if (!x) {
                 continue;
             }
@@ -477,7 +478,7 @@ namespace {
         std::string b = "frx.gui."+_b;
         b = boost::algorithm::replace_all_copy(b, ".", "\\.");
         b = boost::algorithm::replace_all_copy(b, "*", ".*?");
-        return boost::regex_match(a, boost::regex(b));
+        return std::regex_match(a, std::regex(b));
     }
 } // namespace
 //-----------------------------------------------------------------------------
@@ -582,7 +583,7 @@ void LuaFrxView::showMenu(lua_State *lua) {
     using namespace sambag::disco::components;
     try {
         using namespace sambag::disco::components;
-        typedef boost::weak_ptr<PopupMenu> PopupMenuWPtr;
+        typedef std::weak_ptr<PopupMenu> PopupMenuWPtr;
         PopupMenuWPtr wres;
         PopupMenuPtr res;
         AComponentPtr invoker = getView();
@@ -609,7 +610,7 @@ void LuaFrxView::showMenu(lua_State *lua) {
         }
         lua_pop(lua, 1);
         // get pos
-        boost::tuple<int, int> pos;
+        std::tuple<int, int> pos;
         sambag::lua::pop(lua, pos);
         MenuSelectionManager &m = MenuSelectionManager::defaultManager();
 		m.clearSelectedPath();
@@ -617,7 +618,7 @@ void LuaFrxView::showMenu(lua_State *lua) {
 		p.push_back(res);
 		m.setSelectedPath(p);
 		res->setInvoker(invoker);
-        res->showPopup(sd::Point2D(boost::get<1>(pos), boost::get<0>(pos)));
+        res->showPopup(sd::Point2D(std::get<1>(pos), std::get<0>(pos)));
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua, ex.what());
     } catch(...) {
@@ -627,7 +628,7 @@ void LuaFrxView::showMenu(lua_State *lua) {
 //-----------------------------------------------------------------------------
 void LuaFrxView::closeMenu(lua_State *lua) {
     using namespace sambag::disco::components;
-    typedef boost::weak_ptr<PopupMenu> PopupMenuWPtr;
+    typedef std::weak_ptr<PopupMenu> PopupMenuWPtr;
     try {
         AComponentPtr invoker = getView();
         PopupMenuWPtr wres;
@@ -657,7 +658,7 @@ slua::IgnoreReturn LuaFrxView::getByType(lua_State *lua, const std::string &sera
         std::vector<sdc::AComponent::Ptr> res;
         std::string compType;
         BOOST_FOREACH(AComponentPtr c, comps) {
-            FrxComponent::Ptr x = boost::dynamic_pointer_cast<FrxComponent>(c);
+            FrxComponent::Ptr x = std::dynamic_pointer_cast<FrxComponent>(c);
             if (!x) {
                 continue;
             }

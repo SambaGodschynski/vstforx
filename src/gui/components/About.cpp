@@ -30,7 +30,7 @@ namespace {
 //-----------------------------------------------------------------------------
 class AboutLabel : public sdc::Label {
 public:
-	typedef boost::shared_ptr<AboutLabel> Ptr;
+	typedef std::shared_ptr<AboutLabel> Ptr;
 	typedef sdc::Label Super;
 protected:
 	AboutLabel(){

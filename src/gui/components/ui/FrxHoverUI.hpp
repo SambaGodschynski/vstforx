@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXHOVERUI_H
 #define SAMBAG_FRXHOVERUI_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "FrxSelectionUI.hpp"
 #include "FrxHoverMouseListener.hpp"
 #include <gui/HandyNamespaces.hpp>
@@ -23,7 +23,7 @@ class FrxHoverUI : public FrxSelectionUI {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxHoverUI> Ptr;
+	typedef std::shared_ptr<FrxHoverUI> Ptr;
 	//-------------------------------------------------------------------------
 	typedef FrxSelectionUI Super;
 protected:

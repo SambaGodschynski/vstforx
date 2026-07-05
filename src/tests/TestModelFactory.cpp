@@ -29,7 +29,7 @@ void TestModelFactory::testCreateProducts() {
     ModelFactory &fac = ModelFactory::instance();
     CPPUNIT_ASSERT(fac.create("frx.processing.internal.Volume", hI));
     CPPUNIT_ASSERT(
-        boost::dynamic_pointer_cast<Volume>(
+        std::dynamic_pointer_cast<Volume>(
             fac.create("frx.processing.internal.Volume", hI)
         )
     );

@@ -11,7 +11,7 @@ namespace components { namespace ui {
 //-----------------------------------------------------------------------------
 void FrxSvgIOUI::installUI(sdc::AComponentPtr c) {
     Super::installUI(c);
-    FrxIO::Ptr io = boost::dynamic_pointer_cast<FrxIO>(c);
+    FrxIO::Ptr io = std::dynamic_pointer_cast<FrxIO>(c);
     SAMBAG_ASSERT(io);
     sdc::SvgComponent::Ptr svg = getSvgComponent();
     SAMBAG_ASSERT(svg);
@@ -57,7 +57,7 @@ void FrxSvgIOUI::onProperty(const sce::PropertyChanged &ev) {
 }
 //-----------------------------------------------------------------------------
 void FrxSvgIOUI::setDisplay(const std::string &txt) {
-    sdsg::Text::Ptr displ = boost::dynamic_pointer_cast<sdsg::Text>(_display.lock());
+    sdsg::Text::Ptr displ = std::dynamic_pointer_cast<sdsg::Text>(_display.lock());
     if (!displ) {
         return;
     }

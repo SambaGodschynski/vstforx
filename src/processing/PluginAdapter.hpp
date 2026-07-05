@@ -8,7 +8,7 @@
 #ifndef SAMBAG_PLUGINADAPTER_H
 #define SAMBAG_PLUGINADAPTER_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "IPluginAdapter.hpp"
 #include "ProcessorAdapter.hpp"
 #include "IPlugin.hpp" // the only reason for having an additinal plugin interface
@@ -24,7 +24,7 @@ class PluginAdapter : public ProcessorAdapter, public IPluginAdapter {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<PluginAdapter> Ptr;
+	typedef std::shared_ptr<PluginAdapter> Ptr;
 	//-------------------------------------------------------------------------
 	typedef IPlugin Adaptee;
 private:
@@ -40,7 +40,7 @@ private:
 protected:
 	//-------------------------------------------------------------------------
 	Adaptee::Ptr getPlugin() const {
-		return boost::dynamic_pointer_cast<Adaptee>(getAdaptee());
+		return std::dynamic_pointer_cast<Adaptee>(getAdaptee());
 	}
 private:
 public:

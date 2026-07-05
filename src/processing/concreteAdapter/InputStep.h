@@ -36,7 +36,7 @@ friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<InputStep> Ptr;
+	typedef std::shared_ptr<InputStep> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**

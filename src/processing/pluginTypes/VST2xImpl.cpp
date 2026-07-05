@@ -4,6 +4,7 @@
  *      Author: Johannes Unger
  * ============================================================================
  */
+#include <tuple>
 #include <boost/bind.hpp>
 #include "processing/processing.h"
 #include "VST2xImpl.h"
@@ -505,7 +506,7 @@ VstIntPtr VSTPluginImpl::_hostCallback ( AEffect* effect,
     }
     VstInt32 ret = 0;
     bool suc = false;
-    boost::tie(ret, suc) =
+    std::tie(ret, suc) =
         pl->processRequest(hI, effect, opcode, index, value, ptr, opt);
     
     if (suc) {

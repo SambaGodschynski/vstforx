@@ -10,9 +10,7 @@
 
 #include <list>
 #include <functional>
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
-#include <boost/make_shared.hpp>
+#include <memory>
 
 namespace com{
 namespace events{
@@ -54,7 +52,7 @@ struct OnDestroy : public Event {
  */
 struct TrackingDummy {
 //============================================================================================================
-	typedef boost::shared_ptr<TrackingDummy> Ptr;
+	typedef std::shared_ptr<TrackingDummy> Ptr;
 	static Ptr create() {
 		return Ptr( new TrackingDummy() );
 	}
@@ -89,8 +87,8 @@ class Connection {
 		int  blocked;
 		State() : disconnected(false), blocked(0) {}
 	};
-	boost::shared_ptr<State> state_;
-	explicit Connection(boost::shared_ptr<State> s) : state_(s) {}
+	std::shared_ptr<State> state_;
+	explicit Connection(std::shared_ptr<State> s) : state_(s) {}
 public:
 	Connection() {}
 	void disconnect()  { if (state_) state_->disconnected = true; }
@@ -130,16 +128,16 @@ private:
 	//--------------------------------------------------------------------------------------------------------
 	struct Slot {
 		ValueChangedFunction fn;
-		boost::weak_ptr<void> tracker;
+		std::weak_ptr<void> tracker;
 		bool hasTracker;
-		boost::shared_ptr<Connection::State> state;
+		std::shared_ptr<Connection::State> state;
 	};
 	std::list<Slot> slots;
 protected:
 public:
 	//--------------------------------------------------------------------------------------------------------
 	Connection addValueChangedListener ( const ValueChangedFunction &vCl ) {
-		boost::shared_ptr<Connection::State> s = boost::make_shared<Connection::State>();
+		std::shared_ptr<Connection::State> s = std::make_shared<Connection::State>();
 		Slot slot;
 		slot.fn = vCl;
 		slot.hasTracker = false;
@@ -153,9 +151,9 @@ public:
 	 * Slot wird automatisch entfernt wenn toTrack ablaeuft.
 	 */
 	Connection addTrackedValueChangedListener ( const ValueChangedFunction &vCl,
-		const boost::weak_ptr<void> &toTrack )
+		const std::weak_ptr<void> &toTrack )
 	{
-		boost::shared_ptr<Connection::State> s = boost::make_shared<Connection::State>();
+		std::shared_ptr<Connection::State> s = std::make_shared<Connection::State>();
 		Slot slot;
 		slot.fn = vCl;
 		slot.tracker = toTrack;
@@ -227,7 +225,7 @@ public:
 	}
 	//--------------------------------------------------------------------------------------------------------
 	EventConnection addTrackedEventListener ( EventListener<EventType> *eL,
-		const boost::weak_ptr<void> &toTrack )
+		const std::weak_ptr<void> &toTrack )
 	{
 		return sender.addTrackedValueChangedListener(
 			[eL](void *src, const EventType &ev){ eL->eventHandler(src, ev); },
@@ -236,7 +234,7 @@ public:
 	}
 	//--------------------------------------------------------------------------------------------------------
 	EventConnection addTrackedEventListener ( const typename Base::ValueChangedFunction &f,
-		const boost::weak_ptr<void> &toTrack )
+		const std::weak_ptr<void> &toTrack )
 	{
 		return sender.addTrackedValueChangedListener(f, toTrack);
 	}

@@ -30,7 +30,7 @@ public com::Serializable
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<Volume> Ptr;
+	typedef std::shared_ptr<Volume> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**

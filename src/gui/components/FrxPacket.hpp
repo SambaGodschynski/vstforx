@@ -8,8 +8,7 @@
 #ifndef SAMBAG_FRXPACKET_H
 #define SAMBAG_FRXPACKET_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include "FrxNode.hpp"
 #include <sambag/com/events/PropertyChanged.hpp>
@@ -30,7 +29,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxNode Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxPacket> Ptr;
+	typedef std::shared_ptr<FrxPacket> Ptr;
     //-------------------------------------------------------------------------
     typedef std::pair<FrxComponentPtr, sd::Point2D> Content;
     //-------------------------------------------------------------------------
@@ -97,11 +96,11 @@ public:
 //-----------------------------------------------------------------------------
 namespace {
     template <typename T>
-    boost::shared_ptr<T> __getPtr(boost::shared_ptr<T> x) {
+    std::shared_ptr<T> __getPtr(std::shared_ptr<T> x) {
         return x;
     }
     template <typename T>
-    boost::shared_ptr<T> __getPtr(boost::weak_ptr<T> x) {
+    std::shared_ptr<T> __getPtr(std::weak_ptr<T> x) {
         return x.lock();
     }
 } // namespace
@@ -111,7 +110,7 @@ FrxPacket::Ptr FrxPacket::create(FrxCircuidViewPtr view, const STL &c) {
     // add elements to packet
     BOOST_FOREACH(typename STL::value_type x, c) {
         FrxComponent::Ptr comp =
-            boost::dynamic_pointer_cast<FrxComponent>(
+            std::dynamic_pointer_cast<FrxComponent>(
                 __getPtr(x)
             );
         if (!comp) {

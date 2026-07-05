@@ -82,7 +82,7 @@ void FrxComponent::serializeSelfPtr(::com::iArchive &ar, const unsigned int vers
 	postConstructor();
 }
 void FrxComponent::serializeSelfPtr(::com::oArchive &ar, const unsigned int version) {
-	tmpSelf = boost::dynamic_pointer_cast<FrxComponent>(self.lock());
+	tmpSelf = std::dynamic_pointer_cast<FrxComponent>(self.lock());
 	ar << boost::serialization::base_object<ViewObject>(*this); 
 	ar << tmpSelf;
 	ar << uFlagTxt;

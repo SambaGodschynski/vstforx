@@ -41,7 +41,7 @@ Plugin * plug;
 Plugin * createPlug();
 frx::scripts::PluginScriptCtrl *scriptCtrl;
 bool failed;
-boost::thread processingThread;
+std::thread processingThread;
 bool plugProcessing = false;
 namespace po = boost::program_options;
 po::variables_map vm;
@@ -254,7 +254,7 @@ int main(int narg, char **args) {
     processExecutes();
 	// Start the main loop in its own thread so that scripts can safely use
 	// invokeLater() to queue X11 work onto the main-loop thread.
-	boost::thread mainLoopThread([](){
+	std::thread mainLoopThread([](){
 		sambag::disco::components::Window::startMainLoop();
 	});
 	// Wait until the main loop is actually spinning before launching scripts.
@@ -264,12 +264,10 @@ int main(int narg, char **args) {
 	scriptCtrl->start();
 	// start console thread
 	bool consoleRunning = true;
-	boost::thread consoleThread(boost::bind(&onConsoleThread, &consoleRunning));
+	std::thread consoleThread(&onConsoleThread, &consoleRunning);
 	// start processing thread
 	plugProcessing = true;
-	processingThread = boost::thread(
-		boost::bind(&processPlugin, plug)
-	);
+	processingThread = std::thread(&processPlugin, plug);
 	mainLoopThread.join();
 	consoleRunning = false;
 	scriptCtrl->join();

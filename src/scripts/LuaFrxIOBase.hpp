@@ -12,8 +12,7 @@
 #ifndef SAMBAG_LuaFrxIOBase_H
 #define SAMBAG_LuaFrxIOBase_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/lua/Lua.hpp>
 #include <loki/Typelist.h>
 #include <sambag/lua/ALuaObject.hpp>
@@ -28,9 +27,9 @@ public:
     //-------------------------------------------------------------------------
     typedef LuaFrxObject Super;
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<LuaFrxIOBase> Ptr;
+    typedef std::shared_ptr<LuaFrxIOBase> Ptr;
     //-------------------------------------------------------------------------
-    typedef boost::weak_ptr<LuaFrxIOBase> WPtr;
+    typedef std::weak_ptr<LuaFrxIOBase> WPtr;
     //-------------------------------------------------------------------------
     
 private:

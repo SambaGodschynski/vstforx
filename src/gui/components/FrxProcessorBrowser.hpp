@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXPROCESSORBROWSER_H
 #define SAMBAG_FRXPROCESSORBROWSER_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "FrxMainBrowser.hpp"
 
 namespace frx { namespace gui { namespace components {
@@ -20,9 +20,9 @@ class FrxProcessorBrowser : public FrxMainBrowser {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxProcessorBrowser> Ptr;
+	typedef std::shared_ptr<FrxProcessorBrowser> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxProcessorBrowser> WPtr;
+	typedef std::weak_ptr<FrxProcessorBrowser> WPtr;
 	//-------------------------------------------------------------------------
 	typedef FrxMainBrowser Super;
 protected:

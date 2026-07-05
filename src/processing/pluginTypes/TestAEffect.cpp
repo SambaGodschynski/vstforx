@@ -5,7 +5,7 @@
  * ===========================================================================================================
  */
 #include "TestAEffect.hpp"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <vector>
 
 namespace processing {
@@ -63,7 +63,7 @@ float TestAEffect::_aEffectGetParameterProc(AEffect* effect, VstInt32 index) {
 }
 //------------------------------------------------------------------------------------------------------------
 namespace {
-    typedef boost::shared_ptr<TestAEffect> EffPtr;
+    typedef std::shared_ptr<TestAEffect> EffPtr;
     typedef std::vector<EffPtr> EffPtrs;
     EffPtrs holder;
     

@@ -8,8 +8,7 @@
 #ifndef SAMBAG_FRXMENULABEL_H
 #define SAMBAG_FRXMENULABEL_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/Label.hpp>
 #include <gui/HandyNamespaces.hpp>
 
@@ -25,8 +24,8 @@ public:
 	//-------------------------------------------------------------------------
 	typedef sdc::Label Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxMenuLabel> Ptr;
-	typedef boost::weak_ptr<FrxMenuLabel> WPtr;
+	typedef std::shared_ptr<FrxMenuLabel> Ptr;
+	typedef std::weak_ptr<FrxMenuLabel> WPtr;
 protected:
 	//-------------------------------------------------------------------------
 	FrxMenuLabel();

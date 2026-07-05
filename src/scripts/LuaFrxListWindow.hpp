@@ -7,7 +7,7 @@
 #ifndef FORX_LuaFrxListWindow_H
 #define FORX_LuaFrxListWindow_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "LuaFrxListWindowBase.hpp"
 #include <sambag/disco/components/Window.hpp>
 #include <gui/HandyNamespaces.hpp>
@@ -23,7 +23,7 @@ class LuaFrxListWindow : public LuaFrxListWindowBase {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<LuaFrxListWindow> Ptr;
+	typedef std::shared_ptr<LuaFrxListWindow> Ptr;
     //-------------------------------------------------------------------------
     typedef LuaFrxListWindowBase Super;
 protected:

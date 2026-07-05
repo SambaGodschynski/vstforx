@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXPROCESSORBROWSERCTRL_H
 #define SAMBAG_FRXPROCESSORBROWSERCTRL_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "FrxMainBrowserCtrl.hpp"
 #include "Forward.hpp"
 
@@ -21,7 +21,7 @@ class FrxProcessorBrowserCtrl : public FrxMainBrowserCtrl {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxProcessorBrowserCtrl> Ptr;
+	typedef std::shared_ptr<FrxProcessorBrowserCtrl> Ptr;
 	//-------------------------------------------------------------------------
 	typedef FrxMainBrowserCtrl Super;
 protected:

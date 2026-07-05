@@ -21,8 +21,7 @@
 #include <ostream>
 #include <istream>
 #include <map>
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <functional>
 #include <boost/tuple/tuple.hpp>
 #include <sstream>
@@ -198,7 +197,7 @@ namespace com {
 	class IHasState {
 	public:
 		//----------------------------------------------------------------------------------------------------
-		typedef boost::shared_ptr<IHasState> Ptr;
+		typedef std::shared_ptr<IHasState> Ptr;
 		//----------------------------------------------------------------------------------------------------
 		virtual void setState( size_t state ) = 0 ;
 		//----------------------------------------------------------------------------------------------------

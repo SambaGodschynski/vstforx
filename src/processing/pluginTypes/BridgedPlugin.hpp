@@ -9,8 +9,7 @@
 #ifndef SAMBAG_BRIDGEDPLUGIN_H
 #define SAMBAG_BRIDGEDPLUGIN_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include "PluginImpl.hpp"
 #include <processing/interprocess/PluginSession.hpp>
 #include <gui/HandyNamespaces.hpp>
@@ -18,7 +17,7 @@
 namespace frx { namespace processing {
 namespace oldPr = ::processing;
 class PluginSessionClient;
-typedef boost::shared_ptr<PluginSessionClient> PluginSessionClientPtr;
+typedef std::shared_ptr<PluginSessionClient> PluginSessionClientPtr;
 //=============================================================================
 /**
  * @class BridgedPlugin.
@@ -29,7 +28,7 @@ class BridgedPlugin : public APluginImpl
 //=============================================================================
 public:
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<BridgedPlugin> Ptr;
+    typedef std::shared_ptr<BridgedPlugin> Ptr;
     //-------------------------------------------------------------------------
     static Ptr create (IHostInfo::Ptr hI, const std::string &location,
         Parameters *parameters);

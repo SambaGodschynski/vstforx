@@ -20,7 +20,7 @@ void LuaFrxParameterConnection::addOperator(lua_State *lua, const std::string &o
 {
     try {
         processing::ParameterConnection::Ptr mObj =
-            boost::dynamic_pointer_cast<processing::ParameterConnection>(getModelObject());
+            std::dynamic_pointer_cast<processing::ParameterConnection>(getModelObject());
         if (!mObj) {
             throw std::logic_error("unexpected error while accessing model object.");
         }
@@ -69,7 +69,7 @@ LuaFrxParameterConnection::getOperatorNames(lua_State *lua)
     slua::LuaSequence<std::string> res;
     try {
         processing::ParameterConnection::Ptr mObj =
-            boost::dynamic_pointer_cast<processing::ParameterConnection>(getModelObject());
+            std::dynamic_pointer_cast<processing::ParameterConnection>(getModelObject());
         if (!mObj) {
             throw std::logic_error("unexpected error while accessing model object.");
         }
@@ -90,7 +90,7 @@ void LuaFrxParameterConnection::removeOperatorAt(lua_State *lua, int index) {
     index-=1;
     try {
         processing::ParameterConnection::Ptr mObj =
-            boost::dynamic_pointer_cast<processing::ParameterConnection>(getModelObject());
+            std::dynamic_pointer_cast<processing::ParameterConnection>(getModelObject());
         if (!mObj) {
             throw std::logic_error("unexpected error while accessing model object.");
         }

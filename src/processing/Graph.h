@@ -22,7 +22,7 @@
 #include <boost/parameter/name.hpp>
 #include <boost/parameter/keyword.hpp>
 #include <boost/parameter/preprocessor.hpp>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <sambag/com/Thread.hpp>
@@ -77,9 +77,9 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef std::list<ProcessorNode*> NodeList;
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<Graph> Ptr;
+	typedef std::shared_ptr<Graph> Ptr;
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::weak_ptr<Graph> WPtr;
+	typedef std::weak_ptr<Graph> WPtr;
 	//--------------------------------------------------------------------------------------------------------
 	class Janitor;
 	//--------------------------------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ private:
 		vertexProcessorNode = get( bgl::processor_node_t(), g ); 
 	}
 	//--------------------------------------------------------------------------------------------------------
-	boost::weak_ptr<Janitor> updater;
+	std::weak_ptr<Janitor> updater;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Fuegt PObject hinzu. Wird durch Janitor-Objekt aufgerufen.
@@ -191,7 +191,7 @@ private:
 	/**
 	 * smart_pointer this ersatz
 	 */
-	boost::weak_ptr<Graph> self;
+	std::weak_ptr<Graph> self;
 	//--------------------------------------------------------------------------------------------------------
 	Graph( frx::processing::IHostInfo::Ptr hostInfo );
 	//--------------------------------------------------------------------------------------------------------
@@ -203,7 +203,7 @@ private:
 	frx::processing::IHostInfo::HostIOChangedConnection ioChangedCn;
     //--------------------------------------------------------------------------------------------------------
     class IdleHandler;
-    typedef boost::shared_ptr<IdleHandler> IdleHandlerPtr;
+    typedef std::shared_ptr<IdleHandler> IdleHandlerPtr;
     IdleHandlerPtr __idle_;
 protected:
     //--------------------------------------------------------------------------------------------------------
@@ -450,7 +450,7 @@ public:
 	/**
 	 * @return Janitor-Objekt
 	 */
-	boost::shared_ptr<Janitor> getJanitor();
+	std::shared_ptr<Janitor> getJanitor();
 	//--------------------------------------------------------------------------------------------------------
 	//::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 	// Parameterconnection-operationen
@@ -517,7 +517,7 @@ class Graph::Janitor {
 friend class Graph;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<Janitor> Ptr;
+	typedef std::shared_ptr<Janitor> Ptr;
 	//--------------------------------------------------------------------------------------------------------
 	enum State { SUCCEED, FAILED };
 private:
@@ -642,8 +642,8 @@ public:
 	 * @return SUCCEED / FAILED
 	 */
 	State connectNodes( ProcessorNode *parent, ProcessorNode *child) {
-		ProcessorNode::Ptr p = boost::dynamic_pointer_cast< ProcessorNode, PObject > ( parent->getPtr() );
-		ProcessorNode::Ptr c = boost::dynamic_pointer_cast< ProcessorNode, PObject > ( child->getPtr() );
+		ProcessorNode::Ptr p = std::dynamic_pointer_cast< ProcessorNode, PObject > ( parent->getPtr() );
+		ProcessorNode::Ptr c = std::dynamic_pointer_cast< ProcessorNode, PObject > ( child->getPtr() );
 		if ( !p || !c ) return FAILED;
 		return connectNodes( p, c );
 	}
@@ -666,8 +666,8 @@ public:
 	 * @return SUCCEED / FAILED
 	 */
 	State removeConnection( ProcessorNode *parent, ProcessorNode *child) {
-		ProcessorNode::Ptr p = boost::dynamic_pointer_cast< ProcessorNode, PObject > ( parent->getPtr() );
-		ProcessorNode::Ptr c = boost::dynamic_pointer_cast< ProcessorNode, PObject > ( child->getPtr() );
+		ProcessorNode::Ptr p = std::dynamic_pointer_cast< ProcessorNode, PObject > ( parent->getPtr() );
+		ProcessorNode::Ptr c = std::dynamic_pointer_cast< ProcessorNode, PObject > ( child->getPtr() );
 		if ( !p || !c ) return FAILED;
 		return removeConnection( p, c );
 	}

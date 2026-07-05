@@ -30,7 +30,7 @@ class FrqDetector : public ProcessAdapter,
 friend class boost::serialization::access;
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrqDetector> Ptr;
+	typedef std::shared_ptr<FrqDetector> Ptr;
 private:
 	//-------------------------------------------------------------------------
 	/**

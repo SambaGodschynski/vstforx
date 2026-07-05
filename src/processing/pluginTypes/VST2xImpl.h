@@ -37,7 +37,7 @@ class VSTPluginImpl:
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<VSTPluginImpl> Ptr;
+	typedef std::shared_ptr<VSTPluginImpl> Ptr;
 private:
     //-------------------------------------------------------------------------
     VstTimeInfo tmpInfo;

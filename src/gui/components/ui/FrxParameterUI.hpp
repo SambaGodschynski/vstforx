@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXPARAMETERUI_H
 #define SAMBAG_FRXPARAMETERUI_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <gui/components/FrxConcreteParameter.hpp>
 #include <sambag/disco/components/DefaultBoundedRangeModel.hpp>
 #include "FrxNodeUI.hpp"
@@ -42,7 +42,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef _ParameterType ParameterType;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxParameterUI> Ptr;
+	typedef std::shared_ptr<FrxParameterUI> Ptr;
 	//-------------------------------------------------------------------------
 	typedef sdc::DefaultBoundedRangeModelChanged KnobStateChanged;
 protected:
@@ -139,7 +139,7 @@ void FrxParameterUI<PT>::installUI(sdc::AComponentPtr c) {
 template <class PT>
 void FrxParameterUI<PT>::installListeners(sdc::AComponentPtr c) {
 	Super::installListeners(c);
-	FrxParameter::Ptr parameter = boost::dynamic_pointer_cast<FrxParameter>(c);
+	FrxParameter::Ptr parameter = std::dynamic_pointer_cast<FrxParameter>(c);
 	SAMBAG_ASSERT(parameter);
 	_parameter = parameter; 
 	sdc::AComponent::Ptr ctrl = parameter->getEncapsulatedCtrl();
@@ -150,7 +150,7 @@ void FrxParameterUI<PT>::installListeners(sdc::AComponentPtr c) {
 	);
 
 	sdc::DefaultBoundedRangeModel::Ptr ctrlModel = 
-		boost::dynamic_pointer_cast<sdc::DefaultBoundedRangeModel>(ctrl);
+		std::dynamic_pointer_cast<sdc::DefaultBoundedRangeModel>(ctrl);
 	if (!ctrlModel) {
 		return;
 	}

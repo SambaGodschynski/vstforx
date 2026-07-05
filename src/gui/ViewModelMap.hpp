@@ -8,7 +8,7 @@
 #ifndef SAMBAG_MODELMAP_H
 #define SAMBAG_MODELMAP_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "IViewModelMap.hpp"
 #include <boost/bimap.hpp> 
 #include <iostream>
@@ -32,7 +32,7 @@ class ViewModelMap : public IViewModelMap {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<ViewModelMap> Ptr;
+	typedef std::shared_ptr<ViewModelMap> Ptr;
 protected:
 	//-------------------------------------------------------------------------
 	ViewModelMap();

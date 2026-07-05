@@ -8,8 +8,7 @@
 #ifndef SAMBAG_FRXCONCRETEPARAMETER_H
 #define SAMBAG_FRXCONCRETEPARAMETER_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include "FrxParameter.hpp"
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <sambag/disco/components/Knob.hpp>
@@ -34,9 +33,9 @@ public:
     //-------------------------------------------------------------------------
     typedef _ControllerType ControllerType;
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<FrxConcreteParameter> Ptr;
+    typedef std::shared_ptr<FrxConcreteParameter> Ptr;
     //-------------------------------------------------------------------------
-    typedef boost::weak_ptr<FrxConcreteParameter> WPtr;
+    typedef std::weak_ptr<FrxConcreteParameter> WPtr;
 protected:
 	//-------------------------------------------------------------------------
 	FrxConcreteParameter() {
@@ -66,7 +65,7 @@ public:
 	}
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::dynamic_pointer_cast<ThisClass>(Super::getPtr());
+		return std::dynamic_pointer_cast<ThisClass>(Super::getPtr());
 	}
 	//-------------------------------------------------------------------------
 	static Ptr create() {

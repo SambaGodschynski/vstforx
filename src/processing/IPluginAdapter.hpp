@@ -8,14 +8,13 @@
 #ifndef SAMBAG_IPLUGINADAPTER_H
 #define SAMBAG_IPLUGINADAPTER_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/Forward.hpp>
 
 
 namespace sambag { namespace disco { namespace components {
     class AWindowImpl;
-    typedef boost::shared_ptr<AWindowImpl> AWindowImplPtr;
+    typedef std::shared_ptr<AWindowImpl> AWindowImplPtr;
 }}}
 
 namespace frx { namespace processing {
@@ -29,8 +28,8 @@ class IPluginAdapter {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<IPluginAdapter> Ptr;
-	typedef boost::weak_ptr<IPluginAdapter> WPtr;
+	typedef std::shared_ptr<IPluginAdapter> Ptr;
+	typedef std::weak_ptr<IPluginAdapter> WPtr;
     //-------------------------------------------------------------------------
     virtual void beforeOpenEditor(sdc::WindowPtr win) = 0;
 	//-------------------------------------------------------------------------

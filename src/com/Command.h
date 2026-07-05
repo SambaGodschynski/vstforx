@@ -56,7 +56,7 @@ private:
 	virtual void _execute () = 0; 
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<Command> Ptr;
+	typedef std::shared_ptr<Command> Ptr;
 	//--------------------------------------------------------------------------------------------------------
 	typedef list<Ptr> Container;
 	//--------------------------------------------------------------------------------------------------------
@@ -86,7 +86,7 @@ private:
 class CommandExecuter {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<CommandExecuter> Ptr;
+	typedef std::shared_ptr<CommandExecuter> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	Command::Container commands;
@@ -119,7 +119,7 @@ public:
 class CommandWorker : public SysTimer, public CommandExecuter {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<CommandWorker> Ptr;
+	typedef std::shared_ptr<CommandWorker> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	static Ptr singleton;

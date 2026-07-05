@@ -41,7 +41,7 @@ slua::IgnoreReturn2 LuaFrxConnection::getObjects(lua_State *lua) {
     using namespace frx::gui::components;
     try {
         FrxConnection::Ptr cn =
-            boost::dynamic_pointer_cast<FrxConnection>(getViewObject());
+            std::dynamic_pointer_cast<FrxConnection>(getViewObject());
         pushComponent(lua, cn->getSrcComponent());
         pushComponent(lua, cn->getDstComponent());
     } catch(const std::exception &ex) {

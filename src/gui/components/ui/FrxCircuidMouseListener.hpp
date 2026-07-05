@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXCIRCUIDVIEWMOUSELISTENER_H
 #define SAMBAG_FRXCIRCUIDVIEWMOUSELISTENER_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/events/MouseEvent.hpp>
 #include <sambag/disco/Geometry.hpp>
 #include <sambag/disco/svg/graphicElements/Rect.hpp>

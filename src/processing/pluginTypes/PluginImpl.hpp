@@ -8,8 +8,7 @@
 #ifndef SAMBAG_PLUGINIMPL_H
 #define SAMBAG_PLUGINIMPL_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <processing/IHostInfo.h>
 #include <processing/IMidiEventProcessor.h>
 #include <sambag/dsp/IMidiEvents.hpp>
@@ -22,16 +21,16 @@
 
 namespace processing { namespace parameter {
     class Parameter;
-    typedef boost::shared_ptr<Parameter> ParameterPtr;
+    typedef std::shared_ptr<Parameter> ParameterPtr;
 }}
 
 namespace sambag { namespace disco { namespace components {
     class AWindowImpl;
-    typedef boost::shared_ptr<AWindowImpl> AWindowImplPtr;
-    typedef boost::weak_ptr<AWindowImpl> AWindowImplWPtr;
+    typedef std::shared_ptr<AWindowImpl> AWindowImplPtr;
+    typedef std::weak_ptr<AWindowImpl> AWindowImplWPtr;
     class Window;
-    typedef boost::shared_ptr<Window> WindowPtr;
-    typedef boost::weak_ptr<Window> WindowWPtr;
+    typedef std::shared_ptr<Window> WindowPtr;
+    typedef std::weak_ptr<Window> WindowWPtr;
 }}}
 
 namespace frx { namespace processing {
@@ -58,9 +57,9 @@ struct APluginImpl :
 {
 //=============================================================================
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<APluginImpl> Ptr;
+    typedef std::shared_ptr<APluginImpl> Ptr;
     //-------------------------------------------------------------------------
-    typedef boost::weak_ptr<APluginImpl> WPtr;
+    typedef std::weak_ptr<APluginImpl> WPtr;
     //-------------------------------------------------------------------------
     typedef std::pair<int, int> EditorLocation;
     //-------------------------------------------------------------------------

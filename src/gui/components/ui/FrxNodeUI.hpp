@@ -8,8 +8,8 @@
 #ifndef SAMBAG_FRXNODEUI_H
 #define SAMBAG_FRXNODEUI_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <tuple>
+#include <memory>
 #include <gui/components/FrxComponent.hpp>
 #include <gui/components/Forward.hpp>
 #include "FrxComponentUI.hpp"
@@ -37,9 +37,9 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxComponentUI Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxNodeUI> Ptr;
+	typedef std::shared_ptr<FrxNodeUI> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxNodeUI> WPtr;
+	typedef std::weak_ptr<FrxNodeUI> WPtr;
 protected:
 	//-------------------------------------------------------------------------
 	virtual void clipCorona(sd::IDrawContext::Ptr cn, 
@@ -84,7 +84,7 @@ protected:
 	//-------------------------------------------------------------------------
 	virtual void use(const sdc::events::MouseEvent &ev) {}
 	//-------------------------------------------------------------------------
-	typedef boost::tuple<FrxNodePtr, FrxNodePtr, sd::Point2D> ConnectingComponents;
+	typedef std::tuple<FrxNodePtr, FrxNodePtr, sd::Point2D> ConnectingComponents;
 	//-------------------------------------------------------------------------
 	ConnectingComponents getConnectingComponents(const sdc::events::MouseEvent &ev);
 public:
@@ -165,7 +165,7 @@ public:
 	virtual bool contains(sdc::AComponentPtr c, const sd::Point2D &p);
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::dynamic_pointer_cast<FrxNodeUI>(Super::getPtr());
+		return std::dynamic_pointer_cast<FrxNodeUI>(Super::getPtr());
 	}
 	//-------------------------------------------------------------------------
 	virtual bool usesCorona() const { return true; }

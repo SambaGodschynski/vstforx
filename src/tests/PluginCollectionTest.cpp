@@ -6,6 +6,7 @@
  */
 
 
+#include <tuple>
 #include <map>
 #include <string>
 #include <iostream>
@@ -154,7 +155,7 @@ void _checkTree( ::com::PluginCollection::Ptr pC,
 		_checkTree ( pC, *it, exp );
 		// find folder=>subfolder
 		ExcpectedFolderMap::iterator end, expIt;
-		boost::tie( expIt, end ) = exp.equal_range( GET_FOLDER_NAME(currFolder) ); // subfolders of currFolder in exp
+		std::tie( expIt, end ) = exp.equal_range( GET_FOLDER_NAME(currFolder) ); // subfolders of currFolder in exp
 		bool found = false;
 		for ( ;expIt!=end; ++expIt ) {
 			// folder found in exp => erase entry

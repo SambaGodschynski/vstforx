@@ -32,7 +32,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef _ConnectionType ConnectionType;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxConcreteConnection> Ptr;
+	typedef std::shared_ptr<FrxConcreteConnection> Ptr;
 protected:
 	//-------------------------------------------------------------------------
 	virtual void postConstructor() {
@@ -56,7 +56,7 @@ private:
 public:
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::dynamic_pointer_cast<
+		return std::dynamic_pointer_cast<
 			FrxConcreteConnection<ConnectionType>
 		>(Super::getPtr());
 	}

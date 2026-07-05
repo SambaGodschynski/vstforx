@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FrxSvgKnobUI_H
 #define SAMBAG_FrxSvgKnobUI_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <gui/components/FrxConcreteIO.hpp>
 #include "FrxSvgNodeUI.hpp"
 #include <gui/HandyNamespaces.hpp>
@@ -30,7 +30,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxSvgNodeUI Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxSvgKnobUI> Ptr;
+	typedef std::shared_ptr<FrxSvgKnobUI> Ptr;
 protected:
 	//-------------------------------------------------------------------------
 	typedef FrxSvgKnobUI ThisClassType;

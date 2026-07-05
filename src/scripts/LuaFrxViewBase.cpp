@@ -23,7 +23,7 @@ void LuaFrxViewBase::addLuaFields(lua_State *lua, int index)
     // register functions
     registerClassFunctions<Functions1, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaFrxViewBase::add, this, lua),
+	std::make_tuple(boost::bind(&LuaFrxViewBase::add, this, lua),
 		boost::bind(&LuaFrxViewBase::remove, this, lua),
 		boost::bind(&LuaFrxViewBase::getObjects, this, lua),
 		boost::bind(&LuaFrxViewBase::connect, this, lua),
@@ -39,7 +39,7 @@ void LuaFrxViewBase::addLuaFields(lua_State *lua, int index)
 
 	registerClassFunctions<Functions2, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaFrxViewBase::getEntry, this, lua),
+	std::make_tuple(boost::bind(&LuaFrxViewBase::getEntry, this, lua),
 		boost::bind(&LuaFrxViewBase::getExit, this, lua),
 		boost::bind(&LuaFrxViewBase::getByName, this, lua, _1),
 		boost::bind(&LuaFrxViewBase::getByType, this, lua, _1),
@@ -55,7 +55,7 @@ void LuaFrxViewBase::addLuaFields(lua_State *lua, int index)
 
 	registerClassFunctions<Functions3, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaFrxViewBase::addToSelection, this, lua),
+	std::make_tuple(boost::bind(&LuaFrxViewBase::addToSelection, this, lua),
 		boost::bind(&LuaFrxViewBase::clearSelection, this, lua),
 		boost::bind(&LuaFrxViewBase::packSelection, this, lua, _1),
 		boost::bind(&LuaFrxViewBase::showMenu, this, lua),

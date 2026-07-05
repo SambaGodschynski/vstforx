@@ -23,7 +23,7 @@ void LuaImplBase::addLuaFields(lua_State *lua, int index)
     // register functions
     registerClassFunctions<Functions1, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaImplBase::log, this, lua),
+	std::make_tuple(boost::bind(&LuaImplBase::log, this, lua),
 		boost::bind(&LuaImplBase::logWarn, this, lua),
 		boost::bind(&LuaImplBase::logErr, this, lua),
 		boost::bind(&LuaImplBase::logTrace, this, lua),
@@ -39,7 +39,7 @@ void LuaImplBase::addLuaFields(lua_State *lua, int index)
 
 	registerClassFunctions<Functions2, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaImplBase::getBarStartPos, this, lua),
+	std::make_tuple(boost::bind(&LuaImplBase::getBarStartPos, this, lua),
 		boost::bind(&LuaImplBase::getPpqPos, this, lua),
 		boost::bind(&LuaImplBase::getTimeSigNumerator, this, lua),
 		boost::bind(&LuaImplBase::getTimeSigDenominator, this, lua),
@@ -55,7 +55,7 @@ void LuaImplBase::addLuaFields(lua_State *lua, int index)
 
 	registerClassFunctions<Functions3, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaImplBase::addParameterListener, this, lua, _1, _2),
+	std::make_tuple(boost::bind(&LuaImplBase::addParameterListener, this, lua, _1, _2),
 		boost::bind(&LuaImplBase::removeParameterListener, this, lua, _1, _2),
 		boost::bind(&LuaImplBase::getPersistUserData, this, lua, _1),
 		boost::bind(&LuaImplBase::setPersistUserData, this, lua)),

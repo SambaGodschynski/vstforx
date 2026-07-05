@@ -41,7 +41,7 @@ class Plugin:
 friend class boost::serialization::access;
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<Plugin> Ptr;
+	typedef std::shared_ptr<Plugin> Ptr;
     //-------------------------------------------------------------------------
     static const std::string IO_CONFIG_CHANGED_MSG;
     //-------------------------------------------------------------------------

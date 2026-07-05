@@ -8,7 +8,7 @@
 #ifndef SAMBAG_SHELLPLUGINSELECTION_H
 #define SAMBAG_SHELLPLUGINSELECTION_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/FramedWindow.hpp>
 #include <sambag/disco/components/List.hpp>
 #include <sambag/disco/components/events/ActionEvent.hpp>
@@ -32,7 +32,7 @@ class ShellPluginSelection :
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<ShellPluginSelection> Ptr;
+	typedef std::shared_ptr<ShellPluginSelection> Ptr;
 	//-------------------------------------------------------------------------
 	typedef sambag::disco::components::Window Window;
 	//-------------------------------------------------------------------------

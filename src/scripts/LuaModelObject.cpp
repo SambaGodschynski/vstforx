@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <tuple>
 #include "LuaModelObject.hpp"
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <gui/components/FrxCircuidView.hpp>
@@ -32,9 +33,9 @@ LuaModelObject::Ptr LuaModelObject::getFromLuaStack(lua_State *lua, int index) {
             "missing uuid"
         );
     }
-    boost::tuple<std::string> uid;
+    std::tuple<std::string> uid;
     slua::pop(lua, uid);
-    LuaModelObject::Ptr res = getByUId(boost::get<0>(uid));
+    LuaModelObject::Ptr res = getByUId(std::get<0>(uid));
     if (!res) {
         SAMBAG_THROW(
             sambag::com::exceptions::IllegalStateException,
@@ -84,7 +85,7 @@ void LuaModelObject::setTypeId(const std::string &typeId) {
 //-----------------------------------------------------------------------------
 void LuaModelObject::addLuaFields(lua_State *lua, int index) {
     Super::addLuaFields(lua, index);
-    uidMap[getUId()] = boost::dynamic_pointer_cast<LuaModelObject>(shared_from_this());
+    uidMap[getUId()] = std::dynamic_pointer_cast<LuaModelObject>(shared_from_this());
     
     if (getTypeId().empty()) {
         SAMBAG_THROW(

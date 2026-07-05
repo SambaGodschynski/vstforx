@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <tuple>
 #include <com/Settings.h>
 #include <sambag/com/Exception.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
@@ -33,8 +34,8 @@
 
 namespace frx { namespace gui { namespace components {
 namespace {
-typedef boost::weak_ptr<void> AnyWPtr;
-typedef boost::shared_ptr<void> AnyPtr;
+typedef std::weak_ptr<void> AnyWPtr;
+typedef std::shared_ptr<void> AnyPtr;
 //-----------------------------------------------------------------------------
 /**
  * register components in ModelMap
@@ -79,7 +80,7 @@ FrxProcessorNodePtr createProcessor(FrxCircuidViewPtr circ, std::string id)
 	// create model obj.
 	frx::processing::IModelController::Ptr ctrl;
 	IViewModelMap::Ptr map;
-	boost::tie(ctrl, map) = getControllerAndMap(circ);
+	std::tie(ctrl, map) = getControllerAndMap(circ);
     
     bool invisibleOuts = pid.name() == "ADSRTrigger" ||
                        pid.name() == "PeakTracker" ||
@@ -111,13 +112,13 @@ FrxProcessorNodePtr createProcessor(FrxCircuidViewPtr circ, std::string id)
     // add flag if processor == plugin
     // flag
 	frx::processing::IPluginAdapter::Ptr plAd = 
-		boost::dynamic_pointer_cast<frx::processing::IPluginAdapter>(mObj);
+		std::dynamic_pointer_cast<frx::processing::IPluginAdapter>(mObj);
 	if (plAd) {
         FrxFlag::Ptr flag = FrxFlag::create();
         flag->setTarget(viewObj);
         circ->add(flag, FrxCircuidView::Z_Flags, true);
         FrxPluginNode::Ptr plObj =
-            boost::dynamic_pointer_cast<FrxPluginNode>(viewObj);
+            std::dynamic_pointer_cast<FrxPluginNode>(viewObj);
         if(plObj) {
             plObj->setName(plAd->getName());
             plObj->setUpperFlagText(plAd->getName());
@@ -150,7 +151,7 @@ FrxParameterPtr createFreeParameter(FrxCircuidViewPtr circ) {
 	// create model obj.
 	frx::processing::IModelController::Ptr ctrl;
 	IViewModelMap::Ptr map;
-	boost::tie(ctrl, map) = getControllerAndMap(circ);
+	std::tie(ctrl, map) = getControllerAndMap(circ);
 
 	frx::processing::IParameter::Ptr mObj = ctrl->createFreeParameter();
 	if (!mObj) {
@@ -181,7 +182,7 @@ FrxParameterPtr createHostParameter(FrxCircuidViewPtr circ, int id) {
 	// create model obj.
 	frx::processing::IModelController::Ptr ctrl;
 	IViewModelMap::Ptr map;
-	boost::tie(ctrl, map) = getControllerAndMap(circ);
+	std::tie(ctrl, map) = getControllerAndMap(circ);
 
 	frx::processing::IParameter::Ptr mObj = ctrl->getHostParameter(id);
 	if (!mObj) {
@@ -220,7 +221,7 @@ FrxProcessorNodePtr createRemoteChannel(FrxCircuidViewPtr circ, std::string &rcI
     
 	// create model obj.
 	frx::processing::IProcessor::Ptr mObj =
-        boost::dynamic_pointer_cast<frx::processing::IProcessor>(
+        std::dynamic_pointer_cast<frx::processing::IProcessor>(
             getViewModelMap(circ)->getModelObject(viewObj)
         );
 
@@ -234,7 +235,7 @@ FrxProcessorNodePtr createRemoteChannel(FrxCircuidViewPtr circ, std::string &rcI
 	flag->setTarget(viewObj);
 	circ->add(flag, FrxCircuidView::Z_Flags, true);
 	frx::processing::IPluginAdapter::Ptr plAd = 
-		boost::dynamic_pointer_cast<frx::processing::IPluginAdapter>(mObj);
+		std::dynamic_pointer_cast<frx::processing::IPluginAdapter>(mObj);
 	if (plAd) {
 		viewObj->setName(plAd->getName());
 		viewObj->setUpperFlagText(rcId);

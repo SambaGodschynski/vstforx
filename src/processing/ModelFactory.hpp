@@ -13,12 +13,12 @@
 #include "processing.h"
 #include <functional>
 #include <boost/bind.hpp>
-#include <boost/unordered_map.hpp>
-#include <boost/shared_ptr.hpp>
+#include <unordered_map>
+#include <memory>
 #include <com/SerializationFwd.h>
 #include <list>
 #include <boost/foreach.hpp>
-#include <boost/regex.hpp>
+#include <regex>
 
 
 /**
@@ -87,7 +87,7 @@ public:
             return true;
         }
     };
-    typedef boost::unordered_map<Id, CreatorFunctions> CreatorMap;
+    typedef std::unordered_map<Id, CreatorFunctions> CreatorMap;
     typedef std::function<void(com::oArchive*)> OArchiveRegisterF;
     typedef std::function<void(com::iArchive*)> IArchiveRegisterF;
 	typedef std::map<Id, OArchiveRegisterF> OARegList;
@@ -140,8 +140,8 @@ public:
     Product create(const std::string &pdStr, IHostInfo::Ptr hI);
     //-------------------------------------------------------------------------
     template <class T>
-    boost::shared_ptr<T> create(const std::string &pdStr, IHostInfo::Ptr hI) {
-        return boost::dynamic_pointer_cast<T>( create(pdStr, hI) );
+    std::shared_ptr<T> create(const std::string &pdStr, IHostInfo::Ptr hI) {
+        return std::dynamic_pointer_cast<T>( create(pdStr, hI) );
     }
     //-------------------------------------------------------------------------
     /**
@@ -206,7 +206,7 @@ public:
         BOOST_FOREACH(const CreatorMap::value_type &v, creators)
         {
             if (filter.length()==0 ||
-                boost::regex_match(v.first, boost::regex(filter)))
+                std::regex_match(v.first, std::regex(filter)))
             {
                 out.push_back(v.first);
             }

@@ -57,7 +57,7 @@ void LuaFrxParameter::addListener(lua_State * lua, const std::string &callbk) {
     try {
         using frx::processing::IParameter;
         IParameter::Ptr p =
-            boost::dynamic_pointer_cast<IParameter>(getModelObject());
+            std::dynamic_pointer_cast<IParameter>(getModelObject());
         if (!p) {
             return;
         }
@@ -76,7 +76,7 @@ void LuaFrxParameter::setValue(lua_State * lua, float v) {
     try {
         using frx::processing::IParameter;
         IParameter::Ptr p =
-            boost::dynamic_pointer_cast<IParameter>(getModelObject());
+            std::dynamic_pointer_cast<IParameter>(getModelObject());
         if (!p) {
             return;
         }
@@ -91,7 +91,7 @@ void LuaFrxParameter::setValue(lua_State * lua, float v) {
 float LuaFrxParameter::getValue() const {
     using frx::processing::IParameter;
     IParameter::Ptr p =
-        boost::dynamic_pointer_cast<IParameter>(getModelObject());
+        std::dynamic_pointer_cast<IParameter>(getModelObject());
     if (!p) {
         return 0.f;
     }

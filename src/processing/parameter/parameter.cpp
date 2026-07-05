@@ -41,7 +41,7 @@ struct Updater {
     }
 };
 typedef Animation<double, DynamicTween, Updater, frx::processing::FrxAsyncDSPTimer> Tween;
-Tween::Ptr getTween(boost::shared_ptr<void> t, long duration) {
+Tween::Ptr getTween(std::shared_ptr<void> t, long duration) {
     Tween::Ptr res;
     if (!t) {
         res = Tween::create();
@@ -49,7 +49,7 @@ Tween::Ptr getTween(boost::shared_ptr<void> t, long duration) {
         res->setDuration(duration);
         return res;
     } else {
-        return boost::static_pointer_cast<Tween>(t);
+        return std::static_pointer_cast<Tween>(t);
     }
 }
 static Tween::Milliseconds _getDuration(double val) {

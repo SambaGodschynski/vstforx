@@ -7,6 +7,7 @@
 
 #ifdef FRX_OS_MAC
 
+#include <tuple>
 #include "OS_VSTPlugin2x.h" 
 #include "processing/pluginTypes/NullAEffect.h"
 #include <sambag/com/Config.h>
@@ -120,7 +121,7 @@ com::Mutex OS_VSTPlugNode2x::onInitLock;
 bool OS_VSTPlugNode2x::loadModule( const HostCallBackOnInit &_callBkOnInit ) {
 	if ( moduleLocation.length() == 0 ) return false;
 	std::string filename;
-	boost::tie(filename, shellPlugId) = com::extractVSTPluginFilename(moduleLocation);
+	std::tie(filename, shellPlugId) = com::extractVSTPluginFilename(moduleLocation);
 	{ // lock scope
 		TRY_TO_LOCK_TIMED (onInitLock)
 		shellPlugIdOnInit = shellPlugId;

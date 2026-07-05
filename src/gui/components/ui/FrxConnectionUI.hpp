@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXCONNECTIONUI_H
 #define SAMBAG_FRXCONNECTIONUI_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <gui/components/FrxConcreteConnections.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 #include <sambag/disco/IDiscoFactory.hpp>
@@ -36,7 +36,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxComponentUI Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxConnectionUIBase> Ptr;
+	typedef std::shared_ptr<FrxConnectionUIBase> Ptr;
 protected:
 	//-------------------------------------------------------------------------
 	FrxConnectionUIBase() {}
@@ -64,9 +64,9 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxConcreteConnection<_ConnectionType> _ConcreteConnection;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<_ConcreteConnection> ConcreteConnectionPtr;
+	typedef std::shared_ptr<_ConcreteConnection> ConcreteConnectionPtr;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxConnectionUI> Ptr;
+	typedef std::shared_ptr<FrxConnectionUI> Ptr;
 	//-------------------------------------------------------------------------
 	typedef FrxConnectionUI<_ConnectionType> Class;
 protected:
@@ -220,7 +220,7 @@ void _extendPopupMenu(sdc::PopupMenu::WPtr _menu,
     }
     
     FrxConnection::Ptr connection =
-        boost::dynamic_pointer_cast<FrxConnection>(c);
+        std::dynamic_pointer_cast<FrxConnection>(c);
     if (!connection) {
         return;
     }
@@ -364,8 +364,8 @@ template <class CT>
 void FrxConnectionUI<CT>::clipEndNodes(ConcreteConnectionPtr c, 
 	sd::IDrawContext::Ptr cn) const
 {
-	FrxNode::Ptr a = boost::dynamic_pointer_cast<FrxNode>( c->getSrcComponent() );
-	FrxNode::Ptr b = boost::dynamic_pointer_cast<FrxNode>( c->getDstComponent() );
+	FrxNode::Ptr a = std::dynamic_pointer_cast<FrxNode>( c->getSrcComponent() );
+	FrxNode::Ptr b = std::dynamic_pointer_cast<FrxNode>( c->getDstComponent() );
 	if (!a && !b) {
 		return;
 	}
@@ -384,7 +384,7 @@ template <class CT>
 void FrxConnectionUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	//Super::draw(cn, c);
     typename _ConcreteConnection::Ptr ccn =
-		boost::dynamic_pointer_cast<_ConcreteConnection>(c);
+		std::dynamic_pointer_cast<_ConcreteConnection>(c);
 	SAMBAG_ASSERT(ccn);
 	
 	std::pair<sd::Point2D, sd::Point2D> points = getConnectionPoints(ccn);
@@ -435,7 +435,7 @@ bool FrxConnectionUI<CT>::contains(sdc::AComponentPtr c, const sd::Point2D &p) {
 	sd::Coordinate distance = 
 		sdc::ui::getUIPropertyCached<FrxConnectionHitDistance>(sd::Coordinate(10.));
 	typename _ConcreteConnection::Ptr ccn = 
-		boost::dynamic_pointer_cast<_ConcreteConnection>(c);
+		std::dynamic_pointer_cast<_ConcreteConnection>(c);
 	typedef sambag::math::VectorN<Number, 2> Vector2D;
 	std::pair<sd::Point2D, sd::Point2D> points = getConnectionPoints(ccn);
 	Vector2D p1 = sambag::math::createVector((Number)points.first.x(), 

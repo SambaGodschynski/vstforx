@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXPARAMETERLABELUI_H
 #define SAMBAG_FRXPARAMETERLABELUI_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/ui/basic/BasicLabelUI.hpp>
 #include <sambag/disco/svg/Style.hpp>
 #include <gui/HandyNamespaces.hpp>
@@ -23,7 +23,7 @@ class FrxParameterLabelUI : public sdcu::basic::BasicLabelUI {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxParameterLabelUI> Ptr;
+	typedef std::shared_ptr<FrxParameterLabelUI> Ptr;
 	//-------------------------------------------------------------------------
 	typedef sdcu::basic::BasicLabelUI Super;
 protected:

@@ -8,7 +8,7 @@
 #ifndef SAMBAG_ICONNECTION_H
 #define SAMBAG_ICONNECTION_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "ModelObject.hpp"
 
 namespace frx { namespace processing {
@@ -20,7 +20,7 @@ class IConnection : public ModelObject {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<IConnection> Ptr;
+	typedef std::shared_ptr<IConnection> Ptr;
 private:
 	///////////////////////////////////////////////////////////////////////////
 	// Archive:

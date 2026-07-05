@@ -6,7 +6,7 @@
  */
 
 #include <com/Serialization.h>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <gui/components/FrxConcreteConnections.hpp>
 #include <gui/components/FrxConcreteProcessor.hpp>
 #include <gui/components/FrxConcreteIO.hpp>

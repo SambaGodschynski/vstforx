@@ -11,12 +11,12 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/depth_first_search.hpp>
 #include <boost/graph/visitors.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/graph/adj_list_serialize.hpp>
 
 namespace processing {
 class ProcessorNode;
-typedef boost::shared_ptr<ProcessorNode> ProcessorNodePtr;
+typedef std::shared_ptr<ProcessorNode> ProcessorNodePtr;
 namespace bgl {
 	//========================================================================================================
 	// Boost Graph Library stuff

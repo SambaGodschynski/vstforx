@@ -153,7 +153,7 @@ void FrxProcessorNode::configIO(int numInputs, int numOutputs) {
 	inputs.reserve(numInputs);
 	outputs.reserve(numOutputs);
 	for (int i = 0; i<numInputs; ++i) {
-		FrxIO::Ptr io = boost::dynamic_pointer_cast<FrxIO>(
+		FrxIO::Ptr io = std::dynamic_pointer_cast<FrxIO>(
 			createInputNode()
 		);
 		if (numInputs>1) {
@@ -161,7 +161,7 @@ void FrxProcessorNode::configIO(int numInputs, int numOutputs) {
 		}
 	}
 	for (int i = 0; i<numOutputs; ++i) {
-		FrxIO::Ptr io = boost::dynamic_pointer_cast<FrxIO>(
+		FrxIO::Ptr io = std::dynamic_pointer_cast<FrxIO>(
 			createOutputNode()
 		);
 		if (numOutputs>1) {

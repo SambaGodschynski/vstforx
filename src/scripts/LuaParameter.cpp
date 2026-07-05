@@ -31,7 +31,7 @@ void LuaParameter::setValue(lua_State * lua, float v) {
     using ::processing::parameter::Parameter;
     try {
         Parameter::Ptr x =
-            boost::dynamic_pointer_cast<Parameter>(getModelObject());
+            std::dynamic_pointer_cast<Parameter>(getModelObject());
         return x->setValue(v);
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua, ex.what());
@@ -55,14 +55,14 @@ float LuaParameter::getValue(lua_State * lua) {
 float LuaParameter::getValue() const {
     using ::processing::parameter::Parameter;
     Parameter::Ptr x =
-        boost::dynamic_pointer_cast<Parameter>(getModelObject());
+        std::dynamic_pointer_cast<Parameter>(getModelObject());
     return x->getValue();
 }
 //-----------------------------------------------------------------------------
 std::string LuaParameter::getName() const {
     using ::processing::parameter::Parameter;
     Parameter::Ptr x =
-        boost::dynamic_pointer_cast<Parameter>(getModelObject());
+        std::dynamic_pointer_cast<Parameter>(getModelObject());
     return x->getName();
 }
 //-----------------------------------------------------------------------------
@@ -70,7 +70,7 @@ std::string LuaParameter::getName(lua_State * lua) {
     using ::processing::parameter::Parameter;
     try {
         Parameter::Ptr x =
-            boost::dynamic_pointer_cast<Parameter>(getModelObject());
+            std::dynamic_pointer_cast<Parameter>(getModelObject());
         return x->getName();
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua, ex.what());

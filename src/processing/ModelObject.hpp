@@ -8,9 +8,7 @@
 #ifndef SAMBAG_MODELOBJECT_H
 #define SAMBAG_MODELOBJECT_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
-#include <boost/make_shared.hpp>
+#include <memory>
 #include <functional>
 #include "com/SerializationFwd.h"
 #include <boost/serialization/access.hpp>
@@ -22,9 +20,9 @@
 
 namespace frx { namespace processing {
 class IModelController;
-typedef boost::shared_ptr<IModelController> IModelControllerPtr;
+typedef std::shared_ptr<IModelController> IModelControllerPtr;
 class IParameter;
-typedef boost::shared_ptr<IParameter> IParameterPtr;
+typedef std::shared_ptr<IParameter> IParameterPtr;
 //=============================================================================
 /**
   * @class ModelObject.
@@ -33,17 +31,17 @@ class ModelObject {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<ModelObject> Ptr;
+	typedef std::shared_ptr<ModelObject> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<ModelObject> WPtr;
+	typedef std::weak_ptr<ModelObject> WPtr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<void> AnyWPtr;
+	typedef std::weak_ptr<void> AnyWPtr;
 	//-------------------------------------------------------------------------
 	typedef std::function<bool(Ptr)> RequestRemoveFunction;
 	//-------------------------------------------------------------------------
 	class Connection {
-		boost::shared_ptr<bool> disconnected_;
-		explicit Connection(boost::shared_ptr<bool> d) : disconnected_(d) {}
+		std::shared_ptr<bool> disconnected_;
+		explicit Connection(std::shared_ptr<bool> d) : disconnected_(d) {}
 	public:
 		Connection() {}
 		void disconnect() { if (disconnected_) *disconnected_ = true; }
@@ -55,14 +53,14 @@ public:
 	class Signal {
 		struct Slot {
 			RequestRemoveFunction fn;
-			boost::weak_ptr<void> tracker;
+			std::weak_ptr<void> tracker;
 			bool hasTracker;
-			boost::shared_ptr<bool> disconnected;
+			std::shared_ptr<bool> disconnected;
 		};
 		std::list<Slot> slots;
 	public:
 		Connection connect(const RequestRemoveFunction &f) {
-			boost::shared_ptr<bool> d = boost::make_shared<bool>(false);
+			std::shared_ptr<bool> d = std::make_shared<bool>(false);
 			Slot s;
 			s.fn = f;
 			s.hasTracker = false;
@@ -71,9 +69,9 @@ public:
 			return Connection(d);
 		}
 		Connection connect_tracked(const RequestRemoveFunction &f,
-			const boost::weak_ptr<void> &toTrack)
+			const std::weak_ptr<void> &toTrack)
 		{
-			boost::shared_ptr<bool> d = boost::make_shared<bool>(false);
+			std::shared_ptr<bool> d = std::make_shared<bool>(false);
 			Slot s;
 			s.fn = f;
 			s.tracker = toTrack;

@@ -8,11 +8,9 @@
 #ifndef SAMBAG_FrxScriptPluginEditor_H
 #define SAMBAG_FrxScriptPluginEditor_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/Window.hpp>
 #include <gui/HandyNamespaces.hpp>
-#include <boost/enable_shared_from_this.hpp>
 #include <sambag/disco/components/List.hpp>
 #include <sambag/disco/components/ScrollPane.hpp>
 #include <sambag/disco/components/Button.hpp>
@@ -23,16 +21,16 @@ namespace frx { namespace gui { namespace components {
   * @class FrxScriptPluginEditor.
   */
 class FrxScriptPluginEditor :
-    public boost::enable_shared_from_this<FrxScriptPluginEditor>
+    public std::enable_shared_from_this<FrxScriptPluginEditor>
 {
 //=============================================================================
 public:
     //-------------------------------------------------------------------------
     enum {MaxLog=500};
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxScriptPluginEditor> Ptr;
+	typedef std::shared_ptr<FrxScriptPluginEditor> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxScriptPluginEditor> WPtr;
+	typedef std::weak_ptr<FrxScriptPluginEditor> WPtr;
 protected:
     //-------------------------------------------------------------------------
     void createWindow(sdc::Window::Ptr parent, const sd::Dimension &size);

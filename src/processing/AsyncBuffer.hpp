@@ -8,7 +8,7 @@
 #ifndef SAMBAG_ASYNCBUFFER_H
 #define SAMBAG_ASYNCBUFFER_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include <memory>
 #include <cstring>

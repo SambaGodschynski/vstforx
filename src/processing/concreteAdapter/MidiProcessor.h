@@ -28,7 +28,7 @@ public MidiEventProcessor
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<MidiProcessor> Ptr;
+	typedef std::shared_ptr<MidiProcessor> Ptr;
 	//--------------------------------------------------------------------------------------------------------
 	typedef unsigned char Byte;
 private:

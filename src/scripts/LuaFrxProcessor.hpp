@@ -7,7 +7,7 @@
 #ifndef FORX_LuaFrxProcessor_H
 #define FORX_LuaFrxProcessor_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "LuaFrxObject.hpp"
 #include <gui/ViewFactory.hpp>
 #include <com/one4All.h>
@@ -22,7 +22,7 @@ class LuaFrxProcessor : public LuaFrxProcessorBase {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<LuaFrxProcessor> Ptr;
+	typedef std::shared_ptr<LuaFrxProcessor> Ptr;
     //-------------------------------------------------------------------------
     typedef LuaFrxObject Super;
 protected:

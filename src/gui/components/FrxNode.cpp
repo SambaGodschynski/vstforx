@@ -33,12 +33,12 @@ sdcu::AComponentUIPtr FrxNode::createComponentUI(sdcu::ALookAndFeelPtr laf) cons
 }
 //-----------------------------------------------------------------------------
 sambag::com::Number FrxNode::getRadius() const {
-	ui::FrxNodeUI::Ptr ui = boost::dynamic_pointer_cast<ui::FrxNodeUI>(getUI());
+	ui::FrxNodeUI::Ptr ui = std::dynamic_pointer_cast<ui::FrxNodeUI>(getUI());
 	if (!ui) {
         ui::AFrxDualUI::Ptr dualUI =
-            boost::dynamic_pointer_cast<ui::AFrxDualUI>(getUI());
+            std::dynamic_pointer_cast<ui::AFrxDualUI>(getUI());
         if (dualUI) {
-            ui =  boost::dynamic_pointer_cast<ui::FrxNodeUI>(dualUI->getUI());
+            ui =  std::dynamic_pointer_cast<ui::FrxNodeUI>(dualUI->getUI());
             if (ui) {
                 return ui->getCoreRadius(getPtr());
             }
@@ -48,7 +48,7 @@ sambag::com::Number FrxNode::getRadius() const {
         sdc::AComponent::WPtr _imgc;
         getClientProperty("imageComponent", _imgc);
         sdc::SvgComponent::Ptr svg =
-            boost::dynamic_pointer_cast<sdc::SvgComponent>(_imgc.lock());
+            std::dynamic_pointer_cast<sdc::SvgComponent>(_imgc.lock());
         if (!svg) {
             return 0;
         }

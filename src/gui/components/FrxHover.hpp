@@ -8,8 +8,7 @@
 #ifndef SAMBAG_FRXHOVER_H
 #define SAMBAG_FRXHOVER_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include "FrxSelection.hpp"
 #include <gui/HandyNamespaces.hpp>
 
@@ -27,9 +26,9 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxSelection Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxHover> Ptr;
+	typedef std::shared_ptr<FrxHover> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxHover> WPtr;
+	typedef std::weak_ptr<FrxHover> WPtr;
 protected:
 	//-------------------------------------------------------------------------
 	virtual void postConstructor();

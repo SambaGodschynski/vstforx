@@ -28,7 +28,7 @@ class MidiEventProcessor :
 friend class boost::serialization::access;
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<MidiEventProcessor> Ptr;
+	typedef std::shared_ptr<MidiEventProcessor> Ptr;
 private:
 	//-------------------------------------------------------------------------
 	parameter::Parameter::Ptr midiChannel, midiSend;

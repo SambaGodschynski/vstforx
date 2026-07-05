@@ -8,7 +8,7 @@
 #ifndef SAMBAG_SETUPWINDOW_H
 #define SAMBAG_SETUPWINDOW_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/FramedWindow.hpp>
 #include <sambag/disco/components/Forward.hpp>
 #include <sambag/disco/components/List.hpp>
@@ -28,7 +28,7 @@ class SetupWindow : public sdc::FramedWindow {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<SetupWindow> Ptr;
+	typedef std::shared_ptr<SetupWindow> Ptr;
 	//-------------------------------------------------------------------------
 	typedef sdc::FramedWindow Super;
 protected:
@@ -63,7 +63,7 @@ private:
 	//-------------------------------------------------------------------------
 	struct ResizeBtnHandler;
 	//-------------------------------------------------------------------------
-	boost::shared_ptr<ResizeBtnHandler> rszBtnHandler;
+	std::shared_ptr<ResizeBtnHandler> rszBtnHandler;
 	//-------------------------------------------------------------------------
 	SetupCtrl::Ptr ctrl;
 	//-------------------------------------------------------------------------

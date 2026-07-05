@@ -24,9 +24,9 @@ friend class boost::serialization::access;
 friend class Graph;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<PObject> Ptr;
+	typedef std::shared_ptr<PObject> Ptr;
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::weak_ptr<PObject> WPtr;
+	typedef std::weak_ptr<PObject> WPtr;
 	//--------------------------------------------------------------------------------------------------------
 	WPtr self;
 private:

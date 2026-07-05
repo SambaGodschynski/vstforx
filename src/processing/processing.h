@@ -79,9 +79,9 @@ friend class EndNode;
 BOOST_SERIALIZATION_SPLIT_MEMBER() // teilt boost::serialize in save() und load()
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<ProcessorNode> Ptr;
+	typedef std::shared_ptr<ProcessorNode> Ptr;
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::weak_ptr<ProcessorNode> WPtr;
+	typedef std::weak_ptr<ProcessorNode> WPtr;
 	//--------------------------------------------------------------------------------------------------------
 	typedef std::vector<ProcessorNode*> Container;
 	//--------------------------------------------------------------------------------------------------------
@@ -328,9 +328,9 @@ class NOPNode : public ProcessorNode, public com::Serializable {
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<NOPNode> Ptr;
+	typedef std::shared_ptr<NOPNode> Ptr;
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::weak_ptr<NOPNode> WPtr;
+	typedef std::weak_ptr<NOPNode> WPtr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -380,9 +380,9 @@ class StartNode : public NOPNode {
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<StartNode> Ptr;
+	typedef std::shared_ptr<StartNode> Ptr;
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::weak_ptr<StartNode> WPtr;
+	typedef std::weak_ptr<StartNode> WPtr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -421,9 +421,9 @@ class EndNode : public NOPNode {
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<EndNode> Ptr;
+	typedef std::shared_ptr<EndNode> Ptr;
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::weak_ptr<EndNode> WPtr;
+	typedef std::weak_ptr<EndNode> WPtr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -497,21 +497,21 @@ public:
 	 */
 	typedef std::pair<bool, size_t> SwitchState;
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<ProcessAdapter> Ptr;
+	typedef std::shared_ptr<ProcessAdapter> Ptr;
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::weak_ptr<ProcessAdapter> WPtr;
+	typedef std::weak_ptr<ProcessAdapter> WPtr;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Vorwaertz-Deklaration von eingebetteter OutputNode-Klasse
 	 */
 	class OutputNode;
-	typedef boost::shared_ptr<OutputNode> OutputNodePtr;
+	typedef std::shared_ptr<OutputNode> OutputNodePtr;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Vorwaertz-Deklaration von eingebetteter InputNode-Klasse
 	 */
 	class InputNode;
-	typedef boost::shared_ptr<InputNode> InputNodePtr;
+	typedef std::shared_ptr<InputNode> InputNodePtr;
 	//--------------------------------------------------------------------------------------------------------
 	typedef std::vector<OutputNodePtr> OutputNodes;
 	//--------------------------------------------------------------------------------------------------------
@@ -558,7 +558,7 @@ protected:
 	/**
 	 * ProcessAdapterNode-Objekt
 	 */
-	boost::shared_ptr<ProcessAdapterNode> aNode;
+	std::shared_ptr<ProcessAdapterNode> aNode;
 	//--------------------------------------------------------------------------------------------------------
 	frx::processing::IHostInfo::WPtr  hostInfo;
 	//--------------------------------------------------------------------------------------------------------
@@ -660,7 +660,7 @@ public:
 	/**
 	 * @return ProcessAdapterNode-Objekt
 	 */
-	boost::shared_ptr<ProcessAdapterNode> getAdapterNode() { return aNode; }
+	std::shared_ptr<ProcessAdapterNode> getAdapterNode() { return aNode; }
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param index
@@ -684,7 +684,7 @@ class ProcessAdapter::OutputNode : public NOPNode {
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<OutputNode> Ptr;
+	typedef std::shared_ptr<OutputNode> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -730,7 +730,7 @@ public:
 	 */
 	ProcessAdapter::Ptr getProcessAdapter() { 
 		ProcessAdapter::Ptr p = 
-			boost::dynamic_pointer_cast< ProcessAdapter, PObject >( parent->getPtr() );
+			std::dynamic_pointer_cast< ProcessAdapter, PObject >( parent->getPtr() );
 		return p;
 	}
 };
@@ -745,7 +745,7 @@ friend class boost::serialization::access;
 friend class ProcessAdapter;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<InputNode> Ptr;
+	typedef std::shared_ptr<InputNode> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -795,7 +795,7 @@ public:
 	 */
 	ProcessAdapter::Ptr getProcessAdapter() { 
 		ProcessAdapter::Ptr p = 
-			boost::dynamic_pointer_cast< ProcessAdapter, PObject >( parent->getPtr() );
+			std::dynamic_pointer_cast< ProcessAdapter, PObject >( parent->getPtr() );
 		return p;
 	}
 };
@@ -813,7 +813,7 @@ friend class ProcessAdapter::InputNode;
 friend class ProcessAdapter::OutputNode;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<ProcessAdapterNode> Ptr;
+	typedef std::shared_ptr<ProcessAdapterNode> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**

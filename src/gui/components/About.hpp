@@ -8,8 +8,7 @@
 #ifndef SAMBAG_ABOUT_H
 #define SAMBAG_ABOUT_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/FramedWindow.hpp>
 #include <gui/HandyNamespaces.hpp>
 #include <string>
@@ -28,9 +27,9 @@ public:
 	//-------------------------------------------------------------------------
 	typedef AboutBoxWindow Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<About> Ptr;
+	typedef std::shared_ptr<About> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<About> WPtr;
+	typedef std::weak_ptr<About> WPtr;
 protected:
 	//-------------------------------------------------------------------------
 	About( sdc::Window::Ptr parent=sdc::Window::Ptr() ) : Super(parent) {}

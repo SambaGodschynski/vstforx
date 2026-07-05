@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FrxDualUI_H
 #define SAMBAG_FrxDualUI_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/ui/AComponentUI.hpp>
 #include <gui/components/FrxCircuidView.hpp>
 
@@ -20,7 +20,7 @@ namespace components { namespace ui {
   * @class FrxDualUI Base.
   */
 struct AFrxDualUI : public sdcu::AComponentUI {
-    typedef boost::shared_ptr<AFrxDualUI> Ptr;
+    typedef std::shared_ptr<AFrxDualUI> Ptr;
     virtual sdcu::AComponentUI::Ptr getUI() const = 0;
     virtual ~AFrxDualUI(){}
 };
@@ -43,7 +43,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef sdcu::AComponentUI Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<ThisClass> Ptr;
+	typedef std::shared_ptr<ThisClass> Ptr;
 protected:
     sdcu::AComponentUIPtr ui;
     bool usingA;

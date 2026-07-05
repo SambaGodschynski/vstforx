@@ -23,7 +23,7 @@ class Pan : public ProcessAdapter, public com::Serializable, public HasParameter
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<Pan> Ptr;
+	typedef std::shared_ptr<Pan> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**

@@ -8,8 +8,7 @@
 #ifndef IHOST_INFO_H
 #define IHOST_INFO_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/com/events/Events.hpp>
 #include <sambag/dsp/HostTimeInfo.hpp>
 
@@ -17,8 +16,8 @@ namespace frx {
 
 namespace scripts {
     class PluginScriptCtrl;
-    typedef boost::shared_ptr<PluginScriptCtrl> PluginScriptCtrlPtr;
-    typedef boost::weak_ptr<PluginScriptCtrl> PluginScriptCtrlWPtr;
+    typedef std::shared_ptr<PluginScriptCtrl> PluginScriptCtrlPtr;
+    typedef std::weak_ptr<PluginScriptCtrl> PluginScriptCtrlWPtr;
 }
 
 namespace processing {
@@ -45,9 +44,9 @@ typedef sambag::dsp::HostTimeInfo TimeInfo;
 //=============================================================================
 struct IHostInfo {
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<IHostInfo> Ptr;
+	typedef std::shared_ptr<IHostInfo> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<IHostInfo> WPtr;
+	typedef std::weak_ptr<IHostInfo> WPtr;
 	//-------------------------------------------------------------------------
 	template< typename Archive >
 	void serialize ( Archive &ar, const unsigned int version ) {} 
@@ -100,7 +99,7 @@ struct IHostInfo {
 	//-------------------------------------------------------------------------
 	typedef sce::EventSender<HostIOChanged>::Connection HostIOChangedConnection;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<void> AnyWPtr;
+	typedef std::weak_ptr<void> AnyWPtr;
 	//-------------------------------------------------------------------------
 	virtual HostIOChangedConnection 
 	addHostChangedListener(const HostIOChangedFunction &f) = 0;

@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXCIRCUIDVIEW_H
 #define SAMBAG_FRXCIRCUIDVIEW_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/Forward.hpp>
 #include "FrxComponent.hpp"
 #include <sambag/com/ArbitraryType.hpp>
@@ -66,9 +66,9 @@ public:
 	//-------------------------------------------------------------------------
 	typedef float ZOrder;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxCircuidView> Ptr;
+	typedef std::shared_ptr<FrxCircuidView> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxCircuidView> WPtr;
+	typedef std::weak_ptr<FrxCircuidView> WPtr;
 	//-------------------------------------------------------------------------
 	virtual sdcu::AComponentUIPtr createComponentUI(sdcu::ALookAndFeelPtr laf) const;
 	//-------------------------------------------------------------------------
@@ -151,7 +151,7 @@ private:
 	template <typename Archive> 
 	void serializeSelfPtr(Archive &ar, const unsigned int version) {
 		if (Archive::is_saving::value) {
-			tmpSelf = boost::dynamic_pointer_cast<FrxCircuidView>(self.lock());
+			tmpSelf = std::dynamic_pointer_cast<FrxCircuidView>(self.lock());
 		}
 		ar & tmpSelf;
 		if (Archive::is_loading::value) {
@@ -389,7 +389,7 @@ void FrxCircuidView::collectFrxComponentInfo(FrxComponentInfoContainer &out) con
 {
 	BOOST_FOREACH(AComponent::Ptr c, getContentPane()->getComponents()) {
 		FrxComponentPtr frxC = 
-			boost::dynamic_pointer_cast<FrxComponent>(c);
+			std::dynamic_pointer_cast<FrxComponent>(c);
 		if (!frxC)
 			continue;
 		ZOrder z = Z_Default;

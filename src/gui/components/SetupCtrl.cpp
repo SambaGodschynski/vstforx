@@ -12,7 +12,7 @@
 #include <com/PluginCollection.h>
 #include <com/PPIError.h>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
-#include <boost/thread.hpp>
+#include <thread>
 #include <gui/components/FrxCircuidView.hpp>
 #include <sambag/disco/components/Window.hpp>
 #include <com/one4All.h>
@@ -100,7 +100,7 @@ void SetupCtrl::setStyle(const std::string &style) {
         return;
     }
     fgc::ui::FrxLookAndFeel::Ptr laf =
-        boost::dynamic_pointer_cast<fgc::ui::FrxLookAndFeel>(root->getCurrentLookAndFeel());
+        std::dynamic_pointer_cast<fgc::ui::FrxLookAndFeel>(root->getCurrentLookAndFeel());
     if (!laf) {
         return;
     }
@@ -108,7 +108,7 @@ void SetupCtrl::setStyle(const std::string &style) {
 }
 //-----------------------------------------------------------------------------
 namespace {
-boost::thread scanThread;
+std::thread scanThread;
 sambag::com::Mutex mutex;
 typedef SetupCtrl::NotifyFileFunc FileEvF;
 typedef SetupCtrl::ScanCompletedFunc ScanComplF;
@@ -185,9 +185,9 @@ void SetupCtrl::startScan(const NotifyFileFunc &fileEventF,
 		SAMBAG_THROW(sambag::com::exceptions::IllegalStateException, 
 			"tried to start scan with hostInfo == NULL");
 	}
-	scanThread = boost::thread(
-		boost::bind(&startScanImpl, fileEventF, scanCompletedF, failed, hostInfo)	
-	);
+	scanThread = std::thread([fileEventF, scanCompletedF, failed, hostInfo=this->hostInfo](){
+		startScanImpl(fileEventF, scanCompletedF, failed, hostInfo);
+	});
 }
 //-----------------------------------------------------------------------------
 bool SetupCtrl::isAllScanned() const {

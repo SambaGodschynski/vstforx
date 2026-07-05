@@ -8,8 +8,7 @@
 #ifndef SAMBAG_FRXSELECTIONUI_H
 #define SAMBAG_FRXSELECTIONUI_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/ui/AComponentUI.hpp>
 #include "FrxSelectionMouseListener.hpp"
 #include <sambag/disco/svg/Style.hpp>
@@ -29,9 +28,9 @@ public:
 	//-------------------------------------------------------------------------
 	typedef sdcu::AComponentUI Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxSelectionUI> Ptr;
+	typedef std::shared_ptr<FrxSelectionUI> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxSelectionUI> WPtr;
+	typedef std::weak_ptr<FrxSelectionUI> WPtr;
 protected:
     //-------------------------------------------------------------------------
     void rotate(const sdce::ActionEvent &ev, sdc::AComponentWPtr c);

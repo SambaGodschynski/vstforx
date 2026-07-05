@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <tuple>
 #include "FrxSvgNodeUI.hpp"
 #include <gui/components/FrxConcreteProcessor.hpp>
 #include <gui/components/FrxConcreteParameter.hpp>
@@ -200,16 +201,16 @@ FrxSvgNodeUI::getConnectingComponents(const sdc::events::MouseEvent &ev)
 	if (!circ)
 		return res;
 	// uset usr message
-	boost::get<0>(res) = boost::dynamic_pointer_cast<FrxNode>(c);
+	std::get<0>(res) = std::dynamic_pointer_cast<FrxNode>(c);
 	const sd::Point2D &loc = 
 		circ->getViewport()->getView()->getLocationOnComponent(ev.getLocationOnScreen());
 	
-	boost::get<1>(res) = boost::dynamic_pointer_cast<FrxNode>(
+	std::get<1>(res) = std::dynamic_pointer_cast<FrxNode>(
 		circ->findComponentOnPoint(loc, 
 		FrxCircuidView::ZArea_BeginNodes, 
 		FrxCircuidView::ZArea_EndNodes)
 	);
-	boost::get<2>(res) = loc;
+	std::get<2>(res) = loc;
 	return res;
 }
 //-----------------------------------------------------------------------------
@@ -220,7 +221,7 @@ void FrxSvgNodeUI::connecting(const sdc::events::MouseEvent &ev) {
 	
 	FrxNodePtr from, to;
 	sd::Point2D loc;
-	boost::tie(from, to, loc) = getConnectingComponents(ev);
+	std::tie(from, to, loc) = getConnectingComponents(ev);
 	std::stringstream ss;
 	std::string type("default");
 	if (to) {
@@ -253,7 +254,7 @@ void FrxSvgNodeUI::endConnecting(const sdc::events::MouseEvent &ev) {
 	
 	FrxNodePtr from, to;
 	sd::Point2D loc;
-	boost::tie(from, to, loc) = getConnectingComponents(ev);
+	std::tie(from, to, loc) = getConnectingComponents(ev);
 
 	if (!from || !to) {
 		return;

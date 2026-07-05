@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <tuple>
 #include "LuaFrxObject.hpp"
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <gui/components/FrxCircuidView.hpp>
@@ -160,10 +161,10 @@ LuaFrxObject::Ptr LuaFrxObject::getFromLuaStack(lua_State *lua, int index) {
             "missing uuid"
         );
     }
-    boost::tuple<std::string> uid;
+    std::tuple<std::string> uid;
     slua::get(lua, uid);
     lua_pop(lua, 1);
-    LuaFrxObject::Ptr res = getByUId(boost::get<0>(uid));
+    LuaFrxObject::Ptr res = getByUId(std::get<0>(uid));
     if (!res) {
         SAMBAG_THROW(
             sambag::com::exceptions::IllegalStateException,
@@ -237,7 +238,7 @@ fgc::FrxComponent::Ptr LuaFrxObject::getViewObject() const {
             "get: model2view map == NULL"
         );
     }
-    fgc::FrxComponent::Ptr res = boost::dynamic_pointer_cast<fgc::FrxComponent>
+    fgc::FrxComponent::Ptr res = std::dynamic_pointer_cast<fgc::FrxComponent>
         (map->getViewObject(mObj));
     if (!res) {
         SAMBAG_THROW(
@@ -287,7 +288,7 @@ std::string LuaFrxObject::getTypeId(lua_State *lua) {
 //-----------------------------------------------------------------------------
 void LuaFrxObject::addLuaFields(lua_State *lua, int index) {
     Super::addLuaFields(lua, index);
-    uidMap[getUId()] = boost::dynamic_pointer_cast<LuaFrxObject>(shared_from_this());
+    uidMap[getUId()] = std::dynamic_pointer_cast<LuaFrxObject>(shared_from_this());
 
     if (getTypeId().empty()) {
         SAMBAG_THROW(
@@ -318,13 +319,13 @@ void LuaFrxObject::__lua_gc(lua_State *lua) {
     Super::__lua_gc(lua);
 }
 //-----------------------------------------------------------------------------
-boost::tuple<float,float>  LuaFrxObject::getLocation(lua_State *lua) {
+std::tuple<float,float>  LuaFrxObject::getLocation(lua_State *lua) {
     fgc::FrxComponent::Ptr c = getViewObject(lua);
     if (!c) {
-        return boost::make_tuple(0.f, 0.f);
+        return std::make_tuple(0.f, 0.f);
     }
     sd::Point2D p = c->getLocation();
-    return boost::make_tuple(p.x(), p.y());
+    return std::make_tuple(p.x(), p.y());
 }
 //-----------------------------------------------------------------------------
 void LuaFrxObject::setLocation(lua_State *lua, float x, float y) {
@@ -337,13 +338,13 @@ void LuaFrxObject::setLocation(lua_State *lua, float x, float y) {
     SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
-boost::tuple<float,float>  LuaFrxObject::getSize(lua_State *lua) {
+std::tuple<float,float>  LuaFrxObject::getSize(lua_State *lua) {
     fgc::FrxComponent::Ptr c = getViewObject(lua);
     if (!c) {
-        return boost::make_tuple(0.f, 0.f);
+        return std::make_tuple(0.f, 0.f);
     }
     sd::Dimension p = c->getSize();
-    return boost::make_tuple(p.width(), p.height());
+    return std::make_tuple(p.width(), p.height());
 }
 //-----------------------------------------------------------------------------
 void LuaFrxObject::setSize(lua_State *lua, float w, float h) {

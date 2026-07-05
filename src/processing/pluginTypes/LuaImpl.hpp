@@ -16,8 +16,8 @@
 #include <sambag/lua/LuaSequence.hpp>
 #include <sambag/lua/ALuaObject.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
-#include <boost/unordered_map.hpp>
-#include <boost/unordered_set.hpp>
+#include <unordered_map>
+#include <unordered_set>
 #include <processing/parameter/parameter.h>
 #include <loki/Typelist.h>
 #include <sambag/com/Thread.hpp>
@@ -34,7 +34,7 @@ struct _name {                                                                 \
 namespace frx {
 namespace gui { namespace components {
     class FrxScriptPluginEditor;
-    typedef boost::shared_ptr<FrxScriptPluginEditor> ScriptPluginEditorPtr;
+    typedef std::shared_ptr<FrxScriptPluginEditor> ScriptPluginEditorPtr;
 }}
 namespace processing {
 namespace oldPr = ::processing;
@@ -49,9 +49,9 @@ class LuaImpl : public LuaImplBase,
 //=============================================================================
 public:
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<LuaImpl> Ptr;
+    typedef std::shared_ptr<LuaImpl> Ptr;
     //-------------------------------------------------------------------------
-    typedef boost::weak_ptr<LuaImpl> WPtr;
+    typedef std::weak_ptr<LuaImpl> WPtr;
     //-------------------------------------------------------------------------
     typedef frx::scripts::LuaUserData PersistUserData;
     //-------------------------------------------------------------------------
@@ -124,12 +124,12 @@ private:
     //-------------------------------------------------------------------------
     void addToEditor(const std::string &msg);
     //-------------------------------------------------------------------------
-    typedef boost::unordered_set<std::string> Callbacks;
-	typedef boost::tuple<oldPrPa::Parameter::Ptr,
+    typedef std::unordered_set<std::string> Callbacks;
+	typedef std::tuple<oldPrPa::Parameter::Ptr,
         oldPrPa::Parameter::Connection,
         Callbacks> ParameterContainer;
 	//-------------------------------------------------------------------------
-	typedef boost::unordered_map<std::string, ParameterContainer> ParameterMap;
+	typedef std::unordered_map<std::string, ParameterContainer> ParameterMap;
 	//-------------------------------------------------------------------------
 	ParameterMap parameterMap;
     //-------------------------------------------------------------------------
@@ -148,7 +148,7 @@ private:
     typedef sambag::com::RecursiveMutex Mutex;
 	mutable Mutex mutex;
     typedef std::unique_lock<sambag::com::RecursiveMutex> Lock;
-    typedef boost::shared_ptr<Lock> LockPtr;
+    typedef std::shared_ptr<Lock> LockPtr;
     //-------------------------------------------------------------------------
     LockPtr getLock();
     //-------------------------------------------------------------------------

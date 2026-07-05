@@ -28,7 +28,7 @@ FrxCircuidViewUI::Ptr FrxCircuidViewUI::create() {
 }
 //-----------------------------------------------------------------------------
 void FrxCircuidViewUI::installUI(sdc::AComponentPtr c) {
-	FrxCircuidView::Ptr circ = boost::dynamic_pointer_cast<FrxCircuidView>(c);
+	FrxCircuidView::Ptr circ = std::dynamic_pointer_cast<FrxCircuidView>(c);
 	sdc::AContainer::Ptr cont = circ->getContentPane();
 	SAMBAG_ASSERT(cont);
 	cont->sdc::EventSender<sdc::events::MouseEvent>::addTrackedEventListener(

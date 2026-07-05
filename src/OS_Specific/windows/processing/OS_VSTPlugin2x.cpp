@@ -6,6 +6,7 @@
  */
 #ifdef FRX_OS_WINDOWS
 
+#include <tuple>
 #include "OS_VSTPlugin2x.h" 
 #include "processing/pluginTypes/NullAEffect.h"
 #include <boost/tuple/tuple.hpp> // for boost::tie
@@ -144,7 +145,7 @@ std::string OS_VSTPlugNode2x::shellPlugIdOnInit = "";
 bool OS_VSTPlugNode2x::loadModule( const HostCallBackOnInit &_callBkOnInit ) {
 	if ( moduleLocation.length() == 0 ) return false;
 	std::string filename;
-	boost::tie(filename, shellPlugId) = com::extractVSTPluginFilename(moduleLocation);
+	std::tie(filename, shellPlugId) = com::extractVSTPluginFilename(moduleLocation);
 	frx::checkArchWin32(filename);
 	{ // lock scope
 		TRY_TO_LOCK_TIMED (onInitLock)

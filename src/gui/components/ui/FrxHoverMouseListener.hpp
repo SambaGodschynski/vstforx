@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXHOVERMOUSELISTENER_H
 #define SAMBAG_FRXHOVERMOUSELISTENER_H
 #include <sambag/disco/components/Forward.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "FrxSelectionMouseListener.hpp"
 #include <gui/components/FrxHover.hpp>
 #include <gui/HandyNamespaces.hpp>
@@ -23,7 +23,7 @@ class FrxHoverMouseListener : public FrxSelectionMouseListener {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxHoverMouseListener> Ptr;
+	typedef std::shared_ptr<FrxHoverMouseListener> Ptr;
 	//-------------------------------------------------------------------------
 	typedef FrxSelectionMouseListener Super;
 protected:

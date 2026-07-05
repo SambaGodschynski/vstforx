@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <tuple>
 #include "VST3ParameterChanges.hpp"
 #include <boost/foreach.hpp>
 
@@ -30,7 +31,7 @@ void VST3ParamValueQueue::clear()
     if (index>=_points.size()) {
         return Steinberg::kResultFalse;
     }
-    boost::tie(sampleOffset, value) = _points[index];
+    std::tie(sampleOffset, value) = _points[index];
     return Steinberg::kResultOk;
 }
 ::Steinberg::tresult PLUGIN_API VST3ParamValueQueue::addPoint (int32 sampleOffset, ParamValue value, int32 &index)
@@ -38,8 +39,8 @@ void VST3ParamValueQueue::clear()
     for (int32 i = 0; i<_points.size(); ++i) {
         index = i;
         Point &p = _points[i];
-        if (boost::get<0>(p) == sampleOffset) {
-            boost::get<1>(p) = value;
+        if (std::get<0>(p) == sampleOffset) {
+            std::get<1>(p) = value;
         }
         return Steinberg::kResultOk;
     }

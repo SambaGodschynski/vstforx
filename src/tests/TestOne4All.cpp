@@ -5,6 +5,7 @@
  * ===========================================================================================================
  */
 
+#include <tuple>
 #include <cppunit/config/SourcePrefix.h>
 #include "TestOne4All.hpp"
 #include "com/one4All.h"
@@ -22,20 +23,20 @@ void TestOne4All::testExtractVSTPluginFilename() {
 //=============================================================================
 //-----------------------------------------------------------------------------
 	// instr, outstr, outint
-	boost::tuple<std::string, std::string, std::string> in[] = {
-		boost::make_tuple("abc", "abc", ""),
-		boost::make_tuple("abc@123", "abc", "123"),
-		boost::make_tuple("abc@ 123", "abc@ 123", ""),
-		boost::make_tuple("abc@ 123abc", "abc@ 123abc", ""),
-		boost::make_tuple("abc@123abc@123", "abc@123abc", "123"),
-        boost::make_tuple("/Library/Audio/Plug-Ins/VST3/mda.vst3@79F1CDBB1F004396947E35BA22B4FA6D", "/Library/Audio/Plug-Ins/VST3/mda.vst3", "79F1CDBB1F004396947E35BA22B4FA6D"),
-		boost::make_tuple("c:\\Eigene Dateien\\VSTPlugins(x86)\\schnulli.dll", 
+	std::tuple<std::string, std::string, std::string> in[] = {
+		std::make_tuple("abc", "abc", ""),
+		std::make_tuple("abc@123", "abc", "123"),
+		std::make_tuple("abc@ 123", "abc@ 123", ""),
+		std::make_tuple("abc@ 123abc", "abc@ 123abc", ""),
+		std::make_tuple("abc@123abc@123", "abc@123abc", "123"),
+        std::make_tuple("/Library/Audio/Plug-Ins/VST3/mda.vst3@79F1CDBB1F004396947E35BA22B4FA6D", "/Library/Audio/Plug-Ins/VST3/mda.vst3", "79F1CDBB1F004396947E35BA22B4FA6D"),
+		std::make_tuple("c:\\Eigene Dateien\\VSTPlugins(x86)\\schnulli.dll", 
 		 "c:\\Eigene Dateien\\VSTPlugins(x86)\\schnulli.dll", 
 		 ""),
-		boost::make_tuple("c:\\Eigene Dateien\\VSTPlugins(x86)\\schnulli.dll@2333", 
+		std::make_tuple("c:\\Eigene Dateien\\VSTPlugins(x86)\\schnulli.dll@2333", 
 		 "c:\\Eigene Dateien\\VSTPlugins(x86)\\schnulli.dll",
 		 "2333"),
-		boost::make_tuple("c:\\Eigene Dateien\\VSTPlugins(x86)\\schnulli@home.dll@2333", 
+		std::make_tuple("c:\\Eigene Dateien\\VSTPlugins(x86)\\schnulli@home.dll@2333", 
 		 "c:\\Eigene Dateien\\VSTPlugins(x86)\\schnulli@home.dll",
 		 "2333")
 	};
@@ -45,9 +46,9 @@ void TestOne4All::testExtractVSTPluginFilename() {
 
 	for (size_t i=0; i<NUM; ++i) {
 		std::pair<std::string, std::string> res;
-		res = com::extractVSTPluginFilename(boost::get<InStr>(in[i]));
-		CPPUNIT_ASSERT_EQUAL(boost::get<ExpStr>(in[i]), res.first);
-		CPPUNIT_ASSERT_EQUAL(boost::get<ExpInt>(in[i]), res.second);
+		res = com::extractVSTPluginFilename(std::get<InStr>(in[i]));
+		CPPUNIT_ASSERT_EQUAL(std::get<ExpStr>(in[i]), res.first);
+		CPPUNIT_ASSERT_EQUAL(std::get<ExpInt>(in[i]), res.second);
 	}
 }
 //-----------------------------------------------------------------------------

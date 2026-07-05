@@ -12,7 +12,7 @@
 #include <string.h>
 #include <assert.h>
 #include <vector>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <memory>
 
 // TODO: durch ErrorKlassen ersetzen 
@@ -40,7 +40,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef size_t Int;
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<Frames> Ptr;
+	typedef std::shared_ptr<Frames> Ptr;
 	//--------------------------------------------------------------------------------------------------------
 	static const Int CHANNELS = 2;
 private:

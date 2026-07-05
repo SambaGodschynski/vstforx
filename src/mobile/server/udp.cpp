@@ -13,7 +13,7 @@
 #include <string>
 #include <boost/array.hpp>
 #include <boost/bind.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/asio.hpp>
 
 using boost::asio::ip::udp;
@@ -49,7 +49,7 @@ private:
   {
     if (!error || error == boost::asio::error::message_size)
     {
-      boost::shared_ptr<std::string> message(
+      std::shared_ptr<std::string> message(
           new std::string(make_daytime_string()));
 
       socket_.async_send_to(boost::asio::buffer(*message), remote_endpoint_,
@@ -61,7 +61,7 @@ private:
     }
   }
 
-  void handle_send(boost::shared_ptr<std::string> /*message*/,
+  void handle_send(std::shared_ptr<std::string> /*message*/,
       const boost::system::error_code& /*error*/,
       std::size_t /*bytes_transferred*/)
   {

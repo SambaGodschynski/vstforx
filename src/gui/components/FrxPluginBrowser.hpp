@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXPLUGINBROWSER_H
 #define SAMBAG_FRXPLUGINBROWSER_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include "FrxProcessorBrowser.hpp"
 #include <sambag/disco/components/events/ActionEvent.hpp>
@@ -26,9 +26,9 @@ class FrxPluginBrowser : public FrxProcessorBrowser {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxPluginBrowser> Ptr;
+	typedef std::shared_ptr<FrxPluginBrowser> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxPluginBrowser> WPtr;
+	typedef std::weak_ptr<FrxPluginBrowser> WPtr;
 	//-------------------------------------------------------------------------
 	typedef FrxProcessorBrowser Super;
 protected:

@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXSELECTION_H
 #define SAMBAG_FRXSELECTION_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/AContainer.hpp>
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
@@ -30,7 +30,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef sdc::AComponent Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxSelection> Ptr;
+	typedef std::shared_ptr<FrxSelection> Ptr;
 	//-------------------------------------------------------------------------
 	typedef std::list<sdc::AComponent::WPtr> ContentContainer;
 protected:

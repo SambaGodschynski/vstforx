@@ -23,7 +23,7 @@ namespace com {
 class SystemCommand : public Command {
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<SystemCommand> Ptr;
+	typedef std::shared_ptr<SystemCommand> Ptr;
 	//--------------------------------------------------------------------------------------------------------
 	~SystemCommand(){}
 };

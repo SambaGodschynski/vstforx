@@ -4,6 +4,7 @@
  *  Author: Johannes Unger
  * ============================================================================
  */
+#include <tuple>
 #include "processing/processing.h"
 #include "VST3xImpl.h"
 #include "pluginterfaces/base/ipluginbase.h"
@@ -51,7 +52,7 @@ namespace {
         enum { ClassVersion = 1 };
         int classVersion;
         VST3PluginState() : classVersion(ClassVersion) {}
-        typedef boost::tuple<Steinberg::Vst::IComponent*,
+        typedef std::tuple<Steinberg::Vst::IComponent*,
         Steinberg::Vst::IEditController*> Sources;
         void fromSources (const Sources &sources, ::com::oArchive &oa);
         void intoSources (const Sources &sources, ::com::iArchive &ia);
@@ -85,7 +86,7 @@ namespace {
     {
         Steinberg::Vst::IComponent* comp;
         Steinberg::Vst::IEditController* ctrl;
-        boost::tie(comp, ctrl) = sources;
+        std::tie(comp, ctrl) = sources;
         std::string compData = getState(comp);
         std::string ctrlData = getState(ctrl);
         ar << classVersion;
@@ -96,7 +97,7 @@ namespace {
     {
         Steinberg::Vst::IComponent* comp;
         Steinberg::Vst::IEditController* ctrl;
-        boost::tie(comp, ctrl) = sources;
+        std::tie(comp, ctrl) = sources;
         std::string compData;
         std::string ctrlData;
         int archiveVersion;
@@ -130,7 +131,7 @@ VST3PluginImpl::VST3PluginImpl(IHostInfo::Ptr hI,
     , outParameterChanges(NULL)
 {
     std::string path;
-    boost::tie(path, cid) = com::extractVSTPluginFilename(location);
+    std::tie(path, cid) = com::extractVSTPluginFilename(location);
     setModuleLocation(path);
     loadModule();
     if (cid.empty()) {
@@ -414,7 +415,7 @@ namespace {
 #ifdef DISCO_USE_COCOA
         // check if we have a cocoa window
         CocoaWindowImpl::Ptr cocoa =
-        boost::dynamic_pointer_cast<CocoaWindowImpl>(impl);
+        std::dynamic_pointer_cast<CocoaWindowImpl>(impl);
         if (!cocoa) {
             void *res = ::__getHandlerForVstPlugins_(impl->getSystemHandle());
             return std::make_pair((void*)res, Steinberg::kPlatformTypeHWND);
@@ -441,7 +442,7 @@ void VST3PluginImpl::openEditor(sambag::disco::components::WindowPtr win) {
     win->setWindowSize(sd::Dimension(size.getWidth(), size.getHeight()));
     void *hnd = NULL;
     Steinberg::FIDString type = NULL;
-    boost::tie(hnd, type) = getSytemHandle(win, editor);
+    std::tie(hnd, type) = getSytemHandle(win, editor);
     FRX_WARN_ON_FAILURE(editor->attached(hnd, type));
 	viewWindowMap[editor] = win;
     // add event(s)

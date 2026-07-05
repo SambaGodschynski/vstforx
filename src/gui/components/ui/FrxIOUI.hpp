@@ -8,7 +8,8 @@
 #ifndef SAMBAG_FRXIOUI_H
 #define SAMBAG_FRXIOUI_H
 
-#include <boost/shared_ptr.hpp>
+#include <tuple>
+#include <memory>
 #include <gui/components/FrxConcreteIO.hpp>
 #include "FrxNodeUI.hpp"
 #include <gui/HandyNamespaces.hpp>
@@ -50,7 +51,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxNodeUI Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxIOUI> Ptr;
+	typedef std::shared_ptr<FrxIOUI> Ptr;
 	//-------------------------------------------------------------------------
 	typedef _ConcreteIO ConcreteIO;
 protected:
@@ -93,7 +94,7 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 namespace {
 	typedef sds::Style DisplayStyle;
-	typedef boost::tuple<sd::ISurface::Ptr, DisplayStyle> ReturnValue;
+	typedef std::tuple<sd::ISurface::Ptr, DisplayStyle> ReturnValue;
 	template <class IOType>
 	ReturnValue _ioDef(sdc::AComponentPtr c) {
 		return ReturnValue(
@@ -158,7 +159,7 @@ namespace {
 template <class CIO>
 void FrxIOUI<CIO>::drawActiveState(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) 
 {
-	FrxIO::Ptr node = boost::dynamic_pointer_cast<FrxIO>(c);
+	FrxIO::Ptr node = std::dynamic_pointer_cast<FrxIO>(c);
 	if (!node) {
 		return;
 	}
@@ -195,7 +196,7 @@ void FrxIOUI<CIO>::drawDisplay(sd::IDrawContext::Ptr cn, FrxIO::Ptr c)
 template <class CIO>
 void FrxIOUI<CIO>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	Super::draw(cn, c);
-	FrxIO::Ptr io = boost::dynamic_pointer_cast<FrxIO>(c);
+	FrxIO::Ptr io = std::dynamic_pointer_cast<FrxIO>(c);
 	if (hasImage()) {
 		drawImage(cn, c);
 		drawActiveState(cn,c);
@@ -227,7 +228,7 @@ void FrxIOUI<CIO>::installUI(sdc::AComponentPtr c) {
 	pat->addColorStop(col.setA(0.0), 0.0);
 	stateActive = pat;	
 	sd::ISurface::Ptr img;
-	boost::tie(img, displayStyle) = _ioDef<CIO>(c);
+	std::tie(img, displayStyle) = _ioDef<CIO>(c);
 	setImage(img);
 	Super::installUI(c);
 }

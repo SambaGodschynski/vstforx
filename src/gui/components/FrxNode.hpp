@@ -8,10 +8,10 @@
 #ifndef SAMBAG_FRXNODE_H
 #define SAMBAG_FRXNODE_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "FrxComponent.hpp"
 #include <gui/HandyNamespaces.hpp>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <sambag/com/events/PropertyChanged.hpp>
 
 namespace frx { namespace gui { namespace components {
@@ -25,14 +25,14 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxComponent Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxNode> Ptr;
+	typedef std::shared_ptr<FrxNode> Ptr;
 	//-------------------------------------------------------------------------
 	virtual sdcu::AComponentUIPtr createComponentUI(sdcu::ALookAndFeelPtr laf) const;
 protected:
 	//-------------------------------------------------------------------------
 	typedef sce::EventSender<sce::PropertyChanged>::Connection ChildSender;
 	//-------------------------------------------------------------------------
-	typedef boost::unordered_map<sdc::AComponent::Ptr, ChildSender>
+	typedef std::unordered_map<sdc::AComponent::Ptr, ChildSender>
 		ChildSenderMap;
 	ChildSenderMap childSenderMap;
 	//-------------------------------------------------------------------------

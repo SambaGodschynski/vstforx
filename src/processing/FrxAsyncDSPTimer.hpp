@@ -20,11 +20,11 @@ namespace frx { namespace processing {
 
 #else
 #include <sambag/disco/components/Timer.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 namespace frx { namespace processing {
     struct FrxAsyncDSPTimer : public sambag::disco::components::Timer
     {
-        typedef boost::shared_ptr<void> Dummy;
+        typedef std::shared_ptr<void> Dummy;
         typedef Dummy WorkerThreadHolder;
         static Dummy startWorkerThread() {
             return Dummy();

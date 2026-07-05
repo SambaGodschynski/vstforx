@@ -16,7 +16,7 @@
 #include "processing/PObject.h"
 #include <boost/math/special_functions/fpclassify.hpp>
 #include <boost/foreach.hpp>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <boost/functional/hash.hpp>
 namespace processing {
 namespace parameter {
@@ -28,8 +28,8 @@ class HasParameter;
 class Parameter;
 class ConnectionOperator;
 class Inertia;
-typedef boost::shared_ptr<Parameter> ParameterPtr;
-typedef boost::shared_ptr<Inertia> InertiaPtr;
+typedef std::shared_ptr<Parameter> ParameterPtr;
+typedef std::shared_ptr<Inertia> InertiaPtr;
 } // namespace parameter
 } // namespace processing
 
@@ -44,7 +44,7 @@ class HasParameter{
 //============================================================================================================
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<HasParameter> Ptr;
+	typedef std::shared_ptr<HasParameter> Ptr;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param index
@@ -65,7 +65,7 @@ class HasOutParameter{
 //============================================================================================================
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<HasOutParameter> Ptr;
+	typedef std::shared_ptr<HasOutParameter> Ptr;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param index
@@ -88,7 +88,7 @@ class ConnectionOperator {
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<ConnectionOperator> Ptr;
+	typedef std::shared_ptr<ConnectionOperator> Ptr;
 	//--------------------------------------------------------------------------------------------------------
 	typedef std::list<ConnectionOperator::Ptr> Container; 
 private:
@@ -145,10 +145,10 @@ class ParameterConnection : public HasParameter {
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<ParameterConnection> Ptr;
+	typedef std::shared_ptr<ParameterConnection> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
-	boost::weak_ptr<ParameterConnection> self;
+	std::weak_ptr<ParameterConnection> self;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * Initalisiert Listener.
@@ -184,7 +184,7 @@ private:
 		}
 	}
     //--------------------------------------------------------------------------------------------------------
-    typedef boost::shared_ptr<void> TweenPtr;
+    typedef std::shared_ptr<void> TweenPtr;
     TweenPtr _tween;
 	//--------------------------------------------------------------------------------------------------------
 	ParameterPtr a, b;
@@ -335,7 +335,7 @@ struct ParameterConnectionSetHash
  * Container fuer ParameterConnection. Nimmt keine Verbindung doppelt auf. 
  */
 class ParameterConnectionSet : 
-	public boost::unordered_map<
+	public std::unordered_map<
 			std::pair<ParameterPtr, ParameterPtr>,
 			ParameterConnection::Ptr, 
 			ParameterConnectionSetHash,
@@ -346,7 +346,7 @@ friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::unordered_map<
+	typedef std::unordered_map<
 			std::pair<ParameterPtr, ParameterPtr>,
 			ParameterConnection::Ptr, 
 			ParameterConnectionSetHash,
@@ -411,7 +411,7 @@ private:
 	void save( Archive &ar, const unsigned int version ) const {
 		//unordered_set mit spezalisiertem hash-creator(H)
 		//und comparator(P) konnte nicht serialisert werden:
-		//'serialize': Ist kein Element von 'boost::unordered_set<T,H,P>'
+		//'serialize': Ist kein Element von 'std::unordered_set<T,H,P>'
 		//ar & boost::serialization::base_object<Base> (*this);
 		std::list<ParameterConnection::Ptr>  l;
 		BOOST_FOREACH(const Base::value_type &obj, *this) {
@@ -429,7 +429,7 @@ private:
 	void load( Archive &ar, const unsigned int version ) {
 		//unordered_set mit spezalisiertem hash-creator(H)
 		//und comparator(P) konnte nicht serialisert werden:
-		//'serialize': Ist kein Element von 'boost::unordered_set<T,H,P>'
+		//'serialize': Ist kein Element von 'std::unordered_set<T,H,P>'
 		//ar & boost::serialization::base_object<Base> (*this);
 		std::list<ParameterConnection::Ptr>  l;
 		ar & l;
@@ -455,9 +455,9 @@ class Parameter :
 friend class boost::serialization::access; 
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<Parameter> Ptr;
+	typedef std::shared_ptr<Parameter> Ptr;
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::weak_ptr<Parameter> WPtr;
+	typedef std::weak_ptr<Parameter> WPtr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	typedef Parameter* U; //verbundener Parameter

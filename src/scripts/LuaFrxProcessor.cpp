@@ -28,7 +28,7 @@ void LuaFrxProcessor::openCloseEditor(lua_State *lua) {
     using namespace frx::gui::components;
     try {
         FrxProcessorNode::Ptr obj =
-            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
+            std::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
         FrxCircuidView::Ptr view = obj->getFirstContainer<FrxCircuidView>();
         IFrxControl &frxctrl = getFrxControl(view);
         frxctrl.openClosePluginEditor(view, obj);
@@ -44,7 +44,7 @@ slua::IgnoreReturn LuaFrxProcessor::getInputs(lua_State *lua) {
     using namespace frx::gui::components;
     try {
         FrxProcessorNode::Ptr obj =
-            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
+            std::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
         IViewModelMap::Ptr map;
         map = getViewModelMap();
         const FrxProcessorNode::IOContainer &cont = obj->getInputs();
@@ -71,7 +71,7 @@ slua::IgnoreReturn LuaFrxProcessor::getOutputs(lua_State *lua) {
     using namespace frx::gui::components;
     try {
         FrxProcessorNode::Ptr obj =
-            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
+            std::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
         IViewModelMap::Ptr map;
         map = getViewModelMap();
         const FrxProcessorNode::IOContainer &cont = obj->getOutputs();
@@ -128,7 +128,7 @@ slua::IgnoreReturn LuaFrxProcessor::addInput(lua_State *lua, bool follow) {
     using namespace frx::gui::components;
     try {
         FrxProcessorNode::Ptr obj =
-            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
+            std::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
         FrxCircuidView::Ptr view = obj->getFirstContainer<FrxCircuidView>();
         if (!view) {
             lua_pushnil(lua);
@@ -156,7 +156,7 @@ slua::IgnoreReturn LuaFrxProcessor::addOutput(lua_State *lua, bool follow) {
     using namespace frx::gui::components;
     try {
         FrxProcessorNode::Ptr obj =
-            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
+            std::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
         FrxCircuidView::Ptr view = obj->getFirstContainer<FrxCircuidView>();
         if (!view) {
             lua_pushnil(lua);
@@ -184,7 +184,7 @@ int LuaFrxProcessor::getNumInputs(lua_State *lua) {
     using namespace frx::gui::components;
     try {
         FrxProcessorNode::Ptr obj =
-            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
+            std::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
         return obj->getInputs().size();
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua, ex.what());
@@ -199,7 +199,7 @@ int LuaFrxProcessor::getNumOutputs(lua_State *lua) {
     using namespace frx::gui::components;
     try {
         FrxProcessorNode::Ptr obj =
-            boost::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
+            std::dynamic_pointer_cast<FrxProcessorNode>(getViewObject());
         return obj->getOutputs().size();
     } catch(const std::exception &ex) {
         slua::pushLuaError(lua, ex.what());
@@ -234,7 +234,7 @@ std::string LuaFrxProcessor::getPluginLocation(lua_State *lua) {
     using namespace frx::processing;
     try {
         IPluginAdapter::Ptr obj =
-            boost::dynamic_pointer_cast<IPluginAdapter>(getModelObject());
+            std::dynamic_pointer_cast<IPluginAdapter>(getModelObject());
         if (!obj) {
             return "";
         }
@@ -253,7 +253,7 @@ sambag::lua::IgnoreReturn LuaFrxProcessor::serialize(lua_State *lua) {
 	using namespace frx::processing;
 	try {
 		ProcessorAdapter::Ptr obj =
-			boost::dynamic_pointer_cast<ProcessorAdapter>(getModelObject());
+			std::dynamic_pointer_cast<ProcessorAdapter>(getModelObject());
 		if (!obj || !obj->supportsPresetSerialization()) {
 			return sambag::lua::IgnoreReturn();
 		}
@@ -275,7 +275,7 @@ void LuaFrxProcessor::deserialize(lua_State *lua) {
 	using namespace frx::processing;
 	try {
 		ProcessorAdapter::Ptr obj =
-			boost::dynamic_pointer_cast<ProcessorAdapter>(getModelObject());
+			std::dynamic_pointer_cast<ProcessorAdapter>(getModelObject());
 		if (!obj || !obj->supportsPresetSerialization()) {
 			return;
 		}
@@ -315,7 +315,7 @@ std::string LuaFrxProcessor::sendMessage(lua_State *lua, const std::string &msg)
     using namespace frx::processing;
     try {
         IPluginAdapter::Ptr obj =
-            boost::dynamic_pointer_cast<IPluginAdapter>(getModelObject());
+            std::dynamic_pointer_cast<IPluginAdapter>(getModelObject());
         if (!obj) {
             return "";
         }

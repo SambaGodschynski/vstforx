@@ -6,7 +6,7 @@
  */
 
 #include <com/Serialization.h>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <processing/concreteAdapter/Volume.h>
 #include <processing/legacy/VSTPlugin2x.h>
 #include <processing/concreteAdapter/Pan.h>

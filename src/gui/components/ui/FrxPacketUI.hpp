@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXPACKETUI_H
 #define SAMBAG_FRXPACKETUI_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "FrxNodeUI.hpp"
 #include <sambag/disco/components/PopupMenu.hpp>
 #include <sambag/disco/IResourceManager.hpp>
@@ -31,9 +31,9 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxNodeUI Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxPacketUI> Ptr;
+	typedef std::shared_ptr<FrxPacketUI> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxPacketUI> WPtr;
+	typedef std::weak_ptr<FrxPacketUI> WPtr;
 protected:
 	//-------------------------------------------------------------------------
 	FrxPacketUI();

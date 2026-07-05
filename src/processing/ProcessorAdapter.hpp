@@ -8,8 +8,7 @@
 #ifndef SAMBAG_PROCESSORADAPTER_H
 #define SAMBAG_PROCESSORADAPTER_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include "IProcessor.hpp"
 #include <sambag/com/Exception.hpp>
 #include "ParameterAdapter.hpp"
@@ -45,9 +44,9 @@ private:
 	}
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<ProcessorAdapter> Ptr;
+	typedef std::shared_ptr<ProcessorAdapter> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<ProcessorAdapter> WPtr;
+	typedef std::weak_ptr<ProcessorAdapter> WPtr;
 	//-------------------------------------------------------------------------
 	typedef ::processing::ProcessAdapter Adaptee;
 	//-------------------------------------------------------------------------
@@ -89,7 +88,7 @@ public:
     virtual std::string getName() const;
 	//-------------------------------------------------------------------------
 	virtual IProcessor::Ptr getPtr() const {
-		return boost::dynamic_pointer_cast<IProcessor>( self.lock() );
+		return std::dynamic_pointer_cast<IProcessor>( self.lock() );
 	}
 	//-------------------------------------------------------------------------
 	static Ptr create(Adaptee::Ptr a = Adaptee::Ptr()) {

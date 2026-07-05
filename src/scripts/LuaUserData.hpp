@@ -8,8 +8,7 @@
 #ifndef SAMBAG_LUAUSERDATA_H
 #define SAMBAG_LUAUSERDATA_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/archive/basic_archive.hpp>
 #include <boost/property_tree/ptree_serialization.hpp>

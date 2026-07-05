@@ -8,8 +8,7 @@
 #ifndef SAMBAG_FRXCOMPONENTUI_H
 #define SAMBAG_FRXCOMPONENTUI_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/ui/AComponentUI.hpp>
 #include <sambag/disco/components/Forward.hpp>
 #include <sambag/disco/svg/Style.hpp>
@@ -30,9 +29,9 @@ public:
 	//-------------------------------------------------------------------------
 	typedef AComponentUI Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxComponentUI> Ptr;
+	typedef std::shared_ptr<FrxComponentUI> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxComponentUI> WPtr;
+	typedef std::weak_ptr<FrxComponentUI> WPtr;
 protected:
 	//-------------------------------------------------------------------------
 	void postConstructor(Ptr self);

@@ -8,7 +8,6 @@
 #include "MobileServer.hpp"
 #include <boost/xpressive/xpressive.hpp>
 #include <boost/bind.hpp>
-#include <boost/enable_shared_from_this.hpp>
 #include <sambag/com/Common.hpp>
 
 namespace frx { namespace mobile {
@@ -41,11 +40,11 @@ void parseRequest(const std::string &req, MobileServer::Request &out) {
 }
 ///////////////////////////////////////////////////////////////////////////////
 class MobileServer::TcpConnection
-  : public boost::enable_shared_from_this<TcpConnection>
+  : public std::enable_shared_from_this<TcpConnection>
 {
 public:
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<TcpConnection> Ptr;
+    typedef std::shared_ptr<TcpConnection> Ptr;
     //-------------------------------------------------------------------------
     static Ptr create(boost::asio::io_service& io_service,
         const MobileServer::RequestHandlers &handlers) {

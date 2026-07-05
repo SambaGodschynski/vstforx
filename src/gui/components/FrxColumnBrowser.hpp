@@ -8,8 +8,7 @@
 #ifndef SAMBAG_FRXCOLUMNBROWSER_H
 #define SAMBAG_FRXCOLUMNBROWSER_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/FramedWindow.hpp>
 #include <sambag/disco/components/ColumnBrowser.hpp>
 #include <sambag/disco/components/Forward.hpp>
@@ -125,13 +124,13 @@ struct FrxBrowserCellRenderer :
 	//-------------------------------------------------------------------------
 	typedef FrxBrowserCellRenderer<T> Class;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<Class> Ptr;
+	typedef std::shared_ptr<Class> Ptr;
 	//-------------------------------------------------------------------------
 	SAMBAG_STD_STATIC_COMPONENT_CREATOR(Class)
 	//-------------------------------------------------------------------------
 	template <class ListType>
 	sdc::AComponentPtr getListCellRendererComponent(
-			boost::shared_ptr<ListType> list, // the list
+			std::shared_ptr<ListType> list, // the list
 			const T &value, // value to display
 			int index, // cell index
 			bool isSelected, // is the cell selected
@@ -151,7 +150,7 @@ struct FrxBrowserCellRenderer :
 template <class T>
 template <class ListType>
 sdc::AComponentPtr FrxBrowserCellRenderer<T>::getListCellRendererComponent(
-	boost::shared_ptr<ListType> list, // the list
+	std::shared_ptr<ListType> list, // the list
 	const T &value, // value to display
 	int index, // cell index
 	bool isSelected, // is the cell selected
@@ -197,9 +196,9 @@ public:
 	//-------------------------------------------------------------------------
 	typedef BrowserNodeData T;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxColumnBrowser> Ptr;
+	typedef std::shared_ptr<FrxColumnBrowser> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxColumnBrowser> WPtr;
+	typedef std::weak_ptr<FrxColumnBrowser> WPtr;
 	//-------------------------------------------------------------------------
 	sdcu::AComponentUIPtr createComponentUI(sdcu::ALookAndFeelPtr laf) const;
 	//-------------------------------------------------------------------------
@@ -233,7 +232,7 @@ public:
     virtual ~FrxColumnBrowser();
 	//-------------------------------------------------------------------------
 	Ptr getPtr() {
-		return boost::dynamic_pointer_cast<FrxColumnBrowser>(AComponent::getPtr());
+		return std::dynamic_pointer_cast<FrxColumnBrowser>(AComponent::getPtr());
 	}
 	//-------------------------------------------------------------------------
 	sdc::AContainerPtr getButtonPane() const {

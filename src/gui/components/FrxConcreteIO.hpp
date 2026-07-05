@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXCONCRETEIO_H
 #define SAMBAG_FRXCONCRETEIO_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "FrxIO.hpp"
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 
@@ -30,7 +30,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxIO Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxConcreteIO> Ptr;
+	typedef std::shared_ptr<FrxConcreteIO> Ptr;
 	//-------------------------------------------------------------------------
 	typedef _IOType IOType;
 protected:

@@ -12,8 +12,8 @@
 #ifndef SAMBAG_LuaFrxViewBase_H
 #define SAMBAG_LuaFrxViewBase_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <tuple>
+#include <memory>
 #include <sambag/lua/Lua.hpp>
 #include <loki/Typelist.h>
 #include <sambag/lua/ALuaObject.hpp>
@@ -28,11 +28,11 @@ public:
     //-------------------------------------------------------------------------
     typedef sambag::lua::ALuaObject Super;
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<LuaFrxViewBase> Ptr;
+    typedef std::shared_ptr<LuaFrxViewBase> Ptr;
     //-------------------------------------------------------------------------
-    typedef boost::weak_ptr<LuaFrxViewBase> WPtr;
+    typedef std::weak_ptr<LuaFrxViewBase> WPtr;
     //-------------------------------------------------------------------------
-    typedef  boost::tuple<float, float>  Point;
+    typedef  std::tuple<float, float>  Point;
 	
 private:
 protected:

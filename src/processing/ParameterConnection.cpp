@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <tuple>
 #include "ParameterConnection.hpp"
 #include "ParameterAdapter.hpp"
 #include <processing/parameter/ConnectionOperators.h>
@@ -21,8 +22,8 @@ ParameterConnection::Ptr
 ParameterConnection::createConnection(IParameter::Ptr _a, 
 	IParameter::Ptr _b)
 {
-	ParameterAdapter::Ptr a = boost::dynamic_pointer_cast<ParameterAdapter>(_a);
-	ParameterAdapter::Ptr b = boost::dynamic_pointer_cast<ParameterAdapter>(_b);
+	ParameterAdapter::Ptr a = std::dynamic_pointer_cast<ParameterAdapter>(_a);
+	ParameterAdapter::Ptr b = std::dynamic_pointer_cast<ParameterAdapter>(_b);
 	Ptr res = create();
 	res->src = a;
 	res->dst = b;
@@ -75,7 +76,7 @@ void ParameterConnection::getParameterCnOpTypeIds(ParameterCnOpTypeIds &out) {
 //-----------------------------------------------------------------------------
 void ParameterConnection::initConnectionParameter() {
     using namespace ::processing::parameter;
-	HasParameter::Ptr hp = boost::dynamic_pointer_cast<HasParameter>(cn);
+	HasParameter::Ptr hp = std::dynamic_pointer_cast<HasParameter>(cn);
 	if (!hp) {
 		return;
 	}
@@ -98,7 +99,7 @@ addParameterCnOp(const ParameterCnOpTypeId &opId)
 	cn->addOperator(op);
     operators.push_back(op);
 	HasParameter::Ptr hp = 
-		boost::dynamic_pointer_cast<HasParameter>(op);
+		std::dynamic_pointer_cast<HasParameter>(op);
 	if (!hp) {
 		return;
 	}
@@ -138,7 +139,7 @@ void ParameterConnection::removeConnectionOp(size_t index) {
     
     // remove op parameter
     using namespace ::processing::parameter;
-	HasParameter::Ptr hp = boost::dynamic_pointer_cast<HasParameter>(op);
+	HasParameter::Ptr hp = std::dynamic_pointer_cast<HasParameter>(op);
 	if (!hp) {
 		return;
 	}
@@ -177,7 +178,7 @@ getParameters(const ParameterGroupKey &key, Parameters &out) const
 		return;
 	}
 	ParameterGroupMap::const_iterator it, end;
-	boost::tie(it, end) = parameters.equal_range(key);
+	std::tie(it, end) = parameters.equal_range(key);
 	out.reserve(parameters.count(key));
 	for (; it!=end; ++it) {
 		out.push_back(it->second);

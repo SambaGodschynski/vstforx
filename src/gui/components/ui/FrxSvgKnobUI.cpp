@@ -93,14 +93,14 @@ void FrxSvgKnobUI::installUI(sdc::AComponentPtr c) {
     SAMBAG_ASSERT(handle);
     this->handle = handle;
     // remove encapsulated ctrl from view
-    FrxParameter::Ptr par = boost::dynamic_pointer_cast<FrxParameter>(c);
+    FrxParameter::Ptr par = std::dynamic_pointer_cast<FrxParameter>(c);
     SAMBAG_ASSERT(par);
     sdc::AComponent::Ptr enc = par->getEncapsulatedCtrl();
     SAMBAG_ASSERT(enc);
     par->remove(enc);
     // set encapsulated ctrl as svg knob model
     sdc::DefaultBoundedRangeModel::Ptr model =
-        boost::dynamic_pointer_cast<sdc::DefaultBoundedRangeModel>(enc);
+        std::dynamic_pointer_cast<sdc::DefaultBoundedRangeModel>(enc);
     SAMBAG_ASSERT(model);
     main->setModel(model);
     // corona-knob

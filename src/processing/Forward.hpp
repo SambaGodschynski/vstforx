@@ -8,40 +8,39 @@
 #ifndef FRX_PROCESSING_FORWARD_H
 #define FRX_PROCESSING_FORWARD_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 
 namespace processing {
 	class ProcessAdapter;
-	typedef boost::shared_ptr<ProcessAdapter> ProcessAdapterPtr;
-	typedef boost::weak_ptr<ProcessAdapter> ProcessAdapterWPtr;
+	typedef std::shared_ptr<ProcessAdapter> ProcessAdapterPtr;
+	typedef std::weak_ptr<ProcessAdapter> ProcessAdapterWPtr;
 	class ProcessorNode;
-	typedef boost::shared_ptr<ProcessorNode> ProcessorNodePtr;
-	typedef boost::weak_ptr<ProcessorNode> ProcessorNodeWPtr;
+	typedef std::shared_ptr<ProcessorNode> ProcessorNodePtr;
+	typedef std::weak_ptr<ProcessorNode> ProcessorNodeWPtr;
 }
 
 namespace frx { namespace processing {
 	class ModelObject;
-	typedef boost::shared_ptr<ModelObject> ModelObjectPtr;
-	typedef boost::weak_ptr<ModelObject> ModelObjectWPtr;
+	typedef std::shared_ptr<ModelObject> ModelObjectPtr;
+	typedef std::weak_ptr<ModelObject> ModelObjectWPtr;
 	class ProcessorAdapter;
-	typedef boost::shared_ptr<ProcessorAdapter> ProcessorAdapterPtr;
-	typedef boost::weak_ptr<ProcessorAdapter> ProcessorAdapterWPtr;
+	typedef std::shared_ptr<ProcessorAdapter> ProcessorAdapterPtr;
+	typedef std::weak_ptr<ProcessorAdapter> ProcessorAdapterWPtr;
 	class NodeAdapter;
-	typedef boost::shared_ptr<NodeAdapter> NodeAdapterPtr;
-	typedef boost::weak_ptr<NodeAdapter> NodeAdapterWPtr;
+	typedef std::shared_ptr<NodeAdapter> NodeAdapterPtr;
+	typedef std::weak_ptr<NodeAdapter> NodeAdapterWPtr;
 	class ParameterAdapter;
-	typedef boost::shared_ptr<ParameterAdapter> ParameterAdapterPtr;
-	typedef boost::weak_ptr<ParameterAdapter> ParameterAdapterWPtr;
+	typedef std::shared_ptr<ParameterAdapter> ParameterAdapterPtr;
+	typedef std::weak_ptr<ParameterAdapter> ParameterAdapterWPtr;
 	class PluginAdapter;
-	typedef boost::shared_ptr<PluginAdapter> PluginAdapterPtr;
-	typedef boost::weak_ptr<PluginAdapter> PluginAdapterWPtr;
+	typedef std::shared_ptr<PluginAdapter> PluginAdapterPtr;
+	typedef std::weak_ptr<PluginAdapter> PluginAdapterWPtr;
 	class NodeConnection;
-	typedef boost::shared_ptr<NodeConnection> NodeConnectionPtr;
-	typedef boost::weak_ptr<NodeConnection> NodeConnectionWPtr;
+	typedef std::shared_ptr<NodeConnection> NodeConnectionPtr;
+	typedef std::weak_ptr<NodeConnection> NodeConnectionWPtr;
 	class ParameterConnection;
-	typedef boost::shared_ptr<ParameterConnection> ParameterConnectionPtr;
-	typedef boost::weak_ptr<ParameterConnection> ParameterConnectionWPtr;
+	typedef std::shared_ptr<ParameterConnection> ParameterConnectionPtr;
+	typedef std::weak_ptr<ParameterConnection> ParameterConnectionWPtr;
 }}
 
 #endif /* FRX_PROCESSING_FORWARD_H */

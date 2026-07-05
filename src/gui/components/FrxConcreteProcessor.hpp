@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXPLUGINNODE_H
 #define SAMBAG_FRXPLUGINNODE_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "FrxProcessorNode.hpp"
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
 #include <gui/HandyNamespaces.hpp>
@@ -59,7 +59,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxConcreteProcessor<ProcessorType> ConcreteProcessor;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<ConcreteProcessor> Ptr;
+	typedef std::shared_ptr<ConcreteProcessor> Ptr;
 protected:
 	//-------------------------------------------------------------------------
 	FrxConcreteProcessor() {
@@ -96,7 +96,7 @@ public:
 	}
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::dynamic_pointer_cast<ConcreteProcessor>(Super::getPtr());
+		return std::dynamic_pointer_cast<ConcreteProcessor>(Super::getPtr());
 	}
 	//-------------------------------------------------------------------------
 	static Ptr create() {

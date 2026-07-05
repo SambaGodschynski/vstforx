@@ -59,7 +59,7 @@ void FrxSvgPluginUI::installListeners(sdc::AComponent::Ptr c) {
         return;
     }
 	typedef sce::EventSender<sdc::events::ActionEvent> AcSender;
-    boost::shared_ptr<sdc::DefaultButtonModell> model =
+    std::shared_ptr<sdc::DefaultButtonModell> model =
         main->getModel<sdc::DefaultButtonModell>();
     if (!model) {
         return;

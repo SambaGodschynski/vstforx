@@ -108,9 +108,9 @@ class VST3PluginImpl :
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-    typedef boost::shared_ptr<VST3PluginImpl> Ptr;
+    typedef std::shared_ptr<VST3PluginImpl> Ptr;
     //-------------------------------------------------------------------------
-    typedef boost::weak_ptr<VST3PluginImpl> WPtr;
+    typedef std::weak_ptr<VST3PluginImpl> WPtr;
 protected:
 	//-------------------------------------------------------------------------
     /**
@@ -159,7 +159,7 @@ private:
     VST3ParameterChanges *inParameterChanges, *outParameterChanges;
     std::string cid;
     mutable std::string __tempStateData;
-    typedef boost::unordered_map<Steinberg::Vst::ParamID, int> VstParam2Index;
+    typedef std::unordered_map<Steinberg::Vst::ParamID, int> VstParam2Index;
     VstParam2Index indexMap;
     void valueChanged(void *src, const float &value);
     /**

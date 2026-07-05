@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FrxSvgIOUI_H
 #define SAMBAG_FrxSvgIOUI_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <gui/components/FrxConcreteIO.hpp>
 #include "FrxSvgNodeUI.hpp"
 #include <gui/HandyNamespaces.hpp>
@@ -31,7 +31,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxSvgNodeUI Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxSvgIOUI> Ptr;
+	typedef std::shared_ptr<FrxSvgIOUI> Ptr;
 protected:
 	//-------------------------------------------------------------------------
 	typedef FrxSvgIOUI ThisClassType;
@@ -40,7 +40,7 @@ protected:
     //-------------------------------------------------------------------------
     void onProperty(const sce::PropertyChanged &ev);
     //-------------------------------------------------------------------------
-    boost::weak_ptr<sd::IDrawable> _state, _display;
+    std::weak_ptr<sd::IDrawable> _state, _display;
     //-------------------------------------------------------------------------
     void setDisplay(const std::string &txt);
 public:

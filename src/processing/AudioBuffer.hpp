@@ -8,7 +8,7 @@
 #ifndef SAMBAG_AUDIOBUFFER_H
 #define SAMBAG_AUDIOBUFFER_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/circular_buffer.hpp>
 #include <boost/static_assert.hpp>
 #include <memory>

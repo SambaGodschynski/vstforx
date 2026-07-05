@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <tuple>
 #include "TestIPSession.hpp"
 #include <cppunit/config/SourcePrefix.h>
 #include <processing/interprocess/Session.hpp>
@@ -84,7 +85,7 @@ struct HostSession : Session {
             std::string ret("no luck, try again");
             void * data;
             TransferReceiverGuardPtr guard;
-            boost::tie(data, guard) = getTransferedData(OpCpyLongString::OPC);
+            std::tie(data, guard) = getTransferedData(OpCpyLongString::OPC);
             if (data) {
                 int byteSize = getTransferedDataSize(OpCpyLongString::OPC);
                 char *toString = new char[byteSize+1];
@@ -131,7 +132,7 @@ struct ClientSession : Session {
         waitForProcess(OpCpyLongString::OPC, getMemoryGuard(), 5*1000);
         void * data;
         TransferReceiverGuardPtr guard;
-        boost::tie(data, guard) = getTransferedData(OpCpyLongString::OPC);
+        std::tie(data, guard) = getTransferedData(OpCpyLongString::OPC);
         std::string res;
         if (!data) {
             return "";
@@ -171,7 +172,7 @@ struct ClientSession : Session {
 void th_host(std::string sId) {
     HostSession session(sId);
     while(session.isRunning) {
-        boost::this_thread::sleep(boost::posix_time::millisec(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 }
 } // namespace
@@ -185,8 +186,8 @@ namespace tests {
 void TestIPSession::testSession() {
     using frx::processing::interprocess::SessionManager;
     std::string sId("testSession-"+SessionManager::createUniqueName());
-    boost::thread host( boost::bind( &th_host, sId ));
-    boost::this_thread::sleep(boost::posix_time::millisec(1000));
+    std::thread host(&th_host, sId);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     ClientSession session(sId);
     CPPUNIT_ASSERT_EQUAL( (int)2, session.add(1, 1) );
     CPPUNIT_ASSERT_EQUAL( (int)20, session.add(10, 10) );
@@ -205,8 +206,8 @@ void TestIPSession::testNoHost() {
 void TestIPSession::testHostLost() {
     using frx::processing::interprocess::SessionManager;
     std::string sId("testHostLost-"+SessionManager::createUniqueName());
-    boost::thread host( boost::bind( &th_host, sId ));
-    boost::this_thread::sleep(boost::posix_time::millisec(1000));
+    std::thread host(&th_host, sId);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     ClientSession session(sId);
     CPPUNIT_ASSERT_EQUAL( (int)2, session.add(1, 1) );
     session.closeHost();
@@ -225,8 +226,8 @@ void TestIPSession::testFailures() {
     }
     { // cause overload
         std::string sId("testFailures3-"+SessionManager::createUniqueName());
-        boost::thread host( boost::bind( &th_host, sId ));
-        boost::this_thread::sleep(boost::posix_time::millisec(1000));
+        std::thread host(&th_host, sId);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
         ClientSession session(sId);
         
         session.causeChannelOverload = true;
@@ -240,8 +241,8 @@ void TestIPSession::testFailures() {
 /*void TestIPSession::testTransferData() {
     using frx::processing::interprocess::SessionManager;
     std::string sId("testTransferData."+SessionManager::createUniqueName());
-    boost::thread host( boost::bind( &th_host, sId ));
-    boost::this_thread::sleep(boost::posix_time::millisec(1000));
+    std::thread host(&th_host, sId);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     ClientSession session(sId);
     
     CPPUNIT_ASSERT_EQUAL(std::string("hallo received."), session.transferString("hallo"));

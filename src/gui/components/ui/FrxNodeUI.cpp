@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <tuple>
 #include "FrxNodeUI.hpp"
 #include <gui/components/FrxConcreteProcessor.hpp>
 #include <gui/components/FrxConcreteParameter.hpp>
@@ -35,7 +36,7 @@ bool FrxNodeUI::contains(sdc::AComponentPtr c, const sd::Point2D &p) {
 }
 //-----------------------------------------------------------------------------
 bool FrxNodeUI::hitsCorona(sdc::AComponentPtr c, const sd::Point2D &p) const {
-	FrxComponent::Ptr node = boost::dynamic_pointer_cast<FrxComponent>(c);
+	FrxComponent::Ptr node = std::dynamic_pointer_cast<FrxComponent>(c);
 	sd::Coordinate x = p.x() - node->getPivot().x();
 	sd::Coordinate y = p.y() - node->getPivot().y();
 	sd::Coordinate radius = getCoronaRadius(c);
@@ -43,7 +44,7 @@ bool FrxNodeUI::hitsCorona(sdc::AComponentPtr c, const sd::Point2D &p) const {
 }
 //-----------------------------------------------------------------------------
 bool FrxNodeUI::hitsCore(sdc::AComponentPtr c, const sd::Point2D &p) const {
-	FrxComponent::Ptr node = boost::dynamic_pointer_cast<FrxComponent>(c);
+	FrxComponent::Ptr node = std::dynamic_pointer_cast<FrxComponent>(c);
 	sd::Coordinate x = p.x() - node->getPivot().x();
 	sd::Coordinate y = p.y() - node->getPivot().y();
 	sd::Coordinate radius = getCoreRadius(c);
@@ -57,7 +58,7 @@ void FrxNodeUI::installListeners(sdc::AComponent::Ptr c) {
 		getPtr()
 	);
 	sdc::AContainer::Ptr cont = 
-		boost::dynamic_pointer_cast<sdc::AContainer>(c);
+		std::dynamic_pointer_cast<sdc::AContainer>(c);
 	if (!cont) {
 		return;
 	}
@@ -119,7 +120,7 @@ void FrxNodeUI::drawCorona(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	sd::ColorRGBA coronaCol = 
 		sdcu::getUIPropertyCached<FrxNodeCoronaPropertyTag>(sd::ColorRGBA());
 	coronaCol.setA(getCoronaAlpha());
-	FrxComponent::Ptr node = boost::dynamic_pointer_cast<FrxComponent>(c);
+	FrxComponent::Ptr node = std::dynamic_pointer_cast<FrxComponent>(c);
 	sd::Point2D loc = node->getPivot();
 	double rCore = getCoreRadius(c), rCorona = getCoronaRadius(c);
 	// clip
@@ -164,7 +165,7 @@ void FrxNodeUI::beginConnecting(const sdc::events::MouseEvent &ev) {
 	if (!circ->containsComponent(toConnect))
 		circ->add(toConnect, FrxCircuidView::Z_InteractiveStuff);
 	// setline coord.
-	FrxComponent::Ptr frxC = boost::dynamic_pointer_cast<FrxComponent>(c);
+	FrxComponent::Ptr frxC = std::dynamic_pointer_cast<FrxComponent>(c);
 	SAMBAG_ASSERT(frxC);
 	sd::Point2D loc = frxC->getPivot();
 	boost::geometry::add_point(loc, frxC->getLocation());
@@ -226,16 +227,16 @@ FrxNodeUI::getConnectingComponents(const sdc::events::MouseEvent &ev)
 	if (!circ)
 		return res;
 	// uset usr message
-	boost::get<0>(res) = boost::dynamic_pointer_cast<FrxNode>(c);
+	std::get<0>(res) = std::dynamic_pointer_cast<FrxNode>(c);
 	const sd::Point2D &loc = 
 		circ->getViewport()->getView()->getLocationOnComponent(ev.getLocationOnScreen());
 	
-	boost::get<1>(res) = boost::dynamic_pointer_cast<FrxNode>(
+	std::get<1>(res) = std::dynamic_pointer_cast<FrxNode>(
 		circ->findComponentOnPoint(loc, 
 		FrxCircuidView::ZArea_BeginNodes, 
 		FrxCircuidView::ZArea_EndNodes)
 	);
-	boost::get<2>(res) = loc;
+	std::get<2>(res) = loc;
 	return res;
 }
 //-----------------------------------------------------------------------------
@@ -246,7 +247,7 @@ void FrxNodeUI::connecting(const sdc::events::MouseEvent &ev) {
 	
 	FrxNodePtr from, to;
 	sd::Point2D loc;
-	boost::tie(from, to, loc) = getConnectingComponents(ev);
+	std::tie(from, to, loc) = getConnectingComponents(ev);
 	std::stringstream ss;
 	std::string type("default");
 	if (to) {
@@ -279,7 +280,7 @@ void FrxNodeUI::endConnecting(const sdc::events::MouseEvent &ev) {
 	
 	FrxNodePtr from, to;
 	sd::Point2D loc;
-	boost::tie(from, to, loc) = getConnectingComponents(ev);
+	std::tie(from, to, loc) = getConnectingComponents(ev);
 
 	if (!from || !to) {
 		return;

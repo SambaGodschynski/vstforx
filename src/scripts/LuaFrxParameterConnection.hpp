@@ -7,7 +7,7 @@
 #ifndef FORX_LuaFrxParameterConnection_H
 #define FORX_LuaFrxParameterConnection_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "LuaFrxConnection.hpp"
 #include <gui/ViewFactory.hpp>
 #include <com/one4All.h>
@@ -22,7 +22,7 @@ class LuaFrxParameterConnection : public LuaFrxParameterConnectionBase {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<LuaFrxParameterConnection> Ptr;
+	typedef std::shared_ptr<LuaFrxParameterConnection> Ptr;
     //-------------------------------------------------------------------------
     typedef LuaFrxConnection Super;
 protected:

@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <tuple>
 #include "ViewModelMap.hpp"
 #include <com/Serialization.h>
 
@@ -110,7 +111,7 @@ bool ViewModelMap::registerObjects(ViewObject::Ptr vobj,
         }
         Map::const_iterator it;
         bool inserted;
-        boost::tie(it, inserted) = map.insert(Map::value_type(vobj, mobj));
+        std::tie(it, inserted) = map.insert(Map::value_type(vobj, mobj));
         return inserted;
     SAMBAG_END_SYNCHRONIZED
 }

@@ -64,9 +64,7 @@ void startProcess(const char *path, int argc, const char **argv) {
 			ss<<" "<<argv[i];
 		}
 	}
-	boost::thread(
-		boost::bind(&__startProcess, std::string(path), ss.str())
-	);
+	std::thread(&__startProcess, std::string(path), ss.str()).detach();
 }
 //------------------------------------------------------------------------------------------------------------
 std::string getRootDirectory() {

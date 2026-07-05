@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXPROCESSORNODEUI_H
 #define SAMBAG_FRXPROCESSORNODEUI_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <gui/components/FrxProcessorNode.hpp>
 #include <gui/components/FrxConcreteProcessor.hpp>
 #include "FrxNodeUI.hpp"
@@ -57,7 +57,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxProcessorNodeUI<ConcreteProcessor> ThisClass;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<ThisClass> Ptr;
+	typedef std::shared_ptr<ThisClass> Ptr;
 private:
 	//-------------------------------------------------------------------------
 	void addHasMultipleInputEntry(sdc::PopupMenuPtr menu, FrxCircuidViewPtr view, 
@@ -127,13 +127,13 @@ bool FrxProcessorNodeUI<CT>::contains(sdc::AComponentPtr c, const sd::Point2D &p
 template <class CT>
 void FrxProcessorNodeUI<CT>::installUI(sdc::AComponentPtr c) {
 	Super::installUI(c);
-	FrxProcessorNode::Ptr pr = boost::dynamic_pointer_cast<FrxProcessorNode>(c);
+	FrxProcessorNode::Ptr pr = std::dynamic_pointer_cast<FrxProcessorNode>(c);
 	SAMBAG_ASSERT(pr);
 }
 //-----------------------------------------------------------------------------
 template <class CT>
 void FrxProcessorNodeUI<CT>::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
-	FrxProcessorNode::Ptr node = boost::dynamic_pointer_cast<FrxProcessorNode>(c);
+	FrxProcessorNode::Ptr node = std::dynamic_pointer_cast<FrxProcessorNode>(c);
 	Super::draw(cn, c);
 	if (hasImage()) {
 		/*cn->setFillColor(c->getBackground());
@@ -176,7 +176,7 @@ void installSpecificDefs(sdc::AComponentPtr c)
 template <>
 inline void installSpecificDefs<FrxPluginNode>(sdc::AComponentPtr _c)
 {
-	FrxComponent::Ptr c = boost::dynamic_pointer_cast<FrxComponent>(_c);
+	FrxComponent::Ptr c = std::dynamic_pointer_cast<FrxComponent>(_c);
 	if (!c) {
 		return;
 	}
@@ -301,7 +301,7 @@ void FrxProcessorNodeUI<CT>::createPopupmenuEntries(sdc::PopupMenuPtr menu,
 	IViewModelMap::Ptr map = getViewModelMap(view);
 	
 	frx::processing::IProcessor::Ptr processor =
-		boost::dynamic_pointer_cast<frx::processing::IProcessor>(
+		std::dynamic_pointer_cast<frx::processing::IProcessor>(
 			map->getModelObject(c)
 		);
 	if (!processor)

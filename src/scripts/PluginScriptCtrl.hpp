@@ -8,19 +8,17 @@
 #ifndef SAMBAG_PLUGINSCRIPTCTRL_H
 #define SAMBAG_PLUGINSCRIPTCTRL_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <gui/components/VstForxEditor.hpp>
 #include <sambag/disco/components/Forward.hpp>
 #include <gui/components/Forward.hpp>
 #include <sambag/com/events/Events.hpp>
-#include <boost/thread.hpp>
 #include <sambag/com/Thread.hpp>
 #include <thread>
 #include <string>
 #include <sambag/lua/Lua.hpp>
 #include <list>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include <processing/ModelObject.hpp>
 #include <map>
@@ -49,9 +47,9 @@ class PluginScriptCtrl :
 //=============================================================================
 public:
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<PluginScriptCtrl> Ptr;
+    typedef std::shared_ptr<PluginScriptCtrl> Ptr;
     //-------------------------------------------------------------------------
-    typedef boost::weak_ptr<PluginScriptCtrl> WPtr;
+    typedef std::weak_ptr<PluginScriptCtrl> WPtr;
 	//-------------------------------------------------------------------------
 	typedef std::string LuaPtr;
     //-------------------------------------------------------------------------
@@ -88,10 +86,10 @@ private:
 	//-------------------------------------------------------------------------
 	typedef frx::processing::ModelObject::Ptr ModelObjectPtr;
 	//-------------------------------------------------------------------------
-	typedef boost::unordered_map<LuaPtr, FrxComponentPtr> ComponentMap;
+	typedef std::unordered_map<LuaPtr, FrxComponentPtr> ComponentMap;
 	ComponentMap componentMap;
 	//-------------------------------------------------------------------------
-	typedef boost::unordered_map<LuaPtr, ModelObjectPtr> ModelObjectMap;
+	typedef std::unordered_map<LuaPtr, ModelObjectPtr> ModelObjectMap;
 	ModelObjectMap modelObjectMap;
 public:
     //-------------------------------------------------------------------------
@@ -111,7 +109,7 @@ public:
 	void setPlugin(frx::processing::VstForxPlug *plug);
     //-------------------------------------------------------------------------
     typedef std::unique_lock<sambag::com::RecursiveMutex> Lock;
-    typedef boost::shared_ptr<Lock> LockPtr;
+    typedef std::shared_ptr<Lock> LockPtr;
     /**
      * @brief a lua state with lock guard, to ensure
      * no async access while external use @see getLuaState()
@@ -120,13 +118,13 @@ public:
     LockPtr getLock();
     LuaState getLuaState();
     typedef std::function<void(std::string)> OnExecErrorF;
-    typedef boost::shared_ptr<void> AnyPtr;
-    typedef boost::weak_ptr<void> AnyWPtr;
+    typedef std::shared_ptr<void> AnyPtr;
+    typedef std::weak_ptr<void> AnyWPtr;
     typedef std::function<AnyPtr()> GetLockObjectF;
-    typedef boost::tuple<sambag::lua::LuaStateWRef, // lua_state
-        GetLockObjectF,                             // getLockObject
-        OnExecErrorF,                               // executation fails callbk
-        AnyWPtr                                     // signals track
+    typedef std::tuple<sambag::lua::LuaStateWRef, // lua_state
+        GetLockObjectF,                            // getLockObject
+        OnExecErrorF,                              // executation fails callbk
+        AnyWPtr                                    // signals track
     > LuaProcessor;
 	//-------------------------------------------------------------------------
 	void registerFunctions(const LuaProcessor &lp,

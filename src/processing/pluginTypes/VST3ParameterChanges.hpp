@@ -1,9 +1,10 @@
 #ifndef _VST3PARAMVALUEQUEUE_H
 #define _VST3PARAMVALUEQUEUE_H
 
+#include <tuple>
 #include "pluginterfaces/vst/ivstparameterchanges.h"
 #include "pluginterfaces/base/funknown.h"
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <boost/tuple/tuple.hpp>
 #include <vector>
 
@@ -21,7 +22,7 @@ public:
 protected:
     VST3ParamValueQueue(const VST3ParamValueQueue&) : __funknownRefCount(0){}
     VST3ParamValueQueue & operator=(const VST3ParamValueQueue&) {return *this;}
-    typedef boost::tuple<int32, ParamValue> Point;
+    typedef std::tuple<int32, ParamValue> Point;
     typedef std::vector<Point> Points;
     Points _points;
 private:

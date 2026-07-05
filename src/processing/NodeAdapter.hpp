@@ -8,7 +8,7 @@
 #ifndef SAMBAG_NODEADAPTER_H
 #define SAMBAG_NODEADAPTER_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/com/Common.hpp>
 #include "INode.hpp"
 #include "processing.h"
@@ -23,7 +23,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef INode Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<NodeAdapter> Ptr;
+	typedef std::shared_ptr<NodeAdapter> Ptr;
 	//-------------------------------------------------------------------------
 	typedef ::processing::ProcessorNode Adaptee;
 protected:
@@ -49,7 +49,7 @@ private:
 public:
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::dynamic_pointer_cast<NodeAdapter>( self.lock() );
+		return std::dynamic_pointer_cast<NodeAdapter>( self.lock() );
 	}
 	//-------------------------------------------------------------------------
 	static Ptr create(Adaptee::Ptr a = Adaptee::Ptr()) {

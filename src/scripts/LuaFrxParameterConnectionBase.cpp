@@ -23,7 +23,7 @@ void LuaFrxParameterConnectionBase::addLuaFields(lua_State *lua, int index)
     // register functions
     registerClassFunctions<Functions1, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaFrxParameterConnectionBase::getOperatorNames, this, lua),
+	std::make_tuple(boost::bind(&LuaFrxParameterConnectionBase::getOperatorNames, this, lua),
 		boost::bind(&LuaFrxParameterConnectionBase::removeOperatorAt, this, lua, _1),
 		boost::bind(&LuaFrxParameterConnectionBase::addOperator, this, lua, _1),
 		boost::bind(&LuaFrxParameterConnectionBase::getParameters, this, lua)),

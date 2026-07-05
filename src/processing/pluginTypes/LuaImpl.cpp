@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <tuple>
 #include <scripts/PluginScriptCtrl.hpp>
 #include "LuaImpl.hpp"
 #include <filesystem>
@@ -314,8 +315,8 @@ void LuaImpl::onParameterChanged(void *src, float value, const std::string &id)
     if (it==parameterMap.end()) {
         return;
     }
-    const Callbacks &callbacks = boost::get<2>(it->second);
-    oldPrPa::Parameter::Connection &cn = boost::get<1>(it->second);
+    const Callbacks &callbacks = std::get<2>(it->second);
+    oldPrPa::Parameter::Connection &cn = std::get<1>(it->second);
     
     // block signal to prevent stack overflow
     com::events::ScopedBlock block(cn);
@@ -327,7 +328,7 @@ void LuaImpl::onParameterChanged(void *src, float value, const std::string &id)
         }
         try {
             sambag::lua::callLuaFunc(luaState.get(), cbk,
-                boost::make_tuple(id, value)
+                std::make_tuple(id, value)
             );
         } catch(const sambag::lua::ExecutionFailed &ex) {
             scriptFailed("calling " + cbk + " failed: " + ex.errMsg);
@@ -349,7 +350,7 @@ void LuaImpl::addParameterListener(lua_State *lua,
                 std::make_pair(id, ParameterContainer())
             ).first;
         }
-        Callbacks &cbks = boost::get<2>(it->second);
+        Callbacks &cbks = std::get<2>(it->second);
         cbks.insert(callBack);
     } catch(const std::exception &ex) {
         slua::pushLuaError(luaState.get(),  ex.what());
@@ -367,7 +368,7 @@ void LuaImpl::removeParameterListener(lua_State *lua,
         if (it==parameterMap.end()) {
             throw std::runtime_error("parameter not found");
         }
-        Callbacks &cbks = boost::get<2>(it->second);
+        Callbacks &cbks = std::get<2>(it->second);
         if (cbks.erase(callBack)==0) {
             throw std::runtime_error("callback not found");
         }
@@ -403,10 +404,10 @@ void LuaImpl::loadParameters() {
                 ).first;
         }
         ParameterContainer &pc = it->second;
-        if (!boost::get<0>(pc)) {
-            boost::get<0>(pc) = p;
+        if (!std::get<0>(pc)) {
+            std::get<0>(pc) = p;
             // add listener
-            boost::get<1>(pc) = p->addValueChangedListener (
+            std::get<1>(pc) = p->addValueChangedListener (
                 [this, id=v.first](void* src, float value){ onParameterChanged(src, value, id); }
             );
         }
@@ -425,7 +426,7 @@ void LuaImpl::baseConfigChanged() {
     }
     try {
         sambag::lua::callLuaFunc(luaState.get(), LC_NAME(lcSetAudioConfig),
-            boost::make_tuple(hI->getBlockSize(), hI->getSampleRate())
+            std::make_tuple(hI->getBlockSize(), hI->getSampleRate())
         );
     } catch(const sambag::lua::ExecutionFailed &ex) {
         scriptFailed("calling " + LC_STR(lcSetAudioConfig) + " failed: " + ex.errMsg);
@@ -546,7 +547,7 @@ void LuaImpl::setParameterValue(lua_State *lua, const std::string &name, float v
 		lua_error(luaState.get());
         return;
     }
-    oldPrPa::Parameter::Ptr p = boost::get<0>(it->second);
+    oldPrPa::Parameter::Ptr p = std::get<0>(it->second);
     if (p) {
         p->setValue(value);
     }
@@ -561,7 +562,7 @@ float LuaImpl::getParameterValue(lua_State *lua, const std::string &name) {
 		lua_error(luaState.get());
         return 0;
     }
-    oldPrPa::Parameter::Ptr p = boost::get<0>(it->second);
+    oldPrPa::Parameter::Ptr p = std::get<0>(it->second);
     if (p) {
         return p->getValue();
     }
@@ -577,7 +578,7 @@ std::string LuaImpl::getParameterDisplay(lua_State *lua, const std::string &name
 		lua_error(luaState.get());
         return "";
     }
-    oldPrPa::Parameter::Ptr p = boost::get<0>(it->second);
+    oldPrPa::Parameter::Ptr p = std::get<0>(it->second);
     if (p) {
         return p->getDisplay();
     }
@@ -595,7 +596,7 @@ void LuaImpl::setParameterDisplay(lua_State *lua, const std::string &name,
 		lua_error(luaState.get());
         return;
     }
-    oldPrPa::Parameter::Ptr p = boost::get<0>(it->second);
+    oldPrPa::Parameter::Ptr p = std::get<0>(it->second);
     if (p) {
         p->setDisplay(value);
         p->setValue(p->getValue());
@@ -629,11 +630,11 @@ void LuaImpl::processMidiEvents( sambag::dsp::IMidiEvents::Ptr events ) {
 			lua_newtable(lua);
 			int top = lua_gettop(lua);
 			push(lua, PROCESS_MIDI_DELTAFRAMES); // deltaFrames
-			push(lua, boost::get<1>(ev));
+			push(lua, std::get<1>(ev));
 			lua_settable(lua, top); //<- 
             push(lua, PROCESS_MIDI_DATA); // midi data
-            size_t byteSize = boost::get<0>(ev);
-			push(lua, LuaSequenceEx<IMidiEvents::Data>(boost::get<2>(ev),byteSize) );
+            size_t byteSize = std::get<0>(ev);
+			push(lua, LuaSequenceEx<IMidiEvents::Data>(std::get<2>(ev),byteSize) );
 			lua_settable(lua, top); //<- 
 		}
 		lua_settable(lua, top);
@@ -703,7 +704,7 @@ namespace {
                 delta = lua_tointeger(lua, -1);
             }
             if (key==PROCESS_MIDI_DATA) {
-                boost::tie(data, size) = __addMidiData(lua, midiEvents);
+                std::tie(data, size) = __addMidiData(lua, midiEvents);
             }
             lua_pop(lua, 1);
         }
@@ -767,7 +768,7 @@ void LuaImpl::processPlugin(oldPr::Frames::T ** ins,
         currInChannels = ins;
         currOutChannels = outs;
         currNumSamples = numSamples;
-		callLuaFunc(luaState.get(), LC_NAME(lcProcess), boost::make_tuple(numSamples));
+		callLuaFunc(luaState.get(), LC_NAME(lcProcess), std::make_tuple(numSamples));
         currInChannels = NULL;
         currOutChannels = NULL;
         currNumSamples = 0;
@@ -817,8 +818,8 @@ void LuaImpl::setChannel(lua_State *lua) {
 		lua_error(luaState.get());
 	}
     // pop all arguments from stack
-	boost::tuple<LuaFloatSeqEx,int> arg =
-        boost::make_tuple(LuaFloatSeqEx(currOutChannels[channel], currNumSamples), 0);
+	std::tuple<LuaFloatSeqEx,int> arg =
+        std::make_tuple(LuaFloatSeqEx(currOutChannels[channel], currNumSamples), 0);
     pop(luaState.get(), arg);
 }
 //-----------------------------------------------------------------------------
@@ -858,12 +859,12 @@ FFTData LuaImpl::fft(lua_State *lua) {
             throw std::runtime_error("arguments mismatch");
         }
         size_t ns =
-            std::min(boost::get<0>(data).size(), boost::get<1>(data).size());
+            std::min(std::get<0>(data).size(), std::get<1>(data).size());
         if (ns==0) {
             return FFTData();
         }
-        ::processing::fft( &(boost::get<0>(data)[0]),
-            &(boost::get<1>(data)[0]),
+        ::processing::fft( &(std::get<0>(data)[0]),
+            &(std::get<1>(data)[0]),
             ns
         );
         return data;
@@ -877,11 +878,11 @@ FFTData LuaImpl::fft(lua_State *lua) {
 //-----------------------------------------------------------------------------
 double LuaImpl::getFrequency(lua_State *lua) {
       try {
-        boost::tuple<LuaFloatSeq> datac;
+        std::tuple<LuaFloatSeq> datac;
         if(!sambag::lua::pop(luaState.get(), datac)) {
             throw std::runtime_error("arguments mismatch");
         }
-        LuaFloatSeq data = boost::get<0>(datac);
+        LuaFloatSeq data = std::get<0>(datac);
         IHostInfo::Ptr hI = hostInfo.lock();
         return ::processing::detectFrequency( &data[0], hI->getSampleRate(), data.size());
     } catch(const std::exception &ex) {

@@ -8,7 +8,7 @@
 #ifndef SAMBAG_LEGACY_H
 #define SAMBAG_LEGACY_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace com {
 //=============================================================================
@@ -18,7 +18,7 @@ namespace com {
   * update a legacy object into an appropriate new version.
   */
 template <class _CommonBase,
-    typename _CommonBasePtr = boost::shared_ptr<_CommonBase>
+    typename _CommonBasePtr = std::shared_ptr<_CommonBase>
 >
 class Legacy {
 //=============================================================================
@@ -28,7 +28,7 @@ public:
     typedef _CommonBasePtr CommonBasePtr;
     typedef Legacy<CommonBase, CommonBasePtr> ThisClass;
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<ThisClass> Ptr;
+    typedef std::shared_ptr<ThisClass> Ptr;
     //-------------------------------------------------------------------------
     virtual ~Legacy() {}
     //-------------------------------------------------------------------------

@@ -10,8 +10,8 @@
 
 #include <loki/Singleton.h>
 #include <functional>
-#include <boost/unordered_map.hpp>
-#include <boost/shared_ptr.hpp>
+#include <unordered_map>
+#include <memory>
 #include <com/SerializationFwd.h>
 #include <list>
 #include <gui/components/FrxProcessorNode.hpp>
@@ -30,7 +30,7 @@ public:
     typedef FrxProcessorNode::Ptr Product;
     typedef std::function<Product()> Creator;
     typedef std::string Id;
-    typedef boost::unordered_map<Id, Creator> CreatorMap;
+    typedef std::unordered_map<Id, Creator> CreatorMap;
     typedef std::function<void(com::oArchive*)> OArchiveRegisterF;
     typedef std::function<void(com::iArchive*)> IArchiveRegisterF;
     typedef std::list<OArchiveRegisterF> OARegList;

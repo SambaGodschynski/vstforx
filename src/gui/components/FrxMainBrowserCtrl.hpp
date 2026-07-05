@@ -8,8 +8,7 @@
 #ifndef SAMBAG_FRXMAINBROWSERCTRL_H
 #define SAMBAG_FRXMAINBROWSERCTRL_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include "IFrxColumnBrowserCtrl.hpp"
 #include <processing/IHostInfo.h>
 #include "FrxColumnBrowser.hpp"
@@ -23,7 +22,7 @@
 #include <processing/pluginTypes/VstShellPlugin.hpp>
 #include <sambag/disco/components/events/ActionEvent.hpp>
 #include <sambag/disco/components/Timer.hpp>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 namespace frx { namespace gui { namespace components {
 struct FrxCircuidViewEvent;
@@ -37,9 +36,9 @@ class FrxMainBrowserCtrl : public IFrxColumnBrowserCtrl {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxMainBrowserCtrl> Ptr;
+	typedef std::shared_ptr<FrxMainBrowserCtrl> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxMainBrowserCtrl> WPtr;
+	typedef std::weak_ptr<FrxMainBrowserCtrl> WPtr;
 	//-------------------------------------------------------------------------
 	typedef ::frx::processing::IHostInfo IHostInfo;
 	//-------------------------------------------------------------------------
@@ -172,7 +171,7 @@ private:
 	//-------------------------------------------------------------------------
 	typedef long int Id;
 	enum { NoId = INT_MAX };
-	typedef boost::unordered_map<Id, TreeNode> NodeMap; 
+	typedef std::unordered_map<Id, TreeNode> NodeMap; 
 	//-------------------------------------------------------------------------
 	Id getId(FrxComponentPtr c) const;
 	//-------------------------------------------------------------------------

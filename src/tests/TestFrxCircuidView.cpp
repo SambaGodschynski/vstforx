@@ -89,7 +89,7 @@ void TestFrxCircuidView::testFindComponentsFiltered() {
 
 	res.clear();
 	TestFilter f;
-	boost::function<int(AComponent::Ptr)> bf = 
+	std::function<int(AComponent::Ptr)> bf = 
 		boost::bind(&TestFilter::filter, &f, _1);
 	circ->findComponents(res, bf);
 	CPPUNIT_ASSERT_EQUAL((size_t)0, res.size());

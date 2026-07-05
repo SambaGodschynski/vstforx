@@ -28,7 +28,7 @@ class PeakTracker :
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<PeakTracker> Ptr;
+	typedef std::shared_ptr<PeakTracker> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**

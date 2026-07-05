@@ -53,7 +53,7 @@ private:
 	} 
 public:
 	//----------------------------------------------------------------------------
-	typedef boost::shared_ptr<HelperNode> Ptr;
+	typedef std::shared_ptr<HelperNode> Ptr;
 	//----------------------------------------------------------------------------
 	static Ptr create() {
 		Ptr neu( new HelperNode() );

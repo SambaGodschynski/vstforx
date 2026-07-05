@@ -1,7 +1,6 @@
 /**
  * PlugSettings.hpp
  */
-#include <boost/weak_ptr.hpp>
 
 #ifndef _PLUG_SETTINGS_HPP
 #define _PLUG_SETTINGS_HPP
@@ -49,7 +48,7 @@ struct PlugSettings
 bool globFrxIsDemo();
 std::string globVersionStr();
 
-void globAddProcessor( boost::shared_ptr<void> obj );
-void globAddPlugin( boost::shared_ptr<void> obj );
+void globAddProcessor( std::shared_ptr<void> obj );
+void globAddPlugin( std::shared_ptr<void> obj );
 
 #endif

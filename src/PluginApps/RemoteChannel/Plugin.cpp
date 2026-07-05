@@ -157,9 +157,9 @@ void Plugin::updateConfiguration() {
 	}
 
     if (channelId.empty()) {
-        channelId = rm.addChannel( boost::make_tuple(sId, name) );
+        channelId = rm.addChannel( std::make_tuple(sId, name) );
     } else {
-        rm.addChannel( channelId, boost::make_tuple(sId, name) );
+        rm.addChannel( channelId, std::make_tuple(sId, name) );
     }
 }
 //-----------------------------------------------------------------------------

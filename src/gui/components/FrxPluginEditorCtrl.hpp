@@ -8,8 +8,7 @@
 #ifndef SAMBAG_FRXPLUGINEDITORCTRL_H
 #define SAMBAG_FRXPLUGINEDITORCTRL_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include "IFrxProcessorEditorCtrl.hpp"
 #include <processing/IPluginAdapter.hpp>
 #include <sambag/disco/components/Timer.hpp>
@@ -26,9 +25,9 @@ public:
 	//-------------------------------------------------------------------------
 	typedef IFrxProcessorEditorCtrl Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxPluginEditorCtrl> Ptr;
+	typedef std::shared_ptr<FrxPluginEditorCtrl> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxPluginEditorCtrl> WPtr;
+	typedef std::weak_ptr<FrxPluginEditorCtrl> WPtr;
 protected:
 	//-------------------------------------------------------------------------
 	WPtr self;

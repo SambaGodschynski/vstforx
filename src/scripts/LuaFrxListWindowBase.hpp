@@ -12,8 +12,7 @@
 #ifndef SAMBAG_LuaFrxListWindowBase_H
 #define SAMBAG_LuaFrxListWindowBase_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/lua/Lua.hpp>
 #include <loki/Typelist.h>
 #include <sambag/lua/ALuaObject.hpp>
@@ -28,9 +27,9 @@ public:
     //-------------------------------------------------------------------------
     typedef frx::scripts::LuaFrxWindow Super;
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<LuaFrxListWindowBase> Ptr;
+    typedef std::shared_ptr<LuaFrxListWindowBase> Ptr;
     //-------------------------------------------------------------------------
-    typedef boost::weak_ptr<LuaFrxListWindowBase> WPtr;
+    typedef std::weak_ptr<LuaFrxListWindowBase> WPtr;
     //-------------------------------------------------------------------------
     
 private:

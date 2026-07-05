@@ -5,6 +5,7 @@
  * ===========================================================================================================
  */
 
+#include <tuple>
 #include <boost/xpressive/xpressive.hpp>
 #include <boost/xpressive/regex_primitives.hpp>
 #include "one4All.h"
@@ -99,7 +100,7 @@ IdParser::IdParser(const std::string &str) :
     if (what.size() >= 5) {
         std::stringstream ss;
         ss<<what[tNumI]<<" "<<what[tNumO];
-        ss>>boost::get<3>(*this)>>boost::get<4>(*this);
+        ss>>std::get<3>(*this)>>std::get<4>(*this);
     }
     if (what.size() >= 8) {
         details(what[tDetails]);

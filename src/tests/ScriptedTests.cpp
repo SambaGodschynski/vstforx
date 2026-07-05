@@ -45,7 +45,7 @@ void processPlugin(TestPlugin * plug) {
 		if (plug->isOpen()) {
 			fillBlock(in, BS);
 			plug->process(in, out, BS);
-			boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
 	}
 	delete[] in[0];
@@ -79,9 +79,7 @@ void ScriptedTests::setUp() {
 		boost::bind(&ScriptedTests::onScriptEnd, this, _1, _2)
 	);
 	plugProcessing = true;
-	processingThread = boost::thread(
-		boost::bind(&processPlugin, plug)
-	);
+	processingThread = std::thread(&processPlugin, plug);
     
     scriptCtrl->appendJob( "require\"scripts/vstforx-helper\"" );
     scriptCtrl->appendJob( "require\"scripts/vstforx-helper\"" );

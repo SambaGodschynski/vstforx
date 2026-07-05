@@ -36,7 +36,7 @@ void FrxSelectionUI::installDefaults(sdc::AComponentPtr c) {
 	m.getProperty("FrxSelection.selectedStyle", selectedStyle);
     vFormatter = VerticalFormatter::create();
     hFormatter = HorizontalFormatter::create();
-    FrxSelection::Ptr sel = boost::dynamic_pointer_cast<FrxSelection> (c);
+    FrxSelection::Ptr sel = std::dynamic_pointer_cast<FrxSelection> (c);
     sel->setFormatter(vFormatter);
 }
 //-----------------------------------------------------------------------------
@@ -58,7 +58,7 @@ void FrxSelectionUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 namespace {
 	void clearSelection(void *src, const sdce::ActionEvent &ev, sdc::AComponentWPtr c)
 	{
-		FrxSelection::Ptr sel = boost::dynamic_pointer_cast<FrxSelection> (c.lock());
+		FrxSelection::Ptr sel = std::dynamic_pointer_cast<FrxSelection> (c.lock());
 		if (!sel) {
 			return;
 		}
@@ -69,7 +69,7 @@ namespace {
 		IFrxControl &ctrl = getFrxControl(view);
 		typedef FrxSelection::ContentContainer C;
 		BOOST_FOREACH(C::value_type v, sel->getContent()) {
-			FrxComponentPtr cmp = boost::dynamic_pointer_cast<FrxComponent>(v.lock());
+			FrxComponentPtr cmp = std::dynamic_pointer_cast<FrxComponent>(v.lock());
 			if (!cmp) {
 				continue;
 			}
@@ -81,7 +81,7 @@ namespace {
     //-------------------------------------------------------------------------
 	void packItems(const sdce::ActionEvent &ev, sdc::AComponentWPtr c)
 	{
-		FrxSelection::Ptr sel = boost::dynamic_pointer_cast<FrxSelection> (c.lock());
+		FrxSelection::Ptr sel = std::dynamic_pointer_cast<FrxSelection> (c.lock());
 		if (!sel) {
 			return;
 		}
@@ -100,7 +100,7 @@ namespace {
 //-----------------------------------------------------------------------------
 void FrxSelectionUI::rotate(const sdce::ActionEvent &ev, sdc::AComponentWPtr c)
 {
-    FrxSelection::Ptr sel = boost::dynamic_pointer_cast<FrxSelection> (c.lock());
+    FrxSelection::Ptr sel = std::dynamic_pointer_cast<FrxSelection> (c.lock());
     if (!sel) {
         return;
     }

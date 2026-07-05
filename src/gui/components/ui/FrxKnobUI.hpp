@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXKNOBUI_H
 #define SAMBAG_FRXKNOBUI_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/ui/basic/BasicKnobUI.hpp>
 #include <gui/HandyNamespaces.hpp>
 
@@ -23,7 +23,7 @@ class FrxKnobUI : public sdcu::basic::BasicKnobUI<ComponentModel> {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxKnobUI> Ptr;
+	typedef std::shared_ptr<FrxKnobUI> Ptr;
 	//-------------------------------------------------------------------------
 	typedef FrxKnobUI<ComponentModel> Class;
 	//-------------------------------------------------------------------------

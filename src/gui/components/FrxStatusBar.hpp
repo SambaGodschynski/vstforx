@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXSTATUSBAR_H
 #define SAMBAG_FRXSTATUSBAR_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <string>
 #include <sambag/disco/components/Label.hpp>
 #include <sambag/disco/components/Panel.hpp>
@@ -23,7 +23,7 @@ class FrxStatusBar : public sdc::Panel {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxStatusBar> Ptr;
+	typedef std::shared_ptr<FrxStatusBar> Ptr;
 protected:
 	//-------------------------------------------------------------------------
 	virtual void initStatusBar();

@@ -15,10 +15,9 @@
 #include <com/Settings.h>
 #include <exception>
 #include <aeffect.h>
-#include <boost/tuple/tuple.hpp>
-#include <boost/thread.hpp>
+#include <tuple>
+#include <thread>
 #include <scripts/PluginScriptCtrl.hpp>
-#include <boost/thread.hpp>
 #include <sambag/com/UnitEx.hpp>
 
 // settingup plugin
@@ -55,7 +54,7 @@ private:
 	bool failed;
 	void onScriptExeFailed(void *src, const frx::scripts::ScriptExeFailedEvent &ev);
 	void onScriptEnd(void *src, const frx::scripts::ScriptEnded &ev);
-	boost::thread processingThread;
+	std::thread processingThread;
 public:
 	ScriptedTests();
 	virtual void setUp();

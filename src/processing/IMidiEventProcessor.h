@@ -10,7 +10,6 @@
 
 #include <sambag/dsp/IMidiEvents.hpp>
 #include <sambag/com/events/Events.hpp>
-#include <boost/weak_ptr.hpp>
 
 namespace processing {
 //=============================================================================
@@ -26,7 +25,7 @@ public:
         EventSender;
     typedef EventSender::EventFunction EventFunction;
     typedef EventSender::Connection Connection;
-    typedef boost::weak_ptr<void> AnyWPtr;
+    typedef std::weak_ptr<void> AnyWPtr;
 	//-------------------------------------------------------------------------
     /**
      * @brief processes the midi event

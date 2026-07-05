@@ -8,8 +8,7 @@
 #ifndef SAMBAG_MODELCONTROLLER_H
 #define SAMBAG_MODELCONTROLLER_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include "IModelController.hpp"
 #include "Graph.h"
 
@@ -25,9 +24,9 @@ class ModelController : public IModelController {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<ModelController> Ptr;
+	typedef std::shared_ptr<ModelController> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<ModelController> WPtr;
+	typedef std::weak_ptr<ModelController> WPtr;
 protected:
 	//-------------------------------------------------------------------------
 	WPtr self;

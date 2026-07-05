@@ -8,7 +8,7 @@
 #ifndef SAMBAG_VSTFORXPLUG_H
 #define SAMBAG_VSTFORXPLUG_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/com/events/Events.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include <sambag/dsp/DspPlugin.hpp>
@@ -43,7 +43,7 @@ public:
 	typedef sambag::dsp::PluginProcessorBase Super;
 	//-------------------------------------------------------------------------
 	typedef ::frx::scripts::PluginScriptCtrl ScriptCtrl;
-    typedef boost::shared_ptr<ScriptCtrl> ScriptCtrlPtr;
+    typedef std::shared_ptr<ScriptCtrl> ScriptCtrlPtr;
 private:
     //-------------------------------------------------------------------------
     ScriptCtrlPtr scriptCtrl;

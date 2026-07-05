@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXMAINBROWSER_H
 #define SAMBAG_FRXMAINBROWSER_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "FrxColumnBrowser.hpp"
 #include <sambag/disco/components/events/ActionEvent.hpp>
 #include <sambag/disco/components/Button.hpp>
@@ -24,9 +24,9 @@ class FrxMainBrowser : public FrxColumnBrowser {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxMainBrowser> Ptr;
+	typedef std::shared_ptr<FrxMainBrowser> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxMainBrowser> WPtr;
+	typedef std::weak_ptr<FrxMainBrowser> WPtr;
 	//-------------------------------------------------------------------------
 	typedef FrxColumnBrowser Super;
 protected:

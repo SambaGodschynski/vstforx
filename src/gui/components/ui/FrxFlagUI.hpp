@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXFLAGUI_H
 #define SAMBAG_FRXFLAGUI_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <gui/components/FrxFlag.hpp>
 #include "FrxComponentUI.hpp"
 #include <sambag/com/events/PropertyChanged.hpp>
@@ -27,7 +27,7 @@ class FrxFlagUI : public FrxComponentUI {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxFlagUI> Ptr;
+	typedef std::shared_ptr<FrxFlagUI> Ptr;
 	//-------------------------------------------------------------------------
 	typedef FrxComponentUI Super;
 protected:

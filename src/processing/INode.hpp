@@ -8,7 +8,7 @@
 #ifndef SAMBAG_INODE
 #define SAMBAG_INODE
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "ModelObject.hpp"
 
 namespace frx { namespace processing {
@@ -30,7 +30,7 @@ private:
 	}
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<INode> Ptr;
+	typedef std::shared_ptr<INode> Ptr;
 	//-------------------------------------------------------------------------
 	virtual ~INode() {}
 }; // INode

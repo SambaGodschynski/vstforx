@@ -12,8 +12,7 @@
 #ifndef SAMBAG_LuaImplBase_H
 #define SAMBAG_LuaImplBase_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/lua/Lua.hpp>
 #include <loki/Typelist.h>
 #include <sambag/lua/ALuaObject.hpp>
@@ -28,9 +27,9 @@ public:
     //-------------------------------------------------------------------------
     typedef sambag::lua::ALuaObject Super;
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<LuaImplBase> Ptr;
+    typedef std::shared_ptr<LuaImplBase> Ptr;
     //-------------------------------------------------------------------------
-    typedef boost::weak_ptr<LuaImplBase> WPtr;
+    typedef std::weak_ptr<LuaImplBase> WPtr;
     //-------------------------------------------------------------------------
     
 private:

@@ -23,7 +23,7 @@ void LuaFrxListWindowBase::addLuaFields(lua_State *lua, int index)
     // register functions
     registerClassFunctions<Functions1, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaFrxListWindowBase::add, this, lua, _1),
+	std::make_tuple(boost::bind(&LuaFrxListWindowBase::add, this, lua, _1),
 		boost::bind(&LuaFrxListWindowBase::remove, this, lua, _1),
 		boost::bind(&LuaFrxListWindowBase::getSelection, this, lua),
 		boost::bind(&LuaFrxListWindowBase::getNumElements, this, lua),

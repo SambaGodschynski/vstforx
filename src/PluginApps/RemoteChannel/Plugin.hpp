@@ -8,12 +8,11 @@
 #ifndef SAMBAG_VSTFORXPLUG_H
 #define SAMBAG_VSTFORXPLUG_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/dsp/DspPlugin.hpp>
 #include <com/FrxConfig.h>
 #include <processing/interprocess/RemoteChannelManager.hpp>
 #include <processing/interprocess/Stream.hpp>
-#include <boost/shared_array.hpp>
 #include <sambag/com/Thread.hpp>
 #include <processing/Frames.h>
 #include <processing/FrxAsyncDSPTimer.hpp>
@@ -31,7 +30,7 @@ public:
 private:
     //-------------------------------------------------------------------------
     struct TrackingDummy {};
-    boost::shared_ptr<TrackingDummy> trackingDummyPtr;
+    std::shared_ptr<TrackingDummy> trackingDummyPtr;
     //-------------------------------------------------------------------------
     sambag::com::Mutex mutex;
 	//-------------------------------------------------------------------------
@@ -49,7 +48,7 @@ private:
 	//-------------------------------------------------------------------------
 	frx::processing::FrxAsyncDSPTimer::Ptr ioChangedTimer;
     //-------------------------------------------------------------------------
-    // typedef boost::shared_array<char> Chunk; CRT (HEAP_CORRUPTION) issues on Win32
+    // typedef std::shared_ptr<char[]> Chunk; CRT (HEAP_CORRUPTION) issues on Win32
 	typedef std::string Chunk;
     Chunk chunk;
 protected:

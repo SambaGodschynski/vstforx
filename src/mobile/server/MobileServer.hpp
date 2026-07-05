@@ -9,9 +9,9 @@
 #define SAMBAG_MOBILESERVER_H
 
 #include <boost/asio.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <string>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <functional>
 #include <boost/ref.hpp>
 #include <sstream>
@@ -29,18 +29,18 @@ class MobileServer {
 public:
     //-------------------------------------------------------------------------
     class TcpConnection;
-    typedef boost::shared_ptr<TcpConnection> TcpConnectionPtr;
+    typedef std::shared_ptr<TcpConnection> TcpConnectionPtr;
     //-------------------------------------------------------------------------
     typedef boost::system::error_code ErrorCode;
     //-------------------------------------------------------------------------
     typedef std::string RequestKey;
     typedef std::string RequestValue;
-    typedef boost::unordered_map<RequestKey, RequestValue> Request;
+    typedef std::unordered_map<RequestKey, RequestValue> Request;
     //-------------------------------------------------------------------------
     typedef std::string RequestTarget;
     typedef std::stringstream Response;
     typedef std::function< void(Request&, Response&) > RequestHandler;
-    typedef boost::unordered_map<RequestTarget, RequestHandler> RequestHandlers;
+    typedef std::unordered_map<RequestTarget, RequestHandler> RequestHandlers;
 protected:
     //-------------------------------------------------------------------------
     typedef bai::tcp::acceptor Acceptor;

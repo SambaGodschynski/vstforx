@@ -8,7 +8,7 @@
 #ifndef SAMBAG_SETUPCTRL_H
 #define SAMBAG_SETUPCTRL_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <functional>
 #include <string>
 #include <list>
@@ -27,7 +27,7 @@ class SetupCtrl {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<SetupCtrl> Ptr;
+	typedef std::shared_ptr<SetupCtrl> Ptr;
 protected:
 	//-------------------------------------------------------------------------
 	SetupCtrl(){}

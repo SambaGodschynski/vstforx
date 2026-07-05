@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXPROCESSORBROWSERUI_H
 #define SAMBAG_FRXPROCESSORBROWSERUI_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/ui/AComponentUI.hpp>
 #include <gui/HandyNamespaces.hpp>
 
@@ -22,7 +22,7 @@ class FrxColumnBrowserUI : public sdc::ui::AComponentUI {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxColumnBrowserUI> Ptr;
+	typedef std::shared_ptr<FrxColumnBrowserUI> Ptr;
 protected:
 	//-------------------------------------------------------------------------
 	virtual void installListeners(sdc::AComponentPtr c);

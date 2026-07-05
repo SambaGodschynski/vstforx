@@ -15,7 +15,7 @@
 
 #include "audioeffectx.h"
 #include "processing/IHostInfo.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <com/SerializationFwd.h>
 
 
@@ -28,7 +28,7 @@ public:
 		      const frx::processing::TimeInfo & timeInfo = frx::processing::TimeInfo() 
 	) : AudioEffectX ( audioMaster, 0, 0 ), timeInfo(timeInfo), blockSize(0), sampleRate(0) {}
 public:
-	typedef boost::shared_ptr<DummyFX> Ptr;
+	typedef std::shared_ptr<DummyFX> Ptr;
 	float sampleRate;
 	int blockSize;
 	frx::processing::TimeInfo timeInfo;

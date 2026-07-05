@@ -19,7 +19,7 @@ namespace components { namespace ui {
 //-----------------------------------------------------------------------------
 void FrxHoverUI::installListeners(sdc::AComponentPtr c) {
 	sdc::Window::Ptr top = c->getTopLevelAncestor();
-	FrxHover::Ptr hover = boost::dynamic_pointer_cast<FrxHover>(c);
+	FrxHover::Ptr hover = std::dynamic_pointer_cast<FrxHover>(c);
 	SAMBAG_ASSERT(top && hover);
 	FrxHoverMouseListener::Ptr mouseListener = FrxHoverMouseListener::create();
 	mouseListener->setHover(hover);

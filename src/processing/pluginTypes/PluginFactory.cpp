@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <tuple>
 #include "PluginFactory.hpp"
 #include <processing/ModelFactory.hpp>
 #include <processing/interprocess/BridgeSessionManager.hpp>
@@ -86,7 +87,7 @@ PluginFactory::loadLua(IHostInfo::Ptr hI, Parameters*par, const std::string &loc
 PluginFactory::Type PluginFactory::detectType(const std::string &pluginID) {
     using ::processing::PluginInfo;
     std::string loc, shellID;
-    boost::tie(loc, shellID) = ::com::extractVSTPluginFilename(pluginID);
+    std::tie(loc, shellID) = ::com::extractVSTPluginFilename(pluginID);
     
     std::filesystem::path path(loc);
     std::string ext = path.extension().string();

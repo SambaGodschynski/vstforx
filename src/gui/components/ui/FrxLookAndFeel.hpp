@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXLOOKANDFEEL_H
 #define SAMBAG_FRXLOOKANDFEEL_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/ui/basic/BasicLookAndFeel.hpp>
 #include <gui/HandyNamespaces.hpp>
 #include <sambag/disco/svg/Image.hpp>
@@ -25,7 +25,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef sdcu::basic::BasicLookAndFeel Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxLookAndFeel> Ptr;
+	typedef std::shared_ptr<FrxLookAndFeel> Ptr;
 protected:
 	//-------------------------------------------------------------------------
 	FrxLookAndFeel();

@@ -49,9 +49,9 @@ void TestRemoteChannelManager::testAddGetChannels() {
     
     // ** Consider: Managers totmann timer isn't running here **
     RemoteChannelManager &rm = RemoteChannelManager::instance();
-    rm.addChannel("RemoteChannel1", boost::make_tuple("stream_1", "sname1"));
-    rm.addChannel("RemoteChannel2", boost::make_tuple("stream_2", "sname2"));
-    rm.addChannel("RemoteChannel3", boost::make_tuple("stream_3", "sname3"));
+    rm.addChannel("RemoteChannel1", std::make_tuple("stream_1", "sname1"));
+    rm.addChannel("RemoteChannel2", std::make_tuple("stream_2", "sname2"));
+    rm.addChannel("RemoteChannel3", std::make_tuple("stream_3", "sname3"));
     CPPUNIT_ASSERT_EQUAL((size_t)3, (size_t)rm.getNumChannels());
     
     {
@@ -92,9 +92,9 @@ void TestRemoteChannelManager::testAddGetChannels() {
         CPPUNIT_ASSERT_EQUAL((size_t)0, res.size());
     }
     
-    rm.addChannel("RemoteChannel4", boost::make_tuple("stream_1", "sname1"));
-    rm.addChannel("RemoteChannel5", boost::make_tuple("stream_2", "sname2"));
-    rm.addChannel("RemoteChannel6", boost::make_tuple("stream_3", "sname3"));
+    rm.addChannel("RemoteChannel4", std::make_tuple("stream_1", "sname1"));
+    rm.addChannel("RemoteChannel5", std::make_tuple("stream_2", "sname2"));
+    rm.addChannel("RemoteChannel6", std::make_tuple("stream_3", "sname3"));
     {
         std::vector< RemoteChannelManager::RCId > res;
         rm.getChannels(res);
@@ -122,7 +122,7 @@ void TestRemoteChannelManager::testRemoteChannelManager() {
     Stream::Ptr stream = Stream::create(name,512,2, 100);
     rm.addChannel(
         "RemoteChannel 1",
-        boost::make_tuple(name, "sname1")
+        std::make_tuple(name, "sname1")
     );
     
     SharedMemoryObject shm = SAMBAG_SHARED_MEMORY_OBJECT_CREATE(open_or_create, "RCC", read_write, 6400);

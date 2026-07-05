@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXIO_H
 #define SAMBAG_FRXIO_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "FrxNode.hpp"
 #include <gui/HandyNamespaces.hpp>
 #include <boost/serialization/version.hpp>
@@ -28,7 +28,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxNode Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxIO> Ptr;
+	typedef std::shared_ptr<FrxIO> Ptr;
 	//-------------------------------------------------------------------------
 	enum State {
 		None, 

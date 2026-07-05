@@ -52,7 +52,7 @@ void FrxSvgComponentUI::postConstructor(FrxSvgComponentUI::Ptr self) {
 }
 //-----------------------------------------------------------------------------
 void FrxSvgComponentUI::installUI(sdc::AComponentPtr c) {
-    component = boost::dynamic_pointer_cast<sdc::AContainer>(c);
+    component = std::dynamic_pointer_cast<sdc::AContainer>(c);
     installImageComponent(c);
 	installListeners(c);
 	installDefaults(c);
@@ -96,7 +96,7 @@ sdc::PopupMenuPtr FrxSvgComponentUI::createPopupmenu(FrxComponentPtr c,
 }
 //-----------------------------------------------------------------------------
 void FrxSvgComponentUI::installImageComponent(sdc::AComponentPtr c) {
-    FrxComponent::Ptr fc = boost::dynamic_pointer_cast<FrxComponent>(c);
+    FrxComponent::Ptr fc = std::dynamic_pointer_cast<FrxComponent>(c);
     if (!fc) {
         return;
     }
@@ -114,7 +114,7 @@ void FrxSvgComponentUI::installImageComponent(sdc::AComponentPtr c) {
 }
 //-----------------------------------------------------------------------------
 void FrxSvgComponentUI::installDefaults(sdc::AComponentPtr c) {
-	FrxComponent::Ptr frxC = boost::dynamic_pointer_cast<FrxComponent>(c);
+	FrxComponent::Ptr frxC = std::dynamic_pointer_cast<FrxComponent>(c);
 	FrxCircuidView::Ptr view = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(frxC && view);
 	// add popupmenu
@@ -150,7 +150,7 @@ void FrxSvgComponentUI::setImageComponent(sdc::SvgComponent::Ptr img) {
 }
 //-----------------------------------------------------------------------------
 void FrxSvgComponentUI::uninstallUI(sdc::AComponentPtr _c) {
-    sdc::AContainerPtr c = boost::dynamic_pointer_cast<sdc::AContainer>(_c);
+    sdc::AContainerPtr c = std::dynamic_pointer_cast<sdc::AContainer>(_c);
     if (!c) {
         return;
     }

@@ -8,7 +8,7 @@
 #ifndef SAMBAG_CONNECTION_H
 #define SAMBAG_CONNECTION_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "INodeConnection.hpp"
 #include "processing.h"
 #include "NodeAdapter.hpp"
@@ -24,7 +24,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef INodeConnection Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<NodeConnection> Ptr;
+	typedef std::shared_ptr<NodeConnection> Ptr;
 	//-------------------------------------------------------------------------
 protected:
 	//-------------------------------------------------------------------------
@@ -52,7 +52,7 @@ private:
 public:
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::dynamic_pointer_cast<NodeConnection>( self.lock() );
+		return std::dynamic_pointer_cast<NodeConnection>( self.lock() );
 	}
 	//-------------------------------------------------------------------------
 	static Ptr create() {

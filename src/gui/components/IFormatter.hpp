@@ -8,7 +8,7 @@
 #ifndef SAMBAG_IFORMATTER_H
 #define SAMBAG_IFORMATTER_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/Forward.hpp>
 #include <gui/HandyNamespaces.hpp>
 
@@ -23,7 +23,7 @@ class IFormatter {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<IFormatter> Ptr;
+	typedef std::shared_ptr<IFormatter> Ptr;
 	//-------------------------------------------------------------------------
 	/**
 	 * handles the next num elements as one object (with a common bounding box)

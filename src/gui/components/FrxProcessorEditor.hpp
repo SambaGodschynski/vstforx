@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXPROCESSOREDITOR_H
 #define SAMBAG_FRXPROCESSOREDITOR_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/FramedWindow.hpp>
 #include "IFrxProcessorEditorCtrl.hpp"
 #include <gui/HandyNamespaces.hpp>
@@ -24,7 +24,7 @@ public:
 	//-------------------------------------------------------------------------
 	typedef sdc::FramedWindow Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxProcessorEditor> Ptr;
+	typedef std::shared_ptr<FrxProcessorEditor> Ptr;
 protected:
 	//-------------------------------------------------------------------------
 	FrxProcessorEditor(sdc::Window::Ptr parent = sdc::Window::Ptr()) :

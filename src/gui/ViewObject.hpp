@@ -8,7 +8,7 @@
 #ifndef SAMBAG_VIEWOBJECT_H
 #define SAMBAG_VIEWOBJECT_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/serialization/access.hpp>
 #include <com/SerializationFwd.h>
 namespace frx { namespace gui {
@@ -20,7 +20,7 @@ class ViewObject {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<ViewObject> Ptr;
+	typedef std::shared_ptr<ViewObject> Ptr;
 protected:
 private:
 	///////////////////////////////////////////////////////////////////////////

@@ -24,7 +24,7 @@
 #include <boost/foreach.hpp>
 #include <sambag/com/Thread.hpp>
 #include <queue>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <com/one4All.h>
 #include <sambag/disco/components/SvgComponent.hpp>
 
@@ -36,7 +36,7 @@ namespace frx { namespace gui { namespace components {
 class ScanningDialog : public sdc::FramedWindow {
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<ScanningDialog> Ptr;
+	typedef std::shared_ptr<ScanningDialog> Ptr;
 	//-------------------------------------------------------------------------
 	typedef sdc::FramedWindow Super;
 protected:
@@ -52,7 +52,7 @@ protected:
 	//-------------------------------------------------------------------------
 	std::queue<FileAndStatus> tmpEntries;
 	//-------------------------------------------------------------------------
-	typedef boost::unordered_map<std::string, size_t> File2Listindex;
+	typedef std::unordered_map<std::string, size_t> File2Listindex;
 	//-------------------------------------------------------------------------
 	File2Listindex file2listindex;
 	//-------------------------------------------------------------------------
@@ -304,7 +304,7 @@ namespace {
 	enum ResizeDirection{EdPlusW, EdMinusW, EdPlusH, EdMinusH};
 }
 struct SetupWindow::ResizeBtnHandler {
-	typedef boost::shared_ptr<ResizeBtnHandler> Ptr;
+	typedef std::shared_ptr<ResizeBtnHandler> Ptr;
 	static Ptr create(SetupWindow *host);
 	void registerBtn(sdc::AComponentPtr c, ResizeDirection dir);
 	void onMouse(void *src, const sdc::events::MouseEvent &ev, ResizeDirection dir);
@@ -516,7 +516,7 @@ void SetupWindow::updatePreview(const std::string &path) {
         return;
     }
     sdc::SvgComponent::Ptr img =
-        boost::dynamic_pointer_cast<sdc::SvgComponent>(preview->getComponent(0));
+        std::dynamic_pointer_cast<sdc::SvgComponent>(preview->getComponent(0));
     if(!img) {
         return;
     }

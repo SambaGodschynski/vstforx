@@ -8,7 +8,7 @@
 #ifndef SAMBAG_IVIEWMODELMAP_H
 #define SAMBAG_IVIEWMODELMAP_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <processing/ModelObject.hpp>
 #include "components/Forward.hpp"
 #include "ViewObject.hpp"
@@ -30,7 +30,7 @@ private:
 	void serialize(Archive &ar, const unsigned int version) {}
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<IViewModelMap> Ptr;
+	typedef std::shared_ptr<IViewModelMap> Ptr;
 	//-------------------------------------------------------------------------
 	/**
 	 * @param viewobject

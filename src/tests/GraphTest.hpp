@@ -21,7 +21,7 @@ class VolumeAdapterX : public processing::Volume {
 //============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<VolumeAdapterX> Ptr;
+	typedef std::shared_ptr<VolumeAdapterX> Ptr;
 protected:
 	//-------------------------------------------------------------------------
 	VolumeAdapterX( frx::processing::IHostInfo::Ptr g ) : 

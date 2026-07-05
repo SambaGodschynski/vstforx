@@ -5,6 +5,7 @@
  * ===========================================================================================================
  */
 
+#include <tuple>
 #include <boost/bind.hpp>
 #include "PluginCollection.h"
 #include "Log.h"
@@ -296,7 +297,7 @@ processing::PluginInfo PluginCollection::restorePluginInfo ( processing::PluginI
 {
 	using namespace processing;
 	std::string shellId;
-	boost::tie(info.location, shellId) = com::extractVSTPluginFilename(info.location);
+	std::tie(info.location, shellId) = com::extractVSTPluginFilename(info.location);
 	PluginInfo pI = getPlugInfo ( info.location );
 	// plugin not in db => search in db
 	if ( !pI.isValid() ) {
@@ -423,7 +424,7 @@ namespace {
 	using namespace sqlcommands;
 	using namespace processing;
 	typedef std::list<PluginInfo> PluginInfoList;
-    typedef boost::function<void(int, DataBase::Result::Ptr)> _EntryF;
+    typedef std::function<void(int, DataBase::Result::Ptr)> _EntryF;
 	bool extractAndAdd ( const DataBase::Results &results, PluginInfoList &pL, _EntryF entryCallback=NULL)
     {
 		if ( results.empty() ) return false;
@@ -925,7 +926,7 @@ void PluginCollection::getFavouritePlugins ( PluginInfoList &outList, std::vecto
 }
 //::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 PluginCollection::Ptr getPluginCollection() {
-    static boost::weak_ptr<PluginCollection> instance;
+    static std::weak_ptr<PluginCollection> instance;
     static sambag::com::RecursiveMutex lock;
     PluginCollection::Ptr res;
     SAMBAG_BEGIN_SYNCHRONIZED(lock)

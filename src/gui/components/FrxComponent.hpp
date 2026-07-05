@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXCOMPONENT_H
 #define SAMBAG_FRXCOMPONENT_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/AContainer.hpp>
 #include <sambag/disco/Geometry.hpp>
 #include <sambag/com/events/Events.hpp>
@@ -45,9 +45,9 @@ public:
 	//-------------------------------------------------------------------------
 	typedef sdc::AContainer Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxComponent> Ptr;
+	typedef std::shared_ptr<FrxComponent> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxComponent> WPtr;
+	typedef std::weak_ptr<FrxComponent> WPtr;
 	//-------------------------------------------------------------------------
 	virtual sdc::ui::AComponentUIPtr 
 	createComponentUI(sdc::ui::ALookAndFeelPtr laf) const;
@@ -98,7 +98,7 @@ public:
     }
     //-------------------------------------------------------------------------
     Ptr getPtr() const {
-        return boost::dynamic_pointer_cast<FrxComponent>(self.lock());
+        return std::dynamic_pointer_cast<FrxComponent>(self.lock());
     }
     //-------------------------------------------------------------------------
 	virtual ~FrxComponent();

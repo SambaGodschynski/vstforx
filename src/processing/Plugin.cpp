@@ -4,6 +4,7 @@
  *      Author: Johannes Unger
  * ============================================================================
  */
+#include <tuple>
 #include <boost/bind.hpp>
 #include "Plugin.h"
 #include <com/Serialization.h>
@@ -321,7 +322,7 @@ void Plugin::saveImplState(com::oArchive &ar, const unsigned int version, Int2Ty
 	size_t dataSize;
     void *data;
 
-    boost::tie(dataSize, data) = impl->getStateData();
+    std::tie(dataSize, data) = impl->getStateData();
     ar << dataSize;
 	if ( dataSize ) {
         ar.save_binary (data, dataSize);

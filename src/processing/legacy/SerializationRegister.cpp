@@ -6,7 +6,7 @@
  */
 
 #include <com/Serialization.h>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <processing/processing.h>
 #include <processing/parameter/parameter.h>
 #include <processing/parameter/ConnectionOperators.h>

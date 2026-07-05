@@ -23,7 +23,7 @@ void LuaFrxObjectBase::addLuaFields(lua_State *lua, int index)
     // register functions
     registerClassFunctions<Functions1, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaFrxObjectBase::getLocation, this, lua),
+	std::make_tuple(boost::bind(&LuaFrxObjectBase::getLocation, this, lua),
 		boost::bind(&LuaFrxObjectBase::setLocation, this, lua, _1, _2),
 		boost::bind(&LuaFrxObjectBase::getSize, this, lua),
 		boost::bind(&LuaFrxObjectBase::setSize, this, lua, _1, _2),

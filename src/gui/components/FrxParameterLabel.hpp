@@ -8,8 +8,7 @@
 #ifndef SAMBAG_FRXPARAMETERLABEL_H
 #define SAMBAG_FRXPARAMETERLABEL_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/Label.hpp>
 #include <sambag/disco/components/DefaultBoundedRangeModel.hpp>
 #include <gui/HandyNamespaces.hpp>
@@ -29,9 +28,9 @@ public:
 	//-------------------------------------------------------------------------
 	typedef sdc::Label Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxParameterLabel> Ptr;
+	typedef std::shared_ptr<FrxParameterLabel> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxParameterLabel> WPtr;
+	typedef std::weak_ptr<FrxParameterLabel> WPtr;
 	//-------------------------------------------------------------------------
 	virtual sdc::ui::AComponentUIPtr 
 	createComponentUI(sdc::ui::ALookAndFeelPtr laf) const;

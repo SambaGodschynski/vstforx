@@ -8,7 +8,7 @@
 #ifndef SAMBAG_LUAPARAMETER_H
 #define SAMBAG_LUAPARAMETER_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "LuaModelObject.hpp"
 
 namespace frx { namespace scripts {
@@ -22,7 +22,7 @@ class LuaParameter : public LuaModelObject {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<LuaParameter> Ptr;
+	typedef std::shared_ptr<LuaParameter> Ptr;
     //-------------------------------------------------------------------------
     typedef LuaModelObject Super;
 protected:

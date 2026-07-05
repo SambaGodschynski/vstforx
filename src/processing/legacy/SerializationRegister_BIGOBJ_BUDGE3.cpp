@@ -6,7 +6,7 @@
  */
 
 #include <com/Serialization.h>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <processing/dspTools.h>
 #include <processing/processing.h>
 #include <processing/NodeConnection.hpp>

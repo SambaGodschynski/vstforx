@@ -8,8 +8,7 @@
 #ifndef SAMBAG_FRXBROWSERLISTUI_H
 #define SAMBAG_FRXBROWSERLISTUI_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/ui/basic/BasicListUI.hpp>
 #include <gui/components/FrxColumnBrowser.hpp>
 #include <sambag/disco/svg/Style.hpp>
@@ -36,9 +35,9 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxBrowserListUI Class;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<Class> Ptr;
+	typedef std::shared_ptr<Class> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<Class> WPtr;
+	typedef std::weak_ptr<Class> WPtr;
 protected:
 	//-------------------------------------------------------------------------
 	void installDefaults(sdc::AComponentPtr c);

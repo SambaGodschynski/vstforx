@@ -8,7 +8,7 @@
 #ifndef SAMBAG_IFRXPROCESSOREDITORCTRL_H
 #define SAMBAG_IFRXPROCESSOREDITORCTRL_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/Forward.hpp>
 #include <sambag/com/events/Events.hpp>
 #include <gui/HandyNamespaces.hpp>
@@ -22,7 +22,7 @@ class IFrxProcessorEditorCtrl {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<IFrxProcessorEditorCtrl> Ptr;
+	typedef std::shared_ptr<IFrxProcessorEditorCtrl> Ptr;
 protected:
 private:
 public:

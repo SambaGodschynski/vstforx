@@ -5,10 +5,11 @@
  *      Author: Johannes Unger
  */
 
+#include <tuple>
 #include "ProcessorAdapter.hpp"
 #include "NodeAdapter.hpp"
 #include "ParameterAdapter.hpp"
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <boost/foreach.hpp>
 #include "MidiEventProcessor.h"
 #include <algorithm>
@@ -141,7 +142,7 @@ void ProcessorAdapter::updateParameters() {
 	using ::processing::parameter::HasParameter;
 	using ::processing::MidiEventProcessor;
 	HasParameter::Ptr hp =
-		boost::dynamic_pointer_cast<HasParameter>(processor);
+		std::dynamic_pointer_cast<HasParameter>(processor);
 	if (!hp) {
 		return;
 	}
@@ -172,7 +173,7 @@ void ProcessorAdapter::initParameter() {
 	using ::processing::parameter::HasParameter;
 	using ::processing::MidiEventProcessor;
 	HasParameter::Ptr hp =
-		boost::dynamic_pointer_cast<HasParameter>(processor);
+		std::dynamic_pointer_cast<HasParameter>(processor);
 	if (hp) {
 		size_t num = hp->getNumParameter();
 		for (size_t i=0; i<num; ++i) {
@@ -188,7 +189,7 @@ void ProcessorAdapter::initParameter() {
 	using ::processing::parameter::HasOutParameter;
 	using ::processing::MidiEventProcessor;
 	HasOutParameter::Ptr hpo =
-		boost::dynamic_pointer_cast<HasOutParameter>(processor);
+		std::dynamic_pointer_cast<HasOutParameter>(processor);
 	if (hpo) {
 		size_t num = hpo->getNumOutParameter();
 		for (size_t i=0; i<num; ++i) {
@@ -237,7 +238,7 @@ getParameters(const ParameterGroupKey &key, Parameters &out) const
 		return;
 	}
 	ParameterGroupMap::left_map::const_iterator it, end;
-	boost::tie(it, end) = parameters.left.equal_range(key);
+	std::tie(it, end) = parameters.left.equal_range(key);
 	out.reserve(parameters.left.count(key));
 	for (; it!=end; ++it) {
 		out.push_back(it->second);

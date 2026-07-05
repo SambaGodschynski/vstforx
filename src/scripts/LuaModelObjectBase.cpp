@@ -23,7 +23,7 @@ void LuaModelObjectBase::addLuaFields(lua_State *lua, int index)
     // register functions
     registerClassFunctions<Functions1, TupleAccessor>(
 	lua,
-	boost::make_tuple(),
+	std::make_tuple(),
 	index, 
 	getUId() 
 	); 

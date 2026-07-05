@@ -20,7 +20,7 @@
 
 namespace frx { namespace processing {
     struct APluginImpl;
-    typedef boost::shared_ptr<APluginImpl> APluginImplPtr;
+    typedef std::shared_ptr<APluginImpl> APluginImplPtr;
 }}
 
 namespace processing {
@@ -39,7 +39,7 @@ class Plugin : public ::processing::ProcessAdapter,
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<Plugin> Ptr;
+	typedef std::shared_ptr<Plugin> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	std::string statusMsg;

@@ -18,7 +18,7 @@ namespace {
 //-----------------------------------------------------------------------------
 class StatusLabel : public sdc::Label {
 public:
-	typedef boost::shared_ptr<StatusLabel> Ptr;
+	typedef std::shared_ptr<StatusLabel> Ptr;
 	typedef sdc::Label Super;
 protected:
 	StatusLabel(){

@@ -12,8 +12,7 @@
 #ifndef SAMBAG_LuaParameterBase_H
 #define SAMBAG_LuaParameterBase_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/lua/Lua.hpp>
 #include <loki/Typelist.h>
 #include <sambag/lua/ALuaObject.hpp>
@@ -28,9 +27,9 @@ public:
     //-------------------------------------------------------------------------
     typedef LuaModelObject Super;
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<LuaParameterBase> Ptr;
+    typedef std::shared_ptr<LuaParameterBase> Ptr;
     //-------------------------------------------------------------------------
-    typedef boost::weak_ptr<LuaParameterBase> WPtr;
+    typedef std::weak_ptr<LuaParameterBase> WPtr;
     //-------------------------------------------------------------------------
     
 private:

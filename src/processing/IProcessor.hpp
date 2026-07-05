@@ -8,8 +8,7 @@
 #ifndef SAMBAG_IPROCESSOR_H
 #define SAMBAG_IPROCESSOR_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include "ModelObject.hpp"
 #include "INode.hpp"
 #include "IParameter.hpp"
@@ -39,9 +38,9 @@ public:
 	//-------------------------------------------------------------------------
 	typedef ModelObject Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<IProcessor> Ptr;
+	typedef std::shared_ptr<IProcessor> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<IProcessor> WPtr;
+	typedef std::weak_ptr<IProcessor> WPtr;
 	//-------------------------------------------------------------------------
 	virtual Ptr getPtr() const = 0;
 	//-------------------------------------------------------------------------
@@ -107,7 +106,7 @@ public:
 		Ptr src;
 		IOChangedEvent(Ptr src) : src(src) {}
 	};
-	typedef boost::weak_ptr<void> AnyWPtr;
+	typedef std::weak_ptr<void> AnyWPtr;
 	typedef sambag::com::events::EventSender<IOChangedEvent> IOChangedEventSender;
 	//-------------------------------------------------------------------------
 	virtual IOChangedEventSender::Connection 

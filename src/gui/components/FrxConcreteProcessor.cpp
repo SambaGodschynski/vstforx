@@ -6,9 +6,9 @@
  */
 
 #include "FrxConcreteProcessor.hpp"
-#include <boost/function.hpp>
-#include <boost/tuple/tuple.hpp>
-#include <boost/unordered_map.hpp>
+#include <functional>
+#include <tuple>
+#include <unordered_map>
 #include <sambag/disco/IResourceManager.hpp>
 
 namespace frx { namespace gui { namespace components {
@@ -77,9 +77,9 @@ const char * FrqDetector::Details::ns      = "internal";
 } // namespace processorTypes
 //-----------------------------------------------------------------------------
 namespace {
-	typedef boost::function <const char *()> GetStrF;
-	typedef boost::tuple<GetStrF, GetStrF> NameFs;
-	typedef boost::unordered_map<std::string, NameFs> ProcessorNameMap;
+	typedef std::function<const char *()> GetStrF;
+	typedef std::tuple<GetStrF, GetStrF> NameFs;
+	typedef std::unordered_map<std::string, NameFs> ProcessorNameMap;
 	ProcessorNameMap processorNameMap;
 	template <class Pr>
 	void addProcessor() {
@@ -87,7 +87,7 @@ namespace {
 		GetStrF toolt = &getProcessorTooltip<Pr>;
 		processorNameMap.insert( ProcessorNameMap::value_type(
 				getProcessorName<Pr>(),
-				boost::make_tuple(beauty, toolt)
+				std::make_tuple(beauty, toolt)
 			)
 		);
 	}
@@ -115,7 +115,7 @@ std::string getProcessorBeautyName(const std::string &processorName) {
 	if (it==processorNameMap.end()) {
         return "unkown processor";
 	}
-	return boost::get<0>( it->second )();
+	return std::get<0>( it->second )();
 }
 //-----------------------------------------------------------------------------
 std::string getProcessorTooltip(const std::string &processorName) {
@@ -123,7 +123,7 @@ std::string getProcessorTooltip(const std::string &processorName) {
 	if (it==processorNameMap.end()) {
 		return "?";
 	}
-	return boost::get<1>( it->second )();
+	return std::get<1>( it->second )();
 }
 }}} // namespace(s)
 

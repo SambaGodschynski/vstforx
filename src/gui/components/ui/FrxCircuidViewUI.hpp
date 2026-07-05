@@ -8,8 +8,7 @@
 #ifndef SAMBAG_FRXCIRCUIDVIEWUI_H
 #define SAMBAG_FRXCIRCUIDVIEWUI_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/disco/components/ui/AComponentUI.hpp>
 #include <sambag/disco/components/Forward.hpp>
 #include <sambag/disco/Geometry.hpp>
@@ -28,9 +27,9 @@ public:
 	//-------------------------------------------------------------------------
 	typedef sdcu::AComponentUI Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxCircuidViewUI> Ptr;
+	typedef std::shared_ptr<FrxCircuidViewUI> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxCircuidViewUI> WPtr;
+	typedef std::weak_ptr<FrxCircuidViewUI> WPtr;
 protected:
 	//-------------------------------------------------------------------------
 	WPtr self;

@@ -159,7 +159,7 @@ class PluginCollection :
 	public com::events::EventSender<ScanInterrupted>
 {
 friend class ScanVisitor;
-friend boost::shared_ptr<PluginCollection> getPluginCollection();
+friend std::shared_ptr<PluginCollection> getPluginCollection();
 public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef com::events::EventSender<OnLoadFile> OnLoadFileSender;
@@ -170,7 +170,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef std::string PluginIdType;
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<PluginCollection> Ptr;
+	typedef std::shared_ptr<PluginCollection> Ptr;
 	//--------------------------------------------------------------------------------------------------------
 	typedef std::list < processing::PluginInfo > PluginInfoList;
 	//--------------------------------------------------------------------------------------------------------

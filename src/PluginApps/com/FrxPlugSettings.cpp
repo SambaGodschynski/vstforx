@@ -45,8 +45,8 @@ std::string globVersionStr() {
 
 //------------------------------------------------------------------------------
 namespace {
-typedef boost::shared_ptr<void> AnyPtr;
-typedef boost::weak_ptr<void> AnyWPtr;
+typedef std::shared_ptr<void> AnyPtr;
+typedef std::weak_ptr<void> AnyWPtr;
 template <int Max>
 void checkConstraints(AnyPtr object) {
   static const int numMax = Max;
@@ -67,34 +67,34 @@ void checkConstraints(AnyPtr object) {
 template <>
 void checkConstraints<0>(AnyPtr object) {}
 
-void addProcessor(boost::shared_ptr<void> obj, Int2Type<PlugSettings::Normal>) 
+void addProcessor(std::shared_ptr<void> obj, Int2Type<PlugSettings::Normal>) 
 {
 }
-void addProcessor(boost::shared_ptr<void> obj, Int2Type<PlugSettings::Demo>) 
+void addProcessor(std::shared_ptr<void> obj, Int2Type<PlugSettings::Demo>) 
 {
   checkConstraints<FRX_MAX_DEMO_MODULES>(obj);
 }
-void addProcessor(boost::shared_ptr<void> obj, Int2Type<PlugSettings::CM>) 
+void addProcessor(std::shared_ptr<void> obj, Int2Type<PlugSettings::CM>) 
 {
   checkConstraints<FRX_MAX_CM_MODULES>(obj);
 }
-void addPlugin(boost::shared_ptr<void> obj, Int2Type<PlugSettings::Normal>) 
+void addPlugin(std::shared_ptr<void> obj, Int2Type<PlugSettings::Normal>) 
 {
 }
-void addPlugin(boost::shared_ptr<void> obj, Int2Type<PlugSettings::Demo>) 
+void addPlugin(std::shared_ptr<void> obj, Int2Type<PlugSettings::Demo>) 
 {
   checkConstraints<FRX_MAX_DEMO_MODULES>(obj);
 }
-void addPlugin(boost::shared_ptr<void> obj, Int2Type<PlugSettings::CM>) 
+void addPlugin(std::shared_ptr<void> obj, Int2Type<PlugSettings::CM>) 
 {
 }
 
 } // namespace
 
-void globAddProcessor( boost::shared_ptr<void> obj ) {
+void globAddProcessor( std::shared_ptr<void> obj ) {
   addProcessor( obj, Int2Type<PlugSettings::Version>() );
 }
-void globAddPlugin( boost::shared_ptr<void> obj ) {
+void globAddPlugin( std::shared_ptr<void> obj ) {
   addPlugin( obj, Int2Type<PlugSettings::Version>() );
 }
 

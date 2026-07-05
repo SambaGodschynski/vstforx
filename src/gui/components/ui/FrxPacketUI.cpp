@@ -46,7 +46,7 @@ namespace {
             return;
         }
         IFrxControl &ctrl = getFrxControl(view);
-        FrxPacket::Ptr packet = boost::dynamic_pointer_cast<FrxPacket>(c);
+        FrxPacket::Ptr packet = std::dynamic_pointer_cast<FrxPacket>(c);
         if (!packet) {
             return;
         }

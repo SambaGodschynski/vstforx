@@ -8,8 +8,7 @@
 #ifndef SAMBAG_FRXPARAMETER_H
 #define SAMBAG_FRXPARAMETER_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/com/Common.hpp>
 #include <sambag/disco/components/DefaultBoundedRangeModel.hpp>
 #include "FrxNode.hpp"
@@ -32,9 +31,9 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxNode Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxParameter> Ptr;
+	typedef std::shared_ptr<FrxParameter> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxParameter> WPtr;
+	typedef std::weak_ptr<FrxParameter> WPtr;
 	//-------------------------------------------------------------------------
 	virtual sdcu::AComponentUIPtr createComponentUI(sdcu::ALookAndFeelPtr laf) const;
 protected:
@@ -69,7 +68,7 @@ public:
 	sdc::AComponent::Ptr getEncapsulatedCtrl() const { return ctrl; }
 	//-------------------------------------------------------------------------
 	Ptr getPtr() const {
-		return boost::dynamic_pointer_cast<FrxParameter>(Super::getPtr());
+		return std::dynamic_pointer_cast<FrxParameter>(Super::getPtr());
 	}
 
 }; // FrxParameter

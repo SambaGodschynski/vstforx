@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXPROCESSORNODE_H
 #define SAMBAG_FRXPROCESSORNODE_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "FrxIO.hpp"
 #include <vector>
 #include <gui/HandyNamespaces.hpp>
@@ -24,9 +24,9 @@ public:
 	//-------------------------------------------------------------------------
 	typedef FrxNode Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxProcessorNode> Ptr;
+	typedef std::shared_ptr<FrxProcessorNode> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxProcessorNode> WPtr;
+	typedef std::weak_ptr<FrxProcessorNode> WPtr;
 	//-------------------------------------------------------------------------
 	typedef std::vector<FrxIO::Ptr> IOContainer;
 protected:

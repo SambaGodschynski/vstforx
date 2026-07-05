@@ -8,7 +8,7 @@
 #ifndef SAMBAG_VSTSHELLPLUGIN_H
 #define SAMBAG_VSTSHELLPLUGIN_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <string>
 #include <list>
 #include <boost/lexical_cast.hpp>

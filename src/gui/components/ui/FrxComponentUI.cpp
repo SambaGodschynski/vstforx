@@ -82,7 +82,7 @@ sdc::PopupMenuPtr FrxComponentUI::createPopupmenu(FrxComponentPtr c,
 }
 //-----------------------------------------------------------------------------
 void FrxComponentUI::installDefaults(sdc::AComponentPtr c) {
-	FrxComponent::Ptr frxC = boost::dynamic_pointer_cast<FrxComponent>(c);
+	FrxComponent::Ptr frxC = std::dynamic_pointer_cast<FrxComponent>(c);
 	FrxCircuidView::Ptr view = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(frxC && view);
 	// add popupmenu

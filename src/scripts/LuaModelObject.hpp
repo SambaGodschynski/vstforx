@@ -8,12 +8,11 @@
 #ifndef SAMBAG_LuaModelObject_H
 #define SAMBAG_LuaModelObject_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/lua/ALuaObject.hpp>
 #include <processing/PObject.h>
 #include <gui/IViewModelMap.hpp>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <map>
 #include <functional>
 
@@ -30,13 +29,13 @@ public:
     //-------------------------------------------------------------------------
     typedef slua::ALuaObject Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<LuaModelObject> Ptr;
+	typedef std::shared_ptr<LuaModelObject> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<LuaModelObject> WPtr;
+	typedef std::weak_ptr<LuaModelObject> WPtr;
     //-------------------------------------------------------------------------
     typedef ::processing::PObject ModelObject;
     //-------------------------------------------------------------------------
-    typedef boost::unordered_map<UId, LuaModelObject::WPtr> UIdMap;
+    typedef std::unordered_map<UId, LuaModelObject::WPtr> UIdMap;
 private:
     //-------------------------------------------------------------------------
     ModelObject::WPtr obj;

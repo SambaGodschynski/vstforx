@@ -7,21 +7,21 @@
 #ifndef FORX_LuaFrxView_H
 #define FORX_LuaFrxView_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <tuple>
+#include <memory>
 #include <sambag/lua/ALuaObject.hpp>
 #include "LuaFrxObject.hpp"
 #include <gui/HandyNamespaces.hpp>
 #include <sambag/disco/components/Forward.hpp>
 #include <gui/components/FrxCircuidView.hpp>
-#include <boost/unordered_set.hpp>
+#include <unordered_set>
 #include "LuaFrxViewBase.hpp"
 
 namespace frx {
 namespace gui { namespace components {
     class FrxCircuidView;
-    typedef boost::shared_ptr<FrxCircuidView> FrxCircuidViewPtr;
-    typedef boost::weak_ptr<FrxCircuidView> FrxCircuidViewWPtr;
+    typedef std::shared_ptr<FrxCircuidView> FrxCircuidViewPtr;
+    typedef std::weak_ptr<FrxCircuidView> FrxCircuidViewWPtr;
     class VstForxEditor;
 }}
 
@@ -34,7 +34,7 @@ class LuaFrxView : public LuaFrxViewBase {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<LuaFrxView> Ptr;
+	typedef std::shared_ptr<LuaFrxView> Ptr;
     //-------------------------------------------------------------------------
     typedef LuaFrxViewBase Super;
 protected:
@@ -76,9 +76,9 @@ protected:
     void setMenu(lua_State *lua);
     void addViewListener(lua_State *lua, const std::string &listener);
     void removeViewListener(lua_State *lua, const std::string &listener);
-    boost::tuple<float,float> getLocation(lua_State *lua);
+    std::tuple<float,float> getLocation(lua_State *lua);
     void setLocation(lua_State *lua, float x, float y);
-    boost::tuple<float,float> getSize(lua_State *lua);
+    std::tuple<float,float> getSize(lua_State *lua);
     void setSize(lua_State *lua, float x, float y);
     slua::IgnoreReturn createListWindow(lua_State *lua);
 	virtual void addToSelection(lua_State *lua);
@@ -89,7 +89,7 @@ private:
     //-------------------------------------------------------------------------
     fgc::VstForxEditor *editor;
     //-------------------------------------------------------------------------
-    boost::unordered_set<std::string> luaViewListener;
+    std::unordered_set<std::string> luaViewListener;
     //-------------------------------------------------------------------------
     fgc::FrxCircuidView::WPtr listenerInstalled;
 public:
@@ -115,7 +115,7 @@ void LuaFrxView::pushComponents(lua_State *lua, const Container &components) {
     int lua_index = 1;
     BOOST_FOREACH(const typename Container::value_type &_c, components) {
         AComponentPtr c = _c;
-        FrxComponent::Ptr vObj = boost::dynamic_pointer_cast<FrxComponent>(c);
+        FrxComponent::Ptr vObj = std::dynamic_pointer_cast<FrxComponent>(c);
         if (!vObj) {
             continue;
         }

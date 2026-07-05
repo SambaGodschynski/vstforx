@@ -14,7 +14,7 @@
 #include <set>
 #include <loki/Singleton.h>
 #include <sambag/com/ArithmeticWrapper.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #define SETTINGS com::getSettings()
 #define HOSTINFO SETTINGS.getHostInformation()
@@ -27,8 +27,8 @@ extern bool globFrxIsDemo();
 /**
  * restrictions check:
  */
-extern void globAddProcessor( boost::shared_ptr<void> obj );
-extern void globAddPlugin( boost::shared_ptr<void> obj );
+extern void globAddProcessor( std::shared_ptr<void> obj );
+extern void globAddPlugin( std::shared_ptr<void> obj );
 extern std::string globVersionStr();
 
 namespace com {

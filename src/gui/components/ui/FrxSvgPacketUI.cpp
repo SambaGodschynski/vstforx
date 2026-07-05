@@ -47,7 +47,7 @@ namespace {
             return;
         }
         IFrxControl &ctrl = getFrxControl(view);
-        FrxPacket::Ptr packet = boost::dynamic_pointer_cast<FrxPacket>(c);
+        FrxPacket::Ptr packet = std::dynamic_pointer_cast<FrxPacket>(c);
         if (!packet) {
             return;
         }
@@ -90,7 +90,7 @@ FrxSvgPacketUI::Ptr FrxSvgPacketUI::create() {
 //-----------------------------------------------------------------------------
 void FrxSvgPacketUI::installUI(sdc::AComponentPtr c) {
     Super::installUI(c);
-    FrxComponent::Ptr frxC = boost::dynamic_pointer_cast<FrxComponent>(c);
+    FrxComponent::Ptr frxC = std::dynamic_pointer_cast<FrxComponent>(c);
 	FrxCircuidView::Ptr view = c->getFirstContainer<FrxCircuidView>();
 	SAMBAG_ASSERT(frxC && view);
     // add popupmenu

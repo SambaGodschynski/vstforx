@@ -12,8 +12,7 @@
 #ifndef SAMBAG_LuaFrxParameterConnectionBase_H
 #define SAMBAG_LuaFrxParameterConnectionBase_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include <sambag/lua/Lua.hpp>
 #include <loki/Typelist.h>
 #include <sambag/lua/ALuaObject.hpp>
@@ -29,9 +28,9 @@ public:
     //-------------------------------------------------------------------------
     typedef LuaFrxConnection Super;
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<LuaFrxParameterConnectionBase> Ptr;
+    typedef std::shared_ptr<LuaFrxParameterConnectionBase> Ptr;
     //-------------------------------------------------------------------------
-    typedef boost::weak_ptr<LuaFrxParameterConnectionBase> WPtr;
+    typedef std::weak_ptr<LuaFrxParameterConnectionBase> WPtr;
     //-------------------------------------------------------------------------
     typedef  sambag::lua::LuaSequence<std::string>  OpNames;
 	

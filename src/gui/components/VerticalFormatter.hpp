@@ -8,7 +8,7 @@
 #ifndef SAMBAG_VERTICALFORMATTER_H
 #define SAMBAG_VERTICALFORMATTER_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <sambag/disco/Geometry.hpp>
 #include <sambag/com/ArithmeticWrapper.hpp>
 #include "IFormatter.hpp"
@@ -22,7 +22,7 @@ class VerticalFormatter : public IFormatter {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<VerticalFormatter> Ptr;
+	typedef std::shared_ptr<VerticalFormatter> Ptr;
 	//-------------------------------------------------------------------------
 	typedef IFormatter Super;
 protected:

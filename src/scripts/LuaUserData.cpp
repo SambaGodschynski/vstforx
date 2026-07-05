@@ -5,6 +5,7 @@
  *      Author: Johannes Unger
  */
 
+#include <tuple>
 #include "LuaUserData.hpp"
 #include <sambag/lua/LuaHelper.hpp>
 
@@ -50,9 +51,9 @@ void LuaUserData::add(lua_State *lua) {
     lua_pushnil(lua); /* first key */
     --index;
     while (lua_next(lua,  index) != 0) {
-        boost::tuple<std::string> value;
+        std::tuple<std::string> value;
         slua::pop(lua,  value);
-        add(key, boost::get<0>(value));
+        add(key, std::get<0>(value));
     }
 
 }

@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXCONNECTIONBROWSERCTRL_H
 #define SAMBAG_FRXCONNECTIONBROWSERCTRL_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "FrxMainBrowserCtrl.hpp"
 namespace frx { namespace gui { namespace components {
 //=============================================================================
@@ -19,7 +19,7 @@ class FrxConnectionBrowserCtrl : public FrxMainBrowserCtrl {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxConnectionBrowserCtrl> Ptr;
+	typedef std::shared_ptr<FrxConnectionBrowserCtrl> Ptr;
 	//-------------------------------------------------------------------------
 	typedef FrxMainBrowserCtrl Super;
 protected:

@@ -23,7 +23,7 @@ void LuaParameterBase::addLuaFields(lua_State *lua, int index)
     // register functions
     registerClassFunctions<Functions1, TupleAccessor>(
 	lua,
-	boost::make_tuple(boost::bind(&LuaParameterBase::setValue, this, lua, _1),
+	std::make_tuple(boost::bind(&LuaParameterBase::setValue, this, lua, _1),
 		boost::bind(&LuaParameterBase::getValue, this, lua),
 		boost::bind(&LuaParameterBase::getName, this, lua)),
 	index, 

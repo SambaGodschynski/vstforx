@@ -46,7 +46,7 @@ class InverseConnection : public ConnectionOperator {
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<InverseConnection> Ptr;
+	typedef std::shared_ptr<InverseConnection> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -100,7 +100,7 @@ class OffsetConnection : public ConnectionOperator, public HasParameter {
 friend class boost::serialization::access;
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<OffsetConnection> Ptr;
+	typedef std::shared_ptr<OffsetConnection> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	/**
@@ -181,7 +181,7 @@ friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<ExpConnection> Ptr;
+	typedef std::shared_ptr<ExpConnection> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	void initListener() {
@@ -296,7 +296,7 @@ friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<LogConnection> Ptr;
+	typedef std::shared_ptr<LogConnection> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	void initListener() {
@@ -410,7 +410,7 @@ friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<MultiplierConnection> Ptr;
+	typedef std::shared_ptr<MultiplierConnection> Ptr;
 private:
     //--------------------------------------------------------------------------------------------------------
     static const float MaxFactor;
@@ -515,7 +515,7 @@ friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<MinMaxConnection> Ptr;
+	typedef std::shared_ptr<MinMaxConnection> Ptr;
 private:
 	//--------------------------------------------------------------------------------------------------------
 	void initListener() {}

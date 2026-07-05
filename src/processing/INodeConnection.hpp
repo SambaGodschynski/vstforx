@@ -8,7 +8,7 @@
 #ifndef SAMBAG_INODECONNECTION_H
 #define SAMBAG_INODECONNECTION_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "IConnection.hpp"
 namespace frx { namespace processing {
 //=============================================================================
@@ -29,7 +29,7 @@ private:
 	}
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<INodeConnection> Ptr;
+	typedef std::shared_ptr<INodeConnection> Ptr;
 }; // INodeConnection
 }} // namespace(s)
 

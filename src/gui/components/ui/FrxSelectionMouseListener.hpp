@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXSELECTIONMOUSELISTENER_H
 #define SAMBAG_FRXSELECTIONMOUSELISTENER_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <gui/components/Forward.hpp>
 #include <sambag/disco/components/events/MouseEvent.hpp>
 #include <sambag/disco/Geometry.hpp>
@@ -24,7 +24,7 @@ class FrxSelectionMouseListener {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxSelectionMouseListener> Ptr;
+	typedef std::shared_ptr<FrxSelectionMouseListener> Ptr;
 protected:
 private:
 public:

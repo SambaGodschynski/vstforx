@@ -8,7 +8,7 @@
 #ifndef SAMBAG_TOOLTIPTEXTS_H
 #define SAMBAG_TOOLTIPTEXTS_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <loki/LokiTypeInfo.h>
 #include <string>
 #include <map>

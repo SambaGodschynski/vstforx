@@ -8,6 +8,7 @@
 #ifndef SAMBAG_IFRXCONTROL_H
 #define SAMBAG_IFRXCONTROL_H
 
+#include <tuple>
 #include <sambag/disco/components/Forward.hpp>
 #include <sambag/disco/components/events/ActionEvent.hpp>
 #include <sambag/disco/components/events/MouseEvent.hpp>
@@ -186,7 +187,7 @@ public:
 //-----------------------------------------------------------------------------
 extern IFrxControl & getFrxControl(fgc::FrxCircuidViewPtr view);
 //-----------------------------------------------------------------------------
-extern boost::tuple<
+extern std::tuple<
 	frx::processing::IModelController::Ptr,
 	IViewModelMap::Ptr
 >

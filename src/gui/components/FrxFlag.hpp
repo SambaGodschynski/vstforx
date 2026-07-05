@@ -8,8 +8,7 @@
 #ifndef SAMBAG_FRXFLAG_H
 #define SAMBAG_FRXFLAG_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <memory>
 #include "FrxComponent.hpp"
 #include <gui/HandyNamespaces.hpp>
 
@@ -22,9 +21,9 @@ class FrxFlag : public FrxComponent {
 //=============================================================================
 public:
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<FrxFlag> Ptr;
+	typedef std::shared_ptr<FrxFlag> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<FrxFlag> WPtr;
+	typedef std::weak_ptr<FrxFlag> WPtr;
 	//-------------------------------------------------------------------------
 	typedef FrxComponent Super;
 	//-------------------------------------------------------------------------

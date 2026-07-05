@@ -4,6 +4,7 @@
  *      Author: Johannes Unger
  * ===========================================================================================================
  */
+#include <tuple>
 #include "MidiProcessor.h"
 #include <com/Serialization.h>
 #include "processing/dspTools.h"
@@ -35,7 +36,7 @@ void MidiProcessor::processMidiEvents ( sambag::dsp::IMidiEvents::Ptr ev ) {
 		IMidiEvents::ByteSize size;
 		IMidiEvents::DeltaFrames d;
 		IMidiEvents::DataPtr data;
-		boost::tie(size, d, data) = ev->getMidiEvent(i);
+		std::tie(size, d, data) = ev->getMidiEvent(i);
 
 		for (int j=0; j<size-2;) { // through bytes
 			Byte status = ( data[j] & 0xf0 ) >> 4;

@@ -30,7 +30,7 @@ void FrxParameterLabelUI::installUI(sdc::AComponentPtr c) {
 //-----------------------------------------------------------------------------
 void FrxParameterLabelUI::draw(sd::IDrawContext::Ptr cn, sdc::AComponentPtr c) {
 	FrxParameterLabel::Ptr label = 
-		boost::dynamic_pointer_cast<FrxParameterLabel>(c);
+		std::dynamic_pointer_cast<FrxParameterLabel>(c);
 	SAMBAG_ASSERT(label);
 	sambag::com::Number value = label->getValue();
 	Super::draw(cn, c);

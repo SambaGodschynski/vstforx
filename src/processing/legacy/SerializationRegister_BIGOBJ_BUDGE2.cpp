@@ -6,7 +6,7 @@
  */
 
 #include <com/Serialization.h>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <processing/concreteAdapter/InputSwitch.h>
 #include <processing/concreteAdapter/PeakTracker.h>
 #include <processing/concreteAdapter/Pan.h>

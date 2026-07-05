@@ -39,7 +39,7 @@ friend class boost::serialization::access;
 BOOST_SERIALIZATION_SPLIT_MEMBER()
 public:
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<VSTPlugin> Ptr;
+	typedef std::shared_ptr<VSTPlugin> Ptr;
 	//--------------------------------------------------------------------------------------------------------
 	/**
 	 * @param fileName
@@ -51,7 +51,7 @@ private:
     //--------------------------------------------------------------------------------------------------------
     mutable sambag::com::ArithmeticWrapper<size_t> _processDelay;
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::shared_ptr<sambag::dsp::VstMidiEventAdapter> VstMidiEventAdapterPtr;
+	typedef std::shared_ptr<sambag::dsp::VstMidiEventAdapter> VstMidiEventAdapterPtr;
 	VstMidiEventAdapterPtr tmpMidiData;
 	//--------------------------------------------------------------------------------------------------------
 	/**

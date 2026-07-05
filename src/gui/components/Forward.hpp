@@ -9,33 +9,33 @@
 #define SAMBAG_FRXFORWARD_H
 
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace frx { namespace gui { namespace components {
 	class FrxComponent;
-	typedef boost::shared_ptr<FrxComponent> FrxComponentPtr; 
-	typedef boost::weak_ptr<FrxComponent> FrxComponentWPtr; 
+	typedef std::shared_ptr<FrxComponent> FrxComponentPtr; 
+	typedef std::weak_ptr<FrxComponent> FrxComponentWPtr; 
 	class FrxCircuidView;
-	typedef boost::shared_ptr<FrxCircuidView> FrxCircuidViewPtr; 
-	typedef boost::weak_ptr<FrxCircuidView> FrxCircuidViewWPtr; 
+	typedef std::shared_ptr<FrxCircuidView> FrxCircuidViewPtr; 
+	typedef std::weak_ptr<FrxCircuidView> FrxCircuidViewWPtr; 
 	class FrxSelection;
-	typedef boost::shared_ptr<FrxSelection> FrxSelectionPtr; 
-	typedef boost::weak_ptr<FrxSelection> FrxSelectionWPtr; 
+	typedef std::shared_ptr<FrxSelection> FrxSelectionPtr; 
+	typedef std::weak_ptr<FrxSelection> FrxSelectionWPtr; 
 	class FrxNode;
-	typedef boost::shared_ptr<FrxNode> FrxNodePtr; 
-	typedef boost::weak_ptr<FrxNode> FrxNodeWPtr; 
+	typedef std::shared_ptr<FrxNode> FrxNodePtr; 
+	typedef std::weak_ptr<FrxNode> FrxNodeWPtr; 
 	class FrxColumnBrowser;
-	typedef boost::shared_ptr<FrxColumnBrowser> FrxColumnBrowserPtr; 
-	typedef boost::weak_ptr<FrxColumnBrowser> FrxColumnBrowserWPtr; 
+	typedef std::shared_ptr<FrxColumnBrowser> FrxColumnBrowserPtr; 
+	typedef std::weak_ptr<FrxColumnBrowser> FrxColumnBrowserWPtr; 
 	class FrxProcessorNode;
-	typedef boost::shared_ptr<FrxProcessorNode> FrxProcessorNodePtr; 
-	typedef boost::weak_ptr<FrxProcessorNode> FrxProcessorNodeWPtr;
+	typedef std::shared_ptr<FrxProcessorNode> FrxProcessorNodePtr; 
+	typedef std::weak_ptr<FrxProcessorNode> FrxProcessorNodeWPtr;
 	class FrxParameter;
-	typedef boost::shared_ptr<FrxParameter> FrxParameterPtr; 
-	typedef boost::weak_ptr<FrxParameter> FrxParameterWPtr;
+	typedef std::shared_ptr<FrxParameter> FrxParameterPtr; 
+	typedef std::weak_ptr<FrxParameter> FrxParameterWPtr;
 	class FrxProcessorEditor;
-	typedef boost::shared_ptr<FrxProcessorEditor> FrxProcessorEditorPtr; 
-	typedef boost::weak_ptr<FrxProcessorEditor> FrxProcessorEditorWPtr;
+	typedef std::shared_ptr<FrxProcessorEditor> FrxProcessorEditorPtr; 
+	typedef std::weak_ptr<FrxProcessorEditor> FrxProcessorEditorWPtr;
 }}}
 
 #endif

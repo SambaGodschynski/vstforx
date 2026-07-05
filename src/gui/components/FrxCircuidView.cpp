@@ -4,6 +4,7 @@
  *  Created on: Mon Aug 20 12:12:59 2012
  *      Author: Johannes Unger
  */
+#include <tuple>
 #include "FrxCircuidView.hpp"
 #include <com/Serialization.h>
 #include <sambag/disco/components/ui/ALookAndFeel.hpp>
@@ -86,7 +87,7 @@ namespace {
 const float FRX_MAX_VIEW = 10000.;
 class BgPane : public sdc::Panel {
 public:
-	typedef boost::shared_ptr<BgPane> Ptr;
+	typedef std::shared_ptr<BgPane> Ptr;
 	typedef sdc::Panel Super;
 protected:
 	BgPane() : matrixInit(false) {}
@@ -127,7 +128,7 @@ public:
 namespace {
 	void _getViewportRect(sdc::AComponentPtr view, sd::Rectangle &res) {
 		sdc::Viewport::Ptr v =
-			boost::dynamic_pointer_cast<sdc::Viewport>(view->getParent());
+			std::dynamic_pointer_cast<sdc::Viewport>(view->getParent());
 		if (!v) {
 			return;
 		}
@@ -226,7 +227,7 @@ sdc::AComponentPtr BgPane::findComponentAt(const sd::Point2D &p,
 					continue;
 				}
 				sdc::AContainer::Ptr con = 
-					boost::dynamic_pointer_cast<sdc::AContainer>(comp);
+					std::dynamic_pointer_cast<sdc::AContainer>(comp);
 				if (con) {
 					sdc::AComponent::Ptr deeper = con->findComponentAt(
 						trP,
@@ -350,7 +351,7 @@ void FrxCircuidView::add(sdc::AComponentPtr comp, ZOrder zord, bool normalize)
 		content->add(comp);
 	}
 	FrxComponent::Ptr frxC =
-		boost::dynamic_pointer_cast<FrxComponent>(comp);
+		std::dynamic_pointer_cast<FrxComponent>(comp);
 	if (!frxC)
 		return;
 
@@ -387,7 +388,7 @@ void FrxCircuidView::fireViewEvent(FrxCircuidViewEvent::Type type, FrxComponentP
 //-----------------------------------------------------------------------------
 void FrxCircuidView::remove(sdc::AComponentPtr comp) {
 	SAMBAG_BEGIN_SYNCHRONIZED(getTreeLock())
-	FrxComponent::Ptr frxC = boost::dynamic_pointer_cast<FrxComponent>(comp);
+	FrxComponent::Ptr frxC = std::dynamic_pointer_cast<FrxComponent>(comp);
 	if (frxC) { // fire removing event
 		frxC->sce::EventSender<OnRemoving>::notifyListeners(frxC.get(),
 			OnRemoving(getPtr()));
@@ -406,7 +407,7 @@ FrxCircuidView::createComponentUI(sdcu::ALookAndFeelPtr laf) const
 }
 //-----------------------------------------------------------------------------
 namespace {
-    boost::tuple<sdc::SvgComponent::Ptr,
+    std::tuple<sdc::SvgComponent::Ptr,
         sdc::SvgComponent::Dummy::Ptr,
         sdc::SvgComponent::Dummy::Ptr>
     _loadSvgBg(const std::string &x, bool isFile) {
@@ -427,7 +428,7 @@ namespace {
         if (!svgMain) {
             throw std::runtime_error("missing svg #background component");
         }
-        return boost::make_tuple(svg, bg, svgMain);
+        return std::make_tuple(svg, bg, svgMain);
     }
 }
 //-----------------------------------------------------------------------------
@@ -440,15 +441,15 @@ void FrxCircuidView::postConstructor() {
     sdc::SvgComponent::Dummy::Ptr bg;
     sdc::SvgComponent::Dummy::Ptr svgMain;
     try {
-        boost::tie(svg, bg, svgMain) =
+        std::tie(svg, bg, svgMain) =
             _loadSvgBg(com::getSettings().getStylePath()+"/bg.svg", true);
     } catch(const std::exception &ex) {
         errorMessage(ex.what());
-        boost::tie(svg, bg, svgMain) =
+        std::tie(svg, bg, svgMain) =
             _loadSvgBg(SVG_FALLBACK, false);
     } catch(...) {
         errorMessage("loading bg.svg failed: unknown error");
-        boost::tie(svg, bg, svgMain) =
+        std::tie(svg, bg, svgMain) =
             _loadSvgBg(SVG_FALLBACK, false);
     }
     Super::add(svg);

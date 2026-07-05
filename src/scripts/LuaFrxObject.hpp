@@ -8,13 +8,13 @@
 #ifndef SAMBAG_LUAFRXOBJECT_H
 #define SAMBAG_LUAFRXOBJECT_H
 
-#include <boost/shared_ptr.hpp>
-#include <boost/weak_ptr.hpp>
+#include <tuple>
+#include <memory>
 #include <sambag/lua/ALuaObject.hpp>
 #include <processing/ModelObject.hpp>
 #include <gui/ViewObject.hpp>
 #include <gui/IViewModelMap.hpp>
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <gui/components/Forward.hpp>
 #include <map>
 #include <functional>
@@ -38,19 +38,19 @@ public:
     //-------------------------------------------------------------------------
     typedef LuaFrxObjectBase Super;
 	//-------------------------------------------------------------------------
-	typedef boost::shared_ptr<LuaFrxObject> Ptr;
+	typedef std::shared_ptr<LuaFrxObject> Ptr;
 	//-------------------------------------------------------------------------
-	typedef boost::weak_ptr<LuaFrxObject> WPtr;
+	typedef std::weak_ptr<LuaFrxObject> WPtr;
     //-------------------------------------------------------------------------
     typedef frx::gui::IViewModelMap ViewModelMap;
     //-------------------------------------------------------------------------
-    typedef boost::weak_ptr<ViewModelMap> ViewModelMapWPtr;
+    typedef std::weak_ptr<ViewModelMap> ViewModelMapWPtr;
     //-------------------------------------------------------------------------
     typedef frx::processing::ModelObject ModelObject;
     //-------------------------------------------------------------------------
     typedef frx::gui::ViewObject ViewObject;
     //-------------------------------------------------------------------------
-    typedef boost::unordered_map<UId, LuaFrxObject::WPtr> UIdMap;
+    typedef std::unordered_map<UId, LuaFrxObject::WPtr> UIdMap;
     //-------------------------------------------------------------------------
     struct Factory {
         friend struct Loki::CreateUsingNew<Factory>;
@@ -118,9 +118,9 @@ protected:
     // lua2frx impl
     virtual std::string toString(lua_State *lua) const;
     virtual bool isequal(lua_State *lua) const;
-    boost::tuple<float,float> getLocation(lua_State *lua);
+    std::tuple<float,float> getLocation(lua_State *lua);
     void setLocation(lua_State *lua, float x, float y);
-    boost::tuple<float,float> getSize(lua_State *lua);
+    std::tuple<float,float> getSize(lua_State *lua);
     void setSize(lua_State *lua, float x, float y);
     void setName(lua_State *lua, const std::string &name);
     std::string getName(lua_State *lua);

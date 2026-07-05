@@ -18,7 +18,7 @@ void FrxBrowserListUI::installDefaults(sdc::AComponentPtr c) {
 	sdc::ui::UIManager &m = sdc::ui::getUIManager();
 	m.getProperty("FrxBrowserList.selectedEntryStyle", selectedStyle);
 	ListType::Ptr list = 
-		boost::dynamic_pointer_cast<ListType>(c);
+		std::dynamic_pointer_cast<ListType>(c);
 	SAMBAG_ASSERT(list);
 	list->setSelectionBackground(
 		selectedStyle.fillPattern() 
@@ -57,7 +57,7 @@ void FrxBrowserListUI::mouseDragged(const sdc::events::MouseEvent &ev) {
 	value /= c->getWidth();
 	value = std::min( 1.0, std::max( 0., value ) );
 	ListType::Ptr list = 
-		boost::dynamic_pointer_cast<ListType>(c);
+		std::dynamic_pointer_cast<ListType>(c);
 	if (!list)
 		return;
 	const ListType::ValueType &node = list->get(currentIndex);

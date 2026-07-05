@@ -8,7 +8,7 @@
 #ifndef SAMBAG_FRXCOMPONENTFACTORY_H
 #define SAMBAG_FRXCOMPONENTFACTORY_H
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "IFrxComponentFactory.hpp"
 #include <loki/Singleton.h>
 #include <map>
