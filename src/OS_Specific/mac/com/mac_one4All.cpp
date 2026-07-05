@@ -30,7 +30,7 @@ bool isPlugFilename ( const std::string &filename ) {
 //-----------------------------------------------------------------------------
 bool isDirectory ( const std::string &filename ) {
 	sambag::com::Location p(filename);
-	boost::filesystem::file_status s = boost::filesystem::status(p); 
+	std::filesystem::file_status s = std::filesystem::status(p); 
 	// in osx (vst) bundles are directories
     // but we want to treat them as file
     std::string ext = Filename(filename).extension().string();

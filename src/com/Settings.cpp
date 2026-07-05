@@ -11,7 +11,7 @@
 #include <sstream>
 #include <string>
 #include <boost/algorithm/string.hpp> 
-#include "boost/filesystem.hpp"
+#include <filesystem>
 #include "com/one4All.h"
 #include "OS_Specific/OS_com.h"
 #include "com/PPIError.h"
@@ -75,7 +75,6 @@ const std::string Settings::SCAN_REPORT_FILENAME = "scanReport.txt";
 static size_t KILO = 1000;
 //------------------------------------------------------------------------------------------------------------
 bool Settings::PathComparator::operator() (const Pathname& lhs, const Pathname& rhs) const {
-    using namespace boost::filesystem;
     return lhs<rhs;
 }
 //------------------------------------------------------------------------------------------------------------
@@ -94,32 +93,32 @@ void Settings::setHomeDirectory(const std::string &path) {
 //------------------------------------------------------------------------------------------------------------
 std::string Settings::getPlugCollectionDumpFilename ()  {
 	std::string str = getHomeDirectory() + "/" + plugCollectionDumpFile; 
-	boost::filesystem::path p(str);
-	return absolute(p).string();
+	std::filesystem::path p(str);
+	return std::filesystem::absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
 std::string Settings::getLogFilename() const { 
 	std::string str = SETTINGS.getHomeDirectory() + "/" + NAME + ".log";
-	boost::filesystem::path p(str);
-	return absolute(p).string();
+	std::filesystem::path p(str);
+	return std::filesystem::absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
 std::string Settings::getInitScriptFilename() const {
 	std::string str = SETTINGS.getHomeDirectory() + "/scripts/" + NAME + "-init.lua";
-	boost::filesystem::path p(str);
-	return absolute(p).string();
+	std::filesystem::path p(str);
+	return std::filesystem::absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
 std::string Settings::getConfFilename() const { 
 	std::string str = SETTINGS.getHomeDirectory() + "/" + CONFIG_FILE; 
-	boost::filesystem::path p(str);
-	return absolute(p).string();
+	std::filesystem::path p(str);
+	return std::filesystem::absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
 std::string Settings::getPlugInitLogFilename() const { 
 	std::string str = SETTINGS.getHomeDirectory() + "/" + PLUG_LOAD_LOGFILE;
-	boost::filesystem::path p(str);
-	return absolute(p).string();
+	std::filesystem::path p(str);
+	return std::filesystem::absolute(p).string();
 }
 //------------------------------------------------------------------------------------------------------------
 void Settings::init(const std::string &homeDirectory) {
@@ -136,9 +135,9 @@ bool Settings::addPluginFolder ( const std::string &_path ) {
 	if (_path.empty()) {
         return false;
     }
-    boost::filesystem::path path(_path);
+    std::filesystem::path path(_path);
     if (path.is_relative()) {
-        path = boost::filesystem::absolute(_path, com::getSettings().getHomeDirectory());
+        path = std::filesystem::path(com::getSettings().getHomeDirectory()) / path;
     }
 	// testen ob path == unterverz. von schon vorhandenen pfad
 	PathnameSet::iterator it = pluginDirectories.begin();
@@ -194,7 +193,7 @@ void Settings::loadConfigFile() { // TODO: use boost::Program_options
 	f.open ( conFile.c_str(), std::ios::in );
 	// wenn zugriff verw. aber datei existent
 	if ( f.fail() )  {
-		if (  boost::filesystem::exists(conFile) ) {
+		if (  std::filesystem::exists(conFile) ) {
 			SAMBAG_THROW(sambag::com::exceptions::IllegalStateException,
 				std::string("access to [" + conFile + "] failed. (check protection)" )
 			);

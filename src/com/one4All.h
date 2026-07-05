@@ -24,7 +24,6 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/weak_ptr.hpp>
 #include <functional>
-#include <boost/filesystem.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <sstream>
 #include "com/SerializationFwd.h"

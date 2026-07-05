@@ -14,12 +14,25 @@
 #include <boost/config.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/serialization/level.hpp>
+#include <filesystem>
 #include <string>
 
 namespace boost { namespace serialization {
 
 template<class Archive>
 void serialize(Archive& ar, boost::filesystem::path& p,
+                const unsigned int version)
+{
+	std::string s;
+     if(Archive::is_saving::value)
+         s = p.string();
+     ar & boost::serialization::make_nvp("string", s);
+     if(Archive::is_loading::value)
+         p = s;
+}
+
+template<class Archive>
+void serialize(Archive& ar, std::filesystem::path& p,
                 const unsigned int version)
 {
 	std::string s;

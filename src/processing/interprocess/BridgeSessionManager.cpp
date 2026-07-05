@@ -8,7 +8,7 @@
 #include "BridgeSessionManager.hpp"
 #include <sambag/com/Config.h>
 #include "BridgeSession.hpp"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include "SessionManager.hpp"
 #include <processing/FrxAsyncDSPTimer.hpp>
@@ -62,7 +62,7 @@ void BridgeSessionManager::onHostClosing() {
 }
 //-----------------------------------------------------------------------------
 void BridgeSessionManager::startBridge() {
-    namespace bs=boost::filesystem;
+    namespace bs = std::filesystem;
     using sambag::com::exceptions::IllegalStateException;
     using sambag::com::events::EventSender;
     

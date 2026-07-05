@@ -127,7 +127,7 @@ std::string getHomeDirectory() {
 	const size_t N = 2048; 
 	char _d[N];
 	DWORD r = GetModuleFileName ( (HINSTANCE)hInstance, &_d[0], N );
-	boost::filesystem::path f( _d  );
+	std::filesystem::path f( _d  );
 	std::string res;
 	if ( is_regular_file(f) ) {
 		res = f.remove_filename().string();

@@ -8,7 +8,7 @@
 #ifdef FRX_OS_LINUX
 
 #include <string>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include "com/one4All.h"
 #include <sambag/disco/components/Window.hpp>
 
@@ -39,7 +39,7 @@ bool isPlugFilename ( const std::string &filename ) {
 //------------------------------------------------------------------------------------------------------------
 bool isDirectory ( const std::string &filename ) {
 	sambag::com::Location p(filename);
-	boost::filesystem::file_status s = boost::filesystem::status(p); 
+	std::filesystem::file_status s = std::filesystem::status(p); 
 	return is_directory (s);
 } 	
 //------------------------------------------------------------------------------------------------------------

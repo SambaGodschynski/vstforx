@@ -224,7 +224,7 @@ FrxMainBrowserCtrl::fillPluginFolder(TreeNode parent, DBFolderID dbFolderId)
 			tree->addNode(parent);
 
 		std::string name =
-			boost::filesystem::path(pI.location).filename().string();
+			std::filesystem::path(pI.location).filename().string();
 		if (pI.access == ::processing::PluginInfo::FAILED) {
 			name+="<FAILED>";
 		}
@@ -273,7 +273,7 @@ BrowserNodeData::ResultPtr FrxMainBrowserCtrl::fillHistoryFolder(TreeNode parent
 			tree->addNode(parent);
 
 		std::string name =
-			boost::filesystem::path(pI.location).filename().string();
+			std::filesystem::path(pI.location).filename().string();
 		if (pI.access == ::processing::PluginInfo::FAILED) {
 			name+="<FAILED>";
 		}

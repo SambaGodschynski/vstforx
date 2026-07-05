@@ -23,7 +23,7 @@
 #include <sambag/com/Config.h>
 #include <sambag/com/Common.hpp>
 #include <scripts/PluginScriptCtrl.hpp>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 
 extern void * __getHandlerForVstPlugins_(void *ptr);
@@ -177,12 +177,12 @@ void VstForxEditor::loadInitScript() {
                 SAMBAG_LOG_WARN<<"get script control failed.";
                 return;
             }
-            if (!boost::filesystem::exists(file)) {
+            if (!std::filesystem::exists(file)) {
                 SAMBAG_LOG_INFO<<file<<" not found";
                 return;
             }
             std::stringstream ss;
-            boost::filesystem::path luaPath(com::getSettings().getHomeDirectory());
+            std::filesystem::path luaPath(com::getSettings().getHomeDirectory());
             ss<<"package.path='"<<luaPath.generic_string()<<"/scripts/?.lua;' .. package.path";
             sctrl->execute(ss.str());
             sctrl->executeFile(file);

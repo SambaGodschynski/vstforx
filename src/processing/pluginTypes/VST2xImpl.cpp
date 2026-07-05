@@ -8,7 +8,7 @@
 #include "processing/processing.h"
 #include "VST2xImpl.h"
 #include "com/Settings.h"
-#include <boost/filesystem.hpp> 
+#include <filesystem> 
 #include "com/PluginCollection.h"
 #include <float.h>
 #include <boost/foreach.hpp>

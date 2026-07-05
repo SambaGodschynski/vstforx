@@ -8,7 +8,7 @@
 #include "processing/processing.h"
 #include "VSTPlugin2x.h"
 #include "com/Settings.h"
-#include <boost/filesystem.hpp> 
+#include <filesystem> 
 #include "com/PluginCollection.h"
 #include <float.h>
 #include <boost/foreach.hpp>
@@ -79,7 +79,7 @@ ioChangedLock(false)
 }
 //------------------------------------------------------------------------------------------------------------
 ::com::MyString VSTPlugin::extractNameFromFilename( const std::string &fileName ) {
-	boost::filesystem::path p(fileName);
+	std::filesystem::path p(fileName);
 	return ::com::MyString ( p.stem().string() );
 }
 //------------------------------------------------------------------------------------------------------------

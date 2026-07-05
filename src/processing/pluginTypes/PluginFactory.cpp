@@ -9,7 +9,7 @@
 #include <processing/ModelFactory.hpp>
 #include <processing/interprocess/BridgeSessionManager.hpp>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <com/one4All.h>
 
 namespace com {
@@ -88,7 +88,7 @@ PluginFactory::Type PluginFactory::detectType(const std::string &pluginID) {
     std::string loc, shellID;
     boost::tie(loc, shellID) = ::com::extractVSTPluginFilename(pluginID);
     
-    boost::filesystem::path path(loc);
+    std::filesystem::path path(loc);
     std::string ext = path.extension().string();
     if (ext==std::string(com::FRX_VST_EXT)) {
         return PluginInfo::VST2X;
@@ -103,7 +103,7 @@ PluginFactory::Type PluginFactory::detectType(const std::string &pluginID) {
 }
 //-----------------------------------------------------------------------------
 std::string PluginFactory::complete(const std::string &str) {
-    boost::filesystem::path path(str);
+    std::filesystem::path path(str);
     if (path.is_absolute()) {
         return str;
     }

@@ -153,7 +153,7 @@ Plugin * createPlug() {
 }
 //-----------------------------------------------------------------------------
 void processScript(const File &file) {
-	if ( !boost::filesystem::exists(file) ) {
+	if ( !std::filesystem::exists(file) ) {
 		std::cout<<file<<" does not exist."<<std::endl;
 		return;
 	}

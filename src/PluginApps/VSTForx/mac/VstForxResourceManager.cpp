@@ -6,7 +6,7 @@
  */
 
 #include "VstForxResourceManager.hpp"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 
 namespace frx { namespace com { 
@@ -31,7 +31,7 @@ VstForxResourceManager::VstForxResourceManager() {
 VstForxResourceManager::ImagePtr 
 VstForxResourceManager::loadImage(const std::string &_path) 
 {
-	std::string filename = boost::filesystem::path(_path).filename().string();
+	std::string filename = std::filesystem::path(_path).filename().string();
     filename = com::getResourceLocation(filename);
 	return Super::loadImage(filename);
 }

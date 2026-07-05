@@ -7,7 +7,7 @@
 
 #include <scripts/PluginScriptCtrl.hpp>
 #include "LuaImpl.hpp"
-#include <boost/filesystem.hpp>
+#include <filesystem>
 #include <boost/foreach.hpp>
 #include <processing/parameter/parameter.h>
 #include <processing/dspTools.h>
@@ -68,7 +68,7 @@ LuaImpl::Ptr LuaImpl::create(IHostInfo::Ptr hI,
     LuaImpl::Args args;
     std::string location = LuaImpl::extractFilenameAndArgs(_location, args);
     Ptr res(new LuaImpl(hI, location, parameters));
-    if (!boost::filesystem::exists(location)) {
+    if (!std::filesystem::exists(location)) {
         res->statusMsg=location + " not found";
     }
     res->setArgs(args);
@@ -249,7 +249,7 @@ void LuaImpl::loadScript() {
         }
         scriptName = config["name"];
         if (scriptName.empty()) {
-            scriptName = boost::filesystem::path(scriptFile).filename().string();
+            scriptName = std::filesystem::path(scriptFile).filename().string();
         }
         checkFunctions();
         initScript();
@@ -1048,7 +1048,7 @@ double LuaImpl::getTempo(lua_State *lua) {
 void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
     SAMBAG_TRY_TO_LOCK_RECURSIVE(mutex);
     std::stringstream ss;
-    boost::filesystem::path path = location;
+    std::filesystem::path path = location;
     path=path.parent_path();
     ss<<"package.path='"<<path.generic_string()<<"/?.lua;' .. package.path";
     sambag::lua::executeString(luaState.get(), ss.str());

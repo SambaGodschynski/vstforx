@@ -11,7 +11,6 @@
 #include "one4All.h"
 #include <sstream>
 #include "PluginCollectionSQL.h"
-#include <boost/filesystem.hpp>
 #include "OS_Specific/OS_com.h"
 #include "processing/pluginTypes/VstShellPlugin.hpp"
 #include <sambag/com/exceptions/IllegalStateException.hpp>
@@ -19,7 +18,8 @@
 #include <boost/date_time.hpp>
 #include <processing/pluginTypes/PluginFactory.hpp>
 #include <processing/ModelFactory.hpp>
-#include <boost/filesystem.hpp>
+#include <filesystem>
+#include <chrono>
 #include <loki/TypeManip.h>
 
 #define DB_QUERY(x)											\
@@ -146,7 +146,7 @@ PluginCollection::PluginCollection() :
 		try {
 			// remove file, try again
 			database.reset();
-			boost::filesystem::remove( settings.getPlugCollectionDumpFilename() );
+			std::filesystem::remove( settings.getPlugCollectionDumpFilename() );
 			database = DataBase::getDataBase ( settings.getPlugCollectionDumpFilename() );
 			initDB();
 		} catch(...) { // failed again
@@ -204,9 +204,9 @@ void PluginCollection::scanDirectories ( const Settings::PathnameSet &pathSet ) 
 }
 //------------------------------------------------------------------------------------------------------------
 void PluginCollection::scanDirectory ( const ScanVisitor::Path &_path, ScanVisitor &vis ) {
-    boost::filesystem::path path = _path;
+    std::filesystem::path path = _path;
     if (path.is_relative()) {
-        path = boost::filesystem::absolute(_path, com::getSettings().getHomeDirectory()).string();
+        path = std::filesystem::path(com::getSettings().getHomeDirectory()) / path;
     }
 	vis.setStartFolder ( path );
 	abortScan = false;
@@ -339,7 +339,8 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 		// TODO: insert as folder with concrete shell ids as content
 		out_info.access = PluginInfo::SUCCEED;
 		out_info.name = com::getFileNameFromPath(out_info.location);
-		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
+		out_info.timestamp = (time_t)std::chrono::duration_cast<std::chrono::seconds>(
+            std::filesystem::last_write_time(out_info.location).time_since_epoch()).count();
 		return;
 	} catch(...) {
         // loading failed
@@ -348,19 +349,22 @@ void PluginCollection::peekFile ( processing::PluginInfo &out_info, frx::process
 										   // im scan diese datei nicht nochmal versucht wird zu laden. 
 		out_info.access = PluginInfo::FAILED;
 		// set timestamp and name
-		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
+		out_info.timestamp = (time_t)std::chrono::duration_cast<std::chrono::seconds>(
+            std::filesystem::last_write_time(out_info.location).time_since_epoch()).count();
 		out_info.name = com::getFileNameFromPath(out_info.location);
 		return;
 	}
 	if ( out_info.access==PluginInfo::FAILED ) {
 		// loading succeed but plugin isn't accessable
 		// set timestamp and name
-		out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
+		out_info.timestamp = (time_t)std::chrono::duration_cast<std::chrono::seconds>(
+            std::filesystem::last_write_time(out_info.location).time_since_epoch()).count();
 		out_info.name = com::getFileNameFromPath(out_info.location);
 		return;
 	}
 	// set timestamp
-	out_info.timestamp = boost::filesystem::last_write_time(out_info.location);
+	out_info.timestamp = (time_t)std::chrono::duration_cast<std::chrono::seconds>(
+            std::filesystem::last_write_time(out_info.location).time_since_epoch()).count();
 	return;
 }
 //------------------------------------------------------------------------------------------------------------
@@ -381,16 +385,19 @@ void PluginCollection::checkFile( const PluginCollection::Path &path, const Plug
             updatePlug ( tmp );
         } else {
             tmp.location  = path.string();
-            tmp.timestamp = last_write_time ( path );
+            tmp.timestamp = (time_t)std::chrono::duration_cast<std::chrono::seconds>(
+                std::filesystem::last_write_time(path).time_since_epoch()).count();
             tmp.access = PluginInfo::FAILED;
             insertPlug ( folder, tmp );
         }
 		com::events::EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
 		return;
 	}
-    
+
 	if ( tmp.isValid() ) { // ja, schon vorhanden!
-		if ( tmp.hasChanged ( last_write_time (path) )  ) { // hatt sich geaendert
+		const time_t fts = (time_t)std::chrono::duration_cast<std::chrono::seconds>(
+            std::filesystem::last_write_time(path).time_since_epoch()).count();
+		if ( tmp.hasChanged ( fts )  ) { // hatt sich geaendert
 			updatePlug ( tmp );
 			com::events::EventSender<OnFileLoaded>::notifyEventListeners ( this, OnFileLoaded ( path.string(), tmp ) );
 			return;

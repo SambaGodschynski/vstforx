@@ -16,16 +16,16 @@ namespace com {
 //============================================================================================================
 bool isSubDirectory ( const sambag::com::Location &a,  const sambag::com::Location &b )
 {
-    using namespace boost::filesystem;
+    using namespace std::filesystem;
     if (equivalent(a, b)) {
         return false;
     }
-    boost::filesystem::path path = b;
-    while (!path.empty()) {
-        if (equivalent(path, a)) {
+    path p = b;
+    while (!p.empty()) {
+        if (equivalent(p, a)) {
             return true;
         }
-        path = path.parent_path();
+        p = p.parent_path();
     }
     return false;
 }
@@ -55,7 +55,7 @@ std::string createVSTPluginFilename(const std::string &filename, const std::stri
 }
 //------------------------------------------------------------------------------------------------------------
 std::string getFileNameFromPath( const std::string &fileName ) {
-	boost::filesystem::path p(fileName);
+	std::filesystem::path p(fileName);
 	return std::string( p.stem().string() );
 }
 //============================================================================================================
