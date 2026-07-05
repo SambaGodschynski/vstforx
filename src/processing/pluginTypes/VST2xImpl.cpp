@@ -8,7 +8,8 @@
 #include "processing/processing.h"
 #include "VST2xImpl.h"
 #include "com/Settings.h"
-#include <filesystem> 
+#include <filesystem>
+#include <thread> 
 #include "com/PluginCollection.h"
 #include <float.h>
 #include <boost/foreach.hpp>
@@ -319,7 +320,7 @@ void VSTPluginImpl::onEditorParameterChanged (int index, float value){
 		return;
 	}
 	// try to lock:
-	boost::unique_lock<boost::timed_mutex> lock( mutex, boost::try_to_lock);
+	std::unique_lock<std::timed_mutex> lock( mutex, std::try_to_lock);
 	if (!lock.owns_lock()) {
 		return; // lock failed
 	}
@@ -525,9 +526,7 @@ std::pair<VstIntPtr, bool> VSTPluginImpl::processRequest( frx::processing::IHost
     switch (opcode) {
         //---------------------------------------------------------------------
         case audioMasterIdle:
-            boost::this_thread::sleep( boost::posix_time::milliseconds(
-                FRX_VST2XPLUGIN_MAX_IDLE_MS
-            ));
+            std::this_thread::sleep_for(std::chrono::milliseconds(FRX_VST2XPLUGIN_MAX_IDLE_MS));
             return std::make_pair(0, true);
         //---------------------------------------------------------------------
         case DECLARE_VST_DEPRECATED(audioMasterWantMidi):

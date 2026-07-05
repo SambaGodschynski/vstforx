@@ -85,7 +85,7 @@ void DFSVisitor::addToSignalProcessPath( ProcessorNode::Ptr node ) {
 //============================================================================================================
 class Graph::IdleHandler {
 public:
-    typedef boost::function<void()> Function;
+    typedef std::function<void()> Function;
 private:
     frx::processing::FrxAsyncDSPTimer::Ptr timer;
     sambag::com::RecursiveMutex mutex;

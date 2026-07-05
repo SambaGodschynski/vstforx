@@ -147,7 +147,7 @@ private:
 	// lock lua calls
     typedef sambag::com::RecursiveMutex Mutex;
 	mutable Mutex mutex;
-    typedef boost::unique_lock<sambag::com::RecursiveMutex> Lock;
+    typedef std::unique_lock<sambag::com::RecursiveMutex> Lock;
     typedef boost::shared_ptr<Lock> LockPtr;
     //-------------------------------------------------------------------------
     LockPtr getLock();

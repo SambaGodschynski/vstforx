@@ -28,10 +28,8 @@
 #include <sstream>
 #include "com/SerializationFwd.h"
 #include "OS_Specific/OS_com.h"
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/locks.hpp>
-#include <boost/thread/thread_time.hpp>
-#include <boost/date_time/posix_time/posix_time_types.hpp>
+#include <mutex>
+#include <chrono>
 #include <float.h>
 #include "TList.h"
 #include <sambag/com/FileSystem.hpp>
@@ -56,21 +54,20 @@
 
 namespace com {
 // Mutex
-typedef boost::timed_mutex Mutex;
+typedef std::timed_mutex Mutex;
 }
 
 #define DEADLOCK_EXCEPTION com::ppiError::DeadlockException ("DeadlockException.", __FILE__, __LINE__)
 #define LOCK_TIMEOUT 1
-// scheitert zugriff auf mutex nach LOCK_TIMEOUT sec. wird DEADLOCK_EXCEPTION ausnahme geworfen.
-#define TRY_TO_LOCK_TIMED(mutex) boost::unique_lock<boost::timed_mutex> __lock( (mutex), boost::try_to_lock);\
-	if (!__lock.owns_lock()) { __lock.timed_lock(boost::get_system_time() + boost::posix_time::seconds(LOCK_TIMEOUT)); }\
+#define TRY_TO_LOCK_TIMED(mutex) std::unique_lock<std::timed_mutex> __lock( (mutex), std::try_to_lock);\
+	if (!__lock.owns_lock()) { __lock.try_lock_for(std::chrono::seconds(LOCK_TIMEOUT)); }\
 	if ( !__lock.owns_lock() ) throw DEADLOCK_EXCEPTION;
-#define TRY_TO_LOCK_TIMED2(mutex,timeout) boost::unique_lock<boost::timed_mutex> __lock( (mutex), boost::try_to_lock);\
-	if (!__lock.owns_lock()) { __lock.timed_lock(boost::get_system_time() + boost::posix_time::seconds(timeout)); }\
+#define TRY_TO_LOCK_TIMED2(mutex,timeout) std::unique_lock<std::timed_mutex> __lock( (mutex), std::try_to_lock);\
+	if (!__lock.owns_lock()) { __lock.try_lock_for(std::chrono::seconds(timeout)); }\
 	if ( !__lock.owns_lock() ) throw DEADLOCK_EXCEPTION;
-#define TRY_TO_LOCK(mutex, _bool) boost::unique_lock<boost::timed_mutex> __lock( (mutex), boost::try_to_lock);\
+#define TRY_TO_LOCK(mutex, _bool) std::unique_lock<std::timed_mutex> __lock( (mutex), std::try_to_lock);\
 								  _bool = __lock.owns_lock();
-// Mutex	
+// Mutex
 
 
 namespace com {

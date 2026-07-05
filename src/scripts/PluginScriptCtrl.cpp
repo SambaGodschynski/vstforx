@@ -1028,7 +1028,7 @@ void PluginScriptCtrl::setPlugin(frx::processing::VstForxPlug *plug) {
 	__luaState = createLuaStateRef();
 	registerFunctions(
         LuaProcessor(__luaState,
-                     boost::bind(&PluginScriptCtrl::getLock, this),
+                     [this](){ return getLock(); },
                      OnExecErrorF(),
                      __luaState
         ), isPublic, true);
@@ -1040,9 +1040,7 @@ void PluginScriptCtrl::appendJob(const std::string &str) {
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::start() {
 	using namespace sambag::lua;
-	thread = boost::thread(
-		boost::bind(&PluginScriptCtrl::runThread, this)
-	);
+	thread = std::thread(&PluginScriptCtrl::runThread, this);
 }
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::join() {
@@ -1104,10 +1102,9 @@ PluginScriptCtrl::LuaState PluginScriptCtrl::getLuaState()  {
 }
 //-----------------------------------------------------------------------------
 PluginScriptCtrl::LockPtr PluginScriptCtrl::getLock()  {
-    LockPtr lock( new Lock(__scriptCallMutex, boost::try_to_lock));
+    LockPtr lock( new Lock(__scriptCallMutex, std::try_to_lock));
 	if (!lock->owns_lock()) {
-        lock->timed_lock(boost::get_system_time() +
-        boost::posix_time::seconds(SAMBAG_LOCK_TIMEOUT));
+        lock->try_lock_for(std::chrono::seconds(SAMBAG_LOCK_TIMEOUT));
     }
 	if ( !lock->owns_lock() ) {
         SAMBAG_THROW(SAMBAG_DEADLOCK_EXCEPTION, "PluginScriptCtrl: deadlock exception");

@@ -149,7 +149,7 @@ void startScanImpl(const FileEvF &f,
 	typedef LoadingEvSender::EventConnection LoadEvConnection;
 	typedef LoadedEvSender::EventConnection LoadedEvConnection;
 	
-    boost::unique_lock<boost::timed_mutex> lock( mutex, boost::try_to_lock);
+    std::unique_lock<std::timed_mutex> lock( mutex, std::try_to_lock);
 	if (!lock.owns_lock()) {
         return;
     }

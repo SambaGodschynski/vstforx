@@ -407,7 +407,7 @@ void LuaImpl::loadParameters() {
             boost::get<0>(pc) = p;
             // add listener
             boost::get<1>(pc) = p->addValueChangedListener (
-                boost::bind(&LuaImpl::onParameterChanged, this, _1, _2, v.first)
+                [this, id=v.first](void* src, float value){ onParameterChanged(src, value, id); }
             );
         }
         p->setValue(v.second);
@@ -479,7 +479,7 @@ void LuaImpl::openEditor(sambag::disco::components::WindowPtr window) {
         editor->log(x);
     }
     editor->getReloadButton()->sce::EventSender<sdc::events::ActionEvent>::addEventListener(
-		boost::bind(&LuaImpl::onReloadScript, this)
+		[this](void*, const sdc::events::ActionEvent&){ onReloadScript(); }
 	);
 }
 //-----------------------------------------------------------------------------
@@ -1063,8 +1063,8 @@ void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
         typedef scripts::PluginScriptCtrl::LuaProcessor LP;
         ctrl->registerFunctions(
             LP(luaState,
-                boost::bind(&LuaImpl::getLock, this),
-                boost::bind(&LuaImpl::onExecError, this, _1),
+                [this](){ return getLock(); },
+                [this](const std::string& e){ onExecError(e); },
                 shared_from_this() // inherits shared_from_this from LuaImplBase->ALuaObject 
             ), true, false);
     }
@@ -1081,10 +1081,9 @@ void LuaImpl::initLuaEnv(sambag::lua::LuaStateRef luaState) {
 }
 //-----------------------------------------------------------------------------
 LuaImpl::LockPtr LuaImpl::getLock() {
-    LockPtr lock( new Lock(mutex, boost::try_to_lock));
+    LockPtr lock( new Lock(mutex, std::try_to_lock));
 	if (!lock->owns_lock()) {
-        lock->timed_lock(boost::get_system_time() +
-        boost::posix_time::seconds(SAMBAG_LOCK_TIMEOUT));
+        lock->try_lock_for(std::chrono::seconds(SAMBAG_LOCK_TIMEOUT));
     }
 	if ( !lock->owns_lock() ) {
         SAMBAG_THROW(SAMBAG_DEADLOCK_EXCEPTION, "PluginScriptCtrl: deadlock exception");

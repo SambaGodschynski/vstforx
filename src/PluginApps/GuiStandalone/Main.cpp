@@ -4,7 +4,8 @@
 #include <com/Settings.h>
 #include <aeffect.h>
 #include <boost/tuple/tuple.hpp>
-#include <boost/thread.hpp>
+#include <thread>
+#include <chrono>
 #include <scripts/PluginScriptCtrl.hpp>
 #include <sambag/disco/components/Window.hpp>
 #include <gui/components/VstForxEditor.hpp>
@@ -83,7 +84,7 @@ void processPlugin(Plugin * plug) {
 		if (plug->isOpen()) {
 			fillBlock(in, BS);
 			plug->process(in, out, BS);
-			boost::this_thread::sleep(boost::posix_time::milliseconds(10));
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 		}
 	}
 	delete[] in[0];
@@ -258,7 +259,7 @@ int main(int narg, char **args) {
 	});
 	// Wait until the main loop is actually spinning before launching scripts.
 	while (!sambag::disco::components::X11WindowToolkit::isMainLoopRunning()) {
-		boost::this_thread::sleep(boost::posix_time::milliseconds(1));
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 	scriptCtrl->start();
 	// start console thread

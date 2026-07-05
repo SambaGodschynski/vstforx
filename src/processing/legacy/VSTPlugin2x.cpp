@@ -372,7 +372,7 @@ void VSTPlugin::onEditorParameterChanged (int index, float value){
 		return;
 	}
 	// try to lock:
-	boost::unique_lock<boost::timed_mutex> lock( mutex, boost::try_to_lock);
+	std::unique_lock<std::timed_mutex> lock( mutex, std::try_to_lock);
 	if (!lock.owns_lock()) {
 		return; // lock failed
 	}

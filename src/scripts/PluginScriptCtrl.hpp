@@ -16,6 +16,7 @@
 #include <sambag/com/events/Events.hpp>
 #include <boost/thread.hpp>
 #include <sambag/com/Thread.hpp>
+#include <thread>
 #include <string>
 #include <sambag/lua/Lua.hpp>
 #include <list>
@@ -79,7 +80,7 @@ private:
 	//-------------------------------------------------------------------------
 	std::string scriptStr;
 	//-------------------------------------------------------------------------
-	boost::thread thread;
+	std::thread thread;
 	//-------------------------------------------------------------------------
 	sambag::lua::LuaStateRef __luaState;
 	//-------------------------------------------------------------------------
@@ -109,7 +110,7 @@ public:
     //-------------------------------------------------------------------------
 	void setPlugin(frx::processing::VstForxPlug *plug);
     //-------------------------------------------------------------------------
-    typedef boost::unique_lock<sambag::com::RecursiveMutex> Lock;
+    typedef std::unique_lock<sambag::com::RecursiveMutex> Lock;
     typedef boost::shared_ptr<Lock> LockPtr;
     /**
      * @brief a lua state with lock guard, to ensure

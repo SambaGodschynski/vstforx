@@ -5,6 +5,7 @@
  * ============================================================================
  */
 #include "FrqDetector.hpp"
+#include <thread>
 #include <com/Serialization.h>
 #include <processing/ModelFactory.hpp>
 #include "processing/dspTools.h"
@@ -28,7 +29,7 @@ void FrqDetector::startWorker() {
         return;
     }
     running = true;
-    worker = new boost::thread(boost::bind(&FrqDetector::doWork, this));
+    worker = new std::thread(&FrqDetector::doWork, this);
 }
 //-----------------------------------------------------------------------------
 void FrqDetector::stopWorker() {

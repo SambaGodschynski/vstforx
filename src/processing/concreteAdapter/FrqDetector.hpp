@@ -10,7 +10,9 @@
 #include "processing/processing.h"
 #include "processing/parameter/parameter.h"
 #include "com/SerializationFwd.h"
-#include <sambag/com/Thread.hpp> 
+#include <sambag/com/Thread.hpp>
+#include <thread>
+#include <chrono> 
 #include <boost/circular_buffer.hpp>
 
 namespace processing {
@@ -50,7 +52,7 @@ private:
     float sampleRate;
     Buffer buffer;
     //-------------------------------------------------------------------------
-    boost::thread *worker;
+    std::thread *worker;
     sambag::com::RecursiveMutex mutex;
     bool running;
     //-------------------------------------------------------------------------
@@ -58,7 +60,7 @@ private:
     void startWorker();
     void stopWorker();
     inline void sleep(int millis) {
-        boost::this_thread::sleep(boost::posix_time::milliseconds(millis));
+        std::this_thread::sleep_for(std::chrono::milliseconds(millis));
     }
 protected:
 	//-------------------------------------------------------------------------

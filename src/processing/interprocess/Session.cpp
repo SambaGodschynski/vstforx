@@ -6,6 +6,7 @@
  */
 
 #include "Session.hpp"
+#include <boost/date_time/posix_time/posix_time.hpp>
 #include "ShmCom.hpp"
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <sambag/com/exceptions/IllegalArgumentException.hpp>
@@ -121,7 +122,7 @@ void Session::process() {
 //-----------------------------------------------------------------------------
 void Session::startProcessThread() {
     processThread = ThreadPtr (
-        new boost::thread( boost::bind(&Session::process, this) )
+        new std::thread( &Session::process, this )
     );
 }
 //-----------------------------------------------------------------------------

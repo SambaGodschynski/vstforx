@@ -157,7 +157,7 @@ PluginCollection::PluginCollection() :
 }
 //------------------------------------------------------------------------------------------------------------
 bool PluginCollection::isScanning() const {
-	boost::unique_lock<boost::timed_mutex> lock( mutex, boost::try_to_lock);
+	std::unique_lock<std::timed_mutex> lock( mutex, std::try_to_lock);
 	if (!lock.owns_lock()) return true;
 	return false;
 }
@@ -214,7 +214,7 @@ void PluginCollection::scanDirectory ( const ScanVisitor::Path &_path, ScanVisit
 }
 //------------------------------------------------------------------------------------------------------------
 void PluginCollection::update(  frx::processing::IHostInfo::Ptr hostInfo ) {
-    boost::unique_lock<boost::timed_mutex> lock( mutex, boost::try_to_lock);
+    std::unique_lock<std::timed_mutex> lock( mutex, std::try_to_lock);
 	if (!lock.owns_lock()) {
         return;
     }

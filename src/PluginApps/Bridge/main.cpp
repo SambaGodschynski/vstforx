@@ -5,6 +5,8 @@
  *      Author: Johannes Unger
  */
 #include <processing/interprocess/BridgeSessionManager.hpp>
+#include <thread>
+#include <chrono>
 #include <processing/interprocess/BridgeSession.hpp>
 #include <processing/FrxAsyncDSPTimer.hpp>
 #include <sambag/com/BoostTimer2.hpp>
@@ -23,7 +25,7 @@ void checkForClosing(frx::processing::interprocess::BridgeSession *session_ptr)
         if ( session_ptr->getNumPluginSessions() > 0 ) {
             return;
         }
-        boost::this_thread::sleep(boost::posix_time::seconds( // we wait
+        std::this_thread::sleep_for(std::chrono::seconds( // we wait
             FRX_BRIDGE_AUTOCLOSE_WAIT_FOR_SURE_SEC
         )); 
         if ( session_ptr->getNumPluginSessions() == 0 ) { // still unused

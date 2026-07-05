@@ -22,6 +22,8 @@
 #include <boost/type_traits.hpp>
 #include "ShmCom.hpp"
 #include <sambag/com/Thread.hpp>
+#include <thread>
+#include <chrono>
 #include <sambag/com/exceptions/IllegalStateException.hpp>
 #include <loki/Typelist.h>
 #include <loki/HierarchyGenerators.h>
@@ -293,21 +295,18 @@ private:
      */
     inline int sleep() const {
         if (!priority) {
-            boost::this_thread::sleep(boost::posix_time::microsec(
-                FRX_PRIOR_NORMAL_MICROSEC));
+            std::this_thread::sleep_for(std::chrono::microseconds(FRX_PRIOR_NORMAL_MICROSEC));
             return FRX_PRIOR_NORMAL_MICROSEC;
         }
         if (*priority == (Integer)High) {
-            boost::this_thread::sleep(boost::posix_time::microsec(
-                FRX_PRIOR_HIGH_MICROSEC));
+            std::this_thread::sleep_for(std::chrono::microseconds(FRX_PRIOR_HIGH_MICROSEC));
             return FRX_PRIOR_HIGH_MICROSEC;
         }
-        boost::this_thread::sleep(boost::posix_time::microsec(
-            FRX_PRIOR_NORMAL_MICROSEC));
+        std::this_thread::sleep_for(std::chrono::microseconds(FRX_PRIOR_NORMAL_MICROSEC));
         return FRX_PRIOR_NORMAL_MICROSEC;
     }
     //-------------------------------------------------------------------------
-    typedef boost::shared_ptr<boost::thread> ThreadPtr;
+    typedef std::shared_ptr<std::thread> ThreadPtr;
     ThreadPtr processThread;
     //-------------------------------------------------------------------------
     /**

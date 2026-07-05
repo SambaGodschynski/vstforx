@@ -461,7 +461,7 @@ void FrxCircuidView::postConstructor() {
     viewPort->add(content);
 	content->setLayout(sdc::ALayoutManagerPtr());
     viewPort->sce::EventSender<sdc::ViewportChanged>::addTrackedEventListener(
-        boost::bind(&BgPane::onViewport, bgPane.get(), sdc::Viewport::WPtr(viewPort)),
+        [bgPtr = bgPane.get(), vpW = sdc::Viewport::WPtr(viewPort)](void*, const sdc::ViewportChanged&){ bgPtr->onViewport(vpW); },
         content
     );
     // assign fill pattern to content

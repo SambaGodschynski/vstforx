@@ -26,7 +26,7 @@ namespace frx { namespace gui { namespace components {
 //-----------------------------------------------------------------------------
 void FrxScriptPluginEditor::log(const std::string &msg) {
     sdc::getWindowToolkit()->invokeLater(
-        boost::bind(&FrxScriptPluginEditor::delayedLog, this, msg),
+        [this, msg](){ this->delayedLog(msg); },
         50, shared_from_this()
     );
 }
