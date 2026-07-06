@@ -9,6 +9,7 @@
 #define SAMBAG_IPLUGINADAPTER_H
 
 #include <memory>
+#include <string>
 #include <sambag/disco/components/Forward.hpp>
 
 
