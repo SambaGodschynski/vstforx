@@ -210,7 +210,7 @@ namespace com {
 	 */
 	std::pair<std::string, std::string> extractVSTPluginFilename(const std::string &filename);
 	//--------------------------------------------------------------------------------------------------------
-    typedef boost::tuple<std::string, // namespace
+    typedef std::tuple<std::string, // namespace
                          std::string, // type
                          std::string, // name
                          int,         // numInputs , -1 for undefined
@@ -242,18 +242,18 @@ namespace com {
         const Data & data() const { return *this; }
         void data(const Data &data) { *this = data; }
         
-        const std::string & namespace_() const { return boost::get<0>(*this); }
-        const std::string &       type() const { return boost::get<1>(*this); }
-        const std::string &       name() const { return boost::get<2>(*this); }
-        int                  numInputs() const { return boost::get<3>(*this); }
-        int                 numOutputs() const { return boost::get<4>(*this); }
-        const std::string &    details() const { return boost::get<5>(*this); }
-        IdParser & namespace_(const std::string &val) { boost::get<0>(*this) = val; return *this; }
-        IdParser &       type(const std::string &val) { boost::get<1>(*this) = val; return *this; }
-        IdParser &       name(const std::string &val) { boost::get<2>(*this) = val; return *this; }
-        IdParser &                 numInputs(int val) { boost::get<3>(*this) = val; return *this; }
-        IdParser &                numOutputs(int val) { boost::get<4>(*this) = val; return *this; }
-        IdParser &    details(const std::string &val) { boost::get<5>(*this) = val; return *this; }
+        const std::string & namespace_() const { return std::get<0>(*this); }
+        const std::string &       type() const { return std::get<1>(*this); }
+        const std::string &       name() const { return std::get<2>(*this); }
+        int                  numInputs() const { return std::get<3>(*this); }
+        int                 numOutputs() const { return std::get<4>(*this); }
+        const std::string &    details() const { return std::get<5>(*this); }
+        IdParser & namespace_(const std::string &val) { std::get<0>(*this) = val; return *this; }
+        IdParser &       type(const std::string &val) { std::get<1>(*this) = val; return *this; }
+        IdParser &       name(const std::string &val) { std::get<2>(*this) = val; return *this; }
+        IdParser &                 numInputs(int val) { std::get<3>(*this) = val; return *this; }
+        IdParser &                numOutputs(int val) { std::get<4>(*this) = val; return *this; }
+        IdParser &    details(const std::string &val) { std::get<5>(*this) = val; return *this; }
         std::string toString() const;
         bool operator==(const IdParser &descr) const;
         bool operator!=(const IdParser &descr) const;

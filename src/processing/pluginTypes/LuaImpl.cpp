@@ -6,6 +6,7 @@
  */
 
 #include <tuple>
+#include <boost/tuple/tuple.hpp>
 #include <scripts/PluginScriptCtrl.hpp>
 #include "LuaImpl.hpp"
 #include <filesystem>
@@ -630,11 +631,11 @@ void LuaImpl::processMidiEvents( sambag::dsp::IMidiEvents::Ptr events ) {
 			lua_newtable(lua);
 			int top = lua_gettop(lua);
 			push(lua, PROCESS_MIDI_DELTAFRAMES); // deltaFrames
-			push(lua, std::get<1>(ev));
+			push(lua, boost::get<1>(ev));
 			lua_settable(lua, top); //<- 
             push(lua, PROCESS_MIDI_DATA); // midi data
-            size_t byteSize = std::get<0>(ev);
-			push(lua, LuaSequenceEx<IMidiEvents::Data>(std::get<2>(ev),byteSize) );
+            size_t byteSize = boost::get<0>(ev);
+			push(lua, LuaSequenceEx<IMidiEvents::Data>(boost::get<2>(ev),byteSize) );
 			lua_settable(lua, top); //<- 
 		}
 		lua_settable(lua, top);

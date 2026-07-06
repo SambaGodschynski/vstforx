@@ -142,8 +142,8 @@ public:
 	virtual void file ( const Path & file );
 };
 
-#define GET_FOLDER_ID(folder)   boost::tuples::get<1>( (folder) )
-#define GET_FOLDER_NAME(folder) boost::tuples::get<0>( (folder) )
+#define GET_FOLDER_ID(folder)   std::get<1>( (folder) )
+#define GET_FOLDER_NAME(folder) std::get<0>( (folder) )
 
 //============================================================================================================
 /**
@@ -178,7 +178,7 @@ public:
 	//--------------------------------------------------------------------------------------------------------
 	typedef ScanVisitor::FolderID Int;
 	//--------------------------------------------------------------------------------------------------------
-	typedef boost::tuples::tuple<std::string, FolderID> Folder;
+	typedef std::tuple<std::string, FolderID> Folder;
 	//--------------------------------------------------------------------------------------------------------
 	typedef std::list<Folder> Folders;
 	//--------------------------------------------------------------------------------------------------------

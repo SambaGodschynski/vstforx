@@ -1,4 +1,5 @@
 #include "FrxPlugSettings.hpp"
+#include <memory>
 #include <iostream>
 #include <sstream>
 #include <com/FrxConfig.h>

@@ -6,6 +6,7 @@
 #define _PLUG_SETTINGS_HPP
 
 #include <string>
+#include <memory>
 
 struct PlugSettings 
 {

@@ -72,187 +72,187 @@ namespace {
 	std::list<std::string> registeredFs;
 	//-------------------------------------------------------------------------
 	struct FrxOpenPlugin {
-		typedef std::function<void()> Function;
+		typedef boost::function<void()> Function;
 		static const char * name() { return "openPlugin"; }
 		static void process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxClosePlugin {
-		typedef std::function<void()> Function;
+		typedef boost::function<void()> Function;
 		static const char * name() { return "closePlugin"; }
 		static void process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxOpenEditor {
-		typedef std::function<void()> Function;
+		typedef boost::function<void()> Function;
 		static const char * name() { return "openEditor"; }
 		static void process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxCloseEditor {
-		typedef std::function<void()> Function;
+		typedef boost::function<void()> Function;
 		static const char * name() { return "closeEditor"; }
 		static void process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxWait {
-		typedef std::function<void(int)> Function;
+		typedef boost::function<void(int)> Function;
 		static const char * name() { return "wait"; }
 		static void process(int sec, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxSerializePlugin {
-		typedef std::function<std::string()> Function;
+		typedef boost::function<std::string()> Function;
 		static const char * name() { return "serializePlugin"; }
 		static std::string process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxDeserializePlugin {
-		typedef std::function<void(std::string)> Function;
+		typedef boost::function<void(std::string)> Function;
 		static const char * name() { return "deserializePlugin"; }
 		static void process(const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxIsEditorOpen {
-		typedef std::function<Bool()> Function;
+		typedef boost::function<Bool()> Function;
 		static const char * name() { return "isEditorOpen"; }
 		static Bool process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxVerbose {
-		typedef std::function<void(Bool val)> Function;
+		typedef boost::function<void(Bool val)> Function;
 		static const char * name() { return "verbose"; }
 		static void process(Bool val, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetGraphDelay {
-        typedef std::function<int()> Function;
+        typedef boost::function<int()> Function;
 		static const char * name() { return "getGraphDelay"; }
 		static int process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxMessageBox {
-        typedef std::function<void(std::string)> Function;
+        typedef boost::function<void(std::string)> Function;
 		static const char * name() { return "messageBox"; }
 		static void process(const std::string&, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxSelectFile {
-        typedef std::function<std::string(std::string)> Function;
+        typedef boost::function<std::string(std::string)> Function;
 		static const char * name() { return "showSelectFileDlg"; }
 		static std::string process(const std::string&, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxSelectDirectory {
-        typedef std::function<std::string(std::string)> Function;
+        typedef boost::function<std::string(std::string)> Function;
 		static const char * name() { return "showSelectDirectory"; }
 		static std::string process(const std::string&, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxSaveFile {
-        typedef std::function<std::string(std::string)> Function;
+        typedef boost::function<std::string(std::string)> Function;
 		static const char * name() { return "showSaveFileDlg"; }
 		static std::string process(const std::string&, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxOpenSceneBrowser {
-        typedef std::function<void(std::string)> Function;
+        typedef boost::function<void(std::string)> Function;
 		static const char * name() { return "openSceneBrowser"; }
 		static void process(const std::string&, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxOpenUrl {
-        typedef std::function<void(std::string)> Function;
+        typedef boost::function<void(std::string)> Function;
 		static const char * name() { return "openUrl"; }
 		static void process(const std::string&, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxOpenSetup {
-        typedef std::function<void()> Function;
+        typedef boost::function<void()> Function;
 		static const char * name() { return "openSetup"; }
 		static void process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxOpenAbout {
-        typedef std::function<void()> Function;
+        typedef boost::function<void()> Function;
 		static const char * name() { return "openAbout"; }
 		static void process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetLastBrowserSelection {
-        typedef std::function<std::string()> Function;
+        typedef boost::function<std::string()> Function;
 		static const char * name() { return "getLastSceneBrowserSelection"; }
 		static std::string process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetVersionInteger {
-        typedef std::function<int()> Function;
+        typedef boost::function<int()> Function;
 		static const char * name() { return "getVersionInteger"; }
 		static int process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetVersionString {
-        typedef std::function<std::string()> Function;
+        typedef boost::function<std::string()> Function;
 		static const char * name() { return "getVersionString"; }
 		static std::string process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxSetEditorExitOnClose {
-		typedef std::function<void(Bool)> Function;
+		typedef boost::function<void(Bool)> Function;
 		static const char * name() { return "setEditorExitOnClose"; }
 		static void process(Bool val, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxQueryDB {
-		typedef std::function<slua::IgnoreReturn(std::string)> Function;
+		typedef boost::function<slua::IgnoreReturn(std::string)> Function;
 		static const char * name() { return "queryDB"; }
 		static slua::IgnoreReturn process(const std::string &query, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxAddTimer {
-		typedef std::function<slua::IgnoreReturn(std::string, int, int)> Function;
+		typedef boost::function<slua::IgnoreReturn(std::string, int, int)> Function;
 		static const char * name() { return "addTimer"; }
 		static slua::IgnoreReturn process(const std::string &, int, int, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxSetPersistData {
-		typedef std::function<void()> Function;
+		typedef boost::function<void()> Function;
 		static const char * name() { return "setPersistData"; }
 		static void process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
 	//-------------------------------------------------------------------------
 	struct FrxGetPersistData {
-		typedef std::function<slua::IgnoreReturn(std::string)> Function;
+		typedef boost::function<slua::IgnoreReturn(std::string)> Function;
 		static const char * name() { return "getPersistData"; }
 		static slua::IgnoreReturn process(const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
     //-------------------------------------------------------------------------
 	struct FrxShowInputTextDlg {
-		typedef std::function<std::string(std::string, std::string)> Function;
+		typedef boost::function<std::string(std::string, std::string)> Function;
 		static const char * name() { return "showInputTextDlg"; }
 		static std::string process(const std::string &, const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
     //-------------------------------------------------------------------------
 	struct FrxShowYesNoDlg {
-		typedef std::function<bool(std::string)> Function;
+		typedef boost::function<bool(std::string)> Function;
 		static const char * name() { return "showYesNoDlg"; }
 		static bool process(const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
     //-------------------------------------------------------------------------
 	struct FrxRunOnUIThread {
-		typedef std::function<void(std::string)> Function;
+		typedef boost::function<void(std::string)> Function;
 		static const char * name() { return "runOnUIThread"; }
 		static void process(const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
     //-------------------------------------------------------------------------
 	struct FrxExec {
-		typedef std::function<void(std::string)> Function;
+		typedef boost::function<void(std::string)> Function;
 		static const char * name() { return "exec"; }
 		static void process(const std::string &, Ctrl *ctrl, const Ctrl::LuaProcessor &lp);
 	};
     //-------------------------------------------------------------------------
 	struct FrxGetBuildHash {
-		typedef std::function<std::string()> Function;
+		typedef boost::function<std::string()> Function;
 		static const char * name() { return "getBuildHash"; }
 		static std::string process(Ctrl *ctrl, const Ctrl::LuaProcessor &lp) {
             std::stringstream ss;

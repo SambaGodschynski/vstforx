@@ -5,6 +5,7 @@
  * ===========================================================================================================
  */
 #include <tuple>
+#include <boost/tuple/tuple.hpp>
 #include "MidiProcessor.h"
 #include <com/Serialization.h>
 #include "processing/dspTools.h"
@@ -36,7 +37,10 @@ void MidiProcessor::processMidiEvents ( sambag::dsp::IMidiEvents::Ptr ev ) {
 		IMidiEvents::ByteSize size;
 		IMidiEvents::DeltaFrames d;
 		IMidiEvents::DataPtr data;
-		std::tie(size, d, data) = ev->getMidiEvent(i);
+		auto _mev = ev->getMidiEvent(i);
+		size = boost::get<0>(_mev);
+		d = boost::get<1>(_mev);
+		data = boost::get<2>(_mev);
 
 		for (int j=0; j<size-2;) { // through bytes
 			Byte status = ( data[j] & 0xf0 ) >> 4;

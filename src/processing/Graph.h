@@ -490,7 +490,7 @@ public:
 template < typename Container >
 void Graph::getChildNodes ( ProcessorNode::Ptr node, Container &outContainer ) {
 	bgl::AdjacencyIterator ai, end;
-	boost::tie( ai, end ) = boost::adjacent_vertices ( node->getBglVertex(), g );
+	std::tie( ai, end ) = boost::adjacent_vertices ( node->getBglVertex(), g );
 	for ( ; ai!=end; ++ai ) {
 		ProcessorNode::Ptr n = vertexProcessorNode[*ai];
 		outContainer.push_back(n);
@@ -500,7 +500,7 @@ void Graph::getChildNodes ( ProcessorNode::Ptr node, Container &outContainer ) {
 template < typename Container >
 void Graph::getParentNodes ( ProcessorNode::Ptr node, Container &outContainer ) {
 	bgl::InvAdjacencyIterator ai, end;
-	boost::tie( ai, end ) = boost::inv_adjacent_vertices ( node->getBglVertex(), g );
+	std::tie( ai, end ) = boost::inv_adjacent_vertices ( node->getBglVertex(), g );
 	for ( ; ai!=end; ++ai ) {
 		ProcessorNode::Ptr n = vertexProcessorNode[*ai];
 		outContainer.push_back(n);
