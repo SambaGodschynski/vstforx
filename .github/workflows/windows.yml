@@ -5,6 +5,7 @@ on:
     branches: [ DISCO, main ]
   pull_request:
     branches: [ DISCO, main ]
+  workflow_dispatch:
 
 jobs:
   build:
