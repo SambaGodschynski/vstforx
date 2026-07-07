@@ -59,9 +59,10 @@ jobs:
           cmake -B build \
             -DCMAKE_BUILD_TYPE=Release \
             -DSAMBAG_DIST=${{ github.workspace }}/sambag-dist \
+            -DFRX_BUILD_VST3_PLUGIN=ON \
             2>&1 || (cat build/CMakeFiles/CMakeError.log 2>/dev/null; exit 1)
 
-      - name: Build
+      - name: Build standalone
         run: |
           set +e
           cmake --build build --target standalone --parallel $(nproc) 2>&1 | tee build.log
@@ -72,7 +73,25 @@ jobs:
             exit $rc
           fi
 
-      - name: Upload artifact
+      - name: Build VST3 plugin
+        run: |
+          set +e
+          cmake --build build --target vstforx3 --parallel $(nproc) 2>&1 | tee build_vst3.log
+          rc=${PIPESTATUS[0]}
+          if [ $rc -ne 0 ]; then
+            echo "=== ERRORS ===" >&2
+            grep -E "error:|undefined reference" build_vst3.log | head -50 >&2 || true
+            exit $rc
+          fi
+          # Assemble .vst3 bundle directory
+          mkdir -p build/vstforx3.vst3/Contents/x86_64-linux
+          cp build/src/PluginApps/vstforx3.so \
+             build/vstforx3.vst3/Contents/x86_64-linux/vstforx3.so
+          cp -r build/src/PluginApps/images  build/vstforx3.vst3/ 2>/dev/null || true
+          cp -r build/src/PluginApps/styles  build/vstforx3.vst3/ 2>/dev/null || true
+          cp -r build/src/PluginApps/scripts build/vstforx3.vst3/ 2>/dev/null || true
+
+      - name: Upload standalone artifact
         uses: actions/upload-artifact@v4
         with:
           name: vstforx-standalone-linux-x64
@@ -81,4 +100,11 @@ jobs:
             build/src/PluginApps/images
             build/src/PluginApps/styles
             build/src/PluginApps/scripts
+          retention-days: 14
+
+      - name: Upload VST3 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vstforx3-linux-x64
+          path: build/vstforx3.vst3/
           retention-days: 14

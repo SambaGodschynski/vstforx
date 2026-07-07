@@ -14,10 +14,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # ── Options ───────────────────────────────────────────────────────────────────
-option(FRX_BUILD_STANDALONE "Build standalone application" ON)
-option(FRX_BUILD_PLUGIN     "Build VST plugin shared library" OFF)
-option(FRX_BUILD_VST3       "Include VST3 hosting support (requires VST3 SDK)" OFF)
-option(FRX_USE_LOG          "Enable boost::log" OFF)
+option(FRX_BUILD_STANDALONE   "Build standalone application" ON)
+option(FRX_BUILD_PLUGIN       "Build VST plugin shared library" OFF)
+option(FRX_BUILD_VST3         "Include VST3 hosting support (requires VST3 SDK)" OFF)
+option(FRX_BUILD_VST3_PLUGIN  "Build VSTforx as a VST3 plugin (.vst3)" OFF)
+option(FRX_USE_LOG            "Enable boost::log" OFF)
 
 # ── sambag dependency ─────────────────────────────────────────────────────────
 # Three modes (mutually exclusive, checked in order):
