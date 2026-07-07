@@ -12,7 +12,6 @@
  */
 
 #include <processing/VstForxPlug.hpp>
-#include <gui/components/VstForxEditor.hpp>
 #include <sambag/dsp/VST3xPluginWrapper.hpp>
 #include <sambag/dsp/VST3xPluginFactory.hpp>
 #include <com/Settings.h>
@@ -77,8 +76,9 @@ typedef sambag::dsp::vst::VST3xPluginWrapper<
         PlugSettings::PluginOutputs,
         PlugSettings::IsInstrument,
         ::com::Settings::PROGRAM_PARAMETER
-    >,
-    frx::gui::components::CreateVstForxEditor
+    >
+    // CreateNoEditor is the default — VST3 editor requires IPlugView which
+    // VstForxEditor doesn't implement yet.
 > VstForx3Plugin;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -109,10 +109,9 @@ void ensureInit() {
     SAMBAG_LOG_INFO << "VST3 factory loaded, resRoot=" << resRoot;
 
     try {
-        // File-based resource manager (no embedded binaries on Linux/Win VST3)
-        static sambag::disco::FileResourceManager rm;
-        rm.setSearchPath(resRoot);
-        sambag::disco::installResourceManager(rm);
+        sambag::disco::FileResourceManager::init(resRoot);
+        sambag::disco::installResourceManager(
+            sambag::disco::FileResourceManager::instance());
     } catch (const std::exception& ex) {
         SAMBAG_LOG_ERR << "ResourceManager init failed: " << ex.what();
     }

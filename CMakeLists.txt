@@ -33,6 +33,10 @@ if(SAMBAG_DIR)
     set(SAMBAG_VST_SUPPORT   OFF CACHE BOOL "" FORCE)
     set(SAMBAG_BUILD_TESTS   OFF CACHE BOOL "" FORCE)
     set(SAMBAG_BUILD_TESTAPP OFF CACHE BOOL "" FORCE)
+    # On Linux, static Boost .a files lack -fPIC and cannot be linked into .so
+    if(NOT WIN32 AND NOT APPLE)
+        set(SAMBAG_STATIC_DEPS OFF CACHE BOOL "" FORCE)
+    endif()
     add_subdirectory("${SAMBAG_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/sambag")
     set(SAMBAG_LIBRARIES sambag)
     set(SAMBAG_INCLUDE_DIRS
@@ -111,6 +115,8 @@ elseif(UNIX)
     add_compile_definitions("__cdecl=__attribute__((__cdecl__))")
     set(FRX_ASYNC_DSP_TIMER 1)
     set(FRX_USE_FONTCACHE 0)
+    # Required for vstforx3.so: all static archives must be compiled as PIC
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 elseif(WIN32)
     add_compile_definitions(
         DISCO_USE_WIN32
@@ -142,7 +148,10 @@ if(NOT WIN32)
     find_package(PkgConfig REQUIRED)
 endif()
 
-# Boost
+# Boost — on Linux use shared libs so they can be linked into .so targets
+if(WIN32)
+    set(Boost_USE_STATIC_LIBS ON)
+endif()
 set(_BOOST_COMPS filesystem system thread regex serialization
                  date_time timer chrono program_options)
 if(FRX_USE_LOG)
