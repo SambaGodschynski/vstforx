@@ -32,18 +32,20 @@ IF(UNIX AND NOT APPLE)
     )
 
     set(_FRX_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
-    # Bundle layout: vstforx3.vst3/Contents/x86_64-linux/vstforx3.so
-    set(_VST3_BUNDLE_DIR "$<TARGET_FILE_DIR:vstforx3>/../../..")
+    # Bundle layout: <outdir>/vstforx3.vst3/Contents/x86_64-linux/vstforx3.so
     add_custom_command(TARGET vstforx3 POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory
-            "$<TARGET_FILE_DIR:vstforx3>"
+            "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/x86_64-linux"
+        COMMAND ${CMAKE_COMMAND} -E copy
+            "$<TARGET_FILE:vstforx3>"
+            "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/x86_64-linux/vstforx3.so"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${_FRX_SRC_DIR}/images"  "$<TARGET_FILE_DIR:vstforx3>/../../../images"
+            "${_FRX_SRC_DIR}/images"  "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/images"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${_FRX_SRC_DIR}/styles"  "$<TARGET_FILE_DIR:vstforx3>/../../../styles"
+            "${_FRX_SRC_DIR}/styles"  "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/styles"
         COMMAND ${CMAKE_COMMAND}
             -D "SRC_DIR=${_FRX_SRC_DIR}/scripts"
-            -D "DST_DIR=$<TARGET_FILE_DIR:vstforx3>/../../../scripts"
+            -D "DST_DIR=$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/scripts"
             -P "${CMAKE_CURRENT_SOURCE_DIR}/CopyLuaScripts.cmake"
         COMMENT "Assembling vstforx3.vst3 bundle"
     )
@@ -87,6 +89,35 @@ ELSEIF(WIN32)
           -P "${CMAKE_CURRENT_SOURCE_DIR}/CopyLuaScripts.cmake"
       COMMENT "Copying resources next to standalone binary"
   )
+
+  # ── VST3 plugin ─────────────────────────────────────────────────────────────
+  if(FRX_BUILD_VST3_PLUGIN)
+    set(_VST3_SRCS
+        VSTForx3/GetPluginFactory.cpp
+        com/FrxPlugSettings.cpp
+    )
+    add_library(vstforx3 SHARED ${_VST3_SRCS})
+    target_link_libraries(vstforx3 PRIVATE frx_core)
+    # Keep .dll suffix for the build artifact; the bundle copy gets .vst3 name
+    set_target_properties(vstforx3 PROPERTIES PREFIX "" OUTPUT_NAME "vstforx3")
+    # Assemble bundle: <outdir>/vstforx3.vst3/Contents/x86_64-win/vstforx3.vst3
+    add_custom_command(TARGET vstforx3 POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/x86_64-win"
+        COMMAND ${CMAKE_COMMAND} -E copy
+            "$<TARGET_FILE:vstforx3>"
+            "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/x86_64-win/vstforx3.vst3"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${_FRX_SRC_DIR}/images"  "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/images"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+            "${_FRX_SRC_DIR}/styles"  "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/styles"
+        COMMAND ${CMAKE_COMMAND}
+            -D "SRC_DIR=${_FRX_SRC_DIR}/scripts"
+            -D "DST_DIR=$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/scripts"
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/CopyLuaScripts.cmake"
+        COMMENT "Assembling vstforx3.vst3 bundle"
+    )
+  endif()
 
   #vstforx
   SET (PlugSources ${PlugSources}

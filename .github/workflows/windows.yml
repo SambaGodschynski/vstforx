@@ -67,19 +67,32 @@ jobs:
             -DVCPKG_TARGET_TRIPLET=x64-windows-static `
             -DVCPKG_MANIFEST_MODE=OFF `
             -DCMAKE_BUILD_TYPE=Release `
+            -DFRX_BUILD_VST3_PLUGIN=ON `
             -DSAMBAG_DIST="${{ github.workspace }}/sambag-dist"
         shell: pwsh
 
-      - name: Build plugins
+      - name: Build VST2 plugins
         run: |
           cmake --build build --config Release `
             --target vstforx vstforxInstrument vstforxInstrument_2Out vstforxInstrument_4Out vstforxInstrument_8Out `
             --parallel
         shell: pwsh
 
-      - name: Upload artifact
+      - name: Build VST3 plugin
+        run: |
+          cmake --build build --config Release --target vstforx3 --parallel
+        shell: pwsh
+
+      - name: Upload VST2 artifact
         uses: actions/upload-artifact@v4
         with:
           name: vstforx-plugins-windows-x64
           path: build/src/PluginApps/Release/
+          retention-days: 14
+
+      - name: Upload VST3 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vstforx3-windows-x64
+          path: build/src/PluginApps/Release/vstforx3.vst3/
           retention-days: 14

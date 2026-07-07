@@ -83,13 +83,6 @@ jobs:
             grep -E "error:|undefined reference" build_vst3.log | head -50 >&2 || true
             exit $rc
           fi
-          # Assemble .vst3 bundle directory
-          mkdir -p build/vstforx3.vst3/Contents/x86_64-linux
-          cp build/src/PluginApps/vstforx3.so \
-             build/vstforx3.vst3/Contents/x86_64-linux/vstforx3.so
-          cp -r build/src/PluginApps/images  build/vstforx3.vst3/ 2>/dev/null || true
-          cp -r build/src/PluginApps/styles  build/vstforx3.vst3/ 2>/dev/null || true
-          cp -r build/src/PluginApps/scripts build/vstforx3.vst3/ 2>/dev/null || true
 
       - name: Upload standalone artifact
         uses: actions/upload-artifact@v4
@@ -106,5 +99,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: vstforx3-linux-x64
-          path: build/vstforx3.vst3/
+          path: build/src/PluginApps/vstforx3.vst3/
           retention-days: 14
