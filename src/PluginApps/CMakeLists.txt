@@ -21,7 +21,10 @@ IF(UNIX AND NOT APPLE)
   if(FRX_BUILD_VST3_PLUGIN)
     set(_VST3_SRCS
         VSTForx3/GetPluginFactory.cpp
+        VSTForx3/vstiids.cpp
         com/FrxPlugSettings.cpp
+        "${FRX_VSTSDK3_DIR}/pluginterfaces/base/funknown.cpp"
+        "${FRX_VSTSDK3_DIR}/pluginterfaces/base/coreiids.cpp"
     )
     add_library(vstforx3 SHARED ${_VST3_SRCS})
     target_link_libraries(vstforx3 PRIVATE frx_core ${CMAKE_DL_LIBS})
@@ -94,9 +97,8 @@ ELSEIF(WIN32)
   if(FRX_BUILD_VST3_PLUGIN)
     set(_VST3_SRCS
         VSTForx3/GetPluginFactory.cpp
+        VSTForx3/vstiids.cpp
         com/FrxPlugSettings.cpp
-        # VST3 pluginterfaces IID definitions (needed on all platforms with MSVC,
-        # harmless on GCC/Clang where they're inline)
         "${FRX_VSTSDK3_DIR}/pluginterfaces/base/funknown.cpp"
         "${FRX_VSTSDK3_DIR}/pluginterfaces/base/coreiids.cpp"
     )
