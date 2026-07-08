@@ -95,6 +95,10 @@ ELSEIF(WIN32)
     set(_VST3_SRCS
         VSTForx3/GetPluginFactory.cpp
         com/FrxPlugSettings.cpp
+        # VST3 pluginterfaces IID definitions (needed on all platforms with MSVC,
+        # harmless on GCC/Clang where they're inline)
+        "${FRX_VSTSDK3_DIR}/pluginterfaces/base/funknown.cpp"
+        "${FRX_VSTSDK3_DIR}/pluginterfaces/base/coreiids.cpp"
     )
     add_library(vstforx3 SHARED ${_VST3_SRCS})
     target_link_libraries(vstforx3 PRIVATE frx_core)

@@ -25,6 +25,9 @@
 #  define WIN32_LEAN_AND_MEAN
 #  include <windows.h>
 static HMODULE g_hModule = nullptr;
+// frx_core's win32 glue (win_one4All.cpp) references this as extern;
+// the VST2 entry point normally defines it — we define it here for VST3.
+void* hInstance = nullptr;
 #else
 #  include <dlfcn.h>
 #endif
@@ -148,6 +151,7 @@ Steinberg::IPluginFactory* GetPluginFactory()
 #ifdef _WIN32
 BOOL WINAPI DllMain(HINSTANCE hInst, DWORD /*reason*/, LPVOID /*reserved*/) {
     g_hModule = reinterpret_cast<HMODULE>(hInst);
+    hInstance  = reinterpret_cast<void*>(hInst);
     return TRUE;
 }
 #endif
