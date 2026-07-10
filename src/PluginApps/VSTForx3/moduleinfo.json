@@ -1,0 +1,30 @@
+{
+  "Name": "VSTForx",
+  "Version": "1.0.72",
+  "Factory Info": {
+    "Vendor": "Samba Godschynski",
+    "URL": "https://vstforx.de",
+    "E-Mail": "samba.godschynski@gmail.com",
+    "Flags": {
+      "Unicode": true,
+      "Classes Discardable": false,
+      "Component Non Discardable": false
+    }
+  },
+  "Classes": [
+    {
+      "CID": "A1B2C3D4E5F67890ABCDEF1234567890",
+      "Category": "Audio Module Class",
+      "Name": "VSTForx",
+      "Vendor": "Samba Godschynski",
+      "Version": "1.0.72",
+      "SDKVersion": "VST 3.8.0",
+      "Sub Categories": [
+        "Fx"
+      ],
+      "Class Flags": 1,
+      "Cardinality": 2147483647,
+      "Snapshots": []
+    }
+  ]
+}

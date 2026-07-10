@@ -35,13 +35,19 @@ IF(UNIX AND NOT APPLE)
     )
 
     set(_FRX_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/..")
+    set(_VST3_MODULE_INFO "${CMAKE_CURRENT_SOURCE_DIR}/VSTForx3/moduleinfo.json")
     # Bundle layout: <outdir>/vstforx3.vst3/Contents/x86_64-linux/vstforx3.so
     add_custom_command(TARGET vstforx3 POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory
             "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/x86_64-linux"
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/Resources"
         COMMAND ${CMAKE_COMMAND} -E copy
             "$<TARGET_FILE:vstforx3>"
             "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/x86_64-linux/vstforx3.so"
+        COMMAND ${CMAKE_COMMAND} -E copy
+            "${_VST3_MODULE_INFO}"
+            "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/Resources/moduleinfo.json"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${_FRX_SRC_DIR}/images"  "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/images"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -106,13 +112,19 @@ ELSEIF(WIN32)
     target_link_libraries(vstforx3 PRIVATE frx_core)
     # Keep .dll suffix for the build artifact; the bundle copy gets .vst3 name
     set_target_properties(vstforx3 PROPERTIES PREFIX "" OUTPUT_NAME "vstforx3")
+    set(_VST3_MODULE_INFO "${CMAKE_CURRENT_SOURCE_DIR}/VSTForx3/moduleinfo.json")
     # Assemble bundle: <outdir>/vstforx3.vst3/Contents/x86_64-win/vstforx3.vst3
     add_custom_command(TARGET vstforx3 POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory
             "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/x86_64-win"
+        COMMAND ${CMAKE_COMMAND} -E make_directory
+            "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/Resources"
         COMMAND ${CMAKE_COMMAND} -E copy
             "$<TARGET_FILE:vstforx3>"
             "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/x86_64-win/vstforx3.vst3"
+        COMMAND ${CMAKE_COMMAND} -E copy
+            "${_VST3_MODULE_INFO}"
+            "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/Resources/moduleinfo.json"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
             "${_FRX_SRC_DIR}/images"  "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/images"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
