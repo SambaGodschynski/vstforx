@@ -30,6 +30,7 @@ static HMODULE g_hModule = nullptr;
 void* hInstance = nullptr;
 #else
 #  include <dlfcn.h>
+static void* g_soHandle = nullptr;
 #endif
 
 #include <string>
@@ -48,6 +49,12 @@ std::string getPluginDirectory() {
     GetModuleFileNameA(g_hModule, path, MAX_PATH);
     return std::filesystem::path(path).parent_path().string();
 #else
+    // Prefer the handle captured in ModuleEntry; fall back to dladdr.
+    if (g_soHandle) {
+        Dl_info info{};
+        if (dladdr(g_soHandle, &info) && info.dli_fname)
+            return std::filesystem::path(info.dli_fname).parent_path().string();
+    }
     Dl_info info{};
     if (dladdr(reinterpret_cast<void*>(&getPluginDirectory), &info) && info.dli_fname) {
         return std::filesystem::path(info.dli_fname).parent_path().string();
@@ -153,6 +160,20 @@ BOOL WINAPI DllMain(HINSTANCE hInst, DWORD /*reason*/, LPVOID /*reserved*/) {
     g_hModule = reinterpret_cast<HMODULE>(hInst);
     hInstance  = reinterpret_cast<void*>(hInst);
     return TRUE;
+}
+#else
+// Linux VST3 requires ModuleEntry/ModuleExit instead of DllMain.
+// The host calls ModuleEntry right after dlopen(), passing the dl handle.
+__attribute__((visibility("default")))
+bool ModuleEntry(void* sharedLibraryHandle) {
+    g_soHandle = sharedLibraryHandle;
+    return true;
+}
+
+__attribute__((visibility("default")))
+bool ModuleExit() {
+    g_soHandle = nullptr;
+    return true;
 }
 #endif
 
