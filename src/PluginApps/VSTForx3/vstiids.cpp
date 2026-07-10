@@ -5,6 +5,7 @@
 #include "pluginterfaces/vst/ivstcomponent.h"
 #include "pluginterfaces/vst/ivstaudioprocessor.h"
 #include "pluginterfaces/vst/ivsteditcontroller.h"
+#include "pluginterfaces/gui/iplugview.h"
 
 namespace Steinberg {
 namespace Vst {
@@ -24,4 +25,9 @@ DEF_CLASS_IID(IComponentHandlerSystemTime)
 DEF_CLASS_IID(IProgress)
 
 } // namespace Vst
+} // namespace Steinberg
+
+namespace Steinberg {
+DEF_CLASS_IID(IPlugView)
+DEF_CLASS_IID(IPlugFrame)
 } // namespace Steinberg

@@ -14,6 +14,7 @@
 #include <processing/VstForxPlug.hpp>
 #include <sambag/dsp/VST3xPluginWrapper.hpp>
 #include <sambag/dsp/VST3xPluginFactory.hpp>
+#include "VstForxPlugView.hpp"
 #include <com/Settings.h>
 #include <sambag/disco/FileResourceManager.hpp>
 #include <sambag/disco/IResourceManager.hpp>
@@ -86,9 +87,8 @@ typedef sambag::dsp::vst::VST3xPluginWrapper<
         PlugSettings::PluginOutputs,
         PlugSettings::IsInstrument,
         ::com::Settings::PROGRAM_PARAMETER
-    >
-    // CreateNoEditor is the default — VST3 editor requires IPlugView which
-    // VstForxEditor doesn't implement yet.
+    >,
+    frx::vst3::CreateVstForxEditorVST3
 > VstForx3Plugin;
 
 // ─────────────────────────────────────────────────────────────────────────────
