@@ -90,9 +90,15 @@ jobs:
           path: build/src/PluginApps/Release/
           retention-days: 14
 
+      - name: Stage VST3 artifact
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path vst3-stage | Out-Null
+          Copy-Item -Recurse build\src\PluginApps\Release\vstforx3.vst3 vst3-stage\
+
       - name: Upload VST3 artifact
         uses: actions/upload-artifact@v4
         with:
           name: vstforx3-windows-x64
-          path: build/src/PluginApps/Release/vstforx3.vst3
+          path: vst3-stage/
           retention-days: 14

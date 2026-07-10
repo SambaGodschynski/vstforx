@@ -95,9 +95,14 @@ jobs:
             build/src/PluginApps/scripts
           retention-days: 14
 
+      - name: Stage VST3 artifact
+        run: |
+          mkdir -p vst3-stage
+          cp -r build/src/PluginApps/vstforx3.vst3 vst3-stage/
+
       - name: Upload VST3 artifact
         uses: actions/upload-artifact@v4
         with:
           name: vstforx3-linux-x64
-          path: build/src/PluginApps/vstforx3.vst3
+          path: vst3-stage/
           retention-days: 14
