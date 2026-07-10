@@ -99,5 +99,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: vstforx3-linux-x64
-          path: build/src/PluginApps/vstforx3.vst3/
+          path: build/src/PluginApps/vstforx3.vst3
           retention-days: 14
