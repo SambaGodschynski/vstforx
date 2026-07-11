@@ -6,6 +6,7 @@
 #include "pluginterfaces/gui/iplugview.h"
 #include "gui/components/VstForxEditor.hpp"
 #include <processing/VstForxPlug.hpp>
+#include <scripts/PluginScriptCtrl.hpp>
 
 #ifndef _WIN32
 #include <sambag/disco/components/windowImpl/X11WindowToolkit.hpp>
@@ -98,6 +99,7 @@ public:
         : _editor(new frx::gui::components::VstForxEditor(nullptr))
     {
         _editor->setPlugin(plugin);
+        plugin->getScriptController()->setEditor(_editor);
     }
 
     ~VstForxPlugView() {

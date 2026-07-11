@@ -108,6 +108,8 @@ public:
     //-------------------------------------------------------------------------
 	void setPlugin(frx::processing::VstForxPlug *plug);
     //-------------------------------------------------------------------------
+    void setEditor(frx::gui::components::VstForxEditor *editor);
+    //-------------------------------------------------------------------------
     typedef std::unique_lock<sambag::com::RecursiveMutex> Lock;
     typedef std::shared_ptr<Lock> LockPtr;
     /**

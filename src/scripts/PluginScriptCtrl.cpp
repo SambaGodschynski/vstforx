@@ -1015,24 +1015,29 @@ void PluginScriptCtrl::setPlugin(frx::processing::VstForxPlug *plug) {
 		return;
 	}
 	this->plug = plug;
-	using namespace sambag::disco::components;
-	editor =
-		static_cast<frx::gui::components::VstForxEditor*>(plug->getEditor());
-	if (!editor) {
-		SAMBAG_THROW(
-			sambag::com::exceptions::IllegalStateException,
-			"VstForxEditor = NULL"
-		);
-	}
-    
+	editor = static_cast<frx::gui::components::VstForxEditor*>(plug->getEditor());
+
     using namespace sambag::lua;
 	__luaState = createLuaStateRef();
+	// Register functions without frx.view; setEditor() adds it once the editor exists.
 	registerFunctions(
         LuaProcessor(__luaState,
                      [this](){ return getLock(); },
                      OnExecErrorF(),
                      __luaState
-        ), isPublic, true);
+        ), isPublic, editor != nullptr);
+}
+//-----------------------------------------------------------------------------
+void PluginScriptCtrl::setEditor(frx::gui::components::VstForxEditor *ed) {
+    editor = ed;
+    if (!ed || !__luaState) return;
+    sambag::lua::LuaStateRef state = __luaState;
+    lua_State *L = state.get();
+    lua_getglobal(L, "frx");
+    int index = lua_gettop(L);
+    LuaFrxView::createAndPush(L, editor);
+    lua_setfield(L, index, "view");
+    lua_pop(L, 1);
 }
 //-----------------------------------------------------------------------------
 void PluginScriptCtrl::appendJob(const std::string &str) {

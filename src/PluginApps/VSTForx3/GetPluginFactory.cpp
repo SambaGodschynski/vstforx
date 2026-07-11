@@ -3,12 +3,10 @@
  *
  * Cross-platform (Linux + Windows).  Mac is handled by a separate bundle target.
  *
- * The VST3 bundle layout on Linux:
- *   vstforx3.vst3/Contents/x86_64-linux/vstforx3.so
- *
- * Resources (images/, styles/, scripts/) are expected alongside the .so's
- * grandparent directory:
- *   vstforx3.vst3/Contents/x86_64-linux/../../../   →  vstforx3.vst3/
+ * VST3 bundle layout:
+ *   vstforx3.vst3/Contents/x86_64-linux/vstforx3.so   (Linux)
+ *   vstforx3.vst3/Contents/x86_64-win/vstforx3.vst3   (Windows)
+ *   vstforx3.vst3/Contents/Resources/images|styles|scripts/
  */
 
 #include <processing/VstForxPlug.hpp>
@@ -50,12 +48,8 @@ std::string getPluginDirectory() {
     GetModuleFileNameA(g_hModule, path, MAX_PATH);
     return std::filesystem::path(path).parent_path().string();
 #else
-    // Prefer the handle captured in ModuleEntry; fall back to dladdr.
-    if (g_soHandle) {
-        Dl_info info{};
-        if (dladdr(g_soHandle, &info) && info.dli_fname)
-            return std::filesystem::path(info.dli_fname).parent_path().string();
-    }
+    // Use a function pointer from within this .so so dladdr returns this library's path.
+    // g_soHandle is a dlopen handle (not a symbol address) and must not be passed to dladdr.
     Dl_info info{};
     if (dladdr(reinterpret_cast<void*>(&getPluginDirectory), &info) && info.dli_fname) {
         return std::filesystem::path(info.dli_fname).parent_path().string();
@@ -64,15 +58,18 @@ std::string getPluginDirectory() {
 #endif
 }
 
-// .so is at <bundle>/Contents/x86_64-linux/; resources are at <bundle>/
+// Resources live at <bundle>/Contents/Resources/ (VST3 standard).
+// The .so/.vst3 is at <bundle>/Contents/<arch>/; one parent_path() gives Contents/.
 std::string getResourceRoot() {
     namespace fs = std::filesystem;
-    fs::path soDir = getPluginDirectory();
-    // Walk up two directories: x86_64-linux -> Contents -> <bundle>
-    fs::path root = soDir.parent_path().parent_path();
-    if (fs::exists(root / "images")) return root.string();
-    // Fallback: same directory as the .so (development / flat install)
-    return soDir.string();
+    std::string soDir = getPluginDirectory();
+    fs::path contentsDir = fs::path(soDir).parent_path();
+    fs::path resourcesDir = contentsDir / "Resources";
+    if (fs::exists(resourcesDir / "images")) return resourcesDir.string();
+    // Fallback: bundle root (old layout) or .so directory (development)
+    fs::path bundleRoot = contentsDir.parent_path();
+    if (fs::exists(bundleRoot / "images")) return bundleRoot.string();
+    return soDir;
 }
 
 } // namespace
@@ -116,17 +113,21 @@ void ensureInit() {
 
     std::string resRoot = getResourceRoot();
     ::sambag::com::addLogFile(resRoot + "/VSTForx.log");
-    SAMBAG_LOG_INFO << "VST3 factory loaded, resRoot=" << resRoot;
 
     try {
         sambag::disco::FileResourceManager::init(resRoot);
         sambag::disco::installResourceManager(
             sambag::disco::FileResourceManager::instance());
     } catch (const std::exception& ex) {
-        SAMBAG_LOG_ERR << "ResourceManager init failed: " << ex.what();
+        SAMBAG_LOG_ERR<<"vstforx: ResourceManager init failed: "<<ex.what();
     }
 
-    ::com::initSettings(resRoot);
+    try {
+        ::com::initSettings(resRoot);
+    } catch (const std::exception& ex) {
+        SAMBAG_LOG_ERR<<"vstforx: initSettings failed: "<<ex.what();
+    }
+
     sambag::disco::components::getWindowToolkit()->useWithoutMainloop();
 }
 

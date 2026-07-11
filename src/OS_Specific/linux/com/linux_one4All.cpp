@@ -11,7 +11,7 @@
 #include <filesystem>
 #include "com/one4All.h"
 #include <sambag/disco/components/Window.hpp>
-
+#include <iostream>
 // Required by VSTPlugin2x.cpp and VST2xImpl.cpp: return native window handle
 // for embedding VST editor. On Linux this is unused in standalone mode.
 void * __getHandlerForVstPlugins_(void *ptr) {
@@ -44,6 +44,8 @@ bool isDirectory ( const std::string &filename ) {
 } 	
 //------------------------------------------------------------------------------------------------------------
 MessageBoxReturn osMessageBox ( const std::string &title, const std::string &text, const MessageBoxType &type ) {
+
+	std::cout << "!!!!" << title << ": " << text << std::endl;
 	return MSG_RET_NONE;
 }
 //------------------------------------------------------------------------------------------------------------

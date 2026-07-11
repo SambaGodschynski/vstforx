@@ -188,6 +188,8 @@ void VstForxEditor::loadInitScript() {
             sctrl->executeFile(file);
         } catch(const sambag::lua::ExecutionFailed &ex) {
             errorMessage("executing "+file+" failed: " + ex.errMsg);
+        } catch(const std::exception &ex) {
+            errorMessage("executing "+file+" failed: " + std::string(ex.what()));
         } catch(...) {
             errorMessage("executing "+file+" failed: unkown reason");
     }

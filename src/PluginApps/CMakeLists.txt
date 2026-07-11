@@ -49,12 +49,12 @@ IF(UNIX AND NOT APPLE)
             "${_VST3_MODULE_INFO}"
             "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/Resources/moduleinfo.json"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${_FRX_SRC_DIR}/images"  "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/images"
+            "${_FRX_SRC_DIR}/images"  "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/Resources/images"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${_FRX_SRC_DIR}/styles"  "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/styles"
+            "${_FRX_SRC_DIR}/styles"  "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/Resources/styles"
         COMMAND ${CMAKE_COMMAND}
             -D "SRC_DIR=${_FRX_SRC_DIR}/scripts"
-            -D "DST_DIR=$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/scripts"
+            -D "DST_DIR=$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/Resources/scripts"
             -P "${CMAKE_CURRENT_SOURCE_DIR}/CopyLuaScripts.cmake"
         COMMENT "Assembling vstforx3.vst3 bundle"
     )
@@ -126,12 +126,12 @@ ELSEIF(WIN32)
             "${_VST3_MODULE_INFO}"
             "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/Resources/moduleinfo.json"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${_FRX_SRC_DIR}/images"  "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/images"
+            "${_FRX_SRC_DIR}/images"  "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/Resources/images"
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${_FRX_SRC_DIR}/styles"  "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/styles"
+            "${_FRX_SRC_DIR}/styles"  "$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/Resources/styles"
         COMMAND ${CMAKE_COMMAND}
             -D "SRC_DIR=${_FRX_SRC_DIR}/scripts"
-            -D "DST_DIR=$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/scripts"
+            -D "DST_DIR=$<TARGET_FILE_DIR:vstforx3>/vstforx3.vst3/Contents/Resources/scripts"
             -P "${CMAKE_CURRENT_SOURCE_DIR}/CopyLuaScripts.cmake"
         COMMENT "Assembling vstforx3.vst3 bundle"
     )
