@@ -31,3 +31,11 @@ namespace Steinberg {
 DEF_CLASS_IID(IPlugView)
 DEF_CLASS_IID(IPlugFrame)
 } // namespace Steinberg
+
+#ifndef _WIN32
+namespace Steinberg { namespace Linux {
+DEF_CLASS_IID(IRunLoop)
+DEF_CLASS_IID(IEventHandler)
+DEF_CLASS_IID(ITimerHandler)
+} } // namespace Steinberg::Linux
+#endif
