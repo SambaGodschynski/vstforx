@@ -102,6 +102,12 @@ static const Steinberg::TUID kVstForx3ClassId = {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // One-time plugin init (called on first GetPluginFactory)
+#ifndef _WIN32
+namespace frx { namespace vst3 {
+int VstForxPlugView::_boostTimerRefCount = 0;
+}} // namespace frx::vst3
+#endif
+
 // ─────────────────────────────────────────────────────────────────────────────
 namespace {
 

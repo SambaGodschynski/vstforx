@@ -18,8 +18,11 @@ void ViewModelMap::serialize(com::iArchive &ar, const unsigned int version) {
 	map.clear();
 	ar & boost::serialization::base_object<IViewModelMap> ( *this );
 	ar & bedroom;
-	ar & closed;
+	bool ignoredClosed;
+	ar & ignoredClosed; // never restore 'closed' from archive — lock()/unlock() own that flag
 	ar & map;
+	// Prevent stale bedroom from doubling the model-object list on the next lock() call
+	bedroom.clear();
 }
 //-----------------------------------------------------------------------------
 void ViewModelMap::serialize(com::oArchive &ar, const unsigned int version) {
@@ -132,6 +135,14 @@ void ViewModelMap::remove(ViewObject::Ptr vobj,
 //-----------------------------------------------------------------------------
 bool ViewModelMap::isLocked() const {
 	return closed;
+}
+//-----------------------------------------------------------------------------
+void ViewModelMap::forceUnlock() {
+    SAMBAG_BEGIN_SYNCHRONIZED(mutex)
+    map.clear();
+    bedroom.clear();
+    closed = false;
+    SAMBAG_END_SYNCHRONIZED
 }
 //-----------------------------------------------------------------------------
 size_t ViewModelMap::getSize() const {

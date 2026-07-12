@@ -427,24 +427,28 @@ int VstForxPlug::setChunk(void *data, int byteSize, int version) {
 //-----------------------------------------------------------------------------
 void VstForxPlug::saveEditor(::com::oArchive &ar) {
 	using frx::gui::components::VstForxEditor;
-	VstForxEditor * editor = static_cast<VstForxEditor*>(
-		host->getEditor()
-	);
+	VstForxEditor * editor = _vstForxEditor
+		? _vstForxEditor
+		: static_cast<VstForxEditor*>(host->getEditor());
+
+	frx::gui::components::register_types(ar);
+	ar.register_type<frx::gui::ViewModelMap>();
+
 	if (!editor) {
-		SAMBAG_THROW(
-			sambag::com::exceptions::IllegalStateException,
-			"editor == NULL"
-		);
+		// VST3: editor not yet created (getState before createView).
+		// Serialize the last known view stream and map.
+		ar & _cachedViewStream;
+		ar & map;
+		return;
 	}
+
 	std::string serializedViewStream;
 	std::stringstream tmpss;
-	frx::gui::ViewModelMap::Ptr tmpMap;
 	frx::gui::ViewModelMap::Ptr origMap;
 	if (editor->isOpen()) {
-		origMap = map; // keep orig. map untouched
-		tmpMap = map->clone();
+		origMap = map;
+		frx::gui::ViewModelMap::Ptr tmpMap = map->clone();
 		map = tmpMap;
-		//void serializeViewTemp(::com::oArchive &ar, FrxCircuidViewPtr view);
 		::com::oArchive tmp(tmpss);
 		frx::gui::components::register_types(tmp);
 		editor->serializeViewTemp(tmp, editor->getCircuidView());
@@ -452,11 +456,10 @@ void VstForxPlug::saveEditor(::com::oArchive &ar) {
 	} else {
 		serializedViewStream = editor->hiChamber.first;
 	}
-	frx::gui::components::register_types(ar);
-	ar.register_type<frx::gui::ViewModelMap>();
-	ar & serializedViewStream; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<1.
-	ar & map;				   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<2.
-	
+	_cachedViewStream   = serializedViewStream;
+	_cachedViewVersion  = FRX_ARCHIVE_VERSION;
+	ar & serializedViewStream;
+	ar & map;
 	if (origMap) {
 		map = origMap;
 	}
@@ -464,22 +467,23 @@ void VstForxPlug::saveEditor(::com::oArchive &ar) {
 //-----------------------------------------------------------------------------
 void VstForxPlug::loadEditor(::com::iArchive &ar, int version) {
 	using frx::gui::components::VstForxEditor;
-	VstForxEditor * editor = static_cast<VstForxEditor*>(
-		host->getEditor()
-	);
-	if (!editor) {
-		SAMBAG_THROW(
-			sambag::com::exceptions::IllegalStateException,
-			"editor == NULL"
-		);
-	}
-    
-    frx::gui::components::register_types(ar, version);
-	
+	VstForxEditor * editor = _vstForxEditor
+		? _vstForxEditor
+		: static_cast<VstForxEditor*>(host->getEditor());
+
+	frx::gui::components::register_types(ar, version);
 	ar.register_type<frx::gui::ViewModelMap>();
 	std::string serializedViewStream;
-	ar & serializedViewStream; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<1.
-	ar & map;				   //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<2.
+	ar & serializedViewStream;
+	ar & map;
+
+	if (!editor) {
+		// VST3: setState before createView — cache for when editor appears.
+		_cachedViewStream  = serializedViewStream;
+		_cachedViewVersion = version;
+		return;
+	}
+
 	if (editor->isOpen()) {
 		std::stringstream tmpss;
 		tmpss<<serializedViewStream;
@@ -490,8 +494,10 @@ void VstForxPlug::loadEditor(::com::iArchive &ar, int version) {
 		editor->setCircuidView(view);
 		return;
 	}
+	_cachedViewStream        = serializedViewStream;
+	_cachedViewVersion       = version;
 	editor->hiChamber.first  = serializedViewStream;
-    editor->hiChamber.second = version;
+	editor->hiChamber.second = version;
 }
 //-----------------------------------------------------------------------------
 void VstForxPlug::save(std::ostream &os) {

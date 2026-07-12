@@ -124,9 +124,12 @@ public:
 	//-------------------------------------------------------------------------
 	void setPlugin(frx::processing::VstForxPlug *aEff);
 	//-------------------------------------------------------------------------
-	frx::processing::VstForxPlug * getPlugin() const { 
-		return plug; 
+	frx::processing::VstForxPlug * getPlugin() const {
+		return plug;
 	}
+	//-------------------------------------------------------------------------
+	const std::string& getHiChamberData() const { return hiChamber.first; }
+	int                getHiChamberVersion() const { return hiChamber.second; }
 	//-------------------------------------------------------------------------
 	VstForxEditor(AudioEffect *ptr);
 	//-------------------------------------------------------------------------

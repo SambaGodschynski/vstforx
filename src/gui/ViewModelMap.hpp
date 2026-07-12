@@ -122,6 +122,12 @@ public:
 	 */
 	void unlock(::com::iArchive &ar);
 	//-------------------------------------------------------------------------
+	/**
+	 * Resets map to unlocked/empty state. Used as fallback when deserialization
+	 * fails so the map doesn't stay stuck in locked state.
+	 */
+	void forceUnlock();
+	//-------------------------------------------------------------------------
     typedef std::vector<frx::processing::ModelObject::Ptr> ModelObjects;
     void getModelObjects(ModelObjects &out) const;
 }; // ModelMap

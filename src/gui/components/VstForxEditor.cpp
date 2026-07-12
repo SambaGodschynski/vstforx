@@ -128,7 +128,11 @@ FrxCircuidView::Ptr VstForxEditor::deserializeViewTemp(::com::iArchive &ar, int 
 		view = FrxControl::deserializeView(ar);
 		getPlugin()->registerView(view);
 		FrxControl::serializeViewComponents(ar, view);
+	} catch(const std::exception &ex) {
+		SAMBAG_LOG_ERR<<"deserializeViewTemp failed: "<<ex.what();
+		return FrxCircuidView::Ptr();
 	} catch(...) {
+		SAMBAG_LOG_ERR<<"deserializeViewTemp failed: unknown error";
 		return FrxCircuidView::Ptr();
 	}
 	return view;
@@ -220,7 +224,17 @@ FrxCircuidViewPtr VstForxEditor::createView(sdc::Window::Ptr win) {
             if (res) {
                 return res;
             }
-        } 
+        }
+        // Unlock map if still locked — happens when deserialization failed OR
+        // when a new editor is created without prior state (VST3: host destroys
+        // the old IPlugView and creates a new one, so hiChamber is empty but the
+        // map is still locked from the previous editor's close()).
+        {
+            frx::gui::ViewModelMap::Ptr vmap = getPlugin()->getViewModelMap();
+            if (vmap && vmap->isLocked()) {
+                vmap->forceUnlock();
+            }
+        }
 
         res = createEmptyView();
         getPlugin()->registerView(res);
@@ -336,13 +350,9 @@ void VstForxEditor::close() {
         hiChamber.second = FRX_ARCHIVE_VERSION;
 		SAMBAG_END_SYNCHRONIZED
 	} catch (const std::exception &ex) {
-		std::stringstream ss;
-		ss<<"closing main view failed: "<<ex.what();
-		errorMessage(ss.str());
+		errorMessage(std::string("closing main view failed: ") + ex.what());
 	} catch (...) {
-		std::stringstream ss;
-		ss<<"closing main view failed: unkown error.";
-		errorMessage(ss.str());
+		errorMessage("closing main view failed: unknown error.");
 	}
     
     getPlugin()->unRegisterView(circView);

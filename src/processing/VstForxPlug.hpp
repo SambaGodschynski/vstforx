@@ -47,6 +47,14 @@ public:
 private:
     //-------------------------------------------------------------------------
     ScriptCtrlPtr scriptCtrl;
+    //-------------------------------------------------------------------------
+    // In VST3, host->getEditor() always returns nullptr (the audio component
+    // and the IPlugView are separate objects).  VstForxPlugView sets this
+    // directly so saveEditor()/loadEditor() can reach the editor in VST3 too.
+    frx::gui::components::VstForxEditor* _vstForxEditor{nullptr};
+    // View stream cached here so getState() works even before createView().
+    std::string _cachedViewStream;
+    int         _cachedViewVersion{0};
 	//-------------------------------------------------------------------------
 	void *effectPtr;
 	//-------------------------------------------------------------------------
@@ -130,6 +138,18 @@ public:
 	void close();
 	//-------------------------------------------------------------------------
 	void * getEditor();
+	//-------------------------------------------------------------------------
+	void setVstForxEditor(frx::gui::components::VstForxEditor* e) {
+        _vstForxEditor = e;
+        if (e && !_cachedViewStream.empty()) {
+            e->hiChamber.first  = _cachedViewStream;
+            e->hiChamber.second = _cachedViewVersion;
+        }
+    }
+    void setCachedViewStream(const std::string& s, int version) {
+        _cachedViewStream  = s;
+        _cachedViewVersion = version;
+    }
 	//-------------------------------------------------------------------------
 	bool requestEditorResize(int width, int height);
 	//-------------------------------------------------------------------------

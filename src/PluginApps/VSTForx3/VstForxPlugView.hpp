@@ -29,6 +29,16 @@ class VstForxPlugView : public Steinberg::IPlugView {
     unsigned long                        _xid{0};
 
 #ifndef _WIN32
+    // Reference-counted BoostTimerImpl start/stop: start once on first attach,
+    // stop when the last VstForxPlugView instance is destroyed.  Calling
+    // tearDownTimer() on every removed()/attached() cycle is wrong: it stops
+    // the background thread that drives sambag Timers (e.g. idle timers), and
+    // the subsequent startUpTimer() does not reliably restart per-timer threads
+    // whose thread* pointers are not null after join.
+    static int _boostTimerRefCount;
+#endif
+
+#ifndef _WIN32
     // ── Linux: minimal IEventHandler / ITimerHandler wrappers ────────────────
     // Separate objects avoid the multiple-FUnknown diamond; they have trivial
     // ref-counting because VstForxPlugView owns them.
@@ -81,7 +91,9 @@ class VstForxPlugView : public Steinberg::IPlugView {
         if (dsp)
             _runLoop->registerEventHandler(&_eventHandler, XConnectionNumber(dsp));
         _runLoop->registerTimer(&_timerHandler, 16); // ~60 fps
-        sambag::com::BoostTimerImpl::startUpTimer();
+        if (_boostTimerRefCount++ == 0) {
+            sambag::com::BoostTimerImpl::startUpTimer();
+        }
     }
 
     void unregisterRunLoop() {
@@ -90,7 +102,6 @@ class VstForxPlugView : public Steinberg::IPlugView {
         _runLoop->unregisterTimer(&_timerHandler);
         _runLoop->release();
         _runLoop = nullptr;
-        sambag::com::BoostTimerImpl::tearDownTimer();
     }
 #endif // !_WIN32
 
@@ -99,13 +110,32 @@ public:
         : _editor(new frx::gui::components::VstForxEditor(nullptr))
     {
         _editor->setPlugin(plugin);
+        plugin->setVstForxEditor(_editor);
         plugin->getScriptController()->setEditor(_editor);
     }
 
     ~VstForxPlugView() {
 #ifndef _WIN32
-        unregisterRunLoop();
+        // removed() already called unregisterRunLoop() and cleared _runLoop.
+        // Only clean up here if removed() was skipped (edge case).
+        if (_runLoop) {
+            _runLoop->unregisterEventHandler(&_eventHandler);
+            _runLoop->unregisterTimer(&_timerHandler);
+            _runLoop->release();
+            _runLoop = nullptr;
+        }
+        if (--_boostTimerRefCount == 0) {
+            sambag::com::BoostTimerImpl::tearDownTimer();
+        }
 #endif
+        frx::processing::VstForxPlug* plugin = _editor->getPlugin();
+        // Preserve hiChamber in the plugin's cache so the next VstForxEditor
+        // (created fresh by the next createView() call) can restore the state.
+        if (!_editor->getHiChamberData().empty()) {
+            plugin->setCachedViewStream(_editor->getHiChamberData(),
+                                        _editor->getHiChamberVersion());
+        }
+        plugin->setVstForxEditor(nullptr);
         delete _editor;
     }
 
@@ -155,10 +185,19 @@ public:
     }
 
     Steinberg::tresult PLUGIN_API removed() override {
+        _editor->close();
+        // Save hiChamber to plugin cache immediately after close().
+        // The host may call createView() (creating a fresh VstForxEditor with
+        // empty hiChamber) BEFORE releasing this view and triggering our
+        // destructor, so the destructor would be too late.
+        if (!_editor->getHiChamberData().empty()) {
+            _editor->getPlugin()->setCachedViewStream(
+                _editor->getHiChamberData(), _editor->getHiChamberVersion());
+        }
 #ifndef _WIN32
+        sambag::disco::components::X11WindowToolkit::flushInvokeLater();
         unregisterRunLoop();
 #endif
-        _editor->close();
         return Steinberg::kResultOk;
     }
 
